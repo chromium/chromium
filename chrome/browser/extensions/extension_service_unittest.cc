@@ -703,13 +703,15 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   }
 
   testing::AssertionResult IsBlocked(const std::string& id) {
-    std::unique_ptr<ExtensionSet> all_unblocked_extensions =
+    const ExtensionSet all_unblocked_extensions =
         registry()->GenerateInstalledExtensionsSet(
             ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::BLOCKED);
-    if (all_unblocked_extensions->Contains(id))
+    if (all_unblocked_extensions.Contains(id)) {
       return testing::AssertionFailure() << id << " is still unblocked!";
-    if (!registry()->blocked_extensions().Contains(id))
+    }
+    if (!registry()->blocked_extensions().Contains(id)) {
       return testing::AssertionFailure() << id << " is not blocked!";
+    }
     return testing::AssertionSuccess();
   }
 
@@ -2835,7 +2837,7 @@ TEST_F(ExtensionServiceTest, EnsureCWSOrdinalsInitialized) {
 
 TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
   InitializeEmptyExtensionService();
-  EXPECT_TRUE(registry()->enabled_extensions().is_empty());
+  EXPECT_TRUE(registry()->enabled_extensions().empty());
 
   int pref_count = 0;
 
@@ -2886,7 +2888,7 @@ TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
 
 TEST_F(ExtensionServiceTest, InstallAppsAndCheckStorageProtection) {
   InitializeEmptyExtensionService();
-  EXPECT_TRUE(registry()->enabled_extensions().is_empty());
+  EXPECT_TRUE(registry()->enabled_extensions().empty());
 
   int pref_count = 0;
 
@@ -2917,7 +2919,7 @@ TEST_F(ExtensionServiceTest, InstallAppsAndCheckStorageProtection) {
 
   UninstallExtension(id2);
 
-  EXPECT_TRUE(registry()->enabled_extensions().is_empty());
+  EXPECT_TRUE(registry()->enabled_extensions().empty());
   EXPECT_FALSE(
       profile()->GetExtensionSpecialStoragePolicy()->IsStorageProtected(
           origin1));
@@ -4926,7 +4928,7 @@ TEST_F(ExtensionServiceTest, PRE_DisableAllExtensions) {
       ::switches::kDisableExtensions);
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet()->is_empty());
+  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
 }
 
 // ... But, if we remove the switch, they are.
@@ -4935,8 +4937,8 @@ TEST_F(ExtensionServiceTest, DisableAllExtensions) {
       ::switches::kDisableExtensions));
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  EXPECT_FALSE(registry()->GenerateInstalledExtensionsSet()->is_empty());
-  EXPECT_FALSE(registry()->enabled_extensions().is_empty());
+  EXPECT_FALSE(registry()->GenerateInstalledExtensionsSet().empty());
+  EXPECT_FALSE(registry()->enabled_extensions().empty());
 }
 
 // Tests reloading extensions.
@@ -5558,7 +5560,7 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
 
   EXPECT_EQ(1u, GetErrors().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
-  EXPECT_EQ(1u, registry()->GenerateInstalledExtensionsSet()->size());
+  EXPECT_EQ(1u, registry()->GenerateInstalledExtensionsSet().size());
   EXPECT_TRUE(
       get_extension_by_name(registry()->enabled_extensions(), kGoodExtension));
 
@@ -5568,7 +5570,7 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
           ->id();
   service()->UninstallExtension(good_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
   task_environment()->RunUntilIdle();
-  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet()->is_empty());
+  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
 }
 
 // Tests that we generate IDs when they are not specified in the manifest for
@@ -7605,7 +7607,7 @@ TEST_F(ExtensionServiceTest, InstallBlocklistedExtension) {
 TEST_F(ExtensionServiceTest, CannotEnableBlocklistedExtension) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  ASSERT_FALSE(registry()->enabled_extensions().is_empty());
+  ASSERT_FALSE(registry()->enabled_extensions().empty());
 
   // Blocklist the first extension; then try enabling it.
   std::string id = (*(registry()->enabled_extensions().begin()))->id();
@@ -7652,7 +7654,7 @@ TEST_F(ExtensionServiceTest, CannotDisableSharedModules) {
 TEST_F(ExtensionServiceTest, UninstallBlocklistedExtension) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  ASSERT_FALSE(registry()->enabled_extensions().is_empty());
+  ASSERT_FALSE(registry()->enabled_extensions().empty());
 
   // Blocklist the first extension; then try uninstalling it.
   std::string id = (*(registry()->enabled_extensions().begin()))->id();

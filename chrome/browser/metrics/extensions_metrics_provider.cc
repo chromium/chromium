@@ -33,6 +33,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 using extensions::Extension;
@@ -344,14 +345,14 @@ std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
     Profile* profile,
     base::Time last_sample_time) {
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile);
-  std::unique_ptr<extensions::ExtensionSet> extensions =
+  const extensions::ExtensionSet extensions =
       extensions::ExtensionRegistry::Get(profile)
           ->GenerateInstalledExtensionsSet();
   std::vector<ExtensionInstallProto> installs;
-  installs.reserve(extensions->size());
+  installs.reserve(extensions.size());
   extensions::ExtensionManagement* extension_management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
-  for (const auto& extension : *extensions) {
+  for (const auto& extension : extensions) {
     installs.push_back(ConstructInstallProto(
         *extension, prefs, last_sample_time, extension_management));
   }
@@ -380,12 +381,12 @@ int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
   return output % kExtensionListBuckets;
 }
 
-std::unique_ptr<extensions::ExtensionSet>
+absl::optional<extensions::ExtensionSet>
 ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
   // Some profiles cannot have extensions, such as the System Profile.
   if (!profile || extensions::ChromeContentBrowserClientExtensionsPart::
                       AreExtensionsDisabledForProfile(profile)) {
-    return nullptr;
+    return absl::nullopt;
   }
 
   extensions::ExtensionRegistry* registry =
@@ -441,8 +442,8 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
   // time when this metric is generated.
   std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
   for (size_t i = 0u; i < profiles.size() && state < OFF_STORE; ++i) {
-    std::unique_ptr<extensions::ExtensionSet> extensions(
-        GetInstalledExtensions(profiles[i]));
+    absl::optional<extensions::ExtensionSet> extensions =
+        GetInstalledExtensions(profiles[i]);
     if (!extensions)
       continue;
 
@@ -452,8 +453,8 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
 
     // Combine the state from each profile, always favoring the higher state as
     // defined by the order of ExtensionState.
-    state = std::max(
-        state, CheckForOffStore(*extensions.get(), *verifier, profiles[i]));
+    state =
+        std::max(state, CheckForOffStore(*extensions, *verifier, profiles[i]));
   }
 
   system_profile->set_offstore_extensions_state(ExtensionStateAsProto(state));
@@ -467,8 +468,8 @@ void ExtensionsMetricsProvider::ProvideOccupiedBucketMetric(
   // profiles.
   Profile* profile = cached_profile_.GetMetricsProfile();
 
-  std::unique_ptr<extensions::ExtensionSet> extensions(
-      GetInstalledExtensions(profile));
+  absl::optional<extensions::ExtensionSet> extensions =
+      GetInstalledExtensions(profile);
   if (!extensions)
     return;
 

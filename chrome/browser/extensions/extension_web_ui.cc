@@ -513,12 +513,12 @@ void ExtensionWebUI::InitializeChromeURLOverrides(Profile* profile) {
 
 // static
 void ExtensionWebUI::ValidateChromeURLOverrides(Profile* profile) {
-  std::unique_ptr<extensions::ExtensionSet> all_extensions =
+  extensions::ExtensionSet all_extensions =
       extensions::ExtensionRegistry::Get(profile)
           ->GenerateInstalledExtensionsSet();
 
-  ForEachOverrideList(profile, base::BindRepeating(&ValidateOverridesList,
-                                                   all_extensions.get()));
+  ForEachOverrideList(
+      profile, base::BindRepeating(&ValidateOverridesList, &all_extensions));
 }
 
 // static

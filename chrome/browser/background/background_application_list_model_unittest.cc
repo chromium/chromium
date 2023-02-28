@@ -158,7 +158,7 @@ TEST_F(BackgroundApplicationListModelTest, DISABLED_ExplicitTest) {
   ASSERT_TRUE(ExtensionSystem::Get(profile())->is_ready());
   ASSERT_TRUE(model()->startup_done());
 
-  ASSERT_TRUE(registry()->enabled_extensions().is_empty());
+  ASSERT_TRUE(registry()->enabled_extensions().empty());
   ASSERT_EQ(0U, model()->size());
 
   scoped_refptr<Extension> ext1 = CreateExtension("alpha", false);
@@ -224,7 +224,7 @@ TEST_F(BackgroundApplicationListModelTest, AddRemovePermissionsTest) {
   service()->Init();
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(ExtensionSystem::Get(profile())->is_ready());
-  ASSERT_TRUE(registry()->enabled_extensions().is_empty());
+  ASSERT_TRUE(registry()->enabled_extensions().empty());
   ASSERT_EQ(0U, model()->size());
 
   scoped_refptr<Extension> ext = CreateExtension("extension", false);
@@ -277,7 +277,7 @@ TEST_F(BackgroundApplicationListModelTest, ExtensionLoadAndUnload) {
       CreateExtension("background_application", true);
   ASSERT_TRUE(bgapp->permissions_data()->HasAPIPermission(
       APIPermissionID::kBackground));
-  ASSERT_TRUE(registry()->enabled_extensions().is_empty());
+  ASSERT_TRUE(registry()->enabled_extensions().empty());
   ASSERT_EQ(0U, model()->size());
 
   extensions::TestExtensionRegistryObserver load_observer(registry());
@@ -290,7 +290,7 @@ TEST_F(BackgroundApplicationListModelTest, ExtensionLoadAndUnload) {
   service()->UnloadExtension(bgapp->id(),
                              extensions::UnloadedExtensionReason::UNINSTALL);
   unload_observer.WaitForExtensionUnloaded();
-  ASSERT_TRUE(registry()->enabled_extensions().is_empty());
+  ASSERT_TRUE(registry()->enabled_extensions().empty());
   EXPECT_EQ(0U, model()->size());
 }
 
@@ -306,7 +306,7 @@ TEST_F(BackgroundApplicationListModelTest, LateExtensionSystemReady) {
       CreateExtension("background_application", true);
   EXPECT_TRUE(bgapp->permissions_data()->HasAPIPermission(
       APIPermissionID::kBackground));
-  EXPECT_TRUE(registry()->enabled_extensions().is_empty());
+  EXPECT_TRUE(registry()->enabled_extensions().empty());
   EXPECT_EQ(0U, model()->size());
 
   extensions::TestExtensionRegistryObserver load_observer(registry());
@@ -433,7 +433,7 @@ TEST_F(BackgroundApplicationListModelTest, RandomTest) {
   service()->Init();
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(ExtensionSystem::Get(profile())->is_ready());
-  ASSERT_TRUE(registry()->enabled_extensions().is_empty());
+  ASSERT_TRUE(registry()->enabled_extensions().empty());
   ASSERT_EQ(0U, model()->size());
 
   static const int kIterations = 20;

@@ -459,12 +459,13 @@ void ForceInstalledMetrics::ReportMetrics() {
   auto installed_extensions = registry_->GenerateInstalledExtensionsSet();
   auto blocklisted_extensions = registry_->GenerateInstalledExtensionsSet(
       ExtensionRegistry::IncludeFlag::BLOCKLISTED);
-  for (const auto& entry : *installed_extensions) {
+  for (const auto& entry : installed_extensions) {
     if (missing_forced_extensions.count(entry->id())) {
       missing_forced_extensions.erase(entry->id());
       ReportDisableReason(entry->id());
-      if (blocklisted_extensions->Contains(entry->id()))
+      if (blocklisted_extensions.Contains(entry->id())) {
         blocklisted_count++;
+      }
     }
   }
   size_t misconfigured_extensions = 0;

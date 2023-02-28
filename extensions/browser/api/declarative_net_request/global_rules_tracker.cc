@@ -22,14 +22,14 @@ namespace dnr_api = api::declarative_net_request;
 size_t CalculateAllocatedGlobalRuleCount(
     const ExtensionPrefs* extension_prefs,
     const ExtensionRegistry* extension_registry) {
-  std::unique_ptr<ExtensionSet> installed_extensions =
+  const ExtensionSet installed_extensions =
       extension_registry->GenerateInstalledExtensionsSet();
 
   // For each extension, fetch its allocated rules count and add it to
   // |allocated_global_rule_count_|.
   size_t allocated_rule_count;
   size_t allocated_global_rule_count = 0;
-  for (const auto& extension : *installed_extensions) {
+  for (const auto& extension : installed_extensions) {
     if (extension_prefs->GetDNRAllocatedGlobalRuleCount(
             extension->id(), &allocated_rule_count)) {
       allocated_global_rule_count += allocated_rule_count;

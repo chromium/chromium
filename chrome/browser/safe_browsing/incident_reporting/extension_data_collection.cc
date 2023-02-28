@@ -114,12 +114,12 @@ void CollectExtensionData(ClientIncidentReport_ExtensionData* data) {
       continue;
     }
 
-    std::unique_ptr<const extensions::ExtensionSet> extensions(
+    const extensions::ExtensionSet extensions =
         extensions::ExtensionRegistryFactory::GetForBrowserContext(profile)
-            ->GenerateInstalledExtensionsSet());
+            ->GenerateInstalledExtensionsSet();
     extensions::ExtensionPrefs* extension_prefs =
         extensions::ExtensionPrefsFactory::GetForBrowserContext(profile);
-    for (const auto& extension : *extensions) {
+    for (const auto& extension : extensions) {
       base::Time install_time =
           extension_prefs->GetLastUpdateTime(extension->id());
       if (install_time > last_install_time) {

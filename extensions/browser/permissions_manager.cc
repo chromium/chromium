@@ -710,7 +710,7 @@ void PermissionsManager::OnUserPermissionsSettingsChanged() {
   // accurate.
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   auto all_extensions = registry->GenerateInstalledExtensionsSet();
-  for (const auto& extension : *all_extensions) {
+  for (const auto& extension : all_extensions) {
     UpdatePermissionsWithUserSettings(*extension, user_allowed_set);
   }
 

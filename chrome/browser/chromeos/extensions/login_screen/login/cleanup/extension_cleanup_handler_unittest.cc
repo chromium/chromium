@@ -164,9 +164,9 @@ TEST_F(ExtensionCleanupHandlerUnittest, Cleanup) {
       ->AddExtension(MakeExtensionNamed("baz", kExtensionId2).get());
 
   SetupExemptList();
-  std::unique_ptr<extensions::ExtensionSet> all_installed_extensions =
+  extensions::ExtensionSet all_installed_extensions =
       extension_registry_->GenerateInstalledExtensionsSet();
-  EXPECT_EQ(all_installed_extensions->size(), 3u);
+  EXPECT_EQ(all_installed_extensions.size(), 3u);
 
   base::RunLoop run_loop;
   extension_cleanup_handler_->Cleanup(
@@ -178,8 +178,8 @@ TEST_F(ExtensionCleanupHandlerUnittest, Cleanup) {
 
   all_installed_extensions =
       extension_registry_->GenerateInstalledExtensionsSet();
-  EXPECT_EQ(all_installed_extensions->size(), 1u);
-  EXPECT_TRUE(all_installed_extensions->Contains(kExemptExtensionId));
+  EXPECT_EQ(all_installed_extensions.size(), 1u);
+  EXPECT_TRUE(all_installed_extensions.Contains(kExemptExtensionId));
 }
 
 }  // namespace chromeos

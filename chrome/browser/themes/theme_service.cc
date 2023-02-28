@@ -411,13 +411,11 @@ void ThemeService::RemoveUnusedThemes() {
 
   std::string current_theme = GetThemeID();
   std::vector<std::string> remove_list;
-  std::unique_ptr<const extensions::ExtensionSet> extensions(
+  const extensions::ExtensionSet extensions =
       extensions::ExtensionRegistry::Get(profile_)
-          ->GenerateInstalledExtensionsSet());
+          ->GenerateInstalledExtensionsSet();
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
-  for (extensions::ExtensionSet::const_iterator it = extensions->begin();
-       it != extensions->end(); ++it) {
-    const extensions::Extension* extension = it->get();
+  for (const auto& extension : extensions) {
     if (extension->is_theme() && extension->id() != current_theme) {
       // Only uninstall themes which are not disabled or are disabled with
       // reason DISABLE_USER_ACTION. We cannot blanket uninstall all disabled
@@ -425,7 +423,7 @@ void ThemeService::RemoveUnusedThemes() {
       int disable_reason = prefs->GetDisableReasons(extension->id());
       if (!prefs->IsExtensionDisabled(extension->id()) ||
           disable_reason == extensions::disable_reason::DISABLE_USER_ACTION) {
-        remove_list.push_back((*it)->id());
+        remove_list.push_back(extension->id());
       }
     }
   }

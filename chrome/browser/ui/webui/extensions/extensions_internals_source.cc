@@ -507,14 +507,13 @@ void ExtensionsInternalsSource::StartDataRequest(
 
 std::string ExtensionsInternalsSource::WriteToString() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::unique_ptr<extensions::ExtensionSet> extensions =
-      extensions::ExtensionRegistry::Get(profile_)
-          ->GenerateInstalledExtensionsSet();
+  const auto extensions = extensions::ExtensionRegistry::Get(profile_)
+                              ->GenerateInstalledExtensionsSet();
   extensions::ProcessManager* process_manager =
       extensions::ProcessManager::Get(profile_);
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
   base::Value::List data;
-  for (const auto& extension : *extensions) {
+  for (const auto& extension : extensions) {
     base::Value::Dict extension_data;
     extension_data.Set(kInternalsIdKey, extension->id());
     extension_data.Set(kInternalsCreationFlagsKey,

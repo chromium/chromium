@@ -86,15 +86,14 @@ class ManagedValueStoreCache::ExtensionTracker
   void OnExtensionsReady();
 
   // Starts a schema load for all extensions that use managed storage.
-  void LoadSchemas(std::unique_ptr<ExtensionSet> added);
+  void LoadSchemas(ExtensionSet added);
 
   bool UsesManagedStorage(const Extension* extension) const;
 
   // Loads the schemas of the |extensions| and passes a ComponentMap to
   // Register().
-  static void LoadSchemasOnFileTaskRunner(
-      std::unique_ptr<ExtensionSet> extensions,
-      base::WeakPtr<ExtensionTracker> self);
+  static void LoadSchemasOnFileTaskRunner(ExtensionSet extensions,
+                                          base::WeakPtr<ExtensionTracker> self);
   void Register(const policy::ComponentMap* components);
 
   raw_ptr<Profile> profile_;
@@ -129,8 +128,8 @@ void ManagedValueStoreCache::ExtensionTracker::OnExtensionWillBeInstalled(
   // most once.
   if (!ExtensionSystem::Get(profile_)->ready().is_signaled())
     return;
-  auto added = std::make_unique<ExtensionSet>();
-  added->Insert(extension);
+  ExtensionSet added;
+  added.Insert(extension);
   LoadSchemas(std::move(added));
 }
 
@@ -152,17 +151,16 @@ void ManagedValueStoreCache::ExtensionTracker::OnExtensionsReady() {
       ExtensionRegistry::Get(profile_)->GenerateInstalledExtensionsSet());
 }
 
-void ManagedValueStoreCache::ExtensionTracker::LoadSchemas(
-    std::unique_ptr<ExtensionSet> added) {
+void ManagedValueStoreCache::ExtensionTracker::LoadSchemas(ExtensionSet added) {
   // Filter out extensions that don't use managed storage.
-  ExtensionSet::const_iterator it = added->begin();
-  while (it != added->end()) {
+  ExtensionSet::const_iterator it = added.begin();
+  while (it != added.end()) {
     std::string to_remove;
     if (!UsesManagedStorage(it->get()))
       to_remove = (*it)->id();
     ++it;
     if (!to_remove.empty())
-      added->Remove(to_remove);
+      added.Remove(to_remove);
   }
 
   GetExtensionFileTaskRunner()->PostTask(
@@ -177,28 +175,27 @@ bool ManagedValueStoreCache::ExtensionTracker::UsesManagedStorage(
 
 // static
 void ManagedValueStoreCache::ExtensionTracker::LoadSchemasOnFileTaskRunner(
-    std::unique_ptr<ExtensionSet> extensions,
+    ExtensionSet extensions,
     base::WeakPtr<ExtensionTracker> self) {
   auto components = std::make_unique<policy::ComponentMap>();
 
-  for (const auto& it : *extensions) {
-    const Extension& extension = *it;
-    if (!extension.manifest()->FindStringPath(
+  for (const auto& extension : extensions) {
+    if (!extension->manifest()->FindStringPath(
             manifest_keys::kStorageManagedSchema)) {
       // TODO(joaodasilva): Remove this. http://crbug.com/325349
-      (*components)[extension.id()] = policy::Schema();
+      (*components)[extension->id()] = policy::Schema();
       continue;
     }
     // The extension should have been validated, so assume the schema exists
     // and is valid.
     std::string error;
     policy::Schema schema =
-        StorageSchemaManifestHandler::GetSchema(&extension, &error);
+        StorageSchemaManifestHandler::GetSchema(extension.get(), &error);
     // If the schema is invalid then proceed with an empty schema. The extension
     // will be listed in chrome://policy but won't be able to load any policies.
     if (!schema.valid())
       schema = policy::Schema();
-    (*components)[extension.id()] = schema;
+    (*components)[extension->id()] = schema;
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(

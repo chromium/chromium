@@ -543,9 +543,9 @@ std::unique_ptr<ExtensionTelemetryReportRequest>
 ExtensionTelemetryService::CreateReport() {
   // Don't create a telemetry report if there were no signals generated (i.e.,
   // extension store is empty) AND there are no installed extensions currently.
-  std::unique_ptr<extensions::ExtensionSet> installed_extensions =
+  extensions::ExtensionSet installed_extensions =
       extension_registry_->GenerateInstalledExtensionsSet();
-  if (extension_store_.empty() && installed_extensions->is_empty()) {
+  if (extension_store_.empty() && installed_extensions.empty()) {
     return nullptr;
   }
 
@@ -583,11 +583,11 @@ ExtensionTelemetryService::CreateReport() {
   // them. Note that these installed extension reports will only contain
   // extension information (and no signal data).
   for (const auto& entry : extension_store_) {
-    installed_extensions->Remove(entry.first /* extension_id */);
+    installed_extensions.Remove(entry.first /* extension_id */);
   }
 
-  for (const scoped_refptr<const extensions::Extension> installed_entry :
-       *installed_extensions) {
+  for (const scoped_refptr<const extensions::Extension>& installed_entry :
+       installed_extensions) {
     auto report_entry_pb =
         std::make_unique<ExtensionTelemetryReportRequest_Report>();
 
@@ -827,10 +827,10 @@ void ExtensionTelemetryService::StartOffstoreFileDataCollection() {
 }
 
 void ExtensionTelemetryService::GetOffstoreExtensionDirs() {
-  std::unique_ptr<extensions::ExtensionSet> installed_extensions =
+  const extensions::ExtensionSet installed_extensions =
       extension_registry_->GenerateInstalledExtensionsSet();
 
-  for (const auto& extension : *installed_extensions) {
+  for (const auto& extension : installed_extensions) {
     if (!extension->from_webstore() &&
         !extensions::Manifest::IsComponentLocation(extension->location())) {
       offstore_extension_dirs_[extension->id()] = extension->path();

@@ -110,12 +110,11 @@ std::vector<std::string> SyncExtensionHelper::GetInstalledExtensionNames(
     Profile* profile) const {
   std::vector<std::string> names;
 
-  std::unique_ptr<const extensions::ExtensionSet> extensions(
+  const extensions::ExtensionSet extensions =
       extensions::ExtensionRegistry::Get(profile)
-          ->GenerateInstalledExtensionsSet());
-  for (extensions::ExtensionSet::const_iterator it = extensions->begin();
-       it != extensions->end(); ++it) {
-    names.push_back((*it)->name());
+          ->GenerateInstalledExtensionsSet();
+  for (const auto& extension : extensions) {
+    names.push_back(extension->name());
   }
 
   return names;
@@ -219,13 +218,13 @@ SyncExtensionHelper::ExtensionStateMap SyncExtensionHelper::GetExtensionStates(
 
   ExtensionStateMap extension_state_map;
 
-  std::unique_ptr<const extensions::ExtensionSet> extensions(
+  const extensions::ExtensionSet extensions =
       extensions::ExtensionRegistry::Get(profile)
-          ->GenerateInstalledExtensionsSet());
+          ->GenerateInstalledExtensionsSet();
 
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
-  for (const scoped_refptr<const Extension>& extension : *extensions) {
+  for (const scoped_refptr<const Extension>& extension : extensions) {
     const std::string& id = extension->id();
     ExtensionState& extension_state = extension_state_map[id];
     extension_state.enabled_state = extension_service->IsExtensionEnabled(id)

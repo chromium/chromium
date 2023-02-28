@@ -312,13 +312,12 @@ void ExtensionMessageBubbleController::AcknowledgeExtensions() {
 ExtensionIdList* ExtensionMessageBubbleController::GetOrCreateExtensionList() {
   if (!initialized_) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-    std::unique_ptr<const ExtensionSet> all_extensions;
+    absl::optional<ExtensionSet> all_extensions;
     if (!delegate_->ShouldLimitToEnabledExtensions())
       all_extensions = registry->GenerateInstalledExtensionsSet();
     const ExtensionSet& extensions_to_check =
         all_extensions ? *all_extensions : registry->enabled_extensions();
-    for (const scoped_refptr<const Extension>& extension :
-         extensions_to_check) {
+    for (const auto& extension : extensions_to_check) {
       if (delegate_->ShouldIncludeExtension(extension.get()))
         extension_list_.push_back(extension->id());
     }

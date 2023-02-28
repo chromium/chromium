@@ -120,11 +120,10 @@ base::Value::Dict ExtensionPoliciesValueProvider::GetExtensionPolicyNames(
 
   const extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(extension_profile);
-  std::unique_ptr<extensions::ExtensionSet> extension_set =
+  const extensions::ExtensionSet extension_set =
       registry->GenerateInstalledExtensionsSet();
 
-  for (const scoped_refptr<const extensions::Extension>& extension :
-       *extension_set) {
+  for (const auto& extension : extension_set) {
     // Skip this extension if it's not an enterprise extension.
     if (!ContainsStorageManagedSchema(extension.get())) {
       continue;

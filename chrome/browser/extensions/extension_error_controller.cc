@@ -38,7 +38,7 @@ void ExtensionErrorController::ShowErrorIfNeeded() {
 
   // Make sure there's something to show, and that there isn't currently a
   // bubble displaying.
-  if (!blocklisted_extensions_.is_empty() && !error_ui_.get()) {
+  if (!blocklisted_extensions_.empty() && !error_ui_.get()) {
     if (!is_first_run_) {
       error_ui_.reset(g_create_ui(this));
       if (!error_ui_->ShowErrorInBubbleView())  // Couldn't find a browser.

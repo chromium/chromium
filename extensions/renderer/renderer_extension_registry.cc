@@ -39,16 +39,6 @@ const ExtensionSet* RendererExtensionRegistry::GetMainThreadExtensionSet()
   return &extensions_;
 }
 
-size_t RendererExtensionRegistry::size() const {
-  base::AutoLock lock(lock_);
-  return extensions_.size();
-}
-
-bool RendererExtensionRegistry::is_empty() const {
-  base::AutoLock lock(lock_);
-  return extensions_.is_empty();
-}
-
 bool RendererExtensionRegistry::Contains(
     const std::string& extension_id) const {
   base::AutoLock lock(lock_);

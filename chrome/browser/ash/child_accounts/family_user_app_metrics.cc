@@ -192,9 +192,9 @@ bool FamilyUserAppMetrics::IsAppTypeReady(apps::AppType app_type) const {
 
 void FamilyUserAppMetrics::RecordInstalledExtensionsCount() {
   int extensions_count = 0;
-  std::unique_ptr<extensions::ExtensionSet> all_installed_extensions =
+  const extensions::ExtensionSet all_installed_extensions =
       extension_registry_->GenerateInstalledExtensionsSet();
-  for (const auto& extension : *all_installed_extensions) {
+  for (const auto& extension : all_installed_extensions) {
     if (extensions::Manifest::IsComponentLocation(extension->location()))
       continue;
     if (extension->is_extension() || extension->is_theme())

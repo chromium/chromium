@@ -57,10 +57,10 @@ void ExtensionCleanupHandler::UninstallExtensions() {
       GetCleanupExemptExtensions();
 
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
-  std::unique_ptr<extensions::ExtensionSet> all_installed_extensions =
+  const extensions::ExtensionSet all_installed_extensions =
       extension_registry->GenerateInstalledExtensionsSet();
 
-  for (const auto& extension : *all_installed_extensions) {
+  for (const auto& extension : all_installed_extensions) {
     std::string extension_id = extension->id();
     // Skip the apps/extensions not meant to be uninstalled and reinstalled. The
     // browsing history will be removed by BrowsingDataCleanupHandler and open

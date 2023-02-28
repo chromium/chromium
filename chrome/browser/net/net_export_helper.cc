@@ -52,10 +52,10 @@ base::Value::List GetExtensionInfo(Profile* profile) {
     extensions::ExtensionService* extension_service =
         extension_system->extension_service();
     if (extension_service) {
-      std::unique_ptr<const extensions::ExtensionSet> extensions(
+      const extensions::ExtensionSet extensions =
           extensions::ExtensionRegistry::Get(profile)
-              ->GenerateInstalledExtensionsSet());
-      for (const auto& extension : *extensions) {
+              ->GenerateInstalledExtensionsSet();
+      for (const auto& extension : extensions) {
         base::Value::Dict extension_info;
         bool enabled = extension_service->IsExtensionEnabled(extension->id());
         extensions::GetExtensionBasicInfo(extension.get(), enabled,

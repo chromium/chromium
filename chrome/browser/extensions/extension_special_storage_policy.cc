@@ -365,7 +365,7 @@ ExtensionSpecialStoragePolicy::SpecialCollection::~SpecialCollection() {}
 
 bool ExtensionSpecialStoragePolicy::SpecialCollection::Contains(
     const GURL& origin) {
-  return !ExtensionsContaining(origin)->is_empty();
+  return !ExtensionsContaining(origin)->empty();
 }
 
 bool ExtensionSpecialStoragePolicy::SpecialCollection::GrantsCapabilitiesTo(

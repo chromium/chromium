@@ -215,13 +215,13 @@ void GetManifestError(const std::string& error,
 // Runs the install verifier for all extensions that are enabled, disabled, or
 // terminated.
 void PerformVerificationCheck(content::BrowserContext* context) {
-  std::unique_ptr<ExtensionSet> extensions =
+  const ExtensionSet extensions =
       ExtensionRegistry::Get(context)->GenerateInstalledExtensionsSet(
           ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
           ExtensionRegistry::TERMINATED);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   bool should_do_verification_check = false;
-  for (const scoped_refptr<const Extension>& extension : *extensions) {
+  for (const scoped_refptr<const Extension>& extension : extensions) {
     if (ui_util::ShouldDisplayInExtensionSettings(*extension) &&
         prefs->HasDisableReason(extension->id(),
                                 disable_reason::DISABLE_NOT_VERIFIED)) {
@@ -2508,12 +2508,12 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
 
   std::vector<developer::MatchingExtensionInfo> matching_extensions;
   URLPatternSet site_pattern({parsed_site});
-  std::unique_ptr<ExtensionSet> all_extensions =
+  const ExtensionSet all_extensions =
       ExtensionRegistry::Get(browser_context())
           ->GenerateInstalledExtensionsSet(
               ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
               ExtensionRegistry::TERMINATED | ExtensionRegistry::BLOCKLISTED);
-  for (const auto& extension : *all_extensions) {
+  for (const auto& extension : all_extensions) {
     const URLPatternSet& extension_withheld_sites =
         extension->permissions_data()->withheld_permissions().effective_hosts();
     const URLPatternSet granted_intersection =

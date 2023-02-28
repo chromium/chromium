@@ -108,9 +108,9 @@ void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
   scoped_refptr<Latch> latch = new Latch(std::move(callback));
 
   // Update all apps.
-  std::unique_ptr<extensions::ExtensionSet> candidates =
+  extensions::ExtensionSet candidates =
       registry->GenerateInstalledExtensionsSet();
-  for (auto& extension_refptr : *candidates) {
+  for (auto& extension_refptr : candidates) {
     const extensions::Extension* extension = extension_refptr.get();
     if (ShouldUpgradeShortcutFor(profile, extension)) {
       UpdateAllShortcuts(std::u16string(), profile, extension,

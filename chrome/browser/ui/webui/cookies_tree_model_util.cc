@@ -223,7 +223,7 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const extensions::ExtensionSet* protecting_apps =
       node.GetModel()->ExtensionsProtectingNode(node);
-  if (protecting_apps && !protecting_apps->is_empty()) {
+  if (protecting_apps && !protecting_apps->empty()) {
     base::Value::List app_infos;
     for (const auto& app : *protecting_apps) {
       base::Value::Dict app_info;

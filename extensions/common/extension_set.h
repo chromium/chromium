@@ -68,12 +68,14 @@ class ExtensionSet {
   ExtensionSet();
 
   ExtensionSet(const ExtensionSet&) = delete;
+  ExtensionSet(ExtensionSet&&);
   ExtensionSet& operator=(const ExtensionSet&) = delete;
+  ExtensionSet& operator=(ExtensionSet&&) noexcept;
 
   ~ExtensionSet();
 
-  size_t size() const;
-  bool is_empty() const;
+  size_t size() const { return extensions_.size(); }
+  bool empty() const { return extensions_.empty(); }
 
   // Iteration support.
   const_iterator begin() const { return const_iterator(extensions_.begin()); }

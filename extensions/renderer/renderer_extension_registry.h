@@ -42,12 +42,8 @@ class RendererExtensionRegistry {
   // TODO(annekao): remove or make thread-safe and callback-based.
   const ExtensionSet* GetMainThreadExtensionSet() const;
 
-  size_t size() const;
-  bool is_empty() const;
-
   // Forwards to the ExtensionSet methods by the same name.
   bool Contains(const std::string& id) const;
-  bool ContainsGUID(const std::string& guid) const;
   bool Insert(const scoped_refptr<const Extension>& extension);
   bool Remove(const std::string& id);
   std::string GetExtensionOrAppIDByURL(const GURL& url) const;
