@@ -31,6 +31,7 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
+#include "headless/lib/browser/headless_client_hints_controller_delegate.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 #include "headless/public/switches.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -317,6 +318,10 @@ std::string HeadlessContentBrowserClient::GetProduct() {
 
 std::string HeadlessContentBrowserClient::GetUserAgent() {
   return browser_->options()->user_agent;
+}
+
+blink::UserAgentMetadata HeadlessContentBrowserClient::GetUserAgentMetadata() {
+  return HeadlessBrowser::GetUserAgentMetadata(browser_->GetPrefs());
 }
 
 void HeadlessContentBrowserClient::BindBadgeService(
