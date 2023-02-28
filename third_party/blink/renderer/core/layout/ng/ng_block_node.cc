@@ -527,7 +527,8 @@ const NGLayoutResult* NGBlockNode::Layout(
   // clamping the offset.
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
-  FinishLayout(block_flow, constraint_space, break_token, layout_result);
+  FinishLayout(block_flow, constraint_space, break_token, layout_result,
+               box_->Size());
 
   // We may be intrinsicly sized (shrink-to-fit), if our intrinsic logical
   // widths are now dirty, re-calculate our inline-size for comparison.
@@ -569,6 +570,7 @@ const NGLayoutResult* NGBlockNode::Layout(
       // We need to clear any previous results when scrollbars change. For
       // example - we may have stored a "measure" layout result which will be
       // incorrect if we try and reuse it.
+      LayoutSize old_box_size = box_->Size();
       params.previous_result = nullptr;
       box_->ClearLayoutResults();
 
@@ -589,7 +591,8 @@ const NGLayoutResult* NGBlockNode::Layout(
       fragment_geometry = CalculateInitialFragmentGeometry(constraint_space,
                                                            *this, break_token);
       layout_result = LayoutWithAlgorithm(params);
-      FinishLayout(block_flow, constraint_space, break_token, layout_result);
+      FinishLayout(block_flow, constraint_space, break_token, layout_result,
+                   old_box_size);
 
 #if DCHECK_IS_ON()
       scrollbar_changed->erase(box_);
@@ -820,7 +823,8 @@ void NGBlockNode::PrepareForLayout() const {
 void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
                                const NGConstraintSpace& constraint_space,
                                const NGBlockBreakToken* break_token,
-                               const NGLayoutResult* layout_result) const {
+                               const NGLayoutResult* layout_result,
+                               LayoutSize old_box_size) const {
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
   // properties, and other global states.
   if (NGDisableSideEffectsScope::IsDisabled())
@@ -894,7 +898,6 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
   bool clear_trailing_results =
       break_token || box_->PhysicalFragmentCount() > 1;
 
-  const LayoutSize old_box_size = box_->Size();
   StoreResultInLayoutBox(layout_result, break_token, clear_trailing_results);
 
   if (block_flow) {
