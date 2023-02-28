@@ -178,7 +178,6 @@ void SystemInfoProvider::OnTabletModeEnded() {
 // network_config::mojom::CrosNetworkConfigObserver implementation:
 void SystemInfoProvider::OnNetworkStateChanged(
     network_config::mojom::NetworkStatePropertiesPtr network) {
-  PA_LOG(INFO) << "echeapi SystemInfoProvider OnNetworkStateChanged";
   FetchWifiNetworkList();
 }
 
