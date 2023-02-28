@@ -22,18 +22,14 @@ namespace password_manager {
 namespace {
 
 // Returns signon_realm for regular forms and formatted url for federated forms.
-std::string GetSignonRealm(const PasswordForm& form) {
+std::string GetFacetRepresentation(const PasswordForm& form) {
   std::string result = form.signon_realm;
   if (form.IsFederatedCredential()) {
     result = base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
         form.url, url_formatter::SchemeDisplay::SHOW));
   }
-  // Remove trailing '/' because FacetURIs don't have it.
-  if (base::EndsWith(result, "/")) {
-    return result.substr(0, result.size() - 1);
-  }
-
-  return result;
+  return FacetURI::FromPotentiallyInvalidSpec(result)
+      .potentially_invalid_spec();
 }
 
 // An implementation of the disjoint-set data structure
@@ -222,7 +218,7 @@ void PasswordsGrouper::GroupPasswords(std::vector<PasswordForm> forms,
   std::vector<std::string> signon_realms;
   signon_realms.reserve(forms.size());
   for (const auto& form : forms) {
-    signon_realms.push_back(GetSignonRealm(form));
+    signon_realms.push_back(GetFacetRepresentation(form));
   }
 
   auto merge_callback = base::BindOnce(&MergeRelatedGroups, psl_extensions_);
@@ -357,10 +353,10 @@ void PasswordsGrouper::GroupPasswordsImpl(
       blocked_sites.push_back(std::move(form));
       continue;
     }
-    std::string signon_realm = GetSignonRealm(form);
+    std::string facet_uri = GetFacetRepresentation(form);
 
-    DCHECK(map_facet_to_group_id.contains(signon_realm));
-    GroupId group_id = map_facet_to_group_id[signon_realm];
+    DCHECK(map_facet_to_group_id.contains(facet_uri));
+    GroupId group_id = map_facet_to_group_id[facet_uri];
 
     // Store group id for sign-on realm.
     map_signon_realm_to_group_id[SignonRealm(form.signon_realm)] = group_id;

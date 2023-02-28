@@ -323,4 +323,33 @@ TEST_F(PasswordsGrouperTest, FederatedAndroidAppGroupedWithRegularPasswords) {
                                   {GetShownOrigin(federated_credential)})));
 }
 
+TEST_F(PasswordsGrouperTest, EncodedCharactersInSignonRealm) {
+  PasswordForm form = CreateForm("https://test.com/sign in/%-.<>`^_'{|}");
+
+  // For federated credentials url is used for grouping. Add space there.
+  PasswordForm federated_form;
+  federated_form.url = GURL("https://test.org/sign in/%-.<>`^_'{|}");
+  federated_form.signon_realm = "federation://test.com/accounts.federation.com";
+  federated_form.username_value = u"username2";
+  federated_form.federation_origin =
+      url::Origin::Create(GURL("https://accounts.federation.com"));
+
+  GroupedFacets group;
+  // Group them only by TLD.
+  group.facets = {
+      Facet(FacetURI::FromCanonicalSpec("https://test.com")),
+      Facet(FacetURI::FromCanonicalSpec("https://test.org")),
+  };
+
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<GroupedFacets>{group}));
+  grouper().GroupPasswords({form, federated_form}, base::DoNothing());
+
+  CredentialUIEntry credential1(form), credential2(federated_form);
+  EXPECT_THAT(grouper().GetAffiliatedGroupsWithGroupingInfo(),
+              UnorderedElementsAre(AffiliatedGroup(
+                  {credential1, credential2}, {GetShownOrigin(credential1)})));
+}
+
 }  // namespace password_manager
