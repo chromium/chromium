@@ -304,6 +304,22 @@ class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
 
       hasTouchpad_: Boolean,
 
+      isAccessibilityChromeVoxPageMigrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityChromeVoxPageMigrationEnabled');
+        },
+      },
+
+      isAccessibilitySelectToSpeakPageMigrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilitySelectToSpeakPageMigrationEnabled');
+        },
+      },
+
       /**
        * Boolean indicating whether shelf navigation buttons should implicitly
        * be enabled in tablet mode - the navigation buttons are implicitly
@@ -381,6 +397,8 @@ class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
   private hasTouchpad_: boolean;
+  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
+  private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
   private manageBrowserProxy_: ManageA11yPageBrowserProxy;
@@ -523,12 +541,20 @@ class SettingsManageA11yPageElement extends SettingsManageA11yPageElementBase {
     this.manageBrowserProxy_.showChromeVoxSettings();
   }
 
+  private onChromeVoxNewSettingsTap_(): void {
+    Router.getInstance().navigateTo(routes.A11Y_CHROMEVOX);
+  }
+
   private onChromeVoxTutorialTap_(): void {
     this.manageBrowserProxy_.showChromeVoxTutorial();
   }
 
   private onSelectToSpeakSettingsTap_(): void {
     this.manageBrowserProxy_.showSelectToSpeakSettings();
+  }
+
+  private onSelectToSpeakNewSettingsTap_(): void {
+    Router.getInstance().navigateTo(routes.A11Y_SELECT_TO_SPEAK);
   }
 
   private onSwitchAccessSettingsTap_(): void {
