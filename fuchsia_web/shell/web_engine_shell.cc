@@ -36,6 +36,7 @@
 #include "fuchsia_web/shell/shell_relauncher.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
 
@@ -297,10 +298,12 @@ int main(int argc, char** argv) {
   fuchsia::element::AnnotationControllerPtr annotation_controller;
   annotations_manager->Connect(annotation_controller.NewRequest());
 
+  absl::optional<fuchsia::element::GraphicalPresenterPtr> maybe_presenter;
   if (is_headless) {
     frame->EnableHeadlessRendering();
   } else {
-    PresentFrame(frame.get(), std::move(annotation_controller));
+    auto result = PresentFrame(frame.get(), std::move(annotation_controller));
+    maybe_presenter.swap(result);
   }
 
   LOG(INFO) << "Launched browser at URL " << url.spec();

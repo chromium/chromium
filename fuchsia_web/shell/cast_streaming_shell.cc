@@ -88,7 +88,7 @@ fuchsia::web::CreateContextParams GetCreateContextParams(
 }
 
 // Set autoplay, enable all logging, and present fullscreen view of `frame`.
-void ConfigureFrame(
+absl::optional<fuchsia::element::GraphicalPresenterPtr> ConfigureFrame(
     fuchsia::web::Frame* frame,
     fidl::InterfaceHandle<fuchsia::element::AnnotationController>
         annotation_controller) {
@@ -96,7 +96,7 @@ void ConfigureFrame(
   settings.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
   frame->SetContentAreaSettings(std::move(settings));
   frame->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
-  PresentFrame(frame, std::move(annotation_controller));
+  return PresentFrame(frame, std::move(annotation_controller));
 }
 
 }  // namespace
@@ -173,7 +173,8 @@ int main(int argc, char** argv) {
       std::make_unique<fuchsia_component_support::AnnotationsManager>();
   fuchsia::element::AnnotationControllerPtr annotation_controller;
   annotations_manager->Connect(annotation_controller.NewRequest());
-  ConfigureFrame(frame.get(), std::move(annotation_controller));
+  auto maybe_presenter =
+      ConfigureFrame(frame.get(), std::move(annotation_controller));
 
   // Register the MessagePort for the Cast Streaming Receiver.
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
