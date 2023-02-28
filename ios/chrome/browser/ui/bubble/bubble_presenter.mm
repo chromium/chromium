@@ -516,8 +516,11 @@ presentBubbleForFeature:(const base::Feature&)feature
   [self.rootViewController.view addLayoutGuide:guide];
   CGPoint anchorPoint =
       bubble_util::AnchorPoint(guide.layoutFrame, arrowDirection);
-  return [guide.owningView convertPoint:anchorPoint
-                                 toView:guide.owningView.window];
+  CGPoint anchorPointInWindow =
+      [guide.owningView convertPoint:anchorPoint
+                              toView:guide.owningView.window];
+  [self.rootViewController.view removeLayoutGuide:guide];
+  return anchorPointInWindow;
 }
 
 // Returns whether the tab can present a bubble tip.
