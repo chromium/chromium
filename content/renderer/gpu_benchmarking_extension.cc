@@ -281,7 +281,7 @@ void RunCallbackHelper(CallbackAndContext* callback_and_context,
 }
 
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,
-                               base::Value result) {
+                               base::Value::Dict result) {
   RunCallbackHelper(callback_and_context,
                     absl::optional<base::Value>(std::move(result)));
 }
@@ -291,7 +291,7 @@ void OnSwapCompletedWithCoreAnimationErrorCode(
     CallbackAndContext* callback_and_context,
     gfx::CALayerResult error_code) {
   RunCallbackHelper(callback_and_context,
-                    absl::optional<base::Value>((base::Value(error_code))));
+                    absl::optional<base::Value>(base::Value(error_code)));
 }
 #endif
 
@@ -612,7 +612,7 @@ void GpuBenchmarking::Install(base::WeakPtr<RenderFrameImpl> frame) {
 GpuBenchmarking::GpuBenchmarking(base::WeakPtr<RenderFrameImpl> frame)
     : render_frame_(std::move(frame)) {}
 
-GpuBenchmarking::~GpuBenchmarking() {}
+GpuBenchmarking::~GpuBenchmarking() = default;
 
 void GpuBenchmarking::EnsureRemoteInterface() {
   if (!input_injector_) {
@@ -1326,9 +1326,12 @@ int GpuBenchmarking::RunMicroBenchmark(gin::Arguments* args) {
   std::unique_ptr<base::Value> value =
       V8ValueConverter::Create()->FromV8Value(arguments, v8_context);
   DCHECK(value);
+  if (!value->is_dict()) {
+    return 0;
+  }
 
   return context.layer_tree_host()->ScheduleMicroBenchmark(
-      name, base::Value::FromUniquePtrValue(std::move(value)),
+      name, std::move(*value).TakeDict(),
       base::BindOnce(&OnMicroBenchmarkCompleted,
                      base::RetainedRef(callback_and_context)));
 }
@@ -1343,9 +1346,12 @@ bool GpuBenchmarking::SendMessageToMicroBenchmark(
   std::unique_ptr<base::Value> value =
       V8ValueConverter::Create()->FromV8Value(message, v8_context);
   DCHECK(value);
+  if (!value->is_dict()) {
+    return false;
+  }
 
   return context.layer_tree_host()->SendMessageToMicroBenchmark(
-      id, base::Value::FromUniquePtrValue(std::move(value)));
+      id, std::move(*value).TakeDict());
 }
 
 bool GpuBenchmarking::HasGpuChannel() {

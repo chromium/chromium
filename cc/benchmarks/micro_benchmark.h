@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "cc/cc_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-class Value;
 }  // namespace base
 
 namespace cc {
@@ -22,7 +22,7 @@ class MicroBenchmarkImpl;
 
 class CC_EXPORT MicroBenchmark {
  public:
-  using DoneCallback = base::OnceCallback<void(base::Value)>;
+  using DoneCallback = base::OnceCallback<void(base::Value::Dict)>;
 
   explicit MicroBenchmark(DoneCallback callback);
   virtual ~MicroBenchmark();
@@ -34,23 +34,23 @@ class CC_EXPORT MicroBenchmark {
 
   virtual void RunOnLayer(PictureLayer* layer);
 
-  virtual bool ProcessMessage(base::Value message);
+  virtual bool ProcessMessage(base::Value::Dict message);
 
   bool ProcessedForBenchmarkImpl() const;
   std::unique_ptr<MicroBenchmarkImpl> GetBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner);
 
  protected:
-  void NotifyDone(base::Value result);
+  void NotifyDone(base::Value::Dict result);
 
   virtual std::unique_ptr<MicroBenchmarkImpl> CreateBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner);
 
  private:
   DoneCallback callback_;
-  bool is_done_;
-  bool processed_for_benchmark_impl_;
-  int id_;
+  bool is_done_ = false;
+  bool processed_for_benchmark_impl_ = false;
+  int id_ = 0;
 };
 
 }  // namespace cc

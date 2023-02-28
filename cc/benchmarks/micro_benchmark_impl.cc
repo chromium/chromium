@@ -29,7 +29,7 @@ bool MicroBenchmarkImpl::IsDone() const {
 
 void MicroBenchmarkImpl::DidCompleteCommit(LayerTreeHostImpl* host) {}
 
-void MicroBenchmarkImpl::NotifyDone(base::Value result) {
+void MicroBenchmarkImpl::NotifyDone(base::Value::Dict result) {
   origin_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback_), std::move(result)));
   is_done_ = true;

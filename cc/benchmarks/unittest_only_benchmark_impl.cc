@@ -19,7 +19,7 @@ UnittestOnlyBenchmarkImpl::UnittestOnlyBenchmarkImpl(
 UnittestOnlyBenchmarkImpl::~UnittestOnlyBenchmarkImpl() = default;
 
 void UnittestOnlyBenchmarkImpl::DidCompleteCommit(LayerTreeHostImpl* host) {
-  NotifyDone(base::Value());
+  NotifyDone(base::Value::Dict());
 }
 
 }  // namespace cc

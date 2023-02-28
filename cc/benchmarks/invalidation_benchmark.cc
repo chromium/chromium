@@ -30,22 +30,19 @@ const char* kDefaultInvalidationMode = "viewport";
 }  // namespace
 
 InvalidationBenchmark::InvalidationBenchmark(
-    base::Value settings,
+    base::Value::Dict settings,
     MicroBenchmark::DoneCallback callback)
-    : MicroBenchmark(std::move(callback)), seed_(0) {
-  if (!settings.is_dict())
-    return;
-
+    : MicroBenchmark(std::move(callback)) {
   std::string mode_string = kDefaultInvalidationMode;
 
-  auto* mode_string_from_settings = settings.FindStringKey("mode");
+  auto* mode_string_from_settings = settings.FindString("mode");
   if (mode_string_from_settings)
     mode_string = *mode_string_from_settings;
 
   if (mode_string == "fixed_size") {
     mode_ = FIXED_SIZE;
-    auto width = settings.FindIntKey("width");
-    auto height = settings.FindIntKey("height");
+    auto width = settings.FindInt("width");
+    auto height = settings.FindInt("height");
     CHECK(width.has_value()) << "Must provide a width for fixed_size mode.";
     CHECK(height.has_value()) << "Must provide a height for fixed_size mode.";
     width_ = *width;
@@ -112,14 +109,12 @@ void InvalidationBenchmark::RunOnLayer(PictureLayer* layer) {
   }
 }
 
-bool InvalidationBenchmark::ProcessMessage(base::Value message) {
-  if (!message.is_dict())
-    return false;
-
-  auto notify_done = message.FindBoolKey("notify_done");
+bool InvalidationBenchmark::ProcessMessage(base::Value::Dict message) {
+  auto notify_done = message.FindBool("notify_done");
   if (notify_done.has_value()) {
-    if (*notify_done)
-      NotifyDone(base::Value());
+    if (notify_done.value()) {
+      NotifyDone(base::Value::Dict());
+    }
     return true;
   }
   return false;

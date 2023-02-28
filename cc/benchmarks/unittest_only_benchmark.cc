@@ -15,13 +15,10 @@
 
 namespace cc {
 
-UnittestOnlyBenchmark::UnittestOnlyBenchmark(base::Value settings,
+UnittestOnlyBenchmark::UnittestOnlyBenchmark(base::Value::Dict settings,
                                              DoneCallback callback)
     : MicroBenchmark(std::move(callback)), create_impl_benchmark_(false) {
-  if (!settings.is_dict())
-    return;
-
-  auto run_benchmark_impl = settings.FindBoolKey("run_benchmark_impl");
+  auto run_benchmark_impl = settings.FindBool("run_benchmark_impl");
   if (run_benchmark_impl.has_value())
     create_impl_benchmark_ = *run_benchmark_impl;
 }
@@ -31,18 +28,14 @@ UnittestOnlyBenchmark::~UnittestOnlyBenchmark() {
 }
 
 void UnittestOnlyBenchmark::DidUpdateLayers(LayerTreeHost* layer_tree_host) {
-  NotifyDone(base::Value());
+  NotifyDone(base::Value::Dict());
 }
 
-bool UnittestOnlyBenchmark::ProcessMessage(base::Value message) {
-  auto can_handle = message.FindBoolKey("can_handle");
-  if (can_handle.has_value() && *can_handle) {
-    return true;
-  }
-  return false;
+bool UnittestOnlyBenchmark::ProcessMessage(base::Value::Dict message) {
+  return message.FindBool("can_handle").value_or(false);
 }
 
-void UnittestOnlyBenchmark::RecordImplResults(base::Value results) {
+void UnittestOnlyBenchmark::RecordImplResults(base::Value::Dict results) {
   NotifyDone(std::move(results));
 }
 
