@@ -1,0 +1,184 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
+
+#include <numeric>
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+
+namespace blink {
+
+namespace {
+
+// Max number of lines to balance.
+static constexpr wtf_size_t kMaxLinesToBalance = 4;
+
+struct LineBreakResult {
+  LayoutUnit width;
+};
+
+struct LineBreakResults {
+  STACK_ALLOCATED();
+
+ public:
+  LineBreakResults(const NGInlineNode& node, const NGConstraintSpace& space)
+      : node_(node), space_(space) {}
+
+  wtf_size_t size() const { return lines_.size(); }
+  LayoutUnit LineWidthSum() const {
+    return std::accumulate(lines_.begin(), lines_.end(), LayoutUnit(),
+                           [](LayoutUnit acc, const LineBreakResult& item) {
+                             return acc + item.width;
+                           });
+  }
+
+  void clear() { lines_.clear(); }
+
+  bool BreakLines(const LayoutUnit available_width, wtf_size_t max_lines) {
+    DCHECK(lines_.empty());
+    const NGInlineBreakToken* break_token = nullptr;
+    const NGLineLayoutOpportunity line_opportunity(available_width);
+    NGPositionedFloatVector leading_floats;
+    NGExclusionSpace exclusion_space;
+    for (;;) {
+      STACK_UNINITIALIZED NGLineInfo line_info;
+      NGLineBreaker line_breaker(
+          node_, NGLineBreakerMode::kContent, space_, line_opportunity,
+          leading_floats,
+          /* handled_leading_floats_index */ 0, break_token,
+          /* column_spanner_path_ */ nullptr, &exclusion_space);
+      line_breaker.NextLine(&line_info);
+      // Bisecting can't find the desired value if the paragraph has forced line
+      // breaks.
+      DCHECK(!line_info.HasForcedBreak());
+      if (line_info.HasOverflow()) {
+        return false;  // Don't balance if there are overflowing lines.
+      }
+      break_token = line_breaker.CreateBreakToken(line_info);
+      lines_.push_back(LineBreakResult{line_info.Width()});
+      DCHECK_LE(lines_.size(), kMaxLinesToBalance);
+      if (!break_token) {
+        return true;
+      }
+      if (!--max_lines) {
+        return false;  // Didn't fit into `max_lines`.
+      }
+    }
+  }
+
+  LayoutUnit BisectAvailableWidth(const LayoutUnit max_available_width,
+                                  const LayoutUnit min_available_width,
+                                  const LayoutUnit epsilon,
+                                  const wtf_size_t num_lines) {
+    DCHECK_GT(epsilon, LayoutUnit());  // 0 may cause an infinite loop
+    DCHECK_GT(num_lines, 0u);
+    DCHECK_EQ(size(), 0u);
+    LayoutUnit upper = max_available_width;
+    LayoutUnit lower = min_available_width;
+    while (lower + epsilon < upper) {
+      const LayoutUnit middle = (upper + lower) / 2;
+      if (!BreakLines(middle, num_lines)) {
+        lower = middle;
+      } else {
+        DCHECK_LE(size(), num_lines);
+        upper = middle;
+      }
+      clear();
+    }
+    DCHECK_GE(upper, min_available_width);
+    DCHECK_LE(upper, max_available_width);
+    return upper;
+  }
+
+ private:
+  const NGInlineNode node_;
+  const NGConstraintSpace& space_;
+  Vector<LineBreakResult, kMaxLinesToBalance> lines_;
+};
+
+// Estimate the number of lines using the `ch` unit (the space width) without
+// running the line breaker.
+wtf_size_t EstimateNumLines(const String& text_content,
+                            const SimpleFontData* font,
+                            LayoutUnit available_width) {
+  const float space_width = font->SpaceWidth();
+  const wtf_size_t num_line_chars = available_width / space_width;
+  return (text_content.length() + num_line_chars - 1) / num_line_chars;
+}
+
+}  // namespace
+
+// static
+absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
+    const NGInlineNode& node,
+    const NGConstraintSpace& space,
+    const NGLineLayoutOpportunity& line_opportunity) {
+  const NGInlineItemsData& items_data = node.ItemsData(
+      /* use_first_line_style */ false);
+  // Bisecting can't balance if there were floating objects, block-in-inline, or
+  // forced line breaks.
+  for (const NGInlineItem& item : items_data.items) {
+    if (item.IsForcedLineBreak() || item.Type() == NGInlineItem::kFloating ||
+        item.Type() == NGInlineItem::kBlockInInline) {
+      return absl::nullopt;
+    }
+  }
+
+  // Estimate the number of lines to see if the text is too long to balance.
+  // Because this is an estimate, allow it to be `kMaxLinesToBalance * 2`.
+  const ComputedStyle& block_style = node.Style();
+  const wtf_size_t estimated_num_lines = EstimateNumLines(
+      items_data.text_content, block_style.GetFont().PrimaryFont(),
+      line_opportunity.AvailableInlineSize());
+  if (estimated_num_lines > kMaxLinesToBalance * 2) {
+    return absl::nullopt;
+  }
+
+  const LayoutUnit available_width = line_opportunity.AvailableInlineSize();
+  LineBreakResults normal_lines(node, space);
+  if (!normal_lines.BreakLines(available_width, kMaxLinesToBalance)) {
+    return absl::nullopt;
+  }
+  const wtf_size_t num_lines = normal_lines.size();
+  DCHECK_LE(num_lines, kMaxLinesToBalance);
+  if (num_lines <= 1) {
+    return absl::nullopt;  // Balancing not needed for single line paragraphs.
+  }
+
+  // The bisect less than 1 pixel is worthless, so ignore. Use CSS pixels
+  // instead of device pixels to make the algorithm consistent across different
+  // zoom levels, but make sure it's not zero to avoid infinite loop.
+  const LayoutUnit epsilon =
+      LayoutUnit::FromFloatCeil(block_style.EffectiveZoom());
+
+  // Find the desired available width by bisecting the maximum available width
+  // that produces `num_lines`.
+  LineBreakResults balanced_lines(node, space);
+  // Start the bisect with the minimum value at the average line width, with 20%
+  // buffer for potential edge cases.
+  const LayoutUnit avg_line_width = normal_lines.LineWidthSum() / num_lines;
+  const LayoutUnit min_available_width =
+      LayoutUnit::FromFloatRound(avg_line_width * .8f);
+  return balanced_lines.BisectAvailableWidth(
+      available_width, min_available_width, epsilon, num_lines);
+}
+
+// static
+void NGParagraphLineBreaker::PrepareForNextLine(
+    LayoutUnit balanced_available_width,
+    NGLineLayoutOpportunity* line_opportunity) {
+  DCHECK_GE(line_opportunity->line_right_offset,
+            line_opportunity->line_left_offset);
+  DCHECK_EQ(line_opportunity->line_left_offset,
+            line_opportunity->float_line_left_offset);
+  DCHECK_EQ(line_opportunity->line_right_offset,
+            line_opportunity->float_line_right_offset);
+  line_opportunity->line_right_offset =
+      line_opportunity->line_left_offset + balanced_available_width;
+}
+
+}  // namespace blink

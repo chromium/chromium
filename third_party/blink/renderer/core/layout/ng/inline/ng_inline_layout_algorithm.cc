@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_truncator.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
@@ -44,6 +45,33 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+namespace {
+
+inline bool ShouldInitiateBalancing(
+    const NGInlineBreakToken* break_token,
+    const LayoutOpportunityVector& opportunities) {
+  // Block-fragmented boxes are not supported.
+  if (break_token) {
+    return false;
+  }
+  // All lines should have the same available widths. No floats etc.
+  if (opportunities.size() != 1) {
+    return false;
+  }
+  const NGLayoutOpportunity& opportunity = opportunities.front();
+  // Bisection needs a positive available width.
+  if (opportunity.rect.InlineSize() <= LayoutUnit() ||
+      // Block-fragmented boxes are not supported.
+      opportunity.rect.BlockEndOffset() != LayoutUnit::Max() ||
+      // Shape exclusions are not supported.
+      opportunity.HasShapeExclusions()) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
 
 NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
     NGInlineNode inline_node,
@@ -1238,6 +1266,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   NGLogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
   DCHECK(line_box);
 
+  const bool initiate_balancing =
+      Style().TextWrap() == ETextWrap::kBalance &&
+      ShouldInitiateBalancing(break_token, opportunities) &&
+      !column_spanner_path_;
   bool is_line_created = false;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
@@ -1271,6 +1303,22 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     NGLineLayoutOpportunity line_opportunity =
         opportunity.ComputeLineLayoutOpportunity(ConstraintSpace(),
                                                  line_block_size, block_delta);
+
+    if (initiate_balancing) {
+      // `ShouldInitiateBalancing` should have checked these conditions.
+      DCHECK(!context_->BalancedAvailableWidth());
+      DCHECK_GT(line_opportunity.AvailableInlineSize(), LayoutUnit());
+      DCHECK_EQ(opportunity.rect.BlockEndOffset(), LayoutUnit::Max());
+      DCHECK(!opportunity.HasShapeExclusions());
+      context_->SetBalancedAvailableWidth(
+          NGParagraphLineBreaker::AttemptParagraphBalancing(
+              Node(), ConstraintSpace(), line_opportunity));
+    }
+    if (const absl::optional<LayoutUnit>& balanced_available_width =
+            context_->BalancedAvailableWidth()) {
+      NGParagraphLineBreaker::PrepareForNextLine(*balanced_available_width,
+                                                 &line_opportunity);
+    }
 
     STACK_UNINITIALIZED NGLineInfo line_info;
     NGLineBreaker line_breaker(

@@ -440,6 +440,8 @@ blink_core_sources_layout = [
   "ng/inline/ng_offset_mapping.h",
   "ng/inline/ng_offset_mapping_builder.cc",
   "ng/inline/ng_offset_mapping_builder.h",
+  "ng/inline/ng_paragraph_line_breaker.cc",
+  "ng/inline/ng_paragraph_line_breaker.h",
   "ng/inline/ng_physical_line_box_fragment.cc",
   "ng/inline/ng_physical_line_box_fragment.h",
   "ng/inline/ng_ruby_utils.cc",

@@ -72,6 +72,9 @@ class CORE_EXPORT NGInlineItem {
   const char* NGInlineItemTypeToString(int val) const;
 
   NGTextType TextType() const { return static_cast<NGTextType>(text_type_); }
+  bool IsForcedLineBreak() const {
+    return TextType() == NGTextType::kForcedLineBreak;
+  }
   void SetTextType(NGTextType text_type) {
     text_type_ = static_cast<unsigned>(text_type);
   }
