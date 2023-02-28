@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
 import org.chromium.chrome.browser.firstrun.ToSAndUMAFirstRunFragment.Observer;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -114,7 +113,6 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test interacts with startup, native initialization, and first run.")
-@CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
 public class FirstRunIntegrationTest {
     private static final String TEST_URL = "https://test.com";
     private static final String FOO_URL = "https://foo.com";
@@ -438,6 +436,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testFirstRunPages_NoCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase());
     }
@@ -487,33 +486,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    public void testFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_WithCctPolicy_SearchPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSearchPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_WithCctPolicy_SearchPromo_SigninPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase()
-                                     .withCctTosDisabled()
-                                     .withSearchPromo()
-                                     .withSigninPromo());
-    }
-
-    @Test
-    @MediumTest
-    public void testFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
-        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSigninPromo());
-    }
-
-    @Test
-    @MediumTest
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         initializePreferences(new FirstRunPagesTestCase()
                                       .withCctTosDisabled()
@@ -542,24 +514,18 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testSigninFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
     }
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testSigninFirstRunPages_WithCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSearchPromo());
     }
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testSigninFirstRunPages_WithCctPolicy_SearchPromo_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase()
                                      .withCctTosDisabled()
@@ -569,8 +535,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSigninPromo());
     }
@@ -767,12 +731,14 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testResetOnBackPress() throws Exception {
         testResetOnBackPressImpl(true);
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testResetOnBackPress_NoUmaAccepted() throws Exception {
         testResetOnBackPressImpl(false);
     }
@@ -894,6 +860,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testInitialDrawBlocked() throws Exception {
         // This should block the FRE from showing any UI.
         blockOnFlowIsKnown();
@@ -924,6 +891,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testNativeInitBeforeFragment() throws Exception {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase();
         initializePreferences(testCase);
@@ -945,8 +913,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testSigninFirstRunPageShownBeforeChildStatusFetch() throws Exception {
         // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
         // so pretend there are AppRestrictions set by FamilyLink.
@@ -974,8 +940,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testSigninFirstRunLoadPointHistograms() throws Exception {
         initializePreferences(new FirstRunPagesTestCase());
 
@@ -1070,6 +1034,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testPrefsUpdated_noPagesShown() throws Exception {
         FirstRunPagesTestCase testCase =
                 new FirstRunPagesTestCase().withSearchPromo().withSigninPromo();
@@ -1217,6 +1182,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testSlowToInitTemplateUrlService() throws Exception {
         setTemplateUrlServiceForMock();
         initializePreferences(new FirstRunPagesTestCase().withSearchPromo());
@@ -1242,8 +1208,7 @@ public class FirstRunIntegrationTest {
      */
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @DisabledTest(message = "https://crbug.com/1419886")
     public void testDelayedPolicyInitializationRespectsMetricsAndCrashReportingSelection()
             throws Exception {
         initializePreferences(new FirstRunPagesTestCase());
