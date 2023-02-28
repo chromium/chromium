@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import pytest
+from anys import ANY_STR
 from test_helpers import *
 
 
@@ -41,15 +42,14 @@ async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": iframe_id,
-                "children": [],
-                "parent": any_string,
-                "url": url_with_hash_1
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": ANY_STR,
+            "url": url_with_hash_1
+        }]
+    } == result
 
 
 @pytest.mark.asyncio
@@ -72,14 +72,13 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "id": 13,
-            "result": {
-                "navigation": any_string,
-                "url": "data:text/html,<h2>test</h2>"
-            }
-        }, resp)
+    assert {
+        "id": 13,
+        "result": {
+            "navigation": ANY_STR,
+            "url": "data:text/html,<h2>test</h2>"
+        }
+    } == resp
 
     navigation_id = resp["result"]["navigation"]
 
@@ -289,15 +288,14 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": iframe_id,
-                "children": [],
-                "parent": any_string,
-                "url": url_with_hash_1
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": ANY_STR,
+            "url": url_with_hash_1
+        }]
+    } == result
 
     resp = await execute_command(
         websocket, {
@@ -317,15 +315,14 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": iframe_id,
-                "children": [],
-                "parent": any_string,
-                "url": url_with_hash_2
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": ANY_STR,
+            "url": url_with_hash_2
+        }]
+    } == result
 
 
 @pytest.mark.asyncio
@@ -364,15 +361,14 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": iframe_id,
-                "children": [],
-                "parent": any_string,
-                "url": url_with_hash_1
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": ANY_STR,
+            "url": url_with_hash_1
+        }]
+    } == result
 
     resp = await execute_command(
         websocket, {
@@ -392,15 +388,14 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": iframe_id,
-                "children": [],
-                "parent": any_string,
-                "url": url_with_hash_2
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": iframe_id,
+            "children": [],
+            "parent": ANY_STR,
+            "url": url_with_hash_2
+        }]
+    } == result
 
 
 # TODO(sadym): make offline.
@@ -441,19 +436,18 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": iframe_id,
-                "children": [{
-                    "context": any_string,
-                    "url": another_nested_iframe,
-                    "children": []
-                }],
-                "parent": any_string,
-                "url": another_page_with_nested_iframe
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": iframe_id,
+            "children": [{
+                "context": ANY_STR,
+                "url": another_nested_iframe,
+                "children": []
+            }],
+            "parent": ANY_STR,
+            "url": another_page_with_nested_iframe
+        }]
+    } == result
 
 
 @pytest.mark.asyncio
@@ -493,16 +487,15 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_c
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": iframe_id,
-                "url": another_page_with_nested_iframe,
-                "children": [{
-                    "context": any_string,
-                    "url": another_nested_iframe,
-                    "children": []
-                }],
-                "parent": any_string
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": iframe_id,
+            "url": another_page_with_nested_iframe,
+            "children": [{
+                "context": ANY_STR,
+                "url": another_nested_iframe,
+                "children": []
+            }],
+            "parent": ANY_STR
+        }]
+    } == result

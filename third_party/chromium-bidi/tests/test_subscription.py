@@ -13,7 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import ANY
+
 import pytest
+from anys import ANY_DICT, ANY_STR
 from test_helpers import *
 
 
@@ -28,11 +31,10 @@ async def test_subscribeForUnknownContext_exceptionReturned(websocket):
                     "contexts": ["UNKNOWN_CONTEXT_ID"]
                 }
             })
-    recursive_compare(
-        {
-            'error': 'no such frame',
-            'message': 'Context UNKNOWN_CONTEXT_ID not found'
-        }, exception_info.value.args[0])
+    assert {
+        'error': 'no such frame',
+        'message': 'Context UNKNOWN_CONTEXT_ID not found'
+    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -115,16 +117,15 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "browsingContext.contextCreated",
-            "params": {
-                "context": any_string,
-                "url": "about:blank",
-                "children": None,
-                "parent": context_id
-            }
-        }, resp)
+    assert {
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": ANY_STR,
+            "url": "about:blank",
+            "children": None,
+            "parent": context_id
+        }
+    } == resp
 
 
 @pytest.mark.asyncio
@@ -146,10 +147,10 @@ async def test_subscribeToNestedContext_subscribesToTopLevelContext(
 
     # Assert event received.
     resp = await read_JSON_message(websocket)
-    recursive_compare({
+    assert {
         "method": "log.entryAdded",
-        "params": any_value,
-    }, resp)
+        "params": ANY,
+    } == resp
 
 
 @pytest.mark.asyncio
@@ -180,7 +181,7 @@ async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    recursive_compare({'id': command_id, 'result': any_value}, resp)
+    assert {'id': command_id, 'result': ANY} == resp
 
     # Assert unsubscribed from nested context.
     command_id = await send_JSON_command(
@@ -197,7 +198,7 @@ async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    recursive_compare({'id': command_id, 'result': any_value}, resp)
+    assert {'id': command_id, 'result': ANY} == resp
 
 
 @pytest.mark.asyncio
@@ -228,7 +229,7 @@ async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    recursive_compare({'id': command_id, 'result': any_value}, resp)
+    assert {'id': command_id, 'result': ANY} == resp
 
     # Assert unsubscribed from nested context.
     command_id = await send_JSON_command(
@@ -245,7 +246,7 @@ async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubsc
 
     # Assert evaluate script is ended without any events before.
     resp = await read_JSON_message(websocket)
-    recursive_compare({'id': command_id, 'result': any_value}, resp)
+    assert {'id': command_id, 'result': ANY} == resp
 
 
 @pytest.mark.asyncio
@@ -344,12 +345,11 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
 
     # Assert event received in `CHANNEL_2`.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "params": any_value,
-            "channel": "CHANNEL_2"
-        }, resp)
+    assert {
+        "method": "log.entryAdded",
+        "params": ANY_DICT,
+        "channel": "CHANNEL_2"
+    } == resp
 
 
 @pytest.mark.asyncio
@@ -404,31 +404,28 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
 
     # Empty string channel is considered as no channel provided.
     resp = await read_JSON_message(websocket)
-    recursive_compare({"method": "log.entryAdded", "params": any_value}, resp)
+    assert {"method": "log.entryAdded", "params": ANY_DICT} == resp
 
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "channel": channel_2,
-            "params": any_value
-        }, resp)
+    assert {
+        "method": "log.entryAdded",
+        "channel": channel_2,
+        "params": ANY_DICT
+    } == resp
 
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "channel": channel_3,
-            "params": any_value
-        }, resp)
+    assert {
+        "method": "log.entryAdded",
+        "channel": channel_3,
+        "params": ANY_DICT
+    } == resp
 
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "channel": channel_4,
-            "params": any_value
-        }, resp)
+    assert {
+        "method": "log.entryAdded",
+        "channel": channel_4,
+        "params": ANY_DICT
+    } == resp
 
 
 @pytest.mark.asyncio
@@ -477,27 +474,27 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
     # Assert only message from not closed context is received.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "params": {
-                "level": "info",
-                "source": {
-                    "realm": any_value,
-                    "context": context_id
-                },
-                "text": "SOME_MESSAGE",
-                "timestamp": any_value,
-                "stackTrace": any_value,
-                "type": "console",
-                "method": "log",
-                "args": [{
-                    "type": "string",
-                    "value": "SOME_MESSAGE"
-                }]
-            }
-        }, resp)
+
+    assert {
+        "method": "log.entryAdded",
+        "params": {
+            "level": "info",
+            "source": {
+                "realm": ANY,
+                "context": context_id
+            },
+            "text": "SOME_MESSAGE",
+            "timestamp": ANY_TIMESTAMP,
+            "stackTrace": ANY,
+            "type": "console",
+            "method": "log",
+            "args": [{
+                "type": "string",
+                "value": "SOME_MESSAGE"
+            }]
+        }
+    } == resp
 
     # Assert no more events were buffered.
     resp = await read_JSON_message(websocket)
-    recursive_compare({'id': command_id, 'result': any_value}, resp)
+    assert {'id': command_id, 'result': ANY} == resp

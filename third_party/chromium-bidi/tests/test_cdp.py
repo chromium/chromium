@@ -13,7 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import ANY
+
 import pytest
+from anys import ANY_DICT, ANY_INT, ANY_NUMBER, ANY_STR
 from test_helpers import *
 
 
@@ -28,7 +31,7 @@ async def test_cdp_sendCommand_commandResultReturned(websocket):
             }
         })
 
-    recursive_compare({"targetInfos": any_value}, command_result)
+    assert {"targetInfos": ANY} == command_result
 
 
 @pytest.mark.asyncio
@@ -58,25 +61,24 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
 
-    recursive_compare(
-        {
-            "method": "cdp.eventReceived",
-            "params": {
-                "cdpMethod": "Runtime.consoleAPICalled",
-                "cdpParams": {
-                    "type": "log",
-                    "args": [{
-                        "type": "number",
-                        "value": 1,
-                        "description": "1"
-                    }],
-                    "executionContextId": any_value,
-                    "timestamp": any_value,
-                    "stackTrace": any_value
-                },
-                "cdpSession": session_id
-            }
-        }, resp)
+    assert {
+        "method": "cdp.eventReceived",
+        "params": {
+            "cdpMethod": "Runtime.consoleAPICalled",
+            "cdpParams": {
+                "type": "log",
+                "args": [{
+                    "type": "number",
+                    "value": 1,
+                    "description": "1"
+                }],
+                "executionContextId": ANY_INT,
+                "timestamp": ANY_TIMESTAMP,
+                "stackTrace": ANY
+            },
+            "cdpSession": session_id
+        }
+    } == resp
 
 
 @pytest.mark.asyncio
@@ -107,22 +109,21 @@ async def test_cdp_subscribeToAllCdpEvents_cdpEventReceived(
 
     resp = await read_JSON_message(websocket)
 
-    recursive_compare(
-        {
-            "method": "cdp.eventReceived",
-            "params": {
-                "cdpMethod": "Runtime.consoleAPICalled",
-                "cdpParams": {
-                    "type": "log",
-                    "args": [{
-                        "type": "number",
-                        "value": 1,
-                        "description": "1"
-                    }],
-                    "executionContextId": any_value,
-                    "timestamp": any_value,
-                    "stackTrace": any_value
-                },
-                "cdpSession": session_id
-            }
-        }, resp)
+    assert {
+        "method": "cdp.eventReceived",
+        "params": {
+            "cdpMethod": "Runtime.consoleAPICalled",
+            "cdpParams": {
+                "type": "log",
+                "args": [{
+                    "type": "number",
+                    "value": 1,
+                    "description": "1"
+                }],
+                "executionContextId": ANY_INT,
+                "timestamp": ANY_TIMESTAMP,
+                "stackTrace": ANY
+            },
+            "cdpSession": session_id
+        }
+    } == resp

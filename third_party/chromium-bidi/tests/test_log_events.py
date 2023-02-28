@@ -13,7 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import ANY
+
 import pytest
+from anys import ANY_NUMBER, ANY_STR
 from test_helpers import *
 
 
@@ -92,95 +95,93 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert "log.entryAdded" event emitted.
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "params": {
-                # BaseLogEntry
-                "level": "info",
-                "source": {
-                    "realm": any_string,
-                    "context": context_id
-                },
-                "text": "window "
-                        "undefined "
-                        "null "
-                        "42 "
-                        "text "
-                        "false "
-                        "123 "
-                        "/abc/g "
-                        "Array(2) "
-                        "Object(1) "
-                        "Map(1) "
-                        "Set(1)",
-                "timestamp": any_timestamp,
-                "stackTrace": {
-                    "callFrames": [{
-                        "url": "",
-                        "functionName": "",
-                        "lineNumber": 0,
-                        "columnNumber": 8
-                    }]
-                },
-                # ConsoleLogEntry
-                "type": "console",
-                "method": "log",
-                "args": [{
-                    'type': 'window'
-                }, {
-                    'type': 'undefined'
-                }, {
-                    'type': 'null'
-                }, {
-                    'type': 'number',
-                    'value': 42
-                }, {
-                    'type': 'string',
-                    'value': 'text'
-                }, {
-                    'type': 'boolean',
-                    'value': False
-                }, {
-                    "type": "bigint",
-                    "value": "123"
-                }, {
-                    "type": "regexp",
-                    "value": {
-                        "pattern": "abc",
-                        "flags": "g"
-                    }
-                }, {
-                    "type": "array",
-                    "value": [{
-                        "type": "number",
-                        "value": 1
-                    }, {
-                        "type": "string",
-                        "value": "str"
-                    }]
-                }, {
-                    "type": "object",
-                    "value": [["a", {
-                        "type": "number",
-                        "value": 1
-                    }]]
-                }, {
-                    "type": "map",
-                    "value": [["key1", {
-                        "type": "string",
-                        "value": "value1"
-                    }]]
-                }, {
-                    "type": "set",
-                    "value": [{
-                        "type": "string",
-                        "value": "value1"
-                    }]
+    assert {
+        "method": "log.entryAdded",
+        "params": {
+            # BaseLogEntry
+            "level": "info",
+            "source": {
+                "realm": ANY_STR,
+                "context": context_id
+            },
+            "text": "window "
+                    "undefined "
+                    "null "
+                    "42 "
+                    "text "
+                    "false "
+                    "123 "
+                    "/abc/g "
+                    "Array(2) "
+                    "Object(1) "
+                    "Map(1) "
+                    "Set(1)",
+            "timestamp": ANY_TIMESTAMP,
+            "stackTrace": {
+                "callFrames": [{
+                    "url": "",
+                    "functionName": "",
+                    "lineNumber": 0,
+                    "columnNumber": 8
                 }]
-            }
-        },
-        event_response)
+            },
+            # ConsoleLogEntry
+            "type": "console",
+            "method": "log",
+            "args": [{
+                'type': 'window'
+            }, {
+                'type': 'undefined'
+            }, {
+                'type': 'null'
+            }, {
+                'type': 'number',
+                'value': 42
+            }, {
+                'type': 'string',
+                'value': 'text'
+            }, {
+                'type': 'boolean',
+                'value': False
+            }, {
+                "type": "bigint",
+                "value": "123"
+            }, {
+                "type": "regexp",
+                "value": {
+                    "pattern": "abc",
+                    "flags": "g"
+                }
+            }, {
+                "type": "array",
+                "value": [{
+                    "type": "number",
+                    "value": 1
+                }, {
+                    "type": "string",
+                    "value": "str"
+                }]
+            }, {
+                "type": "object",
+                "value": [["a", {
+                    "type": "number",
+                    "value": 1
+                }]]
+            }, {
+                "type": "map",
+                "value": [["key1", {
+                    "type": "string",
+                    "value": "value1"
+                }]]
+            }, {
+                "type": "set",
+                "value": [{
+                    "type": "string",
+                    "value": "value1"
+                }]
+            }]
+        }
+    } == event_response
 
 
 @pytest.mark.asyncio
@@ -348,31 +349,29 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(
     event_response = await wait_for_event(websocket, "log.entryAdded")
 
     # Assert "log.entryAdded" event emitted.
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "params": {
-                # BaseLogEntry
-                "level": "error",
-                "source": {
-                    "realm": any_string,
-                    "context": context_id
-                },
-                "text": "Error: some error",
-                "timestamp": any_timestamp,
-                "stackTrace": {
-                    "callFrames": [{
-                        "url": "",
-                        "functionName": "",
-                        "lineNumber": 0,
-                        "columnNumber": 14
-                    }]
-                },
-                # ConsoleLogEntry
-                "type": "javascript"
-            }
-        },
-        event_response)
+    assert {
+        "method": "log.entryAdded",
+        "params": {
+            # BaseLogEntry
+            "level": "error",
+            "source": {
+                "realm": ANY_STR,
+                "context": context_id
+            },
+            "text": "Error: some error",
+            "timestamp": ANY_TIMESTAMP,
+            "stackTrace": {
+                "callFrames": [{
+                    "url": "",
+                    "functionName": "",
+                    "lineNumber": 0,
+                    "columnNumber": 14
+                }]
+            },
+            # ConsoleLogEntry
+            "type": "javascript"
+        }
+    } == event_response
 
 
 @pytest.mark.asyncio
@@ -407,12 +406,12 @@ async def test_buffer_bufferedEventsReturned(websocket, context_id):
 
     # Wait for `LOG_ENTRY_1`.
     resp = await read_JSON_message(websocket)
-    recursive_compare({"method": "log.entryAdded", "params": any_value}, resp)
+    assert {"method": "log.entryAdded", "params": ANY} == resp
     assert resp["params"]["text"] == "LOG_ENTRY_1"
 
     # Wait for `LOG_ENTRY_2`.
     resp = await read_JSON_message(websocket)
-    recursive_compare({"method": "log.entryAdded", "params": any_value}, resp)
+    assert {"method": "log.entryAdded", "params": ANY} == resp
     assert resp["params"]["text"] == "LOG_ENTRY_2"
 
     # Wait for subscription command to finish.
@@ -446,33 +445,31 @@ async def test_runtimeException_emitted(websocket, context_id):
 
     # Assert event was emitted before the command is finished.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "params": {
-                "level": "error",
-                "source": {
-                    "realm": any_string,
-                    "context": any_string
-                },
-                "text": f"Error: {error_message}",
-                "timestamp": any_timestamp,
-                "stackTrace": any_value,
-                "type": "javascript"
-            }
-        }, resp)
+    assert {
+        "method": "log.entryAdded",
+        "params": {
+            "level": "error",
+            "source": {
+                "realm": ANY_STR,
+                "context": ANY_STR
+            },
+            "text": f"Error: {error_message}",
+            "timestamp": ANY_TIMESTAMP,
+            "stackTrace": ANY,
+            "type": "javascript"
+        }
+    } == resp
 
     # Assert evaluate command is finished after event emitted.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "id": command_id,
-            "result": {
-                "type": "success",
-                "realm": any_string,
-                "result": any_value
-            }
-        }, resp)
+    assert {
+        "id": command_id,
+        "result": {
+            "type": "success",
+            "realm": ANY_STR,
+            "result": ANY
+        }
+    } == resp
 
 
 @pytest.mark.asyncio
@@ -498,7 +495,7 @@ async def test_runtimeException_buffered(websocket, context_id):
 
     # Assert evaluate command is finished.
     resp = await read_JSON_message(websocket)
-    recursive_compare({"id": command_id, "result": any_value}, resp)
+    assert {"id": command_id, "result": ANY} == resp
 
     # Subscribe to events with buffer.
     subscribe_command_id = await send_JSON_command(websocket, {
@@ -510,22 +507,21 @@ async def test_runtimeException_buffered(websocket, context_id):
 
     # Assert event was emitted.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            "method": "log.entryAdded",
-            "params": {
-                "level": "error",
-                "source": {
-                    "realm": any_string,
-                    "context": any_string
-                },
-                "text": f"Error: {error_message}",
-                "timestamp": any_timestamp,
-                "stackTrace": any_value,
-                "type": "javascript"
-            }
-        }, resp)
+    assert {
+        "method": "log.entryAdded",
+        "params": {
+            "level": "error",
+            "source": {
+                "realm": ANY_STR,
+                "context": ANY_STR
+            },
+            "text": f"Error: {error_message}",
+            "timestamp": ANY_TIMESTAMP,
+            "stackTrace": ANY,
+            "type": "javascript"
+        }
+    } == resp
 
     # Assert subscribe command is finished.
     resp = await read_JSON_message(websocket)
-    recursive_compare({"id": subscribe_command_id, "result": {}}, resp)
+    assert {"id": subscribe_command_id, "result": {}} == resp

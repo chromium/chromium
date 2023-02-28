@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import pytest
+from anys import AnyContains
 from test_helpers import *
 
 
@@ -186,11 +187,10 @@ async def test_sharedId_in_different_navigable(websocket, context_id):
                 }
             })
 
-    recursive_compare(
-        {
-            "error": "no such node",
-            "message": string_containing("different document")
-        }, exception_info.value.args[0])
+    assert {
+        "error": "no such node",
+        "message": AnyContains("different document")
+    } == exception_info.value.args[0]
 
 
 @pytest.mark.asyncio
@@ -231,8 +231,7 @@ async def test_sharedId_not_found(websocket, context_id):
                 }
             })
 
-    recursive_compare(
-        {
-            "error": "no such node",
-            "message": string_containing("was not found")
-        }, exception_info.value.args[0])
+    assert {
+        "error": "no such node",
+        "message": AnyContains("was not found")
+    } == exception_info.value.args[0]

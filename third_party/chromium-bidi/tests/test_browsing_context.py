@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import pytest
+from anys import ANY_STR
 from test_helpers import *
 
 
@@ -86,15 +87,14 @@ async def test_browsingContext_noInitialLoadEvents(websocket):
 
     # Wait for the navigated page to be loaded.
     resp = await read_JSON_message(websocket)
-    recursive_compare(
-        {
-            'method': 'browsingContext.load',
-            'params': {
-                'context': context_id,
-                'navigation': navigation,
-                'url': url
-            }
-        }, resp)
+    assert {
+        'method': 'browsingContext.load',
+        'params': {
+            'context': context_id,
+            'navigation': navigation,
+            'url': url
+        }
+    } == resp
 
 
 @pytest.mark.asyncio
@@ -202,19 +202,18 @@ async def test_browsingContext_getTreeWithNestedSameOriginContexts_contextsRetur
         "params": {}
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [{
-                    "context": any_string,
-                    "url": nested_iframe,
-                    "children": []
-                }],
-                "parent": None,
-                "url": page_with_nested_iframe
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": ANY_STR,
+                "url": nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": page_with_nested_iframe
+        }]
+    } == result
 
 
 # TODO(sadym): make offline.
@@ -239,19 +238,18 @@ async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsRetu
         "params": {}
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [{
-                    "context": any_string,
-                    "url": nested_iframe,
-                    "children": []
-                }],
-                "parent": None,
-                "url": page_with_nested_iframe
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": ANY_STR,
+                "url": nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": page_with_nested_iframe
+        }]
+    } == result
 
 
 # TODO(sadym): make offline.
@@ -290,19 +288,18 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
         "params": {}
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [{
-                    "context": any_string,
-                    "url": another_nested_iframe,
-                    "children": []
-                }],
-                "parent": None,
-                "url": another_page_with_nested_iframe
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": ANY_STR,
+                "url": another_nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": another_page_with_nested_iframe
+        }]
+    } == result
 
 
 @pytest.mark.asyncio
@@ -330,19 +327,18 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
         "params": {}
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [{
-                    "context": any_string,
-                    "url": nested_iframe,
-                    "children": []
-                }],
-                "parent": None,
-                "url": page_with_nested_iframe
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": ANY_STR,
+                "url": nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": page_with_nested_iframe
+        }]
+    } == result
 
     await execute_command(
         websocket, {
@@ -359,19 +355,18 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
         "params": {}
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [{
-                    "context": any_string,
-                    "url": another_nested_iframe,
-                    "children": []
-                }],
-                "parent": None,
-                "url": another_page_with_nested_iframe
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [{
+                "context": ANY_STR,
+                "url": another_nested_iframe,
+                "children": []
+            }],
+            "parent": None,
+            "url": another_page_with_nested_iframe
+        }]
+    } == result
 
 
 @pytest.mark.asyncio
@@ -421,38 +416,35 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
     }
 
     # Assert "browsingContext.contextCreated" event emitted.
-    recursive_compare(
-        {
-            "method": "browsingContext.contextCreated",
-            "params": {
-                "context": new_context_id,
-                "url": "about:blank",
-                "children": None,
-                "parent": None
-            }
-        }, context_created_event)
+    assert {
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": new_context_id,
+            "url": "about:blank",
+            "children": None,
+            "parent": None
+        }
+    } == context_created_event
 
     # Assert "browsingContext.domContentLoaded" event emitted.
-    recursive_compare(
-        {
-            "method": "browsingContext.domContentLoaded",
-            "params": {
-                "context": new_context_id,
-                "navigation": any_string,
-                "url": "about:blank"
-            }
-        }, dom_content_loaded_event)
+    assert {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": new_context_id,
+            "navigation": ANY_STR,
+            "url": "about:blank"
+        }
+    } == dom_content_loaded_event
 
     # Assert "browsingContext.load" event emitted.
-    recursive_compare(
-        {
-            "method": "browsingContext.load",
-            "params": {
-                "context": new_context_id,
-                "navigation": any_string,
-                "url": "about:blank"
-            }
-        }, load_event)
+    assert {
+        "method": "browsingContext.load",
+        "params": {
+            "context": new_context_id,
+            "navigation": ANY_STR,
+            "url": "about:blank"
+        }
+    } == load_event
 
 
 @pytest.mark.asyncio
@@ -492,28 +484,26 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
         "params": {}
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": any_string,
-                "parent": None,
-                "url": top_level_page,
-                "children": [
-                    {
-                        "context": any_string,
+    assert {
+        "contexts": [{
+            "context": ANY_STR,
+            "parent": None,
+            "url": top_level_page,
+            "children": [
+                {
+                    "context": ANY_STR,
+                    # It's not guaranteed the nested page is already loaded.
+                    "url": ANY_STR,
+                    "children": [{
+                        "context": ANY_STR,
                         # It's not guaranteed the nested page is already loaded.
-                        "url": any_string,
-                        "children": [{
-                            "context": any_string,
-                            # It's not guaranteed the nested page is already loaded.
-                            "url": any_string,
-                            "children": []
-                        }]
-                    },
-                ]
-            }]
-        },
-        tree)
+                        "url": ANY_STR,
+                        "children": []
+                    }]
+                },
+            ]
+        }]
+    } == tree
 
     intermediate_page_context_id = tree["contexts"][0]["children"][0][
         "context"]
@@ -815,15 +805,14 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [],
-                "parent": None,
-                "url": url_with_hash_1
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_1
+        }]
+    } == result
 
     resp = await execute_command(
         websocket, {
@@ -843,15 +832,14 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [],
-                "parent": None,
-                "url": url_with_hash_2
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_2
+        }]
+    } == result
 
 
 @pytest.mark.asyncio
@@ -890,15 +878,14 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [],
-                "parent": None,
-                "url": url_with_hash_1
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_1
+        }]
+    } == result
 
     resp = await execute_command(
         websocket, {
@@ -918,15 +905,14 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
         }
     })
 
-    recursive_compare(
-        {
-            "contexts": [{
-                "context": context_id,
-                "children": [],
-                "parent": None,
-                "url": url_with_hash_2
-            }]
-        }, result)
+    assert {
+        "contexts": [{
+            "context": context_id,
+            "children": [],
+            "parent": None,
+            "url": url_with_hash_2
+        }]
+    } == result
 
 
 @pytest.mark.asyncio

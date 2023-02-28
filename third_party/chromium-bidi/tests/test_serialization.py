@@ -16,6 +16,7 @@
 import copy
 
 import pytest
+from anys import ANY_STR
 from test_helpers import *
 
 
@@ -53,13 +54,13 @@ async def assert_serialization(websocket, context_id, js_str_object,
         expected_serialized_object)
     resp = await read_JSON_message(websocket)
     assert resp["method"] == "log.entryAdded"
-    recursive_compare(expected_serialized_object_without_handle,
-                      resp["params"]["args"][0])
+    assert expected_serialized_object_without_handle == resp["params"]["args"][
+        0]
 
     # Assert result serialized properly.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == command_id
-    recursive_compare(expected_serialized_object, resp["result"]["result"])
+    assert expected_serialized_object == resp["result"]["result"]
 
     resp = await execute_command(
         websocket, {
@@ -75,8 +76,7 @@ async def assert_serialization(websocket, context_id, js_str_object,
         })
 
     # Assert exception serialized properly.
-    recursive_compare(expected_serialized_object,
-                      resp["exceptionDetails"]["exception"])
+    assert expected_serialized_object == resp["exceptionDetails"]["exception"]
 
 
 async def assert_callFunction_deserialization_serialization(
@@ -113,12 +113,12 @@ async def assert_callFunction_deserialization_serialization(
         expected_serialized_object)
     resp = await read_JSON_message(websocket)
     assert resp["method"] == "log.entryAdded"
-    recursive_compare(expected_serialized_object_without_handle,
-                      resp["params"]["args"][0])
+    assert expected_serialized_object_without_handle == resp["params"]["args"][
+        0]
 
     resp = await read_JSON_message(websocket)
     assert resp["id"] == command_id
-    recursive_compare(expected_serialized_object, resp["result"]["result"])
+    assert expected_serialized_object == resp["result"]["result"]
 
     resp = await execute_command(
         websocket, {
@@ -136,8 +136,7 @@ async def assert_callFunction_deserialization_serialization(
                 "resultOwnership": "root"
             }
         })
-    recursive_compare(expected_serialized_object,
-                      resp["exceptionDetails"]["exception"])
+    assert expected_serialized_object == resp["exceptionDetails"]["exception"]
 
 
 @pytest.mark.asyncio
@@ -187,31 +186,31 @@ async def test_serialization_deserialization(websocket, context_id,
 @pytest.mark.parametrize("jsString, excepted_serialized",
                          [("function(){}", {
                              "type": "function",
-                             "handle": any_string
+                             "handle": ANY_STR
                          }),
                           ("Promise.resolve(1)", {
                               "type": "promise",
-                              "handle": any_string
+                              "handle": ANY_STR
                           }),
                           ("new WeakMap()", {
                               "type": "weakmap",
-                              "handle": any_string
+                              "handle": ANY_STR
                           }),
                           ("new WeakSet()", {
                               "type": "weakset",
-                              "handle": any_string
+                              "handle": ANY_STR
                           }),
                           ("new Proxy({}, {})", {
                               "type": "proxy",
-                              "handle": any_string
+                              "handle": ANY_STR
                           }),
                           ("new Int32Array()", {
                               "type": "typedarray",
-                              "handle": any_string
+                              "handle": ANY_STR
                           }),
                           ("{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
                               "type": "object",
-                              "handle": any_string,
+                              "handle": ANY_STR,
                               "value": [["foo", {
                                   "type": "object"
                               }], ["qux", {
@@ -221,7 +220,7 @@ async def test_serialization_deserialization(websocket, context_id,
                           }),
                           ("[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
                               "type": "array",
-                              "handle": any_string,
+                              "handle": ANY_STR,
                               "value": [{
                                   "type": "number",
                                   "value": 1
@@ -236,7 +235,7 @@ async def test_serialization_deserialization(websocket, context_id,
                           }),
                           ("new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
                               "type": "set",
-                              "handle": any_string,
+                              "handle": ANY_STR,
                               "value": [{
                                   "type": "number",
                                   "value": 1
@@ -251,15 +250,15 @@ async def test_serialization_deserialization(websocket, context_id,
                           }),
                           ("Symbol('foo')", {
                               "type": "symbol",
-                              "handle": any_string
+                              "handle": ANY_STR
                           }),
                           ("this.window", {
                               "type": "window",
-                              "handle": any_string
+                              "handle": ANY_STR
                           }),
                           ("new Error('Woops!')", {
                               "type": "error",
-                              "handle": any_string
+                              "handle": ANY_STR
                           })])
 async def test_serialization_function(websocket, context_id, jsString,
                                       excepted_serialized):
@@ -284,7 +283,7 @@ async def test_serialization_function(websocket, context_id, jsString,
                   }]]
     }, {
         "type": "object",
-        "handle": any_string,
+        "handle": ANY_STR,
         "value": [["foo", {
             "type": "object"
         }], ["qux", {
@@ -307,7 +306,7 @@ async def test_serialization_function(websocket, context_id, jsString,
                   }]]
     }, {
         "type": "map",
-        "handle": any_string,
+        "handle": ANY_STR,
         "value": [["foo", {
             "type": "object"
         }], ["qux", {
@@ -326,7 +325,7 @@ async def test_serialization_function(websocket, context_id, jsString,
         }]
     }, {
         "type": "array",
-        "handle": any_string,
+        "handle": ANY_STR,
         "value": [{
             "type": "number",
             "value": 1
@@ -346,7 +345,7 @@ async def test_serialization_function(websocket, context_id, jsString,
         }]
     }, {
         "type": "set",
-        "handle": any_string,
+        "handle": ANY_STR,
         "value": [{
             "type": "number",
             "value": 1.23
@@ -363,7 +362,7 @@ async def test_serialization_function(websocket, context_id, jsString,
         }
     }, {
         "type": "regexp",
-        "handle": any_string,
+        "handle": ANY_STR,
         "value": {
             "pattern": "ab+c",
             "flags": "i"
@@ -425,38 +424,37 @@ async def test_serialization_node(websocket, context_id):
             }
         })
 
-    recursive_compare(
-        {
-            "type": "node",
-            "value": {
-                "nodeType": 1,
-                "sharedId": any_shared_id,
-                "localName": "div",
-                "namespaceURI": "http://www.w3.org/1999/xhtml",
-                "childNodeCount": 2,
-                "attributes": {
-                    "some_attr_name": "some_attr_value"
-                },
-                "children": [{
-                    "type": "node",
-                    "value": {
-                        "nodeType": 3,
-                        "nodeValue": "some text",
-                        "sharedId": any_shared_id,
-                    }
-                }, {
-                    "type": "node",
-                    "value": {
-                        "nodeType": 1,
-                        "sharedId": any_shared_id,
-                        "localName": "h2",
-                        "namespaceURI": "http://www.w3.org/1999/xhtml",
-                        "childNodeCount": 1,
-                        "attributes": {}
-                    }
-                }]
-            }
-        }, result["result"])
+    assert {
+        "type": "node",
+        "value": {
+            "nodeType": 1,
+            "sharedId": ANY_SHARED_ID,
+            "localName": "div",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "childNodeCount": 2,
+            "attributes": {
+                "some_attr_name": "some_attr_value"
+            },
+            "children": [{
+                "type": "node",
+                "value": {
+                    "nodeType": 3,
+                    "nodeValue": "some text",
+                    "sharedId": ANY_SHARED_ID,
+                }
+            }, {
+                "type": "node",
+                "value": {
+                    "nodeType": 1,
+                    "sharedId": ANY_SHARED_ID,
+                    "localName": "h2",
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "childNodeCount": 1,
+                    "attributes": {}
+                }
+            }]
+        }
+    } == result["result"]
 
 
 # Verify node nested in other data structures are serialized with the proper
@@ -489,20 +487,19 @@ async def test_serialization_nested_node(websocket, context_id, eval_delegate,
             }
         })
 
-    recursive_compare(
-        {
-            "type": "node",
-            "value": {
-                "nodeType": 1,
-                "localName": "div",
-                "namespaceURI": "http://www.w3.org/1999/xhtml",
-                "childNodeCount": 2,
-                "attributes": {
-                    "some_attr_name": "some_attr_value"
-                },
-                "sharedId": any_shared_id
-            }
-        }, extract_delegate(result["result"]))
+    assert {
+        "type": "node",
+        "value": {
+            "nodeType": 1,
+            "localName": "div",
+            "namespaceURI": "http://www.w3.org/1999/xhtml",
+            "childNodeCount": 2,
+            "attributes": {
+                "some_attr_name": "some_attr_value"
+            },
+            "sharedId": ANY_SHARED_ID
+        }
+    } == extract_delegate(result["result"])
 
 
 @pytest.mark.asyncio
@@ -545,17 +542,16 @@ async def test_deserialization_nestedObjectInObject(websocket, context_id):
             }
         })
 
-    recursive_compare(
-        {
-            "type": "success",
-            "result": {
-                "type": "object",
-                "value": [["nested_object", {
-                    "type": "object"
-                }]]
-            },
-            "realm": any_string
-        }, result)
+    assert {
+        "type": "success",
+        "result": {
+            "type": "object",
+            "value": [["nested_object", {
+                "type": "object"
+            }]]
+        },
+        "realm": ANY_STR
+    } == result
 
 
 @pytest.mark.asyncio
@@ -593,17 +589,16 @@ async def test_deserialization_nestedObjectInArray(websocket, context_id):
             }
         })
 
-    recursive_compare(
-        {
-            "type": "success",
-            "result": {
-                "type": "array",
-                "value": [{
-                    "type": "object"
-                }]
-            },
-            "realm": any_string
-        }, result)
+    assert {
+        "type": "success",
+        "result": {
+            "type": "array",
+            "value": [{
+                "type": "object"
+            }]
+        },
+        "realm": ANY_STR
+    } == result
 
 
 @pytest.mark.asyncio
@@ -652,15 +647,14 @@ async def test_deserialization_handleAndValue(websocket, context_id):
         })
 
     # Assert the `type` and `value` were ignored.
-    recursive_compare(
-        {
-            "type": "success",
-            "result": {
-                "type": "object",
-                "value": [["a", {
-                    "type": "number",
-                    "value": 1
-                }]]
-            },
-            "realm": any_string
-        }, result)
+    assert {
+        "type": "success",
+        "result": {
+            "type": "object",
+            "value": [["a", {
+                "type": "number",
+                "value": 1
+            }]]
+        },
+        "realm": ANY_STR
+    } == result
