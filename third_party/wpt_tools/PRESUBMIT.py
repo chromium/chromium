@@ -10,6 +10,10 @@ some smoke checks of WPT functionality.
 
 USE_PYTHON3 = True
 
+import pathlib
+import textwrap
+
+
 def _TestWPTLint(input_api, output_api):
   # We test 'wpt lint' by deferring to the web_tests/external presubmit test,
   # which runs 'wpt lint' against web_tests/external/wpt.
@@ -55,10 +59,48 @@ def _TestWPTManifest(input_api, output_api):
   return []
 
 
+def _TestWPTRolled(input_api, output_api):
+  """Warn developers making manual changes to `wpt_tools/`."""
+  lines = input_api.change.DescriptionText().splitlines()
+  # No lines will be present when not run against a change (e.g., ToT).
+  if not lines or input_api.re.search(r'\broll wpt tooling\b', lines[0],
+                                      input_api.re.IGNORECASE):
+    return []
+
+  include_file = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                        'WPTIncludeList')
+  rolled_files = {pathlib.PurePosixPath(line)
+                  for line in input_api.ReadFile(include_file).splitlines()}
+  wpt_dir = pathlib.Path(input_api.PresubmitLocalPath()) / 'wpt'
+
+  def exclude_unrolled_files(affected_file):
+    try:
+      path_from_wpt = pathlib.Path(
+        affected_file.AbsoluteLocalPath()).relative_to(wpt_dir)
+      return pathlib.PurePosixPath(path_from_wpt.as_posix()) in rolled_files
+    except ValueError:
+      # Exclude file relative to `wpt_tools` but not to `wpt_tools/wpt`.
+      return False
+
+  if input_api.AffectedFiles(file_filter=exclude_unrolled_files):
+    message = textwrap.dedent(
+      """\
+      Thanks for your patch to `//third_party/wpt_tools/wpt`. This directory is
+      semiregularly overwritten by rolls from the upstream repo:
+        https://github.com/web-platform-tests/wpt
+
+      Please submit your change upstream as a pull request instead, then run
+      `//third_party/wpt_tools/roll_wpt.py` to pick up the change.
+      """)
+    return [output_api.PresubmitPromptWarning(message)]
+  return []
+
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results += _TestWPTLint(input_api, output_api)
   results += _TestWPTManifest(input_api, output_api)
+  results += _TestWPTRolled(input_api, output_api)
   return results
 
 
@@ -66,4 +108,5 @@ def CheckChangeOnCommit(input_api, output_api):
   results = []
   results += _TestWPTLint(input_api, output_api)
   results += _TestWPTManifest(input_api, output_api)
+  results += _TestWPTRolled(input_api, output_api)
   return results
