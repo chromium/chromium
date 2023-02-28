@@ -11,18 +11,23 @@ const filesToCache = [
   'auth-consts.js',
   'caspian_web.js',
   'caspian_web.wasm',
+  'dom.js',
   'favicon.ico',
   'viewer.html',
   'infocard-ui.js',
   'infocard.css',
   'main.css',
   'manifest.json',
+  'metrics-tree-ui.js',
   'options.css',
   'shared.js',
   'start-worker.js',
   'state.js',
+  'symbol-tree-ui.js',
   'tree-ui.js',
   'tree-worker-wasm.js',
+  'ui-base.js',
+  'ui-main.js',
 ];
 
 // On install, cache the items in the `filesToCache` list

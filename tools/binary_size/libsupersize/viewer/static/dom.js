@@ -4,6 +4,25 @@
 
 'use strict';
 
+/**
+ * @fileoverview
+ * Constants, utilities, and objects for DOM access.
+ */
+
+/** @enum {string} Keys in query string and names of input elements. */
+const STATE_KEY = {
+  LOAD_URL: 'load_url',
+  BEFORE_URL: 'before_url',
+  BYTE_UNIT: 'byteunit',
+  METHOD_COUNT: 'method_count',
+  MIN_SIZE: 'min_size',
+  GROUP_BY: 'group_by',
+  INCLUDE: 'include',
+  EXCLUDE: 'exclude',
+  TYPE: 'type',
+  FLAG_FILTER: 'flag_filter',
+};
+
 /** Utilities for working with the DOM */
 const dom = {
   /**
