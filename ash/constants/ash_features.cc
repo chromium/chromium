@@ -1373,7 +1373,7 @@ BASE_FEATURE(kMicMuteNotifications,
 // Migrates rule-based input methods from Chromium into an internal codebase.
 BASE_FEATURE(kMigrateRuleBasedInputMethods,
              "MigrateRuleBasedInputMethods",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Disables the deprecated Messages cross-device integration, to be used
 // along side the flag preinstall-by-default (kMessagesPreinstall).
