@@ -5888,6 +5888,7 @@
       keywords: [
         "normal", "pre", "pre-wrap", "pre-line", "nowrap", "break-spaces"
       ],
+      style_builder_custom_functions: ["initial", "inherit", "value"],
       typedom_types: ["Keyword"],
       default_value: "EWhiteSpace::kNormal",
       valid_for_cue: true,
