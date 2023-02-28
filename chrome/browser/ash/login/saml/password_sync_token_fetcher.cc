@@ -295,18 +295,14 @@ void PasswordSyncTokenFetcher::OnSimpleLoaderComplete(
       deserializer.Deserialize(/*error_code=*/nullptr, &error_msg);
 
   if (!response_body || (response_code != net::HTTP_OK)) {
-    const auto* error_json =
-        json_value && json_value->is_dict()
-            ? json_value->FindKeyOfType(kErrorKey, base::Value::Type::DICT)
-            : nullptr;
-    const auto* error_value =
-        error_json ? error_json->FindKeyOfType(kErrorDescription,
-                                               base::Value::Type::STRING)
-                   : nullptr;
+    const auto* error_json = json_value && json_value->is_dict()
+                                 ? json_value->GetDict().FindDict(kErrorKey)
+                                 : nullptr;
+    const std::string* error =
+        error_json ? error_json->FindString(kErrorDescription) : nullptr;
 
     LOG(WARNING) << "Server returned wrong response code: " << response_code
-                 << ": " << (error_value ? error_value->GetString() : "Unknown")
-                 << ".";
+                 << ": " << (error ? *error : "Unknown") << ".";
     RecordEvent(InSessionPasswordSyncEvent::kErrorWrongResponseCode);
     consumer_->OnApiCallFailed(ErrorType::kServerError);
     return;
@@ -326,30 +322,26 @@ void PasswordSyncTokenFetcher::OnSimpleLoaderComplete(
     return;
   }
 
-  ProcessValidTokenResponse(std::move(json_value));
+  ProcessValidTokenResponse(std::move(json_value->GetDict()));
 }
 
 void PasswordSyncTokenFetcher::ProcessValidTokenResponse(
-    std::unique_ptr<base::Value> json_response) {
+    base::Value::Dict json_response) {
   switch (request_type_) {
     case RequestType::kCreateToken: {
-      const auto* sync_token_value =
-          json_response->FindKeyOfType(kToken, base::Value::Type::STRING);
-      std::string sync_token =
-          sync_token_value ? sync_token_value->GetString() : std::string();
-      if (sync_token.empty()) {
+      const std::string* sync_token = json_response.FindString(kToken);
+      if (!sync_token || sync_token->empty()) {
         LOG(WARNING) << "Response does not contain sync token.";
         RecordEvent(InSessionPasswordSyncEvent::kErrorNoTokenInCreateResponse);
         consumer_->OnApiCallFailed(ErrorType::kCreateNoToken);
         return;
       }
-      consumer_->OnTokenCreated(sync_token);
+      consumer_->OnTokenCreated(*sync_token);
       break;
     }
     case RequestType::kGetToken: {
       std::string sync_token;
-      const auto* token_list_entry =
-          json_response->GetDict().FindList(kTokenEntry);
+      const auto* token_list_entry = json_response.FindList(kTokenEntry);
       if (!token_list_entry) {
         LOG(WARNING) << "Response does not contain list of sync tokens.";
         RecordEvent(InSessionPasswordSyncEvent::kErrorNoTokenInGetResponse);
@@ -358,21 +350,15 @@ void PasswordSyncTokenFetcher::ProcessValidTokenResponse(
       }
       const base::Value::List& list_of_tokens = *token_list_entry;
       if (list_of_tokens.size() > 0) {
-        const auto* sync_token_value =
-            list_of_tokens[0].FindKeyOfType(kToken, base::Value::Type::STRING);
-        if (!sync_token_value) {
+        const std::string* sync_token_string =
+            list_of_tokens[0].GetDict().FindString(kToken);
+        if (!sync_token_string || sync_token_string->empty()) {
           LOG(WARNING) << "Response does not contain sync token.";
           RecordEvent(InSessionPasswordSyncEvent::kErrorNoTokenInGetResponse);
           consumer_->OnApiCallFailed(ErrorType::kGetNoToken);
           return;
         }
-        sync_token = sync_token_value->GetString();
-        if (sync_token.empty()) {
-          LOG(WARNING) << "Response does not contain sync token.";
-          RecordEvent(InSessionPasswordSyncEvent::kErrorNoTokenInGetResponse);
-          consumer_->OnApiCallFailed(ErrorType::kGetNoToken);
-          return;
-        }
+        sync_token = *sync_token_string;
       }
       // list_of_tokens.size() == 0 is still a valid case here - it means we
       // have not created any token for this user yet.
@@ -380,11 +366,10 @@ void PasswordSyncTokenFetcher::ProcessValidTokenResponse(
       break;
     }
     case RequestType::kVerifyToken: {
-      const auto* sync_token_status = json_response->FindKeyOfType(
-          kTokenStatusKey, base::Value::Type::STRING);
+      const std::string* sync_token_status =
+          json_response.FindString(kTokenStatusKey);
       bool is_valid = false;
-      if (sync_token_status &&
-          sync_token_status->GetString() == kTokenStatusValid) {
+      if (sync_token_status && *sync_token_status == kTokenStatusValid) {
         is_valid = true;
       }
       RecordEvent(is_valid

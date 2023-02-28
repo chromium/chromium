@@ -246,15 +246,13 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
       deserializer.Deserialize(nullptr, &error_msg);
 
   if (!response_body || (response_code != net::HTTP_OK)) {
-    const auto* error_value =
+    const std::string* error =
         json_value && json_value->is_dict()
-            ? json_value->FindKeyOfType(kErrorDescription,
-                                        base::Value::Type::STRING)
+            ? json_value->GetDict().FindString(kErrorDescription)
             : nullptr;
 
     LOG(WARNING) << "Server returned wrong response code: " << response_code
-                 << ": " << (error_value ? error_value->GetString() : "Unknown")
-                 << ".";
+                 << ": " << (error ? *error : "Unknown") << ".";
 
     OptInSilentAuthCode uma_status;
     if (response_code >= 400 && response_code < 500) {
@@ -287,18 +285,15 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     return;
   }
 
-  const auto* auth_code_value =
-      json_value->FindKeyOfType(kToken, base::Value::Type::STRING);
-  std::string auth_code =
-      auth_code_value ? auth_code_value->GetString() : std::string();
-  if (auth_code.empty()) {
+  const std::string* auth_code = json_value->GetDict().FindString(kToken);
+  if (!auth_code || auth_code->empty()) {
     LOG(WARNING) << "Response does not contain auth code.";
     ReportResult(std::string(), OptInSilentAuthCode::NO_AUTH_CODE_IN_RESPONSE);
     return;
   }
 
   UpdateAuthCodeFetcherProxyBypassUMA(bypass_proxy_, profile_);
-  ReportResult(auth_code, OptInSilentAuthCode::SUCCESS);
+  ReportResult(*auth_code, OptInSilentAuthCode::SUCCESS);
 }
 
 void ArcBackgroundAuthCodeFetcher::ReportResult(

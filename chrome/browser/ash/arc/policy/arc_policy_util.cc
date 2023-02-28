@@ -93,26 +93,28 @@ absl::optional<base::Value> ParsePolicyJson(const std::string& arc_policy) {
 
 std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
     const base::Value& dict) {
-  const base::Value* const packages =
-      dict.FindKeyOfType(kApplicationsKey, base::Value::Type::LIST);
+  const base::Value::List* const packages =
+      dict.GetDict().FindList(kApplicationsKey);
   if (!packages)
     return {};
 
   std::map<std::string, std::set<std::string>> install_type_map;
-  for (const auto& package : packages->GetList()) {
-    if (!package.is_dict())
+  for (const auto& package : *packages) {
+    const base::Value::Dict* package_dict = package.GetIfDict();
+    if (!package_dict) {
       continue;
-    const base::Value* const install_type =
-        package.FindKeyOfType(kInstallTypeKey, base::Value::Type::STRING);
+    }
+    const std::string* const install_type =
+        package_dict->FindString(kInstallTypeKey);
     if (!install_type)
       continue;
 
-    const base::Value* const package_name =
-        package.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
-    if (!package_name || package_name->GetString().empty())
+    const std::string* const package_name =
+        package_dict->FindString(kPackageNameKey);
+    if (!package_name || package_name->empty()) {
       continue;
-    install_type_map[install_type->GetString()].insert(
-        package_name->GetString());
+    }
+    install_type_map[*install_type].insert(*package_name);
   }
   return install_type_map;
 }

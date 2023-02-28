@@ -199,21 +199,20 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   // following format:
   //   {"Error code":"error code","Error message":"Error message"}
   if (parsed_json->is_dict()) {
-    const base::Value* response_error_code_value =
-        parsed_json->FindKeyOfType("Error code", base::Value::Type::STRING);
+    const std::string* response_error_code_str =
+        parsed_json->GetDict().FindString("Error code");
 
-    if (!response_error_code_value) {
+    if (!response_error_code_str) {
       LOG(ERROR) << "Unable to find error code: response="
                  << response.substr(0, 128);
       // TODO(thanhdng): Add a UMA histogram here.
       return absl::nullopt;
     }
 
-    base::StringPiece response_error_code_str =
-        response_error_code_value->GetString();
     int response_error_code = 0;
-    if (!base::StringToInt(response_error_code_str, &response_error_code)) {
-      LOG(WARNING) << "Unable to parse error code: " << response_error_code_str;
+    if (!base::StringToInt(*response_error_code_str, &response_error_code)) {
+      LOG(WARNING) << "Unable to parse error code: "
+                   << *response_error_code_str;
       // TODO(thanhdng): Add a UMA histogram here.
       return absl::nullopt;
     }
@@ -223,7 +222,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     } else if (response_error_code == kResponseErrorNotEnoughApps) {
       // TODO(thanhdng): Add a UMA histogram here.
     } else {
-      LOG(WARNING) << "Unknown error code: " << response_error_code_str;
+      LOG(WARNING) << "Unknown error code: " << *response_error_code_str;
       // TODO(thanhdng): Add a UMA histogram here.
     }
 
