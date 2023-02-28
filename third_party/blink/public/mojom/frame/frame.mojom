@@ -580,7 +580,7 @@ interface LocalFrameHost {
   // This implements the API:
   // window.fence.reportEvent({eventType, eventData, destination})
   //
-  // A document in a fenced frames can invoke the reportEvent API to request the
+  // A document in a fenced frame can invoke the reportEvent API to request the
   // browser to send `eventData` in a beacon toward the URL registered against
   // `eventType` by the worklet in registerAdBeacon. Depending on the declared
   // `destination`, the beacon is sent to either the buyer's or the seller's
@@ -597,6 +597,16 @@ interface LocalFrameHost {
   SetFencedFrameAutomaticBeaconReportEventData(
       string event_data,
       array<ReportingDestination> destination);
+
+  // See:
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
+  //
+  // This implements the API:
+  // window.fence.reportEvent(eventType)
+  //
+  // A document in a fenced frame can invoke the reportEvent API to request the
+  // browser to send private aggregation requests associated with `event_type`.
+  SendPrivateAggregationRequestsForFencedFrameEvent(string event_type);
 
   // Sent by the renderer process to request the creation of a new portal.
   // |portal| is the pipe to be used for the Portal object, |client| is the pipe

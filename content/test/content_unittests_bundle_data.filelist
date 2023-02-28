@@ -398,6 +398,8 @@
 //content/test/data/fenced_frames/ad_that_leaves_interest_group.html
 //content/test/data/fenced_frames/ad_that_leaves_interest_group.html.mock-http-headers
 //content/test/data/fenced_frames/ad_with_components.html
+//content/test/data/fenced_frames/ad_with_fenced_frame_private_aggregation_reporting.html
+//content/test/data/fenced_frames/ad_with_fenced_frame_private_aggregation_reporting.html.mock-http-headers
 //content/test/data/fenced_frames/ad_with_fenced_frame_reporting.html
 //content/test/data/fenced_frames/ad_with_fenced_frame_reporting.html.mock-http-headers
 //content/test/data/fenced_frames/basic.html

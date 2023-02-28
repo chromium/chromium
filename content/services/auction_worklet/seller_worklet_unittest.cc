@@ -4075,9 +4075,10 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 class SellerWorkletPrivateAggregationEnabledTest : public SellerWorkletTest {
  public:
   SellerWorkletPrivateAggregationEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    scoped_feature_list_.InitWithFeatures(
+        {content::kPrivateAggregationApi,
+         blink::features::kPrivateAggregationApiFledgeExtensions},
+        {});
   }
 
  private:

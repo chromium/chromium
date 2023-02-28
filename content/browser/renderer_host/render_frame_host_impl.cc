@@ -34,6 +34,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -7755,6 +7756,50 @@ void RenderFrameHostImpl::CreateNewWindow(
   // The mojom reply callback with kSuccess causes the renderer to create the
   // renderer-side objects.
   new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
+}
+
+void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
+    const std::string& event_type) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFledgeExtensions)) {
+    mojo::ReportBadMessage(
+        "FLEDGE extensions must be enabled to use reportEvent() for private "
+        "aggregation events.");
+    return;
+  }
+  // We only care if the event type starts with "reserved." - We allow event
+  // types like "myevent.reserved.name".
+  if (base::StartsWith(event_type, blink::kFencedFrameReservedPAEventPrefix)) {
+    mojo::ReportBadMessage("Reserved events cannot be triggered manually.");
+    return;
+  }
+  // Get the reporting metadata associated with the fenced frame.
+  const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+      frame_tree_node_->GetFencedFrameProperties();
+  if (!fenced_frame_properties.has_value() ||
+      !fenced_frame_properties->fenced_frame_reporter_) {
+    // No associated fenced frame reporter. This should have been captured
+    // in the renderer process at `Fence::reportEvent`.
+    // This implies there is an inconsistency between the browser and the
+    // renderer.
+    mojo::ReportBadMessage(
+        "This frame had reporting metadata registered in its renderer process"
+        "but not in its browser process. The reporting metadata should be"
+        "consistent between the two.");
+    return;
+  }
+  if (!fenced_frame_properties->mapped_url_.has_value() ||
+      !GetLastCommittedOrigin().IsSameOriginWith(
+          url::Origin::Create(fenced_frame_properties->mapped_url_
+                                  ->GetValueIgnoringVisibility()))) {
+    mojo::ReportBadMessage(
+        "This frame is cross-origin to the mapped url of its fenced frame "
+        "config, so the renderer should not be able to call reportEvent.");
+    return;
+  }
+
+  fenced_frame_properties->fenced_frame_reporter_
+      ->SendPrivateAggregationRequestsForEvent(event_type);
 }
 
 void RenderFrameHostImpl::CreatePortal(

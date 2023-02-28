@@ -5679,9 +5679,10 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
 class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletPrivateAggregationEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    scoped_feature_list_.InitWithFeatures(
+        {content::kPrivateAggregationApi,
+         blink::features::kPrivateAggregationApiFledgeExtensions},
+        {});
   }
 
  private:

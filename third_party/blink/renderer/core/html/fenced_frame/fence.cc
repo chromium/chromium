@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_fenceevent_string.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -49,6 +51,20 @@ Fence::Fence(LocalDOMWindow& window) : ExecutionContextClient(&window) {}
 void Fence::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
+}
+
+void Fence::reportEvent(ScriptState* script_state,
+                        const V8UnionFenceEventOrString* event,
+                        ExceptionState& exception_state) {
+  switch (event->GetContentType()) {
+    case V8UnionFenceEventOrString::ContentType::kString:
+      reportPrivateAggregationEvent(script_state, event->GetAsString(),
+                                    exception_state);
+      return;
+    case V8UnionFenceEventOrString::ContentType::kFenceEvent:
+      reportEvent(script_state, event->GetAsFenceEvent(), exception_state);
+      return;
+  }
 }
 
 void Fence::reportEvent(ScriptState* script_state,
@@ -142,6 +158,42 @@ HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
     }
   }
   return out;
+}
+
+void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
+                                          const String& event,
+                                          ExceptionState& exception_state) {
+  if (!RuntimeEnabledFeatures::PrivateAggregationApiFledgeExtensionsEnabled(
+          ExecutionContext::From(script_state))) {
+    exception_state.ThrowSecurityError(
+        "FLEDGE extensions must be enabled to use reportEvent() for private "
+        "aggregation events.");
+    return;
+  }
+  if (!DomWindow()) {
+    exception_state.ThrowSecurityError(
+        "May not use a Fence object associated with a Document that is not "
+        "fully active");
+    return;
+  }
+
+  if (event.StartsWith(blink::kFencedFrameReservedPAEventPrefix)) {
+    AddConsoleMessage("Reserved events cannot be triggered manually.");
+    return;
+  }
+
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
+
+  bool has_fenced_frame_reporting =
+      frame->GetDocument()->Loader()->HasFencedFrameReporting();
+  if (!has_fenced_frame_reporting) {
+    AddConsoleMessage("This frame did not register reporting metadata.");
+    return;
+  }
+
+  frame->GetLocalFrameHostRemote()
+      .SendPrivateAggregationRequestsForFencedFrameEvent(event);
 }
 
 void Fence::AddConsoleMessage(const String& message) {

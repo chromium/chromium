@@ -2365,6 +2365,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destination)
       override;
+  void SendPrivateAggregationRequestsForFencedFrameEvent(
+      const std::string& event_type) override;
   void CreatePortal(
       mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
       mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,

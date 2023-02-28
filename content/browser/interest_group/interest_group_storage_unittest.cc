@@ -92,49 +92,53 @@ class InterestGroupStorageTest : public testing::Test {
     const url::Origin full_origin =
         url::Origin::Create(GURL("https://full.example.com"));
     InterestGroup full(
-        /*expiry=*/base::Time::Now() + base::Days(30), /*owner=*/full_origin,
-        /*name=*/"full", /*priority=*/1.0,
-        /*enable_bidding_signals_prioritization=*/true,
-        /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
-        /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
-        /*seller_capabilities=*/
-        {{{full_origin, SellerCapabilities::kInterestGroupCounts},
-          {partial_origin, SellerCapabilities::kLatencyStats}}},
-        /*all_sellers_capabilities=*/
-        {SellerCapabilities::kInterestGroupCounts,
-         SellerCapabilities::kLatencyStats},
-        /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
-        /*bidding_url=*/GURL("https://full.example.com/bid"),
-        /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
-        /*daily_update_url=*/GURL("https://full.example.com/update"),
-        /*trusted_bidding_signals_url=*/
-        GURL("https://full.example.com/signals"),
-        /*trusted_bidding_signals_keys=*/
-        std::vector<std::string>{"a", "b", "c", "d"},
-        /*user_bidding_signals=*/"foo",
-        /*ads=*/
-        std::vector<InterestGroup::Ad>{
-            blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
-                                     "metadata1"),
-            blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                     "metadata2")},
-        /*ad_components=*/
-        std::vector<InterestGroup::Ad>{
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent1"), "metadata1c"),
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent2"), "metadata2c")},
-        /*ad_sizes=*/
-        {{{"size_1", blink::InterestGroup::Size(
-                         300, blink::InterestGroup::Size::LengthUnit::kPixels,
-                         150, blink::InterestGroup::Size::LengthUnit::kPixels)},
-          {"size_2",
-           blink::InterestGroup::Size(
-               640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
-               blink::InterestGroup::Size::LengthUnit::kPixels)}}},
-        /*size_groups=*/
-        {{{"group_1", std::vector<std::string>{"size_1"}},
-          {"group_2", std::vector<std::string>{"size_1", "size_2"}}}});
+        {.expiry = base::Time::Now() + base::Days(30),
+         .owner = full_origin,
+         .name = "full",
+         .priority = 1.0,
+         .enable_bidding_signals_prioritization = true,
+         .priority_vector = {{{"a", 2}, {"b", -2.2}}},
+         .priority_signals_overrides = {{{"a", -2}, {"c", 10}, {"d", 1.2}}},
+         .seller_capabilities =
+             {{{full_origin, SellerCapabilities::kInterestGroupCounts},
+               {partial_origin, SellerCapabilities::kLatencyStats}}},
+         .all_sellers_capabilities = {SellerCapabilities::kInterestGroupCounts,
+                                      SellerCapabilities::kLatencyStats},
+         .execution_mode = InterestGroup::ExecutionMode::kCompatibilityMode,
+         .bidding_url = GURL("https://full.example.com/bid"),
+         .bidding_wasm_helper_url = GURL("https://full.example.com/bid_wasm"),
+         .daily_update_url = GURL("https://full.example.com/update"),
+         .trusted_bidding_signals_url =
+             GURL("https://full.example.com/signals"),
+         .trusted_bidding_signals_keys =
+             std::vector<std::string>{"a", "b", "c", "d"},
+         .user_bidding_signals = "foo",
+         .ads =
+             std::vector<InterestGroup::Ad>{
+                 blink::InterestGroup::Ad(GURL("https://full.example.com/ad1"),
+                                          "metadata1"),
+                 blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
+                                          "metadata2")},
+         .ad_components =
+             std::vector<InterestGroup::Ad>{
+                 blink::InterestGroup::Ad(
+                     GURL("https://full.example.com/adcomponent1"),
+                     "metadata1c"),
+                 blink::InterestGroup::Ad(
+                     GURL("https://full.example.com/adcomponent2"),
+                     "metadata2c")},
+         .ad_sizes =
+             {{{"size_1",
+                blink::InterestGroup::Size(
+                    300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
+                    blink::InterestGroup::Size::LengthUnit::kPixels)},
+               {"size_2",
+                blink::InterestGroup::Size(
+                    640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
+                    blink::InterestGroup::Size::LengthUnit::kPixels)}}},
+         .size_groups = {
+             {{"group_1", std::vector<std::string>{"size_1"}},
+              {"group_2", std::vector<std::string>{"size_1", "size_2"}}}}});
 
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
