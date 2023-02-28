@@ -14,6 +14,7 @@
 #include "build/chromecast_buildflags.h"
 #include "ui/base/buildflags.h"
 #include "ui/color/system_theme.h"
+#include "ui/linux/fallback_linux_ui.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
 
@@ -37,37 +38,51 @@ const char kUiToolkitFlag[] = "ui-toolkit";
 std::unique_ptr<LinuxUiAndTheme> CreateGtkUi() {
 #if BUILDFLAG(USE_GTK)
   auto gtk_ui = BuildGtkUi();
-  if (gtk_ui->Initialize())
+  if (gtk_ui->Initialize()) {
     return gtk_ui;
+  }
 #endif
   return nullptr;
 }
 
 LinuxUiAndTheme* GetGtkUi() {
   // LinuxUi creation will fail without a delegate.
-  if (!ui::LinuxUiDelegate::GetInstance())
+  if (!ui::LinuxUiDelegate::GetInstance()) {
     return nullptr;
+  }
   static LinuxUiAndTheme* gtk_ui = CreateGtkUi().release();
   return gtk_ui;
 }
 
 std::unique_ptr<LinuxUiAndTheme> CreateQtUi() {
-  if (!base::FeatureList::IsEnabled(kAllowQt))
+  if (!base::FeatureList::IsEnabled(kAllowQt)) {
     return nullptr;
+  }
 #if BUILDFLAG(USE_QT)
   auto qt_ui = qt::CreateQtUi(GetGtkUi());
-  if (qt_ui->Initialize())
+  if (qt_ui->Initialize()) {
     return qt_ui;
+  }
 #endif
   return nullptr;
 }
 
 LinuxUiAndTheme* GetQtUi() {
   // LinuxUi creation will fail without a delegate.
-  if (!ui::LinuxUiDelegate::GetInstance())
+  if (!ui::LinuxUiDelegate::GetInstance()) {
     return nullptr;
+  }
   static LinuxUiAndTheme* qt_ui = CreateQtUi().release();
   return qt_ui;
+}
+
+std::unique_ptr<LinuxUiAndTheme> CreateFallbackUi() {
+  return std::make_unique<FallbackLinuxUi>();
+}
+
+LinuxUiAndTheme* GetFallbackUi() {
+  static LinuxUiAndTheme* fallback_ui = CreateFallbackUi().release();
+  return fallback_ui;
 }
 
 LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
@@ -75,24 +90,38 @@ LinuxUiAndTheme* GetDefaultLinuxUiAndTheme() {
   std::string ui_toolkit =
       base::ToLowerASCII(cmd_line->GetSwitchValueASCII(kUiToolkitFlag));
   if (ui_toolkit == "gtk") {
-    if (auto* gtk_ui = GetGtkUi())
+    if (auto* gtk_ui = GetGtkUi()) {
       return gtk_ui;
+    }
   } else if (ui_toolkit == "qt") {
-    if (auto* qt_ui = GetQtUi())
+    if (auto* qt_ui = GetQtUi()) {
       return qt_ui;
+    }
+  } else if (ui_toolkit == "fallback") {
+    if (auto* fallback_ui = GetFallbackUi()) {
+      return fallback_ui;
+    }
   }
 
   std::unique_ptr<base::Environment> env = base::Environment::Create();
   switch (GetDefaultSystemTheme()) {
     case SystemTheme::kQt:
-      if (auto* qt_ui = GetQtUi())
+      if (auto* qt_ui = GetQtUi()) {
         return qt_ui;
-      return GetGtkUi();
+      }
+      if (auto* gtk_ui = GetGtkUi()) {
+        return gtk_ui;
+      }
+      return GetFallbackUi();
     case SystemTheme::kGtk:
     case SystemTheme::kDefault:
-      if (auto* gtk_ui = GetGtkUi())
+      if (auto* gtk_ui = GetGtkUi()) {
         return gtk_ui;
-      return GetQtUi();
+      }
+      if (auto* qt_ui = GetQtUi()) {
+        return qt_ui;
+      }
+      return GetFallbackUi();
   }
 }
 
