@@ -180,10 +180,6 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   GestureEventWithHitTestResults HitTestResultForGestureEvent(
       const WebGestureEvent&,
       HitTestRequest::HitTestRequestType);
-  // Handle the provided non-scroll gesture event. Should be called only on the
-  // inner frame.
-  WebInputEventResult HandleGestureEventInFrame(
-      const GestureEventWithHitTestResults&);
 
   // Handle the provided scroll gesture event, propagating down to child frames
   // as necessary.
@@ -297,6 +293,11 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
                       bool no_lifecycle_update) const;
 
   void UpdateGestureTargetNodeForMouseEvent(
+      const GestureEventWithHitTestResults&);
+
+  // Handle the provided non-scroll gesture event. Should be called only on the
+  // inner frame.
+  WebInputEventResult HandleGestureEventInFrame(
       const GestureEventWithHitTestResults&);
 
   bool ShouldApplyTouchAdjustment(const WebGestureEvent&) const;

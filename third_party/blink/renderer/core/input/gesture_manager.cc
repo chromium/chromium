@@ -633,20 +633,22 @@ PointerId GestureManager::GetPointerIdFromWebGestureEvent(
   // populated.
   if (gesture_event.primary_unique_touch_event_id == 0)
     return PointerEventFactory::kInvalidId;
-  // TODO(crbug.com/1244085): Look into why pointerdown event is not sent
-  // in some tests even though pointerup event is sent.
-  // Return kInvalidId if we saw no pointerdown for the gesture sequence.
-  if (recent_pointerdown_pointer_ids_.empty())
-    return PointerEventFactory::kInvalidId;
-  // If everything works correctly, the first touch id, pointer id pair
+
+  // Because of `ClearOldPointerDownIds()`, the first touch id, pointer id pair
   // in the deque is the one we are interested in.
-  if (gesture_event.primary_unique_touch_event_id ==
-      recent_pointerdown_pointer_ids_.front().first)
+  if (!recent_pointerdown_pointer_ids_.empty() &&
+      gesture_event.primary_unique_touch_event_id ==
+          recent_pointerdown_pointer_ids_.front().first) {
     return recent_pointerdown_pointer_ids_.front().second;
+  }
+
   // Getting here means either we saw no pointerdown for the gesture,
   // or that the gestures were not generated in order resulting in
   // prematurely clearing pointerdown id in HandleGestureEventInFrame.
-  NOTREACHED();
+  //
+  // TODO(https://crbug.com/1264930): Returning kInvalidId here is wrong when
+  // none of the corresponding pointer events reach Blink because of lack of
+  // event listeners.
   return PointerEventFactory::kInvalidId;
 }
 
