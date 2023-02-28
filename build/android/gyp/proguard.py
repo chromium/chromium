@@ -5,9 +5,9 @@
 # found in the LICENSE file.
 
 import argparse
-from collections import defaultdict
 import logging
 import os
+import pathlib
 import re
 import shutil
 import sys
@@ -17,13 +17,12 @@ import dex
 from util import build_utils
 from util import diff_utils
 
-sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
-from pylib.dex import dex_parser
-
 _BLOCKLISTED_EXPECTATION_PATHS = [
     # A separate expectation file is created for these files.
-    'clank/third_party/google3/pg_confs/'
+    'clank/third_party/google3/pg_confs/',
 ]
+
+_DUMP_DIR_NAME = 'r8inputs_dir'
 
 
 def _ParseOptions():
@@ -258,7 +257,7 @@ def _OptimizeWithR8(options,
         '-Dcom.android.tools.r8.enableSameFilePolicy=1',
     ]
     if options.dump_inputs:
-      cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
+      cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
     if options.dump_unknown_refs:
       cmd += ['-Dcom.android.tools.r8.reportUnknownApiReferences=1']
     cmd += [
@@ -343,6 +342,7 @@ def _OptimizeWithR8(options,
 
 def _OutputKeepRules(r8_path, input_paths, classpath, targets_re_string,
                      keep_rules_output):
+
   cmd = build_utils.JavaCmd() + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
@@ -361,8 +361,13 @@ def _OutputKeepRules(r8_path, input_paths, classpath, targets_re_string,
 
 
 def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
-                            error_title):
-  cmd = build_utils.JavaCmd() + [
+                            dump_inputs, error_title):
+  cmd = build_utils.JavaCmd()
+
+  if dump_inputs:
+    cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
+
+  cmd += [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
       '--check'
@@ -569,7 +574,8 @@ def _DoTraceReferencesChecks(options, split_contexts_by_name):
   dex_files = sorted(c.final_output_path
                      for c in split_contexts_by_name.values())
   if _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
-                             options.warnings_as_errors, error_title):
+                             options.warnings_as_errors, options.dump_inputs,
+                             error_title):
     # Failed but didn't raise due to warnings_as_errors=False
     return
 
@@ -584,15 +590,13 @@ def _DoTraceReferencesChecks(options, split_contexts_by_name):
     # We could run them concurrently, to shave off 5-6 seconds, but would need
     # to make sure that the order is maintained.
     if _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
-                               options.warnings_as_errors, error_title):
+                               options.warnings_as_errors, options.dump_inputs,
+                               error_title):
       # Failed but didn't raise due to warnings_as_errors=False
       return
 
 
-def main():
-  build_utils.InitLogging('PROGUARD_DEBUG')
-  options = _ParseOptions()
-
+def _Run(options):
   # ProGuard configs that are derived from flags.
   logging.debug('Preparing configs')
   dynamic_config_data = _CreateDynamicConfig(options)
@@ -658,6 +662,30 @@ def main():
     depfile_inputs.append(options.apply_mapping)
 
   _MaybeWriteStampAndDepFile(options, depfile_inputs)
+
+
+def main():
+  build_utils.InitLogging('PROGUARD_DEBUG')
+  options = _ParseOptions()
+
+  if options.dump_inputs:
+    # Dumping inputs causes output to be emitted, avoid failing due to stdout.
+    options.warnings_as_errors = False
+    # Use dumpinputtodirectory instead of dumpinputtofile to avoid failing the
+    # build and keep running tracereferences.
+    dump_dir_name = _DUMP_DIR_NAME
+    dump_dir_path = pathlib.Path(dump_dir_name)
+    if dump_dir_path.exists():
+      shutil.rmtree(dump_dir_path)
+    # The directory needs to exist before r8 adds the zip files in it.
+    dump_dir_path.mkdir()
+
+  # This ensure that the final outputs are zipped and easily uploaded to a bug.
+  try:
+    _Run(options)
+  finally:
+    if options.dump_inputs:
+      build_utils.ZipDir('r8inputs.zip', _DUMP_DIR_NAME)
 
 
 if __name__ == '__main__':
