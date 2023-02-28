@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +36,7 @@ class SyncAppsyncServiceTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   testing::NiceMock<syncer::MockSyncService> sync_service_;
-  testing::NiceMock<MockUserManager> user_manager_;
+  FakeChromeUserManager user_manager_;
   std::unique_ptr<SyncAppsyncService> sync_appsync_service_;
 };
 
