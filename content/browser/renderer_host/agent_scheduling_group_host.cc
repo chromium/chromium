@@ -18,11 +18,11 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_message.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace content {
 
@@ -332,8 +332,7 @@ void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
 }
 
 void AgentSchedulingGroupHost::CreateSharedStorageWorkletService(
-    mojo::PendingReceiver<
-        shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
+    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver) {
   DCHECK_EQ(state_, LifecycleState::kBound);
   DCHECK(process_->IsInitializedAndNotDead());
   DCHECK(mojo_remote_.is_bound());

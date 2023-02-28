@@ -8,11 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "content/common/aggregatable_report.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 
 namespace content {
 namespace {
@@ -22,12 +22,11 @@ const PrivateAggregationRequestWithEventType
         auction_worklet::mojom::PrivateAggregationRequest::New(
             auction_worklet::mojom::AggregatableReportContribution::
                 NewHistogramContribution(
-                    content::mojom::AggregatableReportHistogramContribution::
-                        New(
-                            /*bucket=*/123,
-                            /*value=*/45)),
-            content::mojom::AggregationServiceMode::kDefault,
-            content::mojom::DebugModeDetails::New()),
+                    blink::mojom::AggregatableReportHistogramContribution::New(
+                        /*bucket=*/123,
+                        /*value=*/45)),
+            blink::mojom::AggregationServiceMode::kDefault,
+            blink::mojom::DebugModeDetails::New()),
         /*event_type=*/absl::nullopt);
 
 auction_worklet::mojom::SignalBucketPtr CreateSignalBucket(
@@ -58,10 +57,10 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreateHistogramRequest(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
-              content::mojom::AggregatableReportHistogramContribution::New(
+              blink::mojom::AggregatableReportHistogramContribution::New(
                   bucket, value)),
-      content::mojom::AggregationServiceMode::kDefault,
-      content::mojom::DebugModeDetails::New());
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New());
 }
 
 // Creates a PrivateAggregationRequest with ForEvent contribution using
@@ -79,8 +78,8 @@ auction_worklet::mojom::PrivateAggregationRequestPtr CreateForEventRequest(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)),
-      content::mojom::AggregationServiceMode::kDefault,
-      content::mojom::DebugModeDetails::New());
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New());
 }
 
 // Creates a PrivateAggregationRequest with ForEvent contribution using
@@ -100,8 +99,8 @@ CreateForEventRequestWithBucketObject(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)),
-      content::mojom::AggregationServiceMode::kDefault,
-      content::mojom::DebugModeDetails::New());
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New());
 }
 
 // Creates a PrivateAggregationRequest with ForEvent contribution using
@@ -121,8 +120,8 @@ CreateForEventRequestWithValueObject(
   return auction_worklet::mojom::PrivateAggregationRequest::New(
       auction_worklet::mojom::AggregatableReportContribution::
           NewForEventContribution(std::move(contribution)),
-      content::mojom::AggregationServiceMode::kDefault,
-      content::mojom::DebugModeDetails::New());
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New());
 }
 
 PrivateAggregationRequestWithEventType
@@ -149,11 +148,11 @@ TEST_F(InterestGroupPaReportUtilTest, HistogramContribution) {
   auction_worklet::mojom::PrivateAggregationRequest request(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
-              content::mojom::AggregatableReportHistogramContribution::New(
+              blink::mojom::AggregatableReportHistogramContribution::New(
                   /*bucket=*/123,
                   /*value=*/45)),
-      content::mojom::AggregationServiceMode::kDefault,
-      content::mojom::DebugModeDetails::New());
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New());
 
   EXPECT_EQ(kExpectedRequestWithReservedEventType,
             FillInPrivateAggregationRequest(
@@ -174,13 +173,13 @@ TEST_F(InterestGroupPaReportUtilTest, AggregationModeAndDebugMode) {
   auction_worklet::mojom::PrivateAggregationRequest request(
       auction_worklet::mojom::AggregatableReportContribution::
           NewHistogramContribution(
-              content::mojom::AggregatableReportHistogramContribution::New(
+              blink::mojom::AggregatableReportHistogramContribution::New(
                   /*bucket=*/123,
                   /*value=*/45)),
-      content::mojom::AggregationServiceMode::kExperimentalPoplar,
-      content::mojom::DebugModeDetails::New(
+      blink::mojom::AggregationServiceMode::kExperimentalPoplar,
+      blink::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
-          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
 
   PrivateAggregationRequestWithEventType request_with_event_type(
       request.Clone(), /*event_type=*/absl::nullopt);
@@ -369,11 +368,11 @@ TEST_F(InterestGroupPaReportUtilTest,
       auction_worklet::mojom::PrivateAggregationRequest::New(
           auction_worklet::mojom::AggregatableReportContribution::
               NewHistogramContribution(
-                  content::mojom::AggregatableReportHistogramContribution::New(
+                  blink::mojom::AggregatableReportHistogramContribution::New(
                       /*bucket=*/6,
                       /*value=*/45)),
-          content::mojom::AggregationServiceMode::kDefault,
-          content::mojom::DebugModeDetails::New()),
+          blink::mojom::AggregationServiceMode::kDefault,
+          blink::mojom::DebugModeDetails::New()),
       /*event_type=*/absl::nullopt);
   EXPECT_EQ(
       std::move(expected_requests_with_event_type),

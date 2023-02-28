@@ -14,7 +14,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/common/agent_scheduling_group.mojom.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -26,6 +25,7 @@
 #include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -101,8 +101,7 @@ class SelfOwnedSharedStorageWorkletThread {
  public:
   SelfOwnedSharedStorageWorkletThread(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
-      mojo::PendingReceiver<
-          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver)
+      mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver)
       : main_thread_runner_(std::move(main_thread_runner)) {
     DCHECK(main_thread_runner_->BelongsToCurrentThread());
 
@@ -446,8 +445,7 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
 }
 
 void AgentSchedulingGroup::CreateSharedStorageWorkletService(
-    mojo::PendingReceiver<
-        shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
+    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver) {
   new SelfOwnedSharedStorageWorkletThread(
       agent_group_scheduler_->DefaultTaskRunner(), std::move(receiver));
 }

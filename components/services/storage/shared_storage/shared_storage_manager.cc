@@ -164,8 +164,7 @@ void SharedStorageManager::Length(url::Origin context_origin,
 
 void SharedStorageManager::Keys(
     url::Origin context_origin,
-    mojo::PendingRemote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
         pending_listener,
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(callback);
@@ -176,8 +175,7 @@ void SharedStorageManager::Keys(
 
 void SharedStorageManager::Entries(
     url::Origin context_origin,
-    mojo::PendingRemote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
         pending_listener,
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(callback);

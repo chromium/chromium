@@ -28,11 +28,11 @@
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/common/aggregatable_report.mojom.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -92,7 +92,8 @@ bool PrivateAggregationManagerImpl::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
-    mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver) {
+    mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
+        pending_receiver) {
   return host_->BindNewReceiver(std::move(worklet_origin),
                                 std::move(top_frame_origin), api_for_budgeting,
                                 std::move(pending_receiver));
@@ -110,16 +111,15 @@ void PrivateAggregationManagerImpl::ClearBudgetData(
 void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(
     AggregatableReportRequest report_request,
     PrivateAggregationBudgetKey budget_key) {
-  const std::vector<mojom::AggregatableReportHistogramContribution>&
+  const std::vector<blink::mojom::AggregatableReportHistogramContribution>&
       contributions = report_request.payload_contents().contributions;
 
   base::CheckedNumeric<int> budget_needed = std::accumulate(
       contributions.begin(), contributions.end(),
       /*init=*/base::CheckedNumeric<int>(0), /*op=*/
       [](base::CheckedNumeric<int> running_sum,
-         const mojom::AggregatableReportHistogramContribution& contribution) {
-        return running_sum + contribution.value;
-      });
+         const blink::mojom::AggregatableReportHistogramContribution&
+             contribution) { return running_sum + contribution.value; });
 
   if (!budget_needed.IsValid()) {
     RecordBudgeterResultHistogram(PrivateAggregationBudgeter::RequestResult::

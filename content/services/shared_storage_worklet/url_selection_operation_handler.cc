@@ -45,20 +45,20 @@ bool ToIDLUnsignedLong(v8::Isolate* isolate,
 }  // namespace
 
 struct UrlSelectionOperationHandler::PendingRequest {
-  explicit PendingRequest(
-      size_t urls_size,
-      mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
-          callback);
+  explicit PendingRequest(size_t urls_size,
+                          blink::mojom::SharedStorageWorkletService::
+                              RunURLSelectionOperationCallback callback);
 
   ~PendingRequest();
 
   size_t urls_size;
-  mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback callback;
+  blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+      callback;
 };
 
 UrlSelectionOperationHandler::PendingRequest::PendingRequest(
     size_t urls_size,
-    mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+    blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback)
     : urls_size(urls_size), callback(std::move(callback)) {}
 
@@ -76,7 +76,7 @@ void UrlSelectionOperationHandler::RunOperation(
     const std::string& name,
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
-    mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+    blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {
   auto it = operation_definition_map_->find(name);
   if (it == operation_definition_map_->end()) {

@@ -16,7 +16,6 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -31,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,24 +45,22 @@ const auction_worklet::mojom::PrivateAggregationRequestPtr
         auction_worklet::mojom::PrivateAggregationRequest::New(
             auction_worklet::mojom::AggregatableReportContribution::
                 NewHistogramContribution(
-                    content::mojom::AggregatableReportHistogramContribution::
-                        New(
-                            /*bucket=*/1,
-                            /*value=*/2)),
-            content::mojom::AggregationServiceMode::kDefault,
-            content::mojom::DebugModeDetails::New());
+                    blink::mojom::AggregatableReportHistogramContribution::New(
+                        /*bucket=*/1,
+                        /*value=*/2)),
+            blink::mojom::AggregationServiceMode::kDefault,
+            blink::mojom::DebugModeDetails::New());
 
 const auction_worklet::mojom::PrivateAggregationRequestPtr
     kPrivateAggregationRequest2 =
         auction_worklet::mojom::PrivateAggregationRequest::New(
             auction_worklet::mojom::AggregatableReportContribution::
                 NewHistogramContribution(
-                    content::mojom::AggregatableReportHistogramContribution::
-                        New(
-                            /*bucket=*/3,
-                            /*value=*/4)),
-            content::mojom::AggregationServiceMode::kDefault,
-            content::mojom::DebugModeDetails::New());
+                    blink::mojom::AggregatableReportHistogramContribution::New(
+                        /*bucket=*/3,
+                        /*value=*/4)),
+            blink::mojom::AggregationServiceMode::kDefault,
+            blink::mojom::DebugModeDetails::New());
 
 // Helper to avoid excess boilerplate.
 template <typename... Ts>

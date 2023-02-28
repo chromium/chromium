@@ -6,8 +6,8 @@
 
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/public/browser/render_process_host.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace content {
 
@@ -35,8 +35,7 @@ SharedStorageRenderThreadWorkletDriver::
 }
 
 void SharedStorageRenderThreadWorkletDriver::StartWorkletService(
-    mojo::PendingReceiver<
-        shared_storage_worklet::mojom::SharedStorageWorkletService>
+    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService>
         pending_receiver) {
   // `StartWorkletService` will be called right after the driver is created when
   // the document is still alive, as the driver is created on-demand on the

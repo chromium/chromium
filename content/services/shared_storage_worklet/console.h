@@ -6,9 +6,9 @@
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_CONSOLE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace gin {
 class Arguments;
@@ -18,7 +18,7 @@ namespace shared_storage_worklet {
 
 class Console final : public gin::Wrappable<Console> {
  public:
-  explicit Console(mojom::SharedStorageWorkletServiceClient* client);
+  explicit Console(blink::mojom::SharedStorageWorkletServiceClient* client);
   ~Console() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -31,7 +31,7 @@ class Console final : public gin::Wrappable<Console> {
  private:
   void Log(gin::Arguments* args);
 
-  raw_ptr<mojom::SharedStorageWorkletServiceClient> client_;
+  raw_ptr<blink::mojom::SharedStorageWorkletServiceClient> client_;
 
   base::WeakPtrFactory<Console> weak_ptr_factory_{this};
 };

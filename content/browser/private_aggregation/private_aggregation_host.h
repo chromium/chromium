@@ -11,9 +11,9 @@
 #include "base/memory/raw_ref.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
 namespace url {
 class Origin;
@@ -29,7 +29,7 @@ class BrowserContext;
 // receiver set for this interface. It is responsible for validating the
 // messages received and then passing them on for budget approval
 class CONTENT_EXPORT PrivateAggregationHost
-    : public mojom::PrivateAggregationHost {
+    : public blink::mojom::PrivateAggregationHost {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -68,14 +68,15 @@ class CONTENT_EXPORT PrivateAggregationHost
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver);
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
+          pending_receiver);
 
-  // mojom::PrivateAggregationHost:
+  // blink::mojom::PrivateAggregationHost:
   void SendHistogramReport(
-      std::vector<mojom::AggregatableReportHistogramContributionPtr>
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contributions,
-      mojom::AggregationServiceMode aggregation_mode,
-      mojom::DebugModeDetailsPtr debug_mode_details) override;
+      blink::mojom::AggregationServiceMode aggregation_mode,
+      blink::mojom::DebugModeDetailsPtr debug_mode_details) override;
 
  private:
   struct ReceiverContext;
@@ -87,7 +88,7 @@ class CONTENT_EXPORT PrivateAggregationHost
                                PrivateAggregationBudgetKey)>
       on_report_request_received_;
 
-  mojo::ReceiverSet<mojom::PrivateAggregationHost, ReceiverContext>
+  mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>
       receiver_set_;
 
   // `this` is indirectly owned by the StoragePartitionImpl, which itself is

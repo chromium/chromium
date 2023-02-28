@@ -10,7 +10,7 @@
 
 namespace shared_storage_worklet {
 
-Console::Console(mojom::SharedStorageWorkletServiceClient* client)
+Console::Console(blink::mojom::SharedStorageWorkletServiceClient* client)
     : client_(client) {}
 
 Console::~Console() = default;

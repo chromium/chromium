@@ -99,13 +99,11 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   void Length(url::Origin context_origin,
               base::OnceCallback<void(int)> callback) override;
   void Keys(url::Origin context_origin,
-            mojo::PendingRemote<
-                shared_storage_worklet::mojom::SharedStorageEntriesListener>
+            mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
                 pending_listener,
             base::OnceCallback<void(OperationResult)> callback) override;
   void Entries(url::Origin context_origin,
-               mojo::PendingRemote<
-                   shared_storage_worklet::mojom::SharedStorageEntriesListener>
+               mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
                    pending_listener,
                base::OnceCallback<void(OperationResult)> callback) override;
   void PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction storage_key_matcher,

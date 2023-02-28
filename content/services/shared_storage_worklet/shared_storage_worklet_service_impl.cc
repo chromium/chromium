@@ -7,14 +7,14 @@
 #include <utility>
 
 #include "base/check.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
 namespace shared_storage_worklet {
 
 SharedStorageWorkletServiceImpl::SharedStorageWorkletServiceImpl(
-    mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
+    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver,
     base::OnceClosure disconnect_handler)
     : receiver_(this, std::move(receiver)) {
   receiver_.set_disconnect_handler(std::move(disconnect_handler));
@@ -23,10 +23,10 @@ SharedStorageWorkletServiceImpl::SharedStorageWorkletServiceImpl(
 SharedStorageWorkletServiceImpl::~SharedStorageWorkletServiceImpl() = default;
 
 void SharedStorageWorkletServiceImpl::Initialize(
-    mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
-        client,
+    mojo::PendingAssociatedRemote<
+        blink::mojom::SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
-    mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+    mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
         private_aggregation_host) {
   DCHECK(!global_scope_);
   client_.Bind(std::move(client));

@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -23,10 +22,11 @@
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/common/private_aggregation_features.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
@@ -472,9 +472,9 @@ void SharedStorageWorkletHost::SharedStorageGet(
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
   if (!IsSharedStorageAllowed()) {
-    std::move(callback).Run(
-        shared_storage_worklet::mojom::SharedStorageGetStatus::kError,
-        /*error_message=*/kSharedStorageDisabledMessage, /*value=*/{});
+    std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kError,
+                            /*error_message=*/kSharedStorageDisabledMessage,
+                            /*value=*/{});
     return;
   }
 
@@ -492,7 +492,7 @@ void SharedStorageWorkletHost::SharedStorageGet(
         if (result.result == OperationResult::kNotFound ||
             result.result == OperationResult::kExpired) {
           std::move(callback).Run(
-              shared_storage_worklet::mojom::SharedStorageGetStatus::kNotFound,
+              blink::mojom::SharedStorageGetStatus::kNotFound,
               /*error_message=*/"sharedStorage.get() could not find key",
               /*value=*/{});
           return;
@@ -500,14 +500,13 @@ void SharedStorageWorkletHost::SharedStorageGet(
 
         if (result.result != OperationResult::kSuccess) {
           std::move(callback).Run(
-              shared_storage_worklet::mojom::SharedStorageGetStatus::kError,
+              blink::mojom::SharedStorageGetStatus::kError,
               /*error_message=*/"sharedStorage.get() failed", /*value=*/{});
           return;
         }
 
-        std::move(callback).Run(
-            shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess,
-            /*error_message=*/{}, /*value=*/result.data);
+        std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kSuccess,
+                                /*error_message=*/{}, /*value=*/result.data);
       },
       std::move(callback));
 
@@ -516,14 +515,13 @@ void SharedStorageWorkletHost::SharedStorageGet(
 }
 
 void SharedStorageWorkletHost::SharedStorageKeys(
-    mojo::PendingRemote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
         pending_listener) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
   if (!IsSharedStorageAllowed()) {
-    mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
-        listener(std::move(pending_listener));
+    mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener(
+        std::move(pending_listener));
     listener->DidReadEntries(
         /*success=*/false, kSharedStorageDisabledMessage,
         /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
@@ -542,14 +540,13 @@ void SharedStorageWorkletHost::SharedStorageKeys(
 }
 
 void SharedStorageWorkletHost::SharedStorageEntries(
-    mojo::PendingRemote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
         pending_listener) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
   if (!IsSharedStorageAllowed()) {
-    mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
-        listener(std::move(pending_listener));
+    mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener(
+        std::move(pending_listener));
     listener->DidReadEntries(
         /*success=*/false, kSharedStorageDisabledMessage,
         /*entries=*/{}, /*has_more_entries=*/false, /*total_queued_to_send=*/0);
@@ -844,7 +841,7 @@ base::TimeDelta SharedStorageWorkletHost::GetKeepAliveTimeout() const {
   return kKeepAliveTimeout;
 }
 
-shared_storage_worklet::mojom::SharedStorageWorkletService*
+blink::mojom::SharedStorageWorkletService*
 SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
   DCHECK(document_service_);
 
@@ -865,26 +862,26 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
   return shared_storage_worklet_service_.get();
 }
 
-mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
   DCHECK(browser_context_);
 
   if (!base::FeatureList::IsEnabled(content::kPrivateAggregationApi) ||
       !content::kPrivateAggregationApiEnabledInSharedStorage.Get()) {
-    return mojo::PendingRemote<content::mojom::PrivateAggregationHost>();
+    return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
   }
 
   PrivateAggregationManager* private_aggregation_manager =
       PrivateAggregationManager::GetManager(*browser_context_);
   DCHECK(private_aggregation_manager);
 
-  mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+  mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
       pending_pa_host_remote;
   if (!private_aggregation_manager->BindNewReceiver(
           shared_storage_origin_, main_frame_origin_,
           PrivateAggregationBudgetKey::Api::kSharedStorage,
           pending_pa_host_remote.InitWithNewPipeAndPassReceiver())) {
-    return mojo::PendingRemote<content::mojom::PrivateAggregationHost>();
+    return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
   }
 
   return pending_pa_host_remote;

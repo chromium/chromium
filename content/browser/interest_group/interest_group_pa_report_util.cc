@@ -15,12 +15,12 @@
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -170,7 +170,7 @@ absl::optional<int32_t> CalculateValue(
 // Returns nullptr if `contribution`'s bucket cannot be calculated to a valid
 // uint128 number, or `contribution`'s value cannot be calculated to a valid
 // integer.
-content::mojom::AggregatableReportHistogramContributionPtr
+blink::mojom::AggregatableReportHistogramContributionPtr
 CalculateContributionBucketAndValue(
     auction_worklet::mojom::AggregatableReportForEventContributionPtr
         contribution,
@@ -217,8 +217,8 @@ CalculateContributionBucketAndValue(
     value = value_opt.value();
   }
 
-  return content::mojom::AggregatableReportHistogramContribution::New(bucket,
-                                                                      value);
+  return blink::mojom::AggregatableReportHistogramContribution::New(bucket,
+                                                                    value);
 }
 
 }  // namespace
@@ -289,7 +289,7 @@ FillInPrivateAggregationRequest(
        (event_type == kReservedWin || final_event_type.has_value()))) {
     return absl::nullopt;
   }
-  content::mojom::AggregatableReportHistogramContributionPtr
+  blink::mojom::AggregatableReportHistogramContributionPtr
       calculated_contribution = CalculateContributionBucketAndValue(
           std::move(contribution->get_for_event_contribution()), winning_bid,
           highest_scoring_other_bid, reject_reason);

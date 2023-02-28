@@ -13,9 +13,9 @@
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
 namespace base {
 class FilePath;
@@ -53,8 +53,8 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver)
-      override;
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
+          pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,
                        base::Time delete_end,
                        StoragePartition::StorageKeyMatcherFunction filter,

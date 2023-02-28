@@ -1,17 +1,41 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module shared_storage_worklet.mojom;
+module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import
-"components/services/storage/shared_storage/public/mojom/shared_storage.mojom";
-import "content/common/private_aggregation_host.mojom";
+import "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "url/mojom/url.mojom";
+
+// Used to denote a shared storage's key, value, or the [key, value] pair. This
+// would unify the handling for different type of iterators, such as for
+// sharedStorage.keys() and for sharedStorage.entries().
+struct SharedStorageKeyAndOrValue {
+  mojo_base.mojom.String16 key;
+  mojo_base.mojom.String16 value;
+};
+
+// Used by the SharedStorageWorkletServiceClient receiver (i.e. the worklet
+// environment) to listen for new entries sent from the browser process.
+interface SharedStorageEntriesListener {
+  // Called by the SharedStorageWorkletServiceClient remote (i.e. in the browser
+  // process) when some entries have been obtained. `has_more_entries` is false
+  // when all the entries have been obtained, and indicates that the callback
+  // will not be called again. `total_queued_to_send` indicates the total
+  // number of entries that the database had prepared to send for this origin
+  // via this iterator (including any already sent on previous calls to
+  // `DidReadEntries()`), even if this call indicates that an error was
+  // encountered in retrieving the keys/entries.
+  DidReadEntries(
+      bool success, string error_message,
+      array<SharedStorageKeyAndOrValue> entries,
+      bool has_more_entries,
+      int32 total_queued_to_send);
+};
 
 enum SharedStorageGetStatus {
   kSuccess,
@@ -25,19 +49,19 @@ interface SharedStorageWorkletServiceClient {
  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
   // `ignoreIfPresent` is true, the entry is not updated if `key` already
   // exists.
-  SharedStorageSet(blink.mojom.SharedStorageKeyArgument key,
-                   blink.mojom.SharedStorageValueArgument value,
+  SharedStorageSet(SharedStorageKeyArgument key,
+                   SharedStorageValueArgument value,
                    bool ignore_if_present)
     => (bool success, string error_message);
 
   // Handle sharedStorage.append(): append `value` to the entry for `key`.
   // Equivalent to "set" if the `key` is not present.
-  SharedStorageAppend(blink.mojom.SharedStorageKeyArgument key,
-                      blink.mojom.SharedStorageValueArgument value)
+  SharedStorageAppend(SharedStorageKeyArgument key,
+                      SharedStorageValueArgument value)
     => (bool success, string error_message);
 
   // Handle sharedStorage.delete(): delete the entry at the given `key`.
-  SharedStorageDelete(blink.mojom.SharedStorageKeyArgument key)
+  SharedStorageDelete(SharedStorageKeyArgument key)
     => (bool success, string error_message);
 
   // Handle sharedStorage.clear(): delete all entries.
@@ -46,7 +70,7 @@ interface SharedStorageWorkletServiceClient {
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
   // `key` is not present.
-  SharedStorageGet(blink.mojom.SharedStorageKeyArgument key)
+  SharedStorageGet(SharedStorageKeyArgument key)
     => (SharedStorageGetStatus status, string error_message,
       mojo_base.mojom.String16 value);
 
@@ -70,7 +94,7 @@ interface SharedStorageWorkletServiceClient {
   ConsoleLog(string message);
 
   // Record use counters for APIs used within the worklet.
-  RecordUseCounters(array<blink.mojom.WebFeature> features);
+  RecordUseCounters(array<WebFeature> features);
 };
 
 // Used by the browser to load shared storage worklet script and run operations
@@ -84,7 +108,7 @@ interface SharedStorageWorkletService {
   Initialize(
     pending_associated_remote<SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
-    pending_remote<content.mojom.PrivateAggregationHost>? pa_host);
+    pending_remote<PrivateAggregationHost>? pa_host);
 
   // Handle sharedStorage.worklet.addModule(): download and load the script in
   // the worklet environment. The origin of the `script_source_url` should be
