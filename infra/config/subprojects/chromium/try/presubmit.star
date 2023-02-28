@@ -128,9 +128,6 @@ presubmit_builder(
     branch_selector = branches.selector.ALL_BRANCHES,
     executable = "recipe:presubmit",
     execution_timeout = 40 * time.minute,
-
-    # TODO(crbug.com/1366979): remove this.
-    omit_python2 = False,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
