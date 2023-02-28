@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/system/toast_manager.h"
@@ -125,6 +126,11 @@ void CrostiniUnsupportedActionNotifier::
 
 void CrostiniUnsupportedActionNotifier::
     ShowIMEUnsupportedNotificationIfNeeded() {
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
+    // IME support is not yet available for all Crostini apps, but Chrome can
+    // not yet determine up front whether an app is supported or not.
+    return;
+  }
   auto method = delegate_->GetCurrentInputMethod();
   if (IsIMESupportedByCrostini(method) ||
       !delegate_->IsFocusedWindowCrostini()) {

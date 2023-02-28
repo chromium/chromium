@@ -8,6 +8,8 @@
 #include <string>
 #include <tuple>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -133,11 +135,16 @@ class CrostiniUnsupportedActionNotifierTest
     EXPECT_CALL(get_delegate(), ShowToast(Truly(IsIMEToast)))
         .Times(num_ime_toasts);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   CrostiniUnsupportedActionNotifier notifier;
 };
 
 TEST_P(CrostiniUnsupportedActionNotifierTest,
        ToastShownOnceOnlyWhenEnteringTabletMode) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kCrostiniImeSupport);
+
   bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
   // Since tablet and vk toasts are the same we can trigger the toast
   // OnTabletModeStarted even if not in tablet mode.
@@ -152,6 +159,9 @@ TEST_P(CrostiniUnsupportedActionNotifierTest,
 
 TEST_P(CrostiniUnsupportedActionNotifierTest,
        ToastShownOnceOnlyWhenShowingVirtualKeyboard) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kCrostiniImeSupport);
+
   // Since tablet and vk toasts are the same we can trigger the toast
   // OnKeyboardVisibilityChanged even if the virtual keyboard isn't visible.
   bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
@@ -167,6 +177,9 @@ TEST_P(CrostiniUnsupportedActionNotifierTest,
 
 TEST_P(CrostiniUnsupportedActionNotifierTest,
        ToastShownOnceOnlyWhenChangingIME) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kCrostiniImeSupport);
+
   bool show_tablet_toast = false;
   bool show_vk_toast = false;
   bool show_ime_toast = is_ime_unsupported() && is_crostini_focused();
@@ -179,9 +192,26 @@ TEST_P(CrostiniUnsupportedActionNotifierTest,
 
 TEST_P(CrostiniUnsupportedActionNotifierTest,
        ToastsShownOnceOnlyWhenFocusingCrostiniApp) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kCrostiniImeSupport);
+
   bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
   bool show_vk_toast = is_vk_visible() && is_crostini_focused();
   bool show_ime_toast = is_ime_unsupported() && is_crostini_focused();
+
+  SetExpectations(show_tablet_toast, show_vk_toast, show_ime_toast);
+
+  notifier.OnWindowFocused({}, {});
+  notifier.OnWindowFocused({}, {});
+}
+
+TEST_P(CrostiniUnsupportedActionNotifierTest,
+       NoImeNotificationWhenFeatureEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kCrostiniImeSupport);
+
+  bool show_tablet_toast = is_tablet_mode() && is_crostini_focused();
+  bool show_vk_toast = is_vk_visible() && is_crostini_focused();
+  bool show_ime_toast = false;
 
   SetExpectations(show_tablet_toast, show_vk_toast, show_ime_toast);
 
