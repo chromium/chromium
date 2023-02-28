@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
@@ -135,6 +137,13 @@ std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
     return "m17n:" + engine_id.substr(4);
   }
   return engine_id;
+}
+
+std::string SettingToQueryString(std::string subpagePath,
+                                 chromeos::settings::mojom::Setting setting) {
+  const std::string settingString =
+      base::NumberToString(static_cast<int>(setting));
+  return base::StrCat({subpagePath, "?settingId=", settingString});
 }
 
 mojom::ModifierStatePtr ModifierStateFromEvent(const ui::KeyEvent& event) {
@@ -1067,9 +1076,14 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
         autocorrect_manager_->HideUndoWindow();
         base::RecordAction(base::UserMetricsAction(
             "ChromeOS.Settings.InputMethod.Autocorrect.Open"));
+        chromeos::settings::mojom::Setting setting =
+            ChromeKeyboardControllerClient::Get()->is_keyboard_visible()
+                ? chromeos::settings::mojom::Setting::kShowVKAutoCorrection
+                : chromeos::settings::mojom::Setting::kShowPKAutoCorrection;
+        std::string path = SettingToQueryString(
+            chromeos::settings::mojom::kInputMethodOptionsSubpagePath, setting);
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            ProfileManager::GetActiveUserProfile(),
-            chromeos::settings::mojom::kInputMethodOptionsSubpagePath);
+            ProfileManager::GetActiveUserProfile(), path);
       }
       break;
     case ui::ime::ButtonId::kSuggestion:

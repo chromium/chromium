@@ -650,6 +650,11 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kInputMethodOptionsSubpagePath);
 
+  generator->RegisterNestedSetting(mojom::Setting::kShowPKAutoCorrection,
+                                   mojom::Subpage::kInputMethodOptions);
+  generator->RegisterNestedSetting(mojom::Setting::kShowVKAutoCorrection,
+                                   mojom::Subpage::kInputMethodOptions);
+
   // Smart inputs.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_SUGGESTIONS_TITLE, mojom::Subpage::kSmartInputs,

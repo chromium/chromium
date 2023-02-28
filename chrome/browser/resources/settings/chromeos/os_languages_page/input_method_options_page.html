@@ -37,8 +37,9 @@
           </template>
           <template is="dom-if" if="[[isToggleButton_(option.uiType)]]">
             <cr-toggle checked="{{option.value}}"
-                on-click="onToggleButtonOrDropdownChange_"
-                aria-label="[[option.label]]">
+                on-change="onToggleButtonOrDropdownChange_"
+                aria-label="[[option.label]]"
+                deep-link-focus-id$="[[option.deepLink]]">
             </cr-toggle>
           </template>
           <template is="dom-if" if="[[isDropdown_(option.uiType)]]">
@@ -47,7 +48,8 @@
                  <dom-repeat> events instead. -->
             <select class="md-select" value="{{option.value::change}}"
                 on-change="onToggleButtonOrDropdownChange_"
-                aria-label="[[option.label]]">
+                aria-label="[[option.label]]"
+                deep-link-focus-id$="[[option.deepLink]]">
               <template is="dom-repeat" items="[[option.menuItems]]">
                 <option selected="[[item.selected]]" value="[[item.value]]">
                   [[item.label]]
