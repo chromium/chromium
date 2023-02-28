@@ -21,6 +21,8 @@ constexpr char kOutputMuteChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.OutputMuteStateChange";
 constexpr char kInputMuteChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.InputMuteStateChange";
+constexpr char kNoiseCancellationEnabledHistogramName[] =
+    "ChromeOS.CrosAudioConfig.NoiseCancellationEnabled";
 
 // Creates an inactive input device with default property configuration.
 AudioDevice CreateStubInternalMic() {
@@ -292,6 +294,7 @@ void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
   }
 
   audio_handler->SetNoiseCancellationState(enabled);
+  base::UmaHistogramBoolean(kNoiseCancellationEnabledHistogramName, enabled);
 }
 
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,

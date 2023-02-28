@@ -46,6 +46,8 @@ constexpr char kOutputMuteChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.OutputMuteStateChange";
 constexpr char kInputMuteChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.InputMuteStateChange";
+constexpr char kNoiseCancellationEnabledHistogramName[] =
+    "ChromeOS.CrosAudioConfig.NoiseCancellationEnabled";
 
 struct AudioNodeInfo {
   bool is_input;
@@ -535,8 +537,11 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   // Simulate trying to set noise cancellation.
   SimulateSetNoiseCancellationEnabled(/*enabled=*/true);
 
-  // Since noise cancellation is not supported, noting is set.
+  // Since noise cancellation is not supported, nothing is set.
   ASSERT_FALSE(GetNoiseCancellationState());
+  bool expect_noise_cancellation_enabled = true;
+  histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
+                                      expect_noise_cancellation_enabled, 0);
 
   // Turn on noise cancellation support.
   SetNoiseCancellationSupported(/*supported=*/true);
@@ -544,6 +549,8 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
 
   // Now turning on noise cancellation should work.
   SimulateSetNoiseCancellationEnabled(/*enabled=*/true);
+  histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
+                                      expect_noise_cancellation_enabled, 1);
 
   // Add input audio nodes.
   SetAudioNodes({kInternalMic, kUsbMic});
@@ -566,6 +573,9 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
 
   ASSERT_TRUE(GetNoiseCancellationState());
   ASSERT_TRUE(GetNoiseCancellationStatePref());
+  expect_noise_cancellation_enabled = false;
+  histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
+                                      expect_noise_cancellation_enabled, 0);
 
   // Turn noise cancellation off with active input device that supports noise
   // cancellation.
@@ -576,6 +586,8 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   ASSERT_FALSE(GetNoiseCancellationStatePref());
   ASSERT_EQ(mojom::AudioEffectState::kNotEnabled,
             fake_observer->GetInputAudioDevice(1)->noise_cancellation_state);
+  histogram_tester_.ExpectBucketCount(kNoiseCancellationEnabledHistogramName,
+                                      expect_noise_cancellation_enabled, 1);
 }
 
 TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
