@@ -15072,25 +15072,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebHistory.OAuthTokenCompletion" enum="BooleanSuccess"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Whether getting the OAuth token was successful for a web history query. On
-    visits to the chrome://history page this token is obtained and then used to
-    get the user's synced web history.
-  </summary>
-</histogram>
-
-<histogram name="WebHistory.OAuthTokenResponseCode" units="code"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    HTTP Response code returned by the server when trying to fetch the OAuth
-    token for a web history query.
-  </summary>
-</histogram>
-
 <histogram name="WebHistory.QueryCompletion" enum="WebHistoryStatus"
     expires_after="M77">
   <owner>zea@chromium.org</owner>
