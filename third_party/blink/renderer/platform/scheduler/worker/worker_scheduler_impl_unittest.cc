@@ -347,12 +347,28 @@ TEST_F(WorkerSchedulerImplTest, MAYBE_NestedPauseHandlesTasks) {
 
 class WorkerSchedulerDelegateForTesting : public WorkerScheduler::Delegate {
  public:
-  MOCK_METHOD(void,
-              UpdateBackForwardCacheDisablingFeatures,
-              (uint64_t,
-               const BFCacheBlockingFeatureAndLocations&,
-               const BFCacheBlockingFeatureAndLocations&));
+  MOCK_METHOD(void, UpdateBackForwardCacheDisablingFeatures, (BlockingDetails));
 };
+
+MATCHER(BlockingDetailsHasCCNS, "Compares two blocking details.") {
+  bool mask_has_ccns =
+      (arg.feature_mask == (1 << static_cast<uint64_t>(
+                                SchedulingPolicy::Feature::
+                                    kMainResourceHasCacheControlNoStore)) |
+       (1 << static_cast<uint64_t>(
+            SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache)));
+  bool vector_empty = arg.non_sticky_features_and_js_locations.empty();
+  bool vector_has_ccns =
+      arg.sticky_features_and_js_locations.Contains(
+          FeatureAndJSLocationBlockingBFCache(
+              SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
+              nullptr)) &&
+      arg.sticky_features_and_js_locations.Contains(
+          FeatureAndJSLocationBlockingBFCache(
+              SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
+              nullptr));
+  return mask_has_ccns && vector_empty && vector_has_ccns;
+}
 
 // Confirms that the feature usage in a dedicated worker is uploaded to
 // somewhere (the browser side in the actual implementation) via a delegate.
@@ -379,25 +395,9 @@ TEST_F(WorkerSchedulerImplTest, FeatureUpload) {
                                kMainResourceHasCacheControlNoCache,
                            {SchedulingPolicy::DisableBackForwardCache()});
                        testing::Mock::VerifyAndClearExpectations(delegate);
-                       EXPECT_CALL(
-                           *delegate,
-                           UpdateBackForwardCacheDisablingFeatures(
-                               (1 << static_cast<uint64_t>(
-                                    SchedulingPolicy::Feature::
-                                        kMainResourceHasCacheControlNoStore)) |
-                                   (1 << static_cast<uint64_t>(
-                                        SchedulingPolicy::Feature::
-                                            kMainResourceHasCacheControlNoCache)),
-                               BFCacheBlockingFeatureAndLocations(),
-                               BFCacheBlockingFeatureAndLocations(
-                                   {FeatureAndJSLocationBlockingBFCache(
-                                        SchedulingPolicy::Feature::
-                                            kMainResourceHasCacheControlNoStore,
-                                        nullptr),
-                                    FeatureAndJSLocationBlockingBFCache(
-                                        SchedulingPolicy::Feature::
-                                            kMainResourceHasCacheControlNoCache,
-                                        nullptr)})));
+                       EXPECT_CALL(*delegate,
+                                   UpdateBackForwardCacheDisablingFeatures(
+                                       BlockingDetailsHasCCNS()));
                      },
                      worker_scheduler_.get(), delegate.get()));
 

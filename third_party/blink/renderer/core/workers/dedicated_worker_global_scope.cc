@@ -479,11 +479,7 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
 }
 
 void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
-    uint64_t features_mask,
-    const BFCacheBlockingFeatureAndLocations&
-        non_sticky_features_and_js_locations,
-    const BFCacheBlockingFeatureAndLocations&
-        sticky_features_and_js_locations) {
+    BlockingDetails details) {
   // `back_forward_cache_controller_host_` might not be bound when non-
   // PlzDedicatedWorker is used. Non-PlzDedicatedWorker will be removed in near
   // future.
@@ -494,7 +490,7 @@ void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
   }
 
   back_forward_cache_controller_host_
-      ->DidChangeBackForwardCacheDisablingFeatures(features_mask);
+      ->DidChangeBackForwardCacheDisablingFeatures(details.feature_mask);
 }
 
 void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {

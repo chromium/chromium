@@ -2384,15 +2384,11 @@ void LocalFrame::UpdateTaskTime(base::TimeDelta time) {
 }
 
 void LocalFrame::UpdateBackForwardCacheDisablingFeatures(
-    uint64_t features_mask,
-    const BFCacheBlockingFeatureAndLocations&
-        non_sticky_features_and_js_locations,
-    const BFCacheBlockingFeatureAndLocations&
-        sticky_features_and_js_locations) {
+    BlockingDetails details) {
   // TODO(crbug.com/1366675): Add two Vectors to argument of
   // DidChangeBackForwardCacheDisablingFeatures
   GetBackForwardCacheControllerHostRemote()
-      .DidChangeBackForwardCacheDisablingFeatures(features_mask);
+      .DidChangeBackForwardCacheDisablingFeatures(details.feature_mask);
 }
 
 const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {

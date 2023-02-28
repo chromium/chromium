@@ -167,9 +167,10 @@ void BackForwardCacheDisablingFeatureTracker::ReportFeaturesToDelegate() {
   if (mask == last_uploaded_bfcache_disabling_features_)
     return;
   last_uploaded_bfcache_disabling_features_ = mask;
-  delegate_->UpdateBackForwardCacheDisablingFeatures(
+  FrameOrWorkerScheduler::Delegate::BlockingDetails details(
       mask, non_sticky_features_and_js_locations_,
       sticky_features_and_js_locations_);
+  delegate_->UpdateBackForwardCacheDisablingFeatures(details);
 }
 
 }  // namespace scheduler

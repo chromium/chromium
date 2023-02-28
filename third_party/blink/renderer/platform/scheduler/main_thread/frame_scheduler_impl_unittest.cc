@@ -193,15 +193,51 @@ class FrameSchedulerDelegateForTesting : public FrameScheduler::Delegate {
   const base::UnguessableToken& GetAgentClusterId() const override {
     return base::UnguessableToken::Null();
   }
-  MOCK_METHOD(void,
-              UpdateBackForwardCacheDisablingFeatures,
-              (uint64_t,
-               const BFCacheBlockingFeatureAndLocations&,
-               const BFCacheBlockingFeatureAndLocations&));
+  MOCK_METHOD(void, UpdateBackForwardCacheDisablingFeatures, (BlockingDetails));
 
   int update_task_time_calls_ = 0;
 };
 
+MATCHER(BlockingDetailsHasCCNS, "Blocking details has CCNS.") {
+  bool mask_has_ccns =
+      (arg.feature_mask == (1 << static_cast<uint64_t>(
+                                SchedulingPolicy::Feature::
+                                    kMainResourceHasCacheControlNoStore)) |
+       (1 << static_cast<uint64_t>(
+            SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache)));
+  bool vector_empty = arg.non_sticky_features_and_js_locations.empty();
+  bool vector_has_ccns =
+      arg.sticky_features_and_js_locations.Contains(
+          FeatureAndJSLocationBlockingBFCache(
+              SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
+              nullptr)) &&
+      arg.sticky_features_and_js_locations.Contains(
+          FeatureAndJSLocationBlockingBFCache(
+              SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
+              nullptr));
+  return mask_has_ccns && vector_empty && vector_has_ccns;
+}
+
+MATCHER_P(BlockingDetailsHasWebSocket,
+          handle,
+          "BlockingDetails has WebSocket.") {
+  bool mask_has_web_socket =
+      (arg.feature_mask ==
+       (1 << static_cast<size_t>(SchedulingPolicy::Feature::kWebSocket)));
+  bool handle_has_web_socket =
+      (handle->GetFeatureAndJSLocationBlockingBFCache() ==
+       FeatureAndJSLocationBlockingBFCache(
+           SchedulingPolicy::Feature::kWebSocket, nullptr));
+  bool vector_empty = arg.sticky_features_and_js_locations.empty();
+  return mask_has_web_socket && handle_has_web_socket && vector_empty;
+}
+
+MATCHER(BlockingDetailsIsEmpty, "BlockingDetails is empty.") {
+  bool non_sticky_vector_empty =
+      arg.non_sticky_features_and_js_locations.empty();
+  bool sticky_vector_empty = arg.sticky_features_and_js_locations.empty();
+  return non_sticky_vector_empty && sticky_vector_empty;
+}
 class FrameSchedulerImplTest : public testing::Test {
  public:
   FrameSchedulerImplTest()
@@ -2114,25 +2150,8 @@ TEST_F(FrameSchedulerImplTest, FeatureUpload) {
                     {SchedulingPolicy::DisableBackForwardCache()});
                 // Ensure that the feature upload is delayed.
                 testing::Mock::VerifyAndClearExpectations(delegate);
-                EXPECT_CALL(
-                    *delegate,
-                    UpdateBackForwardCacheDisablingFeatures(
-                        (1 << static_cast<size_t>(
-                             SchedulingPolicy::Feature::
-                                 kMainResourceHasCacheControlNoStore)) |
-                            (1 << static_cast<size_t>(
-                                 SchedulingPolicy::Feature::
-                                     kMainResourceHasCacheControlNoCache)),
-                        BFCacheBlockingFeatureAndLocations(),
-                        BFCacheBlockingFeatureAndLocations(
-                            {FeatureAndJSLocationBlockingBFCache(
-                                 SchedulingPolicy::Feature::
-                                     kMainResourceHasCacheControlNoStore,
-                                 nullptr),
-                             FeatureAndJSLocationBlockingBFCache(
-                                 SchedulingPolicy::Feature::
-                                     kMainResourceHasCacheControlNoCache,
-                                 nullptr)})));
+                EXPECT_CALL(*delegate, UpdateBackForwardCacheDisablingFeatures(
+                                           BlockingDetailsHasCCNS()));
               },
               frame_scheduler_.get(), frame_scheduler_delegate_.get()));
 
@@ -2159,15 +2178,9 @@ TEST_F(FrameSchedulerImplTest, FeatureUpload_FrameDestruction) {
                  FeatureHandle* feature_handle) {
                 // Ensure that the feature upload is delayed.
                 testing::Mock::VerifyAndClearExpectations(delegate);
-                EXPECT_CALL(
-                    *delegate,
-                    UpdateBackForwardCacheDisablingFeatures(
-                        (1 << static_cast<size_t>(
-                             SchedulingPolicy::Feature::kWebSocket)),
-                        BFCacheBlockingFeatureAndLocations(
-                            {feature_handle
-                                 ->GetFeatureAndJSLocationBlockingBFCache()}),
-                        BFCacheBlockingFeatureAndLocations()));
+                EXPECT_CALL(*delegate,
+                            UpdateBackForwardCacheDisablingFeatures(
+                                BlockingDetailsHasWebSocket(feature_handle)));
               },
               frame_scheduler_.get(), frame_scheduler_delegate_.get(),
               &feature_handle));
@@ -2183,11 +2196,9 @@ TEST_F(FrameSchedulerImplTest, FeatureUpload_FrameDestruction) {
                        // Ensure that we don't upload the features for frame
                        // destruction.
                        testing::Mock::VerifyAndClearExpectations(delegate);
-                       EXPECT_CALL(
-                           *delegate,
-                           UpdateBackForwardCacheDisablingFeatures(
-                               testing::_, BFCacheBlockingFeatureAndLocations(),
-                               BFCacheBlockingFeatureAndLocations()))
+                       EXPECT_CALL(*delegate,
+                                   UpdateBackForwardCacheDisablingFeatures(
+                                       BlockingDetailsIsEmpty()))
                            .Times(0);
                      },
                      frame_scheduler_.get(), frame_scheduler_delegate_.get(),
