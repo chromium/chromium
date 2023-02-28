@@ -3485,6 +3485,45 @@ static CSSImageValue* CreateCSSImageValueWithReferrer(
   return image_value;
 }
 
+static CSSImageSetOptionValue* ConsumeImageSetOption(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    ConsumeGeneratedImagePolicy generated_image_policy) {
+  CSSValue* image = nullptr;
+  AtomicString url_value = (RuntimeEnabledFeatures::CSSImageSetEnabled()
+                                ? ConsumeUrlOrStringAsStringView(range, context)
+                                : ConsumeUrlAsStringView(range, context))
+                               .ToAtomicString();
+  if (!url_value.IsNull()) {
+    image = CreateCSSImageValueWithReferrer(url_value, context);
+  } else {
+    if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+      return nullptr;
+    }
+
+    image = ConsumeGeneratedImage(range, context);
+    if (!image) {
+      return nullptr;
+    }
+  }
+
+  CSSNumericLiteralValue* resolution = nullptr;
+  if (range.Peek().GetType() == kDimensionToken ||
+      !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+    if (range.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX &&
+        !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+      return nullptr;
+    }
+
+    resolution = ConsumeResolution(range);
+    if (!resolution || resolution->GetDoubleValue() <= 0.0) {
+      return nullptr;
+    }
+  }
+
+  return MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution);
+}
+
 static CSSValue* ConsumeImageSet(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3494,44 +3533,14 @@ static CSSValue* ConsumeImageSet(
   CSSParserTokenRange args = ConsumeFunction(range_copy);
 
   auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
-
   do {
-    CSSValue* image = nullptr;
-
-    AtomicString url_value =
-        (RuntimeEnabledFeatures::CSSImageSetEnabled()
-             ? ConsumeUrlOrStringAsStringView(args, context)
-             : ConsumeUrlAsStringView(args, context))
-            .ToAtomicString();
-    if (!url_value.IsNull()) {
-      image = CreateCSSImageValueWithReferrer(url_value, context);
-    } else {
-      if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-        return nullptr;
-      }
-
-      image = ConsumeGeneratedImage(args, context);
-      if (image == nullptr) {
-        return nullptr;
-      }
+    auto* image_set_option =
+        ConsumeImageSetOption(args, context, generated_image_policy);
+    if (!image_set_option) {
+      return nullptr;
     }
 
-    CSSNumericLiteralValue* resolution = nullptr;
-    if (args.Peek().GetType() == kDimensionToken ||
-        !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-      if (args.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX &&
-          !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-        return nullptr;
-      }
-
-      resolution = ConsumeResolution(args);
-      if (resolution == nullptr || resolution->GetDoubleValue() <= 0.0) {
-        return nullptr;
-      }
-    }
-
-    image_set->Append(
-        *MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution));
+    image_set->Append(*image_set_option);
   } while (ConsumeCommaIncludingWhitespace(args));
 
   if (!args.AtEnd()) {
@@ -3553,6 +3562,7 @@ static CSSValue* ConsumeImageSet(
   }
 
   range = range_copy;
+
   return image_set;
 }
 
