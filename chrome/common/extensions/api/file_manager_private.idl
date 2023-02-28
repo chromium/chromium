@@ -804,7 +804,7 @@ dictionary SearchParams {
 dictionary SearchMetadataParams {
   // Optional root directory from which to start the search. If not present,
   // the search begins at the local root.
-  [instanceof=DirectoryEntry] object? rootDir;
+  [instanceOf=DirectoryEntry] object? rootDir;
 
   // Search query. It can be empty. Any filename matches to an empty query.
   DOMString query;
@@ -1012,7 +1012,7 @@ dictionary OpenWindowParams {
 dictionary IOTaskParams {
   // Destination folder for tasks that require one. Not required by |delete|
   // task.
-  [instanceof=DirectoryEntry] object? destinationFolder;
+  [instanceOf=DirectoryEntry] object? destinationFolder;
 
   // Password used for unpacking encrypted archives.
   DOMString? password;
@@ -1295,12 +1295,12 @@ callback GetRecentFilesCallback = void([instanceOf=Entry] object[] entries);
 
 // |rootDir| The root directory of the volume to which access was requested.
 callback GetVolumeRootCallback =
-    void([instanceof=DirectoryEntry] object rootDir);
+    void([instanceOf=DirectoryEntry] object rootDir);
 
 // |entries| Entries shared with crostini container.
 // |firstForSession| true the first time this is called for the session.
 callback GetCrostiniSharedPathsCallback =
-    void([instanceOf = Entry] object[] entries, boolean firstForSession);
+    void([instanceOf=Entry] object[] entries, boolean firstForSession);
 
 // |linux_package_info| Package info for the queried package.
 callback GetLinuxPackageInfoCallback =
@@ -1336,7 +1336,7 @@ interface Functions {
   // |callback|
   [nocompile]
   static void executeTask(FileTaskDescriptor descriptor,
-                          [instanceof=Entry] object[] entries,
+                          [instanceOf=Entry] object[] entries,
                           ExecuteTaskCallback callback);
 
   // Sets the default task for the supplied MIME types and path extensions.
@@ -1348,7 +1348,7 @@ interface Functions {
   // |callback|
   [nocompile]
   static void setDefaultTask(FileTaskDescriptor descriptor,
-                             [instanceof=Entry] object[] entries,
+                             [instanceOf=Entry] object[] entries,
                              DOMString[] mimeTypes,
                              SimpleCallback callback);
 
@@ -1358,7 +1358,7 @@ interface Functions {
   // check Data Leak Prevention (DLP) restrictions
   // |callback|
   [nocompile]
-  static void getFileTasks([instanceof=Entry] object[] entries,
+  static void getFileTasks([instanceOf=Entry] object[] entries,
                            DOMString[] dlpSourceUrls,
                            GetFileTasksCallback callback);
 
@@ -1366,14 +1366,14 @@ interface Functions {
   // |entry| The entry to be checked.
   // |callback|
   [nocompile]
-  static void getMimeType([instanceof=Entry] object entry,
+  static void getMimeType([instanceOf=Entry] object entry,
                           GetMimeTypeCallback callback);
 
   // Gets the content sniffed MIME type of a file.
   // |fileEntry| The file entry to be checked.
   // |callback|
   [nocompile]
-  static void getContentMimeType([instanceof=FileEntry] object fileEntry,
+  static void getContentMimeType([instanceOf=FileEntry] object fileEntry,
                                  GetContentMimeTypeCallback callback);
 
   // Gets metadata from an Audio or Video file.
@@ -1383,7 +1383,7 @@ interface Functions {
   //     metadata tags and metadata (thumbnail) images.
   // |callback|
   [nocompile]
-  static void getContentMetadata([instanceof=FileEntry] object fileEntry,
+  static void getContentMetadata([instanceOf=FileEntry] object fileEntry,
                                  DOMString mimeType,
                                  boolean includeImages,
                                  GetContentMetadataCallback callback);
@@ -1396,14 +1396,14 @@ interface Functions {
   // |entry| Entry to watch
   // |callback|
   [nocompile]
-  static void addFileWatch([instanceof=Entry] object entry,
+  static void addFileWatch([instanceOf=Entry] object entry,
                            AddFileWatchCallback callback);
 
   // Removes file watch.
   // |entry| Watched entry
   // |callback|
   [nocompile]
-  static void removeFileWatch([instanceof=Entry] object entry,
+  static void removeFileWatch([instanceOf=Entry] object entry,
                               RemoveFileWatchCallback callback);
 
   // Enables the extenal file scheme necessary to initiate drags to the browser
@@ -1455,7 +1455,7 @@ interface Functions {
   // |callback| Completion callback. $(ref:runtime.lastError) will be set if
   //     there was an error.
   [nocompile]
-  static void pinDriveFile([instanceof=Entry] object entry,
+  static void pinDriveFile([instanceOf=Entry] object entry,
                            boolean pin,
                            SimpleCallback callback);
 
@@ -1605,8 +1605,8 @@ interface Functions {
   //     in the directory specified by |parentEntry|.
   // |callback| Callback called on completion.
   [nocompile]
-  static void zipSelection([instanceof=Entry] object[] entries,
-                           [instanceof=DirectoryEntry] object parentEntry,
+  static void zipSelection([instanceOf=Entry] object[] entries,
+                           [instanceOf=DirectoryEntry] object parentEntry,
                            DOMString destName,
                            ZipSelectionCallback callback);
 
@@ -1629,7 +1629,7 @@ interface Functions {
   // |callback| Called back when the check is finished.
   [nocompile]
   static void validatePathNameLength(
-      [instanceof=DirectoryEntry] object parentEntry,
+      [instanceOf=DirectoryEntry] object parentEntry,
       DOMString name,
       ValidatePathNameLengthCallback callback);
 
@@ -1646,7 +1646,7 @@ interface Functions {
   // |entry| The entry to download.
   // |callback|
   [nocompile]
-  static void getDownloadUrl([instanceof=Entry] object entry,
+  static void getDownloadUrl([instanceOf=Entry] object entry,
                              GetUrlCallback callback);
 
   // Obtains a list of profiles that are logged-in.
@@ -1664,7 +1664,7 @@ interface Functions {
   // |entry| The entry of the file to checksum.
   // |callback|
   [nocompile]
-  static void computeChecksum([instanceof=Entry] object entry,
+  static void computeChecksum([instanceOf=Entry] object entry,
                               ComputeChecksumCallback callback);
 
   // Returns list of available providers.
@@ -1672,7 +1672,7 @@ interface Functions {
 
   // Requests adding a new provided file system. On failure, sets
   // $(ref:runtime.lastError).
-  static void addProvidedFileSystem(DOMString provider_id,
+  static void addProvidedFileSystem(DOMString providerId,
                                     SimpleCallback callback);
 
   // Requests configuring an existing volume. On failure, sets
@@ -1682,13 +1682,13 @@ interface Functions {
   // Requests list of custom actions for the specified entries. On failure, sets
   // $(ref:runtime.lastError).
   [nocompile]
-  static void getCustomActions([instanceof=Entry] object[] entries,
+  static void getCustomActions([instanceOf=Entry] object[] entries,
                                GetCustomActionsCallback callback);
 
   // Executes a custom action for a set of entries. On failure, sets
   // $(ref:runtime.lastError).
   [nocompile]
-  static void executeCustomAction([instanceof=Entry] object[] entries,
+  static void executeCustomAction([instanceOf=Entry] object[] entries,
                                   DOMString actionId,
                                   SimpleCallback callback);
 
@@ -1696,7 +1696,7 @@ interface Functions {
   // |entry| Entry of the target directory.
   // |callback|
   [nocompile]
-  static void getDirectorySize([instanceof=DirectoryEntry] object entry,
+  static void getDirectorySize([instanceOf=DirectoryEntry] object entry,
                                GetDirectorySizeCallback callback);
 
   // Gets recently modified files across file systems.
@@ -1725,7 +1725,7 @@ interface Functions {
   // |persist| If true, shares will persist across restarts.
   // |callback|
   [nocompile] static void sharePathsWithCrostini(
-      DOMString vmName, [ instanceof = Entry] object[] entries, boolean persist,
+      DOMString vmName, [instanceOf=Entry] object[] entries, boolean persist,
       SimpleCallback callback);
 
   // Unshares path with crostini container.
@@ -1733,7 +1733,7 @@ interface Functions {
   // |entry| Entry of the file or directory to unshare.
   // |callback|
   [nocompile] static void unsharePathWithCrostini(
-      DOMString vmName, [ instanceof = Entry] object entry,
+      DOMString vmName, [instanceOf=Entry] object entry,
       SimpleCallback callback);
 
   // Returns list of paths shared with crostini container.
@@ -1746,31 +1746,31 @@ interface Functions {
 
   // Requests information about a Linux package. |entry| is a .deb file.
   [nocompile]
-  static void getLinuxPackageInfo([instanceof=Entry] object entry,
+  static void getLinuxPackageInfo([instanceOf=Entry] object entry,
                                   GetLinuxPackageInfoCallback callback);
 
   // Starts installation of a Linux package.
   [nocompile]
-  static void installLinuxPackage([instanceof=Entry] object entry,
+  static void installLinuxPackage([instanceOf=Entry] object entry,
                                   InstallLinuxPackageCallback callback);
 
   // Imports a Crostini Image File (.tini). This overrides the existing Linux
   // apps and files.
   [nocompile]
-  static void importCrostiniImage([instanceof=Entry] object entry);
+  static void importCrostiniImage([instanceOf=Entry] object entry);
 
   // For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
   // returns a thumbnail appropriate for file list or grid views; otherwise,
   // returns a thumbnail appropriate for quickview.
   [nocompile]
-  static void getDriveThumbnail([instanceof=FileEntry] object entry,
+  static void getDriveThumbnail([instanceOf=FileEntry] object entry,
                                 boolean cropToSquare,
                                 GetThumbnailCallback callback);
 
   // For a local PDF file, retrieves its thumbnail with a given |width| and
   // |height|.
   [nocompile]
-  static void getPdfThumbnail([instanceof=FileEntry] object entry,
+  static void getPdfThumbnail([instanceOf=FileEntry] object entry,
                               long width,
                               long height,
                               GetThumbnailCallback callback);
@@ -1783,7 +1783,7 @@ interface Functions {
   // Note: The thumbnail data may originate from third-party application code,
   // and is untrustworthy (Security).
   [nocompile]
-  static void getArcDocumentsProviderThumbnail([instanceof=FileEntry] object entry,
+  static void getArcDocumentsProviderThumbnail([instanceOf=FileEntry] object entry,
                                                long widthHint,
                                                long heightHint,
                                                GetThumbnailCallback callback);
@@ -1802,7 +1802,7 @@ interface Functions {
   // if successfully launched the Sharesheet dialog, but before user has
   // finished the sharing.
   [nocompile]
-  static void sharesheetHasTargets([instanceof=Entry] object[] entries,
+  static void sharesheetHasTargets([instanceOf=Entry] object[] entries,
                            BooleanCallback callback);
 
   // Invoke Sharesheet for selected files.
@@ -1812,7 +1812,7 @@ interface Functions {
   // check Data Leak Prevention (DLP) restrictions
   // |callback|
   [nocompile]
-  static void invokeSharesheet([instanceof=Entry] object[] entries,
+  static void invokeSharesheet([instanceOf=Entry] object[] entries,
                                SharesheetLaunchSource launchSource,
                                DOMString[] dlpSourceUrls,
                                SimpleCallback callback);
@@ -1854,7 +1854,7 @@ interface Functions {
   [nocompile]
   static void startIOTask(
       IOTaskType type,
-      [instanceof=Entry] object[] entries,
+      [instanceOf=Entry] object[] entries,
       IOTaskParams params,
       optional IOTaskIdCallback callback);
 
