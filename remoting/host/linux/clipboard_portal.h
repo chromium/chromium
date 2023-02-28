@@ -54,7 +54,7 @@ class ClipboardPortal {
  private:
   void OnPortalDone(webrtc::xdg_portal::RequestResponse result);
 
-  static void OnClipboardRequest(GDBusProxy* proxy,
+  static void OnClipboardRequest(GObject* object,
                                  GAsyncResult* result,
                                  gpointer user_data);
   static void OnClipboardPortalProxyRequested(GObject* object,

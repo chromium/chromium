@@ -107,15 +107,16 @@ void ClipboardPortal::RequestClipboard() {
   g_dbus_proxy_call(
       proxy_, "RequestClipboard",
       g_variant_new("(oa{sv})", session_handle_.c_str(), &options_builder),
-      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-      reinterpret_cast<GAsyncReadyCallback>(OnClipboardRequest), this);
+      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_, OnClipboardRequest,
+      this);
 }
 
 // static
-void ClipboardPortal::OnClipboardRequest(GDBusProxy* proxy,
+void ClipboardPortal::OnClipboardRequest(GObject* object,
                                          GAsyncResult* result,
                                          gpointer user_data) {
-  ClipboardPortal* that = static_cast<ClipboardPortal*>(user_data);
+  auto* proxy = reinterpret_cast<GDBusProxy*>(object);
+  auto* that = static_cast<ClipboardPortal*>(user_data);
   DCHECK(that);
   DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
 

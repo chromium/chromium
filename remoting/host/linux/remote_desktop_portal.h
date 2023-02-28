@@ -112,7 +112,7 @@ class RemoteDesktopPortal
   static void OnSessionRequested(GDBusProxy* proxy,
                                  GAsyncResult* result,
                                  gpointer user_data);
-  static void OnDevicesRequested(GDBusProxy* proxy,
+  static void OnDevicesRequested(GObject* object,
                                  GAsyncResult* result,
                                  gpointer user_data);
 

@@ -50,16 +50,16 @@ class ClipboardPortalInjector {
   void SubscribeClipboardSignals();
   void UnsubscribeSignalHandlers();
 
-  static void OnSelectionReadCallback(GDBusProxy* proxy,
+  static void OnSelectionReadCallback(GObject* object,
                                       GAsyncResult* result,
                                       gpointer user_data);
-  static void OnSelectionWriteCallback(GDBusProxy* proxy,
+  static void OnSelectionWriteCallback(GObject* object,
                                        GAsyncResult* result,
                                        gpointer user_data);
-  static void OnSetSelectionCallback(GDBusProxy* proxy,
+  static void OnSetSelectionCallback(GObject* object,
                                      GAsyncResult* result,
                                      gpointer user_data);
-  static void OnSelectionWriteDoneCallback(GDBusProxy* proxy,
+  static void OnSelectionWriteDoneCallback(GObject* object,
                                            GAsyncResult* result,
                                            gpointer user_data);
   static void OnSelectionTransferSignal(GDBusConnection* connection,

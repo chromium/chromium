@@ -193,10 +193,11 @@ void RemoteDesktopPortal::OnSessionRequested(GDBusProxy* proxy,
 }
 
 // static
-void RemoteDesktopPortal::OnDevicesRequested(GDBusProxy* proxy,
+void RemoteDesktopPortal::OnDevicesRequested(GObject* object,
                                              GAsyncResult* result,
                                              gpointer user_data) {
-  RemoteDesktopPortal* that = static_cast<RemoteDesktopPortal*>(user_data);
+  auto* proxy = reinterpret_cast<GDBusProxy*>(object);
+  auto* that = static_cast<RemoteDesktopPortal*>(user_data);
   DCHECK(that);
   DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
 
@@ -276,8 +277,8 @@ void RemoteDesktopPortal::SelectDevices() {
   g_dbus_proxy_call(
       proxy_, "SelectDevices",
       g_variant_new("(oa{sv})", session_handle_.c_str(), &builder),
-      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-      reinterpret_cast<GAsyncReadyCallback>(OnDevicesRequested), this);
+      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_, OnDevicesRequested,
+      this);
 }
 
 // static
