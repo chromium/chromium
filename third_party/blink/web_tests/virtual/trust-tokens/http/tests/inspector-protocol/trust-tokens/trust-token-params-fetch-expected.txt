@@ -2,6 +2,7 @@ Check that TrustTokenParams are included in the basic Trust Token operations on 
 Sending request: 
     fetch('https://trusttoken.test', {
       trustToken: {
+        type: 'private-state-token',
         version: 1,
         operation: 'token-request'
       }
@@ -11,6 +12,7 @@ Included trustTokenParams in request: {"operation":"Issuance","refreshPolicy":"U
 Sending request: 
     fetch('https://trusttoken.test', {
       trustToken: {
+        type: 'private-state-token',
         version: 1,
         operation: 'token-redemption'
       }
@@ -20,6 +22,7 @@ Included trustTokenParams in request: {"operation":"Redemption","refreshPolicy":
 Sending request: 
     fetch('https://destination.test', {
       trustToken: {
+        type: 'private-state-token',
         version: 1,
         operation: 'send-redemption-record',
         issuers: ['https://issuer.test']
