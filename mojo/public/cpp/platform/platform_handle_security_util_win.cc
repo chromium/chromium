@@ -12,7 +12,9 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/win/nt_status.h"
 #include "base/win/scoped_handle.h"
@@ -21,6 +23,11 @@
 namespace mojo {
 
 namespace {
+
+FileHandleSecurityErrorCallback& GetErrorCallback() {
+  static base::NoDestructor<FileHandleSecurityErrorCallback> callback;
+  return *callback;
+}
 
 #if DCHECK_IS_ON()
 
@@ -99,13 +106,31 @@ void DcheckIfFileHandleIsUnsafe(HANDLE handle) {
       ::CreateFileW(path.c_str(), FILE_READ_DATA | FILE_EXECUTE,
                     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                     nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
-  CHECK(!file_handle.is_valid())
-      << "Transfer of writable handle to executable "
-         "file to an untrusted process: "
-      << path
-      << ". Please use AddFlagsForPassingToUntrustedProcess or call "
-         "PreventExecuteMapping on the FilePath.";
+
+  // If the file cannot be opened with FILE_EXECUTE it means that it is safe.
+  if (!file_handle.is_valid()) {
+    return;
+  }
+
+  auto& error_callback = GetErrorCallback();
+  if (error_callback) {
+    bool handled = error_callback.Run();
+    if (handled) {
+      return;
+    }
+  }
+
+  DLOG(FATAL) << "Transfer of writable handle to executable file to an "
+                 "untrusted process: "
+              << path
+              << ". Please use AddFlagsForPassingToUntrustedProcess or call "
+                 "PreventExecuteMapping on the FilePath.";
 #endif  // DCHECK_IS_ON();
+}
+
+void SetUnsafeFileHandleCallbackForTesting(
+    FileHandleSecurityErrorCallback callback) {
+  GetErrorCallback() = std::move(callback);
 }
 
 }  // namespace mojo

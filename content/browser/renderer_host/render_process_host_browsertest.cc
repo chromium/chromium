@@ -72,9 +72,10 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "mojo/public/cpp/platform/platform_handle_security_util_win.h"
 #include "sandbox/policy/switches.h"
 #endif
 
@@ -1937,7 +1938,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ZeroExecutionTimes) {
   process->Cleanup();
 }
 
-class RenderProcessHostWriteableFileDeathTest
+class RenderProcessHostWriteableFileTest
     : public RenderProcessHostTest,
       public ::testing::WithParamInterface<
           std::tuple</*enforcement_enabled=*/bool,
@@ -1958,7 +1959,12 @@ class RenderProcessHostWriteableFileDeathTest
   base::test::ScopedFeatureList enforcement_feature_;
 };
 
-IN_PROC_BROWSER_TEST_P(RenderProcessHostWriteableFileDeathTest,
+// This test verifies that the renderer process is wired up correctly with the
+// mojo invitation flag that indicates that it's untrusted. The other half of
+// this test that verifies that a security violation actually causes a DCHECK
+// lives in mojo/core, and can't live here as death tests are not supported for
+// browser tests.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostWriteableFileTest,
                        PassUnsafeWriteableExecutableFile) {
   // This test only works if DCHECKs are enabled.
 #if !DCHECK_IS_ON()
@@ -1992,41 +1998,29 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostWriteableFileDeathTest,
   base::File temp_file_writeable(file_path, flags);
   ASSERT_TRUE(temp_file_writeable.IsValid());
 
-  static base::NoDestructor<std::string> fatal_log_string;
-  // Note: logging::ScopedLogAssertHandler can't be used here as it does not
-  // capture CHECK.
-  auto old_handler = logging::GetLogMessageHandler();
-  logging::SetLogMessageHandler([](int severity, const char* file, int line,
-                                   size_t message_start,
-                                   const std::string& str) -> bool {
-    if (severity != logging::LOGGING_FATAL) {
-      return false;
-    }
-    *fatal_log_string = str;
-    return true;
-  });
+  bool error_was_called = false;
+  mojo::SetUnsafeFileHandleCallbackForTesting(
+      base::BindLambdaForTesting([&error_was_called]() -> bool {
+        error_was_called = true;
+        return true;
+      }));
 
   base::RunLoop run_loop;
   test_service->PassWriteableFile(std::move(temp_file_writeable),
                                   run_loop.QuitClosure());
   run_loop.Run();
-  logging::SetLogMessageHandler(old_handler);
 
-  // This test should only CHECK if enforcement is enabled and the file has not
-  // been marked no-execute correctly.
-  if (IsEnforcementEnabled() && !ShouldMarkNoExecute()) {
-    EXPECT_TRUE(fatal_log_string->find(
-                    "Transfer of writable handle to executable file to an "
-                    "untrusted process") != fatal_log_string->npos);
-  } else {
-    EXPECT_TRUE(fatal_log_string->empty());
-  }
+  // This test should only detect a violation if enforcement is enabled and the
+  // file has not been marked no-execute correctly.
+  bool should_violation_occur =
+      IsEnforcementEnabled() && !ShouldMarkNoExecute();
+  EXPECT_EQ(should_violation_occur, error_was_called);
 #endif  // DCHECK_IS_ON()
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    RenderProcessHostWriteableFileDeathTest,
+    RenderProcessHostWriteableFileTest,
     testing::Combine(/*enforcement_enabled=*/testing::Bool(),
                      /*add_no_execute_flags=*/testing::Bool()));
 
