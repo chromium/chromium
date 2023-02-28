@@ -35,6 +35,7 @@
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
@@ -78,6 +79,7 @@ class PrimaryProfileServicesShutdownNotifierFactory
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart()
     : created_profile_helper_(false),
+      browser_context_flusher_(std::make_unique<ash::BrowserContextFlusher>()),
       account_manager_factory_(std::make_unique<ash::AccountManagerFactory>()) {
 }
 
@@ -258,6 +260,7 @@ void BrowserProcessPlatformPart::StartTearDown() {
   // destroyed.  So we need to destroy |timezone_resolver_| here.
   timezone_resolver_.reset();
   profile_helper_.reset();
+  browser_context_flusher_.reset();
 }
 
 void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {

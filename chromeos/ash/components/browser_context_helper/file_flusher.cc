@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/base/file_flusher.h"
+#include "chromeos/ash/components/browser_context_helper/file_flusher.h"
 
 #include <algorithm>
 #include <set>
@@ -105,8 +105,9 @@ void FileFlusher::Job::Cancel() {
 
   // Cancel() could be called in an iterator/range loop in |flusher_| thus don't
   // invoke FinishOnUIThread in-place.
-  if (!started())
+  if (!started()) {
     ScheduleFinish();
+  }
 }
 
 void FileFlusher::Job::FlushAsync() {
@@ -126,16 +127,18 @@ void FileFlusher::Job::FlushAsync() {
     currentFile.Flush();
     currentFile.Close();
 
-    if (!on_flush_callback_.is_null())
+    if (!on_flush_callback_.is_null()) {
       on_flush_callback_.Run(current);
+    }
   }
 }
 
 void FileFlusher::Job::ScheduleFinish() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (finish_scheduled_)
+  if (finish_scheduled_) {
     return;
+  }
 
   finish_scheduled_ = true;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -146,11 +149,13 @@ void FileFlusher::Job::ScheduleFinish() {
 void FileFlusher::Job::FinishOnUIThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run();
+  }
 
-  if (flusher_)
+  if (flusher_) {
     flusher_->OnJobDone(this);
+  }
 
   delete this;
 }
@@ -161,16 +166,18 @@ void FileFlusher::Job::FinishOnUIThread() {
 FileFlusher::FileFlusher() = default;
 
 FileFlusher::~FileFlusher() {
-  for (auto* job : jobs_)
+  for (auto* job : jobs_) {
     job->Cancel();
+  }
 }
 
 void FileFlusher::RequestFlush(const base::FilePath& path,
                                bool recursive,
                                base::OnceClosure callback) {
   for (auto* job : jobs_) {
-    if (path == job->path() || path.IsParent(job->path()))
+    if (path == job->path() || path.IsParent(job->path())) {
       job->Cancel();
+    }
   }
 
   jobs_.push_back(new Job(path, recursive, on_flush_callback_for_test_,
@@ -190,12 +197,14 @@ void FileFlusher::ResumeForTest() {
 }
 
 void FileFlusher::ScheduleJob() {
-  if (jobs_.empty() || paused_for_test_)
+  if (jobs_.empty() || paused_for_test_) {
     return;
+  }
 
   auto* job = jobs_.front();
-  if (!job->started())
+  if (!job->started()) {
     job->Start();
+  }
 }
 
 void FileFlusher::OnJobDone(FileFlusher::Job* job) {

@@ -122,6 +122,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -1084,8 +1085,9 @@ void UserSessionManager::OnSessionRestoreStateChanged(
 
   // Schedule another flush after session restore for non-ephemeral profile
   // if not restarting.
-  if (!ProfileHelper::IsEphemeralUserProfile(user_profile))
-    ProfileHelper::Get()->FlushProfile(user_profile);
+  if (!ProfileHelper::IsEphemeralUserProfile(user_profile)) {
+    BrowserContextFlusher::Get()->ScheduleFlush(user_profile);
+  }
 }
 
 void UserSessionManager::OnConnectionChanged(
@@ -1727,8 +1729,9 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   quirks::QuirksManager::Get()->OnLoginCompleted();
 
   // Schedule a flush if profile is not ephemeral.
-  if (!ProfileHelper::IsEphemeralUserProfile(profile))
-    ProfileHelper::Get()->FlushProfile(profile);
+  if (!ProfileHelper::IsEphemeralUserProfile(profile)) {
+    BrowserContextFlusher::Get()->ScheduleFlush(profile);
+  }
 
   // TODO(nkostylev): This pointer should probably never be NULL, but it looks
   // like CreateProfileAsync callback may be getting called before

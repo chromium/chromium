@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/base/file_flusher.h"
 #include "chrome/browser/ash/profiles/browser_context_helper_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -55,8 +54,6 @@ class ProfileHelperImpl : public ProfileHelper {
       const Profile* profile) const override;
   user_manager::User* GetUserByProfile(Profile* profile) const override;
 
-  void FlushProfile(Profile* profile) override;
-
   void SetProfileToUserMappingForTesting(user_manager::User* user) override;
   void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                          Profile* profile) override;
@@ -71,8 +68,6 @@ class ProfileHelperImpl : public ProfileHelper {
   // When this list is not empty GetUserByProfile() will find user that has
   // the same user_id as |profile|->GetProfileName().
   user_manager::UserList user_list_for_testing_;
-
-  std::unique_ptr<FileFlusher> profile_flusher_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -326,16 +321,6 @@ void ProfileHelperImpl::RemoveUserFromListForTesting(
                                &user_manager::User::GetAccountId);
   if (it != user_list_for_testing_.end())
     user_list_for_testing_.erase(it);
-}
-
-void ProfileHelperImpl::FlushProfile(Profile* profile) {
-  if (!profile_flusher_)
-    profile_flusher_ = std::make_unique<FileFlusher>();
-
-  // Flushes files directly under profile path since these are the critical
-  // ones.
-  profile_flusher_->RequestFlush(profile->GetPath(), /*recursive=*/false,
-                                 base::OnceClosure());
 }
 
 }  // namespace ash

@@ -15,10 +15,14 @@ component("browser_context_helper") {
     "//content/public/browser",
   ]
   sources = [
+    "browser_context_flusher.cc",
+    "browser_context_flusher.h",
     "browser_context_helper.cc",
     "browser_context_helper.h",
     "browser_context_types.cc",
     "browser_context_types.h",
+    "file_flusher.cc",
+    "file_flusher.h",
   ]
 }
 
@@ -35,5 +39,6 @@ source_set("unit_tests") {
   sources = [
     "browser_context_helper_unittest.cc",
     "browser_context_types_unittest.cc",
+    "file_flusher_unittest.cc",
   ]
 }

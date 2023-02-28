@@ -169,9 +169,6 @@ class ProfileHelper {
   // primary user.
   static void SetAlwaysReturnPrimaryUserForTesting(bool value);
 
-  // Flushes all files of |profile|.
-  virtual void FlushProfile(Profile* profile) = 0;
-
   // DEPRECATED: please set up UserManager.
   // Associates |user| with profile with the same user_id,
   // for GetUserByProfile() testing.

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_BASE_FILE_FLUSHER_H_
-#define CHROME_BROWSER_ASH_BASE_FILE_FLUSHER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BROWSER_CONTEXT_HELPER_FILE_FLUSHER_H_
+#define CHROMEOS_ASH_COMPONENTS_BROWSER_CONTEXT_HELPER_FILE_FLUSHER_H_
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -16,7 +17,7 @@ namespace ash {
 // Flushes files under the requested directories in the blocking pool. If the
 // same directory is requested more than once, the last request cancels all
 // previous ones and start a new flushing process.
-class FileFlusher {
+class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) FileFlusher {
  public:
   FileFlusher();
 
@@ -66,4 +67,4 @@ class FileFlusher {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_BASE_FILE_FLUSHER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BROWSER_CONTEXT_HELPER_FILE_FLUSHER_H_

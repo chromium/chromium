@@ -17,6 +17,7 @@ class Profile;
 
 namespace ash {
 class AccountManagerFactory;
+class BrowserContextFlusher;
 class ChromeSessionManager;
 class ChromeUserManager;
 class InSessionPasswordChangeManager;
@@ -145,6 +146,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
 
   bool created_profile_helper_;
   std::unique_ptr<ash::ProfileHelper> profile_helper_;
+
+  std::unique_ptr<ash::BrowserContextFlusher> browser_context_flusher_;
 
   std::unique_ptr<ash::system::AutomaticRebootManager>
       automatic_reboot_manager_;
