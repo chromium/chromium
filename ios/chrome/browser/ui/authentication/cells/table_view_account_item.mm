@@ -49,7 +49,7 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   if (self.shouldDisplayError) {
     cell.errorIcon.image =
         DefaultSymbolWithPointSize(kErrorCircleFillSymbol, KErrorIconImageSize);
-    cell.errorIcon.tintColor = [UIColor colorNamed:kRedColor];
+    cell.errorIcon.tintColor = [UIColor colorNamed:kRed500Color];
   } else {
     cell.errorIcon.image = nil;
     cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
@@ -193,7 +193,7 @@ constexpr CGFloat KErrorIconImageSize = 22.;
     // Set trailing anchors.
     [_errorIcon.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
-                       constant:-kTableViewTrailingContentPadding],
+                       constant:-kTableViewHorizontalSpacing],
     [_detailTextLabel.trailingAnchor
         constraintEqualToAnchor:_errorIcon.leadingAnchor
                        constant:-kHorizontalPaddingBetweenTextAndError],

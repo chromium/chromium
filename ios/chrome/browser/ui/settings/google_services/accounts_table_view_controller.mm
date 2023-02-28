@@ -101,7 +101,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Size of the symbols.
-constexpr CGFloat kSymbolSize = 15.;
+constexpr CGFloat kErrorSymbolSize = 22.;
 
 }  // namespace
 
@@ -436,8 +436,9 @@ constexpr CGFloat kSymbolSize = 15.;
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeAccountErrorMessage];
   item.detailText = l10n_util::GetNSString(messageID);
-  item.image = DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
-  item.imageViewTintColor = [UIColor colorNamed:kRedColor];
+  item.image =
+      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
+  item.imageViewTintColor = [UIColor colorNamed:kRed500Color];
   return item;
 }
 
