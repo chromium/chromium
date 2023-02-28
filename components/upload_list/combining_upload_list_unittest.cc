@@ -100,30 +100,32 @@ TEST_F(CombiningUploadListTest, ThreeWayCombine) {
   };
   // clang-format on
 
-  std::vector<UploadList::UploadInfo> actual;
-  combined_upload_list->GetUploads(20, &actual);
+  std::vector<const UploadList::UploadInfo*> actual =
+      combined_upload_list->GetUploads(20);
   ASSERT_EQ(actual.size(), std::size(kExpectedUploadTimes));
 
   for (size_t i = 0; i < std::size(kExpectedUploadTimes); i++) {
-    EXPECT_EQ(actual[i].upload_time, kExpectedUploadTimes[i])
+    EXPECT_EQ(actual[i]->upload_time, kExpectedUploadTimes[i])
         << " for index " << i;
-    EXPECT_EQ(actual[i].state, UploadList::UploadInfo::State::Uploaded)
+    EXPECT_EQ(actual[i]->state, UploadList::UploadInfo::State::Uploaded)
         << " for index " << i;
-    EXPECT_EQ(actual[i].upload_id, kExpectedUploadIds[i]) << " for index " << i;
+    EXPECT_EQ(actual[i]->upload_id, kExpectedUploadIds[i])
+        << " for index " << i;
   }
 
-  actual.clear();
-  constexpr int kSmallerUploadsSize = 3;
-  combined_upload_list->GetUploads(kSmallerUploadsSize, &actual);
-  ASSERT_EQ(actual.size(), std::vector<UploadList::UploadInfo>::size_type{
-                               kSmallerUploadsSize});
+  static constexpr int kSmallerUploadsSize = 3;
+  actual = combined_upload_list->GetUploads(kSmallerUploadsSize);
+  ASSERT_EQ(actual.size(),
+            std::vector<const UploadList::UploadInfo*>::size_type{
+                kSmallerUploadsSize});
 
-  for (int i = 0; i < kSmallerUploadsSize; i++) {
-    EXPECT_EQ(actual[i].upload_time, kExpectedUploadTimes[i])
+  for (size_t i = 0; i < kSmallerUploadsSize; i++) {
+    EXPECT_EQ(actual[i]->upload_time, kExpectedUploadTimes[i])
         << " for index " << i;
-    EXPECT_EQ(actual[i].state, UploadList::UploadInfo::State::Uploaded)
+    EXPECT_EQ(actual[i]->state, UploadList::UploadInfo::State::Uploaded)
         << " for index " << i;
-    EXPECT_EQ(actual[i].upload_id, kExpectedUploadIds[i]) << " for index " << i;
+    EXPECT_EQ(actual[i]->upload_id, kExpectedUploadIds[i])
+        << " for index " << i;
   }
 }
 
@@ -194,16 +196,17 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
   };
   // clang-format on
 
-  std::vector<UploadList::UploadInfo> actual;
-  combined_upload_list->GetUploads(20, &actual);
+  const std::vector<const UploadList::UploadInfo*> actual =
+      combined_upload_list->GetUploads(20);
   ASSERT_EQ(actual.size(), std::size(kExpectedUploadTimes));
 
   for (size_t i = 0; i < std::size(kExpectedUploadTimes); i++) {
-    EXPECT_EQ(actual[i].upload_time, kExpectedUploadTimes[i])
+    EXPECT_EQ(actual[i]->upload_time, kExpectedUploadTimes[i])
         << " for index " << i;
-    EXPECT_EQ(actual[i].capture_time, kExpectedCaptureTimes[i])
+    EXPECT_EQ(actual[i]->capture_time, kExpectedCaptureTimes[i])
         << " for index " << i;
-    EXPECT_EQ(actual[i].upload_id, kExpectedUploadIds[i]) << " for index " << i;
+    EXPECT_EQ(actual[i]->upload_id, kExpectedUploadIds[i])
+        << " for index " << i;
   }
 }
 

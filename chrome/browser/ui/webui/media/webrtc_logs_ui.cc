@@ -254,21 +254,22 @@ base::Value::List WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::Value::List result;
-  std::vector<UploadList::UploadInfo> uploads;
-  text_log_upload_list_->GetUploads(50, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      text_log_upload_list_->GetUploads(50);
 
-  for (const auto& upload : uploads) {
+  for (const auto* upload : uploads) {
     base::Value::Dict upload_value;
-    upload_value.Set("id", upload.upload_id);
+    upload_value.Set("id", upload->upload_id);
 
     std::u16string value_w;
-    if (!upload.upload_time.is_null())
-      value_w = base::TimeFormatFriendlyDateAndTime(upload.upload_time);
+    if (!upload->upload_time.is_null()) {
+      value_w = base::TimeFormatFriendlyDateAndTime(upload->upload_time);
+    }
     upload_value.Set("upload_time", value_w);
 
     std::string value;
-    if (!upload.local_id.empty()) {
-      value = text_log_dir_.AppendASCII(upload.local_id)
+    if (!upload->local_id.empty()) {
+      value = text_log_dir_.AppendASCII(upload->local_id)
                   .AddExtension(FILE_PATH_LITERAL(".gz"))
                   .AsUTF8Unsafe();
     }
@@ -280,14 +281,14 @@ base::Value::List WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
     // to a time within reasonable bounds, otherwise we fall back on the upload
     // time.
     // TODO(grunell): Use |capture_time| only.
-    if (!upload.capture_time.is_null()) {
-      value_w = base::TimeFormatFriendlyDateAndTime(upload.capture_time);
+    if (!upload->capture_time.is_null()) {
+      value_w = base::TimeFormatFriendlyDateAndTime(upload->capture_time);
     } else {
       // Fall back on local ID as time. We need to check that it's within
       // resonable bounds, since the ID may not represent time. Check between
       // 2012 when the feature was introduced and now.
       double seconds_since_epoch;
-      if (base::StringToDouble(upload.local_id, &seconds_since_epoch)) {
+      if (base::StringToDouble(upload->local_id, &seconds_since_epoch)) {
         base::Time capture_time = base::Time::FromDoubleT(seconds_since_epoch);
         const base::Time::Exploded lower_limit = {2012, 1, 0, 1, 0, 0, 0, 0};
         base::Time out_time;

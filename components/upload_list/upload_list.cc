@@ -87,14 +87,16 @@ void UploadList::RequestSingleUploadAsync(const std::string& local_id) {
       base::BindOnce(&UploadList::RequestSingleUpload, this, local_id));
 }
 
-void UploadList::GetUploads(size_t max_count,
-                            std::vector<UploadInfo>* uploads) const {
+std::vector<const UploadList::UploadInfo*> UploadList::GetUploads(
+    size_t max_count) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<const UploadInfo*> uploads;
   const size_t copied_size = std::min(uploads_.size(), max_count);
-  uploads->reserve(uploads->size() + copied_size);
+  uploads.reserve(copied_size);
   for (size_t i = 0; i < copied_size; ++i) {
-    uploads->push_back(*uploads_[i]);
+    uploads.push_back(uploads_[i].get());
   }
+  return uploads;
 }
 
 void UploadList::OnLoadComplete(

@@ -96,9 +96,8 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
   // Populates |uploads| with the |max_count| most recent uploads,
   // in reverse chronological order.
   // Must be called only after a Load() callback has been received.
-  // TODO(b/b:264307614): Pass back |UploadInfo| pointers to work with
-  // |UploadInfo|'s children.
-  void GetUploads(size_t max_count, std::vector<UploadInfo>* uploads) const;
+  // The |UploadInfo| pointers are still owned by this |UploadList| instance.
+  std::vector<const UploadInfo*> GetUploads(size_t max_count) const;
 
  protected:
   virtual ~UploadList();
