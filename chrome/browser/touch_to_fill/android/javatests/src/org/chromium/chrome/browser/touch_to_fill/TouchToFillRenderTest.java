@@ -39,7 +39,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,11 +82,11 @@ public class TouchToFillRenderTest {
 
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final Credential ARON =
-            new Credential("אהרן", "S3cr3t", "אהרן", TEST_URL.getSpec(), true, false, 0);
+            new Credential("אהרן", "S3cr3t", "אהרן", "", false, false, 0);
     private static final Credential BOB =
-            new Credential("Bob", "*****", "Bob", TEST_URL.getSpec(), true, false, 0);
+            new Credential("Bob", "*****", "Bob", "", false, false, 0);
     private static final Credential MARIAM =
-            new Credential("مريم", "***", "مريم", TEST_URL.getSpec(), false, true, 0);
+            new Credential("مريم", "***", "مريم", "", false, false, 0);
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -104,7 +103,7 @@ public class TouchToFillRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(7)
+                    .setRevision(8)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -272,7 +271,6 @@ public class TouchToFillRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    @DisabledTest(message = "https://crbug.com/1416856")
     public void testShowsOneCredentialModernHalfState() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             addHeader(mActivityTestRule.getActivity().getString(
@@ -399,7 +397,9 @@ public class TouchToFillRenderTest {
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, callback)
-                        .with(FORMATTED_ORIGIN, credential.getOriginUrl())
+                        .with(FORMATTED_ORIGIN,
+                                UrlFormatter.formatUrlForDisplayOmitScheme(
+                                        credential.getOriginUrl()))
                         .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
                         .build());
     }
