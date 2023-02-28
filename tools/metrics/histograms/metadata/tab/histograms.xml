@@ -2677,38 +2677,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TimeSinceLastView.OnTabClobber" units="seconds"
-    expires_after="M82">
-  <owner>mattsimmons@chromium.org</owner>
-  <owner>memex-team@google.com</owner>
-  <summary>
-    When a tab is revisited and subsequently the omnibox is focused within a
-    certain threshold of time, this reports the amount of time in seconds that
-    has passed since the last user engagement with the tab. Currently
-    Android-only.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.TimeSinceLastView.OnTabClose" units="seconds"
-    expires_after="M82">
-  <owner>mattsimmons@chromium.org</owner>
-  <owner>memex-team@google.com</owner>
-  <summary>
-    When a tab is closed, this reports the amount of time in seconds that has
-    passed since the last user engagement with the tab. Currently Android-only.
-  </summary>
-</histogram>
-
-<histogram name="Tabs.TimeSinceLastView.OnTabView" units="seconds"
-    expires_after="M82">
-  <owner>mattsimmons@chromium.org</owner>
-  <owner>memex-team@google.com</owner>
-  <summary>
-    When a tab is revisited, this reports the amount of time in seconds that has
-    passed since the last user engagement with the tab. Currently Android-only.
-  </summary>
-</histogram>
-
 <histogram
     name="Tabs.UnusedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
     units="tabs" expires_after="M95">

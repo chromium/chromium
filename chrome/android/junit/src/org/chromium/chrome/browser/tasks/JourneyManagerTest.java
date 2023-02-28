@@ -22,11 +22,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -41,8 +38,6 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +88,6 @@ public final class JourneyManagerTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         Robolectric.getBackgroundThreadScheduler().reset();
 
         MockitoAnnotations.initMocks(this);
@@ -126,74 +120,6 @@ public final class JourneyManagerTest {
     }
 
     @Test
-    public void onTabShown_noPreviousEngagement() {
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
-
-        assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
-    public void didFirstVisuallyNonEmptyPaint_previousEngagementExists_firstLoad() {
-        mSharedPreferences.edit().putLong(String.valueOf(mTab.getId()), BASE_TIME_MS).apply();
-        flushAsyncPrefs();
-
-        // Move time forward.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagement(anyLong(), anyLong());
-
-        // Paint to set did paint flag and record metric.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
-    public void didFirstVisuallyNonEmptyPaint_previousEngagementExists_notFirstLoad() {
-        mSharedPreferences.edit().putLong(String.valueOf(mTab.getId()), BASE_TIME_MS).apply();
-        flushAsyncPrefs();
-
-        // Move time forward.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagement(anyLong(), anyLong());
-
-        // Paint to set did paint flag and record first metric.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        // Paint again.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-
-        // Should still only record once.
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
-    public void onTabShown_previousEngagementExists() {
-        // Paint to set did paint flag.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        // Move time forward.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagement(anyLong(), anyLong());
-
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
     public void onTabShown_previousEngagementExists_contentNotYetPainted() {
         // Set did paint flag.
         mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
@@ -205,24 +131,6 @@ public final class JourneyManagerTest {
         mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
 
         assertEquals(-1, mSharedPreferences.getLong(String.valueOf(mTab.getId()), -1));
-    }
-
-    @Test
-    public void onTabShown_previousEngagementExists_notSelectedByUser() {
-        // Set did paint flag.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        // Advance time.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagement(anyLong());
-
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_EXIT);
-
-        assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
     @Test
@@ -242,41 +150,6 @@ public final class JourneyManagerTest {
     }
 
     @Test
-    public void onTabHidden_shouldRemovePendingTasks() {
-        // Paint to set did paint flag.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        doReturn(DEFER_TIME_MS).when(mEngagementTimeUtil).tabClobberThresholdMillis();
-
-        // Move time forward.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagement(anyLong(), anyLong());
-
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
-        mTabModelSelectorTabObserver.onHidden(mTab, TabSelectionType.FROM_USER);
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_REVISIT_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
-    public void onClosingStateChanged_noPreviousEngagement() {
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
-        flushAsyncPrefs();
-
-        mTabModelSelectorTabObserver.onClosingStateChanged(mTab, true);
-
-        assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
     public void onClosingStateChanged_previousEngagementExists_tabClosureNotCommitted() {
         // Set did paint flag.
         mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
@@ -289,29 +162,7 @@ public final class JourneyManagerTest {
 
         mTabModelSelectorTabObserver.onClosingStateChanged(mTab, true);
 
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-
         assertTrue(mSharedPreferences.contains(String.valueOf(mTab.getId())));
-    }
-
-    @Test
-    public void onClosingStateChanged_previousEngagementExists_notClosing() {
-        // Set did paint flag.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        // Advance time.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagement(anyLong());
-
-        mTabModelSelectorTabObserver.onClosingStateChanged(mTab, false);
-
-        assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
     @Test
@@ -327,91 +178,10 @@ public final class JourneyManagerTest {
 
         mTabModelSelectorTabObserver.onClosingStateChanged(mTab, true);
 
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_CLOSE_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-
         mTabModelSelectorTabModelObserver.tabClosureCommitted(mTab);
         flushAsyncPrefs();
 
         assertFalse(mSharedPreferences.contains(String.valueOf(mTab.getId())));
-    }
-
-    @Test
-    public void onLoadUrl_notFromAddressBar() {
-        // Paint to set did paint flag.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        // Set up a pending view metric.
-        doReturn(DEFER_TIME_MS).when(mEngagementTimeUtil).tabClobberThresholdMillis();
-
-        // Move time forward.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagementFromTimeTicksMs(anyLong(), anyLong());
-
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
-
-        LoadUrlParams params = new LoadUrlParams("http://google.com", PageTransition.FORWARD_BACK);
-
-        mTabModelSelectorTabObserver.onLoadUrl(mTab, params, 0);
-
-        assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_CLOBBER_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
-    public void onLoadUrl_fromAddressBar_withinThreshold() {
-        // Paint to set did paint flag.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        // Set up a pending view metric.
-        doReturn(DEFER_TIME_MS).when(mEngagementTimeUtil).tabClobberThresholdMillis();
-
-        // Move time forward.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagementFromTimeTicksMs(anyLong(), anyLong());
-
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
-
-        LoadUrlParams params = new LoadUrlParams(
-                "http://google.com", PageTransition.FROM_ADDRESS_BAR | PageTransition.TYPED);
-
-        mTabModelSelectorTabObserver.onLoadUrl(mTab, params, 0);
-
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_CLOBBER_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
-    }
-
-    @Test
-    public void onLoadUrl_fromAddressBar_afterThreshold() {
-        // Paint to set did paint flag.
-        mTabModelSelectorTabObserver.didFirstVisuallyNonEmptyPaint(mTab);
-        flushAsyncPrefs();
-
-        // Set up a pending view metric.
-        doReturn(NO_TIME_MS).when(mEngagementTimeUtil).tabClobberThresholdMillis();
-
-        // Move time forward.
-        doReturn((long) LAST_ENGAGEMENT_ELAPSED_MS)
-                .when(mEngagementTimeUtil)
-                .timeSinceLastEngagementFromTimeTicksMs(anyLong(), anyLong());
-
-        mTabModelSelectorTabObserver.onShown(mTab, TabSelectionType.FROM_USER);
-
-        LoadUrlParams params = new LoadUrlParams(
-                "http://google.com", PageTransition.FROM_ADDRESS_BAR | PageTransition.TYPED);
-
-        mTabModelSelectorTabObserver.onLoadUrl(mTab, params, 0);
-
-        assertEquals(0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        JourneyManager.TAB_CLOBBER_METRIC, LAST_ENGAGEMENT_ELAPSED_S));
     }
 
     @Test
