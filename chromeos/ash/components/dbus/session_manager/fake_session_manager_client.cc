@@ -71,9 +71,9 @@ void StoreFiles(std::map<base::FilePath, std::string> paths_and_data) {
       continue;
     }
     const std::string& data = kv.second;
-    int result = base::WriteFile(path, data.data(), data.size());
-    if (result == -1 || static_cast<size_t>(result) != data.size())
+    if (!base::WriteFile(path, data)) {
       LOG(WARNING) << "Failed to write to " << path.value();
+    }
   }
 }
 

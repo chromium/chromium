@@ -161,7 +161,7 @@ void WriteTimes(const std::string base_name,
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
 
-  base::WriteFile(log_path.Append(base_name), output.data(), output.size());
+  base::WriteFile(log_path.Append(base_name), output);
 }
 
 }  // namespace
