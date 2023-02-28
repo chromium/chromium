@@ -191,16 +191,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return path === Paths.AMBIENT_ALBUMS;
   }
 
-  private shouldShowZeroState_(): boolean {
-    // TODO(b/253470693): Remove after Ambient subpage UI change is released.
-    return this.ambientModeEnabled_ === false &&
-        !this.isPersonalizationJellyEnabled_;
-  }
-
-  private isLoadingAmbientMode_(): boolean {
-    return this.ambientModeEnabled_ === null;
-  }
-
   private computeLoading_(): boolean {
     return this.ambientModeEnabled_ === null || this.albums_ === null ||
         this.topicSource_ === null || this.temperatureUnit_ === null;
