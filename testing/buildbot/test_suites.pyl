@@ -1966,6 +1966,13 @@
       'dangling_pointer_detection_content_browsertests': {
         'args': [
           '--enable-features=PartitionAllocDanglingPtr:mode/crash',
+          # On non-Android platforms, this suite is dominated by crashes
+          # caught by DPD. This typically ups the per-shard number of
+          # tests from 1.3k to well over 2k and chokes all shards into
+          # timeout. Unlike regular flakes, dangling pointers should not
+          # be retried away; so, at the expense of regular flakes, we
+          # zero the number of retries.
+          '--num-retries=0',
         ],
         'test': 'content_browsertests',
         'android_swarming': {

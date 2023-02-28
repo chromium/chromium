@@ -4184,6 +4184,7 @@
       {
         "args": [
           "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--num-retries=0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -5417,6 +5418,7 @@
       {
         "args": [
           "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--num-retries=0",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -44480,7 +44482,8 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--num-retries=0"
         ],
         "merge": {
           "args": [],
@@ -55141,7 +55144,8 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--num-retries=0"
         ],
         "merge": {
           "args": [],
@@ -59730,7 +59734,8 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--num-retries=0"
         ],
         "merge": {
           "args": [],
@@ -61835,7 +61840,8 @@
       },
       {
         "args": [
-          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer",
+          "--num-retries=0"
         ],
         "merge": {
           "args": [],
