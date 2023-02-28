@@ -381,6 +381,14 @@ void DirectRenderer::DrawFrame(
     // TODO(penghuang): verify this logic with SkiaRenderer.
     if (!output_surface_->capabilities().supports_surfaceless)
       needs_full_frame_redraw = true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    // If compositing is delegated, then there will be no output_surface_plane,
+    // and we should not trigger a redraw of the root render pass.
+    // Pixel tests will not be displayed as overlay planes, so they need redraw.
+    if (current_frame()->output_surface_plane ||
+        !output_surface_->IsDisplayedAsOverlayPlane()) {
+      needs_full_frame_redraw = true;
+    }
 #else
     // The entire surface has to be redrawn if reshape is requested.
     needs_full_frame_redraw = true;

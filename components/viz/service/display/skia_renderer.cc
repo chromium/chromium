@@ -903,6 +903,7 @@ void SkiaRenderer::FinishDrawingFrame() {
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
     }
   }
+
   ScheduleOverlays();
   debug_tint_modulate_count_++;
 }
