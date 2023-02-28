@@ -123,14 +123,16 @@ class DualReadingListModel : public ReadingListModel,
  private:
   void NotifyObserversWithWillRemoveEntry(const GURL& url);
   void NotifyObserversWithDidRemoveEntry(const GURL& url);
+  void NotifyObserversWithWillMoveEntry(const GURL& url);
+  void NotifyObserversWithDidMoveEntry(const GURL& url);
   void NotifyObserversWithDidApplyChanges();
 
   const std::unique_ptr<ReadingListModelImpl> local_or_syncable_model_;
   const std::unique_ptr<ReadingListModelImpl> account_model_;
 
-  // Indicates whether a ReadingListModelImpl::RemoveEntryByURL is currently
-  // performing on `local_or_syncable_model_` and `account_model_`.
-  bool ongoing_remove_entry_by_url_ = false;
+  // Indicates whether the DualReadingListModel is currently handling the
+  // notifications.
+  bool suppress_observer_notifications_ = false;
 
   unsigned int current_batch_updates_count_ = 0;
 

@@ -214,8 +214,8 @@ void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
   NotifyObserversWithWillRemoveEntry(url);
 
   {
-    base::AutoReset<bool> auto_reset_ongoing_remove_entry_by_url(
-        &ongoing_remove_entry_by_url_, true);
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_observer_notifications_, true);
     local_or_syncable_model_->RemoveEntryByURL(url);
     account_model_->RemoveEntryByURL(url);
   }
@@ -226,8 +226,24 @@ void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
 
 void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(loaded());
+
+  scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
+  if (!entry || entry->IsRead() == read) {
+    return;
+  }
+
+  NotifyObserversWithWillMoveEntry(url);
+
+  {
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_observer_notifications_, true);
+    local_or_syncable_model_->SetReadStatusIfExists(url, read);
+    account_model_->SetReadStatusIfExists(url, read);
+  }
+
+  NotifyObserversWithDidMoveEntry(url);
+  NotifyObserversWithDidApplyChanges();
 }
 
 void DualReadingListModel::SetEntryTitleIfExists(const GURL& url,
@@ -300,6 +316,8 @@ void DualReadingListModel::ReadingListModelCompletedBatchUpdates(
 
 void DualReadingListModel::ReadingListModelLoaded(
     const ReadingListModel* model) {
+  DCHECK(!suppress_observer_notifications_);
+
   if (loaded()) {
     for (auto& observer : observers_) {
       observer.ReadingListModelLoaded(this);
@@ -310,7 +328,7 @@ void DualReadingListModel::ReadingListModelLoaded(
 void DualReadingListModel::ReadingListWillRemoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!ongoing_remove_entry_by_url_) {
+  if (!suppress_observer_notifications_) {
     NotifyObserversWithWillRemoveEntry(url);
   }
 }
@@ -318,7 +336,7 @@ void DualReadingListModel::ReadingListWillRemoveEntry(
 void DualReadingListModel::ReadingListDidRemoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!ongoing_remove_entry_by_url_) {
+  if (!suppress_observer_notifications_) {
     NotifyObserversWithDidRemoveEntry(url);
   }
 }
@@ -326,6 +344,8 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
 void DualReadingListModel::ReadingListWillAddEntry(
     const ReadingListModel* model,
     const ReadingListEntry& entry) {
+  DCHECK(!suppress_observer_notifications_);
+
   for (auto& observer : observers_) {
     observer.ReadingListWillAddEntry(this, entry);
   }
@@ -335,13 +355,15 @@ void DualReadingListModel::ReadingListDidAddEntry(
     const ReadingListModel* model,
     const GURL& url,
     reading_list::EntrySource source) {
+  DCHECK(!suppress_observer_notifications_);
+
   for (auto& observer : observers_) {
     observer.ReadingListDidAddEntry(this, url, source);
   }
 }
 
 void DualReadingListModel::ReadingListDidApplyChanges(ReadingListModel* model) {
-  if (!ongoing_remove_entry_by_url_) {
+  if (!suppress_observer_notifications_) {
     NotifyObserversWithDidApplyChanges();
   }
 }
@@ -373,6 +395,18 @@ void DualReadingListModel::NotifyObserversWithWillRemoveEntry(const GURL& url) {
 void DualReadingListModel::NotifyObserversWithDidRemoveEntry(const GURL& url) {
   for (auto& observer : observers_) {
     observer.ReadingListDidRemoveEntry(this, url);
+  }
+}
+
+void DualReadingListModel::NotifyObserversWithWillMoveEntry(const GURL& url) {
+  for (auto& observer : observers_) {
+    observer.ReadingListWillMoveEntry(this, url);
+  }
+}
+
+void DualReadingListModel::NotifyObserversWithDidMoveEntry(const GURL& url) {
+  for (auto& observer : observers_) {
+    observer.ReadingListDidMoveEntry(this, url);
   }
 }
 
