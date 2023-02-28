@@ -309,10 +309,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookies);
 // frames.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoncedPartitionedCookies);
 
-// Enable recording UMAs for network activities which can wake-up radio on
-// Android.
-NET_EXPORT BASE_DECLARE_FEATURE(kRecordRadioWakeupTrigger);
-
 // When enabled, cookies cannot have an expiry date further than 400 days in the
 // future.
 NET_EXPORT BASE_DECLARE_FEATURE(kClampCookieExpiryTo400Days);

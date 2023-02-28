@@ -728,10 +728,7 @@ class URLLoaderTest : public testing::Test {
     net::QuicSimpleTestServer::Start();
     net::URLRequestFailedJob::AddUrlHandler();
 
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAcceptCHFrame,
-                              net::features::kRecordRadioWakeupTrigger},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(features::kAcceptCHFrame);
   }
   ~URLLoaderTest() override {
     net::URLRequestFilter::GetInstance()->ClearHandlers();

@@ -1558,16 +1558,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Radio.PossibleWakeupTrigger.RadioUtilsOverhead"
-    units="ms" expires_after="2023-04-09">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records overheads of calling Android's RadioUtils APIs. Only recorded on
-    Android.
-  </summary>
-</histogram>
-
 <histogram name="Network.Radio.SimpleURLLoaderIsThrottled" enum="Boolean"
     expires_after="2023-06-25">
   <owner>bashi@chromium.org</owner>
