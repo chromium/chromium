@@ -32,6 +32,13 @@ std::string EscapeCertAttribute(const std::string& attribute) {
   return escaped;
 }
 
+int ArchiveEntryWeight(const ClientDownloadRequest::ArchivedBinary& entry) {
+  return FileTypePolicies::GetInstance()
+      ->SettingsForFile(base::FilePath::FromUTF8Unsafe(entry.file_basename()),
+                        GURL{}, nullptr)
+      .file_weight();
+}
+
 }  // namespace
 
 void GetCertificateAllowlistStrings(
@@ -103,14 +110,25 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
                      ClientDownloadRequest::ArchivedBinary>& src_binaries) {
   google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
       selected;
+  std::vector<ClientDownloadRequest::ArchivedBinary> binaries(
+      src_binaries.begin(), src_binaries.end());
+  std::sort(binaries.begin(), binaries.end(),
+            [](const ClientDownloadRequest::ArchivedBinary& lhs,
+               const ClientDownloadRequest::ArchivedBinary& rhs) {
+              // The comparator should return true if `lhs` should come before
+              // `rhs`. We want the first item to have the highest weight.
+              return ArchiveEntryWeight(lhs) > ArchiveEntryWeight(rhs);
+            });
 
   // Limit the number of entries so we don't clog the backend.
   // We can expand this limit by pushing a new download_file_types update.
-  int limit = FileTypePolicies::GetInstance()->GetMaxArchivedBinariesToReport();
-
-  for (int i = 0; selected.size() < limit && i < src_binaries.size(); i++) {
-    if (src_binaries[i].is_executable() || src_binaries[i].is_archive()) {
-      *selected.Add() = src_binaries[i];
+  size_t limit =
+      FileTypePolicies::GetInstance()->GetMaxArchivedBinariesToReport();
+  for (size_t i = 0;
+       static_cast<size_t>(selected.size()) < limit && i < binaries.size();
+       i++) {
+    if (binaries[i].is_executable() || binaries[i].is_archive()) {
+      *selected.Add() = binaries[i];
     }
   }
 

@@ -7,6 +7,7 @@
 #include "base/hash/sha1.h"
 #include "base/path_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_unittest_util.h"
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "net/cert/x509_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,6 +105,44 @@ TEST(DownloadProtectionUtilTest, GetCertificateAllowlistStrings) {
   GetCertificateAllowlistStrings(*cert.get(), *issuer_cert.get(),
                                  &allowlist_strings);
   EXPECT_THAT(allowlist_strings, ElementsAre());
+}
+
+TEST(DownloadProtectionUtilTest, HigherWeightArchivesSelectedFirst) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous;
+  {
+    // Setup fake file-type config so that this test is not dependent on the
+    // actual policy values.
+    auto fake_config = std::make_unique<DownloadFileTypeConfig>();
+    fake_config->set_max_archived_binaries_to_report(1);
+    fake_config->mutable_default_file_type()
+        ->add_platform_settings()
+        ->set_file_weight(0);
+    DownloadFileType* msi = fake_config->add_file_types();
+    msi->set_extension("msi");
+    msi->add_platform_settings()->set_file_weight(1);
+
+    scoped_dangerous.SwapConfig(fake_config);
+  }
+
+  ClientDownloadRequest::ArchivedBinary zip;
+  zip.set_file_basename("a.zip");
+  zip.set_is_archive(true);
+
+  ClientDownloadRequest::ArchivedBinary msi;
+  msi.set_file_basename("a.msi");
+  msi.set_is_executable(true);
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      binaries;
+  *binaries.Add() = zip;
+  *binaries.Add() = zip;
+  *binaries.Add() = msi;
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected_binaries = SelectArchiveEntries(binaries);
+
+  ASSERT_EQ(selected_binaries.size(), 1);
+  EXPECT_EQ(selected_binaries[0].file_basename(), "a.msi");
 }
 
 }  // namespace safe_browsing
