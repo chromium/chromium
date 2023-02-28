@@ -13,11 +13,11 @@ namespace ash::device_activity {
 
 namespace {
 
-// We define the inception date as January 1st 2000, Pacific Time.
+// We define the inception date as January 1st 2000 GMT.
 // This value is used to keep track of the number of months since the
 // inception date in the first 10 bits of the active status
 // |value_|.
-const char kActiveStatusInceptionDate[] = "2000-01-01 00:00:00 PST";
+const char kActiveStatusInceptionDate[] = "2000-01-01 00:00:00 GMT";
 
 // Default value for devices that are missing the activate date.
 const char kActivateDateKeyNotFound[] = "ACTIVATE_DATE_KEY_NOT_FOUND";
@@ -191,7 +191,7 @@ int ChurnActiveStatus::GetMonthsSinceInception() const {
 }
 
 const base::Time ChurnActiveStatus::GetCurrentActiveMonth() const {
-  DCHECK_GT(GetMonthsSinceInception(), 0);
+  DCHECK_GE(GetMonthsSinceInception(), 0);
 
   base::Time inception_ts = GetInceptionMonth();
   int months_from_inception = GetMonthsSinceInception();

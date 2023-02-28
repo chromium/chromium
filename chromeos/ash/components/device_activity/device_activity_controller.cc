@@ -125,6 +125,12 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp, unix_epoch);
   registry->RegisterIntegerPref(prefs::kDeviceActiveLastKnownChurnActiveStatus,
                                 0);
+  registry->RegisterBooleanPref(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, false);
+  registry->RegisterBooleanPref(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, false);
+  registry->RegisterBooleanPref(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
 }
 
 // static

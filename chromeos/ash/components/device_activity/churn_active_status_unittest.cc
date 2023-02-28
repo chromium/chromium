@@ -20,6 +20,9 @@ namespace {
 // https://crsrc.org/o/src/third_party/chromiumos-overlay/chromeos-base/chromeos-activate-date/files/activate_date;l=67
 const char kFakeFirstActivateDate[] = "2000-01";
 
+// The inception month for the active status value is Jan 2000.
+const char kInceptionTimeString[] = "01 Jan 2000 00:00:00 GMT";
+
 template <typename T>
 int ConvertBitSetToInt(T bitset) {
   return static_cast<int>(bitset.to_ulong());
@@ -297,7 +300,6 @@ class ChurnActiveStatusAtInceptionDate : public ChurnActiveStatusBase {
   // 000000000000000000 = No active months
   // 0000000000000000000000000000 = 0
   static constexpr int kInceptionDate = 0;
-  static constexpr char kInceptionTimeString[] = "01 Jan 2000 00:00:00 PST";
 
   ChurnActiveStatusAtInceptionDate() : ChurnActiveStatusBase(kInceptionDate) {}
 };
@@ -456,7 +458,7 @@ class ChurnActiveStatusAtFixedDate : public ChurnActiveStatusBase {
   // 000000000000000001 = Only active in January 2023.
   // 0100010100000000000000000001 = 72351745
   static constexpr int kFixedDate = 72351745;
-  static constexpr char kFixedDateTimeString[] = "01 Jan 2023 00:00:00 PST";
+  static constexpr char kFixedDateTimeString[] = "01 Jan 2023 00:00:00 GMT";
 
   ChurnActiveStatusAtFixedDate() : ChurnActiveStatusBase(kFixedDate) {}
 };
@@ -567,8 +569,6 @@ struct ChurnActiveStatusTestCase {
 class ChurnActiveStatusTest
     : public testing::TestWithParam<ChurnActiveStatusTestCase> {
  public:
-  static constexpr char kInceptionTimeString[] = "01 Jan 2000 00:00:00 PST";
-
   // Construct ChurnActiveStatusTest object with various ActiveStatus values.
   ChurnActiveStatusTest() {
     // Set the fake instance of statistics provider before
@@ -606,11 +606,11 @@ INSTANTIATE_TEST_SUITE_P(
     ChurnActiveStatusTest,
     testing::ValuesIn<ChurnActiveStatusTestCase>({
         {"FirstNewMonthFromInception", 262145, "2000-01", 1,
-         "01 Feb 2000 00:00:00 PST", 1, "03 Jan 2000 00:00:00 GMT"},
-        {"ArbitraryDate1", 1310721, "2000-01", 5, "01 Jun 2000 00:00:00 PST", 1,
+         "01 Feb 2000 00:00:00 GMT", 1, "03 Jan 2000 00:00:00 GMT"},
+        {"ArbitraryDate1", 1310721, "2000-01", 5, "01 Jun 2000 00:00:00 GMT", 1,
          "03 Jan 2000 00:00:00 GMT"},
         {"ActiveValueGreaterThanVPDActivateDate", 72613889, "2023-10", 277,
-         "01 Feb 2023 00:00:00 PST", 1, "06 Mar 2023 00:00:00 GMT"},
+         "01 Feb 2023 00:00:00 GMT", 1, "06 Mar 2023 00:00:00 GMT"},
     }),
     [](const testing::TestParamInfo<ChurnActiveStatusTestCase>& info) {
       return info.param.test_name;
@@ -624,7 +624,7 @@ TEST_P(ChurnActiveStatusTest, ValidateGetCurrentActiveMonth) {
   EXPECT_EQ(churn_active_status->GetValueAsInt(),
             GetParam().active_status_value);
 
-  // Validate inception month is always Jan 2000 PST.
+  // Validate inception month is always Jan 2000 GMT.
   base::Time inception_ts;
   EXPECT_TRUE(base::Time::FromUTCString(kInceptionTimeString, &inception_ts));
   EXPECT_EQ(churn_active_status->GetInceptionMonth(), inception_ts);
