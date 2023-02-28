@@ -5141,31 +5141,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
 }
 
-// TODO(crbug.com/1356907): Remove this and merge it to
-// PrerenderSequentialPrerenderingBrowserTest once kPrerender2InBackground is
-// enabled by default.
-class SequentialPrerenderInBackgroundBrowserTest
-    : public PrerenderSequentialPrerenderingBrowserTest {
- public:
-  SequentialPrerenderInBackgroundBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {// Enable to run prerenderings in the background.
-         blink::features::kPrerender2InBackground},
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        {blink::features::kPrerender2MemoryControls});
-  }
-
-  ~SequentialPrerenderInBackgroundBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test that when the current tab gets hidden then the prerender sequence is
 // terminated, and when the current tab gets visible then we start the next
 // prerender if we have some pending prerender hosts.
-IN_PROC_BROWSER_TEST_F(SequentialPrerenderInBackgroundBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        SequentialPrerenderingInBackground) {
   net::test_server::ControllableHttpResponse response1(
       embedded_test_server(), "/empty.html?prerender1");

@@ -346,10 +346,6 @@ const char kPrerender2MemoryThresholdParamName[] = "memory_threshold_in_mb";
 const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
     "acceptable_percent_of_system_memory";
 
-BASE_FEATURE(kPrerender2InBackground,
-             "Prerender2InBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
