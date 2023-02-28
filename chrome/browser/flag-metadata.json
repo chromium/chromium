@@ -4918,6 +4918,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "new-ntp-omnibox-layout",
+    "owners": [ "hujasonx", "schechter" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "new-overflow-menu",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 115

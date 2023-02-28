@@ -1402,6 +1402,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebFeedFeedbackRerouteName,
      flag_descriptions::kWebFeedFeedbackRerouteDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kWebFeedFeedbackReroute)},
+    {"new-ntp-omnibox-layout", flag_descriptions::kNewNTPOmniboxLayoutName,
+     flag_descriptions::kNewNTPOmniboxLayoutDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNewNTPOmniboxLayout)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

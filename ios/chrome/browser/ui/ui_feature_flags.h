@@ -157,4 +157,7 @@ BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
 // enabled.
 bool IsIndicateAccountStorageErrorInAccountCellEnabled();
 
+// Feature flag to enable the new layout of the NTP omnibox.
+BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

@@ -191,3 +191,7 @@ bool IsIndicateAccountStorageErrorInAccountCellEnabled() {
   return base::FeatureList::IsEnabled(
       kIndicateAccountStorageErrorInAccountCell);
 }
+
+BASE_FEATURE(kNewNTPOmniboxLayout,
+             "kNewNTPOmniboxLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);

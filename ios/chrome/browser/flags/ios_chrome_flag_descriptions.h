@@ -505,6 +505,10 @@ extern const char kMultilineFadeTruncatingLabelDescription[];
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 
+// Title and description for the flag to enable the new NTP omnibox layout.
+extern const char kNewNTPOmniboxLayoutName[];
+extern const char kNewNTPOmniboxLayoutDescription[];
+
 // Title and description for the flag to enable the new overflow menu.
 extern const char kNewOverflowMenuName[];
 extern const char kNewOverflowMenuDescription[];

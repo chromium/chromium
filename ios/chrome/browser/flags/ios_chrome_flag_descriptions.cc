@@ -571,6 +571,11 @@ const char kNativeFindInPageDescription[] =
     "is replaced with a native implementation which also enables searching "
     "text in PDF files. Available for iOS 16 or later.";
 
+const char kNewNTPOmniboxLayoutName[] = "New NTP Omnibox Layout";
+const char kNewNTPOmniboxLayoutDescription[] =
+    "Enables the new NTP omnibox layout with leading-edge aligned hint label "
+    "and magnifying glass icon.";
+
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 

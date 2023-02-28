@@ -212,7 +212,7 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   } else {
     mic_image = [[UIImage imageNamed:@"location_bar_voice"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    voice_search_button.tintColor = [UIColor colorNamed:kGrey500Color];
+    voice_search_button.tintColor = [UIColor colorNamed:kGrey600Color];
   }
 
   [voice_search_button setImage:mic_image forState:UIControlStateNormal];
