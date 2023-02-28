@@ -681,9 +681,6 @@ HRESULT BackgroundDownloader::QueueBitsJob(const GURL& url,
   size_t num_jobs = std::numeric_limits<size_t>::max();
   HRESULT hr = GetBackgroundDownloaderJobCount(&num_jobs);
 
-  // The metric records a large number if the job count can't be read.
-  UMA_HISTOGRAM_COUNTS_100("UpdateClient.BackgroundDownloaderJobs", num_jobs);
-
   // Remove some old jobs from the BITS queue before creating new jobs.
   CleanupStaleJobs();
 
@@ -697,9 +694,6 @@ HRESULT BackgroundDownloader::QueueBitsJob(const GURL& url,
     CleanupJob(local_job);
     return hr;
   }
-
-  const bool is_new_job = hr == S_OK;
-  UMA_HISTOGRAM_BOOLEAN("UpdateClient.BackgroundDownloaderNewJob", is_new_job);
 
   hr = local_job->Resume();
   if (FAILED(hr)) {
