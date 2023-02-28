@@ -48,7 +48,6 @@ import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigR
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {assertExists, castExists} from '../assert_extras.js';
@@ -775,8 +774,7 @@ class SettingsInternetDetailPageElement extends
       return;
     }
     recordSettingChange(
-        Setting.kWifiHidden,
-        {boolValue: !!this.hiddenPref_.value} as SettingChangeValue);
+        Setting.kWifiHidden, {boolValue: !!this.hiddenPref_.value});
     const config = this.getDefaultConfigProperties_();
     config.typeConfig.wifi!.hiddenSsid = this.hiddenPref_.value ?
         HiddenSsidMode.kEnabled :
