@@ -5,6 +5,7 @@ include_rules = [
   "-components",
   "+components/compression",
   "+components/crash/core/common",
+  "+components/keyed_service",
   "+components/metrics",
   "+components/prefs",
   "+components/variations",
