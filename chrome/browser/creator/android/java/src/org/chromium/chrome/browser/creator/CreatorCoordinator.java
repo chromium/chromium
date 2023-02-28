@@ -129,22 +129,24 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     /**
      * Constructor for the CreatorCoordinator.
      *
-     * @param activity The Creator Activity this is a part of.
-     * @param webFeedId The ID that is is used to create the feed.
+     * @param activity the Creator Activity this is a part of.
+     * @param webFeedId the ID that is is used to create the feed.
      * @param snackbarManager the snackbarManager that is used for the feed.
      * @param windowAndroid the window needed by the feed
-     * @param profile The Profile of the user.
+     * @param profile the Profile of the user.
      * @param url the url used by the creator profile.
      * @param creatorWebContents the interface to generate webcontents for the bottomsheet.
      * @param creatorOpenTab the interface to open urls in a new tab, used by the bottomsheet.
      * @param bottomsheetShareDelegateSupplier an empty share delegate supplier, used by the
      *         bottomsheet.
+     * @param entryPoint the SingleWebFeedEntryPoint has the Activity been launched with.
+     * @param isFollowing the initial state of if the creator is being followed.
      */
     public CreatorCoordinator(Activity activity, byte[] webFeedId, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, Profile profile, String url,
             WebContentsCreator creatorWebContents, NewTabCreator creatorOpenTab,
-            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier,
-            int entryPoint) {
+            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier, int entryPoint,
+            boolean isFollowing) {
         mActivity = activity;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
@@ -171,7 +173,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mLayoutView.addView(mRecyclerView);
 
         // Generate Creator Model
-        mCreatorModel = generateCreatorModel(webFeedId, url);
+        mCreatorModel = generateCreatorModel(webFeedId, url, isFollowing);
         // Attempt to avoid possible extra query if we already have metadata.
         if (webFeedId != null) {
             getWebFeedMetadata();
@@ -317,13 +319,13 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         return mActivity.getResources().getDimensionPixelSize(R.dimen.content_previews_padding);
     }
 
-    private PropertyModel generateCreatorModel(byte[] webFeedId, String url) {
+    private PropertyModel generateCreatorModel(byte[] webFeedId, String url, boolean following) {
         String formattedUrl =
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(new GURL(url));
         PropertyModel model = new PropertyModel.Builder(CreatorProperties.ALL_KEYS)
                                       .with(CreatorProperties.WEB_FEED_ID_KEY, webFeedId)
                                       .with(CreatorProperties.URL_KEY, url)
-                                      .with(CreatorProperties.IS_FOLLOWED_KEY, false)
+                                      .with(CreatorProperties.IS_FOLLOWED_KEY, following)
                                       .with(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY, false)
                                       .with(CreatorProperties.FORMATTED_URL_KEY, formattedUrl)
                                       .build();
@@ -341,10 +343,12 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
                 mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
             }
-            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))) {
+            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))
+                    && TextUtils.isEmpty(result.title)) {
                 mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
             }
-            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
+            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))
+                    && result.visitUrl.isValid()) {
                 mCreatorModel.set(CreatorProperties.URL_KEY, result.visitUrl.getSpec());
                 mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
                         UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
