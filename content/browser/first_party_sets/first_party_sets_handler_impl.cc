@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
@@ -27,6 +28,7 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 class SchemefulSite;
@@ -67,16 +69,18 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 }
 
 // static
-std::pair<absl::optional<FirstPartySetsHandler::ParseError>,
+std::pair<base::expected<absl::monostate, FirstPartySetsHandler::ParseError>,
           std::vector<FirstPartySetsHandler::ParseWarning>>
 FirstPartySetsHandler::ValidateEnterprisePolicy(
     const base::Value::Dict& policy) {
-  FirstPartySetParser::PolicyParseResult parsed_or_error =
+  auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
-  if (!parsed_or_error.has_value()) {
-    return {parsed_or_error.error().first, parsed_or_error.error().second};
-  }
-  return {absl::nullopt, parsed_or_error.value().second};
+
+  return {parsed.transform(
+              [](const FirstPartySetParser::ParsedPolicySetLists& set_lists) {
+                return absl::monostate();
+              }),
+          warnings};
 }
 
 // static
@@ -441,12 +445,13 @@ net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal(
     const base::Value::Dict& policy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FirstPartySetParser::PolicyParseResult parsed_or_error =
+  DCHECK(global_sets_.has_value());
+  auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
-  // Provide empty customization if the policy is malformed.
-  return parsed_or_error.has_value()
+
+  return parsed.has_value()
              ? FirstPartySetsHandlerImpl::ComputeEnterpriseContextConfig(
-                   global_sets_.value(), parsed_or_error.value().first)
+                   global_sets_.value(), parsed.value())
              : net::FirstPartySetsContextConfig();
 }
 

@@ -82,12 +82,10 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
             )")
                           .value();
   // Validation doesn't fail with an error and there are no warnings to output.
-  std::pair<absl::optional<FirstPartySetsHandler::ParseError>,
-            std::vector<FirstPartySetsHandler::ParseWarning>>
-      opt_error_and_warnings =
-          FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  EXPECT_FALSE(opt_error_and_warnings.first.has_value());
-  EXPECT_THAT(opt_error_and_warnings.second, IsEmpty());
+  auto [success, warnings] =
+      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
+  EXPECT_TRUE(success.has_value());
+  EXPECT_THAT(warnings, IsEmpty());
 }
 
 TEST(FirstPartySetsHandlerImpl,
@@ -109,18 +107,15 @@ TEST(FirstPartySetsHandlerImpl,
             )")
                           .value();
   // Validation succeeds without errors.
-  std::pair<absl::optional<FirstPartySetsHandler::ParseError>,
-            std::vector<FirstPartySetsHandler::ParseWarning>>
-      opt_error_and_warnings =
-          FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  EXPECT_FALSE(opt_error_and_warnings.first.has_value());
+  auto [success, warnings] =
+      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
+  EXPECT_TRUE(success.has_value());
   // Outputs metadata that can be used to surface a descriptive warning.
-  EXPECT_EQ(opt_error_and_warnings.second,
-            std::vector<FirstPartySetsHandler::ParseWarning>{
-                FirstPartySetsHandler::ParseWarning(
-                    ParseWarningType::kCctldKeyNotCanonical,
-                    {kAdditionsField, 0, kCctldsField,
-                     "https://non-canonical.test"})});
+  EXPECT_THAT(
+      warnings,
+      UnorderedElementsAre(FirstPartySetsHandler::ParseWarning(
+          ParseWarningType::kCctldKeyNotCanonical,
+          {kAdditionsField, 0, kCctldsField, "https://non-canonical.test"})));
 }
 
 TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
@@ -144,16 +139,13 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
             )")
                           .value();
   // Validation fails with an error.
-  std::pair<absl::optional<FirstPartySetsHandler::ParseError>,
-            std::vector<FirstPartySetsHandler::ParseWarning>>
-      opt_error_and_warnings =
-          FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
-  EXPECT_TRUE(opt_error_and_warnings.first.has_value());
+  auto [success, warnings] =
+      FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
+  EXPECT_FALSE(success.has_value());
   // An appropriate ParseError is returned.
-  EXPECT_EQ(
-      opt_error_and_warnings.first.value(),
-      FirstPartySetsHandler::ParseError(ParseErrorType::kNonDisjointSets,
-                                        {kAdditionsField, 0, kPrimaryField}));
+  EXPECT_EQ(success.error(), FirstPartySetsHandler::ParseError(
+                                 ParseErrorType::kNonDisjointSets,
+                                 {kAdditionsField, 0, kPrimaryField}));
 }
 
 class FirstPartySetsHandlerImplEnabledTest : public ::testing::Test {

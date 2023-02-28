@@ -47,11 +47,9 @@ class CONTENT_EXPORT FirstPartySetParser {
     std::vector<SingleSet> additions;
   };
 
-  using PolicyParseResult = base::expected<
-      std::pair<ParsedPolicySetLists,
-                std::vector<FirstPartySetsHandler::ParseWarning>>,
-      std::pair<FirstPartySetsHandler::ParseError,
-                std::vector<FirstPartySetsHandler::ParseWarning>>>;
+  using PolicyParseResult = std::pair<
+      base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>,
+      std::vector<FirstPartySetsHandler::ParseWarning>>;
 
   FirstPartySetParser() = delete;
   ~FirstPartySetParser() = delete;

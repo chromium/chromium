@@ -501,15 +501,15 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
           policy.FindList(kFirstPartySetPolicyReplacementsField), elements,
           PolicySetType::kReplacement, warnings);
   if (!parsed_replacements.has_value()) {
-    return base::unexpected(
-        std::make_pair(parsed_replacements.error(), warnings));
+    return std::make_pair(base::unexpected(parsed_replacements.error()),
+                          warnings);
   }
 
   base::expected<std::vector<SingleSet>, ParseError> parsed_additions =
       GetPolicySetsFromList(policy.FindList(kFirstPartySetPolicyAdditionsField),
                             elements, PolicySetType::kAddition, warnings);
   if (!parsed_additions.has_value()) {
-    return base::unexpected(std::make_pair(parsed_additions.error(), warnings));
+    return std::make_pair(base::unexpected(parsed_additions.error()), warnings);
   }
 
   return std::make_pair(
