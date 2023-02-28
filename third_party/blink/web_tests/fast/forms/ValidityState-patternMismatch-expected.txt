@@ -1,13 +1,13 @@
-CONSOLE WARNING: Pattern attribute value [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])? is valid with the RegExp `u` flag, but not with the `v` flag: Uncaught SyntaxError: Invalid regular expression: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/: Invalid character in character class. See https://crbug.com/1412729
-CONSOLE WARNING: Pattern attribute value [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])? is valid with the RegExp `u` flag, but not with the `v` flag: Uncaught SyntaxError: Invalid regular expression: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/: Invalid character in character class. See https://crbug.com/1412729
-CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
-CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
-CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/: Unmatched ')'
-CONSOLE ERROR: Pattern attribute value foo\ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /foo\/: \ at end of pattern
-CONSOLE ERROR: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/: Unterminated character class
-CONSOLE ERROR: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/: Unterminated character class
-CONSOLE ERROR: Pattern attribute value \@ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\@/: Invalid escape
-CONSOLE ERROR: Pattern attribute value \p is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\p/: Invalid property name
+CONSOLE WARNING: Pattern attribute value [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])? is valid with the RegExp `u` flag, but not with the `v` flag: Uncaught SyntaxError: Invalid regular expression: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/v: Invalid character in character class. See https://crbug.com/1412729
+CONSOLE WARNING: Pattern attribute value [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])? is valid with the RegExp `u` flag, but not with the `v` flag: Uncaught SyntaxError: Invalid regular expression: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/v: Invalid character in character class. See https://crbug.com/1412729
+CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/u: Unmatched ')'
+CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/u: Unmatched ')'
+CONSOLE ERROR: Pattern attribute value )foo( is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /)foo(/u: Unmatched ')'
+CONSOLE ERROR: Pattern attribute value foo\ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /foo\/u: \ at end of pattern
+CONSOLE ERROR: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/u: Unterminated character class
+CONSOLE ERROR: Pattern attribute value [0-9 is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /[0-9/u: Unterminated character class
+CONSOLE ERROR: Pattern attribute value \@ is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\@/u: Invalid escape
+CONSOLE ERROR: Pattern attribute value \p is not a valid regular expression: Uncaught SyntaxError: Invalid regular expression: /\p/u: Invalid property name
 This test checks validity.patternMismatch.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
