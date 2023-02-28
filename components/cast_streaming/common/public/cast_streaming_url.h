@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_PUBLIC_CAST_STREAMING_URL_H_
-#define COMPONENTS_CAST_STREAMING_PUBLIC_CAST_STREAMING_URL_H_
+#ifndef COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_CAST_STREAMING_URL_H_
+#define COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_CAST_STREAMING_URL_H_
 
 #include "url/gurl.h"
 
@@ -17,4 +17,4 @@ bool IsCastStreamingMediaSourceUrl(const GURL& url);
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_PUBLIC_CAST_STREAMING_URL_H_
+#endif  // COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_CAST_STREAMING_URL_H_

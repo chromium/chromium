@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/cast_streaming/public/rpc_call_message_handler.h"
+#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace openscreen::cast {

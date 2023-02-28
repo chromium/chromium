@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_PUBLIC_RPC_CALL_MESSAGE_HANDLER_H_
-#define COMPONENTS_CAST_STREAMING_PUBLIC_RPC_CALL_MESSAGE_HANDLER_H_
+#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_RPC_CALL_MESSAGE_HANDLER_H_
+#define COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_RPC_CALL_MESSAGE_HANDLER_H_
 
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
@@ -75,4 +75,4 @@ bool DispatchDemuxerStreamCBRpcCall(openscreen::cast::RpcMessage* message,
 }  // namespace remoting
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_PUBLIC_RPC_CALL_MESSAGE_HANDLER_H_
+#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_RPC_CALL_MESSAGE_HANDLER_H_

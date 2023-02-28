@@ -1,0 +1,62 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [
+  ":*",
+  "//components/cast_streaming/browser/control/*",
+
+  # Need access to message factories and conversions.
+  "//components/mirroring/service/*",
+  "//media/remoting/*",
+
+  # TODO(crbug.com/1357085): Remove this dependency.
+  "//components/cast_streaming/browser/frame:frame",
+]
+
+source_set("remoting") {
+  public = [
+    "remoting_message_factories.h",
+    "remoting_proto_enum_utils.h",
+    "remoting_proto_utils.h",
+    "rpc_call_message_handler.h",
+  ]
+  sources = [
+    "remoting_message_factories.cc",
+    "remoting_proto_enum_utils.cc",
+    "remoting_proto_utils.cc",
+    "rpc_call_message_handler.cc",
+  ]
+  public_configs =
+      [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
+  public_deps = [
+    "//base",
+    "//media",
+    "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+  ]
+  deps = [ "//components/openscreen_platform" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility += [ "//components/cast_streaming/common:unit_tests" ]
+  public = []
+  sources = [
+    "remoting_message_factories_unittest.cc",
+    "remoting_proto_utils_unittest.cc",
+    "rpc_call_message_handler_unittest.cc",
+  ]
+  deps = [
+    ":remoting",
+    "//base/test:test_support",
+    "//media",
+    "//media:test_support",
+    "//media/mojo/common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+    "//ui/gfx/geometry",
+  ]
+}

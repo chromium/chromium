@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_PUBLIC_REMOTING_PROTO_UTILS_H_
-#define COMPONENTS_CAST_STREAMING_PUBLIC_REMOTING_PROTO_UTILS_H_
+#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_UTILS_H_
+#define COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_UTILS_H_
 
 #include <cstdint>
 #include <vector>
@@ -78,4 +78,4 @@ void ConvertProtoToPipelineStatistics(
 }  // namespace remoting
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_PUBLIC_REMOTING_PROTO_UTILS_H_
+#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONTROL_REMOTING_REMOTING_PROTO_UTILS_H_

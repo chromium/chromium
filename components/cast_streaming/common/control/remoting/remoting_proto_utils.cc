@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 
 #include <algorithm>
 
@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_enum_utils.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/timestamp_constants.h"
 
@@ -41,8 +41,9 @@ scoped_refptr<media::DecoderBuffer> ConvertProtoToDecoderBuffer(
   VLOG(3) << "timestamp:" << buffer_message.timestamp_usec()
           << " duration:" << buffer_message.duration_usec();
 
-  if (buffer_message.has_is_key_frame())
+  if (buffer_message.has_is_key_frame()) {
     buffer->set_is_key_frame(buffer_message.is_key_frame());
+  }
 
   bool has_discard = false;
   base::TimeDelta front_discard;

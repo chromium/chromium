@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_CONTROL_RENDERER_CONTROLLER_CONFIG_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_CONTROL_RENDERER_CONTROLLER_CONFIG_H_
 
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

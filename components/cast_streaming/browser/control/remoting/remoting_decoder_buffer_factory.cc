@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 

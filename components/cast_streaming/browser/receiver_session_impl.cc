@@ -8,7 +8,7 @@
 #include "components/cast_streaming/browser/cast_message_port_converter.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/receiver_config_conversions.h"
-#include "components/cast_streaming/public/features.h"
+#include "components/cast_streaming/common/public/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 

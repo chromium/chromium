@@ -16,16 +16,15 @@ source_set("frame") {
   ]
   public_deps = [
     "//base",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
     "//mojo/public/cpp/bindings",
   ]
   deps = [
     "//base",
     "//components/cast_streaming/browser/common",
-    "//components/cast_streaming/public",
-    "//components/cast_streaming/public:demuxer_stream_traits",
-    "//components/cast_streaming/public:remoting_utils",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common",
+    "//components/cast_streaming/common:mojom",
+    "//components/cast_streaming/common/frame",
     "//media",
     "//media/mojo/common",
     "//mojo/public/cpp/bindings",

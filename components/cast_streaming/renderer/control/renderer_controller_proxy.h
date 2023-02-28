@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"

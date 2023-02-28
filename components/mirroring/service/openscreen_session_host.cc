@@ -31,7 +31,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/cast_streaming/public/config_conversions.h"
+#include "components/cast_streaming/common/config_conversions.h"
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/udp_socket_client.h"

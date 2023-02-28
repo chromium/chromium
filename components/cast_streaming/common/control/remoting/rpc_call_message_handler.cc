@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/public/rpc_call_message_handler.h"
+#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
-#include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/base/demuxer_stream.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 

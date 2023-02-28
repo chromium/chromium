@@ -29,7 +29,7 @@ source_set("browser") {
   public_deps = [
     ":network_context",
     "//base",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
     "//mojo/public/cpp/bindings",
 
     # TODO(crbug.com/1220176): Move this deps elsewhere once include is removed.
@@ -41,9 +41,8 @@ source_set("browser") {
     "//components/cast_streaming/browser/control",
     "//components/cast_streaming/browser/control/remoting",
     "//components/cast_streaming/browser/frame",
-    "//components/cast_streaming/common:message_serialization",
-    "//components/cast_streaming/public",
-    "//components/cast_streaming/public:config_conversions",
+    "//components/cast_streaming/common",
+    "//components/cast_streaming/common:conversions",
     "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
@@ -95,7 +94,7 @@ source_set("unit_tests") {
       "//base/test:test_support",
       "//components/cast/message_port",
       "//components/cast/message_port:test_message_port_receiver",
-      "//components/cast_streaming/common:message_serialization",
+      "//components/cast_streaming/common:conversions",
       "//testing/gtest",
       "//third_party/openscreen/src/cast/common:public",
     ]

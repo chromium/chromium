@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/public/decoder_buffer_reader.h"
+#include "components/cast_streaming/common/frame/decoder_buffer_reader.h"
 
 #include "base/functional/bind.h"
 

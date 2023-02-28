@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/cast_streaming/browser/common/demuxer_stream_client.h"
-#include "components/cast_streaming/public/rpc_call_message_handler.h"
+#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"

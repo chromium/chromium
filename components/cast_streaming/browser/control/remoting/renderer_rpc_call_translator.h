@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/cast_streaming/public/rpc_call_message_handler.h"
+#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
 #include "media/base/renderer.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

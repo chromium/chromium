@@ -8,7 +8,7 @@
 
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
-#include "components/cast_streaming/public/config_conversions.h"
+#include "components/cast_streaming/common/config_conversions.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/channel_layout.h"
 #include "media/base/video_codecs.h"

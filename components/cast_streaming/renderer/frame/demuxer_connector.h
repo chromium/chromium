@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
+#include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 

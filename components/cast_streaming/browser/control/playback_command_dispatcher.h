@@ -17,7 +17,7 @@
 #include "components/cast_streaming/browser/control/remoting/rpc_demuxer_stream_handler.h"
 #include "components/cast_streaming/browser/control/remoting/rpc_initialization_call_handler_base.h"
 #include "components/cast_streaming/browser/control/renderer_control_multiplexer.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/renderer.mojom.h"

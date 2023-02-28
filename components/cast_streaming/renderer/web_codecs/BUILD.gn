@@ -15,7 +15,7 @@ source_set("web_codecs") {
   ]
   deps = [
     "//base",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
     "//components/cast_streaming/renderer:decoder_buffer_provider",
     "//components/cast_streaming/renderer/common",
     "//media/mojo/common",
@@ -33,7 +33,7 @@ source_set("unit_tests") {
     ":web_codecs",
     "//base",
     "//base/test:test_support",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
     "//components/cast_streaming/renderer:decoder_buffer_provider",
     "//media:test_support",
     "//media/",

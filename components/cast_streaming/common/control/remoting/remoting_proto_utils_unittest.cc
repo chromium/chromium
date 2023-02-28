@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 
 #include <memory>
 #include <string>

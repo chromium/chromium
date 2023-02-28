@@ -4,7 +4,7 @@
 
 #include "components/cast_streaming/browser/control/remoting/renderer_rpc_call_translator.h"
 
-#include "components/cast_streaming/public/remoting_message_factories.h"
+#include "components/cast_streaming/common/control/remoting/remoting_message_factories.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace cast_streaming::remoting {

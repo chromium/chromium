@@ -1,7 +1,7 @@
 include_rules = [
   # Do NOT add components/cast or other Cast-specific code to this file.
   "+cc/base",
-  "+components/cast_streaming/public",
+  "+components/cast_streaming/common",
   "+components/client_hints/browser",
   "+components/favicon/content",
   "+components/favicon/core",
@@ -69,9 +69,5 @@ specific_include_rules = {
   "receiver_session_client\.cc" : [
     "+components/cast/message_port",
     "+components/cast_streaming/browser/public",
-    "+components/cast_streaming/public",
   ],
-  "receiver_session_client\.h" : [
-    "+components/cast_streaming/public/mojom"
-  ]
 }

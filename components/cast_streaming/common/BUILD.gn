@@ -2,10 +2,82 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 visibility = [ "//components/cast_streaming/*" ]
 
-source_set("message_serialization") {
-  public = [ "message_serialization.h" ]
-  sources = [ "message_serialization.cc" ]
-  public_deps = [ "//base" ]
+source_set("common") {
+  visibility += [ "*" ]
+  public = [
+    "public/app_ids.h",
+    "public/cast_streaming_url.h",
+    "public/features.h",
+  ]
+  sources = [
+    "app_ids.cc",
+    "cast_streaming_url.cc",
+    "features.cc",
+  ]
+  public_deps = [ "//url" ]
+  deps = [
+    "//base",
+    "//components/cast_streaming:buildflags",
+    "//third_party/openscreen/src/cast/common:public",
+  ]
+}
+
+mojom("mojom") {
+  visibility += [ "*" ]
+  sources = [
+    "public/mojom/demuxer_connector.mojom",
+    "public/mojom/renderer_controller.mojom",
+  ]
+  public_deps = [
+    "//media/mojo/mojom",
+    "//mojo/public/mojom/base",
+  ]
+}
+
+source_set("conversions") {
+  visibility += [
+    "//components/mirroring/service/*",
+
+    # TODO(crbug.com/1219079): Remove this dependency.
+    "//fuchsia_web/webengine:cast_streaming_receiver",
+  ]
+  public = [
+    "config_conversions.h",
+    "message_serialization.h",
+  ]
+  sources = [
+    "config_conversions.cc",
+    "message_serialization.cc",
+  ]
+  public_deps = [
+    "//base",
+    "//media",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+  ]
+  deps = [ "//ui/gfx/geometry" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public = []
+  sources = [ "config_conversions_unittest.cc" ]
+  deps = [
+    ":common",
+    ":conversions",
+    "//base/test:test_support",
+    "//components/cast_streaming/common/control/remoting:unit_tests",
+    "//components/cast_streaming/common/frame:unit_tests",
+    "//media",
+    "//media:test_support",
+    "//media/mojo/common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+    "//ui/gfx/geometry",
+  ]
 }

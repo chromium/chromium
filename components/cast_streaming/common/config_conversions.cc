@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/public/config_conversions.h"
+#include "components/cast_streaming/common/config_conversions.h"
 
 #include "base/check.h"
 #include "base/notreached.h"

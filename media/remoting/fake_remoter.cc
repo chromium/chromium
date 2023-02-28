@@ -11,14 +11,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
-#include "components/cast_streaming/public/decoder_buffer_reader.h"
+#include "components/cast_streaming/common/frame/decoder_buffer_reader.h"
 #include "media/media_buildflags.h"
 #include "media/remoting/renderer_controller.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-#include "components/cast_streaming/public/remoting_proto_utils.h"  // nogncheck
+#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"  // nogncheck
 #endif
 
 namespace media {

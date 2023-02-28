@@ -12,8 +12,8 @@
 #include "base/sequence_checker.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
-#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 

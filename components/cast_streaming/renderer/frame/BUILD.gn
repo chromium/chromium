@@ -16,8 +16,8 @@ source_set("frame") {
   public_deps = [ "//components/cast_streaming/renderer:resource_provider" ]
   deps = [
     "//base",
-    "//components/cast_streaming/public:demuxer_stream_traits",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
+    "//components/cast_streaming/common/frame",
     "//components/cast_streaming/renderer/common",
     "//media",
     "//media/mojo/common",

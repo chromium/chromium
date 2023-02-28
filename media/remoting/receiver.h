@@ -14,7 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
-#include "components/cast_streaming/public/rpc_call_message_handler.h"
+#include "components/cast_streaming/common/control/remoting/rpc_call_message_handler.h"
 #include "media/base/buffering_state.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"

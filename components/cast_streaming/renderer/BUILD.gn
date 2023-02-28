@@ -16,9 +16,8 @@ source_set("renderer") {
   public_deps = [ ":resource_provider" ]
   deps = [
     "//base",
-    "//components/cast_streaming/public",
-    "//components/cast_streaming/public:demuxer_stream_traits",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common",
+    "//components/cast_streaming/common:mojom",
     "//components/cast_streaming/renderer/control",
     "//components/cast_streaming/renderer/frame",
     "//media",
@@ -48,7 +47,7 @@ source_set("resource_provider") {
   ]
   public_deps = [
     "//base",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
   ]

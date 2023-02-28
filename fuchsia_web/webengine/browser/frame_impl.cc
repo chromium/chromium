@@ -78,9 +78,9 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
-#include "components/cast_streaming/public/features.h"  //nogncheck
-#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"  //nogncheck
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"  //nogncheck
+#include "components/cast_streaming/common/public/features.h"  //nogncheck
+#include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"  //nogncheck
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"  //nogncheck
 #include "fuchsia_web/webengine/browser/receiver_session_client.h"  //nogncheck
 #include "fuchsia_web/webengine/common/cast_streaming.h"            // nogncheck
 #endif

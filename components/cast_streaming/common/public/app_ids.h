@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_PUBLIC_APP_IDS_H_
-#define COMPONENTS_CAST_STREAMING_PUBLIC_APP_IDS_H_
+#ifndef COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_APP_IDS_H_
+#define COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_APP_IDS_H_
 
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
@@ -22,4 +22,4 @@ constexpr const char* GetIosAppStreamingAudioVideoAppId() {
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_PUBLIC_APP_IDS_H_
+#endif  // COMPONENTS_CAST_STREAMING_COMMON_PUBLIC_APP_IDS_H_

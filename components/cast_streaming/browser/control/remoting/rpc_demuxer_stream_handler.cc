@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/cast_streaming/public/remoting_message_factories.h"
+#include "components/cast_streaming/common/control/remoting/remoting_message_factories.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 using openscreen::cast::RpcMessenger;

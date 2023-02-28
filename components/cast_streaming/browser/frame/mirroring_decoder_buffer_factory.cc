@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "components/cast_streaming/public/features.h"
+#include "components/cast_streaming/common/public/features.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"

@@ -6,7 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"

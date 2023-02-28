@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/public/remoting_message_factories.h"
+#include "components/cast_streaming/common/control/remoting/remoting_message_factories.h"
 
-#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
-#include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
 #include "media/base/pipeline_status.h"

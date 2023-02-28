@@ -10,7 +10,7 @@
 #include "components/cast_receiver/browser/streaming_controller_mirroring.h"
 #include "components/cast_receiver/browser/streaming_controller_remoting.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
-#include "components/cast_streaming/public/features.h"
+#include "components/cast_streaming/common/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"

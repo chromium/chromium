@@ -40,7 +40,7 @@ source_set("remoting_sender") {
 
     # Consumers of the CourierRenderer implicitly take a dependency on the
     # generated remoting.pb.h file.
-    public_deps += [ "//components/cast_streaming/public:remoting_utils" ]
+    public_deps += [ "//components/cast_streaming/common/control/remoting" ]
   }
 }
 
@@ -76,11 +76,12 @@ source_set("remoting_renderer") {
     ":remoting_constants",
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
+    "//third_party/openscreen/src/cast/streaming:common",
   ]
 
   # Consumers of the ReceiverController implicitly take a dependency on the
   # generated remoting.pb.h file.
-  public_deps = [ "//components/cast_streaming/public:remoting_utils" ]
+  public_deps = [ "//components/cast_streaming/common/control/remoting" ]
 }
 
 source_set("media_remoting_tests") {
@@ -104,8 +105,8 @@ source_set("media_remoting_tests") {
     ":remoting_sender",
     "//base",
     "//base/test:test_support",
-    "//components/cast_streaming/public:decoder_buffer_reader",
-    "//components/cast_streaming/public:remoting_utils",
+    "//components/cast_streaming/common/control/remoting",
+    "//components/cast_streaming/common/frame",
     "//media:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom:remoting",

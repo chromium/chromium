@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_PUBLIC_CONFIG_CONVERSIONS_H_
-#define COMPONENTS_CAST_STREAMING_PUBLIC_CONFIG_CONVERSIONS_H_
+#ifndef COMPONENTS_CAST_STREAMING_COMMON_CONFIG_CONVERSIONS_H_
+#define COMPONENTS_CAST_STREAMING_COMMON_CONFIG_CONVERSIONS_H_
 
 #include <vector>
 
@@ -47,4 +47,4 @@ std::vector<openscreen::cast::VideoCodec> ToVideoCaptureConfigCodecs(
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_PUBLIC_CONFIG_CONVERSIONS_H_
+#endif  // COMPONENTS_CAST_STREAMING_COMMON_CONFIG_CONVERSIONS_H_

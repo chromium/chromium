@@ -46,8 +46,7 @@ if (!is_win) {
       "cast_streaming_test_sender.cc",
     ]
     deps = [
-      "//components/cast_streaming/common:message_serialization",
-      "//components/cast_streaming/public:config_conversions",
+      "//components/cast_streaming/common:conversions",
 
       # Partial implementation of the platform API used by
       # //third_party/openscreen/src/cast/*.

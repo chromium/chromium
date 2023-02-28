@@ -9,8 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 // TODO(crbug.com/1220176): When fixed, remove this include and add it to a file

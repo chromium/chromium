@@ -20,11 +20,11 @@ source_set("remoting") {
   ]
   public_deps = [
     "//base",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
   ]
   deps = [
     "//components/cast_streaming/browser/common",
-    "//components/cast_streaming/public:remoting_utils",
+    "//components/cast_streaming/common/control/remoting",
     "//media",
     "//media/mojo/common",
     "//media/mojo/mojom",

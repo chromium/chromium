@@ -13,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/streaming_controller_base.h"
-#include "components/cast_streaming/public/cast_streaming_url.h"
+#include "components/cast_streaming/common/public/cast_streaming_url.h"
 #include "media/base/video_decoder_config.h"
 
 namespace cast_receiver {

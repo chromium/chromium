@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
-#include "components/cast_streaming/public/remoting_proto_utils.h"
+#include "components/cast_streaming/common/control/remoting/remoting_proto_utils.h"
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/common/frame_id.h"
 #include "media/cast/common/sender_encoded_frame.h"
