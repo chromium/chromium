@@ -404,30 +404,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ActivityTracker.CollectCrash.Event"
-    enum="ActivityTrackerCollectOnCrashEvent" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Events that occur during crash collection of the debug file. Logged each
-    time an event of interest occurs during crash debug file collection.
-  </summary>
-</histogram>
-
 <histogram name="ActivityTracker.CollectCrash.Status"
     enum="ActivityTrackerCollectStatus" expires_after="M90">
   <owner>siggi@chromium.org</owner>
   <summary>
     Status for the collection of a stability debug file. Logged each time a
     debug file collection attempt is made from the crash handler.
-  </summary>
-</histogram>
-
-<histogram name="ActivityTracker.Record.Event"
-    enum="ActivityTrackerRecordEvent" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Events pertaining to recording to the debug file. Logged each time an event
-    of interest occurs wrt debug file recording.
   </summary>
 </histogram>
 
