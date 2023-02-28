@@ -69,6 +69,7 @@ class WaylandDisplayHandler : public display::DisplayObserver,
   void UnsetXdgOutputResource();
 
   size_t CountObserversForTesting() const;
+  WaylandDisplayOutput* GetWaylandDisplayOutputForTesting() { return output_; }
 
  protected:
   wl_resource* output_resource() const { return output_resource_; }

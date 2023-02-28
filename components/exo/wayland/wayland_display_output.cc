@@ -19,17 +19,21 @@
 namespace exo {
 namespace wayland {
 namespace {
-base::TimeDelta kDeleteTaskDelay = base::Seconds(3);
 
 void DoDelete(WaylandDisplayOutput* output, int retry_count) {
-  if (retry_count > 0 && output->output_counts() > 0) {
-    // Try a few times to give a client chance to release it.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&DoDelete, output, retry_count - 1),
-        kDeleteTaskDelay);
-  } else {
-    delete output;
+  // Retry if a client hasn't released the output yet, or if no client has even
+  // made the initial binding yet.
+  if (retry_count > 0 &&
+      (output->output_counts() > 0 || !output->had_registered_output())) {
+    // If we can't post the task successfully, just delete the output resource
+    // now, otherwise we would leak memory.
+    if (base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(&DoDelete, output, retry_count - 1),
+            WaylandDisplayOutput::kDeleteTaskDelay)) {
+      return;
+    }
   }
+  delete output;
 }
 
 }  // namespace
@@ -72,8 +76,10 @@ void WaylandDisplayOutput::UnregisterOutput(wl_resource* output_resource) {
 void WaylandDisplayOutput::RegisterOutput(wl_resource* output_resource) {
   auto* client = wl_resource_get_client(output_resource);
   output_ids_.insert(std::make_pair(client, output_resource));
+  had_registered_output_ = true;
 
   // Notify All wl surfaces that a new output was added.
+  // TODO(aluh): Skip this if output is being destroyed.
   wl_client_for_each_resource(
       client,
       [](wl_resource* resource, void*) {

@@ -35,6 +35,7 @@ void RegistryHandler(void* data,
             registry, id, &interface_type##_interface,             \
             CalculateVersion(version, globals->requested_versions, \
                              #interface_type))));                  \
+    globals->global_member.set_name(id);                           \
     return;                                                        \
   }
 
