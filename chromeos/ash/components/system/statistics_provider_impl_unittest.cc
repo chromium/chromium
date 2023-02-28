@@ -47,8 +47,7 @@ base::FilePath CreateFileInTempDir(const std::string& content,
   DCHECK(file.IsValid());
   DCHECK(!filepath.empty());
 
-  int length = base::WriteFile(filepath, content);
-  DCHECK_GE(length, 0);
+  DCHECK(base::WriteFile(filepath, content));
 
   return filepath;
 }

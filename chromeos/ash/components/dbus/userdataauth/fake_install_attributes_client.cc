@@ -154,7 +154,7 @@ FakeInstallAttributesClient::BlockingInstallAttributesFinalize(
   // The real implementation does a blocking wait on the dbus call; the fake
   // implementation must have this file written before returning.
   base::ScopedAllowBlockingForTesting allow_io;
-  base::WriteFile(cache_path, result.data(), result.size());
+  base::WriteFile(cache_path, result);
 
   return reply;
 }
