@@ -291,6 +291,7 @@ public abstract class ChromeFeatureList {
             "DarkenWebsitesCheckboxInThemesSetting";
     public static final String DEFER_KEEP_SCREEN_ON_DURING_GESTURE =
             "DeferKeepScreenOnDuringGesture";
+    public static final String DEFER_NOTIFY_IN_MOTION = "DeferNotifyInMotion";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DNS_OVER_HTTPS = "DnsOverHttps";
