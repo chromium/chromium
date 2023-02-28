@@ -572,6 +572,15 @@ void WontCompile() {
   BindOnce(&PassIntPtr, UnsafeDangling(&val));
 }
 
+#elif defined(NCTEST_UNSAFE_DANLING_WITH_DIFFERENT_PTR_TRAITS) // [r"fatal error: static assertion failed.+?MayBeDangling<T> parameter must receive the same RawPtrTraits as the one passed to the corresponding base::UnsafeDangling\(\) call\."]
+
+void PassIntPtr(MayBeDangling<int> ptr) {}
+
+void WontCompile() {
+  int val;
+  BindOnce(&PassIntPtr, UnsafeDangling<int, RawPtrTraits::kDummyForTest>(&val));
+}
+
 #elif defined(NCTEST_UNSAFE_DANLING_UNTRIAGED_WITH_RAW_PTR_RECEIVER) // [r"base::Bind\(\) target functor has a parameter of type raw_ptr<T>."]
 
 void PassIntRawPtr(raw_ptr<int> ptr) {}

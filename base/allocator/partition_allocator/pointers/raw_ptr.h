@@ -134,6 +134,11 @@ enum class RawPtrTraits : unsigned {
   //
   // Test only.
   kUseCountingWrapperForTest = (1 << 4),
+
+  // Helper trait that can be used to test raw_ptr's behaviour or conversions.
+  //
+  // Test only.
+  kDummyForTest = (1 << 5),
 };
 
 // Used to combine RawPtrTraits:
@@ -164,6 +169,7 @@ constexpr bool AreValid(RawPtrTraits traits) {
                             RawPtrTraits::kDisableMTECheckedPtr |
                             RawPtrTraits::kDisableHooks |
                             RawPtrTraits::kAllowPtrArithmetic |
+                            RawPtrTraits::kDummyForTest |
                             RawPtrTraits::kUseCountingWrapperForTest) ==
          RawPtrTraits::kEmpty;
 }
