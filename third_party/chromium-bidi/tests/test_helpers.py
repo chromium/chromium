@@ -14,10 +14,6 @@
 # limitations under the License.
 
 import json
-import os
-
-import pytest_asyncio
-import websockets
 
 _command_counter = 0
 
@@ -26,100 +22,6 @@ def get_next_command_id():
     global _command_counter
     _command_counter += 1
     return _command_counter
-
-
-@pytest_asyncio.fixture
-async def websocket():
-    port = os.getenv("PORT", 8080)
-    url = f"ws://localhost:{port}"
-    async with websockets.connect(url) as connection:
-        yield connection
-
-
-@pytest_asyncio.fixture
-async def default_realm(context_id, websocket):
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "globalThis",
-                "target": {
-                    "context": context_id,
-                },
-                "awaitPromise": True
-            }
-        })
-
-    return result["realm"]
-
-
-@pytest_asyncio.fixture
-async def sandbox_realm(context_id, websocket):
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "globalThis",
-                "target": {
-                    "context": context_id,
-                    "sandbox": 'some_sandbox'
-                },
-                "awaitPromise": True
-            }
-        })
-
-    return result["realm"]
-
-
-@pytest_asyncio.fixture
-async def context_id(websocket):
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
-    return result["contexts"][0]["context"]
-
-
-@pytest_asyncio.fixture
-async def another_context_id(websocket):
-    result = await execute_command(websocket, {
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }
-    })
-    return result['context']
-
-
-@pytest_asyncio.fixture
-async def page_with_nested_iframe_url():
-    return f'data:text/html,<h1>MAIN_PAGE</h1>' \
-           f'<iframe src="about:blank" />'
-
-
-@pytest_asyncio.fixture
-async def iframe_id(context_id, websocket, page_with_nested_iframe_url):
-    await goto_url(websocket, context_id, page_with_nested_iframe_url)
-    result = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {
-            "root": context_id
-        }
-    })
-
-    iframe_id = result["contexts"][0]["children"][0]["context"]
-
-    # To avoid issue with the events order in headful mode, navigate to some
-    # page: https://crbug.com/1353719
-    await goto_url(websocket, iframe_id, "data:text/html,<h1>FRAME</h1>")
-
-    return iframe_id
-
-
-@pytest_asyncio.fixture(autouse=True)
-async def before_each_test(websocket):
-    # This method can be used for browser state preparation.
-    assert True
 
 
 async def subscribe(websocket, event_names, context_ids=None, channel=None):
