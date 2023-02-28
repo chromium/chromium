@@ -37,10 +37,10 @@
   if (self) {
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
     DCHECK(config);
-    DCHECK(config.path);
+    DCHECK(config.animationName);
 
     _lottieAnimation = [LOTAnimationView
-        animationNamed:config.path
+        animationNamed:config.animationName
               inBundle:config.bundle == nil ? [NSBundle mainBundle]
                                             : config.bundle];
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
