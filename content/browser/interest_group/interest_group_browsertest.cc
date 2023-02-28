@@ -1020,7 +1020,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 
   // Wrapper around RunAuctionAndWait that assumes the result is a URN URL and
-  // tries to navigate to it. Returns the mapped URL.
+  // tries to navigate to it. Checks that the mapped URL equals `expected_url`.
   void RunAuctionAndWaitForURLAndNavigateIframe(
       const std::string& auction_config_json,
       GURL expected_url) {
