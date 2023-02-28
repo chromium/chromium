@@ -25,7 +25,6 @@
 
 namespace headless {
 class HeadlessBrowserImpl;
-class HeadlessClientHintsControllerDelegate;
 class HeadlessWebContentsImpl;
 
 class HEADLESS_EXPORT HeadlessBrowserContextImpl final
@@ -152,8 +151,6 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
 
   std::unique_ptr<content::OriginTrialsControllerDelegate>
       origin_trials_controller_delegate_;
-
-  std::unique_ptr<HeadlessClientHintsControllerDelegate> hints_delegate_;
 };
 
 }  // namespace headless

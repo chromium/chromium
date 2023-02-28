@@ -10,10 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/embedder_support/user_agent_utils.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -23,7 +20,6 @@
 #include "headless/lib/browser/headless_devtools_agent_host_client.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/version.h"
-#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace headless {
 
@@ -127,30 +123,6 @@ Options Builder::Build() {
 /// static
 std::string HeadlessBrowser::GetProductNameAndVersion() {
   return std::string(kHeadlessProductName) + "/" + PRODUCT_VERSION;
-}
-
-/// static
-blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata(
-    const PrefService* local_state) {
-  auto metadata = embedder_support::GetUserAgentMetadata(local_state);
-  std::string significant_version = version_info::GetMajorVersionNumber();
-  constexpr bool kEnableUpdatedGreaseByPolicy = true;
-
-  // Use the major version number as a greasing seed
-  int seed = 1;
-  bool got_seed = base::StringToInt(significant_version, &seed);
-  DCHECK(got_seed);
-
-  // Rengenerate the brand version lists with kHeadlessProductName.
-  metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, significant_version, absl::nullopt,
-      absl::nullopt, kEnableUpdatedGreaseByPolicy,
-      blink::UserAgentBrandVersionType::kMajorVersion);
-  metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
-      seed, kHeadlessProductName, metadata.full_version, absl::nullopt,
-      absl::nullopt, kEnableUpdatedGreaseByPolicy,
-      blink::UserAgentBrandVersionType::kFullVersion);
-  return metadata;
 }
 
 HeadlessBrowserImpl::HeadlessBrowserImpl(
