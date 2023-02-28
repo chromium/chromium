@@ -79,7 +79,7 @@ static bool CheckChunkInvalidation(
     const gfx::Vector2dF& layer_offset,
     const absl::optional<gfx::Rect>& chunk_rect = absl::nullopt,
     const MapFunction& mapper = base::DoNothing()) {
-  const auto& chunk = *(chunks.begin() + index);
+  const auto& chunk = chunks[index];
   return ChunkRectToLayer(chunk_rect ? *chunk_rect : chunk.drawable_bounds,
                           layer_offset, mapper) == info.rect &&
          chunk.id.client_id == info.client_id && reason == info.reason;

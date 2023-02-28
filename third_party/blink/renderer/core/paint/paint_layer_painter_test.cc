@@ -838,9 +838,9 @@ class PaintLayerPainterPaintedOutputInvisibleTest
                 PaintChunk::Id(child_layer->Id(), DisplayItem::kLayerChunk),
                 child->FirstFragment().LocalBorderBoxProperties(), nullptr,
                 gfx::Rect(0, 0, 200, 50))));
-    EXPECT_FALSE((chunks.begin() + 1)->effectively_invisible);
-    EXPECT_EQ(expected_invisible_, (chunks.begin() + 2)->effectively_invisible);
-    EXPECT_EQ(expected_invisible_, (chunks.begin() + 3)->effectively_invisible);
+    EXPECT_FALSE(chunks[1].effectively_invisible);
+    EXPECT_EQ(expected_invisible_, chunks[2].effectively_invisible);
+    EXPECT_EQ(expected_invisible_, chunks[3].effectively_invisible);
   }
 
   String additional_style_;

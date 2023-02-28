@@ -103,6 +103,10 @@ class PaintChunkSubset {
   Iterator begin() const { return Iterator(*this, 0); }
   Iterator end() const { return Iterator(*this, subset_indices_.size()); }
 
+  const PaintChunk& operator[](wtf_size_t i) const {
+    return paint_artifact_->PaintChunks()[subset_indices_[i]];
+  }
+
   bool IsEmpty() const { return subset_indices_.empty(); }
 
   wtf_size_t size() const { return subset_indices_.size(); }

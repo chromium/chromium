@@ -1048,7 +1048,7 @@ void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
     CHECK(!layer.Chunks().IsEmpty());
     const auto& layer_state = layer.GetPropertyTreeState();
     const auto& first_chunk_state =
-        layer.Chunks().begin()->properties.GetPropertyTreeState();
+        layer.Chunks()[0].properties.GetPropertyTreeState();
     CHECK(layer_state.Transform().IsAncestorOf(first_chunk_state.Transform()));
     CHECK(layer_state.Clip().IsAncestorOf(first_chunk_state.Clip()));
     CHECK(layer_state.Effect().IsAncestorOf(first_chunk_state.Effect()));

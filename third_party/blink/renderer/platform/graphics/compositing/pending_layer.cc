@@ -171,7 +171,7 @@ void PendingLayer::Upcast(const PropertyTreeState& new_state) {
 }
 
 const PaintChunk& PendingLayer::FirstPaintChunk() const {
-  return *chunks_.begin();
+  return chunks_[0];
 }
 
 const DisplayItem& PendingLayer::FirstDisplayItem() const {

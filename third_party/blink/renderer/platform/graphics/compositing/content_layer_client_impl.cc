@@ -97,7 +97,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
     raster_under_invalidation_params.emplace(
         *raster_invalidator_.GetTracking(), gfx::Rect(layer_bounds),
         paint_chunks.GetPaintArtifact().ClientDebugName(
-            paint_chunks.begin()->id.client_id));
+            paint_chunks[0].id.client_id));
   }
 
   // Note: cc::Layer API assumes the layer bounds start at (0, 0), but the
