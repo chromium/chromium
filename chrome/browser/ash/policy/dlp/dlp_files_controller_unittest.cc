@@ -478,10 +478,25 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ErrorResponse) {
   files_controller_->GetDisallowedTransfers(
       transferred_files, dst_url, /*is_move=*/false, future.GetCallback());
 
-  std::vector<storage::FileSystemURL> expected_restricted_files(
-      {files_urls[0], files_urls[1], files_urls[2]});
   ASSERT_EQ(3u, future.Get().size());
-  EXPECT_EQ(expected_restricted_files, future.Take());
+  EXPECT_EQ(transferred_files, future.Take());
+
+  // Validate the request sent to the daemon.
+  std::vector<std::string> expected_requested_files;
+  for (const auto& file_url : files_urls) {
+    expected_requested_files.push_back(file_url.path().value());
+  }
+
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  std::vector<std::string> requested_files(request.files_paths().begin(),
+                                           request.files_paths().end());
+  EXPECT_THAT(requested_files,
+              testing::UnorderedElementsAreArray(expected_requested_files));
+  EXPECT_EQ(dst_url.path().value(), request.destination_url());
+  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
 }
 
 TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_MultiFolder) {
@@ -586,32 +601,16 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ExternalFiles) {
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  std::vector<FileDaemonInfo> files{
-      FileDaemonInfo(kInode1, my_files_dir_.AppendASCII(kFilePath1),
-                     kExampleUrl1),
-      FileDaemonInfo(kInode2, my_files_dir_.AppendASCII(kFilePath2),
-                     kExampleUrl2),
-      FileDaemonInfo(kInode3, my_files_dir_.AppendASCII(kFilePath3),
-                     kExampleUrl3)};
-  std::vector<FileSystemURL> files_urls;
-  AddFilesToDlpClient(std::move(files), files_urls);
-
-  std::vector<ui::SelectedFileInfo> uploaded_files;
-
-  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
-
   base::test::TestFuture<std::vector<ui::SelectedFileInfo>> future;
 
   ASSERT_TRUE(files_controller_);
   files_controller_->FilterDisallowedUploads(
-      std::move(uploaded_files),
-      DlpFilesController::DlpFileDestination("https://example.com"),
+      {}, DlpFilesController::DlpFileDestination(kExampleUrl1),
       future.GetCallback());
 
   std::vector<ui::SelectedFileInfo> filtered_uploads;
 
   ASSERT_EQ(0u, future.Get().size());
-  EXPECT_EQ(filtered_uploads, future.Take());
   EXPECT_FALSE(
       display_service_tester.GetNotification(kUploadBlockedNotificationId));
 }
@@ -655,7 +654,7 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   ASSERT_TRUE(files_controller_);
   files_controller_->FilterDisallowedUploads(
       std::move(uploaded_files),
-      DlpFilesController::DlpFileDestination("https://example.com"),
+      DlpFilesController::DlpFileDestination(kExampleUrl1),
       future.GetCallback());
 
   std::vector<ui::SelectedFileInfo> filtered_uploads;
@@ -665,6 +664,23 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   EXPECT_EQ(filtered_uploads, future.Take());
   EXPECT_TRUE(
       display_service_tester.GetNotification(kUploadBlockedNotificationId));
+
+  // Validate the request sent to the daemon.
+  std::vector<std::string> expected_requested_files;
+  for (const auto& file_url : files_urls) {
+    expected_requested_files.push_back(file_url.path().value());
+  }
+
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  std::vector<std::string> requested_files(request.files_paths().begin(),
+                                           request.files_paths().end());
+  EXPECT_THAT(requested_files,
+              testing::UnorderedElementsAreArray(expected_requested_files));
+  EXPECT_EQ(kExampleUrl1, request.destination_url());
+  EXPECT_EQ(::dlp::FileAction::UPLOAD, request.file_action());
 }
 
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
@@ -775,6 +791,23 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MultiFolder) {
   EXPECT_EQ(expected_filtered_uploads, future.Take());
   EXPECT_TRUE(
       display_service_tester.GetNotification(kUploadBlockedNotificationId));
+
+  // Validate the request sent to the daemon.
+  std::vector<std::string> expected_requested_files;
+  for (const auto& file_url : files_urls) {
+    expected_requested_files.push_back(file_url.path().value());
+  }
+
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  std::vector<std::string> requested_files(request.files_paths().begin(),
+                                           request.files_paths().end());
+  EXPECT_THAT(requested_files,
+              testing::UnorderedElementsAreArray(expected_requested_files));
+  EXPECT_EQ(kExampleUrl1, request.destination_url());
+  EXPECT_EQ(::dlp::FileAction::UPLOAD, request.file_action());
 }
 
 TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
