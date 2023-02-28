@@ -106,7 +106,15 @@ wtf_size_t EstimateNumLines(const String& text_content,
                             const SimpleFontData* font,
                             LayoutUnit available_width) {
   const float space_width = font->SpaceWidth();
+  if (space_width <= 0) {
+    // Can't estimate without space glyph, go on to measure the actual value.
+    return 0;
+  }
   const wtf_size_t num_line_chars = available_width / space_width;
+  if (num_line_chars <= 0) {
+    // The width is too narrow, don't balance.
+    return std::numeric_limits<wtf_size_t>::max();
+  }
   return (text_content.length() + num_line_chars - 1) / num_line_chars;
 }
 
