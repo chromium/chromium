@@ -4,6 +4,7 @@
 #include "FindBadRawPtrPatterns.h"
 
 #include "RawPtrHelpers.h"
+#include "RawPtrManualPathsToIgnore.h"
 #include "Util.h"
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
@@ -92,14 +93,15 @@ const char kNeedRawPtrSignature[] =
 
 class RawPtrFieldMatcher : public MatchFinder::MatchCallback {
  public:
-  explicit RawPtrFieldMatcher(clang::CompilerInstance& compiler,
-                              const std::string& exclude_fields_file,
-                              const std::string& exclude_paths_file)
+  explicit RawPtrFieldMatcher(
+      clang::CompilerInstance& compiler,
+      const std::string& exclude_fields_file,
+      const std::vector<std::string>& paths_to_exclude_lines)
       : compiler_(compiler),
         fields_to_exclude_(std::make_unique<FilterFile>(exclude_fields_file,
                                                         "exclude-fields")),
         paths_to_exclude_(
-            std::make_unique<FilterFile>(exclude_paths_file, "exclude-paths")) {
+            std::make_unique<FilterFile>(paths_to_exclude_lines)) {
     error_need_raw_ptr_signature_ = compiler_.getDiagnostics().getCustomDiagID(
         clang::DiagnosticsEngine::Error, kNeedRawPtrSignature);
   }
@@ -137,14 +139,15 @@ const char kNeedRawRefSignature[] =
 
 class RawRefFieldMatcher : public MatchFinder::MatchCallback {
  public:
-  explicit RawRefFieldMatcher(clang::CompilerInstance& compiler,
-                              const std::string& exclude_fields_file,
-                              const std::string& exclude_paths_file)
+  explicit RawRefFieldMatcher(
+      clang::CompilerInstance& compiler,
+      const std::string& exclude_fields_file,
+      const std::vector<std::string>& paths_to_exclude_lines)
       : compiler_(compiler),
         fields_to_exclude_(std::make_unique<FilterFile>(exclude_fields_file,
                                                         "exclude-fields")),
         paths_to_exclude_(
-            std::make_unique<FilterFile>(exclude_paths_file, "exclude-paths")) {
+            std::make_unique<FilterFile>(paths_to_exclude_lines)) {
     error_need_raw_ref_signature_ = compiler_.getDiagnostics().getCustomDiagID(
         clang::DiagnosticsEngine::Error, kNeedRawRefSignature);
   }
@@ -186,13 +189,21 @@ void FindBadRawPtrPatterns(Options options,
   if (options.check_bad_raw_ptr_cast)
     bad_cast_matcher.Register(match_finder);
 
+  std::vector<std::string> paths_to_exclude_lines;
+  for (auto* const line : kRawPtrManualPathsToIgnore) {
+    paths_to_exclude_lines.push_back(line);
+  }
+  paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
+                                options.raw_ptr_paths_to_exclude_lines.begin(),
+                                options.raw_ptr_paths_to_exclude_lines.end());
+
   RawPtrFieldMatcher field_matcher(compiler, options.exclude_fields_file,
-                                   options.exclude_paths_file);
+                                   paths_to_exclude_lines);
   if (options.check_raw_ptr_fields)
     field_matcher.Register(match_finder);
 
   RawRefFieldMatcher ref_field_matcher(compiler, options.exclude_fields_file,
-                                       options.exclude_paths_file);
+                                       paths_to_exclude_lines);
   if (options.check_raw_ref_fields) {
     ref_field_matcher.Register(match_finder);
   }

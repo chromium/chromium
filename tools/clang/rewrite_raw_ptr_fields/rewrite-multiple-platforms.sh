@@ -146,7 +146,6 @@ pre_process() {
     time tools/clang/scripts/run_tool.py \
         $TARGET_OS_OPTION \
         --tool rewrite_raw_ptr_fields \
-        --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \
         --generate-compdb \
         -p $OUT_DIR \
         $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.out
@@ -168,7 +167,6 @@ main_rewrite() {
         $TARGET_OS_OPTION \
         --tool rewrite_raw_ptr_fields \
         --tool-arg=--exclude-fields="$HOME/scratch/combined-fields-to-ignore.txt" \
-        --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \
         -p $OUT_DIR \
         $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
     cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out

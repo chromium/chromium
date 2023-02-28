@@ -1,4 +1,4 @@
-# File that can be used as an argument of the --exclude-paths cmdline
+# File that can be used as an argument of the --override-exclude-paths cmdline
 # parameter of rewrite_raw_ptr_fields tool.
 #
 # Each non-whitespace / non-comment line specifies a regex that is

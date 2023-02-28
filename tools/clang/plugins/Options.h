@@ -6,6 +6,7 @@
 #define TOOLS_CLANG_PLUGINS_OPTIONS_H_
 
 #include <string>
+#include <vector>
 
 namespace chrome_checker {
 
@@ -20,7 +21,7 @@ struct Options {
   bool check_stack_allocated = false;
   bool check_raw_ref_fields = false;
   std::string exclude_fields_file;
-  std::string exclude_paths_file;
+  std::vector<std::string> raw_ptr_paths_to_exclude_lines;
 };
 
 }  // namespace chrome_checker
