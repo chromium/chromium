@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {CrSettingsPrefs, OsA11yPageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -65,5 +67,30 @@ suite('A11yPageTests', function() {
 
     // Make sure confirmA11yImageLabels is called.
     assertEquals(browserProxy.getCallCount('confirmA11yImageLabels'), 1);
+  });
+
+  test('Checking pdf ocr toggle visibility in the TTS page', async () => {
+    // Need to have this test here as the screen reader state is passed from
+    // the os-settings-a11y-page to the settings-text-to-speech-page.
+    loadTimeData.overrideValues({pdfOcrEnabled: true});
+
+    Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
+    flush();
+    const ttsPage =
+        page.shadowRoot.querySelector('settings-text-to-speech-page');
+
+    // Disable ChromeVox to hide the PDF OCR toggle.
+    webUIListenerCallback('screen-reader-state-changed', false);
+
+    const pdfOcrToggle = ttsPage.shadowRoot.querySelector('#crosPdfOcrToggle');
+    await waitAfterNextRender(pdfOcrToggle);
+    assertTrue(!!pdfOcrToggle);
+    assertTrue(pdfOcrToggle.hidden);
+
+    // Enable ChromeVox to show the PDF OCR toggle.
+    webUIListenerCallback('screen-reader-state-changed', true);
+
+    await waitAfterNextRender(pdfOcrToggle);
+    assertFalse(pdfOcrToggle.hidden);
   });
 });

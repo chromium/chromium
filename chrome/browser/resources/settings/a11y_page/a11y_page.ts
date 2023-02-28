@@ -147,6 +147,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // </if>
 
   private showAccessibilityLabelsSetting_: boolean;
+  private showPdfOcrToggle_: boolean;
   private captionSettingsOpensExternally_: boolean;
 
 
@@ -167,6 +168,8 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
    */
   private onScreenReaderStateChanged_(hasScreenReader: boolean) {
     this.showAccessibilityLabelsSetting_ = hasScreenReader;
+    this.showPdfOcrToggle_ =
+        hasScreenReader && loadTimeData.getBoolean('pdfOcrEnabled');
   }
 
   private onA11yCaretBrowsingChange_(event: Event) {

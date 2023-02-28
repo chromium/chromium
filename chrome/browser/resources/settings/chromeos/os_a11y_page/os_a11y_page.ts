@@ -67,6 +67,14 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       /**
+       * Whether a screen reader is enabled.
+       */
+      hasScreenReader_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Whether to show accessibility labels settings.
        */
       showAccessibilityLabelsSetting_: {
@@ -132,6 +140,7 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
 
   currentRoute: Route;
   private browserProxy_: OsA11yPageBrowserProxy;
+  private hasScreenReader_: boolean;
   private isAccessibilityOSSettingsVisibilityEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
@@ -199,7 +208,8 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   }
 
   private onScreenReaderStateChanged_(hasScreenReader: boolean): void {
-    this.showAccessibilityLabelsSetting_ = hasScreenReader;
+    this.hasScreenReader_ = hasScreenReader;
+    this.showAccessibilityLabelsSetting_ = this.hasScreenReader_;
   }
 
   private onToggleAccessibilityImageLabels_(): void {

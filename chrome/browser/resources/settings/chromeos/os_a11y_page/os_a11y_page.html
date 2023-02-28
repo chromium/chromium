@@ -73,7 +73,8 @@
   </template>
   <template is="dom-if" route-path="/textToSpeech">
     <os-settings-subpage page-title="$i18n{textToSpeechLinkTitle}">
-      <settings-text-to-speech-page prefs="{{prefs}}">
+      <settings-text-to-speech-page prefs="{{prefs}}"
+          has-screen-reader="[[hasScreenReader_]]">
       </settings-text-to-speech-page>
     </os-settings-subpage>
   </template>
