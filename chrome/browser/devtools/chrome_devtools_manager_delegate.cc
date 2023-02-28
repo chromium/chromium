@@ -205,11 +205,13 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
   const extensions::Extension* extension = nullptr;
   if (web_contents) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Disable devtools for ash webui for dev, beta, stable channels unless
+    // device is in devmode, or running with `--force-devtools-available'.
     GURL url = web_contents->GetLastCommittedURL();
     if ((url.SchemeIs("chrome") && url.host() != "inspect") ||
         url.SchemeIs("os")) {
       base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-      if (chrome::GetChannel() != version_info::Channel::CANARY &&
+      if (chrome::GetChannel() >= version_info::Channel::DEV &&
           !command_line->HasSwitch(chromeos::switches::kSystemInDevMode) &&
           !command_line->HasSwitch(ash::switches::kForceDevToolsAvailable)) {
         return false;
