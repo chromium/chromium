@@ -4471,7 +4471,7 @@
   },  {
     "name": "ios-popular-sites-improved-suggestions",
     "owners": ["bwwilliams@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "ios-shared-highlighting-color-change",
