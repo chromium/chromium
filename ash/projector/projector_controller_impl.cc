@@ -71,8 +71,7 @@ bool SaveFile(scoped_refptr<base::RefCountedMemory> data,
   if (!size)
     return false;
 
-  if (size != base::WriteFile(
-                  path, reinterpret_cast<const char*>(data->front()), size)) {
+  if (!base::WriteFile(path, *data)) {
     LOG(ERROR) << "Failed to save file: " << path;
     return false;
   }
