@@ -19,6 +19,10 @@ class MockSecurityDelegate : public SecurityDelegate {
   MOCK_METHOD(std::string, GetSecurityContext, (), (const, override));
   MOCK_METHOD(bool, CanSelfActivate, (aura::Window*), (const, override));
   MOCK_METHOD(bool, CanLockPointer, (aura::Window*), (const, override));
+  MOCK_METHOD(bool,
+              CanSetBoundsWithServerSideDecoration,
+              (aura::Window*),
+              (const, override));
 };
 
 }  // namespace exo::test

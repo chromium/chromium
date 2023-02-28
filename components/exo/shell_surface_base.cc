@@ -642,10 +642,38 @@ void ShellSurfaceBase::SetWindowBounds(const gfx::Rect& bounds) {
     initial_bounds_.emplace(bounds);
     return;
   }
-  // TODO(crbug.com/1261321): This will not work if the full server side
-  // decoration is used.
-  DCHECK(!frame_enabled());
-  widget_->SetBounds(bounds);
+
+  // Currently, clients do not know the size of the server-side decorations,
+  // so may not be able to compute correct bounds for decorated windows.
+  //
+  // TODO(crbug.com/1261321, b/268395213): Instead, tell clients how large the
+  // decorations are, so they can make better decisions.
+  if (GetSecurityDelegate() &&
+      GetSecurityDelegate()->CanSetBoundsWithServerSideDecoration(
+          widget_->GetNativeWindow())) {
+    // For selected clients (Borealis) work around this by expanding
+    // the requested bounds to include the decorations, if any.
+    if (widget_->non_client_view()) {
+      gfx::Rect expanded_bounds{
+          widget_->non_client_view()->GetWindowBoundsForClientBounds(bounds)};
+
+      // If this expansion pushes the title bar offscreen, push it back
+      // onscreen while preserving requested X coordinate, width, and height.
+      gfx::Rect work_area =
+          display::Screen::GetScreen()->GetDisplayMatching(bounds).work_area();
+      if (!work_area.IsEmpty() && expanded_bounds.y() < work_area.y()) {
+        expanded_bounds.Offset(0, work_area.y() - expanded_bounds.y());
+      }
+      widget_->SetBounds(expanded_bounds);
+    } else {
+      // No decorations, so no adjustment needed.
+      widget_->SetBounds(bounds);
+    }
+  } else {
+    // Don't permit other clients (Lacros) to set bounds for decorated windows.
+    DCHECK(!frame_enabled());
+    widget_->SetBounds(bounds);
+  }
 }
 
 void ShellSurfaceBase::SetRestoreInfo(int32_t restore_session_id,

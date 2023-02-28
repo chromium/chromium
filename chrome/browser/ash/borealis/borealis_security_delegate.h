@@ -29,6 +29,8 @@ class BorealisSecurityDelegate : public guest_os::GuestOsSecurityDelegate {
   std::string GetSecurityContext() const override;
   bool CanSelfActivate(aura::Window* window) const override;
   bool CanLockPointer(aura::Window* window) const override;
+  bool CanSetBoundsWithServerSideDecoration(
+      aura::Window* window) const override;
 
  private:
   Profile* const profile_;

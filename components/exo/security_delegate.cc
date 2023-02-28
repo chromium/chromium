@@ -50,4 +50,9 @@ bool SecurityDelegate::CanLockPointer(aura::Window* window) const {
   return false;
 }
 
+bool SecurityDelegate::CanSetBoundsWithServerSideDecoration(
+    aura::Window* window) const {
+  return false;
+}
+
 }  // namespace exo
