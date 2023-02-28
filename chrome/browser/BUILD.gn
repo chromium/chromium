@@ -5172,6 +5172,7 @@ static_library("browser") {
       "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/services/network_config/public/mojom",
       "//chromeos/services/network_health/public/mojom",
+      "//chromeos/startup:constants",
       "//chromeos/strings",
       "//chromeos/ui/base",
       "//chromeos/ui/vector_icons",

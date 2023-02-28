@@ -13,8 +13,16 @@
 #include <sys/time.h>
 
 #include "base/bit_cast.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "chromeos/startup/startup_switches.h"
+
+#if defined(__clang__) || defined(__GNUC__)
+#define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
+#else
+#define ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
 
 // CHROMEOS_ORDERFILE_USE is a flag intended to use orderfile
 // to link Chrome. Only when orderfile is used, we will use hugepages.
@@ -57,10 +65,6 @@ constexpr static bool kIsOrderfileEnabled = true;
 #else
 constexpr static bool kIsOrderfileEnabled = false;
 #endif
-
-BASE_FEATURE(kCrOSHugepageRemapAndLockZygote,
-             "CrOSHugepageRemapAndLockInZygote",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const int kHpageShift = 21;
 const int kHpageSize = (1 << kHpageShift);
@@ -261,10 +265,12 @@ static int FilterElfHeader(struct dl_phdr_info* info, size_t size, void* data) {
 // the hugepages. Any errors will cause the failing piece of this to be rolled
 // back, so nothing world-ending can come from this function (hopefully ;) ).
 void InitHugepagesAndMlockSelf(void) {
+  const bool zygote_hugepage_remap_enabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kZygoteHugepageRemap);
   // The following function is conditionally compiled, so use
   // the statements to avoid compiler warnings of unused functions
-  if (kIsOrderfileEnabled &&
-      base::FeatureList::IsEnabled(chromeos::kCrOSHugepageRemapAndLockZygote)) {
+  if (kIsOrderfileEnabled && zygote_hugepage_remap_enabled) {
     dl_iterate_phdr(FilterElfHeader, 0);
   }
 }

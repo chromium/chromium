@@ -38,6 +38,7 @@ component("chromeos") {
     deps += [
       ":chromeos_export",
       "//base",
+      "//chromeos/startup:constants",
     ]
     sources += [
       "hugepage_text/hugepage_text.cc",
