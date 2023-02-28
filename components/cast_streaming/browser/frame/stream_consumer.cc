@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
 #include "components/cast_streaming/public/features.h"
 #include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/media_util.h"
@@ -16,6 +17,8 @@
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace cast_streaming {
+
+StreamConsumer::BufferDataWrapper::~BufferDataWrapper() = default;
 
 base::span<uint8_t> StreamConsumer::BufferDataWrapper::Get() {
   return base::span<uint8_t>(&pending_buffer_[pending_buffer_offset_],
@@ -49,22 +52,27 @@ void StreamConsumer::BufferDataWrapper::Clear() {
   DCHECK(success);
 }
 
-StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
-                               base::TimeDelta frame_duration,
-                               mojo::ScopedDataPipeProducerHandle data_pipe,
-                               FrameReceivedCB frame_received_cb,
-                               base::RepeatingClosure on_new_frame,
-                               bool is_remoting)
+uint32_t StreamConsumer::BufferDataWrapper::Size() const {
+  return pending_buffer_remaining_bytes_;
+}
+
+StreamConsumer::StreamConsumer(
+    openscreen::cast::Receiver* receiver,
+    mojo::ScopedDataPipeProducerHandle data_pipe,
+    FrameReceivedCB frame_received_cb,
+    base::RepeatingClosure on_new_frame,
+    std::unique_ptr<DecoderBufferFactory> decoder_buffer_factory)
     : receiver_(receiver),
       data_pipe_(std::move(data_pipe)),
       frame_received_cb_(std::move(frame_received_cb)),
       pipe_watcher_(FROM_HERE,
                     mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                     base::SequencedTaskRunner::GetCurrentDefault()),
-      frame_duration_(frame_duration),
-      is_remoting_(is_remoting),
-      on_new_frame_(std::move(on_new_frame)) {
+      on_new_frame_(std::move(on_new_frame)),
+      decoder_buffer_factory_(std::move(decoder_buffer_factory)) {
   DCHECK(receiver_);
+  DCHECK(decoder_buffer_factory_);
+
   receiver_->SetConsumer(this);
   MojoResult result =
       pipe_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
@@ -73,20 +81,6 @@ StreamConsumer::StreamConsumer(openscreen::cast::Receiver* receiver,
   if (result != MOJO_RESULT_OK) {
     CloseDataPipeOnError();
     return;
-  }
-}
-
-StreamConsumer::StreamConsumer(StreamConsumer&& other,
-                               openscreen::cast::Receiver* receiver,
-                               mojo::ScopedDataPipeProducerHandle data_pipe)
-    : StreamConsumer(receiver,
-                     other.frame_duration_,
-                     std::move(data_pipe),
-                     std::move(other.frame_received_cb_),
-                     std::move(other.on_new_frame_),
-                     other.is_remoting_) {
-  if (other.is_read_pending_) {
-    ReadFrame(std::move(other.no_frames_available_cb_));
   }
 }
 
@@ -189,17 +183,8 @@ void StreamConsumer::MaybeSendNextFrame() {
   }
 
   // Create the buffer, retrying if this fails.
-  //
-  // NOTE: Using CreateRemotingBuffer() is EXPECTED for all remoting streams,
-  // but REQUIRED only for certain codecs - so inconsistent behavior rather than
-  // just "not working" will be observed if the wrong call is made.
-  scoped_refptr<media::DecoderBuffer> decoder_buffer;
-  if (is_remoting_) {
-    decoder_buffer = CreateRemotingBuffer();
-  } else {
-    decoder_buffer = CreateMirroringBuffer(encoded_frame);
-  }
-
+  scoped_refptr<media::DecoderBuffer> decoder_buffer =
+      decoder_buffer_factory_->ToDecoderBuffer(encoded_frame, data_wrapper_);
   if (!decoder_buffer) {
     data_wrapper_.Clear();
     MaybeSendNextFrame();
@@ -232,69 +217,6 @@ void StreamConsumer::MaybeSendNextFrame() {
   if (!data_wrapper_.empty()) {
     pipe_watcher_.ArmOrNotify();
   }
-}
-
-scoped_refptr<media::DecoderBuffer> StreamConsumer::CreateRemotingBuffer() {
-  DCHECK(is_remoting_);
-
-  auto span = data_wrapper_.Get();
-  scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      remoting::ByteArrayToDecoderBuffer(span.data(), span.size());
-  if (!decoder_buffer) {
-    DLOG(WARNING) << "Deserialization failed!";
-    return nullptr;
-  }
-
-  if (!data_wrapper_.Reset(decoder_buffer->data_size())) {
-    DLOG(WARNING) << "Buffer overflow!";
-    return nullptr;
-  }
-
-  span = data_wrapper_.Get();
-  base::span<const uint8_t> decoder_buffer_data(decoder_buffer->data(),
-                                                decoder_buffer->data_size());
-  std::copy(decoder_buffer_data.begin(), decoder_buffer_data.end(),
-            span.begin());
-
-  return decoder_buffer;
-}
-
-scoped_refptr<media::DecoderBuffer> StreamConsumer::CreateMirroringBuffer(
-    const openscreen::cast::EncodedFrame& encoded_frame) {
-  DCHECK(!is_remoting_);
-
-  scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      base::MakeRefCounted<media::DecoderBuffer>(data_wrapper_.size());
-
-  decoder_buffer->set_duration(frame_duration_);
-  decoder_buffer->set_is_key_frame(
-      encoded_frame.dependency ==
-      openscreen::cast::EncodedFrame::Dependency::kKeyFrame);
-
-  base::TimeDelta playout_time =
-      base::Microseconds(encoded_frame.rtp_timestamp
-                             .ToTimeSinceOrigin<std::chrono::microseconds>(
-                                 receiver_->rtp_timebase())
-                             .count());
-
-  // Some senders do not send an initial playout time of 0. To work around this,
-  // a playout offset is added here. This is NOT done when remoting is enabled
-  // because the timestamp of the first frame is used to automatically start
-  // playback in such cases.
-  if (!IsCastRemotingEnabled()) {
-    if (playout_offset_ == base::TimeDelta::Max()) {
-      playout_offset_ = playout_time;
-    }
-    playout_time -= playout_offset_;
-  }
-
-  decoder_buffer->set_timestamp(playout_time);
-
-  DVLOG(3) << "[ssrc:" << receiver_->ssrc() << "] "
-           << "Received new frame. Timestamp: " << playout_time
-           << ", is_key_frame: " << decoder_buffer->is_key_frame();
-
-  return decoder_buffer;
 }
 
 }  // namespace cast_streaming

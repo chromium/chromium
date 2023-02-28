@@ -10,6 +10,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/cast_streaming/browser/cast_message_port_converter.h"
+#include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
+#include "components/cast_streaming/browser/control/remoting/remoting_decoder_buffer_factory.h"
+#include "components/cast_streaming/browser/frame/mirroring_decoder_buffer_factory.h"
 #include "components/cast_streaming/browser/frame/stream_consumer.h"
 #include "components/cast_streaming/public/config_conversions.h"
 #include "components/cast_streaming/public/features.h"
@@ -182,18 +185,27 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
     return absl::nullopt;
   }
 
+  std::unique_ptr<DecoderBufferFactory> decoder_buffer_factory;
+  if (initialization_info.is_remoting) {
+    decoder_buffer_factory = std::make_unique<RemotingDecoderBufferFactory>();
+  } else {
+    // The duration is set to kNoTimestamp so the audio renderer does not block.
+    // Audio frames duration is not known ahead of time in mirroring.
+    decoder_buffer_factory = std::make_unique<MirroringDecoderBufferFactory>(
+        initialization_info.audio_stream_info->receiver->rtp_timebase(),
+        media::kNoTimestamp);
+  }
+
   // We can use unretained pointers here because StreamConsumer is owned by
-  // this object and |client_| is guaranteed to outlive this object. Here,
-  // the duration is set to kNoTimestamp so the audio renderer does not block.
-  // Audio frames duration is not known ahead of time in mirroring.
+  // this object and |client_| is guaranteed to outlive this object.
   audio_consumer_ = std::make_unique<StreamConsumer>(
-      initialization_info.audio_stream_info->receiver, media::kNoTimestamp,
+      initialization_info.audio_stream_info->receiver,
       std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnAudioBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)),
-      initialization_info.is_remoting);
+      std::move(decoder_buffer_factory));
 
   return data_pipe_consumer;
 }
@@ -211,22 +223,31 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
     return absl::nullopt;
   }
 
+  std::unique_ptr<DecoderBufferFactory> decoder_buffer_factory;
+  if (initialization_info.is_remoting) {
+    decoder_buffer_factory = std::make_unique<RemotingDecoderBufferFactory>();
+  } else {
+    // The frame duration is set to 10 minutes to work around cases where
+    // senders do not send data for a long period of time. We end up with
+    // overlapping video frames but this is fine since the media pipeline mostly
+    // considers the playout time when deciding which frame to present or play
+    decoder_buffer_factory = std::make_unique<MirroringDecoderBufferFactory>(
+        initialization_info.video_stream_info->receiver->rtp_timebase(),
+        base::Minutes(10));
+  }
+
   // We can use unretained pointers here because StreamConsumer is owned by
   // this object and |client_| is guaranteed to outlive this object.
   // |data_timeout_timer_| is also owned by this object and will outlive both
   // StreamConsumers.
-  // The frame duration is set to 10 minutes to work around cases where
-  // senders do not send data for a long period of time. We end up with
-  // overlapping video frames but this is fine since the media pipeline mostly
-  // considers the playout time when deciding which frame to present or play
   video_consumer_ = std::make_unique<StreamConsumer>(
-      initialization_info.video_stream_info->receiver, base::Minutes(10),
+      initialization_info.video_stream_info->receiver,
       std::move(data_pipe_producer),
       base::BindRepeating(&CastStreamingSession::Client::OnVideoBufferReceived,
                           base::Unretained(client_)),
       base::BindRepeating(&base::OneShotTimer::Reset,
                           base::Unretained(&data_timeout_timer_)),
-      initialization_info.is_remoting);
+      std::move(decoder_buffer_factory));
 
   return data_pipe_consumer;
 }
@@ -235,6 +256,7 @@ void CastStreamingSession::ReceiverSessionClient::StartStreamingSession(
     StreamingInitializationInfo initialization_info) {
   DVLOG(1) << __func__;
   DCHECK_EQ(initialization_info.session, receiver_session_.get());
+  DCHECK(!initialization_info.is_remoting || IsCastRemotingEnabled());
 
   // If a Flush() call is ongoing, its unsafe to begin streaming data, so
   // instead stall this call until the Flush() call has completed.

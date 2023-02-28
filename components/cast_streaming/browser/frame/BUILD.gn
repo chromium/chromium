@@ -7,9 +7,13 @@ visibility = [ "//components/cast_streaming/browser/*" ]
 source_set("frame") {
   public = [
     "demuxer_stream_data_provider.h",
+    "mirroring_decoder_buffer_factory.h",
     "stream_consumer.h",
   ]
-  sources = [ "stream_consumer.cc" ]
+  sources = [
+    "mirroring_decoder_buffer_factory.cc",
+    "stream_consumer.cc",
+  ]
   public_deps = [
     "//base",
     "//components/cast_streaming/public/mojom",

@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/cast_streaming/browser/common/decoder_buffer_factory.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -35,14 +36,10 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // been written to |data_pipe|. On error, |data_pipe| will be closed.
   // On every new frame, |on_new_frame| will be called.
   StreamConsumer(openscreen::cast::Receiver* receiver,
-                 base::TimeDelta frame_duration,
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
                  base::RepeatingClosure on_new_frame,
-                 bool is_remoting);
-  StreamConsumer(StreamConsumer&& old_consumer,
-                 openscreen::cast::Receiver* receiver,
-                 mojo::ScopedDataPipeProducerHandle data_pipe);
+                 std::unique_ptr<DecoderBufferFactory> decoder_buffer_factory);
   ~StreamConsumer() override;
 
   StreamConsumer(const StreamConsumer&) = delete;
@@ -61,26 +58,19 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
  private:
   // Wrapper around a data buffer used for storing the data of a DecoderBuffer
   // received from Openscreen.
-  class BufferDataWrapper {
+  class BufferDataWrapper : public DecoderBufferFactory::FrameContents {
    public:
-    // Returns the span associated with all remaining data for this instance.
-    base::span<uint8_t> Get();
+    ~BufferDataWrapper() override;
 
     // Returns up to |max_size| more bytes of the underlying array, invalidating
     // these bytes in the underlying buffer.
     base::span<uint8_t> Consume(uint32_t max_size);
 
-    // Resets the underlying array to size |new_size|.
-    bool Reset(uint32_t new_size);
-
-    // Empties the underlying array.
-    void Clear();
-
-    // Returns the current size of the buffer.
-    uint32_t size() const { return pending_buffer_remaining_bytes_; }
-
-    // Returns whether this instance is empty.
-    bool empty() const { return !size(); }
+    // DecoderBufferFactory::FrameContents overrides.
+    base::span<uint8_t> Get() override;
+    bool Reset(uint32_t new_size) override;
+    void Clear() override;
+    uint32_t Size() const override;
 
    private:
     // Maximum frame size that OnFramesReady() can accept.
@@ -109,11 +99,6 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
 
   bool WriteBufferToDataPipe();
 
-  // Creates a frame of the given type.
-  scoped_refptr<media::DecoderBuffer> CreateRemotingBuffer();
-  scoped_refptr<media::DecoderBuffer> CreateMirroringBuffer(
-      const openscreen::cast::EncodedFrame& encoded_frame);
-
   // openscreen::cast::Receiver::Consumer implementation.
   void OnFramesReady(int next_frame_buffer_size) override;
 
@@ -130,19 +115,15 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // Provides notifications about |data_pipe_| readiness.
   mojo::SimpleWatcher pipe_watcher_;
 
-  // Offset for frames playout time. This is initialized by the first frame.
-  base::TimeDelta playout_offset_ = base::TimeDelta::Max();
-
-  const base::TimeDelta frame_duration_;
-
   bool is_read_pending_ = false;
-
-  const bool is_remoting_;
 
   base::OnceClosure no_frames_available_cb_;
 
   // Closure called on every new frame.
   base::RepeatingClosure on_new_frame_;
+
+  // Factory to use for creating DecoderBuffers.
+  std::unique_ptr<DecoderBufferFactory> decoder_buffer_factory_;
 };
 
 }  // namespace cast_streaming

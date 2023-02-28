@@ -6,6 +6,7 @@ visibility = [ "//components/cast_streaming/browser/*" ]
 
 source_set("common") {
   public = [
+    "decoder_buffer_factory.h",
     "demuxer_stream_client.h",
     "streaming_initialization_info.h",
   ]
