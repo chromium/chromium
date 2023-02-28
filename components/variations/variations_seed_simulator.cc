@@ -9,11 +9,11 @@
 #include <map>
 
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/study_filtering.h"
-#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 
@@ -83,7 +83,7 @@ const Study_Experiment* FindExperiment(const Study& study,
 bool VariationParamsAreEqual(const Study& study,
                              const Study_Experiment& experiment) {
   std::map<std::string, std::string> params;
-  GetVariationParams(study.name(), &params);
+  base::GetFieldTrialParams(study.name(), &params);
 
   if (static_cast<int>(params.size()) != experiment.param_size())
     return false;

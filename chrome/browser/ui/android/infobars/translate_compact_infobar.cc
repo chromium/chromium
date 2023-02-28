@@ -13,13 +13,13 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/android/chrome_jni_headers/TranslateCompactInfoBar_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 
 using base::android::JavaParamRef;
@@ -218,9 +218,10 @@ TranslateCompactInfoBar::GetContentLanguagesCodes(
 int TranslateCompactInfoBar::GetParam(const std::string& paramName,
                                       int default_value) {
   std::map<std::string, std::string> params;
-  if (!variations::GetVariationParams(translate::kTranslateCompactUI.name,
-                                      &params))
+  if (!base::GetFieldTrialParams(translate::kTranslateCompactUI.name,
+                                 &params)) {
     return default_value;
+  }
   int value = 0;
   base::StringToInt(params[paramName], &value);
   return value <= 0 ? default_value : value;

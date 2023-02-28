@@ -158,11 +158,6 @@ bool AssociateVariationParams(
   return base::AssociateFieldTrialParams(trial_name, group_name, params);
 }
 
-bool GetVariationParams(const std::string& trial_name,
-                        std::map<std::string, std::string>* params) {
-  return base::GetFieldTrialParams(trial_name, params);
-}
-
 bool GetVariationParamsByFeature(const base::Feature& feature,
                                  std::map<std::string, std::string>* params) {
   return base::GetFieldTrialParamsByFeature(feature, params);

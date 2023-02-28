@@ -12,6 +12,7 @@
 
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_samples.h"
@@ -20,7 +21,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/metrics_private/metrics_private_delegate.h"
@@ -82,8 +82,7 @@ MetricsPrivateGetVariationParamsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetVariationParams::Results::Params result;
-  if (variations::GetVariationParams(params->name,
-                                     &result.additional_properties)) {
+  if (base::GetFieldTrialParams(params->name, &result.additional_properties)) {
     return RespondNow(OneArgument(base::Value(result.ToValue())));
   }
   return RespondNow(NoArguments());

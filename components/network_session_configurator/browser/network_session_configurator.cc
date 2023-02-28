@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,7 +24,6 @@
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/http/http_network_session.h"
@@ -694,8 +694,9 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
   std::string quic_trial_group =
       base::FieldTrialList::FindFullName(kQuicFieldTrialName);
   VariationParameters quic_trial_params;
-  if (!variations::GetVariationParams(kQuicFieldTrialName, &quic_trial_params))
+  if (!base::GetFieldTrialParams(kQuicFieldTrialName, &quic_trial_params)) {
     quic_trial_params.clear();
+  }
   ConfigureQuicParams(command_line, quic_trial_group, quic_trial_params,
                       is_quic_force_disabled, quic_user_agent_id, params,
                       quic_params);
@@ -703,9 +704,9 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
   std::string http2_trial_group =
       base::FieldTrialList::FindFullName(kHttp2FieldTrialName);
   VariationParameters http2_trial_params;
-  if (!variations::GetVariationParams(kHttp2FieldTrialName,
-                                      &http2_trial_params))
+  if (!base::GetFieldTrialParams(kHttp2FieldTrialName, &http2_trial_params)) {
     http2_trial_params.clear();
+  }
   ConfigureHttp2Params(command_line, http2_trial_group, http2_trial_params,
                        params);
 

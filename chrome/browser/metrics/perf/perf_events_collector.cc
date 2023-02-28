@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client_provider.h"
-#include "components/variations/variations_associated_data.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -412,7 +412,7 @@ void PerfCollector::SetUp() {
   CHECK(command_selector_.SetOdds(internal::GetDefaultCommandsForCpuModel(
       GetCPUIdentity(), base::SysInfo::HardwareModelName())));
   std::map<std::string, std::string> params;
-  if (variations::GetVariationParams(kCWPFieldTrialName, &params)) {
+  if (base::GetFieldTrialParams(kCWPFieldTrialName, &params)) {
     SetCollectionParamsFromVariationParams(params);
   }
 }

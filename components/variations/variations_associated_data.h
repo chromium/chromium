@@ -126,11 +126,6 @@ bool AssociateVariationParams(const std::string& trial_name,
                               const std::string& group_name,
                               const std::map<std::string, std::string>& params);
 
-// Deprecated. Use base::GetFieldTrialParams() instead.
-COMPONENT_EXPORT(VARIATIONS)
-bool GetVariationParams(const std::string& trial_name,
-                        std::map<std::string, std::string>* params);
-
 // Deprecated. Use base::GetFieldTrialParamsByFeature() instead.
 COMPONENT_EXPORT(VARIATIONS)
 bool GetVariationParamsByFeature(const base::Feature& feature,
