@@ -222,13 +222,15 @@ BASE_FEATURE(kRendererAllocatesImages,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-// By default on Android, when a client is being evicted, it only evicts itself.
-// This differs from Destkop platforms which evict the entire FrameTree along
-// with the topmost viz::Surface. When this feature is enabled, Android will
-// begin also evicting the entire FrameTree.
+// On all platforms when attempting to evict a FrameTree, the active
+// viz::Surface can be not included. This feature ensures that the we always add
+// the active viz::Surface to the eviction list.
+//
+// Furthermore, by default on Android, when a client is being evicted, it only
+// evicts itself. This differs from Destkop platforms which evict the entire
+// FrameTree along with the topmost viz::Surface. When this feature is enabled,
+// Android will begin also evicting the entire FrameTree.
 BASE_FEATURE(kEvictSubtree, "EvictSubtree", base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);

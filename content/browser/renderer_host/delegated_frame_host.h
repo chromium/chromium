@@ -152,10 +152,9 @@ class CONTENT_EXPORT DelegatedFrameHost
   bool CanCopyFromCompositingSurface() const;
   const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
 
+  // FrameEvictorClient:
   // Returns the surface id for the most recently embedded surface.
-  viz::SurfaceId GetCurrentSurfaceId() const {
-    return viz::SurfaceId(frame_sink_id_, local_surface_id_);
-  }
+  viz::SurfaceId GetCurrentSurfaceId() const override;
 
   bool HasPrimarySurface() const;
   bool HasFallbackSurface() const;
@@ -194,6 +193,10 @@ class CONTENT_EXPORT DelegatedFrameHost
     return frame_eviction_state_;
   }
 
+  const viz::FrameEvictor* GetFrameEvictorForTesting() const {
+    return frame_evictor_.get();
+  }
+
  private:
   friend class DelegatedFrameHostClient;
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraBrowserTest,
@@ -204,11 +207,15 @@ class CONTENT_EXPORT DelegatedFrameHost
                            StaleFrameContentOnEvictionNone);
 
   // FrameEvictorClient implementation.
-  void EvictDelegatedFrame() override;
+  void EvictDelegatedFrame(
+      const std::vector<viz::SurfaceId>& surface_ids) override;
+  std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() const override;
+  viz::SurfaceId GetPreNavigationSurfaceId() const override;
 
   void DidCopyStaleContent(std::unique_ptr<viz::CopyOutputResult> result);
 
-  void ContinueDelegatedFrameEviction();
+  void ContinueDelegatedFrameEviction(
+      const std::vector<viz::SurfaceId>& surface_ids);
 
   SkColor GetGutterColor() const;
 
