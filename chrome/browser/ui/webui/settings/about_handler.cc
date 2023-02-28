@@ -54,6 +54,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -353,6 +354,10 @@ void AboutHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setConsumerAutoUpdate",
       base::BindRepeating(&AboutHandler::HandleSetConsumerAutoUpdate,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openProductLicenseOther",
+      base::BindRepeating(&AboutHandler::HandleOpenProductLicenseOther,
                           base::Unretained(this)));
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -715,6 +720,14 @@ void AboutHandler::HandleSetConsumerAutoUpdate(const base::Value::List& args) {
   bool enable = args[0].GetBool();
   const std::string& feature = update_engine::kFeatureConsumerAutoUpdate;
   version_updater_->ToggleFeature(feature, enable);
+}
+
+void AboutHandler::HandleOpenProductLicenseOther(
+    const base::Value::List& args) {
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(chrome::kChromeUICreditsURL),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -367,6 +367,14 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     event.stopPropagation();
   }
 
+  private onProductLicenseOtherClicked_(event: CustomEvent<{event: Event}>) {
+    // Prevent the default link click behavior
+    event.detail.event.preventDefault();
+
+    // Programmatically open license.
+    this.aboutBrowserProxy_.openProductLicenseOther();
+  }
+
   private onReleaseNotesTap_() {
     this.aboutBrowserProxy_.launchReleaseNotes();
   }

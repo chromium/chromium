@@ -144,6 +144,9 @@ export interface AboutPageBrowserProxy {
   /** Opens the diagnostics page. */
   openDiagnostics(): void;
 
+  /** Opens the "other open source software" license page. */
+  openProductLicenseOther(): void;
+
   /** Opens the OS help page. */
   openOsHelpPage(): void;
 
@@ -243,6 +246,10 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
 
   openDiagnostics() {
     chrome.send('openDiagnostics');
+  }
+
+  openProductLicenseOther() {
+    chrome.send('openProductLicenseOther');
   }
 
   openOsHelpPage() {
