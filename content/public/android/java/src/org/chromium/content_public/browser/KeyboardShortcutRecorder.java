@@ -17,14 +17,17 @@ public class KeyboardShortcutRecorder {
     // |PhysicalKeyboardShortcut| in tools/metrics/histograms/enums.xml and
     // third_party/blink/renderer/core/input/keyboard_shortcut_recorder.h
     @IntDef({KeyboardShortcut.ZOOM_IN, KeyboardShortcut.ZOOM_OUT, KeyboardShortcut.ZOOM_RESET,
-            KeyboardShortcut.DELETE_LINE, KeyboardShortcut.COUNT})
+            KeyboardShortcut.DELETE_LINE, KeyboardShortcut.PAGE_UP, KeyboardShortcut.PAGE_DOWN,
+            KeyboardShortcut.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface KeyboardShortcut {
         int ZOOM_IN = 0;
         int ZOOM_OUT = 1;
         int ZOOM_RESET = 2;
         int DELETE_LINE = 3;
-        int COUNT = 4;
+        int PAGE_UP = 4;
+        int PAGE_DOWN = 5;
+        int COUNT = 6;
     }
 
     private KeyboardShortcutRecorder() {}

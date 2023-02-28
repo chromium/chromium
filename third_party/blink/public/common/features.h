@@ -755,8 +755,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
 // Stylus handwriting recognition to text input feature.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusWritingToInput);
 
-// Physical keyboard shortcuts for Android with respect to editing.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidExtendedEditingCommands);
+// Extended physical keyboard shortcuts for Android.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidExtendedKeyboardShortcuts);
 
 // Apply touch adjustment for stylus pointer events. This feature allows
 // enabling functions like writing into a nearby input element.

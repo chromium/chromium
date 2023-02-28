@@ -11,9 +11,9 @@ namespace blink {
 
 bool IsCommandFilteredOut(const String& command_name) {
 #if BUILDFLAG(IS_ANDROID)
-  bool extended_commands_enabled = base::FeatureList::IsEnabled(
-      blink::features::kAndroidExtendedEditingCommands);
-  if (!extended_commands_enabled) {
+  bool extended_shortcuts_enabled = base::FeatureList::IsEnabled(
+      blink::features::kAndroidExtendedKeyboardShortcuts);
+  if (!extended_shortcuts_enabled) {
     if (command_name == "DeleteToBeginningOfLine") {
       return true;
     }

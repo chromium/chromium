@@ -1526,8 +1526,8 @@ BASE_FEATURE(kStylusWritingToInput,
              "StylusWritingToInput",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidExtendedEditingCommands,
-             "AndroidExtendedEditingCommands",
+BASE_FEATURE(kAndroidExtendedKeyboardShortcuts,
+             "AndroidExtendedKeyboardShortcuts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStylusPointerAdjustment,

@@ -18,7 +18,9 @@ enum class KeyboardShortcut {
   kZoomOut = 1,
   kZoomReset = 2,
   kDeleteLine = 3,
-  kMaxValue = kDeleteLine,
+  kPageUp = 4,
+  kPageDown = 5,
+  kMaxValue = kPageDown,
 };
 
 #if BUILDFLAG(IS_ANDROID)
