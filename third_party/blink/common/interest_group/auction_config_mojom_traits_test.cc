@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/common/interest_group/seller_capabilities.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -57,13 +58,15 @@ bool operator==(const AuctionConfig::NonSharedParams& a,
                   a.buyer_cumulative_timeouts, a.per_buyer_group_limits,
                   a.all_buyers_group_limit, a.per_buyer_priority_signals,
                   a.all_buyers_priority_signals, a.auction_report_buyer_keys,
-                  a.auction_report_buyers, a.component_auctions) ==
+                  a.auction_report_buyers, a.required_seller_capabilities,
+                  a.component_auctions) ==
          std::tie(b.interest_group_buyers, b.auction_signals, b.seller_signals,
                   b.seller_timeout, b.per_buyer_signals, b.buyer_timeouts,
                   b.buyer_cumulative_timeouts, b.per_buyer_group_limits,
                   b.all_buyers_group_limit, b.per_buyer_priority_signals,
                   b.all_buyers_priority_signals, b.auction_report_buyer_keys,
-                  b.auction_report_buyers, b.component_auctions);
+                  b.auction_report_buyers, b.required_seller_capabilities,
+                  b.component_auctions);
 }
 
 bool operator==(const AuctionConfig& a, const AuctionConfig& b) {
@@ -161,6 +164,8 @@ AuctionConfig CreateFullConfig() {
       {AuctionConfig::NonSharedParams::BuyerReportType::
            kTotalSignalsFetchLatency,
        {absl::MakeUint128(0, 1), 2.0}}};
+  non_shared_params.required_seller_capabilities = {
+      SellerCapabilities::kLatencyStats};
 
   DirectFromSellerSignalsSubresource
       direct_from_seller_signals_per_buyer_signals_buyer;

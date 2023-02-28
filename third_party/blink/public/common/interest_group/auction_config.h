@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/interest_group/seller_capabilities.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -232,6 +233,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // provides the bucket offset and scalar multiplier for that event.
     absl::optional<base::flat_map<BuyerReportType, AuctionReportBuyersConfig>>
         auction_report_buyers;
+
+    // The set of seller capabilities that each interest group must declare in
+    // order to participate in the auction. Interest groups that don't declare
+    // all required seller capabilities will not participate in the auction.
+    SellerCapabilitiesType required_seller_capabilities;
 
     // Nested auctions whose results will also be fed to `seller`. Only the top
     // level auction config can have component auctions.

@@ -253,6 +253,11 @@ struct BLINK_COMMON_EXPORT
     return params.auction_report_buyers;
   }
 
+  static const blink::SellerCapabilitiesType required_seller_capabilities(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.required_seller_capabilities;
+  }
+
   static const std::vector<blink::AuctionConfig>& component_auctions(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.component_auctions;

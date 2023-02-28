@@ -403,6 +403,24 @@ WTF::HashMap<WTF::String, double> ConvertSparseVectorIdlToMojo(
   return priority_signals_out;
 }
 
+mojom::blink::SellerCapabilitiesPtr ConvertSellerCapabilitiesTypeFromIdlToMojo(
+    const Vector<String>& capabilities_vector) {
+  auto seller_capabilities = mojom::blink::SellerCapabilities::New();
+  for (const String& capability_str : capabilities_vector) {
+    if (capability_str == "interest-group-counts" ||
+        capability_str == "interestGroupCounts") {
+      seller_capabilities->allows_interest_group_counts = true;
+    } else if (capability_str == "latency-stats" ||
+               capability_str == "latencyStats") {
+      seller_capabilities->allows_latency_stats = true;
+    } else {
+      // For forward compatibility with new fields, don't throw.
+      continue;
+    }
+  }
+  return seller_capabilities;
+}
+
 bool CopySellerCapabilitiesFromIdlToMojo(ExceptionState& exception_state,
                                          const AuctionAdInterestGroup& input,
                                          mojom::blink::InterestGroup& output) {
@@ -412,19 +430,8 @@ bool CopySellerCapabilitiesFromIdlToMojo(ExceptionState& exception_state,
 
   for (const auto& [origin_string, capabilities_vector] :
        input.sellerCapabilities()) {
-    auto seller_capabilities = mojom::blink::SellerCapabilities::New();
-    for (const String& capability_str : capabilities_vector) {
-      if (capability_str == "interest-group-counts" ||
-          capability_str == "interestGroupCounts") {
-        seller_capabilities->allows_interest_group_counts = true;
-      } else if (capability_str == "latency-stats" ||
-                 capability_str == "latencyStats") {
-        seller_capabilities->allows_latency_stats = true;
-      } else {
-        // For forward compatibility with new fields, don't throw.
-        continue;
-      }
-    }
+    mojom::blink::SellerCapabilitiesPtr seller_capabilities =
+        ConvertSellerCapabilitiesTypeFromIdlToMojo(capabilities_vector);
     if (origin_string == "*") {
       output.all_sellers_capabilities = std::move(seller_capabilities);
     } else {
@@ -1606,6 +1613,22 @@ bool CopyAuctionReportBuyersFromIdlToMojo(
   return true;
 }
 
+bool CopyRequiredSellerSignalsFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  output.auction_ad_config_non_shared_params->required_seller_capabilities =
+      mojom::blink::SellerCapabilities::New();
+  if (!input.hasRequiredSellerCapabilities()) {
+    return true;
+  }
+
+  output.auction_ad_config_non_shared_params->required_seller_capabilities =
+      ConvertSellerCapabilitiesTypeFromIdlToMojo(
+          input.requiredSellerCapabilities());
+  return true;
+}
+
 // Attempts to convert the AuctionAdConfig `config`, passed in via Javascript,
 // to a `mojom::blink::AuctionAdConfig`. Throws a Javascript exception and
 // return null on failure. `auction_handle` is used for promise handling;
@@ -1664,7 +1687,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyAuctionReportBuyerKeysFromIdlToMojo(exception_state, config,
                                                *mojo_config) ||
       !CopyAuctionReportBuyersFromIdlToMojo(exception_state, config,
-                                            *mojo_config)) {
+                                            *mojo_config) ||
+      !CopyRequiredSellerSignalsFromIdlToMojo(exception_state, config,
+                                              *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 

@@ -38,13 +38,15 @@ dictionary AuctionAdConfig {
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
   record<USVString, record<USVString, double>> perBuyerPrioritySignals;
 
-  // `auctionReportBuyerKeys` and `auctionReportBuyers` are described in:
+  // `auctionReportBuyerKeys`, `auctionReportBuyers`, and
+  // `requiredSellerCapabilities` are described in:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
   //
   // TODO(crbug.com/1402467): Use `bigint` instead of `any` when supported by
   // WebIDL parser.
   sequence<any> auctionReportBuyerKeys;
   record<USVString, AuctionReportBuyersConfig> auctionReportBuyers;
+  sequence<USVString> requiredSellerCapabilities;
 
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;

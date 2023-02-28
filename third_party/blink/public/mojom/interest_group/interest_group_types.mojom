@@ -352,6 +352,11 @@ struct AuctionAdConfigNonSharedParams {
   // provides the bucket offset and scalar multiplier for that event.
   map<BuyerReportType, AuctionReportBuyersConfig>? auction_report_buyers;
 
+  // The set of capabilities that each interest group must declare to
+  // participate in the auction. Interest groups that don't declare all these
+  // capabilities will not participate in the auction.
+  SellerCapabilities required_seller_capabilities;
+
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.
   array<AuctionAdConfig> component_auctions;
