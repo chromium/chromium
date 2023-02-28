@@ -39,7 +39,9 @@ TestUploadDataStreamHandler::TestUploadDataStreamHandler(
 TestUploadDataStreamHandler::~TestUploadDataStreamHandler() {
 }
 
-void TestUploadDataStreamHandler::Destroy(JNIEnv* env) {
+void TestUploadDataStreamHandler::Destroy(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller) {
   DCHECK(!network_thread_->BelongsToCurrentThread());
   network_thread_->DeleteSoon(FROM_HERE, this);
 }
@@ -59,7 +61,8 @@ void TestUploadDataStreamHandler::OnReadCompleted(int res) {
   NotifyJavaReadCompleted();
 }
 
-void TestUploadDataStreamHandler::Init(JNIEnv* env) {
+void TestUploadDataStreamHandler::Init(JNIEnv* env,
+                                       const JavaParamRef<jobject>& jcaller) {
   DCHECK(!network_thread_->BelongsToCurrentThread());
   network_thread_->PostTask(
       FROM_HERE,
@@ -67,7 +70,8 @@ void TestUploadDataStreamHandler::Init(JNIEnv* env) {
                      base::Unretained(this)));
 }
 
-void TestUploadDataStreamHandler::Read(JNIEnv* env) {
+void TestUploadDataStreamHandler::Read(JNIEnv* env,
+                                       const JavaParamRef<jobject>& jcaller) {
   DCHECK(!network_thread_->BelongsToCurrentThread());
   network_thread_->PostTask(
       FROM_HERE,
@@ -75,7 +79,8 @@ void TestUploadDataStreamHandler::Read(JNIEnv* env) {
                      base::Unretained(this)));
 }
 
-void TestUploadDataStreamHandler::Reset(JNIEnv* env) {
+void TestUploadDataStreamHandler::Reset(JNIEnv* env,
+                                        const JavaParamRef<jobject>& jcaller) {
   DCHECK(!network_thread_->BelongsToCurrentThread());
   network_thread_->PostTask(
       FROM_HERE,
@@ -83,7 +88,9 @@ void TestUploadDataStreamHandler::Reset(JNIEnv* env) {
                      base::Unretained(this)));
 }
 
-void TestUploadDataStreamHandler::CheckInitCallbackNotInvoked(JNIEnv* env) {
+void TestUploadDataStreamHandler::CheckInitCallbackNotInvoked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller) {
   DCHECK(!network_thread_->BelongsToCurrentThread());
   network_thread_->PostTask(
       FROM_HERE, base::BindOnce(&TestUploadDataStreamHandler::
@@ -91,7 +98,9 @@ void TestUploadDataStreamHandler::CheckInitCallbackNotInvoked(JNIEnv* env) {
                                 base::Unretained(this)));
 }
 
-void TestUploadDataStreamHandler::CheckReadCallbackNotInvoked(JNIEnv* env) {
+void TestUploadDataStreamHandler::CheckReadCallbackNotInvoked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller) {
   DCHECK(!network_thread_->BelongsToCurrentThread());
   network_thread_->PostTask(
       FROM_HERE, base::BindOnce(&TestUploadDataStreamHandler::

@@ -420,7 +420,6 @@ cronet_impl_native_java_deps_to_package = [
 
 # cronet_impl_native_base_java.jar - native implementation of the Cronet engine.
 android_library("cronet_impl_native_base_java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
@@ -446,6 +445,7 @@ android_library("cronet_impl_native_base_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   deps += cronet_impl_native_java_deps_to_package
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   srcjar_deps = cronet_impl_native_java_srcjar_deps
 }
@@ -935,7 +935,6 @@ if (!is_component_build) {
 
   android_library("cronet_test_apk_java") {
     testonly = true
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     sources = [
       "test/src/org/chromium/net/CronetTestApplication.java",
@@ -1045,7 +1044,6 @@ if (!is_component_build) {
 
   android_library("cronet_javatests") {
     testonly = true
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     sources = [
       "test/javatests/src/org/chromium/net/BidirectionalStreamQuicTest.java",
