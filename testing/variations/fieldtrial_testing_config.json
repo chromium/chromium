@@ -5497,35 +5497,6 @@
             ]
         }
     ],
-    "GridTabSwitcherTablet": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Polish_Delay",
-                    "params": {
-                        "delay_creation": "true",
-                        "enable_launch_polish": "true"
-                    },
-                    "enable_features": [
-                        "GridTabSwitcherForTablets"
-                    ]
-                },
-                {
-                    "name": "Enabled_Polish",
-                    "params": {
-                        "delay_creation": "false",
-                        "enable_launch_polish": "true"
-                    },
-                    "enable_features": [
-                        "GridTabSwitcherForTablets"
-                    ]
-                }
-            ]
-        }
-    ],
     "GroupAutoCreationAndroid": [
         {
             "platforms": [
@@ -11790,21 +11761,6 @@
             ]
         }
     ],
-    "TabGroupsForTablets": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGroupsForTablets"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabHoverCardImages": [
         {
             "platforms": [
@@ -11910,24 +11866,6 @@
                     "name": "TabSearchMetricsReporter",
                     "enable_features": [
                         "TabSearchUseMetricsReporter"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabStripImprovements": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithShortTabWidth_20220719",
-                    "params": {
-                        "min_tab_width": "108.0"
-                    },
-                    "enable_features": [
-                        "TabStripImprovements"
                     ]
                 }
             ]

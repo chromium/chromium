@@ -661,7 +661,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabGroupsContinuationAndroid =
             new CachedFlag(TAB_GROUPS_CONTINUATION_ANDROID, false);
     public static final CachedFlag sTabGroupsForTablets =
-            new CachedFlag(TAB_GROUPS_FOR_TABLETS, false);
+            new CachedFlag(TAB_GROUPS_FOR_TABLETS, true);
     public static final CachedFlag sTabSelectionEditorV2 =
             new CachedFlag(TAB_SELECTION_EDITOR_V2, false);
     public static final CachedFlag sTabStripImprovements =
