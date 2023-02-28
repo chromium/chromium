@@ -4549,14 +4549,9 @@ crbug.com/1104910 fast/peerconnection/RTCPeerConnection-reload-interesting-usage
 # Sheriff 2020-07-14
 
 crbug.com/1105271 [ Mac ] scrollbars/custom-scrollbar-adjust-on-inactive-pseudo.html [ Failure Pass ]
-crbug.com/1105274 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-no-url-end-to-end.js [ Failure Pass Timeout ]
 
 # This test fails due to the linked bug since input is now routed through the compositor.
 crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
-
-# Sheriff 2020-07-20
-crbug.com/1107572 [ Debug Mac12 ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
-crbug.com/1107572 [ Debug Mac12 ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 
 # Sheriff 2020-07-22
 
@@ -6889,3 +6884,7 @@ crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeou
 # Temporarily disabled to roll change of error message in V8.
 # TODO(crbug.com/v8/13743): Re-enable tests after V8 roll.
 crbug.com/v8/13743 fast/forms/ValidityState-patternMismatch.html [ Failure Pass ]
+
+# Consistently crashing; disabling whilst we investigate
+crbug.com/1414607 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-no-url-end-to-end.js [ Crash Failure Pass ]
+crbug.com/1414607 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Crash Failure Pass ]
