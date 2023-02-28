@@ -18,6 +18,9 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
@@ -40,6 +43,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
@@ -94,6 +98,19 @@ MetricReportingManager::Delegate::GetHttpsLatencySampler() const {
 std::unique_ptr<Sampler>
 MetricReportingManager::Delegate::GetNetworkTelemetrySampler() const {
   return std::make_unique<NetworkTelemetrySampler>();
+}
+
+bool MetricReportingManager::Delegate::IsAppServiceAvailableForProfile(
+    Profile* profile) const {
+  return ::apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      profile);
+}
+
+::apps::AppPlatformMetrics*
+MetricReportingManager::Delegate::GetAppPlatformMetricsForProfile(
+    Profile* profile) {
+  return ::apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppPlatformMetrics();
 }
 
 // static
@@ -285,9 +302,12 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
       /*init_delay=*/base::TimeDelta());
   InitPeripheralsCollectors();
 
-  // Start observing app events only if the feature flag is set.
-  if (base::FeatureList::IsEnabled(kEnableAppMetricsReporting)) {
-    auto app_events_observer = AppEventsObserver::CreateForProfile(profile);
+  // Start observing app events only if the feature flag is set and app service
+  // is available for the given profile.
+  if (base::FeatureList::IsEnabled(kEnableAppMetricsReporting) &&
+      delegate_->IsAppServiceAvailableForProfile(profile)) {
+    auto app_events_observer = std::make_unique<AppEventsObserver>(
+        delegate_->GetAppPlatformMetricsForProfile(profile));
     InitEventObserverManager(
         std::move(app_events_observer), user_event_report_queue_.get(),
         /*enable_setting_path=*/::ash::kReportDeviceAppInfo,

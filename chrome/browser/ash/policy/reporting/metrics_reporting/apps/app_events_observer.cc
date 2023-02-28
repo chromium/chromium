@@ -6,11 +6,8 @@
 
 #include <memory>
 
-#include "base/memory/ptr_util.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -20,51 +17,17 @@
 
 namespace reporting {
 
-bool AppEventsObserver::Delegate::IsAppServiceAvailableForProfile(
-    Profile* profile) {
-  return ::apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-      profile);
-}
-
-::apps::AppPlatformMetrics*
-AppEventsObserver::Delegate::GetAppPlatformMetricsForProfile(Profile* profile) {
-  return ::apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppPlatformMetrics();
-}
-
-// static
-std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForProfile(
-    Profile* profile) {
-  auto delegate = std::make_unique<AppEventsObserver::Delegate>();
-  return base::WrapUnique(new AppEventsObserver(profile, std::move(delegate)));
-}
-
-// static
-std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForTest(
-    Profile* profile,
-    std::unique_ptr<AppEventsObserver::Delegate> delegate) {
-  return base::WrapUnique(new AppEventsObserver(profile, std::move(delegate)));
-}
-
 AppEventsObserver::AppEventsObserver(
-    Profile* profile,
-    std::unique_ptr<AppEventsObserver::Delegate> delegate)
-    : profile_(profile), delegate_(std::move(delegate)) {
-  if (!delegate_->IsAppServiceAvailableForProfile(profile)) {
-    // Profile cannot run apps, so we just return.
-    return;
-  }
-
-  // Register instance so we can start observing app events.
-  auto* const app_platform_metrics =
-      delegate_->GetAppPlatformMetricsForProfile(profile);
+    ::apps::AppPlatformMetrics* app_platform_metrics)
+    : app_platform_metrics_(app_platform_metrics) {
+  DCHECK(app_platform_metrics_);
   app_platform_metrics->AddObserver(this);
 }
 
 AppEventsObserver::~AppEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsInObserverList()) {
-    delegate_->GetAppPlatformMetricsForProfile(profile_)->RemoveObserver(this);
+    app_platform_metrics_->RemoveObserver(this);
   }
 }
 
