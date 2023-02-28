@@ -80,17 +80,19 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
 TEST_F(BorealisUtilTest, FeedbackFormUrlExcludesNonGames) {
   TestingProfile profile;
 
-  EXPECT_FALSE(GetFeedbackFormUrl(&profile,
-                                  "borealisanon:org.chromium.borealis.xid.100",
-                                  "CoolApp")
-                   .is_valid());
+  EXPECT_FALSE(
+      GetFeedbackFormUrl(&profile,
+                         "borealis_anon:org.chromium.guest_os.borealis.xid.100",
+                         "CoolApp")
+          .is_valid());
 }
 
 TEST_F(BorealisUtilTest, FeedbackFormUrlPrefillsWindowTitle) {
   TestingProfile profile;
 
   EXPECT_THAT(GetFeedbackFormUrl(
-                  &profile, "borealisanon:org.chromium.borealis.app", "CoolApp")
+                  &profile, "borealis_anon:org.chromium.guest_os.borealis.app",
+                  "CoolApp")
                   .spec(),
               testing::HasSubstr("=CoolApp"));
 }
@@ -99,7 +101,7 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
   TestingProfile profile;
 
   GURL url = GetFeedbackFormUrl(
-      &profile, "borealisanon:org.chromium.borealis.app", "CoolApp");
+      &profile, "borealis_anon:org.chromium.guest_os.borealis.app", "CoolApp");
 
   // Count the number of query parameters beginning with "entry"; these are
   // form fields that we're prefilling.

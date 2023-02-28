@@ -29,7 +29,7 @@ namespace borealis {
 const char kInstallerAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
 const char kClientAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
 const char kLauncherSearchAppId[] = "ceoplblcdaffnnflkkcagjpomjgedmdl";
-const char kIgnoredAppIdPrefix[] = "org.chromium.borealis.xid.";
+const char kIgnoredAppIdPrefix[] = "org.chromium.guest_os.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
 const base::StringPiece kURLAllowlist[] = {"//store/", "//run/"};
@@ -67,10 +67,17 @@ const base::StringPiece kBorealisWindowWithIdPrefix(
     "org.chromium.guest_os.borealis.xprop.");
 
 // Windows with these app IDs are not games. Don't prompt for feedback for them.
-// Hashed by crx_file::id_util::GenerateId().
-static constexpr char kNonGameIdHash1[] = "hnfpbccfbbbjkmcalgjofgokpgjjppon";
-static constexpr char kNonGameIdHash2[] = "kooplpnkalpdpoohnhmlmfebokjkgnlb";
-static constexpr char kNonGameIdHash3[] = "bmhgcnboebpgmobfgfjcfplecleopefa";
+//
+// Some Steam updater windows use Zenity to show dialog boxes, and use its
+// default WMClass.
+static constexpr char kZenityId[] =
+    "borealis_anon:org.chromium.guest_os.borealis.wmclass.Zenity";
+// The Steam client is not a game.
+static constexpr char kSteamClientId[] =
+    "borealis_anon:org.chromium.guest_os.borealis.wmclass.steam";
+// 769 is the Steam App ID assigned to the Steam Big Picture client as of 2023.
+static constexpr char kSteamBigPictureId[] =
+    "borealis_anon:org.chromium.guest_os.borealis.xprop.769";
 
 GURL AssembleUrlAsync(std::string owner_id,
                       absl::optional<int> game_id,
@@ -173,9 +180,8 @@ void FeedbackFormUrl(Profile* const profile,
     return;
   }
 
-  std::string hash = crx_file::id_util::GenerateId(app_id);
-  if (hash == kNonGameIdHash1 || hash == kNonGameIdHash2 ||
-      hash == kNonGameIdHash3) {
+  if (app_id == kZenityId || app_id == kSteamClientId ||
+      app_id == kSteamBigPictureId) {
     std::move(url_callback).Run(GURL());
     return;
   }
