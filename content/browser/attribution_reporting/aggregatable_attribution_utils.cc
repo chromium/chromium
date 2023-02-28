@@ -25,10 +25,10 @@
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 
 namespace content {
 
@@ -133,11 +133,12 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 
-  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
   base::ranges::transform(
       data->contributions, std::back_inserter(contributions),
       [](const auto& contribution) {
-        return mojom::AggregatableReportHistogramContribution(
+        return blink::mojom::AggregatableReportHistogramContribution(
             /*bucket=*/contribution.key(),
             /*value=*/static_cast<int>(contribution.value()));
       });
@@ -153,7 +154,8 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
-          std::move(contributions), mojom::AggregationServiceMode::kDefault,
+          std::move(contributions),
+          blink::mojom::AggregationServiceMode::kDefault,
           data->aggregation_coordinator),
       AggregatableReportSharedInfo(
           data->initial_report_time, report.external_report_id(),

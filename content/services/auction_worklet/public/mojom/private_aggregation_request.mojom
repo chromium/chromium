@@ -4,9 +4,9 @@
 
 module auction_worklet.mojom;
 
-import "content/common/aggregatable_report.mojom";
-import "content/common/private_aggregation_host.mojom";
 import "mojo/public/mojom/base/int128.mojom";
+import "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom";
+import "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom";
 
 // Indicates which value the browser should use to calculate the resulting
 // bucket or value.
@@ -80,7 +80,7 @@ struct AggregatableReportForEventContribution {
 // `histogram_contribution` for sendHistogramReport(), and
 // `for_event_contribution` for reportPrivateAggregationEvent().
 union AggregatableReportContribution {
-  content.mojom.AggregatableReportHistogramContribution histogram_contribution;
+  blink.mojom.AggregatableReportHistogramContribution histogram_contribution;
   AggregatableReportForEventContribution for_event_contribution;
 };
 
@@ -89,6 +89,6 @@ union AggregatableReportContribution {
 // type of contribution.
 struct PrivateAggregationRequest {
   AggregatableReportContribution contribution;
-  content.mojom.AggregationServiceMode aggregation_mode;
-  content.mojom.DebugModeDetails debug_mode_details;
+  blink.mojom.AggregationServiceMode aggregation_mode;
+  blink.mojom.DebugModeDetails debug_mode_details;
 };

@@ -19,10 +19,10 @@
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "content/browser/aggregation_service/public_key.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -42,8 +42,9 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
 
   AggregationServicePayloadContents(
       Operation operation,
-      std::vector<mojom::AggregatableReportHistogramContribution> contributions,
-      mojom::AggregationServiceMode aggregation_mode,
+      std::vector<blink::mojom::AggregatableReportHistogramContribution>
+          contributions,
+      blink::mojom::AggregationServiceMode aggregation_mode,
       ::aggregation_service::mojom::AggregationCoordinator
           aggregation_coordinator);
 
@@ -57,8 +58,9 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
   ~AggregationServicePayloadContents();
 
   Operation operation;
-  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
-  mojom::AggregationServiceMode aggregation_mode;
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
+  blink::mojom::AggregationServiceMode aggregation_mode;
 
   // Does not affect the unencrypted payload, but is used for encryption.
   ::aggregation_service::mojom::AggregationCoordinator aggregation_coordinator;
@@ -240,13 +242,13 @@ class CONTENT_EXPORT AggregatableReport {
   // `aggregation_mode`.
   static bool IsNumberOfProcessingUrlsValid(
       size_t number,
-      mojom::AggregationServiceMode aggregation_mode);
+      blink::mojom::AggregationServiceMode aggregation_mode);
 
   // Returns whether `number` is a valid number of histogram contributions for
   // the `aggregation_mode`.
   static bool IsNumberOfHistogramContributionsValid(
       size_t number,
-      mojom::AggregationServiceMode aggregation_mode);
+      blink::mojom::AggregationServiceMode aggregation_mode);
 
  private:
   // This vector should have an entry for each processing URL specified in

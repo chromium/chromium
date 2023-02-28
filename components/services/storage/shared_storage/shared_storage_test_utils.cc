@@ -398,8 +398,7 @@ TestSharedStorageEntriesListener::~TestSharedStorageEntriesListener() = default;
 void TestSharedStorageEntriesListener::DidReadEntries(
     bool success,
     const std::string& error_message,
-    std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
-        entries,
+    std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> entries,
     bool has_more_entries,
     int total_queued_to_send) {
   if (!success) {
@@ -407,15 +406,15 @@ void TestSharedStorageEntriesListener::DidReadEntries(
     return;
   }
 
-  using iter_type = std::vector<
-      shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>::iterator;
+  using iter_type =
+      std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr>::iterator;
   entries_.insert(entries_.end(),
                   std::move_iterator<iter_type>(entries.begin()),
                   std::move_iterator<iter_type>(entries.end()));
   has_more_.push_back(has_more_entries);
 }
 
-mojo::PendingRemote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
 TestSharedStorageEntriesListener::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote(task_runner_);
 }
@@ -439,7 +438,7 @@ size_t TestSharedStorageEntriesListener::BatchCount() const {
 std::vector<std::u16string> TestSharedStorageEntriesListener::TakeKeys() {
   std::vector<std::u16string> keys;
   while (!entries_.empty()) {
-    shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr entry =
+    blink::mojom::SharedStorageKeyAndOrValuePtr entry =
         std::move(entries_.front());
     entries_.pop_front();
     keys.emplace_back(std::move(entry->key));
@@ -451,7 +450,7 @@ std::vector<std::pair<std::u16string, std::u16string>>
 TestSharedStorageEntriesListener::TakeEntries() {
   std::vector<std::pair<std::u16string, std::u16string>> entries;
   while (!entries_.empty()) {
-    shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr entry =
+    blink::mojom::SharedStorageKeyAndOrValuePtr entry =
         std::move(entries_.front());
     entries_.pop_front();
     entries.emplace_back(std::move(entry->key), std::move(entry->value));
@@ -472,7 +471,7 @@ size_t TestSharedStorageEntriesListenerUtility::RegisterListener() {
   return listener_table_.size() - 1;
 }
 
-mojo::PendingRemote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
 TestSharedStorageEntriesListenerUtility::BindNewPipeAndPassRemoteForId(
     size_t id) {
   return GetListenerForId(id)->BindNewPipeAndPassRemote();

@@ -7,10 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace gin {
 class Arguments;
@@ -20,7 +20,8 @@ namespace shared_storage_worklet {
 
 class SharedStorage final : public gin::Wrappable<SharedStorage> {
  public:
-  explicit SharedStorage(mojom::SharedStorageWorkletServiceClient* client);
+  explicit SharedStorage(
+      blink::mojom::SharedStorageWorkletServiceClient* client);
   ~SharedStorage() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -53,7 +54,7 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
       base::TimeTicks start_time,
-      shared_storage_worklet::mojom::SharedStorageGetStatus status,
+      blink::mojom::SharedStorageGetStatus status,
       const std::string& error_message,
       const std::u16string& result);
 
@@ -73,7 +74,7 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
       const std::string& error_message,
       double bits);
 
-  raw_ptr<mojom::SharedStorageWorkletServiceClient> client_;
+  raw_ptr<blink::mojom::SharedStorageWorkletServiceClient> client_;
 
   base::WeakPtrFactory<SharedStorage> weak_ptr_factory_{this};
 };

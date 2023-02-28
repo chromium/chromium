@@ -17,7 +17,6 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
-#include "content/common/shared_storage_worklet_service.mojom-forward.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/content_features.h"
 #include "ipc/ipc_listener.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-forward.h"
 
 namespace IPC {
 class ChannelProxy;
@@ -102,8 +102,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void CreateFrame(mojom::CreateFrameParamsPtr params);
   void CreateView(mojom::CreateViewParamsPtr params);
   void CreateSharedStorageWorkletService(
-      mojo::PendingReceiver<
-          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver);
+      mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService>
+          receiver);
 
   void ReportNoBinderForInterface(const std::string& error);
 

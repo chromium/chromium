@@ -9,12 +9,12 @@
 #include "base/time/time.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/common/content_export.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "url/origin.h"
 
@@ -43,7 +43,7 @@ class PageImpl;
 // 2. The keepalive timeout is reached after the worklet's owner document is
 // destroyed.
 class CONTENT_EXPORT SharedStorageWorkletHost
-    : public shared_storage_worklet::mojom::SharedStorageWorkletServiceClient {
+    : public blink::mojom::SharedStorageWorkletServiceClient {
  public:
   using BudgetResult = storage::SharedStorageManager::BudgetResult;
 
@@ -85,7 +85,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // keep-alive phase.
   void EnterKeepAliveOnDocumentDestroyed(KeepAliveFinishedCallback callback);
 
-  // shared_storage_worklet::mojom::SharedStorageWorkletServiceClient:
+  // blink::mojom::SharedStorageWorkletServiceClient:
   void SharedStorageSet(const std::u16string& key,
                         const std::u16string& value,
                         bool ignore_if_present,
@@ -99,12 +99,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
   void SharedStorageKeys(
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener) override;
   void SharedStorageEntries(
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener) override;
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void SharedStorageRemainingBudget(
@@ -172,13 +170,13 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // virtual for testing
   virtual base::TimeDelta GetKeepAliveTimeout() const;
 
-  shared_storage_worklet::mojom::SharedStorageWorkletService*
+  blink::mojom::SharedStorageWorkletService*
   GetAndConnectToSharedStorageWorkletService();
 
   // Binds a receiver to the `PrivateAggregationManager` and returns the
   // `PendingRemote`. If there is no `PrivateAggregationManger`, returns an
   // invalid `PendingRemote`.
-  mojo::PendingRemote<content::mojom::PrivateAggregationHost>
+  mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
   MaybeBindPrivateAggregationHost();
 
   bool IsSharedStorageAllowed();
@@ -268,11 +266,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // messages initiated from the worklet (e.g. storage access, console log) to
   // be well ordered with respect to the corresponding request's callback
   // message which will be interpreted as the completion of an operation.
-  mojo::Remote<shared_storage_worklet::mojom::SharedStorageWorkletService>
+  mojo::Remote<blink::mojom::SharedStorageWorkletService>
       shared_storage_worklet_service_;
 
-  mojo::AssociatedReceiver<
-      shared_storage_worklet::mojom::SharedStorageWorkletServiceClient>
+  mojo::AssociatedReceiver<blink::mojom::SharedStorageWorkletServiceClient>
       shared_storage_worklet_service_client_{this};
 
   // The proxy is used to limit the request that the worklet can make, e.g. to

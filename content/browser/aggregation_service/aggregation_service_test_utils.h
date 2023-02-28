@@ -21,10 +21,10 @@
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 
 namespace base {
@@ -67,8 +67,8 @@ testing::AssertionResult SharedInfoEqual(
 
 // Returns an example report request, using the given parameters.
 AggregatableReportRequest CreateExampleRequest(
-    mojom::AggregationServiceMode aggregation_mode =
-        mojom::AggregationServiceMode::kDefault,
+    blink::mojom::AggregationServiceMode aggregation_mode =
+        blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator =
@@ -76,8 +76,8 @@ AggregatableReportRequest CreateExampleRequest(
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
-    mojom::AggregationServiceMode aggregation_mode =
-        mojom::AggregationServiceMode::kDefault,
+    blink::mojom::AggregationServiceMode aggregation_mode =
+        blink::mojom::AggregationServiceMode::kDefault,
     int failed_send_attempts = 0,
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator =
@@ -227,7 +227,7 @@ std::ostream& operator<<(
     std::ostream& out,
     AggregationServicePayloadContents::Operation operation);
 std::ostream& operator<<(std::ostream& out,
-                         mojom::AggregationServiceMode aggregation_mode);
+                         blink::mojom::AggregationServiceMode aggregation_mode);
 std::ostream& operator<<(std::ostream& out,
                          AggregatableReportSharedInfo::DebugMode debug_mode);
 

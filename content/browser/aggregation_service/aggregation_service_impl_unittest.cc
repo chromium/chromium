@@ -340,7 +340,7 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
       });
 
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      /*aggregation_mode=*/mojom::AggregationServiceMode::kDefault,
+      /*aggregation_mode=*/blink::mojom::AggregationServiceMode::kDefault,
       /*failed_send_attempts=*/AggregatableReportScheduler::kMaxRetries);
 
   service_impl_->ScheduleReport(std::move(request));
@@ -441,7 +441,7 @@ TEST_F(AggregationServiceImplTest,
       aggregation_service::CreateExampleRequest();
   AggregatableReportRequest request_2 =
       aggregation_service::CreateExampleRequest(
-          /*aggregation_mode=*/mojom::AggregationServiceMode::kDefault,
+          /*aggregation_mode=*/blink::mojom::AggregationServiceMode::kDefault,
           /*failed_send_attempts=*/2);
 
   service_impl_->ScheduleReport(std::move(request_1));

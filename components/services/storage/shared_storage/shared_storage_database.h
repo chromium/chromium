@@ -21,12 +21,12 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/clock.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
-#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace base {
 class FilePath;
@@ -305,8 +305,7 @@ class SharedStorageDatabase {
   // whether the operation was successful.
   [[nodiscard]] OperationResult Keys(
       const url::Origin& context_origin,
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener);
 
   // From a list of all the unexpired key-value pairs for `context_origin` taken
@@ -315,8 +314,7 @@ class SharedStorageDatabase {
   // `pending_listener`. Returns whether the operation was successful.
   [[nodiscard]] OperationResult Entries(
       const url::Origin& context_origin,
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener);
 
   // Clears all origins that match `storage_key_matcher` run on the owning

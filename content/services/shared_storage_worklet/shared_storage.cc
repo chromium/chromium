@@ -63,7 +63,8 @@ void LogTimingHistogramForVoidOperation(
 
 }  // namespace
 
-SharedStorage::SharedStorage(mojom::SharedStorageWorkletServiceClient* client)
+SharedStorage::SharedStorage(
+    blink::mojom::SharedStorageWorkletServiceClient* client)
     : client_(client) {}
 
 SharedStorage::~SharedStorage() = default;
@@ -359,7 +360,7 @@ void SharedStorage::OnStringRetrievalOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
     base::TimeTicks start_time,
-    shared_storage_worklet::mojom::SharedStorageGetStatus status,
+    blink::mojom::SharedStorageGetStatus status,
     const std::string& error_message,
     const std::u16string& result) {
   WorkletV8Helper::HandleScope scope(isolate);
@@ -367,16 +368,14 @@ void SharedStorage::OnStringRetrievalOperationFinished(
   v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
-  if (status ==
-      shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess) {
+  if (status == blink::mojom::SharedStorageGetStatus::kSuccess) {
     resolver->Resolve(context, gin::ConvertToV8(isolate, result)).ToChecked();
     base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Get",
                                   elapsed_time);
     return;
   }
 
-  if (status ==
-      shared_storage_worklet::mojom::SharedStorageGetStatus::kNotFound) {
+  if (status == blink::mojom::SharedStorageGetStatus::kNotFound) {
     resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
     base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Get",
                                   elapsed_time);

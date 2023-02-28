@@ -17,15 +17,15 @@ namespace shared_storage_worklet {
 
 struct UnnamedOperationHandler::PendingRequest {
   explicit PendingRequest(
-      mojom::SharedStorageWorkletService::RunOperationCallback callback);
+      blink::mojom::SharedStorageWorkletService::RunOperationCallback callback);
 
   ~PendingRequest();
 
-  mojom::SharedStorageWorkletService::RunOperationCallback callback;
+  blink::mojom::SharedStorageWorkletService::RunOperationCallback callback;
 };
 
 UnnamedOperationHandler::PendingRequest::PendingRequest(
-    mojom::SharedStorageWorkletService::RunOperationCallback callback)
+    blink::mojom::SharedStorageWorkletService::RunOperationCallback callback)
     : callback(std::move(callback)) {}
 
 UnnamedOperationHandler::PendingRequest::~PendingRequest() = default;
@@ -41,7 +41,7 @@ void UnnamedOperationHandler::RunOperation(
     v8::Local<v8::Context> context,
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
-    mojom::SharedStorageWorkletService::RunOperationCallback callback) {
+    blink::mojom::SharedStorageWorkletService::RunOperationCallback callback) {
   auto it = operation_definition_map_->find(name);
   if (it == operation_definition_map_->end()) {
     std::move(callback).Run(/*success=*/false, "Cannot find operation name.");

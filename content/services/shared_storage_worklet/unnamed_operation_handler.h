@@ -8,7 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ref.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
 
@@ -32,7 +32,7 @@ class UnnamedOperationHandler {
       v8::Local<v8::Context> context,
       const std::string& name,
       const std::vector<uint8_t>& serialized_data,
-      mojom::SharedStorageWorkletService::RunOperationCallback callback);
+      blink::mojom::SharedStorageWorkletService::RunOperationCallback callback);
 
   void OnPromiseFulfilled(PendingRequest* request, gin::Arguments* args);
 

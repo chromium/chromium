@@ -20,7 +20,7 @@ const int kSharedStorageIteratorBenchmarkStep = 10;
 
 SharedStorageIterator::SharedStorageIterator(
     Mode mode,
-    mojom::SharedStorageWorkletServiceClient* client)
+    blink::mojom::SharedStorageWorkletServiceClient* client)
     : mode_(mode) {
   base::UmaHistogramExactLinear(
       "Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks", 0, 101);
@@ -87,7 +87,7 @@ v8::Local<v8::Promise> SharedStorageIterator::NextHelper(
   }
 
   if (!pending_entries_.empty()) {
-    mojom::SharedStorageKeyAndOrValuePtr next_entry =
+    blink::mojom::SharedStorageKeyAndOrValuePtr next_entry =
         std::move(pending_entries_.front());
     pending_entries_.pop_front();
 
@@ -127,7 +127,7 @@ v8::Local<v8::Promise> SharedStorageIterator::NextHelper(
 void SharedStorageIterator::DidReadEntries(
     bool success,
     const std::string& error_message,
-    std::vector<mojom::SharedStorageKeyAndOrValuePtr> entries,
+    std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> entries,
     bool has_more_entries,
     int total_queued_to_send) {
   DCHECK(waiting_for_more_entries_);
@@ -191,7 +191,7 @@ void SharedStorageIterator::DidReadEntries(
 
 v8::Local<v8::Object> SharedStorageIterator::CreateIteratorResult(
     v8::Isolate* isolate,
-    const mojom::SharedStorageKeyAndOrValuePtr& entry) {
+    const blink::mojom::SharedStorageKeyAndOrValuePtr& entry) {
   v8::Local<v8::Object> obj = v8::Object::New(isolate);
   gin::Dictionary dict(isolate, obj);
   dict.Set<bool>("done", false);

@@ -31,9 +31,9 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -220,7 +220,7 @@ testing::AssertionResult SharedInfoEqual(
 }
 
 AggregatableReportRequest CreateExampleRequest(
-    mojom::AggregationServiceMode aggregation_mode,
+    blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator) {
@@ -231,14 +231,14 @@ AggregatableReportRequest CreateExampleRequest(
 
 AggregatableReportRequest CreateExampleRequestWithReportTime(
     base::Time report_time,
-    mojom::AggregationServiceMode aggregation_mode,
+    blink::mojom::AggregationServiceMode aggregation_mode,
     int failed_send_attempts,
     ::aggregation_service::mojom::AggregationCoordinator
         aggregation_coordinator) {
   return AggregatableReportRequest::Create(
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
-                 {mojom::AggregatableReportHistogramContribution(
+                 {blink::mojom::AggregatableReportHistogramContribution(
                      /*bucket=*/123,
                      /*value=*/456)},
                  aggregation_mode, aggregation_coordinator),
@@ -459,12 +459,13 @@ std::ostream& operator<<(
   }
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         mojom::AggregationServiceMode aggregation_mode) {
+std::ostream& operator<<(
+    std::ostream& out,
+    blink::mojom::AggregationServiceMode aggregation_mode) {
   switch (aggregation_mode) {
-    case mojom::AggregationServiceMode::kTeeBased:
+    case blink::mojom::AggregationServiceMode::kTeeBased:
       return out << "kTeeBased";
-    case mojom::AggregationServiceMode::kExperimentalPoplar:
+    case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
       return out << "kExperimentalPoplar";
   }
 }

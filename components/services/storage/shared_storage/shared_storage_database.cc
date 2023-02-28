@@ -440,13 +440,12 @@ int64_t SharedStorageDatabase::Length(url::Origin context_origin) {
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
     const url::Origin& context_origin,
-    mojo::PendingRemote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
         pending_listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
-      keys_listener(std::move(pending_listener));
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> keys_listener(
+      std::move(pending_listener));
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
     // We do not return an error if the database doesn't exist, but only if it
@@ -506,21 +505,18 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
 
   while (has_more_entries) {
     has_more_entries = false;
-    std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
-        keys;
+    std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> keys;
 
     if (saved_first_key_for_next_batch) {
-      keys.push_back(
-          shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
-              saved_first_key_for_next_batch.value(), u""));
+      keys.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
+          saved_first_key_for_next_batch.value(), u""));
       saved_first_key_for_next_batch.reset();
     }
 
     while (select_statement.Step()) {
       if (keys.size() < max_iterator_batch_size_) {
-        keys.push_back(
-            shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
-                select_statement.ColumnString16(0), u""));
+        keys.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
+            select_statement.ColumnString16(0), u""));
       } else {
         // Cache the current key to use as the start of the next batch, as we're
         // already passing through this step and the next iteration of
@@ -551,13 +547,12 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
     const url::Origin& context_origin,
-    mojo::PendingRemote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
         pending_listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
-      entries_listener(std::move(pending_listener));
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> entries_listener(
+      std::move(pending_listener));
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
     // We do not return an error if the database doesn't exist, but only if it
@@ -618,25 +613,22 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
 
   while (has_more_entries) {
     has_more_entries = false;
-    std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
-        entries;
+    std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> entries;
 
     if (saved_first_key_for_next_batch) {
       DCHECK(saved_first_value_for_next_batch);
-      entries.push_back(
-          shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
-              saved_first_key_for_next_batch.value(),
-              saved_first_value_for_next_batch.value()));
+      entries.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
+          saved_first_key_for_next_batch.value(),
+          saved_first_value_for_next_batch.value()));
       saved_first_key_for_next_batch.reset();
       saved_first_value_for_next_batch.reset();
     }
 
     while (select_statement.Step()) {
       if (entries.size() < max_iterator_batch_size_) {
-        entries.push_back(
-            shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
-                select_statement.ColumnString16(0),
-                select_statement.ColumnString16(1)));
+        entries.push_back(blink::mojom::SharedStorageKeyAndOrValue::New(
+            select_statement.ColumnString16(0),
+            select_statement.ColumnString16(1)));
       } else {
         // Cache the current key and value to use as the start of the next
         // batch, as we're already passing through this step and the next

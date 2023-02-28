@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "content/common/aggregatable_report.mojom-forward.h"
-#include "content/common/private_aggregation_host.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 #include "v8/include/v8-primitive.h"
 
 namespace gin {
@@ -27,7 +27,7 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
 // Parses arguments provided to `sendHistogramReport()` and returns the
 // corresponding contribution. In case of an error, throws an exception and
 // returns `nullptr`.
-content::mojom::AggregatableReportHistogramContributionPtr
+blink::mojom::AggregatableReportHistogramContributionPtr
 ParseSendHistogramReportArguments(
     const gin::Arguments& args,
     bool private_aggregation_permissions_policy_allowed);
@@ -39,7 +39,7 @@ ParseSendHistogramReportArguments(
 void ParseAndApplyEnableDebugModeArguments(
     const gin::Arguments& args,
     bool private_aggregation_permissions_policy_allowed,
-    content::mojom::DebugModeDetails& debug_mode_details);
+    blink::mojom::DebugModeDetails& debug_mode_details);
 
 }  // namespace worklet_utils
 

@@ -10,13 +10,13 @@
 
 #include "base/check.h"
 #include "base/strings/string_util.h"
-#include "content/common/aggregatable_report.mojom.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-isolate.h"
@@ -98,7 +98,7 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
   return absl::MakeUint128(words[1], words[0]);
 }
 
-content::mojom::AggregatableReportHistogramContributionPtr
+blink::mojom::AggregatableReportHistogramContributionPtr
 ParseSendHistogramReportArguments(
     const gin::Arguments& args,
     bool private_aggregation_permissions_policy_allowed) {
@@ -188,14 +188,14 @@ ParseSendHistogramReportArguments(
     return nullptr;
   }
 
-  return content::mojom::AggregatableReportHistogramContribution::New(bucket,
-                                                                      value);
+  return blink::mojom::AggregatableReportHistogramContribution::New(bucket,
+                                                                    value);
 }
 
 void ParseAndApplyEnableDebugModeArguments(
     const gin::Arguments& args,
     bool private_aggregation_permissions_policy_allowed,
-    content::mojom::DebugModeDetails& debug_mode_details) {
+    blink::mojom::DebugModeDetails& debug_mode_details) {
   v8::Isolate* isolate = args.isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
@@ -242,7 +242,7 @@ void ParseAndApplyEnableDebugModeArguments(
     }
 
     debug_mode_details.debug_key =
-        content::mojom::DebugKey::New(maybe_debug_key.value());
+        blink::mojom::DebugKey::New(maybe_debug_key.value());
   }
 
   debug_mode_details.is_enabled = true;

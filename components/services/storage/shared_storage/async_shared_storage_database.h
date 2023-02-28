@@ -14,9 +14,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace base {
 class Time;
@@ -155,8 +155,7 @@ class AsyncSharedStorageDatabase {
   // OperationResult to indicate whether the transaction was successful.
   virtual void Keys(
       url::Origin context_origin,
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener,
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
@@ -167,8 +166,7 @@ class AsyncSharedStorageDatabase {
   // transaction was successful.
   virtual void Entries(
       url::Origin context_origin,
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener,
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
