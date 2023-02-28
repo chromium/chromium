@@ -22,6 +22,16 @@ const htmlTemplate = html`{__html_template__}`;
  * A banner that prompts users to bulk pin their files.
  */
 export class DriveBulkPinningBanner extends EducationalBanner {
+  constructor() {
+    super();
+
+    this.shadowRoot.querySelector('.learn-more')
+        .addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelector('xf-bulk-pinning-dialog').show();
+        });
+  }
+
   /**
    * Returns the HTML template for the Drive Bulk Pinning educational banner.
    * @returns {!Node}

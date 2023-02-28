@@ -78,6 +78,7 @@ export class XfIcon extends XfBase {
     }
 
     const shouldKeepColor = [
+      constants.ICON_TYPES.DRIVE_LOGO,
       constants.ICON_TYPES.EXCEL,
       constants.ICON_TYPES.POWERPOINT,
       constants.ICON_TYPES.WORD,
@@ -209,6 +210,10 @@ function getCSS() {
 
     :host([type="drive_shared_with_me"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/shared.svg);
+    }
+
+    :host([type="drive_logo"]) span {
+      background-image: url(../foreground/images/files/ui/drive_logo.svg);
     }
 
     :host([type="excel"]) span {
@@ -355,6 +360,10 @@ function getCSS() {
 
     :host([type="word"]) span {
       background-image: url(../foreground/images/filetype/filetype_word.svg);
+    }
+
+    :host([type="check"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/check.svg);
     }
   `;
 }

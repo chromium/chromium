@@ -274,6 +274,7 @@ ts_files = [
   # Widgets.
   "file_manager/widgets/xf_base.ts",
   "file_manager/widgets/xf_breadcrumb.ts",
+  "file_manager/widgets/xf_bulk_pinning_dialog.ts",
   "file_manager/widgets/xf_conflict_dialog.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
   "file_manager/widgets/xf_icon.ts",

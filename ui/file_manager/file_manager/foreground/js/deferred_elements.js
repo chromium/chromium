@@ -20,3 +20,4 @@ import '../../widgets/xf_pie_progress.js';
 import '../../widgets/xf_cloud_panel.js';
 import '../../widgets/xf_icon.js';
 import '../../widgets/xf_conflict_dialog.js';
+import '../../widgets/xf_bulk_pinning_dialog.js';
