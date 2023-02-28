@@ -36,7 +36,8 @@ EntropyProviders CreateEntropyProviders(
 std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
     const CreateTrialsFromSeedTestCase::ClientFilterableState& spec) {
   auto client_state = std::make_unique<ClientFilterableState>(
-      base::BindOnce([] { return false; }), base::BindLambdaForTesting([&]() {
+      base::BindOnce([] { return false; }),
+      base::BindLambdaForTesting([spec]() {
         return base::flat_set<uint64_t>(spec.google_groups().begin(),
                                         spec.google_groups().end());
       }));
