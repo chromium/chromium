@@ -278,9 +278,8 @@ class ManagePasswordsUIController
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
 
-  // Requests authentication and reopens the bubble if the controller still
-  // exists and is in a pending state.
-  void RequestAuthenticationAndReopenBubble(AvailabilityCallback callback);
+  // Requests authentication and invokes `callback` with the result.
+  void RequestAuthentication(AvailabilityCallback callback);
 
   // Shows an authentication dialog and returns true if auth is successful.
   virtual bool ShowAuthenticationDialog();
