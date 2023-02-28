@@ -12,7 +12,7 @@ found in the LICENSE file.
         <item
             android:id="@+id/edit_menu_id"
             android:icon="@drawable/ic_edit_24dp"
-            android:title="@string/bookmark_action_bar_edit_folder"
+            android:title="@string/edit_folder"
             android:visible="false"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
@@ -26,7 +26,7 @@ found in the LICENSE file.
         <item
             android:id="@+id/close_menu_id"
             android:icon="@drawable/btn_close"
-            android:title="@string/bookmark_action_bar_close"
+            android:title="@string/bookmark_toolbar_close"
             app:showAsAction="ifRoom"
             app:iconTint="@color/default_icon_color_secondary_tint_list" />
     </group>

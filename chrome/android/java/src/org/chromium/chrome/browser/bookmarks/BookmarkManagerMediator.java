@@ -143,6 +143,7 @@ class BookmarkManagerMediator
         }
 
         @Override
+        // TODO(crbug.com/1419493): Investigate use of synchronized.
         public synchronized BookmarkUIState pop() {
             var state = super.pop();
             onBackPressStateChanged();
@@ -177,9 +178,6 @@ class BookmarkManagerMediator
     private final RecyclerView mRecyclerView;
     // TODO(crbug.com/1416611): Remove reference to BookmarkItemsAdapter.
     private final BookmarkItemsAdapter mBookmarkItemsAdapter;
-    // TODO(crbug.com/1416611): Remove reference to BookmarkActionBar.
-    // Owned by BookmarkManager(Coordinator).
-    private final BookmarkActionBar mBookmarkActionBar;
     private final LargeIconBridge mLargeIconBridge;
     /** Whether we're showing in a dialog UI which is only true for phones. */
     private final boolean mIsDialogUi;
@@ -196,8 +194,8 @@ class BookmarkManagerMediator
     BookmarkManagerMediator(Context context, BookmarkModel bookmarkModel,
             BookmarkOpener bookmarkOpener, SelectableListLayout<BookmarkId> selectableListLayout,
             SelectionDelegate<BookmarkId> selectionDelegate, RecyclerView recyclerView,
-            BookmarkItemsAdapter bookmarkItemsAdapter, BookmarkActionBar bookmarkActionBar,
-            LargeIconBridge largeIconBridge, boolean isDialogUi, boolean isIncognito,
+            BookmarkItemsAdapter bookmarkItemsAdapter, LargeIconBridge largeIconBridge,
+            boolean isDialogUi, boolean isIncognito,
             ObservableSupplierImpl<Boolean> backPressStateSupplier, ViewFactory viewFactory) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
@@ -210,7 +208,6 @@ class BookmarkManagerMediator
         mRecyclerView = recyclerView;
         mBookmarkItemsAdapter = bookmarkItemsAdapter;
         mBookmarkItemsAdapter.registerAdapterDataObserver(mBookmarkItemsAdapterDataObserver);
-        mBookmarkActionBar = bookmarkActionBar;
         mLargeIconBridge = largeIconBridge;
         mIsDialogUi = isDialogUi;
         mIsIncognito = isIncognito;
@@ -229,8 +226,6 @@ class BookmarkManagerMediator
     void onBookmarkModelLoaded() {
         mDragStateDelegate.onBookmarkDelegateInitialized(this);
         mBookmarkItemsAdapter.onBookmarkDelegateInitialized(this, mViewFactory);
-        mBookmarkActionBar.onBookmarkDelegateInitialized(this);
-        mBookmarkItemsAdapter.addDragListener(mBookmarkActionBar);
 
         if (!TextUtils.isEmpty(mInitialUrl)) {
             setState(BookmarkUIState.createStateFromUrl(mInitialUrl, mBookmarkModel));
@@ -306,7 +301,6 @@ class BookmarkManagerMediator
      * {@link #updateForUrl(String)}, if the bookmark model is already loaded.
      */
     private void initializeToLoadingState() {
-        mBookmarkActionBar.showLoadingUi();
         assert mStateStack.isEmpty();
         setState(BookmarkUIState.createLoadingState());
     }
@@ -384,9 +378,7 @@ class BookmarkManagerMediator
     }
 
     @Override
-    public void onBookmarkItemMenuOpened() {
-        mBookmarkActionBar.hideKeyboard();
-    }
+    public void onBookmarkItemMenuOpened() {}
 
     @Override
     public boolean isDialogUi() {
@@ -396,7 +388,6 @@ class BookmarkManagerMediator
     @Override
     public void openFolder(BookmarkId folder) {
         RecordUserAction.record("MobileBookmarkManagerOpenFolder");
-        if (mBookmarkActionBar.isSearching()) mBookmarkActionBar.hideSearchView();
         setState(BookmarkUIState.createFolderState(folder, mBookmarkModel));
         mRecyclerView.scrollToPosition(0);
     }
@@ -414,6 +405,7 @@ class BookmarkManagerMediator
     @Override
     public void notifyStateChange(BookmarkUIObserver observer) {
         int state = getCurrentState();
+        observer.onStateChanged(state);
         switch (state) {
             case BookmarkUIState.STATE_FOLDER:
                 observer.onFolderStateSet(mStateStack.peek().mFolder);
@@ -453,12 +445,11 @@ class BookmarkManagerMediator
     public void openSearchUI() {
         setState(BookmarkUIState.createSearchState());
         mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
-        mBookmarkActionBar.showSearchView(true);
     }
 
     @Override
     public void closeSearchUI() {
-        mBookmarkActionBar.hideSearchView();
+        setState(mStateStack.pop());
     }
 
     @Override

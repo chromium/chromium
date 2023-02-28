@@ -15,6 +15,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
  * states can be uniquely identified by a URL.
  */
 public class BookmarkUIState {
+    // TODO(crbug.com/1419494): Use an intdef here instead.
     public static final int STATE_LOADING = 1;
     public static final int STATE_FOLDER = 2;
     public static final int STATE_SEARCHING = 3;

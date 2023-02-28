@@ -55,7 +55,7 @@ public class BookmarkManagerMediatorTest {
     @Mock
     BookmarkItemsAdapter mBookmarkItemsAdapter;
     @Mock
-    BookmarkActionBar mBookmarkActionBar;
+    BookmarkToolbar mBookmarkToolbar;
     @Mock
     LargeIconBridge mLargeIconBridge;
     @Mock
@@ -101,7 +101,7 @@ public class BookmarkManagerMediatorTest {
 
         mMediator = new BookmarkManagerMediator(mContext, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, mSelectionDelegate, mRecyclerView, mBookmarkItemsAdapter,
-                mBookmarkActionBar, mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
+                mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
                 mBackPressStateSupplier, mViewFactory);
         mMediator.addUIObserver(mBookmarkUIObserver);
     }

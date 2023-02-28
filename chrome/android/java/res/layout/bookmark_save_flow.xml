@@ -33,7 +33,7 @@ found in the LICENSE file.
                 android:background="@drawable/bookmark_save_flow_background"
                 android:foreground="@drawable/bookmark_save_flow_ripple"
                 android:scaleType="centerInside"
-                android:contentDescription="@string/bookmark_action_bar_edit_folder" />
+                android:contentDescription="@string/edit_folder" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

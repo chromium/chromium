@@ -29,27 +29,31 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import java.util.List;
 
 /**
- * Main action bar of bookmark UI. It is responsible for displaying title and buttons
+ * Main toolbar of bookmark UI. It is responsible for displaying title and buttons
  * associated with the current context.
  */
-public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
+public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements BookmarkUIObserver, OnMenuItemClickListener, OnClickListener,
                    DragReorderableListAdapter.DragListener {
-
     private BookmarkItem mCurrentFolder;
+    // TODO(crbug.com/1413463): Remove reference to BookmarkDelegate.
     private BookmarkDelegate mDelegate;
+    private DragReorderableListAdapter mDragReorderableListAdapter;
+    private int mBookmarkUiState;
 
-    public BookmarkActionBar(Context context, AttributeSet attrs) {
+    public BookmarkToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         setNavigationOnClickListener(this);
-        inflateMenu(R.menu.bookmark_action_bar_menu);
+        inflateMenu(R.menu.bookmark_toolbar_menu);
         setOnMenuItemClickListener(this);
 
         getMenu().findItem(R.id.selection_mode_edit_menu_id).setTitle(R.string.edit_bookmark);
-        getMenu().findItem(R.id.selection_mode_move_menu_id)
-                .setTitle(R.string.bookmark_action_bar_move);
-        getMenu().findItem(R.id.selection_mode_delete_menu_id)
-                .setTitle(R.string.bookmark_action_bar_delete);
+        getMenu()
+                .findItem(R.id.selection_mode_move_menu_id)
+                .setTitle(R.string.bookmark_toolbar_move);
+        getMenu()
+                .findItem(R.id.selection_mode_delete_menu_id)
+                .setTitle(R.string.bookmark_toolbar_delete);
 
         getMenu()
                 .findItem(R.id.selection_open_in_incognito_tab_id)
@@ -58,6 +62,37 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         // Wait to enable the selection mode group until the BookmarkDelegate is set. The
         // SelectionDelegate is retrieved from the BookmarkDelegate.
         getMenu().setGroupEnabled(R.id.selection_mode_menu_group, false);
+    }
+
+    void setBookmarkUiState(int state) {
+        if (mBookmarkUiState == BookmarkUIState.STATE_LOADING && state != mBookmarkUiState) {
+            showNormalView();
+        }
+
+        mBookmarkUiState = state;
+
+        if (state == BookmarkUIState.STATE_LOADING) {
+            showLoadingUi();
+        } else if (state == BookmarkUIState.STATE_SEARCHING) {
+            showSearchView(/*showKeyboard=*/true);
+        } else {
+            hideSearchView(/*notify=*/false);
+        }
+    }
+
+    /** Sets the delegate to use to handle UI actions related to this action bar. */
+    void setBookmarkDelegate(BookmarkDelegate delegate) {
+        mDelegate = delegate;
+        mDelegate.addUIObserver(this);
+        if (!delegate.isDialogUi()) getMenu().removeItem(R.id.close_menu_id);
+
+        getMenu().setGroupEnabled(R.id.selection_mode_menu_group, true);
+    }
+
+    /** Sets the drag reorderable list adapter so this action bar can observe events. */
+    void setDragReorderableListAdapter(DragReorderableListAdapter dragReorderableListAdapter) {
+        mDragReorderableListAdapter = dragReorderableListAdapter;
+        mDragReorderableListAdapter.addDragListener(this);
     }
 
     @Override
@@ -75,8 +110,8 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         hideOverflowMenu();
 
         if (menuItem.getItemId() == R.id.edit_menu_id) {
-            BookmarkAddEditFolderActivity.startEditFolderActivity(getContext(),
-                    mCurrentFolder.getId());
+            BookmarkAddEditFolderActivity.startEditFolderActivity(
+                    getContext(), mCurrentFolder.getId());
             return true;
         } else if (menuItem.getItemId() == R.id.close_menu_id) {
             BookmarkUtils.finishActivityOnPhone(getContext());
@@ -100,8 +135,8 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         } else if (menuItem.getItemId() == R.id.selection_mode_move_menu_id) {
             List<BookmarkId> list = selectionDelegate.getSelectedItemsAsList();
             if (list.size() >= 1) {
-                BookmarkFolderSelectActivity.startFolderSelectActivity(getContext(),
-                        list.toArray(new BookmarkId[list.size()]));
+                BookmarkFolderSelectActivity.startFolderSelectActivity(
+                        getContext(), list.toArray(new BookmarkId[list.size()]));
                 RecordUserAction.record("MobileBookmarkManagerMoveToFolderBulk");
             }
             return true;
@@ -161,25 +196,17 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         }
     }
 
-    /**
-     * Sets the delegate to use to handle UI actions related to this action bar.
-     * @param delegate A {@link BookmarkDelegate} instance to handle all backend interaction.
-     */
-    public void onBookmarkDelegateInitialized(BookmarkDelegate delegate) {
-        mDelegate = delegate;
-        mDelegate.addUIObserver(this);
-        if (!delegate.isDialogUi()) getMenu().removeItem(R.id.close_menu_id);
-
-        getMenu().setGroupEnabled(R.id.selection_mode_menu_group, true);
-    }
-
     // BookmarkUIObserver implementations.
 
     @Override
     public void onDestroy() {
-        if (mDelegate == null) return;
+        if (mDelegate != null) {
+            mDelegate.removeUIObserver(this);
+        }
 
-        mDelegate.removeUIObserver(this);
+        if (mDragReorderableListAdapter != null) {
+            mDragReorderableListAdapter.removeDragListener(this);
+        }
     }
 
     @Override
@@ -215,14 +242,15 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
     public void onSelectionStateChange(List<BookmarkId> selectedBookmarks) {
         super.onSelectionStateChange(selectedBookmarks);
 
-        // The super class registers itself as a SelectionObserver before
-        // #onBookmarkDelegateInitialized() is called. Return early if mDelegate has not been set.
+        // The super class registers itself as a SelectionObserver before #setBookmarkDelegate.
+        // Return early if mDelegate has not been set.
         if (mDelegate == null) return;
 
         if (mIsSelectionEnabled) {
             // Editing a bookmark action on multiple selected items doesn't make sense. So disable.
-            getMenu().findItem(R.id.selection_mode_edit_menu_id).setVisible(
-                    selectedBookmarks.size() == 1);
+            getMenu()
+                    .findItem(R.id.selection_mode_edit_menu_id)
+                    .setVisible(selectedBookmarks.size() == 1);
             getMenu()
                     .findItem(R.id.selection_open_in_incognito_tab_id)
                     .setVisible(IncognitoUtils.isIncognitoModeEnabled());
@@ -289,6 +317,12 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         } else {
             mDelegate.notifyStateChange(this);
         }
+    }
+
+    @Override
+    // TODO(crbug.com/1413463): Move this to BookmarkToolbarMediator.
+    public void onBookmarkItemMenuOpened() {
+        hideKeyboard();
     }
 
     // DragListener implementation.

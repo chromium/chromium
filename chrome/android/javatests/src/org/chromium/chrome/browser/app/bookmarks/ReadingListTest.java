@@ -50,7 +50,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.bookmarks.BookmarkActionBar;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter;
 import org.chromium.chrome.browser.bookmarks.BookmarkManager;
@@ -58,6 +57,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow;
+import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUIState;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -213,7 +213,7 @@ public class ReadingListTest {
             throws InterruptedException, ExecutionException {
         openBookmarkManager();
         BookmarkDelegate delegate = getBookmarkDelegate();
-        BookmarkActionBar toolbar = mManager.getToolbarForTests();
+        BookmarkToolbar toolbar = mManager.getToolbarForTesting();
 
         // We should default to the root bookmark.
         Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
@@ -463,7 +463,7 @@ public class ReadingListTest {
                 (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
         onView(withText(TEST_PAGE_TITLE_GOOGLE)).perform(longClick());
 
-        BookmarkActionBar toolbar = mManager.getToolbarForTests();
+        BookmarkToolbar toolbar = mManager.getToolbarForTesting();
         Assert.assertTrue("Read later items should have move option",
                 toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
         Assert.assertTrue("Read later items should have edit option",
@@ -499,7 +499,7 @@ public class ReadingListTest {
 
         TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
 
-        BookmarkActionBar toolbar = mManager.getToolbarForTests();
+        BookmarkToolbar toolbar = mManager.getToolbarForTesting();
         Assert.assertFalse("Menu items shouldn't be visible in search.",
                 toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
         Assert.assertFalse("Menu items shouldn't be visible in search.",

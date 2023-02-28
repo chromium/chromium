@@ -5,9 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.bookmarks.BookmarkActionBar
+<org.chromium.chrome.browser.bookmarks.BookmarkToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bookmark_action_bar"
+    android:id="@+id/bookmark_toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
     style="@style/ModernToolbar" />
