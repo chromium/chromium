@@ -16,8 +16,8 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import './nearby_contact_visibility.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyContactVisibilityElement} from './nearby_contact_visibility.js';
