@@ -124,7 +124,7 @@ class SuspendObserverDelegate;
 
 BASE_FEATURE(kUseAVCaptureDeviceDiscoverySessionDeviceMonitor,
              "UseAVCaptureDeviceDiscoverySessionDeviceMonitor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 NSArray<AVCaptureDevice*>* ListCameras() {
   // The awkward repeated if statements are required for the compiler to
