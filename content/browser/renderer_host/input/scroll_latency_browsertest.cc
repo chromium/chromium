@@ -282,8 +282,6 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
       0, "EventLatency.GestureScrollUpdate.TotalLatency"));
 }
 
-// TODO(crbug.com/1207466): Combine ScrollLatencyCompositedScrollbarBrowserTest
-// with this class now that there is no main thread path.
 class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
  public:
   ScrollLatencyScrollbarBrowserTest() = default;
@@ -366,24 +364,7 @@ class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
-  virtual bool DoesScrollbarScrollOnMainThread() const { return true; }
-
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class ScrollLatencyCompositedScrollbarBrowserTest
-    : public ScrollLatencyScrollbarBrowserTest {
- public:
-  ScrollLatencyCompositedScrollbarBrowserTest() {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ScrollLatencyScrollbarBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  ~ScrollLatencyCompositedScrollbarBrowserTest() override {}
-
- protected:
-  bool DoesScrollbarScrollOnMainThread() const override { return false; }
 };
 
 // Crashes on Mac ASAN.  https://crbug.com/1188553
@@ -392,7 +373,7 @@ class ScrollLatencyCompositedScrollbarBrowserTest
 #else
 #define MAYBE_ScrollbarThumbDragLatency ScrollbarThumbDragLatency
 #endif
-IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScrollLatencyScrollbarBrowserTest,
                        MAYBE_ScrollbarThumbDragLatency) {
   LoadURL();
 
