@@ -100,4 +100,27 @@ suite('AddPasswordDialogTest', function() {
         dialog.i18n('usernameAlreadyUsed', 'www.example2.com'),
         dialog.$.usernameInput.errorMessage);
   });
+
+  test('show/hide password', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    assertEquals(
+        dialog.i18n('showPassword'), dialog.$.showPasswordButton.title);
+    assertEquals('password', dialog.$.passwordInput.type);
+    assertTrue(dialog.$.showPasswordButton.hasAttribute('class'));
+    assertEquals(
+        'icon-visibility', dialog.$.showPasswordButton.getAttribute('class'));
+
+    dialog.$.showPasswordButton.click();
+
+    assertEquals(
+        dialog.i18n('hidePassword'), dialog.$.showPasswordButton.title);
+    assertEquals('text', dialog.$.passwordInput.type);
+    assertTrue(dialog.$.showPasswordButton.hasAttribute('class'));
+    assertEquals(
+        'icon-visibility-off',
+        dialog.$.showPasswordButton.getAttribute('class'));
+  });
 });

@@ -11,24 +11,29 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../shared_style.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {ShowPasswordMixin} from '../show_password_mixin.js';
 
 import {getTemplate} from './add_password_dialog.html.js';
 
 export interface AddPasswordDialogElement {
   $: {
     dialog: CrDialogElement,
-    websiteInput: CrInputElement,
+    passwordInput: CrInputElement,
+    showPasswordButton: CrIconButtonElement,
     usernameInput: CrInputElement,
+    websiteInput: CrInputElement,
   };
 }
 
-const AddPasswordDialogElementBase = I18nMixin(PolymerElement);
+const AddPasswordDialogElementBase =
+    ShowPasswordMixin(I18nMixin(PolymerElement));
 
 function getUsernamesByOrigin(
     passwords: chrome.passwordsPrivate.PasswordUiEntry[]):
@@ -59,6 +64,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return {
       website_: String,
       username_: String,
+      password_: String,
 
       urlCollection_: Object,
 
@@ -82,6 +88,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   private website_: string;
   private username_: string;
+  private password_: string;
   private usernamesBySignonRealm_: Map<string, Set<string>>;
   private websiteErrorMessage_: string|null;
   private usernameErrorMessage_: string|null;
