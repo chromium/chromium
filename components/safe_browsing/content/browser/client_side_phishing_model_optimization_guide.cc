@@ -192,6 +192,25 @@ void ClientSidePhishingModelOptimizationGuide::OnModelAndVisualTfLiteFileLoaded(
             flat::GetClientSideModel(model_str.data())->version();
         memcpy(mapped_region_.mapping.memory(), model_str.data(),
                model_str.length());
+
+        const flat::ClientSideModel* flatbuffer_model =
+            flat::GetClientSideModel(mapped_region_.mapping.memory());
+
+        if (!VerifyCSDFlatBufferIndicesAndFields(flatbuffer_model)) {
+          VLOG(0) << "Failed to verify CSD Flatbuffer indices and fields";
+        } else {
+          if (tflite_valid) {
+            for (const flat::TfLiteModelMetadata_::Threshold* flat_threshold :
+                 *(flatbuffer_model->tflite_metadata()->thresholds())) {
+              TfLiteModelMetadata::Threshold* threshold = thresholds_.Add();
+              threshold->set_label(flat_threshold->label()->str());
+              threshold->set_threshold(flat_threshold->threshold());
+              threshold->set_esb_threshold(flat_threshold->esb_threshold() > 0
+                                               ? flat_threshold->esb_threshold()
+                                               : 0);
+            }
+          }
+        }
       } else {
         model_valid = false;
       }
@@ -259,6 +278,72 @@ bool ClientSidePhishingModelOptimizationGuide::IsEnabled() const {
           visual_tflite_model_->IsValid()) ||
          (model_type_ == CSDModelTypeOptimizationGuide::kProtobuf &&
           !model_str_.empty());
+}
+
+// static
+bool ClientSidePhishingModelOptimizationGuide::
+    VerifyCSDFlatBufferIndicesAndFields(const flat::ClientSideModel* model) {
+  const flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>* hashes =
+      model->hashes();
+  if (!hashes) {
+    return false;
+  }
+
+  const flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>*
+      rules = model->rule();
+  if (!rules) {
+    return false;
+  }
+  for (const flat::ClientSideModel_::Rule* rule : *model->rule()) {
+    if (!rule || !rule->feature()) {
+      return false;
+    }
+    for (int32_t feature : *rule->feature()) {
+      if (feature < 0 || feature >= static_cast<int32_t>(hashes->size())) {
+        return false;
+      }
+    }
+  }
+
+  const flatbuffers::Vector<int32_t>* page_terms = model->page_term();
+  if (!page_terms) {
+    return false;
+  }
+  for (int32_t page_term_idx : *page_terms) {
+    if (page_term_idx < 0 ||
+        page_term_idx >= static_cast<int32_t>(hashes->size())) {
+      return false;
+    }
+  }
+
+  const flatbuffers::Vector<uint32_t>* page_words = model->page_word();
+  if (!page_words) {
+    return false;
+  }
+
+  const flat::TfLiteModelMetadata* metadata = model->tflite_metadata();
+  if (!metadata) {
+    return false;
+  }
+  const flatbuffers::Vector<
+      flatbuffers::Offset<flat::TfLiteModelMetadata_::Threshold>>* thresholds =
+      metadata->thresholds();
+  if (!thresholds) {
+    return false;
+  }
+  for (const flat::TfLiteModelMetadata_::Threshold* threshold : *thresholds) {
+    if (!threshold || !threshold->label()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
+ClientSidePhishingModelOptimizationGuide::GetVisualTfLiteModelThresholds()
+    const {
+  return thresholds_;
 }
 
 const std::string& ClientSidePhishingModelOptimizationGuide::GetModelStr()

@@ -18,6 +18,10 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/core/common/fbs/client_model_generated.h"
+#include "components/safe_browsing/core/common/proto/client_model.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -62,6 +66,9 @@ class ClientSidePhishingModelOptimizationGuide
   // Returns whether we currently have a model.
   bool IsEnabled() const;
 
+  static bool VerifyCSDFlatBufferIndicesAndFields(
+      const flat::ClientSideModel* model);
+
   // Returns model type (protobuf or flatbuffer).
   CSDModelTypeOptimizationGuide GetModelType() const;
 
@@ -84,6 +91,9 @@ class ClientSidePhishingModelOptimizationGuide
   void* GetFlatBufferMemoryAddressForTesting();
   // Notifies all the callbacks of a change in model.
   void NotifyCallbacksOfUpdateForTesting();
+
+  const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
+  GetVisualTfLiteModelThresholds() const;
 
   // This function is used to override internal model for testing in
   // client_side_phishing_model_unittest
@@ -123,6 +133,11 @@ class ClientSidePhishingModelOptimizationGuide
   // Visual TFLite model file. Guarded by sequence_checker_.
   absl::optional<base::File> visual_tflite_model_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Thresholds in visual TFLite model file to be used for comparison after
+  // visual classification
+  google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>
+      thresholds_;
 
   // Model type as inferred by feature flag. Guarded by sequence_checker_.
   CSDModelTypeOptimizationGuide model_type_ GUARDED_BY_CONTEXT(

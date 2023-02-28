@@ -262,6 +262,10 @@ BASE_FEATURE(kClientSideDetectionModelOptimizationGuide,
              "ClientSideDetectionModelOptimizationGuide",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
+             "SafeBrowsingPhishingClassificationESBThreshold",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should
 // be set to true if the experiment state should be listed on

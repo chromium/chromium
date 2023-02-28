@@ -308,16 +308,12 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
   }
 
   verdict->set_tflite_model_version(scorer->tflite_model_version());
+
   for (size_t i = 0; i < result.size(); i++) {
     ClientPhishingRequest::CategoryScore* category =
         verdict->add_tflite_model_scores();
     category->set_label(scorer->tflite_thresholds().at(i).label());
     category->set_value(result[i]);
-
-    if (result[i] >= scorer->tflite_thresholds().at(i).threshold()) {
-      verdict->set_is_phishing(true);
-      verdict->set_is_tflite_match(true);
-    }
   }
 
   RunCallback(*verdict);

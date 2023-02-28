@@ -28,56 +28,6 @@
 namespace safe_browsing {
 
 namespace {
-bool VerifyCSDFlatBufferIndicesAndFields(const flat::ClientSideModel* model) {
-  const flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>* hashes =
-      model->hashes();
-  if (!hashes)
-    return false;
-
-  const flatbuffers::Vector<
-      flatbuffers::Offset<safe_browsing::flat::ClientSideModel_::Rule>>* rules =
-      model->rule();
-  if (!rules)
-    return false;
-  for (const flat::ClientSideModel_::Rule* rule : *model->rule()) {
-    if (!rule || !rule->feature())
-      return false;
-    for (int32_t feature : *rule->feature()) {
-      if (feature < 0 || feature >= static_cast<int32_t>(hashes->size())) {
-        return false;
-      }
-    }
-  }
-
-  const flatbuffers::Vector<int32_t>* page_terms = model->page_term();
-  if (!page_terms)
-    return false;
-  for (int32_t page_term_idx : *page_terms) {
-    if (page_term_idx < 0 ||
-        page_term_idx >= static_cast<int32_t>(hashes->size())) {
-      return false;
-    }
-  }
-
-  const flatbuffers::Vector<uint32_t>* page_words = model->page_word();
-  if (!page_words)
-    return false;
-
-  const flat::TfLiteModelMetadata* metadata = model->tflite_metadata();
-  if (!metadata)
-    return false;
-  const flatbuffers::Vector<
-      flatbuffers::Offset<flat::TfLiteModelMetadata_::Threshold>>* thresholds =
-      metadata->thresholds();
-  if (!thresholds)
-    return false;
-  for (const flat::TfLiteModelMetadata_::Threshold* threshold : *thresholds) {
-    if (!threshold || !threshold->label())
-      return false;
-  }
-
-  return true;
-}
 
 std::string HashToString(const flat::Hash* hash) {
   return std::string(reinterpret_cast<const char*>(hash->data()->Data()),
@@ -119,11 +69,6 @@ std::unique_ptr<FlatBufferModelScorer> FlatBufferModelScorer::Create(
   }
   scorer->flatbuffer_model_ = flat::GetClientSideModel(mapping.memory());
 
-  if (!VerifyCSDFlatBufferIndicesAndFields(scorer->flatbuffer_model_)) {
-    RecordScorerCreationStatus(SCORER_FAIL_FLATBUFFER_BAD_INDICES_OR_FIELDS);
-    return nullptr;
-  }
-
   // Only do this part if the visual model file exists
   if (visual_tflite_model.IsValid()) {
     if (!scorer->visual_tflite_model_.Initialize(
@@ -133,9 +78,11 @@ std::unique_ptr<FlatBufferModelScorer> FlatBufferModelScorer::Create(
     } else {
       for (const flat::TfLiteModelMetadata_::Threshold* flat_threshold :
            *(scorer->flatbuffer_model_->tflite_metadata()->thresholds())) {
+        // While the threshold comparison is done on the browser side, threshold
+        // fields are added so that the verdict score results size check with
+        // threshold size can be done
         TfLiteModelMetadata::Threshold* threshold = scorer->thresholds_.Add();
         threshold->set_label(flat_threshold->label()->str());
-        threshold->set_threshold(flat_threshold->threshold());
       }
     }
   }

@@ -271,5 +271,8 @@ std::string GetFileTypePoliciesTag();
 // of through component updater.
 BASE_DECLARE_FEATURE(kClientSideDetectionModelOptimizationGuide);
 
+// Enables new ESB specific threshold fields in Visual TF Lite model files
+BASE_DECLARE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold);
+
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

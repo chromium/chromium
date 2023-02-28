@@ -495,6 +495,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   if (csd_service_ && verdict->ParseFromString(verdict_str) &&
       verdict->IsInitialized()) {
+    csd_service_->ClassifyPhishingThroughThresholds(verdict.get());
     VLOG(2) << "Phishing classification score: " << verdict->client_score();
     VLOG(2) << "Visual model scores:";
     for (const ClientPhishingRequest::CategoryScore& label_and_value :
