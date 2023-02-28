@@ -930,65 +930,56 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_type_textTyped():
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_type_textTyped():
     pass
-    # TODO sadym: implement
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted(
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted(
 ):
     pass
-    # TODO sadym: implement
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelector_success():
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_waitForSelector_success():
     pass
-    # TODO sadym: implement
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelector_success_slow():
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_waitForSelector_success_slow():
     # 1. Wait for element which is not on the page.
     # 2. Assert element not found.
     # 3. Add element to the page.
     # 4. Wait for newly created element.
     # 5. Assert element found.
-
     pass
-    # TODO sadym: implement
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_waitForHiddenSelector_success():
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_waitForHiddenSelector_success():
     pass
-    # TODO sadym: implement
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout(
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout(
 ):
     pass
-    # TODO sadym: implement
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow(
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow(
 ):
     pass
-    # TODO sadym: implement
 
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_browsingContext_clickElement_clickProcessed():
+@pytest.mark.skip(reason="TODO: Not implemented yet.")
+async def test_browsingContext_clickElement_clickProcessed():
     pass
-    # TODO sadym: implement
