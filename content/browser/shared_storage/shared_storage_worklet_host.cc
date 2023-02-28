@@ -47,6 +47,7 @@ using GetResult = storage::SharedStorageManager::GetResult;
 SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
     StoragePartition* storage_partition,
     BrowserContext* browser_context,
+    PageImpl* page,
     const url::Origin& shared_storage_origin,
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
@@ -56,12 +57,16 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
   DCHECK(!failed_due_to_no_budget);
   DCHECK_GT(urls_with_metadata.size(), 0u);
   DCHECK_LT(index, urls_with_metadata.size());
+  DCHECK(page);
 
   double budget_to_charge = std::log2(urls_with_metadata.size());
 
   // If we are running out of budget, consider this mapping to be failed. Use
   // the default URL, and there's no need to further charge the budget.
-  if (budget_to_charge > 0.0 && budget_to_charge > budget_remaining) {
+  if (budget_to_charge > 0.0 &&
+      (budget_to_charge > budget_remaining ||
+       !page->CheckAndMaybeDebitSelectURLBudgets(shared_storage_origin,
+                                                 budget_to_charge))) {
     failed_due_to_no_budget = true;
     index = 0;
     budget_to_charge = 0.0;
@@ -140,7 +145,7 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
         page_->fenced_frame_urls_map()
             .OnSharedStorageURNMappingResultDetermined(
                 urn_uuid, CreateSharedStorageURNMappingResult(
-                              storage_partition_, browser_context_,
+                              storage_partition_, browser_context_, page_.get(),
                               shared_storage_origin_, std::move(it->second),
                               /*index=*/0, /*budget_remaining=*/0.0,
                               failed_due_to_no_budget));
@@ -753,9 +758,9 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     bool failed_due_to_no_budget = false;
     SharedStorageURNMappingResult mapping_result =
         CreateSharedStorageURNMappingResult(
-            storage_partition_, browser_context_, shared_storage_origin_,
-            std::move(urls_with_metadata), index, budget_result.bits,
-            failed_due_to_no_budget);
+            storage_partition_, browser_context_, page_.get(),
+            shared_storage_origin_, std::move(urls_with_metadata), index,
+            budget_result.bits, failed_due_to_no_budget);
 
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());

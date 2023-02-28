@@ -1,8 +1,9 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../shared_storage/resources/utils.js"></script>
 <script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+<script src="../shared_storage/resources/utils.js"></script>
 <script src="../fenced_frame/resources/utils.js"></script>
 
 <body>
@@ -10,49 +11,32 @@
 'use strict';
 
 promise_test(async () => {
-  const ancestor_key = token();
-  let url0 = generateURL("../shared_storage/resources/frame0.html", [ancestor_key]);
-  let url1 = generateURL("../shared_storage/resources/frame1.html", [ancestor_key]);
+  const ancestorKey = token();
+  const urls = generateUrls(8, "../shared_storage/resources/frame",
+                            [ancestorKey]);
 
   await sharedStorage.worklet.addModule("../shared_storage/resources/simple-module.js");
 
-  let uuid0 = await sharedStorage.selectURL(
-      "test-url-selection-operation", [{url: url0}, {url: url1}],
-      {data: {'mockResult': 0}});
-  assert_true(uuid0.startsWith('urn:uuid:'));
-  attachFencedFrame(uuid0, 'opaque-ads');
-  const result0 = await nextValueFromServer(ancestor_key);
-  assert_equals(result0, "frame0_loaded");
-
-  let uuid1 = await sharedStorage.selectURL(
-      "test-url-selection-operation", [{url: url0}, {url: url1}],
-      {data: {'mockResult': 1}});
-  assert_true(uuid1.startsWith('urn:uuid:'));
-  attachFencedFrame(uuid1, 'opaque-ads');
-  const result1 = await nextValueFromServer(ancestor_key);
-  assert_equals(result1, "frame1_loaded");
-
-  let uuid2 = await sharedStorage.selectURL(
-      "test-url-selection-operation", [{url: url0}, {url: url1}],
-      {data: {'mockResult': -1}});
-  assert_true(uuid2.startsWith('urn:uuid:'));
-  attachFencedFrame(uuid2, 'opaque-ads');
-  const result2 = await nextValueFromServer(ancestor_key);
-  assert_equals(result2, "frame0_loaded");
-
-  // The per-origin per-pageload call limit for `selectURL()` has been
-  // reached. The next call should be blocked.
-  try {
-    await sharedStorage.selectURL(
-      "test-url-selection-operation", [{url: url0}, {url: url1}],
-	{data: {'mockResult': 0}});
-  } catch (e) {
-      assert_equals(e.name, 'OperationError');
-      assert_equals(e.message, 'sharedStorage.selectURL limit has been reached');
-      return;
+  for (let i = 0; i < 8; ++i) {
+    let uuid = await sharedStorage.selectURL(
+        "test-url-selection-operation", urls,
+        {data: {'mockResult': 1}});
+    assert_true(uuid.startsWith('urn:uuid:'));
+    attachFencedFrame(uuid, 'opaque-ads');
+    const result = await nextValueFromServer(ancestorKey);
+    assert_equals(result, "frame1_loaded");
   }
-  assert_unreached("did not reject final call");
-}, 'selectURL() with limit');
 
+  // The per-origin per-pageload bit limit for `selectURL()` has been
+  // reached. The next call should return the default URL.
+  let uuid = await sharedStorage.selectURL(
+      "test-url-selection-operation", urls,
+      {data: {'mockResult': 1}});
+  assert_true(uuid.startsWith('urn:uuid:'));
+  attachFencedFrame(uuid, 'opaque-ads');
+  const result = await nextValueFromServer(ancestorKey);
+  assert_equals(result, "frame0_loaded");
+
+}, 'selectURL() with per-origin per-pageload limit');
 </script>
 </body>

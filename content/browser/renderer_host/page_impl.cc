@@ -34,6 +34,14 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     select_url_report_event_budget_ = static_cast<double>(
         blink::features::kSharedStorageReportEventBitBudgetPerPageLoad.Get());
   }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSharedStorageSelectURLLimit)) {
+    select_url_overall_budget_ = static_cast<double>(
+        blink::features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get());
+    select_url_max_bits_per_origin_ = static_cast<double>(
+        blink::features::kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad
+            .Get());
+  }
 }
 
 PageImpl::~PageImpl() {
@@ -313,20 +321,40 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
 
-bool PageImpl::IsSelectURLAllowed(const url::Origin& origin) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSharedStorageSelectURLLimit)) {
+bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
+                                                  double bits_to_charge) {
+  if (!select_url_overall_budget_) {
+    // The limits are not enabled.
     return true;
   }
 
-  int& count = select_url_count_[origin];
-  if (count >=
-      blink::features::
-          kSharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad.Get()) {
+  // Return false if there is insufficient overall budget.
+  if (bits_to_charge > select_url_overall_budget_.value()) {
     return false;
   }
 
-  ++count;
+  DCHECK(select_url_max_bits_per_origin_);
+
+  // Return false if the max bits per origin is set to a value smaller than the
+  // current bits to charge.
+  if (bits_to_charge > select_url_max_bits_per_origin_.value()) {
+    return false;
+  }
+
+  // Charge the per-origin budget or return false if there is not enough.
+  auto it = select_url_per_origin_budget_.find(origin);
+  if (it == select_url_per_origin_budget_.end()) {
+    select_url_per_origin_budget_[origin] =
+        select_url_max_bits_per_origin_.value() - bits_to_charge;
+  } else if (bits_to_charge > it->second) {
+    // There is insufficient per-origin budget remaining.
+    return false;
+  } else {
+    it->second -= bits_to_charge;
+  }
+
+  // Charge the overall budget.
+  select_url_overall_budget_.value() -= bits_to_charge;
   return true;
 }
 

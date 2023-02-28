@@ -316,10 +316,13 @@ const base::FeatureParam<int>
 BASE_FEATURE(kSharedStorageSelectURLLimit,
              "SharedStorageSelectURLLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kSharedStorageSelectURLBitBudgetPerPageLoad = {
+    &kSharedStorageSelectURLLimit, "SharedStorageSelectURLBitBudgetPerPageLoad",
+    60};
 const base::FeatureParam<int>
-    kSharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad = {
+    kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad = {
         &kSharedStorageSelectURLLimit,
-        "SharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad", 3};
+        "SharedStorageSelectURLBitBudgetPerOriginPerPageLoad", 24};
 
 BASE_FEATURE(kSharedStorageReportEventLimit,
              "SharedStorageReportEventLimit",

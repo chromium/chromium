@@ -184,16 +184,6 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     return;
   }
 
-  if (!static_cast<PageImpl&>(
-           render_frame_host().GetOutermostMainFrame()->GetPage())
-           .IsSelectURLAllowed(render_frame_host().GetLastCommittedOrigin())) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/kSharedStorageSelectURLLimitReachedMessage,
-        /*result_config=*/absl::nullopt);
-    return;
-  }
-
   int fenced_frame_depth = base::checked_cast<int>(
       static_cast<RenderFrameHostImpl&>(render_frame_host())
           .frame_tree_node()
