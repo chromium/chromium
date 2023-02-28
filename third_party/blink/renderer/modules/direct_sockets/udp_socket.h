@@ -57,19 +57,24 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
   explicit UDPSocket(ScriptState*);
   ~UDPSocket() override;
 
-  // Validates options and calls
-  // DirectSocketsServiceMojoRemote::OpenUDPSocket(...) with Init(...) passed as
-  // callback.
+  // Validates options and calls OpenBoundUDPSocket(...) or
+  // OpenConnectedUDPSocket() depending on the provided options.
   bool Open(const UDPSocketOptions*, ExceptionState&);
 
   // On net::OK initializes readable/writable streams and resolves opened
-  // promise. Otherwise rejects the opened promise. Serves as callback for
-  // Open(...).
-  void Init(mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
-                socket_listener,
-            int32_t result,
-            const absl::optional<net::IPEndPoint>& local_addr,
-            const absl::optional<net::IPEndPoint>& peer_addr);
+  // promise. Otherwise rejects the opened promise.
+  void OnConnectedUDPSocketOpened(
+      mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& peer_addr);
+
+  // On net::OK initializes readable/writable streams and resolves opened
+  // promise. Otherwise rejects the opened promise.
+  void OnBoundUDPSocketOpened(
+      mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr);
 
   void Trace(Visitor*) const override;
 
@@ -80,6 +85,15 @@ class MODULES_EXPORT UDPSocket final : public ScriptWrappable,
   void ContextDestroyed() override;
 
  private:
+  void FinishOpen(
+      network::mojom::RestrictedUDPSocketMode,
+      mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& peer_addr);
+
+  void FailOpenWith(int32_t error);
+
   mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
   GetUDPSocketReceiver();
 

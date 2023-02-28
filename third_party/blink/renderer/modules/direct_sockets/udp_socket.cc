@@ -48,15 +48,12 @@ bool CheckSendReceiveBufferSize(const UDPSocketOptions* options,
   return true;
 }
 
-mojom::blink::DirectUDPSocketOptionsPtr CreateUDPSocketOptions(
-    const UDPSocketOptions* options,
-    ExceptionState& exception_state) {
-  auto socket_options = mojom::blink::DirectUDPSocketOptions::New();
-
-  absl::optional<net::HostPortPair> remote_addr;
+absl::optional<network::mojom::blink::RestrictedUDPSocketMode>
+InferUDPSocketMode(const UDPSocketOptions* options,
+                   ExceptionState& exception_state) {
+  absl::optional<network::mojom::blink::RestrictedUDPSocketMode> mode;
   if (options->hasRemoteAddress() && options->hasRemotePort()) {
-    remote_addr = net::HostPortPair(options->remoteAddress().Utf8(),
-                                    options->remotePort());
+    mode = network::mojom::RestrictedUDPSocketMode::CONNECTED;
   } else if (options->hasRemoteAddress() || options->hasRemotePort()) {
     exception_state.ThrowTypeError(
         "remoteAddress and remotePort should either be specified together or "
@@ -64,48 +61,50 @@ mojom::blink::DirectUDPSocketOptionsPtr CreateUDPSocketOptions(
     return {};
   }
 
-  absl::optional<net::IPEndPoint> local_addr;
   if (options->hasLocalAddress()) {
-    net::IPAddress address;
-    if (!address.AssignFromIPLiteral(options->localAddress().Utf8())) {
+    if (mode) {
       exception_state.ThrowTypeError(
-          "localAddress must be a valid IP address.");
+          "remoteAddress and localAddress cannot be specified at the same "
+          "time.");
       return {};
     }
 
-    if (options->hasLocalPort() && options->localPort() == 0) {
-      exception_state.ThrowTypeError(
-          "localPort must be greater than zero. Leave this field unassigned to "
-          "allow the OS to pick a port on its own.");
-      return {};
-    }
-
-    // Port 0 allows the OS to pick an available port on its own.
-    local_addr =
-        net::IPEndPoint(std::move(address),
-                        options->hasLocalPort() ? options->localPort() : 0U);
+    mode = network::mojom::blink::RestrictedUDPSocketMode::BOUND;
   } else if (options->hasLocalPort()) {
     exception_state.ThrowTypeError(
         "localPort cannot be specified without localAddress.");
     return {};
   }
 
-  if (remote_addr && local_addr) {
-    exception_state.ThrowTypeError(
-        "remoteAddress and localAddress cannot be specified at the same time.");
-    return {};
-  } else if (!remote_addr && !local_addr) {
+  if (!mode) {
     exception_state.ThrowTypeError(
         "neither remoteAddress nor localAddress specified.");
     return {};
   }
 
+  return mode;
+}
+
+mojom::blink::DirectConnectedUDPSocketOptionsPtr
+CreateConnectedUDPSocketOptions(const UDPSocketOptions* options,
+                                ExceptionState& exception_state) {
+  DCHECK(options->hasRemoteAddress() && options->hasRemotePort());
+
+  if (options->hasIpv6Only()) {
+    exception_state.ThrowTypeError(
+        "ipv6Only can only be specified with localAddress.");
+    return {};
+  }
+
+  if (!CheckSendReceiveBufferSize(options, exception_state)) {
+    return {};
+  }
+
+  auto socket_options = mojom::blink::DirectConnectedUDPSocketOptions::New();
+
+  socket_options->remote_addr =
+      net::HostPortPair(options->remoteAddress().Utf8(), options->remotePort());
   if (options->hasDnsQueryType()) {
-    if (!options->hasRemoteAddress()) {
-      exception_state.ThrowTypeError(
-          "dnsQueryType is only relevant when remoteAddress is specified.");
-      return {};
-    }
     switch (options->dnsQueryType().AsEnum()) {
       case V8SocketDnsQueryType::Enum::kIpv4:
         socket_options->dns_query_type = net::DnsQueryType::A;
@@ -116,30 +115,62 @@ mojom::blink::DirectUDPSocketOptionsPtr CreateUDPSocketOptions(
     }
   }
 
+  if (options->hasReceiveBufferSize()) {
+    socket_options->receive_buffer_size = options->receiveBufferSize();
+  }
+  if (options->hasSendBufferSize()) {
+    socket_options->send_buffer_size = options->sendBufferSize();
+  }
+
+  return socket_options;
+}
+
+mojom::blink::DirectBoundUDPSocketOptionsPtr CreateBoundUDPSocketOptions(
+    const UDPSocketOptions* options,
+    ExceptionState& exception_state) {
+  DCHECK(options->hasLocalAddress());
+  auto socket_options = mojom::blink::DirectBoundUDPSocketOptions::New();
+
+  auto local_ip = net::IPAddress::FromIPLiteral(options->localAddress().Utf8());
+  if (!local_ip) {
+    exception_state.ThrowTypeError("localAddress must be a valid IP address.");
+    return {};
+  }
+
+  if (options->hasLocalPort() && options->localPort() == 0) {
+    exception_state.ThrowTypeError(
+        "localPort must be greater than zero. Leave this field unassigned to "
+        "allow the OS to pick a port on its own.");
+    return {};
+  }
+
+  if (options->hasDnsQueryType()) {
+    exception_state.ThrowTypeError(
+        "dnsQueryType is only relevant when remoteAddress is specified.");
+    return {};
+  }
+
   if (!CheckSendReceiveBufferSize(options, exception_state)) {
     return {};
   }
 
-  if (options->hasIpv6Only()) {
-    if (!local_addr ||
-        local_addr->address() != net::IPAddress::IPv6AllZeros()) {
-      exception_state.ThrowTypeError(
-          "ipv6Only can only be specified when localAddress is [::] or "
-          "equivalent.");
-      return {};
-    }
-    // TODO(crbug.com/1413161): Implement ipv6_only support.
+  if (options->hasIpv6Only() && local_ip != net::IPAddress::IPv6AllZeros()) {
+    exception_state.ThrowTypeError(
+        "ipv6Only can only be specified when localAddress is [::] or "
+        "equivalent.");
+    return {};
   }
 
-  if (options->hasSendBufferSize()) {
-    socket_options->send_buffer_size = options->sendBufferSize();
-  }
+  socket_options->local_addr =
+      net::IPEndPoint(std::move(*local_ip),
+                      options->hasLocalPort() ? options->localPort() : 0U);
+
   if (options->hasReceiveBufferSize()) {
     socket_options->receive_buffer_size = options->receiveBufferSize();
   }
-
-  socket_options->remote_addr = std::move(remote_addr);
-  socket_options->local_addr = std::move(local_addr);
+  if (options->hasSendBufferSize()) {
+    socket_options->send_buffer_size = options->sendBufferSize();
+  }
 
   return socket_options;
 }
@@ -205,28 +236,47 @@ ScriptPromise UDPSocket::close(ScriptState*, ExceptionState& exception_state) {
 
 bool UDPSocket::Open(const UDPSocketOptions* options,
                      ExceptionState& exception_state) {
-  auto open_udp_socket_options =
-      CreateUDPSocketOptions(options, exception_state);
-
-  if (exception_state.HadException()) {
+  auto mode = InferUDPSocketMode(options, exception_state);
+  if (!mode) {
     return false;
   }
 
   mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
       socket_listener;
-  mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
-      socket_listener_remote = socket_listener.InitWithNewPipeAndPassRemote();
+  auto socket_listener_remote = socket_listener.InitWithNewPipeAndPassRemote();
 
-  GetServiceRemote()->OpenUDPSocket(
-      std::move(open_udp_socket_options), GetUDPSocketReceiver(),
-      std::move(socket_listener_remote),
-      WTF::BindOnce(&UDPSocket::Init, WrapPersistent(this),
-                    std::move(socket_listener)));
-
-  return true;
+  switch (*mode) {
+    case network::mojom::blink::RestrictedUDPSocketMode::CONNECTED: {
+      auto connected_options =
+          CreateConnectedUDPSocketOptions(options, exception_state);
+      if (exception_state.HadException()) {
+        return false;
+      }
+      GetServiceRemote()->OpenConnectedUDPSocket(
+          std::move(connected_options), GetUDPSocketReceiver(),
+          std::move(socket_listener_remote),
+          WTF::BindOnce(&UDPSocket::OnConnectedUDPSocketOpened,
+                        WrapPersistent(this), std::move(socket_listener)));
+      return true;
+    }
+    case network::mojom::blink::RestrictedUDPSocketMode::BOUND: {
+      auto bound_options =
+          CreateBoundUDPSocketOptions(options, exception_state);
+      if (exception_state.HadException()) {
+        return false;
+      }
+      GetServiceRemote()->OpenBoundUDPSocket(
+          std::move(bound_options), GetUDPSocketReceiver(),
+          std::move(socket_listener_remote),
+          WTF::BindOnce(&UDPSocket::OnBoundUDPSocketOpened,
+                        WrapPersistent(this), std::move(socket_listener)));
+      return true;
+    }
+  }
 }
 
-void UDPSocket::Init(
+void UDPSocket::FinishOpen(
+    network::mojom::RestrictedUDPSocketMode mode,
     mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
         socket_listener,
     int32_t result,
@@ -242,9 +292,7 @@ void UDPSocket::Init(
         script_state, close_callback, udp_socket_, std::move(socket_listener));
     // |peer_addr| is populated only in CONNECTED mode.
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
-        script_state, close_callback, udp_socket_,
-        peer_addr ? network::mojom::RestrictedUDPSocketMode::CONNECTED
-                  : network::mojom::RestrictedUDPSocketMode::BOUND);
+        script_state, close_callback, udp_socket_, mode);
 
     auto* open_info = UDPSocketOpenInfo::Create();
 
@@ -256,7 +304,6 @@ void UDPSocket::Init(
       open_info->setRemotePort(peer_addr->port());
     }
 
-    DCHECK(local_addr);
     open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
     open_info->setLocalPort(local_addr->port());
 
@@ -264,18 +311,41 @@ void UDPSocket::Init(
 
     SetState(State::kOpen);
   } else {
-    // Error codes are negative.
-    base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -result);
-    ReleaseResources();
-
-    GetOpenedPromiseResolver()->Reject(
-        CreateDOMExceptionFromNetErrorCode(result));
-    GetClosedPromiseResolver()->Reject();
-
+    FailOpenWith(result);
     SetState(State::kAborted);
   }
 
   DCHECK_NE(GetState(), State::kOpening);
+}
+
+void UDPSocket::OnConnectedUDPSocketOpened(
+    mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
+        socket_listener,
+    int32_t result,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr) {
+  FinishOpen(network::mojom::RestrictedUDPSocketMode::CONNECTED,
+             std::move(socket_listener), result, local_addr, peer_addr);
+}
+
+void UDPSocket::OnBoundUDPSocketOpened(
+    mojo::PendingReceiver<network::mojom::blink::UDPSocketListener>
+        socket_listener,
+    int32_t result,
+    const absl::optional<net::IPEndPoint>& local_addr) {
+  FinishOpen(network::mojom::RestrictedUDPSocketMode::BOUND,
+             std::move(socket_listener), result, local_addr,
+             /*peer_addr=*/absl::nullopt);
+}
+
+void UDPSocket::FailOpenWith(int32_t error) {
+  // Error codes are negative.
+  base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -error);
+  ReleaseResources();
+
+  auto* exception = CreateDOMExceptionFromNetErrorCode(error);
+  GetOpenedPromiseResolver()->Reject(exception);
+  GetClosedPromiseResolver()->Reject(exception);
 }
 
 mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
@@ -312,8 +382,8 @@ void UDPSocket::Trace(Visitor* visitor) const {
 
 void UDPSocket::OnServiceConnectionError() {
   if (GetState() == State::kOpening) {
-    Init(mojo::NullReceiver(), net::ERR_UNEXPECTED, absl::nullopt,
-         absl::nullopt);
+    FailOpenWith(net::ERR_CONNECTION_FAILED);
+    SetState(State::kAborted);
   }
 }
 
