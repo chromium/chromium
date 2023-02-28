@@ -83,8 +83,7 @@ class WebRtcTextLogIndexCleanupTest : public testing::Test {
   void CreateLogListFileWithContents(const std::string& contents) {
     ASSERT_FALSE(base::PathExists(log_list_path_));  // Only call once per test.
 
-    const int len = static_cast<int>(contents.length());
-    ASSERT_EQ(base::WriteFile(log_list_path_, contents.c_str(), len), len);
+    ASSERT_TRUE(base::WriteFile(log_list_path_, contents));
 
     ASSERT_TRUE(base::PathExists(log_list_path_));  // Only call once per test.
   }
