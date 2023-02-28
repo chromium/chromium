@@ -393,6 +393,10 @@ MojoResult MojoCreateDataPipeIpcz(const MojoCreateDataPipeOptions* options,
       config.byte_capacity = options->capacity_num_bytes;
     }
   }
+  if (!config.byte_capacity || !config.element_size ||
+      config.byte_capacity < config.element_size) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
   absl::optional<DataPipe::Pair> pipe = DataPipe::CreatePair(config);
   if (!pipe) {
     // This result implies that we failed to allocate or map a new shared memory
