@@ -20,6 +20,7 @@ namespace ash {
 
 class FakeSupervisedUserManager;
 
+// DEPRECATED: please use FakeUserManager or FakeChromeUserManager in new tests.
 class MockUserManager : public ChromeUserManager {
  public:
   MockUserManager();
