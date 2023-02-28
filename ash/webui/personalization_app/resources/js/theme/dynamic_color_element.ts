@@ -8,6 +8,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../../css/common.css.js';
+import '../../css/cros_button_style.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
