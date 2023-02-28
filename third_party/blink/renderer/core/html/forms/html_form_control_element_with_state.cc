@@ -26,7 +26,9 @@
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -319,8 +321,22 @@ bool HTMLFormControlElementWithState::ClassSupportsStateRestore() const {
 
 bool HTMLFormControlElementWithState::ShouldSaveAndRestoreFormControlState()
     const {
-  // We don't save/restore control state in a form with autocomplete=off.
-  return isConnected() && ShouldAutocomplete();
+  if (!isConnected()) {
+    return false;
+  }
+  // TODO(crbug.com/1419161): remove this after M113 has been stable for a bit.
+  if (RuntimeEnabledFeatures::
+          FormControlRestoreStateIfAutocompleteOffEnabled()) {
+    return ShouldAutocomplete();
+  }
+  if (Form() && !Form()->ShouldAutocomplete()) {
+    return false;
+  }
+  if (EqualIgnoringASCIICase(FastGetAttribute(html_names::kAutocompleteAttr),
+                             "off")) {
+    return false;
+  }
+  return true;
 }
 
 void HTMLFormControlElementWithState::DispatchInputEvent() {
