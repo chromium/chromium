@@ -298,7 +298,8 @@ uint64_t RendererBlinkPlatformImpl::VisitedLinkHash(const char* canonical_url,
 }
 
 bool RendererBlinkPlatformImpl::IsLinkVisited(uint64_t link_hash) {
-  return GetContentClient()->renderer()->IsLinkVisited(link_hash);
+  return (bool)recordreplay::RecordReplayValue("RendererBlinkPlatformImpl::IsLinkVisited", 
+    GetContentClient()->renderer()->IsLinkVisited(link_hash));
 }
 
 blink::WebString RendererBlinkPlatformImpl::UserAgent() {
