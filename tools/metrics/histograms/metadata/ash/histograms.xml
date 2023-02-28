@@ -6286,7 +6286,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Container" units="%"
     expires_after="2024-02-22">
-  <owner>yjliu@chromium.org</owner>
+  <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of showing window animation when the window cycle view
@@ -6301,7 +6301,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Show" units="%"
     expires_after="2024-02-22">
-  <owner>yjliu@chromium.org</owner>
+  <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of showing window animation when the window cycle view
