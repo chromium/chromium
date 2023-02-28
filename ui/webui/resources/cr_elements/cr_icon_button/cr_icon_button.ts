@@ -47,7 +47,8 @@
 import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_icon_button.html.js';
 
@@ -57,7 +58,13 @@ export interface CrIconButtonElement {
   };
 }
 
-export class CrIconButtonElement extends PolymerElement {
+const CrIconbuttonElementBase =
+    mixinBehaviors([PaperRippleBehavior], PolymerElement) as {
+      new (): PolymerElement & PaperRippleBehavior,
+    };
+
+
+export class CrIconButtonElement extends CrIconbuttonElementBase {
   static get is() {
     return 'cr-icon-button';
   }
@@ -118,6 +125,10 @@ export class CrIconButtonElement extends PolymerElement {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('keyup', this.onKeyUp_.bind(this));
+
+    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
+      this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+    }
   }
 
   override ready() {
@@ -213,6 +224,10 @@ export class CrIconButtonElement extends PolymerElement {
       this.spaceKeyDown_ = false;
       this.click();
     }
+  }
+
+  private onPointerDown_() {
+    this.ensureRipple();
   }
 }
 

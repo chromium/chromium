@@ -26,6 +26,12 @@
         width: var(--cr-icon-button-width);
       }
 
+      :host-context([chrome-refresh-2023]):host {
+        --cr-icon-button-fill-color: currentColor;
+        --cr-icon-button-size: 32px;
+        position: relative;
+      }
+
       :host(:hover) {
         background-color: var(--cr-icon-button-hover-background-color,
             var(--cr-hover-background-color));
@@ -44,9 +50,19 @@
         }
       }
 
-      :host(:active) {
+      :host-context(html:not([chrome-refresh-2023])) :host(:active) {
         background-color: var(--cr-icon-button-active-background-color,
             var(--cr-active-background-color));
+      }
+
+      paper-ripple {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]) paper-ripple {
+        --paper-ripple-opacity: 1;
+        color: var(--cr-active-background-color);
+        display: block;
       }
 
       :host([disabled]) {
