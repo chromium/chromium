@@ -330,6 +330,9 @@ BluetoothDevice::UUIDSet BluetoothDevice::GetUUIDs() const {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void BluetoothDevice::SetIsBlockedByPolicy(bool is_blocked_by_policy) {
+  if (is_blocked_by_policy_ == is_blocked_by_policy) {
+    return;
+  }
   is_blocked_by_policy_ = is_blocked_by_policy;
   GetAdapter()->NotifyDeviceIsBlockedByPolicyChanged(this,
                                                      is_blocked_by_policy);
