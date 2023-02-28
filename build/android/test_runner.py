@@ -242,6 +242,12 @@ def AddCommonOptions(parser):
       action='store_true',
       help='Uses a persistent shell connection for the adb connection.')
 
+  parser.add_argument('--disable-test-server',
+                      action='store_true',
+                      help='Disables SpawnedTestServer which doesn'
+                      't work with remote adb. '
+                      'WARNING: Will break tests which require the server.')
+
   # This is currently only implemented for gtests and instrumentation tests.
   parser.add_argument(
       '--gtest_also_run_disabled_tests', '--gtest-also-run-disabled-tests',
