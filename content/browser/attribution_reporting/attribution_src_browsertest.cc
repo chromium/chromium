@@ -913,9 +913,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
       data_host->trigger_data(),
       ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
           FilterPair{.positive = *attribution_reporting::Filters::Create(
-                         {{"w", {}}, {"x", {"y", "z"}}}),
+                         {{{"w", {}}, {"x", {"y", "z"}}}}),
                      .negative = *attribution_reporting::Filters::Create(
-                         {{"a", {"b"}}})},
+                         {{{"a", {"b"}}}})},
           /*debug_key=*/Optional(789),
           EventTriggerDataListMatches(
               EventTriggerDataListMatcherConfig(ElementsAre(
@@ -924,15 +924,15 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                       /*priority=*/5, /*dedup_key=*/1024,
                       FilterPair{
                           .positive = *attribution_reporting::Filters::Create(
-                              {{"a", {"b"}}}),
+                              {{{"a", {"b"}}}}),
                           .negative = *attribution_reporting::Filters::Create(
-                              {{"c", {}}})}),
+                              {{{"c", {}}}})}),
                   attribution_reporting::EventTriggerData(
                       /*data=*/2, /*priority=*/10,
                       /*dedup_key=*/absl::nullopt,
                       FilterPair{.negative =
                                      *attribution_reporting::Filters::Create(
-                                         {{"d", {"e", "f"}}, {"g", {}}})})))),
+                                         {{{"d", {"e", "f"}}, {"g", {}}}})})))),
           *attribution_reporting::AggregatableDedupKeyList::Create(
               {attribution_reporting::AggregatableDedupKey(
                   /*dedup_key=*/123, FilterPair())}),

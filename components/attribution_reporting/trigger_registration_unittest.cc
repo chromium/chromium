@@ -85,7 +85,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.positive = *Filters::Create({{"a", {"b"}}});
+            r.filters.positive = *Filters::Create({{{"a", {"b"}}}});
           }),
       },
       {
@@ -97,7 +97,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.negative = *Filters::Create({{"a", {"b"}}});
+            r.filters.negative = *Filters::Create({{{"a", {"b"}}}});
           }),
       },
       {
@@ -370,8 +370,8 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.debug_reporting = true;
             r.event_triggers =
                 *EventTriggerDataList::Create({EventTriggerData()});
-            r.filters.positive = *Filters::Create({{"b", {}}});
-            r.filters.negative = *Filters::Create({{"c", {}}});
+            r.filters.positive = *Filters::Create({{{"b", {}}}});
+            r.filters.negative = *Filters::Create({{{"c", {}}}});
           }),
           R"json({
             "aggregation_coordinator_identifier": "aws-cloud",
@@ -381,8 +381,8 @@ TEST(TriggerRegistrationTest, ToJson) {
             "debug_key": "3",
             "debug_reporting": true,
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
-            "filters": {"b": []},
-            "not_filters": {"c": []}
+            "filters": [{"b": []}],
+            "not_filters": [{"c": []}]
           })json",
       },
   };

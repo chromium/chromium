@@ -66,8 +66,10 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 // Set on triggers.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
  public:
+  using Disjunction = std::vector<FilterValues>;
+
   // Filters are allowed to contain a `source_type` filter.
-  static absl::optional<Filters> Create(FilterValues);
+  static absl::optional<Filters> Create(Disjunction);
 
   static base::expected<Filters, mojom::TriggerRegistrationError> FromJSON(
       base::Value*);
@@ -85,16 +87,16 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
   Filters& operator=(const Filters&);
   Filters& operator=(Filters&&);
 
-  const FilterValues& filter_values() const { return filter_values_; }
+  const Disjunction& disjunction() const { return disjunction_; }
 
-  base::Value::Dict ToJson() const;
+  base::Value::List ToJson() const;
 
   void SerializeIfNotEmpty(base::Value::Dict&, base::StringPiece key) const;
 
  private:
-  explicit Filters(FilterValues);
+  explicit Filters(Disjunction);
 
-  FilterValues filter_values_;
+  Disjunction disjunction_;
 };
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {

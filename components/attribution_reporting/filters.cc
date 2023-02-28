@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 
@@ -220,45 +221,52 @@ base::Value::Dict FilterData::ToJson() const {
 bool FilterData::Matches(mojom::SourceType source_type,
                          const Filters& filters,
                          bool negated) const {
-  // A filter is considered matched if the filter key is only present either on
-  // the source or trigger, or the intersection of the filter values is
-  // non-empty.
-  // Returns true if all the filters matched.
+  if (filters.disjunction().empty()) {
+    return true;
+  }
+
+  // A filter_value is considered matched if the filter key is only present
+  // either on the source or trigger, or the intersection of the filter values
+  // is non-empty. Returns true if all the filters matched.
   //
   // If the filters are negated, the behavior should be that every single filter
   // key does not match between the two (negating the function result is not
   // sufficient by the API definition).
-  return base::ranges::all_of(
-      filters.filter_values(), [&](const auto& trigger_filter) {
-        if (trigger_filter.first == kSourceTypeFilterKey) {
-          bool has_intersection = base::ranges::any_of(
-              trigger_filter.second, [&](const std::string& value) {
-                return value == SourceTypeName(source_type);
-              });
+  return base::ranges::any_of(
+      filters.disjunction(), [&](const auto& trigger_filter_values) {
+        return base::ranges::all_of(
+            trigger_filter_values, [&](const auto& trigger_filter) {
+              if (trigger_filter.first == kSourceTypeFilterKey) {
+                bool has_intersection = base::ranges::any_of(
+                    trigger_filter.second, [&](const std::string& value) {
+                      return value == SourceTypeName(source_type);
+                    });
 
-          return negated != has_intersection;
-        }
+                return negated != has_intersection;
+              }
 
-        auto source_filter = filter_values_.find(trigger_filter.first);
-        if (source_filter == filter_values_.end()) {
-          return true;
-        }
+              auto source_filter = filter_values_.find(trigger_filter.first);
+              if (source_filter == filter_values_.end()) {
+                return true;
+              }
 
-        // Desired behavior is to treat any empty set of values as a single
-        // unique value itself. This means:
-        //  - x:[] match x:[] is false when negated, and true otherwise.
-        //  - x:[1,2,3] match x:[] is true when negated, and false otherwise.
-        if (trigger_filter.second.empty()) {
-          return negated != source_filter->second.empty();
-        }
+              // Desired behavior is to treat any empty set of values as a
+              // single unique value itself. This means:
+              //  - x:[] match x:[] is false when negated, and true otherwise.
+              //  - x:[1,2,3] match x:[] is true when negated, and false
+              //  otherwise.
+              if (trigger_filter.second.empty()) {
+                return negated != source_filter->second.empty();
+              }
 
-        bool has_intersection = base::ranges::any_of(
-            trigger_filter.second, [&](const std::string& value) {
-              return base::Contains(source_filter->second, value);
+              bool has_intersection = base::ranges::any_of(
+                  trigger_filter.second, [&](const std::string& value) {
+                    return base::Contains(source_filter->second, value);
+                  });
+              // Negating filters are considered matched if the intersection of
+              // the filter values is empty.
+              return negated != has_intersection;
             });
-        // Negating filters are considered matched if the intersection of the
-        // filter values is empty.
-        return negated != has_intersection;
       });
 }
 
@@ -275,11 +283,12 @@ bool FilterData::Matches(mojom::SourceType source_type,
 }
 
 // static
-absl::optional<Filters> Filters::Create(FilterValues filter_values) {
-  if (!IsValidForSourceOrTrigger(filter_values))
+absl::optional<Filters> Filters::Create(Filters::Disjunction filters) {
+  if (!base::ranges::all_of(filters, &IsValidForSourceOrTrigger)) {
     return absl::nullopt;
+  }
 
-  return Filters(std::move(filter_values));
+  return Filters(std::move(filters));
 }
 
 // static
@@ -289,29 +298,53 @@ base::expected<Filters, TriggerRegistrationError> Filters::FromJSON(
     return Filters();
   }
 
-  base::Value::Dict* dict = input_value->GetIfDict();
-  if (!dict) {
-    return base::unexpected(TriggerRegistrationError::kFiltersWrongType);
+  Disjunction disjunction;
+  const auto append_if_valid =
+      [&disjunction](
+          base::Value& value) -> absl::optional<TriggerRegistrationError> {
+    base::Value::Dict* dict = value.GetIfDict();
+    if (!dict) {
+      return TriggerRegistrationError::kFiltersWrongType;
+    }
+
+    auto filter_values = ParseFilterValuesFromJSON(std::move(*dict));
+    if (filter_values.has_value()) {
+      if (!filter_values->empty()) {
+        disjunction.push_back(std::move(filter_values.value()));
+      }
+      return absl::nullopt;
+    }
+
+    switch (filter_values.error()) {
+      case FilterValuesError::kTooManyKeys:
+        return TriggerRegistrationError::kFiltersTooManyKeys;
+      case FilterValuesError::kKeyTooLong:
+        return TriggerRegistrationError::kFiltersKeyTooLong;
+      case FilterValuesError::kListWrongType:
+        return TriggerRegistrationError::kFiltersListWrongType;
+      case FilterValuesError::kListTooLong:
+        return TriggerRegistrationError::kFiltersListTooLong;
+      case FilterValuesError::kValueWrongType:
+        return TriggerRegistrationError::kFiltersValueWrongType;
+      case FilterValuesError::kValueTooLong:
+        return TriggerRegistrationError::kFiltersValueTooLong;
+    }
+  };
+
+  if (base::Value::List* list = input_value->GetIfList()) {
+    disjunction.reserve(list->size());
+    for (base::Value& item : *list) {
+      if (auto error = append_if_valid(item)) {
+        return base::unexpected(*error);
+      }
+    }
+    return Filters(std::move(disjunction));
   }
 
-  auto filter_values = ParseFilterValuesFromJSON(std::move(*dict));
-  if (filter_values.has_value())
-    return Filters(std::move(*filter_values));
-
-  switch (filter_values.error()) {
-    case FilterValuesError::kTooManyKeys:
-      return base::unexpected(TriggerRegistrationError::kFiltersTooManyKeys);
-    case FilterValuesError::kKeyTooLong:
-      return base::unexpected(TriggerRegistrationError::kFiltersKeyTooLong);
-    case FilterValuesError::kListWrongType:
-      return base::unexpected(TriggerRegistrationError::kFiltersListWrongType);
-    case FilterValuesError::kListTooLong:
-      return base::unexpected(TriggerRegistrationError::kFiltersListTooLong);
-    case FilterValuesError::kValueWrongType:
-      return base::unexpected(TriggerRegistrationError::kFiltersValueWrongType);
-    case FilterValuesError::kValueTooLong:
-      return base::unexpected(TriggerRegistrationError::kFiltersValueTooLong);
+  if (auto error = append_if_valid(*input_value)) {
+    return base::unexpected(*error);
   }
+  return Filters(std::move(disjunction));
 }
 
 // static
@@ -324,14 +357,14 @@ Filters Filters::ForSourceTypeForTesting(mojom::SourceType source_type) {
   filter_values.reserve(1);
   filter_values.emplace(FilterData::kSourceTypeFilterKey, std::move(values));
 
-  return Filters(std::move(filter_values));
+  return Filters({std::move(filter_values)});
 }
 
 Filters::Filters() = default;
 
-Filters::Filters(FilterValues filter_values)
-    : filter_values_(std::move(filter_values)) {
-  DCHECK(IsValidForSourceOrTrigger(filter_values_));
+Filters::Filters(Filters::Disjunction disjunction)
+    : disjunction_(std::move(disjunction)) {
+  DCHECK(base::ranges::all_of(disjunction_, &IsValidForSourceOrTrigger));
 }
 
 Filters::~Filters() = default;
@@ -344,13 +377,17 @@ Filters& Filters::operator=(const Filters&) = default;
 
 Filters& Filters::operator=(Filters&&) = default;
 
-base::Value::Dict Filters::ToJson() const {
-  return FilterValuesToJson(filter_values_);
+base::Value::List Filters::ToJson() const {
+  base::Value::List list;
+  for (const auto& filter_values : disjunction_) {
+    list.Append(FilterValuesToJson(filter_values));
+  }
+  return list;
 }
 
 void Filters::SerializeIfNotEmpty(base::Value::Dict& dict,
                                   base::StringPiece key) const {
-  if (!filter_values_.empty()) {
+  if (!disjunction_.empty()) {
     dict.Set(key, ToJson());
   }
 }

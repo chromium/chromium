@@ -225,39 +225,46 @@ object_value {
   field {
     name: "filters"
     value {
-      object_value {
-        field {
-          name: "a"
-          value {
-            array_value {
+      array_value {
+        value {
+          object_value {
+            field {
+              name: "a"
               value {
-                string_value {
-                  value: "x"
+                array_value {
+                  value {
+                    string_value {
+                      value: "x"
+                    }
+                  }
                 }
               }
             }
           }
         }
-        field {
-          name: "b"
-          value {
-            array_value {
+        value {
+          object_value {
+            field {
+              name: "b"
               value {
-                string_value {
-                  value: "y"
-                }
-              }
-              value {
-                string_value {
-                  value: "z"
+                array_value {
+                  value {
+                    string_value {
+                      value: "y"
+                    }
+                  }
+                  value {
+                    string_value {
+                      value: "z"
+                    }
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-  }
+
   field {
     name: "not_filters"
     value {

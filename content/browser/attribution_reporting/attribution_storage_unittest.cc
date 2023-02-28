@@ -2204,18 +2204,18 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
           "filter mismatch",
           attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/123,
-              FilterPair{.positive = *AttributionFilters::Create({
+              FilterPair{.positive = *AttributionFilters::Create({{
                              {"abc", {"456"}},
-                         })}),
+                         }})}),
           false,
       },
       {
           "filter match",
           attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/123,
-              FilterPair{.positive = *AttributionFilters::Create({
+              FilterPair{.positive = *AttributionFilters::Create({{
                              {"abc", {"123"}},
-                         })}),
+                         }})}),
           true,
       },
       {
@@ -2242,9 +2242,9 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
           "null dedup key",
           attribution_reporting::AggregatableDedupKey(
               /*dedup_key=*/absl::nullopt,
-              FilterPair{.positive = *AttributionFilters::Create({
+              FilterPair{.positive = *AttributionFilters::Create({{
                              {"abc", {"123"}},
-                         })}),
+                         }})}),
           false,
       },
   };
@@ -3047,33 +3047,33 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*data=*/11,
           /*priority=*/12,
           /*dedup_key=*/13,
-          FilterPair{.positive = *AttributionFilters::Create({
+          FilterPair{.positive = *AttributionFilters::Create({{
                          {"abc", {"456"}},
-                     })}),
+                     }})}),
 
       // Filters match, but negated filters do not.
       attribution_reporting::EventTriggerData(
           /*data=*/21,
           /*priority=*/22,
           /*dedup_key=*/23,
-          FilterPair{.positive = *AttributionFilters::Create({
+          FilterPair{.positive = *AttributionFilters::Create({{
                          {"abc", {"123"}},
-                     }),
-                     .negative = *AttributionFilters::Create({
+                     }}),
+                     .negative = *AttributionFilters::Create({{
                          {"source_type", {"navigation"}},
-                     })}),
+                     }})}),
 
       // Filters and negated filters match.
       attribution_reporting::EventTriggerData(
           /*data=*/31,
           /*priority=*/32,
           /*dedup_key=*/33,
-          FilterPair{.positive = *AttributionFilters::Create({
+          FilterPair{.positive = *AttributionFilters::Create({{
                          {"abc", {"123"}},
-                     }),
-                     .negative = *AttributionFilters::Create({
+                     }}),
+                     .negative = *AttributionFilters::Create({{
                          {"source_type", {"event"}},
-                     })}),
+                     }})}),
 
       // Filters and negated filters match, but not the first event
       // trigger to match.
@@ -3081,12 +3081,12 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           /*data=*/41,
           /*priority=*/42,
           /*dedup_key=*/43,
-          FilterPair{.positive = *AttributionFilters::Create({
+          FilterPair{.positive = *AttributionFilters::Create({{
                          {"abc", {"123"}},
-                     }),
-                     .negative = *AttributionFilters::Create({
+                     }}),
+                     .negative = *AttributionFilters::Create({{
                          {"source_type", {"event"}},
-                     })}),
+                     }})}),
   };
 
   EXPECT_EQ(
@@ -3147,9 +3147,9 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   AttributionTrigger trigger1(
       /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
-          FilterPair{.positive = *AttributionFilters::Create({
+          FilterPair{.positive = *AttributionFilters::Create({{
                          {"abc", {"456"}},
-                     })},
+                     }})},
           /*debug_key=*/absl::nullopt,
           attribution_reporting::AggregatableDedupKeyList(), event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(
@@ -3163,9 +3163,9 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   AttributionTrigger trigger2(
       /*reporting_origin=*/origin,
       attribution_reporting::TriggerRegistration(
-          FilterPair{.positive = *AttributionFilters::Create({
+          FilterPair{.positive = *AttributionFilters::Create({{
                          {"abc", {"123"}},
-                     })},
+                     }})},
           /*debug_key=*/absl::nullopt,
           attribution_reporting::AggregatableDedupKeyList(), event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(

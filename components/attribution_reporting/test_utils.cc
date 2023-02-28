@@ -51,7 +51,7 @@ std::ostream& operator<<(std::ostream& out, const FilterPair& filters) {
 }
 
 bool operator==(const Filters& a, const Filters& b) {
-  return a.filter_values() == b.filter_values();
+  return a.disjunction() == b.disjunction();
 }
 
 std::ostream& operator<<(std::ostream& out, const Filters& filters) {

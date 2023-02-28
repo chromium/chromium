@@ -105,11 +105,11 @@ const struct {
             {"c", {"e", "d"}},
             {"f", {}},
         }),
-        *Filters::Create({
+        *Filters::Create({{
             {"a", {"b"}},
             {"c", {"e", "d"}},
             {"f", {}},
-        }),
+        }}),
     },
     {
         "source_type_key",
@@ -117,11 +117,11 @@ const struct {
           "source_type": ["a"]
         })json"),
         base::unexpected(SourceRegistrationError::kFilterDataHasSourceTypeKey),
-        *Filters::Create({{"source_type", {"a"}}}),
+        *Filters::Create({{{"source_type", {"a"}}}}),
     },
     {
-        "not_dictionary",
-        base::Value(base::Value::List()),
+        "wrong_type",
+        base::Value("foo"),
         base::unexpected(SourceRegistrationError::kFilterDataWrongType),
         base::unexpected(TriggerRegistrationError::kFiltersWrongType),
     },
@@ -168,7 +168,7 @@ TEST(FilterDataTest, Create_ProhibitsSourceTypeFilter) {
 }
 
 TEST(FiltersTest, Create_AllowsSourceTypeFilter) {
-  EXPECT_TRUE(Filters::Create({{"source_type", {"event"}}}));
+  EXPECT_TRUE(Filters::Create({{{"source_type", {"event"}}}}));
 }
 
 TEST(FilterDataTest, Create_LimitsFilterCount) {
@@ -181,9 +181,9 @@ TEST(FilterDataTest, Create_LimitsFilterCount) {
 
 TEST(FiltersTest, Create_LimitsFilterCount) {
   EXPECT_TRUE(
-      Filters::Create(CreateFilterValues(kMaxFiltersPerSource)).has_value());
+      Filters::Create({CreateFilterValues(kMaxFiltersPerSource)}).has_value());
 
-  EXPECT_FALSE(Filters::Create(CreateFilterValues(kMaxFiltersPerSource + 1))
+  EXPECT_FALSE(Filters::Create({CreateFilterValues(kMaxFiltersPerSource + 1)})
                    .has_value());
 }
 
@@ -271,7 +271,40 @@ TEST(FiltersTest, FromJSON) {
   }
 }
 
-TEST(FilterValuesTest, ToJson) {
+TEST(FiltersTest, FromJSON_list) {
+  // Test cases for a single FilterValues dictionary should also pass when
+  // parsed as a list containing the dictionary.
+  for (auto& test_case : kParseTestCases) {
+    if (!test_case.json) {
+      continue;
+    }
+    auto list = base::Value::List();
+    list.Append(test_case.json->Clone());
+    auto json_copy = base::Value(std::move(list));
+    EXPECT_EQ(Filters::FromJSON(&json_copy), test_case.expected_filters)
+        << test_case.description << " within a list";
+  }
+  {
+    auto multiple_valid_filter_values =
+        base::test::ParseJson(R"json([{"a":["b"]},{"c":["d"]}])json");
+    auto actual = Filters::FromJSON(&multiple_valid_filter_values);
+    ASSERT_TRUE(actual.has_value());
+    EXPECT_EQ(actual.value(), Filters::Create({
+                                                  {{"a", {"b"}}},
+                                                  {{"c", {"d"}}},
+                                              })
+                                  .value());
+  }
+  {
+    auto one_valid_and_one_invalid_filter_values =
+        base::test::ParseJson(R"json([{"a":["b"]},"invalid"])json");
+    auto actual = Filters::FromJSON(&one_valid_and_one_invalid_filter_values);
+    ASSERT_FALSE(actual.has_value());
+    EXPECT_EQ(actual.error(), TriggerRegistrationError::kFiltersWrongType);
+  }
+}
+
+TEST(FilterDataTest, ToJson) {
   const struct {
     FilterValues input;
     const char* expected_json;
@@ -289,7 +322,29 @@ TEST(FilterValuesTest, ToJson) {
   for (const auto& test_case : kTestCases) {
     EXPECT_THAT(FilterData::Create(test_case.input)->ToJson(),
                 base::test::IsJson(test_case.expected_json));
+  }
+}
 
+TEST(FiltersTest, ToJson) {
+  const struct {
+    std::vector<FilterValues> input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          {},
+          R"json([])json",
+      },
+      {
+          {FilterValues({{"a", {}}, {"b", {"c"}}})},
+          R"json([{"a":[],"b":["c"]}])json",
+      },
+      {
+          {FilterValues({{"a", {}}}), FilterValues({{"b", {"c"}}})},
+          R"json([{"a":[]},{"b":["c"]}])json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
     EXPECT_THAT(Filters::Create(test_case.input)->ToJson(),
                 base::test::IsJson(test_case.expected_json));
   }
@@ -326,7 +381,7 @@ TEST(FilterDataTest, EmptyOrMissingAttributionFilters) {
         FilterData::Create(test_case.filter_data);
     ASSERT_TRUE(filter_data) << test_case.description;
 
-    absl::optional<Filters> filters = Filters::Create(test_case.filters);
+    absl::optional<Filters> filters = Filters::Create({test_case.filters});
     ASSERT_TRUE(filters) << test_case.description;
 
     EXPECT_TRUE(filter_data->MatchesForTesting(SourceType::kNavigation,
@@ -384,18 +439,89 @@ TEST(FilterDataTest, AttributionFilterDataMatch) {
       {"Two filters one filter no match", two_filters, one_mismatched_filter,
        false},
   };
-
   for (const auto& test_case : kTestCases) {
     absl::optional<FilterData> filter_data =
         FilterData::Create(test_case.filter_data);
     ASSERT_TRUE(filter_data) << test_case.description;
 
-    absl::optional<Filters> filters = Filters::Create(test_case.filters);
+    absl::optional<Filters> filters = Filters::Create({test_case.filters});
     ASSERT_TRUE(filters) << test_case.description;
 
     EXPECT_EQ(test_case.match_expected,
               filter_data->MatchesForTesting(SourceType::kNavigation, *filters,
                                              /*negated=*/false))
+        << test_case.description;
+  }
+}
+
+TEST(FilterDataTest, AttributionFilterDataMatch_Disjunction) {
+  const auto filter_data = *FilterData::Create({{"a", {"1"}}});
+
+  const struct {
+    const char* description;
+    Filters::Disjunction disjunction;
+    bool negated;
+    bool match_expected;
+  } kTestCases[] = {
+      {
+          .description = "empty",
+          .disjunction = {},
+          .negated = false,
+          .match_expected = true,
+      },
+      {
+          .description = "empty-negated",
+          .disjunction = {},
+          .negated = true,
+          .match_expected = true,
+      },
+      {
+          .description = "non-empty",
+          .disjunction =
+              {
+                  {{"a", {"2"}}},
+                  {{"a", {"1"}}},
+              },
+          .negated = false,
+          .match_expected = true,
+      },
+      {
+          .description = "non-empty-negated",
+          .disjunction =
+              {
+                  {{"a", {"2"}}},
+                  {{"a", {"1"}}},
+              },
+          .negated = true,
+          .match_expected = true,
+      },
+      {
+          .description = "non-empty-no-match",
+          .disjunction =
+              {
+                  {{"a", {"2"}}},
+                  {{"a", {"3"}}},
+              },
+          .negated = false,
+          .match_expected = false,
+      },
+      {
+          .description = "non-empty-no-match-negated",
+          .disjunction =
+              {
+                  {{"a", {"2"}}},
+                  {{"a", {"3"}}},
+              },
+          .negated = true,
+          .match_expected = true,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.match_expected,
+              filter_data.MatchesForTesting(
+                  SourceType::kEvent, *Filters::Create(test_case.disjunction),
+                  test_case.negated))
         << test_case.description;
   }
 }
@@ -462,7 +588,7 @@ TEST(FilterDataTest, NegatedAttributionFilterDataMatch) {
         FilterData::Create(test_case.filter_data);
     ASSERT_TRUE(filter_data) << test_case.description;
 
-    absl::optional<Filters> filters = Filters::Create(test_case.filters);
+    absl::optional<Filters> filters = Filters::Create({test_case.filters});
     ASSERT_TRUE(filters) << test_case.description;
 
     EXPECT_EQ(test_case.match_expected,
@@ -497,18 +623,18 @@ TEST(FilterDataTest, AttributionFilterDataMatch_SourceType) {
       {
           .description = "empty-filter-values",
           .source_type = SourceType::kNavigation,
-          .filters = *Filters::Create({
+          .filters = *Filters::Create({{
               {FilterData::kSourceTypeFilterKey, {}},
-          }),
+          }}),
           .negated = false,
           .match_expected = false,
       },
       {
           .description = "empty-filter-values-negated",
           .source_type = SourceType::kNavigation,
-          .filters = *Filters::Create({
+          .filters = *Filters::Create({{
               {FilterData::kSourceTypeFilterKey, {}},
-          }),
+          }}),
           .negated = true,
           .match_expected = true,
       },

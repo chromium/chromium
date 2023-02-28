@@ -33,9 +33,9 @@ struct FilterData {
 // See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
 struct Filters {
-  // Map of filter name to a possibly empty set of values. May contain a
-  // `source_type` key.
-  map<string, array<string>> filter_values;
+  // Disjunction of maps of filter name to a possibly empty set of values. May
+  // contain a `source_type` key.
+  array<map<string, array<string>>> disjunction;
 };
 
 struct FilterPair {

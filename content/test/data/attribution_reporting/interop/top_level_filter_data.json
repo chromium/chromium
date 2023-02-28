@@ -265,9 +265,9 @@
                   "trigger_data": "5"
                 }
               ],
-              "filters": {
+              "filters": [{
                 "source_type": ["navigation"]
-              },
+              }],
               "not_filters": {
                 "product": ["789"]
               }

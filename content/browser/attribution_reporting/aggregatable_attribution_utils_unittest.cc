@@ -52,28 +52,28 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
               absl::MakeUint128(/*high=*/0, /*low=*/1024),
               /*source_keys=*/{"key1", "key3"},
               FilterPair{.positive = *AttributionFilters::Create(
-                             {{"filter", {"value"}}})}),
+                             {{{"filter", {"value"}}}})}),
 
           // The second trigger data applies to "key2", "key4" is ignored.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/2688),
               /*source_keys=*/{"key2", "key4"},
-              FilterPair{.positive =
-                             *AttributionFilters::Create({{"a", {"b", "c"}}})}),
+              FilterPair{.positive = *AttributionFilters::Create(
+                             {{{"a", {"b", "c"}}}})}),
 
           // The third trigger will be ignored due to mismatched filters.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
               FilterPair{.positive =
-                             *AttributionFilters::Create({{"filter", {}}})}),
+                             *AttributionFilters::Create({{{"filter", {}}}})}),
 
           // The fourth trigger will be ignored due to matched not_filters.
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/0, /*low=*/4096),
               /*source_keys=*/{"key1", "key2"},
               FilterPair{.negative = *AttributionFilters::Create(
-                             {{"filter", {"value"}}})})};
+                             {{{"filter", {"value"}}}})})};
 
   absl::optional<attribution_reporting::FilterData> source_filter_data =
       attribution_reporting::FilterData::Create({{"filter", {"value"}}});

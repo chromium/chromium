@@ -138,13 +138,13 @@ bool StructTraits<attribution_reporting::mojom::FiltersDataView,
                   attribution_reporting::Filters>::
     Read(attribution_reporting::mojom::FiltersDataView data,
          attribution_reporting::Filters* out) {
-  attribution_reporting::FilterValues filter_values;
-  if (!data.ReadFilterValues(&filter_values)) {
+  attribution_reporting::Filters::Disjunction disjunction;
+  if (!data.ReadDisjunction(&disjunction)) {
     return false;
   }
 
   absl::optional<attribution_reporting::Filters> filters =
-      attribution_reporting::Filters::Create(std::move(filter_values));
+      attribution_reporting::Filters::Create(std::move(disjunction));
   if (!filters.has_value()) {
     return false;
   }

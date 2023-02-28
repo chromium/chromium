@@ -274,10 +274,10 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  auto filters = *AttributionFilters::Create({{"a", {"b"}}});
+  auto filters = *AttributionFilters::Create({{{"a", {"b"}}}});
   FilterPair event_trigger_data_filters{
-      .positive = *AttributionFilters::Create({{"c", {"d"}}}),
-      .negative = *AttributionFilters::Create({{"e", {"f"}}})};
+      .positive = *AttributionFilters::Create({{{"c", {"d"}}}}),
+      .negative = *AttributionFilters::Create({{{"e", {"f"}}}})};
 
   auto aggregatable_dedup_keys =
       *attribution_reporting::AggregatableDedupKeyList::Create(

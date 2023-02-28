@@ -1008,8 +1008,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
             attribution_reporting::TriggerRegistration(
                 FilterPair{
-                    .positive = *AttributionFilters::Create({{"a", {"b"}}}),
-                    .negative = *AttributionFilters::Create({{"g", {"h"}}})},
+                    .positive = *AttributionFilters::Create({{{"a", {"b"}}}}),
+                    .negative = *AttributionFilters::Create({{{"g", {"h"}}}})},
                 /*debug_key=*/1,
                 *attribution_reporting::AggregatableDedupKeyList::Create(
                     {attribution_reporting::AggregatableDedupKey(
@@ -1020,25 +1020,25 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                         /*priority=*/3,
                         /*dedup_key=*/absl::nullopt,
                         FilterPair{.positive = *AttributionFilters::Create(
-                                       {{"c", {"d"}}})}),
+                                       {{{"c", {"d"}}}})}),
                     attribution_reporting::EventTriggerData(
                         /*data=*/4,
                         /*priority=*/5,
                         /*dedup_key=*/6,
                         FilterPair{.negative = *AttributionFilters::Create(
-                                       {{"e", {"f"}}})}),
+                                       {{{"e", {"f"}}}})}),
                 }),
                 *attribution_reporting::AggregatableTriggerDataList::Create(
                     {*attribution_reporting::AggregatableTriggerData::Create(
                          /*key_piece=*/345,
                          /*source_keys=*/{"a"},
                          FilterPair{.positive = *AttributionFilters::Create(
-                                        {{"c", {"d"}}})}),
+                                        {{{"c", {"d"}}}})}),
                      *attribution_reporting::AggregatableTriggerData::Create(
                          /*key_piece=*/678,
                          /*source_keys=*/{"b"},
                          FilterPair{.negative = *AttributionFilters::Create(
-                                        {{"e", {"f"}}})})}),
+                                        {{{"e", {"f"}}}})})}),
                 /*aggregatable_values=*/
                 *attribution_reporting::AggregatableValues::Create(
                     {{"a", 123}, {"b", 456}}),
