@@ -13457,23 +13457,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="ThirdPartyModules.InstalledApplications.GetDataTime"
-    units="ms" expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Records the time it took to gather the list of installed third-party
-    programs and their install location or components.
-  </summary>
-</histogram>
-
-<histogram name="ThirdPartyModules.InstalledApplications.GotUserSidString"
-    enum="BooleanSuccess" expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Records whether retrieving the current user SID was successful.
-  </summary>
-</histogram>
-
 <histogram name="ThirdPartyModules.Modules.Loaded" units="modules"
     expires_after="M85">
   <owner>chrisha@chromium.org</owner>
