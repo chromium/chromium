@@ -5,12 +5,15 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -32,8 +35,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
+import org.chromium.ui.display.DisplayAndroid;
 
 import java.lang.ref.WeakReference;
 
@@ -59,6 +64,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private @Mock ViewGroup mContentView;
     private @Mock ViewGroup mAnchorView;
     private @Mock View mHorizontalAlignmentView;
+    private @Mock DisplayAndroid mDisplay;
 
     private OmniboxSuggestionsDropdownEmbedderImpl mImpl;
     private WeakReference<Context> mContextWeakRef;
@@ -77,6 +83,11 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(ANCHOR_HEIGHT).when(mAnchorView).getMeasuredHeight();
         doReturn(ANCHOR_TOP).when(mAnchorView).getTop();
         doReturn(ALIGNMENT_TOP).when(mHorizontalAlignmentView).getTop();
+        doReturn(mDisplay).when(mWindowAndroid).getDisplay();
+        // Sentinel value for mistaken use of pixels. OmniboxSuggestionsDropdownEmbedderImpl should
+        // operate solely in terms of dp so values that are 10x their correct size are probably
+        // being inadvertently converted to px.
+        doReturn(10.0f).when(mDisplay).getDipScale();
         mImpl = new OmniboxSuggestionsDropdownEmbedderImpl(
                 mWindowAndroid, mWindowDelegate, mAnchorView, mHorizontalAlignmentView);
     }
@@ -138,6 +149,59 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 40,
                              ANCHOR_WIDTH - ALIGNMENT_WIDTH - 40),
                 alignment);
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    public void
+    testRecalculateOmniboxAlignment_tabletToPhoneSwitch() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        assertTrue(mImpl.isTablet());
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0),
+                alignment);
+
+        Configuration newConfig = new Configuration();
+        newConfig.smallestScreenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
+        mImpl.onConfigurationChanged(newConfig);
+        assertFalse(mImpl.isTablet());
+        OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0),
+                newAlignment);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    public void
+    testRecalculateOmniboxAlignment_phoneToTabletSwitch() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        assertFalse(mImpl.isTablet());
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(
+                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0), alignment);
+
+        Configuration newConfig = new Configuration();
+        newConfig.smallestScreenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
+        mImpl.onConfigurationChanged(newConfig);
+        assertTrue(mImpl.isTablet());
+        OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0),
+                newAlignment);
     }
 
     @Test

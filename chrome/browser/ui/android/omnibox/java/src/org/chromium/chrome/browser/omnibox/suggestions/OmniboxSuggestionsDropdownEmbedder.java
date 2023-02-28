@@ -59,6 +59,15 @@ public interface OmniboxSuggestionsDropdownEmbedder {
                                    && this.paddingRight != other.paddingRight)
                     && (this.top == other.top && this.width == other.width);
         }
+
+        /**
+         * Returns whether the width of the given OmniboxAlignment differs from this alignment
+         * object's width. Returns true for a null argument.
+         */
+        public boolean doesWidthDiffer(@Nullable OmniboxAlignment other) {
+            if (other == null) return true;
+            return this.width != other.width;
+        }
     }
 
     /**

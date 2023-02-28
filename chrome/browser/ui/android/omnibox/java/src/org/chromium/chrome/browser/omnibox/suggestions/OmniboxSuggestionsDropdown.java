@@ -565,13 +565,18 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private void onOmniboxAlignmentChanged(@NonNull OmniboxAlignment omniboxAlignment) {
         boolean isOnlyHorizontalDifference =
                 omniboxAlignment.isOnlyHorizontalDifference(mOmniboxAlignment);
+        boolean isWidthDifference = omniboxAlignment.doesWidthDiffer(mOmniboxAlignment);
         mOmniboxAlignment = omniboxAlignment;
         if (isOnlyHorizontalDifference) {
             adjustHorizontalPosition();
-        } else {
-            ViewUtils.requestLayout(OmniboxSuggestionsDropdown.this,
-                    "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
+            return;
+        } else if (isWidthDifference) {
+            // If our width has changed, we may have views in our pool that are now the wrong width.
+            // Recycle them by calling swapAdapter() to avoid showing views of the wrong size.
+            swapAdapter(mAdapter, true);
         }
+        ViewUtils.requestLayout(OmniboxSuggestionsDropdown.this,
+                "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
     }
 
     private void adjustHorizontalPosition() {

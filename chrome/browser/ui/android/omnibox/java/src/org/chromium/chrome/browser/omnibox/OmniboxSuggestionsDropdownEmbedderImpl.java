@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowInsets;
 
@@ -26,8 +29,8 @@ import org.chromium.ui.base.WindowDelegate;
  * and "horizontal alignment" view.
  * */
 class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdownEmbedder,
-                                                        View.OnLayoutChangeListener,
-                                                        OnGlobalLayoutListener {
+                                                        OnLayoutChangeListener,
+                                                        OnGlobalLayoutListener, ComponentCallbacks {
     private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
             new ObservableSupplierImpl<>();
     private final @NonNull WindowAndroid mWindowAndroid;
@@ -39,6 +42,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     // Keeping it as a member lets us avoid allocating a temp array every time.
     private final int[] mPositionArray = new int[2];
     private int mVerticalOffsetInWindow;
+    private int mWindowWidthDp;
     private WindowInsetsCompat mWindowInsetsCompat;
 
     /**
@@ -60,6 +64,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         mAnchorView = anchorView;
         mHorizontalAlignmentView = horizontalAlignmentView;
         mContext = mAnchorView.getContext();
+        mContext.registerComponentCallbacks(this);
+        mWindowWidthDp = mContext.getResources().getConfiguration().smallestScreenWidthDp;
         recalculateOmniboxAlignment();
     }
 
@@ -81,7 +87,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
 
     @Override
     public boolean isTablet() {
-        return DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
+            return mWindowWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        } else {
+            return DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
+        }
     }
 
     @Override
@@ -119,6 +129,19 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
             recalculateOmniboxAlignment();
         }
     }
+
+    // ComponentCallbacks
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) return;
+        int windowWidth = newConfig.smallestScreenWidthDp;
+        if (windowWidth == mWindowWidthDp) return;
+        mWindowWidthDp = windowWidth;
+        recalculateOmniboxAlignment();
+    }
+
+    @Override
+    public void onLowMemory() {}
 
     /**
      * Recalculates the desired alignment of the omnibox and sends the updated alignment data to
@@ -164,7 +187,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
                         - mHorizontalAlignmentView.getMeasuredWidth() - mPositionArray[0];
             }
         } else {
-            // Case 3: phones. Full bleed width with no padding or positioning adjustments.
+            // Case 3: phones or phone-sized windows on tablets. Full bleed width with no padding or
+            // positioning adjustments.
             left = 0;
             width = mAnchorView.getMeasuredWidth();
             paddingLeft = 0;
