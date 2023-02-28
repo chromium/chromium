@@ -85,6 +85,12 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
                                                  true);
   }
 
+  void TearDownOnMainThread() override {
+    autofill_context_menu_manager_.reset();
+
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
