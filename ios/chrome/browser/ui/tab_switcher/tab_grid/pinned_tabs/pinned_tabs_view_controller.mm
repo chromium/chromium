@@ -773,7 +773,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   // Scroll the collection view to the newly added item, so it doesn't
   // disappear from the user's sight.
-  [self scrollCollectionViewToLastItemAnimated:NO];
+  [self scrollCollectionViewToLastItemAnimated:YES];
 
   [self pinnedTabsAvailable:_available];
 }
