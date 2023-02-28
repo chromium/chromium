@@ -70,10 +70,12 @@ absl::optional<uint8_t> RTCEncodedVideoFrameDelegate::PayloadType() const {
                        : absl::nullopt;
 }
 
-const webrtc::VideoFrameMetadata* RTCEncodedVideoFrameDelegate::GetMetadata()
-    const {
+absl::optional<webrtc::VideoFrameMetadata>
+RTCEncodedVideoFrameDelegate::GetMetadata() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ ? &webrtc_frame_->GetMetadata() : nullptr;
+  return webrtc_frame_ ? absl::optional<webrtc::VideoFrameMetadata>(
+                             webrtc_frame_->Metadata())
+                       : absl::nullopt;
 }
 
 void RTCEncodedVideoFrameDelegate::SetMetadata(

@@ -243,7 +243,9 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
       metadata->setCaptureTimestamp(delegate_->CaptureTimeIdentifier()->us());
     }
   }
-  const auto* webrtc_metadata = delegate_->GetMetadata();
+
+  const absl::optional<webrtc::VideoFrameMetadata> webrtc_metadata =
+      delegate_->GetMetadata();
   if (!webrtc_metadata)
     return metadata;
 
@@ -347,7 +349,8 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
     return;
   }
 
-  const auto* original_webrtc_metadata = delegate_->GetMetadata();
+  const absl::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
+      delegate_->GetMetadata();
   if (!original_metadata) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
