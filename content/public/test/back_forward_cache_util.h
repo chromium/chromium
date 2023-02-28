@@ -59,21 +59,75 @@ void DisableBackForwardCacheForTesting(
     WebContents* web_contents,
     BackForwardCache::DisableForTestingReason reason);
 
-// Returns a vector of default parameters to set up the BackForwardCache for
-// testing (enables the cache, sets timeouts, etc.)
-// Optionally, |additional_params| can be passed to specify additional
-// features and parameters that will be in the returned structure.
+// Returns a vector of default features with parameters to set up the
+// BackForwardCache for testing, including enabling the cache, allowing
+// outstanding network requests to not block BackForwardCache, setting longer
+// cache timeout. Example:
+//
+//     base::test::ScopedFeatureList feature_list;
+//     feature_list.InitWithFeaturesAndParameters(
+//         GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+//         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+//
+// Set `ignore_outstanding_network_request` to true to avoid flaky behavior when
+// navigating quickly between cached pages.
 std::vector<base::test::FeatureRefAndParams>
-DefaultEnabledBackForwardCacheParametersForTests();
+GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+    const bool ignore_outstanding_network_request = true);
+// Similar to `GetDefaultEnabledBackForwardCacheFeaturesForTesting()` above, but
+// `additional_features_and_params` can be passed to specify additional features
+// and parameters that will be in the returned vector.
+std::vector<base::test::FeatureRefAndParams>
+GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+    const std::vector<base::test::FeatureRefAndParams>&
+        additional_features_and_params,
+    const bool ignore_outstanding_network_request = true);
+// Similar to `GetDefaultEnabledBackForwardCacheFeaturesForTesting()` above, but
+// `additional_features_and_params` can be passed to specify additional features
+// and parameters that will be in the returned vector.
+// `cache_size` and `foreground_cache_size` can be passed to overwrite the
+// corresponding size configs to help testing.
+std::vector<base::test::FeatureRefAndParams>
+GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+    const std::vector<base::test::FeatureRefAndParams>&
+        additional_features_and_params,
+    const size_t cache_size,
+    const size_t foreground_cache_size,
+    const bool ignore_outstanding_network_request = true);
 
+// TODO(crbug.com/1301867): Consider remove this group of functions by updating
+// their callers to use the above ones.
+// Returns a vector to set up the BackForwardCache for testing.
+//
+// The returned vector only contain a single feature to enable BackForwardCache
+// itself but no other features and parameters, unlike
+// the defaults for testing from
+// `GetDefaultEnabledBackForwardCacheFeaturesForTesting()`.
 std::vector<base::test::FeatureRefAndParams>
-DefaultEnabledBackForwardCacheParametersForTests(
-    const std::vector<base::test::FeatureRefAndParams>& additional_params);
+GetBasicBackForwardCacheFeatureForTesting();
+// Similar to `GetBasicBackForwardCacheFeatureForTesting()` above, but
+// `additional_features_and_params` specifies additional features and parameters
+// that will be in the returned structure.
+std::vector<base::test::FeatureRefAndParams>
+GetBasicBackForwardCacheFeatureForTesting(
+    const std::vector<base::test::FeatureRefAndParams>&
+        additional_features_and_params);
 
 // Returns a vector of features to disable by default when testing with the
-// BackForwardCache.
+// BackForwardCache. Example:
+//
+//     base::test::ScopedFeatureList feature_list;
+//     feature_list.InitWithFeaturesAndParameters(
+//         GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+//         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
 std::vector<base::test::FeatureRef>
-DefaultDisabledBackForwardCacheParametersForTests();
+GetDefaultDisabledBackForwardCacheFeaturesForTesting();
+// Similar to `GetDefaultDisabledBackForwardCacheFeaturesForTesting()` above,
+// but `additional_features` can be passed to specify additional features that
+// will be in the returned vector.
+std::vector<base::test::FeatureRef>
+GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+    const std::vector<base::test::FeatureRef>& additional_features);
 
 }  // namespace content
 

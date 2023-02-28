@@ -15,6 +15,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
@@ -96,11 +97,11 @@ class DontAssignSiteContentBrowserClient
 void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
                                  bool enable_back_forward_cache) {
   if (enable_back_forward_cache) {
-    std::vector<base::test::FeatureRefAndParams> features;
-    features.push_back({features::kBackForwardCache, {}});
-    features.push_back({kBackForwardCacheNoTimeEviction, {}});
-    features.push_back({features::kBackForwardCacheMemoryControls, {}});
-    feature_list->InitWithFeaturesAndParameters(features, {});
+    feature_list->InitWithFeaturesAndParameters(
+        GetBasicBackForwardCacheFeatureForTesting(
+            {{kBackForwardCacheNoTimeEviction, {}},
+             {features::kBackForwardCacheMemoryControls, {}}}),
+        {});
   } else {
     feature_list->InitAndDisableFeature(features::kBackForwardCache);
   }

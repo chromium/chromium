@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -2442,10 +2443,10 @@ void NavigateToUrl(content::WebContents* web_contents, const GURL& url) {
 TEST_F(FederatedAuthRequestImplTest,
        NavigateDuringClientMetadataFetchBFCacheEnabled) {
   base::test::ScopedFeatureList list;
-  list.InitWithFeatures(
-      /*enabled_features=*/{features::kBackForwardCache},
-      /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
-  ASSERT_TRUE(content::IsBackForwardCacheEnabled());
+  list.InitWithFeaturesAndParameters(
+      GetBasicBackForwardCacheFeatureForTesting(),
+      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+  ASSERT_TRUE(IsBackForwardCacheEnabled());
 
   SetNetworkRequestManager(
       std::make_unique<IdpNetworkRequestManagerClientMetadataTaskRunner>(
@@ -2466,7 +2467,7 @@ TEST_F(FederatedAuthRequestImplTest,
        NavigateDuringClientMetadataFetchBFCacheDisabled) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(features::kBackForwardCache);
-  ASSERT_FALSE(content::IsBackForwardCacheEnabled());
+  ASSERT_FALSE(IsBackForwardCacheEnabled());
 
   SetNetworkRequestManager(
       std::make_unique<IdpNetworkRequestManagerClientMetadataTaskRunner>(

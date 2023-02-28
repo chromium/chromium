@@ -23,10 +23,10 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   DiceTabHelperTest() {
     signin_url_ = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
+
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {}},
-         {features::kBackForwardCacheMemoryControls, {}}},
-        {});
+        content::GetBasicBackForwardCacheFeatureForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   // Does a navigation to Gaia and initializes the tab helper.

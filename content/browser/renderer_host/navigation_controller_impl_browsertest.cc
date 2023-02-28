@@ -159,11 +159,11 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
 void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
                                  bool enable_back_forward_cache) {
   if (enable_back_forward_cache) {
-    std::vector<base::test::FeatureRefAndParams> features;
-    features.push_back({features::kBackForwardCache, {}});
-    features.push_back({kBackForwardCacheNoTimeEviction, {}});
-    features.push_back({features::kBackForwardCacheMemoryControls, {}});
-    feature_list->InitWithFeaturesAndParameters(features, {});
+    feature_list->InitWithFeaturesAndParameters(
+        GetBasicBackForwardCacheFeatureForTesting(
+            {{kBackForwardCacheNoTimeEviction, {}},
+             {features::kBackForwardCacheMemoryControls, {}}}),
+        {});
   } else {
     feature_list->InitAndDisableFeature(features::kBackForwardCache);
   }
@@ -18931,11 +18931,9 @@ class SandboxedNavigationControllerWithBfcacheBrowserTest
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {{}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
     NavigationControllerBrowserTest::SetUp();
   }
 

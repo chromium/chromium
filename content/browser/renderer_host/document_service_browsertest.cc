@@ -99,11 +99,9 @@ IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
 class DocumentServiceBFCacheBrowserTest : public DocumentServiceBrowserTest {
  public:
   DocumentServiceBFCacheBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> additional_features = {
-        {features::kBackForwardCache, {}}};
     feature_list_.InitWithFeaturesAndParameters(
-        DefaultEnabledBackForwardCacheParametersForTests(additional_features),
-        DefaultDisabledBackForwardCacheParametersForTests());
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~DocumentServiceBFCacheBrowserTest() override = default;
 

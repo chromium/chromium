@@ -30,6 +30,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -3306,19 +3307,17 @@ class MediaSessionImplWithBackForwardCacheBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MediaSessionImplBrowserTest::SetUpCommandLine(command_line);
 
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::map<std::string, std::string> params;
+    feature_list_.InitWithFeaturesAndParameters(
+        GetBasicBackForwardCacheFeatureForTesting(
 #if BUILDFLAG(IS_ANDROID)
-    params["process_binding_strength"] = "NORMAL";
+            {{ features::kBackForwardCache,
+               {
+                 { "process_binding_strength",
+                   "NORMAL" }
+               } }}
 #endif
-    enabled_features.emplace_back(features::kBackForwardCache, params);
-
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kBackForwardCacheMemoryControls,
-    };
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+            ),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   RenderFrameHost* GetPrimaryMainFrame() {

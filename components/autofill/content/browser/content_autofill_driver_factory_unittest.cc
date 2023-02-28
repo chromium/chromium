@@ -18,6 +18,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -285,8 +286,8 @@ class ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes
   ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes() {
     std::vector<base::test::FeatureRef> enabled;
     // Allow BackForwardCache for all devices regardless of their memory.
-    std::vector<base::test::FeatureRef> disabled{
-        ::features::kBackForwardCacheMemoryControls};
+    std::vector<base::test::FeatureRef> disabled =
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
     (autofill_across_iframes() ? enabled : disabled)
         .push_back(features::kAutofillAcrossIframes);
     (use_bfcache() ? enabled : disabled)

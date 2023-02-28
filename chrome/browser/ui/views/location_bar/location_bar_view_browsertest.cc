@@ -31,6 +31,7 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/dns/mock_host_resolver.h"
@@ -250,11 +251,10 @@ class LocationBarViewGeolocationBackForwardCacheBrowserTest
   LocationBarViewGeolocationBackForwardCacheBrowserTest()
       : geo_override_(0.0, 0.0) {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {{}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}},
-         {blink::features::kLoadingTasksUnfreezable, {}},
-         {features::kBackForwardCacheMemoryControls, {}}},
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{blink::features::kLoadingTasksUnfreezable, {}},
+             {features::kBackForwardCacheMemoryControls, {}}},
+            /*ignore_outstanding_network_request=*/false),
         {});
   }
 
