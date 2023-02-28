@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
@@ -565,6 +566,15 @@ void BrowserServiceLacros::NewWindowWithProfile(
 
   display::ScopedDisplayForNewWindows scoped(target_display_id);
 
+  if (HasPendingUncleanExit(profile)) {
+    // Restore all previously open profiles when recovering from a crash with
+    // the profile picker disabled, which is equivalent to performing a
+    // FullRestore.
+    OpenForFullRestoreWithProfile(/*skip_crash_restore=*/false, profile);
+    std::move(callback).Run();
+    return;
+  }
+
   chrome::NewEmptyWindow(
       incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                 : profile,
@@ -673,6 +683,15 @@ void BrowserServiceLacros::LaunchOrNewTabWithProfile(
   }
 
   display::ScopedDisplayForNewWindows scoped(target_display_id);
+
+  if (HasPendingUncleanExit(profile)) {
+    // Restore all previously open profiles when recovering from a crash with
+    // the profile picker disabled, which is equivalent to performing a
+    // FullRestore.
+    OpenForFullRestoreWithProfile(/*skip_crash_restore=*/false, profile);
+    std::move(callback).Run();
+    return;
+  }
 
   Browser* browser =
       chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
