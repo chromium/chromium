@@ -478,7 +478,6 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     attribution_reporting::SourceRegistration data) {
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
-  DCHECK(attribution_reporting::IsSitePotentiallySuitable(data.destination));
 
   ReceiverContext& context = receivers_.current_context();
 

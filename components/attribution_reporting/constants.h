@@ -13,6 +13,8 @@ constexpr size_t kMaxBytesPerFilterString = 25;
 constexpr size_t kMaxValuesPerFilter = 50;
 constexpr size_t kMaxFiltersPerSource = 50;
 
+constexpr size_t kMaxDestinations = 3;
+
 constexpr size_t kMaxBytesPerAggregationKeyId = 25;
 constexpr size_t kMaxAggregationKeysPerSourceOrTrigger = 50;
 

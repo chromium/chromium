@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/bounded_list.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
@@ -507,7 +508,7 @@ class SourceBuilder {
   absl::optional<base::TimeDelta> event_report_window_;
   absl::optional<base::TimeDelta> aggregatable_report_window_;
   attribution_reporting::SuitableOrigin source_origin_;
-  base::flat_set<net::SchemefulSite> destination_sites_;
+  attribution_reporting::DestinationSet destination_sites_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   attribution_reporting::mojom::SourceType source_type_ =
       attribution_reporting::mojom::SourceType::kNavigation;
@@ -782,9 +783,9 @@ MATCHER_P(ImpressionOriginIs, matcher, "") {
 }
 
 MATCHER_P(DestinationSiteIs, matcher, "") {
-  return ExplainMatchResult(::testing::ElementsAre(matcher),
-                            arg.common_info().destination_sites(),
-                            result_listener);
+  return ExplainMatchResult(
+      ::testing::ElementsAre(matcher),
+      arg.common_info().destination_sites().destinations(), result_listener);
 }
 
 MATCHER_P(ReportingOriginIs, matcher, "") {

@@ -3947,7 +3947,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.SourceRegistrationError"
+<histogram name="Conversions.SourceRegistrationError2"
     enum="ConversionSourceRegistrationError" expires_after="M117">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

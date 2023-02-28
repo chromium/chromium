@@ -143,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
 
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front().source_event_id, 5UL);
-  EXPECT_EQ(source_data.front().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.front().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_EQ(source_data.front().priority, 0);
   EXPECT_EQ(source_data.front().expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front().debug_key);
@@ -192,8 +192,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
     EXPECT_EQ(source_data.size(), 1u);
     EXPECT_EQ(source_data.front().source_event_id, 5UL);
-    EXPECT_EQ(source_data.front().destination,
-              net::SchemefulSite::Deserialize("https://d.test"));
+    EXPECT_THAT(source_data.front().destination_set.destinations(),
+                ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
     EXPECT_EQ(source_data.front().priority, 0);
     EXPECT_EQ(source_data.front().expiry, absl::nullopt);
     EXPECT_FALSE(source_data.front().debug_key);
@@ -519,11 +519,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_EQ(source_data.size(), 2u);
   EXPECT_EQ(source_data.front().source_event_id, 1UL);
-  EXPECT_EQ(source_data.front().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.front().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
-  EXPECT_EQ(source_data.back().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.back().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -556,8 +556,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   // Only the second source is registered.
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
-  EXPECT_EQ(source_data.back().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.back().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -619,8 +619,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   // Only the second source is registered.
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
-  EXPECT_EQ(source_data.back().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.back().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,

@@ -16,6 +16,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
@@ -98,10 +99,16 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                   attribution_reporting::SourceRegistration>::
     Read(attribution_reporting::mojom::SourceRegistrationDataView data,
          attribution_reporting::SourceRegistration* out) {
-  if (!data.ReadDestination(&out->destination) ||
-      !attribution_reporting::IsSitePotentiallySuitable(out->destination)) {
+  std::vector<net::SchemefulSite> destinations;
+  if (!data.ReadDestinations(&destinations)) {
     return false;
   }
+  auto destination_set =
+      attribution_reporting::DestinationSet::Create(std::move(destinations));
+  if (!destination_set.has_value()) {
+    return false;
+  }
+  out->destination_set = std::move(*destination_set);
 
   if (!data.ReadExpiry(&out->expiry)) {
     return false;

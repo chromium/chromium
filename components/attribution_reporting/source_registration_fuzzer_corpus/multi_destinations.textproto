@@ -1,0 +1,126 @@
+object_value {
+  field {
+    name: "source_event_id"
+    value {
+      string_value {
+        value: "5"
+      }
+    }
+  }
+  field {
+    name: "destination"
+    value {
+      array_value {
+        value {
+          string_value {
+            value: "https://advertiser.example"
+          }
+        }
+        value {
+          string_value {
+            value: "https://anotheradvertiser.example"
+          }
+        }
+      }
+    }
+  }
+  field {
+    name: "priority"
+    value {
+      string_value {
+        value: "10"
+      }
+    }
+  }
+  field {
+    name: "expiry"
+    value {
+      string_value {
+        value: "1000"
+      }
+    }
+  }
+  field {
+    name: "event_report_window"
+    value {
+      string_value {
+        value: "1000"
+      }
+    }
+  }
+  field {
+    name: "aggregatable_report_window"
+    value {
+      string_value {
+        value: "1000"
+      }
+    }
+  }
+  field {
+    name: "debug_key"
+    value {
+      string_value {
+        value: "789"
+      }
+    }
+  }
+  field {
+    name: "filter_data"
+    value {
+      object_value {
+        field {
+          name: "a"
+          value {
+            array_value {
+              value {
+                string_value {
+                  value: "x"
+                }
+              }
+            }
+          }
+        }
+        field {
+          name: "b"
+          value {
+            array_value {
+              value {
+                string_value {
+                  value: "y"
+                }
+              }
+              value {
+                string_value {
+                  value: "z"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  field {
+    name: "aggregation_keys"
+    value {
+      object_value {
+        field {
+          name: "a"
+          value {
+            string_value {
+              value: "0x1"
+            }
+          }
+        }
+      }
+    }
+  }
+  field {
+    name: "debug_reporting"
+    value {
+      boolean_value {
+        value: true
+      }
+    }
+  }
+}

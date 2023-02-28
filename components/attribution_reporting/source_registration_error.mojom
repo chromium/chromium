@@ -13,6 +13,7 @@ enum SourceRegistrationError {
   kDestinationMissing = 2,
   kDestinationWrongType = 3,
   kDestinationUntrustworthy = 4,
+  kDestinationListTooLong = 18,
 
   kFilterDataWrongType = 5,
   kFilterDataTooManyKeys = 6,

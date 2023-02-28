@@ -11,12 +11,14 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom-shared.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
@@ -102,9 +104,9 @@ template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
-  static const net::SchemefulSite& destination(
+  static const base::flat_set<net::SchemefulSite>& destinations(
       const attribution_reporting::SourceRegistration& source) {
-    return source.destination;
+    return source.destination_set.destinations();
   }
 
   static uint64_t source_event_id(

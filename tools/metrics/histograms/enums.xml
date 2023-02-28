@@ -19522,6 +19522,7 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="aggregation_keys key too long"/>
   <int value="16" label="aggregation_keys value has wrong type"/>
   <int value="17" label="aggregation_keys value has wrong format"/>
+  <int value="18" label="number of destinations exceeds limit"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">

@@ -255,7 +255,7 @@ base::Value::Dict GetReportDataBody(
   const CommonSourceInfo& common_info = source.common_info();
   base::Value::Dict data_body;
   data_body.Set(kAttributionDestination,
-                common_info.SerializeDestinationSites());
+                common_info.destination_sites().ToJson());
   SetSourceData(data_body, common_info);
 
   switch (data_type) {
