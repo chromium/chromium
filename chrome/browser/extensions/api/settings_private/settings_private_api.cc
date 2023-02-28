@@ -85,11 +85,12 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
 
-  base::Value value = delegate->GetPref(parameters->name);
-  if (value.is_none())
+  absl::optional<base::Value::Dict> value = delegate->GetPref(parameters->name);
+  if (!value) {
     return RespondNow(Error("Pref * does not exist", parameters->name));
-  else
-    return RespondNow(OneArgument(std::move(value)));
+  }
+
+  return RespondNow(WithArguments(std::move(*value)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,8 +106,7 @@ ExtensionFunction::ResponseAction
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(delegate->GetDefaultZoom())));
+  return RespondNow(WithArguments(delegate->GetDefaultZoom()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
