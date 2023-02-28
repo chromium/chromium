@@ -43,7 +43,6 @@ extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 extern const base::FilePath::CharType kDenylistFilename[];
 
 // URLs for RPCs in the KidsManagement service.
-GURL KidsManagementGetFamilyProfileURL();
 GURL KidsManagementGetFamilyMembersURL();
 GURL KidsManagementPermissionRequestsURL();
 GURL KidsManagementClassifyURLRequestURL();
