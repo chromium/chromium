@@ -138,12 +138,11 @@ void AutofillPopupControllerImpl::Show(
       return;
     }
 
-    time_view_shown_ = base::TimeTicks::Now();
-
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
     FireControlsChangedEvent(true);
   }
+  time_view_shown_ = base::TimeTicks::Now();
 
   absl::visit(
       [&](auto* driver) {
