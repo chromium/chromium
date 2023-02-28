@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
@@ -49,10 +52,9 @@ EditAddressProfileView::~EditAddressProfileView() = default;
 void EditAddressProfileView::ShowForWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  address_editor_controller_ = std::make_unique<AddressEditorController>(
-      controller_->GetProfileToEdit(), web_contents);
-  address_editor_view_ = AddChildView(
-      std::make_unique<AddressEditorView>(address_editor_controller_.get()));
+  address_editor_view_ = AddChildView(std::make_unique<AddressEditorView>(
+      std::make_unique<AddressEditorController>(controller_->GetProfileToEdit(),
+                                                web_contents)));
 }
 
 void EditAddressProfileView::Hide() {
