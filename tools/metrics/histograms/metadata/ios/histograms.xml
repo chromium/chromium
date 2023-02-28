@@ -848,7 +848,11 @@ chromium-metrics-reviews@google.com.
   <owner>djean@chromium.org</owner>
   <summary>
     Logged when the Incognito Interstitial is dismissed, with a value which
-    depends on what user action led to the dismissal.
+    depends on what user action led to the dismissal. Before M113, the Cancel
+    bucket contains all times the Incognito interstitial was dismissed without
+    opening the URL. Starting M113, it only contains times the user triggered
+    the Cancel button, and new &quot;Learn more about Incognito&quot; and
+    &quot;Dismissed by external event&quot; buckets are added.
   </summary>
 </histogram>
 

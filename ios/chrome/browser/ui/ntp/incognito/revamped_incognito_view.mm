@@ -6,11 +6,10 @@
 
 #import "base/ios/ns_range.h"
 #import "components/content_settings/core/common/features.h"
-#import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/ntp/incognito/incognito_view_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -24,7 +23,6 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,19 +43,6 @@ const CGFloat kLearnMoreHorizontalInnerMargin = 16.0;
 
 // The size of the incognito symbol image.
 NSInteger kIncognitoSymbolImagePointSize = 72;
-
-// The URL for the the Learn More page shown on incognito new tab.
-// Taken from ntp_resource_cache.cc.
-const char kLearnMoreIncognitoUrl[] =
-    "https://support.google.com/chrome/?p=incognito";
-
-// Returns the appropriate learn more URL for the current language of the
-// application.
-GURL GetLearnMoreUrl() {
-  std::string locale = GetApplicationContext()->GetApplicationLocale();
-  return google_util::AppendGoogleLocaleParam(GURL(kLearnMoreIncognitoUrl),
-                                              locale);
-}
 
 // Returns a font, scaled to the current dynamic type settings, that is suitable
 // for the title of the incognito page.
@@ -153,7 +138,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   NSDictionary* linkAttributes = @{
     NSForegroundColorAttributeName : linkTextColor,
     NSFontAttributeName : BodyFont(),
-    NSLinkAttributeName : net::NSURLWithGURL(GetLearnMoreUrl()),
+    NSLinkAttributeName : net::NSURLWithGURL(GetLearnMoreIncognitoUrl()),
   };
 
   NSDictionary* textAttributes = @{
@@ -319,7 +304,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 }
 
 - (void)view:(UIView*)view didDropURL:(const GURL&)URL atPoint:(CGPoint)point {
-  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreUrl()];
+  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreIncognitoUrl()];
 }
 
 #pragma mark - UITextViewDelegate
@@ -328,7 +313,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
-  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreUrl()];
+  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreIncognitoUrl()];
 
   // The handler is already handling the tap.
   return NO;

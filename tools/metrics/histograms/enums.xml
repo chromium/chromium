@@ -52040,6 +52040,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Open in Chrome Incognito"/>
   <int value="2" label="Open in Chrome (in a normal tab)"/>
   <int value="3" label="Cancel"/>
+  <int value="4" label="Learn more about Incognito"/>
+  <int value="5" label="Dismissed by external event"/>
 </enum>
 
 <enum name="IncognitoInterstitialSettingsActionType">

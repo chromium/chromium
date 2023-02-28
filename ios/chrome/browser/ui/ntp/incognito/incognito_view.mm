@@ -6,11 +6,10 @@
 
 #import "base/ios/ns_range.h"
 #import "components/content_settings/core/common/features.h"
-#import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/ntp/incognito/incognito_view_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -42,16 +41,6 @@ const CGFloat kLayoutGuideMinHeight = 12.0;
 
 // The size of the incognito symbol image.
 NSInteger kIncognitoSymbolImagePointSize = 72;
-
-// The URL for the the Learn More page shown on incognito new tab.
-// Taken from ntp_resource_cache.cc.
-const char kLearnMoreIncognitoUrl[] =
-    "https://support.google.com/chrome/?p=incognito";
-
-GURL GetUrlWithLang(const GURL& url) {
-  std::string locale = GetApplicationContext()->GetApplicationLocale();
-  return google_util::AppendGoogleLocaleParam(url, locale);
-}
 
 // Returns a font, scaled to the current dynamic type settings, that is suitable
 // for the title of the incognito page.
@@ -388,8 +377,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
 // Triggers a navigation to the help page.
 - (void)learnMoreButtonPressed {
-  [self.URLLoaderDelegate
-      loadURLInTab:GetUrlWithLang(GURL(kLearnMoreIncognitoUrl))];
+  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreIncognitoUrl()];
 }
 
 // Adds views containing the text of the incognito page to `_stackView`.

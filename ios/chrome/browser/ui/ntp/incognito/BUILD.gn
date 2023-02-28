@@ -13,12 +13,11 @@ source_set("incognito") {
     "revamped_incognito_view.mm",
   ]
   deps = [
+    ":util",
     "resources:incognito_icon",
     "//base",
-    "//components/google/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/ui:feature_flags",
@@ -35,4 +34,17 @@ source_set("incognito") {
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
   ]
+}
+
+source_set("util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "incognito_view_util.h",
+    "incognito_view_util.mm",
+  ]
+  deps = [
+    "//components/google/core/common",
+    "//ios/chrome/browser/application_context",
+  ]
+  public_deps = [ "//url:url" ]
 }

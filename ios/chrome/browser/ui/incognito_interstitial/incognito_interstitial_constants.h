@@ -30,8 +30,13 @@ enum class IncognitoInterstitialActions {
   kOpenInChromeIncognito = 1,
   // The user chose to open link in a "normal" tab.
   kOpenInChrome = 2,
+  // The user triggered the "Cancel" button.
   kCancel = 3,
-  kMaxValue = kCancel,
+  // The user tapped the "Learn more about Incognito" link.
+  kLearnMore = 4,
+  // The Incognito interstitial was dismissed by an external event.
+  kExternalDismissed = 5,
+  kMaxValue = kExternalDismissed,
 };
 
 // Enum for the IOS.IncognitoInterstitial.Settings histogram.
