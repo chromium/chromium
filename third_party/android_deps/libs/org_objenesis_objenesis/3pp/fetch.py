@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/objenesis'
 _MODULE_NAME = 'objenesis'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '3.3'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 
