@@ -44,14 +44,21 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
     num_keyboard_settings_initialized_++;
   }
   void UpdateKeyboardSettings(PrefService* pref_service,
-                              const mojom::Keyboard& keyboard) override {}
+                              const mojom::Keyboard& keyboard) override {
+    num_keyboard_settings_updated_++;
+  }
 
   uint32_t num_keyboard_settings_initialized() {
     return num_keyboard_settings_initialized_;
   }
 
+  uint32_t num_keyboard_settings_updated() {
+    return num_keyboard_settings_updated_;
+  }
+
  private:
   uint32_t num_keyboard_settings_initialized_ = 0;
+  uint32_t num_keyboard_settings_updated_ = 0;
 };
 
 class FakeInputDeviceSettingsControllerObserver
@@ -65,10 +72,18 @@ class FakeInputDeviceSettingsControllerObserver
     num_keyboards_connected_--;
   }
 
+  void OnKeyboardSettingsUpdated(const mojom::Keyboard& keyboard) override {
+    num_keyboards_settings_updated_++;
+  }
+
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
+  uint32_t num_keyboards_settings_updated() {
+    return num_keyboards_settings_updated_;
+  }
 
  private:
   uint32_t num_keyboards_connected_;
+  uint32_t num_keyboards_settings_updated_;
 };
 
 class InputDeviceSettingsControllerTest : public AshTestBase {
@@ -208,6 +223,18 @@ TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenFlagDisabled) {
                 prefs::kPointingStickDeviceSettingsDictPref));
   EXPECT_EQ(base::Value::Dict(), active_pref_service->GetDict(
                                      prefs::kTouchpadDeviceSettingsDictPref));
+}
+
+TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
+  controller()->OnKeyboardListUpdated({kSampleKeyboardUsb}, {});
+
+  EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
+  controller()->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
+                                    mojom::KeyboardSettings::New());
+
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
 }
 
 }  // namespace ash
