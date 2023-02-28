@@ -582,12 +582,16 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   return true;
 }
 
+base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 BEGIN_METADATA(PopupViewViews, PopupBaseView)
 ADD_PROPERTY_METADATA(absl::optional<PopupViewViews::CellIndex>, SelectedCell)
 END_METADATA
 
 // static
-AutofillPopupView* AutofillPopupView::Create(
+base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillPopupController> controller) {
 #if BUILDFLAG(IS_MAC)
   // It's possible for the container_view to not be in a window. In that case,
@@ -610,7 +614,7 @@ AutofillPopupView* AutofillPopupView::Create(
   }
 #endif
 
-  return new PopupViewViews(controller, observing_widget);
+  return (new PopupViewViews(controller, observing_widget))->GetWeakPtr();
 }
 
 }  // namespace autofill

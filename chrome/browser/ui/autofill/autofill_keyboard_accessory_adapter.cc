@@ -106,6 +106,11 @@ absl::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
   return absl::nullopt;
 }
 
+base::WeakPtr<AutofillPopupView>
+AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // AutofillPopupController implementation.
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(

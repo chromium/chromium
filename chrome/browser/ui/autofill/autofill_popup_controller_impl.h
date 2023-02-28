@@ -158,16 +158,17 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // management issue in AutofillPopupView.
   class AutofillPopupViewPtr {
    public:
-    AutofillPopupViewPtr() = default;
+    AutofillPopupViewPtr();
     AutofillPopupViewPtr(const AutofillPopupViewPtr&) = delete;
     AutofillPopupViewPtr& operator=(const AutofillPopupViewPtr&) = delete;
+    ~AutofillPopupViewPtr();
 
-    AutofillPopupViewPtr& operator=(AutofillPopupView* ptr) {
-      ptr_ = ptr;
+    AutofillPopupViewPtr& operator=(base::WeakPtr<AutofillPopupView> ptr) {
+      ptr_ = std::move(ptr);
       return *this;
     }
 
-    explicit operator bool() const { return ptr_; }
+    explicit operator bool() const { return !!ptr_; }
 
     // If `ptr_ == nullptr`, returns something that converts to false.
     // If `ptr_ != nullptr`, calls `ptr_->func(args...)` and, if that returns a
@@ -186,7 +187,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
     }
 
    private:
-    raw_ptr<AutofillPopupView, DanglingUntriaged> ptr_ = nullptr;
+    base::WeakPtr<AutofillPopupView> ptr_;
   };
 
   // The user has accepted the currently selected line. Returns whether there
@@ -210,7 +211,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
-  void SetViewForTesting(AutofillPopupView* view);
+  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view);
 
   PopupControllerCommon controller_common_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;

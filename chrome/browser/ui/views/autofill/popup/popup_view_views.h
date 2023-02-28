@@ -64,6 +64,7 @@ class PopupViewViews : public PopupBaseView,
   void Hide() override;
   absl::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
+  base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
   // PopupBaseView:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
@@ -134,6 +135,8 @@ class PopupViewViews : public PopupBaseView,
   std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> body_container_ = nullptr;
+
+  base::WeakPtrFactory<AutofillPopupView> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

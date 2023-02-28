@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,6 +21,10 @@ class AutofillPopupController;
 // AutofillPopupView.
 class AutofillPopupView {
  public:
+  // Factory function for creating the view.
+  static base::WeakPtr<AutofillPopupView> Create(
+      base::WeakPtr<AutofillPopupController> controller);
+
   // Displays the Autofill popup and fills it in with data from the controller.
   virtual void Show(AutoselectFirstSuggestion autoselect_first_suggestion) = 0;
 
@@ -43,9 +46,8 @@ class AutofillPopupView {
   // Return the autofill popup view's ax unique id.
   virtual absl::optional<int32_t> GetAxUniqueId() = 0;
 
-  // Factory function for creating the view.
-  static AutofillPopupView* Create(
-      base::WeakPtr<AutofillPopupController> controller);
+  // Returns a weak pointer to itself.
+  virtual base::WeakPtr<AutofillPopupView> GetWeakPtr() = 0;
 
  protected:
   virtual ~AutofillPopupView() {}

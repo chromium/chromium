@@ -525,8 +525,9 @@ AutofillPopupControllerImpl::GetDriver() {
   }
 }
 
-void AutofillPopupControllerImpl::SetViewForTesting(AutofillPopupView* view) {
-  view_ = view;
+void AutofillPopupControllerImpl::SetViewForTesting(
+    base::WeakPtr<AutofillPopupView> view) {
+  view_ = std::move(view);
   time_view_shown_ = base::TimeTicks::Now();
 }
 
@@ -590,5 +591,11 @@ AutofillPopupControllerImpl::GetRootAXPlatformNodeForWebContents() {
   // NativeViewAccessible corresponds to an AXPlatformNode.
   return ui::AXPlatformNode::FromNativeViewAccessible(native_view_accessible);
 }
+
+AutofillPopupControllerImpl::AutofillPopupViewPtr::AutofillPopupViewPtr() =
+    default;
+
+AutofillPopupControllerImpl::AutofillPopupViewPtr::~AutofillPopupViewPtr() =
+    default;
 
 }  // namespace autofill

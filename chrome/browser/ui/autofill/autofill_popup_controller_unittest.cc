@@ -157,6 +157,13 @@ class MockAutofillPopupView : public AutofillPopupView {
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(absl::optional<int32_t>, GetAxUniqueId, (), (override));
   MOCK_METHOD(void, AxAnnounce, (const std::u16string&), (override));
+
+  base::WeakPtr<AutofillPopupView> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<AutofillPopupView> weak_ptr_factory_{this};
 };
 
 class TestAutofillPopupController : public AutofillPopupControllerImpl {
@@ -261,7 +268,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     autofill_popup_view_ = std::make_unique<NiceMock<MockAutofillPopupView>>();
     autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
         external_delegate_->GetWeakPtr(), gfx::RectF());
-    autofill_popup_controller_->SetViewForTesting(autofill_popup_view());
+    autofill_popup_controller_->SetViewForTesting(
+        autofill_popup_view()->GetWeakPtr());
   }
 
   void TearDown() override {

@@ -58,6 +58,7 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   void OnSuggestionsChanged() override;
   void AxAnnounce(const std::u16string& text) override;
   absl::optional<int32_t> GetAxUniqueId() override;
+  base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
  private:
   friend class AutofillPopupView;
@@ -78,6 +79,8 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
 
   // Popup view
   ui::ViewAndroid::ScopedAnchorView popup_view_;
+
+  base::WeakPtrFactory<AutofillPopupView> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
