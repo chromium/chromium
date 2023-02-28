@@ -193,4 +193,42 @@ suite('KeyboardBacklightTest', function() {
             'zone-customization'),
         'dialog exists after button is clicked');
   });
+
+  test('shows wallpaper color at the end with multi-zone enabled', async () => {
+    loadTimeData.overrideValues({isMultiZoneRgbKeyboardSupported: true});
+
+    keyboardBacklightElement = initElement(KeyboardBacklight);
+
+    const selectorContainer =
+        keyboardBacklightElement.shadowRoot!.getElementById('selector');
+    assertTrue(!!selectorContainer);
+    const colorContainers =
+        selectorContainer.querySelectorAll('.color-container');
+    assertEquals(9, colorContainers!.length);
+    assertEquals(
+        'Wallpaper color', (colorContainers[8] as HTMLElement).ariaLabel);
+    assertEquals(0, selectorContainer.querySelectorAll('.divider').length);
+    assertTrue(!!keyboardBacklightElement?.shadowRoot!.getElementById(
+        'wallpaperColorDescription'));
+  });
+
+  test(
+      'shows wallpaper color button at the beginning with multi-zone disabled',
+      async () => {
+        loadTimeData.overrideValues({isMultiZoneRgbKeyboardSupported: false});
+
+        keyboardBacklightElement = initElement(KeyboardBacklight);
+
+        const selectorContainer =
+            keyboardBacklightElement.shadowRoot!.getElementById('selector');
+        assertTrue(!!selectorContainer);
+        const colorContainers =
+            selectorContainer.querySelectorAll('.color-container');
+        assertEquals(9, colorContainers!.length);
+        assertEquals(
+            'Wallpaper color', (colorContainers[0] as HTMLElement).ariaLabel);
+        assertEquals(1, selectorContainer.querySelectorAll('.divider').length);
+        assertFalse(!!keyboardBacklightElement?.shadowRoot!.getElementById(
+            'wallpaperColorDescription'));
+      });
 });
