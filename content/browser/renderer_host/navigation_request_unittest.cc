@@ -1016,6 +1016,14 @@ class OriginTrialsControllerDelegateMock
     persisted_tokens_[origin] =
         std::vector<std::string>(header_tokens.begin(), header_tokens.end());
   }
+  void PersistAdditionalTrialsFromTokens(
+      const url::Origin& origin,
+      const url::Origin& partition_origin,
+      const base::span<const url::Origin> script_origins,
+      const base::span<const std::string> header_tokens,
+      const base::Time current_time) override {
+    NOTREACHED() << "not used by test";
+  }
   bool IsTrialPersistedForOrigin(const url::Origin& origin,
                                  const url::Origin& partition_origin,
                                  const base::StringPiece trial_name,

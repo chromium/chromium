@@ -6,6 +6,8 @@
 
 #include "content/browser/bad_message.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -80,6 +82,26 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
       ->GetMutableRuntimeFeatureStateReadContext(
           base::PassKey<RuntimeFeatureStateControllerImpl>())
       .ApplyFeatureChange(validated_features);
+}
+
+void RuntimeFeatureStateControllerImpl::EnablePersistentTrial(
+    const std::string& token,
+    const std::vector<url::Origin>& script_origins) {
+  OriginTrialsControllerDelegate* delegate =
+      render_frame_host_->GetBrowserContext()
+          ->GetOriginTrialsControllerDelegate();
+  if (!delegate) {
+    return;
+  }
+
+  // No validation required here, as the delegate will fully validate the
+  // provided token.
+  std::vector<std::string> tokens = {token};
+  delegate->PersistAdditionalTrialsFromTokens(
+      /*origin=*/render_frame_host_->GetLastCommittedOrigin(),
+      /*partition_origin=*/
+      render_frame_host_->GetOutermostMainFrame()->GetLastCommittedOrigin(),
+      script_origins, tokens, base::Time::Now());
 }
 
 }  // namespace content

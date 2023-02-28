@@ -1,5 +1,7 @@
 The origin trial component implements browser-side support for origin trials.
 
+[toc]
+
 This component is meant to supplement the implementation that exists in Blink,
 by supplying an implementation for persistent origin trials.
 
@@ -19,5 +21,20 @@ Since persistent origin trials are considered to be enabled until the next page
 load for a given domain, the enablement status is not linked to any individual
 browser tab, unlike regular origin trials.
 
-> TODO(crbug.com/1227440): Make non-persistent origin trials available through
-> this component.
+## Critical Origin Trials
+
+A server can set the `Critical-Origin-Trial: <trial name>` HTTP header on
+responses as a way to make the browser restart the request immediately if the
+indicated trial was not already enabled on the first request.
+In order to take advantage of this, the server must also provide a valid trial
+token for the origin trial in the `Origin-Trial: <valid trial token>` header,
+so the browser can enable the trial before restart.
+
+The `Critical-Origin-Trial` header can be set multiple times.
+
+If the headers do not include a valid trial token, a request for restart will be ignored.
+
+## Outstanding work
+
+-  TODO(crbug.com/1227440): Make non-persistent origin trials available through this component.
+-  TODO(crbug.com/1416840): Make subdomain matching work for third-party tokens.

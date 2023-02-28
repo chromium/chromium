@@ -19,6 +19,7 @@ bool IsTrialPersistentToNextResponse(base::StringPiece trial_name) {
       // tests.
       "FrobulatePersistent",
       "FrobulatePersistentExpiryGracePeriod",
+      "FrobulatePersistentThirdPartyDeprecation",
       // Production persistent origin trials follow below:
       "WebViewXRequestedWithDeprecation",
   };
