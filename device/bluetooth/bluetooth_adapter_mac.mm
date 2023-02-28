@@ -536,31 +536,6 @@ void BluetoothAdapterMac::StopScan(DiscoverySessionResultCallback callback) {
                           UMABluetoothDiscoverySessionOutcome::SUCCESS);
 }
 
-bool BluetoothAdapterMac::StartDiscovery(
-    BluetoothDiscoveryFilter* discovery_filter) {
-  // Default to dual discovery if |discovery_filter| is NULL.  IOBluetooth seems
-  // allow starting low energy and classic discovery at once.
-  BluetoothTransport transport = BLUETOOTH_TRANSPORT_DUAL;
-  if (discovery_filter)
-    transport = discovery_filter->GetTransport();
-
-  if ((transport & BLUETOOTH_TRANSPORT_CLASSIC) &&
-      !classic_discovery_manager_->IsDiscovering()) {
-    // TODO(krstnmnlsn): If a classic discovery session is already running then
-    // we should update its filter. crbug.com/498056
-    if (!classic_discovery_manager_->StartDiscovery()) {
-      DVLOG(1) << "Failed to add a classic discovery session";
-      return false;
-    }
-  }
-  if (transport & BLUETOOTH_TRANSPORT_LE) {
-    // Begin a low energy discovery session or update it if one is already
-    // running.
-    low_energy_discovery_manager_->StartDiscovery(BluetoothDevice::UUIDList());
-  }
-  return true;
-}
-
 void BluetoothAdapterMac::Initialize(base::OnceClosure callback) {
   // Real initialization is deferred to LazyInitialize().
   ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();

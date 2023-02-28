@@ -205,10 +205,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
       DiscoverySessionResultCallback callback) override;
   void StopScan(DiscoverySessionResultCallback callback) override;
 
-  // Start classic and/or low energy discovery sessions, according to the
-  // filter.  If a discovery session is already running the filter is updated.
-  bool StartDiscovery(BluetoothDiscoveryFilter* discovery_filter);
-
   void Initialize(base::OnceClosure callback) override;
   void InitForTest(scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
   void PollAdapter();
@@ -228,10 +224,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
 
   // Updates |devices_| when there is a change to the CBCentralManager's state.
   void LowEnergyCentralManagerUpdatedState();
-
-  // Updates |advertisements_| when there is a change to the
-  // CBPeripheralManager's state.
-  void LowEnergyPeripheralManagerUpdatedState();
 
   // Updates |devices_| to include the currently paired devices and notifies
   // observers.
