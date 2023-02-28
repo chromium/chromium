@@ -223,9 +223,6 @@ class FakePasswordAutofillAgent
   void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override {}
 
-  void PasswordFieldHasNoAssociatedUsername(
-      ::autofill::FieldRendererId password_element_renderer_id) override {}
-
   void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) override {}
 

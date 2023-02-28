@@ -107,11 +107,6 @@ interface PasswordAutofillAgent {
   // Fills the given |credential| into the last focused text input.
   FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
 
-  // Sends the renderer a render id of a password field that has
-  // no associated username.
-  PasswordFieldHasNoAssociatedUsername(
-    FieldRendererId password_element_renderer_id);
-
   // Notification to start (|active| == true) or stop (|active| == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);

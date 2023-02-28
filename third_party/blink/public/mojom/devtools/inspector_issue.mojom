@@ -231,7 +231,6 @@ enum GenericIssueErrorType {
   kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
   kFormLabelHasNeitherForNorNestedInput,
   kFormLabelForMatchesNonExistingIdError,
-  kFormHasPasswordFieldWithoutUsernameFieldError,
 };
 
 struct GenericIssueDetails {
