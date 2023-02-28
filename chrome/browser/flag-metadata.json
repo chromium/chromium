@@ -4162,7 +4162,7 @@
   {
     "name": "hidpi-capture",
     "owners": [ "//content/browser/media/capture/OWNERS" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "high-efficiency-mode-available",
