@@ -1080,19 +1080,20 @@ void AppListFolderView::ReparentItem(
     AppsGridView::Pointer pointer,
     AppListItemView* original_drag_view,
     const gfx::Point& drag_point_in_folder_grid) {
-  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    // Convert the drag point relative to the root level AppsGridView.
+    gfx::Point to_root_level_grid = drag_point_in_folder_grid;
+    ConvertPointToTarget(items_grid_view_, root_apps_grid_view_,
+                         &to_root_level_grid);
+    root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
+        pointer, original_drag_view, to_root_level_grid,
+        base::BindOnce(&AppListFolderView::CancelReparentDragFromRootGrid,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
-  // Convert the drag point relative to the root level AppsGridView.
-  gfx::Point to_root_level_grid = drag_point_in_folder_grid;
-  ConvertPointToTarget(items_grid_view_, root_apps_grid_view_,
-                       &to_root_level_grid);
   // Ensures the icon updates to reflect that the icon has been removed during
   // the drag
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
-  root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
-      pointer, original_drag_view, to_root_level_grid,
-      base::BindOnce(&AppListFolderView::CancelReparentDragFromRootGrid,
-                     weak_ptr_factory_.GetWeakPtr()));
   folder_controller_->ReparentFolderItemTransit(folder_item_);
 }
 
@@ -1118,9 +1119,9 @@ void AppListFolderView::DispatchEndDragEventForReparent(
     bool events_forwarded_to_drag_drop_host,
     bool cancel_drag,
     std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
-  DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
-
-  folder_item_->NotifyOfDraggedItem(nullptr);
+  if (folder_item_) {
+    folder_item_->NotifyOfDraggedItem(nullptr);
+  }
   folder_controller_->ReparentDragEnded();
 
   // Cache `folder_item_view_`, as it will get reset in `HideViewImmediately()`.
@@ -1130,9 +1131,11 @@ void AppListFolderView::DispatchEndDragEventForReparent(
   // now as the reparenting ended.
   HideViewImmediately();
 
-  root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
-      folder_item_view, events_forwarded_to_drag_drop_host, cancel_drag,
-      std::move(drag_icon_proxy));
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
+        folder_item_view, events_forwarded_to_drag_drop_host, cancel_drag,
+        std::move(drag_icon_proxy));
+  }
 }
 
 void AppListFolderView::Close() {
