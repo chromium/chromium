@@ -102,7 +102,8 @@ String CSSImageSetOptionValue::CustomCSSText() const {
 }
 
 bool CSSImageSetOptionValue::Equals(const CSSImageSetOptionValue& other) const {
-  return *image_ == *other.image_ && *resolution_ == *other.resolution_;
+  return base::ValuesEquivalent(image_, other.image_) &&
+         base::ValuesEquivalent(resolution_, other.resolution_);
 }
 
 CSSImageSetOptionValue* CSSImageSetOptionValue::ComputedCSSValue(
