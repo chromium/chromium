@@ -1716,11 +1716,16 @@ StyleChange::StyleChange(EditingStyle* style, const Position& position)
     ExtractTextStyles(document, mutable_style,
                       computed_style->IsMonospaceFont());
 
-  // Changing the whitespace style in a tab span would collapse the tab into a
-  // space.
-  if (IsTabHTMLSpanElementTextNode(position.AnchorNode()) ||
-      IsTabHTMLSpanElement((position.AnchorNode())))
-    mutable_style->RemoveProperty(CSSPropertyID::kWhiteSpace);
+  // Disables this use of `white-space` as this doesn't look effective any more.
+  // See crbug.com/1417543 and crrev.com/c/4289333.
+  if (!RuntimeEnabledFeatures::EditingStyleWhiteSpaceEnabled()) {
+    // Changing the whitespace style in a tab span would collapse the tab into a
+    // space.
+    if (IsTabHTMLSpanElementTextNode(position.AnchorNode()) ||
+        IsTabHTMLSpanElement((position.AnchorNode()))) {
+      mutable_style->RemoveProperty(CSSPropertyID::kWhiteSpace);
+    }
+  }
 
   // If unicode-bidi is present in mutableStyle and direction is not, then add
   // direction to mutableStyle.
