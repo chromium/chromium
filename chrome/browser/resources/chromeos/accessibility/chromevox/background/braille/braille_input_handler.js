@@ -64,19 +64,26 @@ export class BrailleInputHandler {
     /** @private {function()?} */
     this.uncommittedCellsChangedListener_ = null;
 
-    this.init_();
+    this.initListeners_();
   }
 
   /**
    * Starts to listen for connections from the Chrome OS braille IME.
    * @private
    */
-  init_() {
+  initListeners_() {
     BrailleTranslatorManager.instance.addChangeListener(
         () => this.commitAndClearEntryState_());
 
     chrome.runtime.onConnectExternal.addListener(
         port => this.onImeConnect_(port));
+  }
+
+  static init() {
+    if (BrailleInputHandler.instance) {
+      throw new Error('Cannot create two BrailleInputHandler instances');
+    }
+    BrailleInputHandler.instance = new BrailleInputHandler();
   }
 
   /**
@@ -672,3 +679,6 @@ BrailleInputHandler.LateCommitEntryState_ =
     });
   }
 };
+
+/** @type {BrailleInputHandler} */
+BrailleInputHandler.instance;

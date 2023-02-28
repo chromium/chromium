@@ -24,9 +24,6 @@ export class BrailleBackground {
     /** @private {boolean} */
     this.frozen_ = false;
 
-    /** @private {!BrailleInputHandler} */
-    this.inputHandler_ = new BrailleInputHandler();
-
     /** @private {BrailleKeyEventRewriter} */
     this.keyEventRewriter_ = new BrailleKeyEventRewriter();
 
@@ -43,9 +40,12 @@ export class BrailleBackground {
     if (BrailleBackground.instance) {
       throw new Error('Cannot create two BrailleBackground instances');
     }
-    // Must be called in the following order for dependencies.
+    // Must be called first.
     BrailleTranslatorManager.init();
+
+    // Must be called before creating BrailleBackground.
     BrailleDisplayManager.init();
+    BrailleInputHandler.init();
 
     BrailleBackground.instance = new BrailleBackground();
   }
@@ -121,9 +121,10 @@ export class BrailleBackground {
       this.lastContent_ = newContentId ? newContent : null;
       this.lastContentId_ = newContentId;
       BrailleDisplayManager.instance.setContent(
-          newContent, this.inputHandler_.getExpansionType());
+          newContent, BrailleInputHandler.instance.getExpansionType());
     };
-    this.inputHandler_.onDisplayContentChanged(newContent.text, updateContent);
+    BrailleInputHandler.instance.onDisplayContentChanged(
+        newContent.text, updateContent);
     updateContent();
   }
 
@@ -139,7 +140,7 @@ export class BrailleBackground {
       return;
     }
 
-    if (this.inputHandler_.onBrailleKeyEvent(brailleEvt)) {
+    if (BrailleInputHandler.instance.onBrailleKeyEvent(brailleEvt)) {
       return;
     }
     if (ChromeVoxState.instance) {
