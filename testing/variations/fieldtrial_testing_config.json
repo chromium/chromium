@@ -11525,6 +11525,23 @@
             ]
         }
     ],
+    "StylusRichGestures": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StylusPointerAdjustment",
+                        "StylusRichGestures"
+                    ]
+                }
+            ]
+        }
+    ],
     "SubstringSetTreeForAttributeBuckets": [
         {
             "platforms": [
