@@ -148,6 +148,9 @@ bool GLTextureImageBackingFactory::IsSupported(
     }
   }
 
+  // This is not beneficial on iOS. The main purpose of this is a multi-gpu
+  // support.
+#if BUILDFLAG(IS_MAC)
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     constexpr uint32_t kMetalInvalidUsages =
@@ -157,6 +160,7 @@ bool GLTextureImageBackingFactory::IsSupported(
       return false;
     }
   }
+#endif  // BUILDFLAG(IS_MAC)
 
   // Doesn't support contexts other than GL for OOPR Canvas
   if (gr_context_type != GrContextType::kGL &&
