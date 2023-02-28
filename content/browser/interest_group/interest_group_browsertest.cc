@@ -149,9 +149,9 @@ base::Value::List SellerCapabilitiesToList(
   base::Value::List list;
   for (blink::SellerCapabilities capability : capabilities) {
     if (capability == blink::SellerCapabilities::kInterestGroupCounts) {
-      list.Append("interestGroupCounts");
+      list.Append("interest-group-counts");
     } else if (capability == blink::SellerCapabilities::kLatencyStats) {
-      list.Append("latencyStats");
+      list.Append("latency-stats");
     } else {
       ADD_FAILURE() << "Unknown seller capability "
                     << static_cast<uint32_t>(capability);
@@ -2603,26 +2603,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       JoinInterestGroupInvalidSellerCapabilities) {
+                       JoinInterestGroupInvalidSellerCapabilitiesIgnored) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   std::string origin_string = url::Origin::Create(url).Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_EQ(
-      base::StringPrintf(
-          "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "sellerCapabilities 'nonValidCapability' for AuctionAdInterestGroup "
-          "with owner '%s' and name 'cars' is not a supported seller "
-          "capability.",
-          origin_string.c_str()),
-      EvalJs(shell(), JsReplace(R"(
+  EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
 (async function() {
   try {
     await navigator.joinAdInterestGroup(
         {
           name: 'cars',
           owner: $1,
-          sellerCapabilities: {'https://example.test': ['nonValidCapability']},
+          sellerCapabilities: {'https://example.test': ['non-valid-capability']},
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -2630,7 +2623,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())",
-                                origin_string.c_str())));
+                                              origin_string.c_str())));
   WaitForAccessObserved({});
 }
 
