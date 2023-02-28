@@ -7,6 +7,14 @@
     height: var(--cr-icon-size);
     width: var(--cr-icon-size);
   }
+
+  #showAllButton {
+    background-color: white;
+    border: none;
+    color: var(--google-blue-700);
+    cursor: pointer;
+    font-size: 13px;
+  }
 </style>
 <div id="content">
   <ntp-module-header
@@ -17,6 +25,10 @@
     show-info-button on-info-button-click="onInfoButtonClick_"
     icon-src="chrome://resources/images/icon_journeys.svg">
     [[i18n('modulesJourneysResumeJourney', cluster.label)]]
+    <button id="showAllButton" type="button" on-click="onShowAllClick_"
+            slot="title-actions">
+        [[i18n('modulesJourneyShowAll')]]
+    </button>
   </ntp-module-header>
   <ntp-history-clusters-tile id="main-tile" large-format
                              visit="[[cluster.visits.0]]">

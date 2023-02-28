@@ -50,6 +50,11 @@ export class HistoryClustersModuleElement extends I18nMixin
   private isLayout_(type: HistoryClusterLayoutType): boolean {
     return type === this.layoutType;
   }
+
+  private onShowAllClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
+        this.cluster.label || '');
+  }
 }
 
 customElements.define(

@@ -88,7 +88,7 @@
 <div id="titleContainer">
   <template is="dom-if" if="[[iconSrc]]">
     <div class="icon-background">
-      <img class="module-icon" src="[[iconSrc]]"  part="module-icon"></img>
+      <img class="module-icon" src="[[iconSrc]]" part="module-icon"></img>
     </div>
   </template>
   <span id="title"><slot></slot></span>
@@ -96,6 +96,7 @@
     <div id="chip">[[chipText]]</div>
   </template>
   <div id="headerSpacer"></div>
+  <slot name="title-actions"></slot>
   <template is="dom-if" if="[[showInfoButton]]">
     <cr-icon-button id="infoButton" title="$i18n{moduleInfoButtonTitle}"
         on-click="onInfoButtonClick_">

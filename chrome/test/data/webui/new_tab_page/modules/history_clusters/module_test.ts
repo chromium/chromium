@@ -171,4 +171,24 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
 
     assertEquals($$(tileElement, '#title')!.innerHTML, 'Test Title 0');
   });
+
+  test('Header element populated with correct data', async () => {
+    handler.setResultFor(
+        'getCluster', Promise.resolve({cluster: createSampleCluster(3, 2)}));
+
+    const moduleElement = await historyClustersDescriptor.initialize(0) as
+        HistoryClustersModuleElement;
+
+    document.body.append(moduleElement);
+    assertTrue(!!moduleElement);
+    await handler.whenCalled('getCluster');
+    await waitAfterNextRender(moduleElement);
+
+    const headerElement = $$(moduleElement, 'ntp-module-header');
+    assertTrue(!!headerElement);
+
+    assertEquals(
+        headerElement.querySelector('#showAllButton')!.innerHTML.trim(),
+        'Show all');
+  });
 });
