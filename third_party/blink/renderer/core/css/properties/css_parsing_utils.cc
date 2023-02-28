@@ -3489,22 +3489,16 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     ConsumeGeneratedImagePolicy generated_image_policy) {
-  CSSValue* image = nullptr;
-  AtomicString url_value = (RuntimeEnabledFeatures::CSSImageSetEnabled()
-                                ? ConsumeUrlOrStringAsStringView(range, context)
-                                : ConsumeUrlAsStringView(range, context))
-                               .ToAtomicString();
-  if (!url_value.IsNull()) {
-    image = CreateCSSImageValueWithReferrer(url_value, context);
-  } else {
-    if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-      return nullptr;
-    }
+  const ConsumeStringUrlImagePolicy string_url_image_policy =
+      RuntimeEnabledFeatures::CSSImageSetEnabled()
+          ? ConsumeStringUrlImagePolicy::kAllow
+          : ConsumeStringUrlImagePolicy::kForbid;
 
-    image = ConsumeGeneratedImage(range, context);
-    if (!image) {
-      return nullptr;
-    }
+  const CSSValue* image = ConsumeImage(range, context, generated_image_policy,
+                                       string_url_image_policy,
+                                       ConsumeImageSetImagePolicy::kForbid);
+  if (!image) {
+    return nullptr;
   }
 
   CSSNumericLiteralValue* resolution = nullptr;
@@ -3566,18 +3560,26 @@ static CSSValue* ConsumeImageSet(
   return image_set;
 }
 
-CSSValue* ConsumeImage(CSSParserTokenRange& range,
-                       const CSSParserContext& context,
-                       ConsumeGeneratedImagePolicy generated_image_policy) {
-  AtomicString uri = ConsumeUrlAsStringView(range, context).ToAtomicString();
+CSSValue* ConsumeImage(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const ConsumeGeneratedImagePolicy generated_image_policy,
+    const ConsumeStringUrlImagePolicy string_url_image_policy,
+    const ConsumeImageSetImagePolicy image_set_image_policy) {
+  AtomicString uri =
+      ((string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow)
+           ? ConsumeUrlOrStringAsStringView(range, context)
+           : ConsumeUrlAsStringView(range, context))
+          .ToAtomicString();
   if (!uri.IsNull()) {
     return CreateCSSImageValueWithReferrer(uri, context);
   }
   if (range.Peek().GetType() == kFunctionToken) {
     CSSValueID id = range.Peek().FunctionId();
-    if (id == CSSValueID::kWebkitImageSet ||
-        (id == CSSValueID::kImageSet &&
-         RuntimeEnabledFeatures::CSSImageSetEnabled())) {
+    if ((id == CSSValueID::kWebkitImageSet ||
+         (id == CSSValueID::kImageSet &&
+          RuntimeEnabledFeatures::CSSImageSetEnabled())) &&
+        image_set_image_policy == ConsumeImageSetImagePolicy::kAllow) {
       return ConsumeImageSet(range, context, generated_image_policy);
     }
     if (generated_image_policy == ConsumeGeneratedImagePolicy::kAllow &&
