@@ -946,8 +946,7 @@ void PasswordsPrivateDelegateImpl::AuthenticateWithBiometrics(
                      weak_ptr_factory_.GetWeakPtr());
 
   biometric_authenticator_->AuthenticateWithMessage(
-      device_reauth::DeviceAuthRequester::kPasswordsInSettings, message,
-      std::move(callback).Then(std::move(on_reauth_completed)));
+      message, std::move(callback).Then(std::move(on_reauth_completed)));
 #endif
 }
 

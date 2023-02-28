@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -1208,12 +1209,8 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   client->SetDeviceAuthenticator(biometric_authenticator_);
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
-  EXPECT_CALL(
-      *biometric_authenticator_.get(),
-      AuthenticateWithMessage(
-          device_reauth::DeviceAuthRequester::kPasswordsInSettings, _, _))
-      .WillOnce(testing::WithArgs<2>(
-          [](auto callback) { std::move(callback).Run(/*successful=*/true); }));
+  EXPECT_CALL(*biometric_authenticator_.get(), AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(/*successful=*/true));
   auto delegate = CreateDelegate();
   delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
   // Expects that the switch value will change.

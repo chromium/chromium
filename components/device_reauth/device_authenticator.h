@@ -75,11 +75,9 @@ class DeviceAuthenticator : public base::RefCounted<DeviceAuthenticator> {
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.
-  // |requester| is the filling surface that is asking for authentication.
   // |message| contains text that will be displayed to the end user on
   // authentication request
-  virtual void AuthenticateWithMessage(DeviceAuthRequester requester,
-                                       const std::u16string& message,
+  virtual void AuthenticateWithMessage(const std::u16string& message,
                                        AuthenticateCallback callback) = 0;
 
   // Cancels an in-progress authentication if the filling surface requesting

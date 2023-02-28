@@ -23,9 +23,7 @@ class MockDeviceAuthenticator : public DeviceAuthenticator {
               (override));
   MOCK_METHOD(void,
               AuthenticateWithMessage,
-              (DeviceAuthRequester,
-               const std::u16string&,
-               AuthenticateCallback),
+              (const std::u16string&, AuthenticateCallback),
               (override));
   MOCK_METHOD(void, Cancel, (DeviceAuthRequester), (override));
 

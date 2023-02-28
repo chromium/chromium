@@ -66,8 +66,7 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Displays `message` in the authentication UI.
   // Note: this only supports one authentication request at a time.
-  void AuthenticateWithMessage(device_reauth::DeviceAuthRequester requester,
-                               const std::u16string& message,
+  void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose

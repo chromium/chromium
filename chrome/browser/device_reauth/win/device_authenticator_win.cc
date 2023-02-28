@@ -61,7 +61,6 @@ void DeviceAuthenticatorWin::Authenticate(
 }
 
 void DeviceAuthenticatorWin::AuthenticateWithMessage(
-    device_reauth::DeviceAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
   if (!NeedsToAuthenticate()) {

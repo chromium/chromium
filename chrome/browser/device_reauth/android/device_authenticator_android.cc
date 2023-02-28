@@ -144,7 +144,6 @@ void DeviceAuthenticatorAndroid::Authenticate(
 }
 
 void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
-    device_reauth::DeviceAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
   NOTIMPLEMENTED();

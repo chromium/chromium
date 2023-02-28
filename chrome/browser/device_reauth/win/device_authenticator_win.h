@@ -35,8 +35,7 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
   // authenticate(a prompt with that information will appear on the screen and
   // the `message` will be displayed there) using their windows hello or if it's
   // not set up, default one with password will appear.
-  void AuthenticateWithMessage(device_reauth::DeviceAuthRequester requester,
-                               const std::u16string& message,
+  void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose

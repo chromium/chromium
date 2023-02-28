@@ -533,7 +533,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                            suggestion.main_text.value, suggestion.frontend_id);
 
         authenticator_->AuthenticateWithMessage(
-            device_reauth::DeviceAuthRequester::kAutofillSuggestion,
             l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
                                        origin),
             metrics_util::TimeCallback(

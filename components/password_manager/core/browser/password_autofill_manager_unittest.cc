@@ -359,10 +359,7 @@ class PasswordAutofillManagerTest : public testing::Test {
   void ExpectAndAllowAuthentication() {
     // Allow authentication.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    EXPECT_CALL(
-        *authenticator_.get(),
-        AuthenticateWithMessage(DeviceAuthRequester::kAutofillSuggestion,
-                                /*message=*/_, _));
+    EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage);
 #else
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
@@ -1751,11 +1748,8 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
         HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    EXPECT_CALL(
-        *authenticator_.get(),
-        AuthenticateWithMessage(DeviceAuthRequester::kAutofillSuggestion,
-                                /*message=*/_, _))
-        .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/true));
+    EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage)
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
     // The authenticator exists and is available.
 #else
     EXPECT_CALL(*authenticator_.get(),
@@ -1827,11 +1821,8 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 
     // The authenticator exists and is available.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    EXPECT_CALL(
-        *authenticator_.get(),
-        AuthenticateWithMessage(DeviceAuthRequester::kAutofillSuggestion,
-                                /*message=*/_, _))
-        .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/false));
+    EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage)
+        .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 #else
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
@@ -2066,7 +2057,7 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
   // The authenticator exists and is available.
   base::OnceCallback<void(bool)> auth_callback;
   EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage)
-      .WillOnce(MoveArg<2>(&auth_callback));
+      .WillOnce(MoveArg<1>(&auth_callback));
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user.

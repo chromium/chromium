@@ -94,7 +94,6 @@ TEST_F(DeviceAuthenticatorWinTest,
        NoReauthenticationIfLessThanAuthValidityPeriod) {
   ExpectAuthenticationAndSetResult(true);
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
 
   // The delay is smaller than kAuthValidityPeriod there shouldn't be
@@ -106,7 +105,6 @@ TEST_F(DeviceAuthenticatorWinTest,
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback.Get());
 
@@ -119,7 +117,6 @@ TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfMoreThan60Seconds) {
   // Simulate a previous successful authentication
   ExpectAuthenticationAndSetResult(true);
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
 
   task_environment().FastForwardBy(
@@ -130,7 +127,6 @@ TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfMoreThan60Seconds) {
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/false));
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback.Get());
 
@@ -142,7 +138,6 @@ TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfMoreThan60Seconds) {
 TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfPreviousFailed) {
   ExpectAuthenticationAndSetResult(false);
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
   task_environment().RunUntilIdle();
 
@@ -151,7 +146,6 @@ TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfPreviousFailed) {
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
   EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback.Get());
 

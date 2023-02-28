@@ -49,7 +49,6 @@ void DeviceAuthenticatorMac::Cancel(device_reauth::DeviceAuthRequester) {
 }
 
 void DeviceAuthenticatorMac::AuthenticateWithMessage(
-    device_reauth::DeviceAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
   // Callers must ensure that previous authentication is canceled.

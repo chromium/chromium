@@ -43,8 +43,7 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   // Always use CanAuthenticate() before using this method, and if it fails use
   // password_manager_util_mac::AuthenticateUser() instead, until
   // crbug.com/1358442 is fixed.
-  void AuthenticateWithMessage(device_reauth::DeviceAuthRequester requester,
-                               const std::u16string& message,
+  void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose

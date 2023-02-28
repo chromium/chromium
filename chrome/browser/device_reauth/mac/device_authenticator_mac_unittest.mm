@@ -62,7 +62,6 @@ TEST_F(DeviceAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
 
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
@@ -75,7 +74,6 @@ TEST_F(DeviceAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
 
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 }
@@ -87,7 +85,6 @@ TEST_F(DeviceAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
 
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
@@ -101,7 +98,6 @@ TEST_F(DeviceAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
 
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 }
@@ -115,7 +111,6 @@ TEST_F(DeviceAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
   // recorded, which fill force reauthentication.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
@@ -127,7 +122,6 @@ TEST_F(DeviceAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
 
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 }
@@ -138,7 +132,6 @@ TEST_F(DeviceAuthenticatorMacTest, CancelPendngAuthentication) {
   touch_id_enviroment()->DoNotResolveNextPrompt();
 
   authenticator()->AuthenticateWithMessage(
-      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 

@@ -33,8 +33,7 @@ class FakeChromeDeviceAuthenticatorCommon
                     AuthenticateCallback callback,
                     bool use_last_valid) override;
 
-  void AuthenticateWithMessage(DeviceAuthRequester requester,
-                               const std::u16string& message,
+  void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   void Cancel(DeviceAuthRequester requester) override;
@@ -67,7 +66,6 @@ void FakeChromeDeviceAuthenticatorCommon::Cancel(
 }
 
 void FakeChromeDeviceAuthenticatorCommon::AuthenticateWithMessage(
-    device_reauth::DeviceAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
   NOTIMPLEMENTED();

@@ -747,8 +747,7 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
   CancelAnyOngoingBiometricAuth();
   biometric_authenticator_ = passwords_data_.client()->GetDeviceAuthenticator();
   biometric_authenticator_->AuthenticateWithMessage(
-      device_reauth::DeviceAuthRequester::kTouchToFill, message,
-      std::move(callback).Then(std::move(on_reauth_completed)));
+      message, std::move(callback).Then(std::move(on_reauth_completed)));
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 }
 
