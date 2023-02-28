@@ -14252,6 +14252,21 @@
             ]
         }
     ],
+    "WindowLayoutMenu": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WindowLayoutMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "ZeroCopyTabCaptureStudyMac": [
         {
             "platforms": [
