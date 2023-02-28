@@ -409,7 +409,6 @@ class PartitionAllocTest
         PartitionOptions::UseConfigurablePool::kNo,
     });
     test_bucket_index_ = SizeToIndex(RealAllocSize());
-
     allocator.root()->UncapEmptySlotSpanMemoryForTesting();
     aligned_allocator.root()->UncapEmptySlotSpanMemoryForTesting();
 
@@ -1403,6 +1402,9 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   PA_EXPECT_PTR_EQ(ptr2, ptr3);
   EXPECT_NE(ptr1, ptr3);
   EXPECT_NE(ptr2, ptr3);
+
+  // We don't check anything about ptr3, but we do clean it up to avoid DCHECKs.
+  allocator.root()->Free(ptr3);
 }
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
