@@ -18,10 +18,12 @@
 #include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +70,7 @@ class SharingImplTest : public testing::Test {
     Connect(
         connections_.BindNewPipeAndPassReceiver(),
         decoder_.BindNewPipeAndPassReceiver(),
+        quick_start_decoder_.BindNewPipeAndPassReceiver(),
         bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
@@ -80,6 +83,7 @@ class SharingImplTest : public testing::Test {
     ASSERT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
     ASSERT_TRUE(connections_.is_connected());
     ASSERT_TRUE(decoder_.is_connected());
+    ASSERT_TRUE(quick_start_decoder_.is_connected());
   }
 
   void Connect(
@@ -87,6 +91,8 @@ class SharingImplTest : public testing::Test {
           connections_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
           decoder_receiver,
+      mojo::PendingReceiver<ash::quick_start::mojom::QuickStartDecoder>
+          quick_start_decoder_receiver,
       mojo::PendingRemote<bluetooth::mojom::Adapter> bluetooth_adapter,
       mojo::PendingRemote<network::mojom::P2PSocketManager> socket_manager,
       mojo::PendingRemote<sharing::mojom::MdnsResponderFactory>
@@ -112,7 +118,8 @@ class SharingImplTest : public testing::Test {
         nearby::api::LogMessage::Severity::kInfo);
     base::RunLoop run_loop;
     service_->Connect(std::move(dependencies), std::move(connections_receiver),
-                      std::move(decoder_receiver));
+                      std::move(decoder_receiver),
+                      std::move(quick_start_decoder_receiver));
 
     // Run Mojo connection handlers.
     base::RunLoop().RunUntilIdle();
@@ -126,7 +133,8 @@ class SharingImplTest : public testing::Test {
   }
 
   bool AreNearbyConnectionsAndDecoderInstancesActive() {
-    return service_->nearby_connections_ && service_->nearby_decoder_;
+    return service_->nearby_connections_ && service_->nearby_decoder_ &&
+           service_->quick_start_decoder_;
   }
 
   void EnsureDependenciesAreDisconnected() {
@@ -143,6 +151,7 @@ class SharingImplTest : public testing::Test {
 
   mojo::Remote<nearby::connections::mojom::NearbyConnections> connections_;
   mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder_;
+  mojo::Remote<ash::quick_start::mojom::QuickStartDecoder> quick_start_decoder_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   sharing::MockWebRtcDependencies webrtc_dependencies_;
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>

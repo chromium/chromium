@@ -20,6 +20,7 @@ source_set("nearby") {
   public_deps = [
     "decoder",
     "platform",
+    "quick_start_decoder",
     "//base",
     "//chrome/services/sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",

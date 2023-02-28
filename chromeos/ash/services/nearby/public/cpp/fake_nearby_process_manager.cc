@@ -7,20 +7,26 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash {
 namespace nearby {
 
 FakeNearbyProcessManager::FakeNearbyProcessReference::
     FakeNearbyProcessReference(
-        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
-            connections,
+        const mojo::SharedRemote<
+            ::nearby::connections::mojom::NearbyConnections>& connections,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
+        const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
+            quick_start_decoder,
         base::OnceClosure destructor_callback)
     : connections_(connections),
       decoder_(decoder),
+      quick_start_decoder_(quick_start_decoder),
       destructor_callback_(std::move(destructor_callback)) {}
 
 FakeNearbyProcessManager::FakeNearbyProcessReference::
@@ -38,6 +44,12 @@ const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
 FakeNearbyProcessManager::FakeNearbyProcessReference::GetNearbySharingDecoder()
     const {
   return decoder_;
+}
+
+const mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>&
+FakeNearbyProcessManager::FakeNearbyProcessReference::GetQuickStartDecoder()
+    const {
+  return quick_start_decoder_;
 }
 
 FakeNearbyProcessManager::FakeNearbyProcessManager() = default;
@@ -58,8 +70,9 @@ void FakeNearbyProcessManager::SimulateProcessStopped(
       std::move(id_to_process_stopped_callback_map_);
   id_to_process_stopped_callback_map_.clear();
 
-  for (auto& entry : old_map)
+  for (auto& entry : old_map) {
     std::move(entry.second).Run(shutdown_reason);
+  }
 }
 
 void FakeNearbyProcessManager::Shutdown() {
@@ -69,10 +82,16 @@ void FakeNearbyProcessManager::Shutdown() {
 std::unique_ptr<NearbyProcessManager::NearbyProcessReference>
 FakeNearbyProcessManager::GetNearbyProcessReference(
     NearbyProcessStoppedCallback on_process_stopped_callback) {
-  if (!active_connections_)
+  if (!active_connections_) {
     active_connections_ = std::make_unique<MockNearbyConnections>();
-  if (!active_decoder_)
+  }
+  if (!active_decoder_) {
     active_decoder_ = std::make_unique<MockNearbySharingDecoder>();
+  }
+
+  if (!active_quick_start_decoder_) {
+    active_quick_start_decoder_ = std::make_unique<MockQuickStartDecoder>();
+  }
 
   auto id = base::UnguessableToken::Create();
   id_to_process_stopped_callback_map_.emplace(
@@ -80,6 +99,7 @@ FakeNearbyProcessManager::GetNearbyProcessReference(
 
   return std::make_unique<FakeNearbyProcessReference>(
       active_connections_->shared_remote(), active_decoder_->shared_remote(),
+      active_quick_start_decoder_->shared_remote(),
       base::BindOnce(&FakeNearbyProcessManager::OnReferenceDeleted,
                      weak_ptr_factory_.GetWeakPtr(), id));
 }

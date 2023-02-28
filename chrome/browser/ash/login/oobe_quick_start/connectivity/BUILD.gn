@@ -8,7 +8,6 @@ assert(is_chromeos_ash)
 
 source_set("connectivity") {
   deps = [
-    ":decoder",
     "//base",
     "//chrome/browser/ash/login/oobe_quick_start/logging",
     "//chrome/browser/nearby_sharing/public/cpp",
@@ -44,21 +43,6 @@ source_set("connectivity") {
   ]
 }
 
-source_set("decoder") {
-  sources = [
-    "quick_start_decoder.cc",
-    "quick_start_decoder.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/ash/services/nearby/public/mojom",
-    "//components/cbor",
-    "//mojo/public/cpp/bindings",
-    "//sandbox/policy",
-  ]
-}
-
 source_set("test_support") {
   testonly = true
   public_deps = [ ":connectivity" ]
@@ -77,7 +61,6 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":connectivity",
-    ":decoder",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/nearby_sharing/public/cpp",
@@ -94,7 +77,6 @@ source_set("unit_tests") {
     "connection_unittest.cc",
     "fast_pair_advertiser_unittest.cc",
     "incoming_connection_unittest.cc",
-    "quick_start_decoder_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",
   ]
 }

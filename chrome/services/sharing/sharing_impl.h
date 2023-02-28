@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -47,7 +48,9 @@ class SharingImpl : public mojom::Sharing {
       NearbyDependenciesPtr deps,
       mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
-          decoder_receiver) override;
+          decoder_receiver,
+      mojo::PendingReceiver<ash::quick_start::mojom::QuickStartDecoder>
+          quick_start_decoder_receiver) override;
   void ShutDown(ShutDownCallback callback) override;
 
  private:
@@ -82,6 +85,9 @@ class SharingImpl : public mojom::Sharing {
   std::unique_ptr<NearbyConnections> nearby_connections_;
 
   std::unique_ptr<NearbySharingDecoder> nearby_decoder_;
+
+  std::unique_ptr<ash::quick_start::mojom::QuickStartDecoder>
+      quick_start_decoder_;
 
   base::WeakPtrFactory<SharingImpl> weak_ptr_factory_{this};
 };

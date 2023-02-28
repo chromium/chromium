@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/quick_start_decoder.h"
+#include "quick_start_decoder.h"
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_tree.h"

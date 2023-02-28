@@ -11,7 +11,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/services/sharing/nearby/decoder/nearby_decoder.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"
+#include "chrome/services/sharing/nearby/quick_start_decoder/quick_start_decoder.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 
 namespace sharing {
 
@@ -31,7 +33,9 @@ void SharingImpl::Connect(
     NearbyDependenciesPtr deps,
     mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
     mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
-        decoder_receiver) {
+        decoder_receiver,
+    mojo::PendingReceiver<ash::quick_start::mojom::QuickStartDecoder>
+        quick_start_decoder_receiver) {
   DCHECK(!nearby_connections_);
   DCHECK(!nearby_decoder_);
 
@@ -46,6 +50,9 @@ void SharingImpl::Connect(
 
   nearby_decoder_ =
       std::make_unique<NearbySharingDecoder>(std::move(decoder_receiver));
+
+  quick_start_decoder_ = std::make_unique<ash::quick_start::QuickStartDecoder>(
+      std::move(quick_start_decoder_receiver));
 }
 
 void SharingImpl::ShutDown(ShutDownCallback callback) {
@@ -56,8 +63,9 @@ void SharingImpl::ShutDown(ShutDownCallback callback) {
 void SharingImpl::DoShutDown(bool is_expected) {
   nearby::NearbySharedRemotes::SetInstance(nullptr);
 
-  if (!nearby_connections_ && !nearby_decoder_)
+  if (!nearby_connections_ && !nearby_decoder_) {
     return;
+  }
 
   nearby_connections_.reset();
   nearby_decoder_.reset();

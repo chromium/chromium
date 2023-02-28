@@ -53,6 +53,8 @@ static_library("test_support") {
     "mock_nearby_process_manager.h",
     "mock_nearby_sharing_decoder.cc",
     "mock_nearby_sharing_decoder.h",
+    "mock_quick_start_decoder.cc",
+    "mock_quick_start_decoder.h",
   ]
 
   deps = [

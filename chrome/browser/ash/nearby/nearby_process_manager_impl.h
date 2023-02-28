@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash {
@@ -55,9 +56,11 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
       : public NearbyProcessManager::NearbyProcessReference {
    public:
     NearbyReferenceImpl(
-        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
-            connections,
+        const mojo::SharedRemote<
+            ::nearby::connections::mojom::NearbyConnections>& connections,
         const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
+        const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
+            quick_start_decoder,
         base::OnceClosure destructor_callback);
     ~NearbyReferenceImpl() override;
 
@@ -67,10 +70,14 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
     GetNearbyConnections() const override;
     const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const override;
+    const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
+    GetQuickStartDecoder() const override;
 
     mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
         connections_;
     mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
+    mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>
+        quick_start_decoder_;
     base::OnceClosure destructor_callback_;
   };
 
@@ -110,6 +117,8 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>
       connections_;
   mojo::SharedRemote<sharing::mojom::NearbySharingDecoder> decoder_;
+  mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>
+      quick_start_decoder_;
 
   // Map which stores callbacks to be invoked if the Nearby process shuts down
   // unexpectedly, before clients release their references.

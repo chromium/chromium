@@ -11,6 +11,7 @@ import "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom";
 import "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom";
 import "chromeos/ash/services/nearby/public/mojom/webrtc.mojom";
 import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
+import "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom";
 import "device/bluetooth/public/mojom/adapter.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
@@ -57,7 +58,10 @@ interface Sharing {
           nearby.connections.mojom.NearbyConnections>
               nearby_connections,
       pending_receiver<sharing.mojom.NearbySharingDecoder>
-          decoder);
+          decoder,
+      pending_receiver<ash.quick_start.mojom.QuickStartDecoder>
+          quick_start_decoder
+      );
 
   // Shuts down Nearby functionality; once this operation returns, it is safe to
   // disconnect active Mojo connections.
