@@ -110,7 +110,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 #pragma mark - UINavigationControllerDelegate
 
 - (void)navigationController:(UINavigationController*)navigationController
-      willShowViewController:(UIViewController*)viewController
+       didShowViewController:(UIViewController*)viewController
                     animated:(BOOL)animated {
   // No-op if the previous view controller is not the detail view.
   if (!self.whatsNewDetailCoordinator) {
