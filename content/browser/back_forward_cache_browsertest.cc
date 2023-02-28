@@ -458,6 +458,11 @@ SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
           testing::ElementsAreArray(children))));
 }
 
+void BackForwardCacheUnloadBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  scoped_feature_list_.InitAndEnableFeature(kBackForwardCacheUnloadAllowed);
+}
+
 std::initializer_list<RenderFrameHostImpl*> Elements(
     std::initializer_list<RenderFrameHostImpl*> t) {
   return t;
@@ -1008,11 +1013,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Sub-frame doesn't transition from LifecycleStateImpl::kInBackForwardCache to
 // LifecycleStateImpl::kRunningUnloadHandlers even when the sub-frame having
 // unload handlers is being evicted from BackForwardCache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithUnloadHandler) {
-  // This test is only enabled for Android, as pages with unload handlers are
-  // only eligible for bfcache on Android.
-  if (!IsUnloadAllowedToEnterBackForwardCache())
-    return;
+IN_PROC_BROWSER_TEST_F(BackForwardCacheUnloadBrowserTest,
+                       SubframeWithUnloadHandler) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a.com(a.com)"));
@@ -2584,15 +2586,6 @@ EvalJsResult BackForwardCacheBrowserTest::GetUnloadRunCount() {
   return GetLocalStorage(current_frame_host(), "unload_run_count");
 }
 
-bool BackForwardCacheBrowserTest::IsUnloadAllowedToEnterBackForwardCache() {
-// Pages with unload handlers are eligible for bfcache only on Android.
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else
-  return false;
-#endif
-}
-
 bool BackForwardCacheBrowserTest::AddBlocklistedFeature(RenderFrameHost* rfh) {
   // Add kDummy as blocking feature.
   RenderFrameHostImplWrapper rfh_a(rfh);
@@ -2613,6 +2606,16 @@ const ukm::TestAutoSetUkmRecorder& BackForwardCacheBrowserTest::ukm_recorder() {
 
 const base::HistogramTester& BackForwardCacheBrowserTest::histogram_tester() {
   return *histogram_tester_;
+}
+
+// Ensure that psges with unload are only allowed to enter back/forward cache by
+// default on Android.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, UnloadAllowedFlag) {
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(BackForwardCacheImpl::IsUnloadAllowed());
+#else
+  ASSERT_FALSE(BackForwardCacheImpl::IsUnloadAllowed());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2665,7 +2668,31 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestoredDueToBlocklistedFeature(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, UnloadHandlerPresent) {
+class BackForwardCacheBrowserUnloadHandlerTest
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, TestFrameType>> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (IsUnloadAllowed()) {
+      scoped_feature_list_.InitAndEnableFeature(kBackForwardCacheUnloadAllowed);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          kBackForwardCacheUnloadAllowed);
+    }
+  }
+
+  bool IsUnloadAllowed() { return std::get<0>(GetParam()); }
+
+  TestFrameType GetTestFrameType() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure that unload handlers in main frames and subframes block caching or
+// not, depending on the flag setting.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
+                       UnloadHandlerPresent) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -2673,7 +2700,22 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, UnloadHandlerPresent) {
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  InstallUnloadHandlerOnMainFrame();
+
+  BackForwardCacheMetrics::NotRestoredReason expected_blocking_reason;
+  switch (GetTestFrameType()) {
+    case content::TestFrameType::kMainFrame:
+      InstallUnloadHandlerOnMainFrame();
+      expected_blocking_reason = BackForwardCacheMetrics::NotRestoredReason::
+          kUnloadHandlerExistsInMainFrame;
+      break;
+    case content::TestFrameType::kSubFrame:
+      InstallUnloadHandlerOnSubFrame();
+      expected_blocking_reason = BackForwardCacheMetrics::NotRestoredReason::
+          kUnloadHandlerExistsInSubFrame;
+      break;
+    default:
+      NOTREACHED();
+  }
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -2682,13 +2724,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, UnloadHandlerPresent) {
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Pages with unload handlers are eligible for bfcache only on Android.
-  if (IsUnloadAllowedToEnterBackForwardCache()) {
+  if (BackForwardCacheImpl::IsUnloadAllowed()) {
     ExpectRestored(FROM_HERE);
     EXPECT_EQ("0", GetUnloadRunCount());
   } else {
-    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                           kUnloadHandlerExistsInMainFrame},
-                      {}, {}, {}, {}, FROM_HERE);
+    ExpectNotRestored({expected_blocking_reason}, {}, {}, {}, {}, FROM_HERE);
     EXPECT_EQ("1", GetUnloadRunCount());
   }
 
@@ -2698,39 +2738,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, UnloadHandlerPresent) {
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       UnloadHandlerPresentInSubFrame) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
-
-  // 1) Navigate to A.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  InstallUnloadHandlerOnSubFrame();
-
-  // 2) Navigate to B.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
-
-  // 3) Go back.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-
-  // Pages with unload handlers are eligible for bfcache only on Android.
-  if (IsUnloadAllowedToEnterBackForwardCache()) {
-    ExpectRestored(FROM_HERE);
-    EXPECT_EQ("0", GetUnloadRunCount());
-  } else {
-    ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                           kUnloadHandlerExistsInSubFrame},
-                      {}, {}, {}, {}, FROM_HERE);
-    EXPECT_EQ("1", GetUnloadRunCount());
-  }
-
-  // 4) Go forward.
-  ASSERT_TRUE(HistoryGoForward(web_contents()));
-
-  ExpectRestored(FROM_HERE);
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheBrowserUnloadHandlerTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(TestFrameType::kMainFrame,
+                                         TestFrameType::kSubFrame)));
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DisableForRenderFrameHost) {
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -69,6 +69,18 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kBackForwardCacheSizeForegroundCacheSize;
 
+// Controls the interaction between back/forward cache and
+// unload. When enabled, pages with unload handlers may enter the
+// cache.
+BASE_FEATURE(kBackForwardCacheUnloadAllowed,
+             "BackForwardCacheUnloadAllowed",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Combines a flattened list and a tree of the reasons why each document cannot
 // enter the back/forward cache (might be empty if it can). The tree saves the
 // reasons for each document in the tree (including those without the reasons)
@@ -200,6 +212,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // Returns whether back/forward cache is enabled for screen reader users.
   static bool IsScreenReaderAllowed();
+
+  // Returns where back/forward cache is allowed for pages with unload handlers.
+  static bool IsUnloadAllowed();
 
   // Log an unexpected message from the renderer. Doing it here so that it is
   // grouped with other back/forward cache vlogging and e.g. will show up in

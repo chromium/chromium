@@ -543,12 +543,8 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
 
 // Check that unload event handlers are not dispatched when the page goes
 // into BackForwardCache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheUnloadBrowserTest,
                        ConfirmUnloadEventNotFired) {
-  // This test is only enabled for Android, as pages with unload handlers are
-  // only eligible for bfcache on Android.
-  if (!IsUnloadAllowedToEnterBackForwardCache())
-    return;
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));

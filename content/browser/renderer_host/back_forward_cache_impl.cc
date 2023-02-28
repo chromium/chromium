@@ -865,16 +865,16 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  const bool has_unload_handler = rfh->has_unload_handler();
-  if (has_unload_handler) {
-    // Note that pages with unload handlers are cached on android.
-    result.No(rfh->GetParent() ? BackForwardCacheMetrics::NotRestoredReason::
-                                     kUnloadHandlerExistsInSubFrame
-                               : BackForwardCacheMetrics::NotRestoredReason::
-                                     kUnloadHandlerExistsInMainFrame);
+  if (!IsUnloadAllowed()) {
+    const bool has_unload_handler = rfh->has_unload_handler();
+    if (has_unload_handler) {
+      // Note that pages with unload handlers are cached on android.
+      result.No(rfh->GetParent() ? BackForwardCacheMetrics::NotRestoredReason::
+                                       kUnloadHandlerExistsInSubFrame
+                                 : BackForwardCacheMetrics::NotRestoredReason::
+                                       kUnloadHandlerExistsInMainFrame);
+    }
   }
-#endif
 
   // When it's not the final decision for putting a page in the back-forward
   // cache, we should only consider "sticky" features here - features that
@@ -1415,6 +1415,11 @@ bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
 bool BackForwardCacheImpl::IsScreenReaderAllowed() {
   return base::FeatureList::IsEnabled(
       features::kEnableBackForwardCacheForScreenReader);
+}
+
+// Static
+bool BackForwardCacheImpl::IsUnloadAllowed() {
+  return base::FeatureList::IsEnabled(kBackForwardCacheUnloadAllowed);
 }
 
 // static
