@@ -491,7 +491,7 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
     // All for-event contributions have already been converted to histogram
     // contributions by filling in post auction signals before reaching here.
     DCHECK(request->contribution->is_histogram_contribution());
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contributions;
     contributions.push_back(
         std::move(request->contribution->get_histogram_contribution()));

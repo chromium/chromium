@@ -483,7 +483,8 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
 
   OperationResult KeysSync(
       url::Origin context_origin,
-      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
           listener) {
     DCHECK(async_database_);
 
@@ -513,7 +514,8 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
 
   OperationResult EntriesSync(
       url::Origin context_origin,
-      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
           listener) {
     DCHECK(async_database_);
 

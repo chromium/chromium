@@ -13,7 +13,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "content/common/aggregatable_report.mojom-shared.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_features.h"
+#include "content/common/private_aggregation_host.mojom-forward.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
@@ -32,9 +35,6 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-shared.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-primitive.h"
 
@@ -1125,23 +1125,23 @@ class ContextRecyclerPrivateAggregationEnabledTest
           pa_requests,
       absl::uint128 bucket,
       int value,
-      absl::optional<blink::mojom::DebugKeyPtr> debug_key = absl::nullopt) {
-    blink::mojom::AggregatableReportHistogramContribution expected_contribution(
-        bucket, value);
+      absl::optional<content::mojom::DebugKeyPtr> debug_key = absl::nullopt) {
+    content::mojom::AggregatableReportHistogramContribution
+        expected_contribution(bucket, value);
 
-    blink::mojom::DebugModeDetailsPtr debug_mode_details;
+    content::mojom::DebugModeDetailsPtr debug_mode_details;
     if (debug_key.has_value()) {
-      debug_mode_details = blink::mojom::DebugModeDetails::New(
+      debug_mode_details = content::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
           /*debug_key=*/std::move(debug_key.value()));
     } else {
-      debug_mode_details = blink::mojom::DebugModeDetails::New();
+      debug_mode_details = content::mojom::DebugModeDetails::New();
     }
 
     auction_worklet::mojom::PrivateAggregationRequest expected_request(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution.Clone()),
-        blink::mojom::AggregationServiceMode::kDefault,
+        content::mojom::AggregationServiceMode::kDefault,
         std::move(debug_mode_details));
 
     ASSERT_EQ(pa_requests.size(), 1u);
@@ -1297,21 +1297,21 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
       EXPECT_THAT(error_msgs, ElementsAre());
     }
 
-    blink::mojom::AggregatableReportHistogramContribution
+    content::mojom::AggregatableReportHistogramContribution
         expected_contribution_1(/*bucket=*/123, /*value=*/45);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_1(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_1.Clone()),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New());
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New());
 
-    blink::mojom::AggregatableReportHistogramContribution
+    content::mojom::AggregatableReportHistogramContribution
         expected_contribution_2(/*bucket=*/678, /*value=*/90);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_2(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_2.Clone()),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New());
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New());
 
     PrivateAggregationRequests pa_requests =
         context_recycler.private_aggregation_bindings()
@@ -1566,7 +1566,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45,
-        /*debug_key=*/blink::mojom::DebugKey::New(1234u));
+        /*debug_key=*/content::mojom::DebugKey::New(1234u));
   }
 
   // Debug mode enabled with large debug key
@@ -1590,7 +1590,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45, /*debug_key=*/
-        blink::mojom::DebugKey::New(std::numeric_limits<uint64_t>::max()));
+        content::mojom::DebugKey::New(std::numeric_limits<uint64_t>::max()));
   }
 
   // Negative debug key
@@ -1688,7 +1688,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45,
-        /*debug_key=*/blink::mojom::DebugKey::New(1234u));
+        /*debug_key=*/content::mojom::DebugKey::New(1234u));
   }
 
   // enableDebugMode called after report requested: debug details still applied
@@ -1713,7 +1713,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45,
-        /*debug_key=*/blink::mojom::DebugKey::New(1234u));
+        /*debug_key=*/content::mojom::DebugKey::New(1234u));
   }
 
   // Multiple debug mode reports
@@ -1744,25 +1744,25 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
       EXPECT_THAT(error_msgs, ElementsAre());
     }
 
-    blink::mojom::AggregatableReportHistogramContribution
+    content::mojom::AggregatableReportHistogramContribution
         expected_contribution_1(/*bucket=*/123, /*value=*/45);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_1(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_1.Clone()),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New(
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New(
             /*is_enabled=*/true,
-            /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
+            /*debug_key=*/content::mojom::DebugKey::New(1234u)));
 
-    blink::mojom::AggregatableReportHistogramContribution
+    content::mojom::AggregatableReportHistogramContribution
         expected_contribution_2(/*bucket=*/678, /*value=*/90);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_2(
         auction_worklet::mojom::AggregatableReportContribution::
             NewHistogramContribution(expected_contribution_2.Clone()),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New(
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New(
             /*is_enabled=*/true,
-            /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
+            /*debug_key=*/content::mojom::DebugKey::New(1234u)));
 
     PrivateAggregationRequests pa_requests =
         context_recycler.private_aggregation_bindings()
@@ -1795,8 +1795,8 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
     return auction_worklet::mojom::PrivateAggregationRequest::New(
         auction_worklet::mojom::AggregatableReportContribution::
             NewForEventContribution(contribution.Clone()),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New());
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New());
   }
 
   // Expects given `pa_requests` to have one item, which equals to the
@@ -1810,8 +1810,8 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
     auction_worklet::mojom::PrivateAggregationRequest expected_request(
         auction_worklet::mojom::AggregatableReportContribution::
             NewForEventContribution(expected_contribution.Clone()),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New());
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New());
 
     ASSERT_EQ(pa_requests.size(), 1u);
     EXPECT_EQ(pa_requests[0], expected_request.Clone());

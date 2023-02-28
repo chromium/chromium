@@ -12,11 +12,11 @@
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/common/aggregatable_report.mojom-forward.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -28,7 +28,7 @@ namespace content {
 // provides.
 class TestInterestGroupPrivateAggregationManager
     : public PrivateAggregationManager,
-      public blink::mojom::PrivateAggregationHost {
+      public mojom::PrivateAggregationHost {
  public:
   // `expected_top_frame_origin` is the expected top-frame origin passed to all
   // calls.
@@ -37,23 +37,22 @@ class TestInterestGroupPrivateAggregationManager
   ~TestInterestGroupPrivateAggregationManager() override;
 
   // PrivateAggregationManager implementation:
-  bool BindNewReceiver(
-      url::Origin worklet_origin,
-      url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
-      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
-          pending_receiver) override;
+  bool BindNewReceiver(url::Origin worklet_origin,
+                       url::Origin top_frame_origin,
+                       PrivateAggregationBudgetKey::Api api_for_budgeting,
+                       mojo::PendingReceiver<mojom::PrivateAggregationHost>
+                           pending_receiver) override;
   void ClearBudgetData(base::Time delete_begin,
                        base::Time delete_end,
                        StoragePartition::StorageKeyMatcherFunction filter,
                        base::OnceClosure done) override;
 
-  // blink::mojom::PrivateAggregationHost implementation:
+  // mojom::PrivateAggregationHost implementation:
   void SendHistogramReport(
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+      std::vector<mojom::AggregatableReportHistogramContributionPtr>
           contributions,
-      blink::mojom::AggregationServiceMode aggregation_mode,
-      blink::mojom::DebugModeDetailsPtr debug_mode_details) override;
+      mojom::AggregationServiceMode aggregation_mode,
+      mojom::DebugModeDetailsPtr debug_mode_details) override;
 
   // Returns a logging callback for use with an InterestGroupAuctionReporter.
   // Each observed private aggregation request it sees is added to an internal
@@ -109,8 +108,7 @@ class TestInterestGroupPrivateAggregationManager
 
   // Bound receivers received by BindNewReceiver. Each one is associated with
   // the worklet origin passed in to BindNewReceiver().
-  mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, url::Origin>
-      receiver_set_;
+  mojo::ReceiverSet<mojom::PrivateAggregationHost, url::Origin> receiver_set_;
 
   // `private_aggregation_requests_` and `logged_private_aggregation_requests_`
   // are required to match if `should_match_logged_requests_` is true.

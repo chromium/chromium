@@ -418,55 +418,55 @@ class InterestGroupAuctionReporterTest
           auction_worklet::mojom::PrivateAggregationRequest::New(
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
+                      content::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/1, /*value=*/2)),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kReportWinPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
+                      content::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/3, /*value=*/4)),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kLosingBidderGenerateBidPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
+                      content::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/5, /*value=*/6)),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kScoreAdPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
+                      content::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/7, /*value=*/8)),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kReportResultPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
+                      content::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/9, /*value=*/10)),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kBonusPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
               auction_worklet::mojom::AggregatableReportContribution::
                   NewHistogramContribution(
-                      blink::mojom::AggregatableReportHistogramContribution::
+                      content::mojom::AggregatableReportHistogramContribution::
                           New(/*bucket=*/42, /*value=*/24)),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kWinningBidderGenerateBidNonReservedPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
@@ -479,8 +479,8 @@ class InterestGroupAuctionReporterTest
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(2),
                               "event_type")),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kBonusNonReservedPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
@@ -493,8 +493,8 @@ class InterestGroupAuctionReporterTest
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(24),
                               "event_type2")),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
   const auction_worklet::mojom::PrivateAggregationRequestPtr
       kReportWinNonReservedPrivateAggregationRequest =
           auction_worklet::mojom::PrivateAggregationRequest::New(
@@ -507,8 +507,8 @@ class InterestGroupAuctionReporterTest
                               auction_worklet::mojom::ForEventSignalValue::
                                   NewIntValue(4),
                               "event_type")),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
 
   std::vector<GURL> debug_win_report_urls_;
   std::vector<GURL> debug_loss_report_urls_;

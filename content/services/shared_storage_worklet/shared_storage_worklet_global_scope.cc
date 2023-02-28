@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/shared_storage_worklet/console.h"
 #include "content/services/shared_storage_worklet/module_script_downloader.h"
 #include "content/services/shared_storage_worklet/private_aggregation.h"
@@ -21,7 +22,6 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-initialization.h"
@@ -53,10 +53,10 @@ SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
 void SharedStorageWorkletGlobalScope::AddModule(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
-    blink::mojom::SharedStorageWorkletServiceClient* client,
-    blink::mojom::PrivateAggregationHost* private_aggregation_host,
+    mojom::SharedStorageWorkletServiceClient* client,
+    content::mojom::PrivateAggregationHost* private_aggregation_host,
     const GURL& script_source_url,
-    blink::mojom::SharedStorageWorkletService::AddModuleCallback callback) {
+    mojom::SharedStorageWorkletService::AddModuleCallback callback) {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
       std::move(pending_url_loader_factory));
 
@@ -69,10 +69,10 @@ void SharedStorageWorkletGlobalScope::AddModule(
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
-    blink::mojom::SharedStorageWorkletServiceClient* client,
-    blink::mojom::PrivateAggregationHost* private_aggregation_host,
+    mojom::SharedStorageWorkletServiceClient* client,
+    content::mojom::PrivateAggregationHost* private_aggregation_host,
     const GURL& script_source_url,
-    blink::mojom::SharedStorageWorkletService::AddModuleCallback callback,
+    mojom::SharedStorageWorkletService::AddModuleCallback callback,
     std::unique_ptr<std::string> response_body,
     std::string error_message) {
   module_script_downloader_.reset();
@@ -163,7 +163,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const std::string& name,
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
-    blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+    mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {
   if (!isolate_holder_) {
     // TODO(yaoxia): if this operation comes while fetching the module script,
@@ -184,7 +184,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 void SharedStorageWorkletGlobalScope::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
-    blink::mojom::SharedStorageWorkletService::RunOperationCallback callback) {
+    mojom::SharedStorageWorkletService::RunOperationCallback callback) {
   if (!isolate_holder_) {
     // TODO(yaoxia): if this operation comes while fetching the module script,
     // we might want to queue the operation to be handled later after addModule

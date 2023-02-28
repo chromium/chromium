@@ -5691,19 +5691,19 @@ class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {
 TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
   mojom::PrivateAggregationRequest kExpectedRequest1(
       mojom::AggregatableReportContribution::NewHistogramContribution(
-          blink::mojom::AggregatableReportHistogramContribution::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/123,
               /*value=*/45)),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedRequest2(
       mojom::AggregatableReportContribution::NewHistogramContribution(
-          blink::mojom::AggregatableReportHistogramContribution::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/absl::MakeInt128(/*high=*/1,
                                           /*low=*/0),
               /*value=*/1)),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
 
   mojom::PrivateAggregationRequest kExpectedForEventRequest1(
       mojom::AggregatableReportContribution::NewForEventContribution(
@@ -5711,8 +5711,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
               /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*event_type=*/"reserved.win")),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
       mojom::AggregatableReportContribution::NewForEventContribution(
           mojom::AggregatableReportForEventContribution::New(
@@ -5721,8 +5721,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                                    /*low=*/0)),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(2),
               /*event_type=*/"reserved.win")),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
 
   // Only sendHistogramReport() is called.
   {
@@ -5924,15 +5924,15 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedRequest1.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
-                /*is_enabled=*/true, blink::mojom::DebugKey::New(1234u))));
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, content::mojom::DebugKey::New(1234u))));
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedForEventRequest1.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
-                /*is_enabled=*/true, blink::mojom::DebugKey::New(1234u))));
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, content::mojom::DebugKey::New(1234u))));
 
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(
@@ -5962,14 +5962,14 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedRequest1.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
                 /*is_enabled=*/true, /*debug_key=*/nullptr)));
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedRequest2.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
                 /*is_enabled=*/true, /*debug_key=*/nullptr)));
 
     RunGenerateBidWithJavascriptExpectingResult(
@@ -6019,26 +6019,26 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
 TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
   auction_worklet::mojom::PrivateAggregationRequest kExpectedRequest1(
       mojom::AggregatableReportContribution::NewHistogramContribution(
-          blink::mojom::AggregatableReportHistogramContribution::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/123,
               /*value=*/45)),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
   auction_worklet::mojom::PrivateAggregationRequest kExpectedRequest2(
       mojom::AggregatableReportContribution::NewHistogramContribution(
-          blink::mojom::AggregatableReportHistogramContribution::New(
+          content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
               /*value=*/1)),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest1(
       mojom::AggregatableReportContribution::NewForEventContribution(
           mojom::AggregatableReportForEventContribution::New(
               /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
               /*event_type=*/"reserved.win")),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
   mojom::PrivateAggregationRequest kExpectedForEventRequest2(
       mojom::AggregatableReportContribution::NewForEventContribution(
           mojom::AggregatableReportForEventContribution::New(
@@ -6047,8 +6047,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
                                    /*low=*/0)),
               /*value=*/mojom::ForEventSignalValue::NewIntValue(2),
               /*event_type=*/"reserved.win")),
-      blink::mojom::AggregationServiceMode::kDefault,
-      blink::mojom::DebugModeDetails::New());
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
 
   {
     PrivateAggregationRequests expected_pa_requests;
@@ -6147,15 +6147,15 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedRequest1.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
-                /*is_enabled=*/true, blink::mojom::DebugKey::New(1234u))));
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, content::mojom::DebugKey::New(1234u))));
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedForEventRequest1.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
-                /*is_enabled=*/true, blink::mojom::DebugKey::New(1234u))));
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, content::mojom::DebugKey::New(1234u))));
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
@@ -6175,14 +6175,14 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedRequest1.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
                 /*is_enabled=*/true, /*debug_key=*/nullptr)));
     expected_pa_requests.push_back(
         auction_worklet::mojom::PrivateAggregationRequest::New(
             kExpectedRequest2.contribution->Clone(),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New(
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
                 /*is_enabled=*/true, /*debug_key=*/nullptr)));
 
     RunReportWinWithFunctionBodyExpectingResult(

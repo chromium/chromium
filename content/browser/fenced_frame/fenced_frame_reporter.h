@@ -17,12 +17,12 @@
 #include "base/types/pass_key.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/common/content_export.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -325,7 +325,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // be received and need to be sent later.
   std::set<std::string> received_pa_events_;
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
+  mojo::Remote<mojom::PrivateAggregationHost> private_aggregation_host_;
 
   // Stores data registered by one of the documents in a FencedFrame using
   // the `Fence.setReportEventDataForAutomaticBeacons` API.

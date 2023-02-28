@@ -5,6 +5,8 @@
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_SERVICE_IMPL_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_WORKLET_SERVICE_IMPL_H_
 
+#include "content/common/private_aggregation_host.mojom.h"
+#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -13,27 +15,25 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace shared_storage_worklet {
 
-// blink::mojom::SharedStorageWorkletService implementation. Responsible for
-// handling worklet operations. The service is started through
+// mojom::SharedStorageWorkletService implementation. Responsible for handling
+// worklet operations. The service is started through
 // `SharedStorageWorkletDriver::StartWorkletService`.
 class SharedStorageWorkletServiceImpl
-    : public blink::mojom::SharedStorageWorkletService {
+    : public mojom::SharedStorageWorkletService {
  public:
   explicit SharedStorageWorkletServiceImpl(
-      mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver,
+      mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
       base::OnceClosure disconnect_handler);
   ~SharedStorageWorkletServiceImpl() override;
 
-  // blink::mojom::SharedStorageWorkletService implementation:
+  // mojom::SharedStorageWorkletService implementation:
   void Initialize(mojo::PendingAssociatedRemote<
-                      blink::mojom::SharedStorageWorkletServiceClient> client,
+                      mojom::SharedStorageWorkletServiceClient> client,
                   bool private_aggregation_permissions_policy_allowed,
-                  mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+                  mojo::PendingRemote<content::mojom::PrivateAggregationHost>
                       private_aggregation_host) override;
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
                      pending_url_loader_factory,
@@ -56,7 +56,7 @@ class SharedStorageWorkletServiceImpl
   // ensure that the worklet thread object and this service are not leaked,
   // `receiver_` must be cut off from the remote side when the worklet is
   // supposed to be destroyed.
-  mojo::Receiver<blink::mojom::SharedStorageWorkletService> receiver_;
+  mojo::Receiver<mojom::SharedStorageWorkletService> receiver_;
 
   // This is associated because on the client side (i.e. worklet host), we want
   // the call-in methods (e.g. storage access) and the callback methods
@@ -68,8 +68,7 @@ class SharedStorageWorkletServiceImpl
   // In contrast, the `receiver_` doesn't need to be associated. This is a
   // standalone service, so the starting of a worklet operation doesn't have to
   // depend on / preserve the order with messages of other types.
-  mojo::AssociatedRemote<blink::mojom::SharedStorageWorkletServiceClient>
-      client_;
+  mojo::AssociatedRemote<mojom::SharedStorageWorkletServiceClient> client_;
 
   // Whether the "private-aggregation" permissions policy is enabled in the
   // worklet.
@@ -77,7 +76,8 @@ class SharedStorageWorkletServiceImpl
 
   // No need to be associated as message ordering (relative to shared storage
   // operations) is unimportant.
-  mojo::Remote<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
+  mojo::Remote<content::mojom::PrivateAggregationHost>
+      private_aggregation_host_;
 
   std::unique_ptr<SharedStorageWorkletGlobalScope> global_scope_;
 };

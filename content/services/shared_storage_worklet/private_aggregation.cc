@@ -7,19 +7,19 @@
 #include <string>
 #include <utility>
 
+#include "content/common/aggregatable_report.mojom.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/worklet_utils/private_aggregation_utils.h"
 #include "gin/arguments.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "v8/include/v8-isolate.h"
 
 namespace shared_storage_worklet {
 
 PrivateAggregation::PrivateAggregation(
-    blink::mojom::SharedStorageWorkletServiceClient& client,
+    mojom::SharedStorageWorkletServiceClient& client,
     bool private_aggregation_permissions_policy_allowed,
-    blink::mojom::PrivateAggregationHost& private_aggregation_host)
+    content::mojom::PrivateAggregationHost& private_aggregation_host)
     : client_(client),
       private_aggregation_permissions_policy_allowed_(
           private_aggregation_permissions_policy_allowed),
@@ -44,7 +44,7 @@ const char* PrivateAggregation::GetTypeName() {
 void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
   EnsureUseCountersAreRecorded();
 
-  blink::mojom::AggregatableReportHistogramContributionPtr contribution =
+  content::mojom::AggregatableReportHistogramContributionPtr contribution =
       worklet_utils::ParseSendHistogramReportArguments(
           *args, private_aggregation_permissions_policy_allowed_);
   if (contribution.is_null()) {
@@ -52,14 +52,14 @@ void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
     return;
   }
 
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+  std::vector<content::mojom::AggregatableReportHistogramContributionPtr>
       contributions;
   contributions.push_back(std::move(contribution));
 
   private_aggregation_host_->SendHistogramReport(
       std::move(contributions),
       // TODO(alexmt): consider allowing this to be set
-      blink::mojom::AggregationServiceMode::kDefault,
+      content::mojom::AggregationServiceMode::kDefault,
       debug_mode_details_.Clone());
 }
 

@@ -212,7 +212,7 @@ class StorageKeyPolicyMatcherFunctionUtility {
 };
 
 class TestSharedStorageEntriesListener
-    : public blink::mojom::SharedStorageEntriesListener {
+    : public shared_storage_worklet::mojom::SharedStorageEntriesListener {
  public:
   explicit TestSharedStorageEntriesListener(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -221,11 +221,13 @@ class TestSharedStorageEntriesListener
   void DidReadEntries(
       bool success,
       const std::string& error_message,
-      std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> entries,
+      std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
+          entries,
       bool has_more_entries,
       int total_queued_to_send) override;
 
-  [[nodiscard]] mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
+  [[nodiscard]] mojo::PendingRemote<
+      shared_storage_worklet::mojom::SharedStorageEntriesListener>
   BindNewPipeAndPassRemote();
 
   void Flush();
@@ -242,10 +244,12 @@ class TestSharedStorageEntriesListener
   TakeEntries();
 
  private:
-  mojo::Receiver<blink::mojom::SharedStorageEntriesListener> receiver_{this};
+  mojo::Receiver<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      receiver_{this};
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::string error_message_;
-  std::deque<blink::mojom::SharedStorageKeyAndOrValuePtr> entries_;
+  std::deque<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
+      entries_;
   std::vector<bool> has_more_;
 };
 
@@ -257,7 +261,8 @@ class TestSharedStorageEntriesListenerUtility {
 
   [[nodiscard]] size_t RegisterListener();
 
-  [[nodiscard]] mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
+  [[nodiscard]] mojo::PendingRemote<
+      shared_storage_worklet::mojom::SharedStorageEntriesListener>
   BindNewPipeAndPassRemoteForId(size_t id);
 
   void FlushForId(size_t id);

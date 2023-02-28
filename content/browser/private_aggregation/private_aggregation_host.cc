@@ -22,6 +22,8 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
+#include "content/common/aggregatable_report.mojom.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -30,8 +32,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -80,8 +80,7 @@ bool PrivateAggregationHost::BindNewReceiver(
     url::Origin worklet_origin,
     url::Origin top_frame_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
-    mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
-        pending_receiver) {
+    mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver) {
   if (!network::IsOriginPotentiallyTrustworthy(worklet_origin)) {
     // Let the pending receiver be destroyed as it goes out of scope so none of
     // its requests are processed.
@@ -96,10 +95,10 @@ bool PrivateAggregationHost::BindNewReceiver(
 }
 
 void PrivateAggregationHost::SendHistogramReport(
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contribution_ptrs,
-    blink::mojom::AggregationServiceMode aggregation_mode,
-    blink::mojom::DebugModeDetailsPtr debug_mode_details) {
+    mojom::AggregationServiceMode aggregation_mode,
+    mojom::DebugModeDetailsPtr debug_mode_details) {
   const url::Origin& reporting_origin =
       receiver_set_.current_context().worklet_origin;
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin));
@@ -115,13 +114,13 @@ void PrivateAggregationHost::SendHistogramReport(
   // Null pointers should fail mojo validation.
   DCHECK(base::ranges::none_of(
       contribution_ptrs,
-      [](const blink::mojom::AggregatableReportHistogramContributionPtr&
+      [](const mojom::AggregatableReportHistogramContributionPtr&
              contribution_ptr) { return contribution_ptr.is_null(); }));
   DCHECK(!debug_mode_details.is_null());
 
   if (base::ranges::any_of(
           contribution_ptrs,
-          [](const blink::mojom::AggregatableReportHistogramContributionPtr&
+          [](const mojom::AggregatableReportHistogramContributionPtr&
                  contribution_ptr) { return contribution_ptr->value < 0; })) {
     mojo::ReportBadMessage("Negative value encountered");
     RecordSendHistogramReportResultHistogram(
@@ -139,12 +138,11 @@ void PrivateAggregationHost::SendHistogramReport(
     contribution_ptrs.resize(kMaxNumberOfContributions);
   }
 
-  std::vector<blink::mojom::AggregatableReportHistogramContribution>
-      contributions;
+  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
   contributions.reserve(contribution_ptrs.size());
   base::ranges::transform(
       contribution_ptrs, std::back_inserter(contributions),
-      [](const blink::mojom::AggregatableReportHistogramContributionPtr&
+      [](const mojom::AggregatableReportHistogramContributionPtr&
              contribution_ptr) { return std::move(*contribution_ptr); });
 
   AggregationServicePayloadContents payload_contents(

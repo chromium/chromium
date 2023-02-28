@@ -1928,13 +1928,13 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
       auction_worklet::mojom::PrivateAggregationRequest::New(
           auction_worklet::mojom::AggregatableReportContribution::
               NewHistogramContribution(
-                  blink::mojom::AggregatableReportHistogramContribution::New(
+                  content::mojom::AggregatableReportHistogramContribution::New(
                       *bucket_base + report_buyers_config->bucket,
                       base::saturated_cast<int32_t>(
                           std::max(0.0, value * report_buyers_config->scale)))),
           // TODO(caraitto): Consider allowing these to be set.
-          blink::mojom::AggregationServiceMode::kDefault,
-          blink::mojom::DebugModeDetails::New()));
+          content::mojom::AggregationServiceMode::kDefault,
+          content::mojom::DebugModeDetails::New()));
   return true;
 }
 

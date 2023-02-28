@@ -132,7 +132,8 @@ void AsyncSharedStorageDatabaseImpl::Length(
 
 void AsyncSharedStorageDatabaseImpl::Keys(
     url::Origin context_origin,
-    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>
         pending_listener,
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(callback);
@@ -144,7 +145,8 @@ void AsyncSharedStorageDatabaseImpl::Keys(
 
 void AsyncSharedStorageDatabaseImpl::Entries(
     url::Origin context_origin,
-    mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
+    mojo::PendingRemote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>
         pending_listener,
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(callback);

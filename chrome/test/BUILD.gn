@@ -339,6 +339,7 @@ static_library("test_support") {
     "//components/search_engines:test_support",
     "//components/services/storage:storage",
     "//components/services/storage:test_support",
+    "//components/services/storage/shared_storage/public/mojom",
     "//components/sessions:test_support",
     "//components/signin/public/base:test_support",
     "//components/startup_metric_utils/browser",

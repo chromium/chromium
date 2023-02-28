@@ -24,6 +24,8 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
+#include "content/common/aggregatable_report.mojom.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -33,8 +35,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -82,7 +82,7 @@ TEST_F(PrivateAggregationHostTest,
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
@@ -93,14 +93,12 @@ TEST_F(PrivateAggregationHostTest,
                               PrivateAggregationBudgetKey::Api::kFledge)))
       .WillOnce(MoveArg<0>(&validated_request));
 
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
   remote->SendHistogramReport(std::move(contributions),
-                              blink::mojom::AggregationServiceMode::kDefault,
-                              blink::mojom::DebugModeDetails::New());
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
 
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
@@ -121,9 +119,9 @@ TEST_F(PrivateAggregationHostTest,
       AggregatableReportRequest::Create(
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
-              {blink::mojom::AggregatableReportHistogramContribution(
+              {mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
-              blink::mojom::AggregationServiceMode::kDefault,
+              mojom::AggregationServiceMode::kDefault,
               ::aggregation_service::mojom::AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               validated_request->shared_info().scheduled_report_time,
@@ -156,8 +154,7 @@ TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
       PrivateAggregationBudgetKey::Api::kFledge,
       PrivateAggregationBudgetKey::Api::kSharedStorage};
 
-  std::vector<mojo::Remote<blink::mojom::PrivateAggregationHost>> remotes{
-      /*n=*/2};
+  std::vector<mojo::Remote<mojom::PrivateAggregationHost>> remotes{/*n=*/2};
   std::vector<absl::optional<AggregatableReportRequest>> validated_requests{
       /*n=*/2};
 
@@ -169,15 +166,13 @@ TEST_F(PrivateAggregationHostTest, ApiDiffers_RequestUpdatesCorrectly) {
                 Run(_, Property(&PrivateAggregationBudgetKey::api, apis[i])))
         .WillOnce(MoveArg<0>(&validated_requests[i]));
 
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contributions;
-    contributions.push_back(
-        blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
-    remotes[i]->SendHistogramReport(
-        std::move(contributions),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New());
+    contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+        /*bucket=*/123, /*value=*/456));
+    remotes[i]->SendHistogramReport(std::move(contributions),
+                                    mojom::AggregationServiceMode::kDefault,
+                                    mojom::DebugModeDetails::New());
 
     remotes[i].FlushForTesting();
     EXPECT_TRUE(remotes[i].is_connected());
@@ -207,15 +202,15 @@ TEST_F(PrivateAggregationHostTest, DebugModeDetails_ReflectedInReport) {
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  std::vector<blink::mojom::DebugModeDetailsPtr> debug_mode_details_args;
-  debug_mode_details_args.push_back(blink::mojom::DebugModeDetails::New());
-  debug_mode_details_args.push_back(blink::mojom::DebugModeDetails::New(
+  std::vector<mojom::DebugModeDetailsPtr> debug_mode_details_args;
+  debug_mode_details_args.push_back(mojom::DebugModeDetails::New());
+  debug_mode_details_args.push_back(mojom::DebugModeDetails::New(
       /*is_enabled=*/true, /*debug_key=*/nullptr));
-  debug_mode_details_args.push_back(blink::mojom::DebugModeDetails::New(
+  debug_mode_details_args.push_back(mojom::DebugModeDetails::New(
       /*is_enabled=*/true,
-      /*debug_key=*/blink::mojom::DebugKey::New(/*value=*/1234u)));
+      /*debug_key=*/mojom::DebugKey::New(/*value=*/1234u)));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
@@ -228,13 +223,12 @@ TEST_F(PrivateAggregationHostTest, DebugModeDetails_ReflectedInReport) {
       .WillOnce(MoveArg<0>(&validated_requests[2]));
 
   for (auto& debug_mode_details_arg : debug_mode_details_args) {
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contributions;
-    contributions.push_back(
-        blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/123, /*value=*/456));
+    contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+        /*bucket=*/123, /*value=*/456));
     remote->SendHistogramReport(std::move(contributions),
-                                blink::mojom::AggregationServiceMode::kDefault,
+                                mojom::AggregationServiceMode::kDefault,
                                 debug_mode_details_arg->Clone());
   }
 
@@ -272,8 +266,7 @@ TEST_F(PrivateAggregationHostTest,
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  std::vector<mojo::Remote<blink::mojom::PrivateAggregationHost>> remotes(
-      /*n=*/4);
+  std::vector<mojo::Remote<mojom::PrivateAggregationHost>> remotes(/*n=*/4);
 
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOriginA, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
@@ -317,27 +310,23 @@ TEST_F(PrivateAggregationHostTest,
           }));
 
   {
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contributions;
-    contributions.push_back(
-        blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/1, /*value=*/123));
-    remotes[1]->SendHistogramReport(
-        std::move(contributions),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New());
+    contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+        /*bucket=*/1, /*value=*/123));
+    remotes[1]->SendHistogramReport(std::move(contributions),
+                                    mojom::AggregationServiceMode::kDefault,
+                                    mojom::DebugModeDetails::New());
   }
 
   {
-    std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
         contributions;
-    contributions.push_back(
-        blink::mojom::AggregatableReportHistogramContribution::New(
-            /*bucket=*/2, /*value=*/123));
-    remotes[2]->SendHistogramReport(
-        std::move(contributions),
-        blink::mojom::AggregationServiceMode::kDefault,
-        blink::mojom::DebugModeDetails::New());
+    contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+        /*bucket=*/2, /*value=*/123));
+    remotes[2]->SendHistogramReport(std::move(contributions),
+                                    mojom::AggregationServiceMode::kDefault,
+                                    mojom::DebugModeDetails::New());
   }
 
   for (auto& remote : remotes) {
@@ -359,12 +348,12 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote_1;
+  mojo::Remote<mojom::PrivateAggregationHost> remote_1;
   EXPECT_FALSE(host_->BindNewReceiver(kInsecureOrigin, kMainFrameOrigin,
                                       PrivateAggregationBudgetKey::Api::kFledge,
                                       remote_1.BindNewPipeAndPassReceiver()));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote_2;
+  mojo::Remote<mojom::PrivateAggregationHost> remote_2;
   EXPECT_FALSE(host_->BindNewReceiver(kOpaqueOrigin, kMainFrameOrigin,
                                       PrivateAggregationBudgetKey::Api::kFledge,
                                       remote_2.BindNewPipeAndPassReceiver()));
@@ -372,14 +361,12 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
   // Attempt to send a message to an unconnected remote. The request should
   // not be processed.
   EXPECT_CALL(mock_callback_, Run(_, _)).Times(0);
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
   remote_1->SendHistogramReport(std::move(contributions),
-                                blink::mojom::AggregationServiceMode::kDefault,
-                                blink::mojom::DebugModeDetails::New());
+                                mojom::AggregationServiceMode::kDefault,
+                                mojom::DebugModeDetails::New());
 
   // Flush to ensure disconnection and the SendHistogramReport call have had
   // time to be processed.
@@ -397,22 +384,22 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
 
   // Negative values are invalid
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+  std::vector<mojom::AggregatableReportHistogramContributionPtr>
       negative_contributions;
   negative_contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
+      mojom::AggregatableReportHistogramContribution::New(
           /*bucket=*/123, /*value=*/-1));
 
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+  std::vector<mojom::AggregatableReportHistogramContributionPtr>
       valid_contributions;
   valid_contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
+      mojom::AggregatableReportHistogramContribution::New(
           /*bucket=*/123, /*value=*/456));
 
   EXPECT_CALL(mock_callback_, Run(_, _)).Times(0);
@@ -420,8 +407,8 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
   {
     base::HistogramTester histogram;
     remote->SendHistogramReport(std::move(negative_contributions),
-                                blink::mojom::AggregationServiceMode::kDefault,
-                                blink::mojom::DebugModeDetails::New());
+                                mojom::AggregationServiceMode::kDefault,
+                                mojom::DebugModeDetails::New());
     remote.FlushForTesting();
     histogram.ExpectUniqueSample(
         kSendHistogramReportResultHistogram,
@@ -431,12 +418,10 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
     base::HistogramTester histogram;
 
     remote->SendHistogramReport(
-        std::move(valid_contributions),
-        blink::mojom::AggregationServiceMode::kDefault,
+        std::move(valid_contributions), mojom::AggregationServiceMode::kDefault,
         // Debug mode must be enabled for a debug key to be set.
-        blink::mojom::DebugModeDetails::New(
-            /*is_enabled=*/false,
-            /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
+        mojom::DebugModeDetails::New(
+            /*is_enabled=*/false, /*debug_key=*/mojom::DebugKey::New(1234u)));
     remote.FlushForTesting();
     histogram.ExpectUniqueSample(
         kSendHistogramReportResultHistogram,
@@ -452,16 +437,16 @@ TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+  std::vector<mojom::AggregatableReportHistogramContributionPtr>
       too_many_contributions;
   for (int i = 0; i < PrivateAggregationHost::kMaxNumberOfContributions + 1;
        ++i) {
     too_many_contributions.push_back(
-        blink::mojom::AggregatableReportHistogramContribution::New(
+        mojom::AggregatableReportHistogramContribution::New(
             /*bucket=*/123, /*value=*/1));
   }
 
@@ -471,8 +456,8 @@ TEST_F(PrivateAggregationHostTest, TooManyContributions_Truncated) {
   EXPECT_CALL(mock_callback_, Run).WillOnce(MoveArg<0>(&validated_request));
 
   remote->SendHistogramReport(std::move(too_many_contributions),
-                              blink::mojom::AggregationServiceMode::kDefault,
-                              blink::mojom::DebugModeDetails::New());
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
   remote.FlushForTesting();
   histogram.ExpectUniqueSample(
       kSendHistogramReportResultHistogram,
@@ -497,7 +482,7 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
@@ -508,14 +493,12 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(mock_callback_, Run);
 
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
   remote->SendHistogramReport(std::move(contributions),
-                              blink::mojom::AggregationServiceMode::kDefault,
-                              blink::mojom::DebugModeDetails::New());
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
 
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
@@ -536,7 +519,7 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
@@ -547,14 +530,12 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
       .WillOnce(testing::Return(false));
   EXPECT_CALL(mock_callback_, Run).Times(0);
 
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
   remote->SendHistogramReport(std::move(contributions),
-                              blink::mojom::AggregationServiceMode::kDefault,
-                              blink::mojom::DebugModeDetails::New());
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
 
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
@@ -581,7 +562,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   const url::Origin kMainFrameOrigin =
       url::Origin::Create(GURL("https://main_frame.com"));
 
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
   EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
@@ -592,14 +573,12 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
                               PrivateAggregationBudgetKey::Api::kFledge)))
       .WillOnce(MoveArg<0>(&validated_request));
 
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
   remote->SendHistogramReport(std::move(contributions),
-                              blink::mojom::AggregationServiceMode::kDefault,
-                              blink::mojom::DebugModeDetails::New());
+                              mojom::AggregationServiceMode::kDefault,
+                              mojom::DebugModeDetails::New());
 
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
