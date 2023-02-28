@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -76,6 +77,17 @@ std::string PermissionUtil::GetPermissionString(
 PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
   return user_gesture ? PermissionRequestGestureType::GESTURE
                       : PermissionRequestGestureType::NO_GESTURE;
+}
+
+absl::optional<blink::mojom::PermissionsPolicyFeature>
+PermissionUtil::GetPermissionsPolicyFeature(ContentSettingsType permission) {
+  PermissionType permission_type;
+  bool success =
+      PermissionUtil::GetPermissionType(permission, &permission_type);
+  DCHECK(success);
+  return success
+             ? blink::PermissionTypeToPermissionsPolicyFeature(permission_type)
+             : absl::nullopt;
 }
 
 bool PermissionUtil::GetPermissionType(ContentSettingsType type,
@@ -315,11 +327,12 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingType(
 
 PermissionType PermissionUtil::ContentSettingTypeToPermissionType(
     ContentSettingsType permission) {
-  PermissionType permissionType;
-  bool success = PermissionUtil::GetPermissionType(permission, &permissionType);
+  PermissionType permission_type;
+  bool success =
+      PermissionUtil::GetPermissionType(permission, &permission_type);
   DCHECK(success);
 
-  return permissionType;
+  return permission_type;
 }
 
 ContentSetting PermissionUtil::PermissionStatusToContentSetting(

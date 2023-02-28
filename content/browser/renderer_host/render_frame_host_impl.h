@@ -477,6 +477,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::SuddenTerminationDisablerType disabler_type) override;
   bool IsFeatureEnabled(
       blink::mojom::PermissionsPolicyFeature feature) override;
+  const blink::PermissionsPolicy* GetPermissionsPolicy() override;
+  const blink::ParsedPermissionsPolicy& GetPermissionsPolicyHeader() override;
   void ViewSource() override;
   void ExecuteMediaPlayerActionAtLocation(
       const gfx::Point&,

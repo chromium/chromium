@@ -81037,6 +81037,15 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
 </enum>
 
+<enum name="PermissionsPolicyConfiguration">
+  <int value="0" label="HEADER_NOT_PRESENT_OR_INVALID"/>
+  <int value="1" label="FEATURE_NOT_PRESENT"/>
+  <int value="2" label="FEATURE_ALLOWLIST_EXPLICITLY_MATCHES_ORIGIN"/>
+  <int value="3" label="FEATURE_ALLOWLIST_IS_WILDCARD"/>
+  <int value="4" label="FEATURE_ALLOWLIST_IS_NONE"/>
+  <int value="5" label="FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN"/>
+</enum>
+
 <enum name="PermissionStatus">
   <int value="0" label="PERMISSION_STATUS_GRANTED"/>
   <int value="1" label="PERMISSION_STATUS_DENIED"/>

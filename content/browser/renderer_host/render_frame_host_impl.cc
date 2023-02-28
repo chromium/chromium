@@ -5931,6 +5931,15 @@ bool RenderFrameHostImpl::IsFeatureEnabled(
                                     feature, GetLastCommittedOrigin());
 }
 
+const blink::PermissionsPolicy* RenderFrameHostImpl::GetPermissionsPolicy() {
+  return permissions_policy_.get();
+}
+
+const blink::ParsedPermissionsPolicy&
+RenderFrameHostImpl::GetPermissionsPolicyHeader() {
+  return permissions_policy_header_;
+}
+
 void RenderFrameHostImpl::ViewSource() {
   delegate_->ViewSource(this);
 }

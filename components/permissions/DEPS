@@ -25,6 +25,7 @@ include_rules = [
   "+third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h",
   "+third_party/blink/public/common/permissions/permission_utils.h",
   "+third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h",
+  "+third_party/blink/public/common/permissions_policy/permissions_policy.h",
   "+third_party/blink/public/common/web_preferences",
   "+third_party/blink/public/mojom/bluetooth",
   "+third_party/blink/public/mojom/permissions/permission_status.mojom.h",
