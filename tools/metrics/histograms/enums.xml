@@ -42310,7 +42310,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4442" label="PrivateNetworkAccessFetchedSubFrame"/>
   <int value="4443" label="PrivateNetworkAccessFetchedTopFrame"/>
   <int value="4444" label="DisableThirdPartyStoragePartitioning"/>
-  <int value="4445" label="ServiceWorkerFetchHandlerUpdateAfterInitialization"/>
+  <int value="4445" label="ServiceWorkerFetchHandlerAddedAfterInitialization"/>
   <int value="4446" label="ObsoleteCreateImageBitmapImageOrientationNone"/>
   <int value="4447" label="WindowManagementPermissionDescriptorUsed"/>
   <int value="4448" label="WindowPlacementPermissionDescriptorUsed"/>
@@ -42336,9 +42336,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4465" label="PopoverTypeManual"/>
   <int value="4466" label="PopoverTypeInvalid"/>
   <int value="4467" label="CSSAnchorPositioning"/>
-  <int value="4468" label="ServiceWorkerAddHandlerAfterInitialization"/>
+  <int value="4468" label="ServiceWorkerEventHandlerAddedAfterInitialization"/>
   <int value="4469"
-      label="ServiceWorkerSetAttributeHandlerAfterInitialization"/>
+      label="ServiceWorkerEventHandlerModifiedAfterInitialization"/>
   <int value="4470" label="AuthorizationCrossOrigin"/>
   <int value="4471" label="CSSColorMixFunction"/>
   <int value="4472" label="CSSColorColorSpecifiedSpace"/>
