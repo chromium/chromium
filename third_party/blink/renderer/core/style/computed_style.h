@@ -2655,6 +2655,9 @@ class ComputedStyle : public ComputedStyleBase,
            !unforced_color.IsSystemColorIncludingDeprecated();
   }
   bool ShouldForceColor(const StyleColor& unforced_color) const {
+    // If any other properties are added that are affected by ForcedColors mode,
+    // adjust EditingStyle::RemoveForcedColorsIfNeeded and
+    // EditingStyle::MergeStyleFromRulesForSerialization accordingly.
     return ShouldForceColor(InForcedColorsMode(), ForcedColorAdjust(),
                             unforced_color);
   }

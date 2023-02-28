@@ -167,6 +167,11 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
  private:
   void Init(Node*, PropertiesToInclude);
   void RemoveInheritedColorsIfNeeded(const ComputedStyle*);
+  // There are some scenarios, like when copying rich text while in ForcedColors
+  // mode where we don't want to keep the ForcedColors styling, so that if it is
+  // pasted and sent to someone with no ForcedColors applied it does not affect
+  // their styling.
+  void RemoveForcedColorsIfNeeded(const ComputedStyle* computed_style);
   void ReplaceFontSizeByKeywordIfPossible(const ComputedStyle*,
                                           SecureContextMode,
                                           CSSComputedStyleDeclaration*);

@@ -598,7 +598,7 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
           /* important */ false,
           node->GetExecutionContext()->GetSecureContextMode());
     }
-
+    RemoveForcedColorsIfNeeded(computed_style);
     RemoveInheritedColorsIfNeeded(computed_style);
     ReplaceFontSizeByKeywordIfPossible(
         computed_style, node->GetExecutionContext()->GetSecureContextMode(),
@@ -607,6 +607,16 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
 
   is_monospace_font_ = computed_style_at_position->IsMonospaceFont();
   ExtractFontSizeDelta();
+}
+
+void EditingStyle::RemoveForcedColorsIfNeeded(
+    const ComputedStyle* computed_style) {
+  if (!computed_style->InForcedColorsMode()) {
+    return;
+  }
+  mutable_style_->RemoveProperty(CSSPropertyID::kColor);
+  mutable_style_->RemoveProperty(CSSPropertyID::kBackgroundColor);
+  mutable_style_->RemoveProperty(CSSPropertyID::kTextDecorationColor);
 }
 
 void EditingStyle::RemoveInheritedColorsIfNeeded(
@@ -1553,6 +1563,19 @@ void EditingStyle::MergeStyleFromRulesForSerialization(Element* element) {
     }
   }
   mutable_style_->MergeAndOverrideOnConflict(from_computed_style);
+
+ // There are some scenarios, like when copying rich text while in ForcedColors
+  // mode where we don't want to keep the ForcedColors styling, so that if it is
+  // pasted and sent to someone with no ForcedColors applied it does not affect
+  // their styling.
+  if (element->GetDocument().InForcedColorsMode()) {
+    mutable_style_->SetLonghandProperty(CSSPropertyID::kBackgroundColor,
+                                        CSSValueID::kInitial, false);
+    mutable_style_->SetLonghandProperty(CSSPropertyID::kColor,
+                                        CSSValueID::kInitial, false);
+    mutable_style_->SetLonghandProperty(CSSPropertyID::kTextDecorationColor,
+                                        CSSValueID::kInitial, false);
+  }
 }
 
 static void RemovePropertiesInStyle(

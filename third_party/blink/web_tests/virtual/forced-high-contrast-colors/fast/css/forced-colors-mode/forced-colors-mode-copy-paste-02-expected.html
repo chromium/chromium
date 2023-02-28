@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<style>
+#destination {
+  background-color: green;
+  /* this is needed to simulate pasting forced colors into a non-forced colors element */
+  forced-color-adjust: none;
+}
+</style>
+<div>
+  <div id="target">Copy this line</div>
+  <div id="other">and this line</div>
+</div>
+
+Paste here:
+<div id="destination" contenteditable>Copy this line
+    <br>
+    and this line
+</div>
+<script>
+// Remove focus to remove caret from test result image
+document.getElementById('destination').blur();
+</script>
+</body>
+</html>
