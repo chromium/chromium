@@ -307,7 +307,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
 
 [['AccessibilityPage', 'os_a11y_page_tests.js'],
  ['AboutPage', 'os_about_page_tests.js'],
- ['AccountsPage', 'add_users_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
@@ -474,6 +473,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_bluetooth_true_wireless_images_tests.js',
  ],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
+ ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui_test.js'],
  /*

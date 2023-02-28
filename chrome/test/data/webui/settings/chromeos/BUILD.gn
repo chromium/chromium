@@ -18,7 +18,6 @@ mojom("test_api_mojom") {
 }
 
 test_files = [
-  "add_users_tests.js",
   "apn_subpage_tests.js",
   "apn_detail_dialog_tests.js",
   "app_notifications_subpage_tests.js",
@@ -221,6 +220,8 @@ test_files = [
   "app_management/test_store.js",
   "app_management/test_util.js",
   "app_management/toggle_row_test.js",
+
+  "os_people_page/add_user_dialog_tests.ts",
 ]
 
 preprocess_if_expr("preprocess") {
