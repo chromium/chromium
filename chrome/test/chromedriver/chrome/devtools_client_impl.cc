@@ -11,14 +11,12 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/i18n/message_formatter.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
@@ -27,10 +25,8 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/util.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
-#include "chrome/test/chromedriver/net/command_id.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/timeout.h"
-#include "chrome/test/chromedriver/net/url_request_context_getter.h"
 
 namespace {
 
@@ -47,6 +43,8 @@ const char kInspectorPushPermissionError[] =
 const char kInspectorNoSuchFrameError[] =
     "Frame with the given id was not found.";
 const char kNoTargetWithGivenIdError[] = "No target with given id found";
+const char kUniqueContextIdNotFoundError[] = "uniqueContextId not found";
+const char kNoNodeForBackendNodeId[] = "No node found for given backend id";
 
 static constexpr int kSessionNotFoundInspectorCode = -32001;
 static constexpr int kCdpMethodNotFoundCode = -32601;
@@ -527,7 +525,9 @@ Status DevToolsClientImpl::SetUpDevTools() {
     std::string script =
         "(function () {"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;"
+        "window.cdc_adoQpoasnfa76pfcZLmcfl_Object = window.Object;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Promise = window.Promise;"
+        "window.cdc_adoQpoasnfa76pfcZLmcfl_Proxy = window.Proxy;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol = window.Symbol;"
         "}) ();";
     params.Set("source", script);
@@ -1370,6 +1370,15 @@ Status ParseInspectorError(const std::string& error_json) {
       // As the server returns the generic error code: SERVER_ERROR = -32000
       // we have to rely on the error message content.
       return Status(kNoSuchFrame, error_message);
+    } else if (error_message == kUniqueContextIdNotFoundError) {
+      // The error message that can arise during a call to
+      // Runtime.evaluate and Runtime.callFunctionOn if the provided
+      // context does no longer exist.
+      return Status(kNoSuchExecutionContext, error_message);
+    } else if (error_message == kNoNodeForBackendNodeId) {
+      // The error message that arises during DOM.resolveNode code.
+      // This means that the node with given BackendNodeId is not found.
+      return Status{kNoSuchElement, error_message};
     }
     absl::optional<int> error_code = error_dict->FindInt("code");
     if (error_code == kInvalidParamsInspectorCode) {

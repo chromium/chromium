@@ -969,11 +969,11 @@ Status ExecuteGetPageSource(Session* session,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout) {
   const char kGetPageSource[] =
-      " () => (document.documentElement || {}).outerHTML || ''";
+      "(document.documentElement || {}).outerHTML || ''";
 
   base::Value::List args;
-  return web_view->CallFunction(
-      session->GetCurrentFrameId(), kGetPageSource, args, value);
+  return web_view->EvaluateScript(session->GetCurrentFrameId(), kGetPageSource,
+                                  true, value);
 }
 
 Status ExecuteFindElement(int interval_ms,

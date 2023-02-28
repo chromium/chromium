@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -20,16 +19,23 @@ FrameTracker::FrameTracker(DevToolsClient* client,
   client->AddListener(this);
 }
 
-FrameTracker::~FrameTracker() {}
+FrameTracker::~FrameTracker() = default;
 
 Status FrameTracker::GetContextIdForFrame(const std::string& frame_id,
-                                          std::string* context_id) {
-  if (frame_to_context_map_.count(frame_id) == 0) {
+                                          std::string* context_id) const {
+  const auto it = frame_to_context_map_.find(frame_id);
+  if (it == frame_to_context_map_.end()) {
     return Status(kNoSuchExecutionContext,
                   "frame does not have execution context");
   }
-  *context_id = frame_to_context_map_[frame_id];
+  *context_id = it->second;
   return Status(kOk);
+}
+
+void FrameTracker::SetContextIdForFrame(std::string frame_id,
+                                        std::string context_id) {
+  frame_to_context_map_.insert_or_assign(std::move(frame_id),
+                                         std::move(context_id));
 }
 
 WebView* FrameTracker::GetTargetForFrame(const std::string& frame_id) {
