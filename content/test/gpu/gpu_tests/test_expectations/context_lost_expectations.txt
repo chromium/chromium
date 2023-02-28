@@ -84,6 +84,7 @@ crbug.com/1078566 [ android ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 
 # Fuchsia cannot launch a new tab.
 [ fuchsia ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]
+[ fuchsia ] ContextLost_WebGLContextRestoredInHiddenTab [ Skip ]
 
 # Webgpu not fully supported on Linux, Android, ChromeOS, and Fuchsia
 [ linux ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
