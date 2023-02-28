@@ -7,6 +7,7 @@ source_set("elements") {
   sources = [
     "extended_touch_target_button.h",
     "extended_touch_target_button.mm",
+    "fade_truncating_label+private.h",
     "fade_truncating_label.h",
     "fade_truncating_label.mm",
     "gray_highlight_button.h",
@@ -66,6 +67,7 @@ source_set("unit_tests") {
   sources = [
     "activity_overlay_coordinator_unittest.mm",
     "chrome_activity_overlay_coordinator_unittest.mm",
+    "fade_truncating_label_unittest.mm",
     "text_field_configuration_unittest.mm",
     "windowed_container_view_unittest.mm",
   ]
@@ -77,6 +79,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",

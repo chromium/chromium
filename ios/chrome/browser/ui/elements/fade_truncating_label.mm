@@ -9,6 +9,7 @@
 
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#import "ios/chrome/browser/ui/elements/fade_truncating_label+private.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/attributed_string_util.h"
 
@@ -216,7 +217,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 #pragma mark Text Drawing Private
 
 /// Draws `attributedString` in `requestedRect`.
-/// `applyGradient`: Wheter gradient should be applied when drawing the text.
+/// `applyGradient`: Whether gradient should be applied when drawing the text.
 /// `alignmentOffset`: offset added to draw the text on the left of
 /// `requestedRect`. Note: with NSLineBreakByClipping the text is always clipped
 /// to the right even when the text is aligned to the right, with the offset the
