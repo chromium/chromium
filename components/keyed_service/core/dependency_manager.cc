@@ -200,7 +200,7 @@ void DependencyManager::DumpDependenciesAsGraphviz(
   DCHECK(!dot_file.empty());
   std::string contents = dependency_graph_.DumpAsGraphviz(
       top_level_name, base::BindRepeating(&KeyedServiceBaseFactoryGetNodeName));
-  base::WriteFile(dot_file, contents.c_str(), contents.size());
+  base::WriteFile(dot_file, contents);
 }
 #endif  // NDEBUG
 
