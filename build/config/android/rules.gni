@@ -4623,6 +4623,7 @@ if (enable_java_templates && is_android) {
       _assets_target_name = "${target_name}__assets"
       android_assets(_assets_target_name) {
         forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+        deps = [ ":$_unpack_target_name" ]
         renaming_sources = []
         renaming_destinations = []
         foreach(_asset_file, _scanned_files.assets) {
