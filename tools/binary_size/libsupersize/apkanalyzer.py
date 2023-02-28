@@ -540,10 +540,11 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
     dex_total_size: Sum of the sizes of all .dex files in the apk.
     class_deobfuscation_map: Map from obfuscated names to class names.
     size_info_prefix: Path such as: out/Release/size-info/BaseName.
-    metrics_by_file: Dict from DEX file name to a dict of {metric_name: value}.
 
   Returns:
-    A tuple of (section_ranges, raw_symbols).
+    A tuple of (section_ranges, raw_symbols, metrics_by_file), where
+    metrics_by_file is a dict from DEX file name to a dict of
+    {metric_name: value}.
   """
   logging.debug('Waiting for apkanalyzer to finish')
   apk_analyzer_result = apk_analyzer_async_result.get()

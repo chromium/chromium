@@ -355,16 +355,17 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
 
   elf_info = None
   if native_spec:
-    section_ranges, native_symbols, elf_info = native.CreateSymbols(
-        apk_spec=apk_spec,
-        native_spec=native_spec,
-        output_directory=output_directory,
-        pak_id_map=pak_id_map)
+    section_ranges, native_symbols, elf_info, native_metrics_by_file = (
+        native.CreateSymbols(apk_spec=apk_spec,
+                             native_spec=native_spec,
+                             output_directory=output_directory,
+                             pak_id_map=pak_id_map))
     add_syms(section_ranges,
              native_symbols,
              source_path_prefix=native_spec.source_path_prefix,
              component=native_spec.component,
              paths_already_normalized=True)
+    metrics_by_file.update(native_metrics_by_file)
   elif apk_spec and apk_spec.analyze_dex:
     logging.info('Analyzing DEX')
     apk_infolist = apk_file_manager.InfoList(apk_spec.apk_path)
