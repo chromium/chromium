@@ -1556,9 +1556,12 @@ void ArcApps::OnGetAppShortcutItems(
 
 void ArcApps::OnInstallationStarted(const std::string& package_name) {
   if (ash::features::ArePromiseIconsEnabled()) {
-    PromiseAppPtr app =
+    PromiseAppPtr promise_app =
         AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
-    AppPublisher::PublishPromiseApp(std::move(app));
+
+    // All ARC installations start as "Pending".
+    promise_app->status = PromiseStatus::kPending;
+    AppPublisher::PublishPromiseApp(std::move(promise_app));
   }
 }
 

@@ -33,6 +33,7 @@ void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
   }
 
   SET_OPTIONAL_VALUE(progress);
+  SET_ENUM_VALUE(status, PromiseStatus::kUnknown);
 
   // When adding new fields to the PromiseApp struct, this function should also
   // be updated.
@@ -58,7 +59,15 @@ absl::optional<float> PromiseAppUpdate::Progress() const {
 }
 
 bool PromiseAppUpdate::ProgressChanged() const {
-  RETURN_OPTIONAL_VALUE_CHANGED(progress)
+  RETURN_OPTIONAL_VALUE_CHANGED(progress);
+}
+
+PromiseStatus PromiseAppUpdate::Status() const {
+  GET_VALUE_WITH_DEFAULT_VALUE(status, PromiseStatus::kUnknown);
+}
+
+bool PromiseAppUpdate::StatusChanged() const {
+  IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(status, PromiseStatus::kUnknown);
 }
 
 }  // namespace apps

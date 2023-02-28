@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_UPDATE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 namespace apps {
 
-struct PromiseApp;
 class PackageId;
 
 class PromiseAppUpdate {
@@ -26,6 +26,9 @@ class PromiseAppUpdate {
 
   absl::optional<float> Progress() const;
   bool ProgressChanged() const;
+
+  PromiseStatus Status() const;
+  bool StatusChanged() const;
 
  private:
   raw_ptr<const PromiseApp> state_ = nullptr;
