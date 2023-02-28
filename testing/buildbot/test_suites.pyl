@@ -481,6 +481,21 @@
       },
     },
 
+    # TODO(crbug/1239300): Remove when persistent_shell experiment is over.
+    'chrome_persistent_shell_tests': {
+      'webview_instrumentation_test_apk_persistent_shell': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'ci_only': True,
+        'test': 'webview_instrumentation_test_apk',
+        'experiment_percentage': 100,
+        'swarming': {
+          'shards': 7,
+        },
+      },
+    },
+
     'chrome_public_tests': {
       'chrome_public_test_apk': {
         'swarming': {
@@ -6672,6 +6687,7 @@
       'android_trichrome_smoke_tests': {},
       'android_smoke_tests': {},
       'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
+      'chrome_persistent_shell_tests': {}, # Remove when experiment is over.
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
