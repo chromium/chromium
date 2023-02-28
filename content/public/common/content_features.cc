@@ -465,6 +465,11 @@ const char kFedCmIdpSigninStatusFieldTrialParamName[] = "IdpSigninStatus";
 const char kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName[] =
     "IdpSigninStatusMetricsOnly";
 
+// Enables the MDocs API in the IdentityCredential.
+BASE_FEATURE(kWebIdentityMDocs,
+             "WebIdentityMDocs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of First Party Sets to determine cookie availability.
 BASE_FEATURE(kFirstPartySets,
              "FirstPartySets",

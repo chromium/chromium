@@ -1523,6 +1523,10 @@ const char kFedCmRpContextDescription[] =
     "Allows relying parties to describe which context (e.g. sign-up vs "
     "sign-in) the FedCM is executing on.";
 
+const char kWebIdentityMDocsName[] = "MDocs";
+const char kWebIdentityMDocsDescription[] =
+    "Allows relying parties to request the presentation of ISO mdocs.";
+
 const char kFileHandlingIconsName[] = "File Handling Icons";
 const char kFileHandlingIconsDescription[] =
     "Allows websites using the file handling API to also register file type "

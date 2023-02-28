@@ -847,6 +847,9 @@ extern const char kFedCmUserInfoDescription[];
 extern const char kFedCmWithoutThirdPartyCookiesName[];
 extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 
+extern const char kWebIdentityMDocsName[];
+extern const char kWebIdentityMDocsDescription[];
+
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 

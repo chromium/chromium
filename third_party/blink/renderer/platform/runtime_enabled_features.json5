@@ -3740,6 +3740,13 @@
       base_feature: "none",
       public: true,
     },
+    {
+      name: "WebIdentityMDocs",
+      depends_on: ["FedCm"],
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
     // Legacy ::-webkit-scrollbar* pseudo element styling. Enabled for stable
     // but configurable via WebPreferences.
     {

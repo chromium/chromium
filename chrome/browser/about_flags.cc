@@ -7903,6 +7903,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmWithoutThirdPartyCookies)},
 
+    {"web-identity-mdocs", flag_descriptions::kWebIdentityMDocsName,
+     flag_descriptions::kWebIdentityMDocsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kWebIdentityMDocs)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"bluetooth-sessionized-metrics",
      flag_descriptions::kBluetoothSessionizedMetricsName,

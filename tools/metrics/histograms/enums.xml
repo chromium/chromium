@@ -64179,6 +64179,7 @@ from previous Chrome versions.
   <int value="1353629763" label="MediaSessionAccelerators:enabled"/>
   <int value="1353749554" label="QuickAnswersTranslation:enabled"/>
   <int value="1354978146" label="LacrosPrimary:enabled"/>
+  <int value="1355458262" label="WebIdentityMDocs:enabled"/>
   <int value="1355656242"
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>
@@ -64432,6 +64433,7 @@ from previous Chrome versions.
   <int value="1497609106" label="ContextualNudges:enabled"/>
   <int value="1497924954" label="js-flags"/>
   <int value="1498398756" label="TemporaryHoldingSpace:disabled"/>
+  <int value="1498464764" label="WebIdentityMDocs:disabled"/>
   <int value="1499009324" label="ZeroSuggestPrefetchingOnSRP:disabled"/>
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>

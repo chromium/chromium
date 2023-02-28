@@ -304,6 +304,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if BUILDFLAG(IS_ANDROID)
     {wf::EnableWebNFC, raw_ref(features::kWebNfc), kSetOnlyIfOverridden},
 #endif
+    {wf::EnableWebIdentityMDocs, raw_ref(features::kWebIdentityMDocs),
+     kDefault},
     {wf::EnableWebOTP, raw_ref(features::kWebOTP), kSetOnlyIfOverridden},
     {wf::EnableWebOTPAssertionFeaturePolicy,
      raw_ref(features::kWebOTPAssertionFeaturePolicy), kSetOnlyIfOverridden},

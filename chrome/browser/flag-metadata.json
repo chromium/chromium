@@ -7272,6 +7272,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "web-identity-mdocs",
+    "owners": ["goto", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "web-midi",
     "owners": [ "//third_party/blink/renderer/modules/webaudio/OWNERS", "reillyg", "deviceapi-team@google.com" ],
     "expiry_milestone": 117
