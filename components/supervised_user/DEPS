@@ -10,6 +10,7 @@ include_rules = [
   "+google_apis",
   "+net",
   "+services/network/public",
+  "+services/network/test",
   "+third_party/protobuf",
   "+ui/base",
 ]

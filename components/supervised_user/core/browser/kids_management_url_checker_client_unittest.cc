@@ -11,26 +11,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "components/account_id/account_id.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
-#include "content/public/browser/storage_partition.h"
-#include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#endif
 
 using testing::_;
 
@@ -62,20 +51,7 @@ std::unique_ptr<ClassifyUrlResponse> BuildResponseProto(
 
 class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
  public:
-  explicit KidsChromeManagementClientForTesting(
-      content::BrowserContext* context)
-      : KidsChromeManagementClient(Profile::FromBrowserContext(context)
-                                       ->GetDefaultStoragePartition()
-                                       ->GetURLLoaderFactoryForBrowserProcess(),
-                                   IdentityManagerFactory::GetForProfile(
-                                       Profile::FromBrowserContext(context))) {}
-
-  KidsChromeManagementClientForTesting(
-      const KidsChromeManagementClientForTesting&) = delete;
-  KidsChromeManagementClientForTesting& operator=(
-      const KidsChromeManagementClientForTesting&) = delete;
-
-  ~KidsChromeManagementClientForTesting() override = default;
+  using KidsChromeManagementClient::KidsChromeManagementClient;
 
   void ClassifyURL(
       std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
@@ -109,32 +85,11 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
       const KidsManagementURLCheckerClientTest&) = delete;
 
   void SetUp() override {
-    test_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(test_profile_manager_->SetUp());
-
-// ChromeOS requires an ash::FakeChromeUserManager for the tests to work.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    const char kEmail[] = "account@gmail.com";
-    const AccountId test_account_id(AccountId::FromUserEmail(kEmail));
-    user_manager_ = new ash::FakeChromeUserManager;
-    user_manager_->AddUser(test_account_id);
-    user_manager_->LoginUser(test_account_id);
-    user_manager_->SwitchActiveUser(test_account_id);
-    test_profile_ = test_profile_manager_->CreateTestingProfile(
-        test_account_id.GetUserEmail());
-
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
-#else
-    test_profile_ =
-        test_profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
-#endif
-
-    DCHECK(test_profile_);
-
     test_kids_chrome_management_client_ =
-        std::make_unique<KidsChromeManagementClientForTesting>(test_profile_);
+        std::make_unique<KidsChromeManagementClientForTesting>(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_),
+            identity_test_env_.identity_manager());
     url_classifier_ = std::make_unique<KidsManagementURLCheckerClient>(
         test_kids_chrome_management_client_.get(), "us");
   }
@@ -159,16 +114,9 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
                void(const GURL& url,
                     safe_search_api::ClientClassification classification));
 
-  content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile> test_profile_;
-  std::unique_ptr<TestingProfileManager> test_profile_manager_;
-  std::unique_ptr<KidsChromeManagementClientForTesting>
-      test_kids_chrome_management_client_;
-  std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-#endif
+  void DestroyURLClassifier() { url_classifier_.reset(); }
+
+  base::test::TaskEnvironment task_environment_;
 
  private:
   void StartCheckURL(const GURL& url) {
@@ -176,6 +124,12 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
         url, base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
                             base::Unretained(this)));
   }
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<KidsChromeManagementClientForTesting>
+      test_kids_chrome_management_client_;
+  std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
 };
 
 TEST_F(KidsManagementURLCheckerClientTest, Simple) {
@@ -268,8 +222,7 @@ TEST_F(KidsManagementURLCheckerClientTest, DestroyClientBeforeCallback) {
   EXPECT_CALL(*this, OnCheckDone(_, _)).Times(0);
   CheckURLWithoutResponse(url);
 
-  // Destroy the URLCheckerClient.
-  url_classifier_.reset();
+  DestroyURLClassifier();
 
   // Now run the callback.
   task_environment_.RunUntilIdle();

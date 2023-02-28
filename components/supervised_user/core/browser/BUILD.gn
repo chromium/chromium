@@ -45,6 +45,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "kids_management_url_checker_client_unittest.cc",
     "supervised_user_error_page_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_sync_model_type_controller_unittest.cc",
@@ -56,9 +57,11 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/resources:components_resources",
+    "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/common",
     "//components/sync:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
