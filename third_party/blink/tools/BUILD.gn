@@ -12,9 +12,7 @@ group("wpt_tests_isolate") {
     # WPT tooling
     "//third_party/wpt_tools/",
 
-    # Include blinkpy tools for setting up expectations and uploading results to
-    # ResultDB.
-    "//third_party/blink/tools/wpt_process_results.py",
+    # Include blinkpy tools for uploading results to ResultDB.
     "//third_party/blink/tools/blinkpy/",
 
     # Imported by some code in blinkpy.

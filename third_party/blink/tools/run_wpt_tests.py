@@ -22,10 +22,12 @@ from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.port.android import (
     ANDROID_WEBVIEW,
     CHROME_ANDROID,
 )
+from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR
 
 path_finder.add_testing_dir_to_sys_path()
 path_finder.add_build_android_to_sys_path()
@@ -266,6 +268,7 @@ class WPTAdapter:
         output_dir = self.path_from_output_dir(options.target)
         if not self.fs.isdir(output_dir):
             raise ValueError("'--target' must be a directory under //out")
+        self.port.set_option_default('target', options.target)
         if options.log_chromium == '':
             options.log_chromium = self.fs.join(output_dir, 'results.json')
         if options.log_wptreport == '':
@@ -281,7 +284,6 @@ class WPTAdapter:
             if filename:
                 filename = self.fs.abspath(filename)
                 setattr(options, dest, [mozlog.commandline.log_file(filename)])
-
         options.log = wptlogging.setup(dict(vars(options)),
                                        {'grouped': sys.stdout})
         logging.root.handlers.clear()
@@ -408,8 +410,8 @@ class WPTAdapter:
             stack.callback(self.port.clean_up_test_run)
             self.fs.chdir(self.path_finder.web_tests_dir())
             run = _load_entry_point(tools_root)
+            stack.enter_context(self.process_and_upload_results(options))
             exit_code = run(**vars(options))
-            self.process_and_upload_results(options)
             return exit_code
 
     def _make_product(self, options: argparse.Namespace) -> 'Product':
@@ -449,49 +451,32 @@ class WPTAdapter:
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
 
+    @contextlib.contextmanager
     def process_and_upload_results(
             self,
             options,
-            layout_test_results_subdir: str = 'layout-test-results',
+            layout_test_results_subdir: str = ARTIFACTS_SUB_DIR,
     ):
-        if not options.log_chromium:
-            return
-        json_results_filename = options.log_chromium[0].name
-        artifacts_dir = os.path.join(os.path.dirname(json_results_filename),
-                                     layout_test_results_subdir)
-        command = [
-            self.port.python3_command(),
-            os.path.join(path_finder.get_blink_tools_dir(),
-                         'wpt_process_results.py'),
-            '--target',
-            options.target,
-            '--web-tests-dir',
-            self.path_finder.web_tests_dir(),
-            '--artifacts-dir',
-            artifacts_dir,
-            '--wpt-results',
-            json_results_filename,
-        ]
-        if options.verbose:
-            command.append('--verbose')
+        if options.log_chromium:
+            artifacts_dir = self.fs.join(
+                self.fs.dirname(options.log_chromium[0].name),
+                layout_test_results_subdir)
+        else:
+            artifacts_dir = self.path_from_output_dir(
+                options.target, layout_test_results_subdir)
+        processor = WPTResultsProcessor(self.host.filesystem,
+                                        self.port,
+                                        artifacts_dir=artifacts_dir)
+        with processor.stream_results() as events:
+            options.log.add_handler(events.put)
+            yield
         if options.log_wptreport:
-            command.extend(['--wpt-report', options.log_wptreport[0].name])
-        exit_code = common.run_command(command)
-        if (exit_code != exit_codes.INTERRUPTED_EXIT_STATUS
-                and options.show_results
-                and self.has_regressions(artifacts_dir)):
-            self.show_results_in_browser(artifacts_dir)
-
-    def show_results_in_browser(self, artifacts_dir: str):
-        results_file = self.fs.join(artifacts_dir, 'results.html')
-        self.port.show_results_html_file(results_file)
-
-    def has_regressions(self, artifacts_dir: str):
-        full_results_file = self.fs.join(artifacts_dir, 'full_results.json')
-        with self.fs.open_text_file_for_reading(
-                full_results_file) as full_results:
-            results = json.load(full_results)
-        return results["num_regressions"] > 0
+            processor.process_wpt_report(options.log_wptreport[0].name)
+        if options.log_chromium:
+            processor.process_results_json(options.log_chromium[0].name)
+        if options.show_results and processor.has_regressions:
+            self.port.show_results_html_file(
+                self.fs.join(artifacts_dir, 'results.html'))
 
     def add_configuration_arguments(self, parser: argparse.ArgumentParser):
         group = parser.add_argument_group('Configuration')

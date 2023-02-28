@@ -62,6 +62,7 @@ from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.port.android import (
     ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID)
+from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 
 from devil import devil_env
 from devil.android import apk_helper
@@ -128,6 +129,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     self.layout_test_results_subdir = 'layout-test-results'
     self._device = device
     self.parse_args()
+    self.port.set_option_default('target', self.options.target)
     self._browser_apk_helper = apk_helper.ToHelper(self.options.browser_apk)
 
     self.browser_package_name = self._browser_apk_helper.GetPackageName()
@@ -322,6 +324,10 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
   def wpt_output(self):
       return self.options.isolated_script_test_output
 
+  @property
+  def _raw_log_path(self):
+    return self.fs.join(self.output_directory, 'finch-smoke-raw-events.log')
+
   def __enter__(self):
     self._device.EnableRoot()
     # Run below commands to ensure that the device can download a seed
@@ -391,24 +397,19 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
           'run',
       ]
 
-  def process_and_upload_results(self):
-    command = [
-        self.select_python_executable(),
-        os.path.join(BLINK_TOOLS, 'wpt_process_results.py'),
-        '--target',
-        self.options.target,
-        '--web-tests-dir',
-        BLINK_WEB_TESTS,
-        '--artifacts-dir',
-        os.path.join(os.path.dirname(self.wpt_output),
-                      self.layout_test_results_subdir),
-        '--wpt-results',
-        self.wpt_output,
-    ]
-    if self.options.verbose:
-        command.append('--verbose')
-
-    return common.run_command(command)
+  def process_and_upload_results(self, test_name_prefix):
+    processor = WPTResultsProcessor(
+        self.host.filesystem,
+        self.port,
+        artifacts_dir=os.path.join(os.path.dirname(self.wpt_output),
+                                   self.layout_test_results_subdir),
+        test_name_prefix=test_name_prefix)
+    processor.recreate_artifacts_dir()
+    with self.fs.open_text_file_for_reading(self._raw_log_path) as raw_logs:
+        for event in map(json.loads, raw_logs):
+            if event.get('action') != 'shutdown':
+                processor.process_event(event)
+    processor.process_results_json(self.wpt_output)
 
   def wpt_rest_args(self, unknown_args):
     rest_args = list(self._wpt_run_args)
@@ -419,6 +420,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
         '--tests=%s' % self.wpt_root_dir,
         '--metadata=%s' % self.wpt_root_dir,
         '--mojojs-path=%s' % self.mojo_js_directory,
+        '--log-raw=%s' % self._raw_log_path,
     ])
 
     if self.options.default_exclude:
@@ -665,7 +667,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     # If wpt tests are not run then the file path stored in self.wpt_output
     # was not created. That is why this check exists.
     if os.path.exists(self.wpt_output):
-      self.process_and_upload_results()
+      self.process_and_upload_results(test_run_variation)
 
       with open(self.wpt_output, 'r') as test_harness_results:
         test_harness_results_dict = json.load(test_harness_results)
