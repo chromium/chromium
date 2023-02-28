@@ -21,7 +21,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Size& natural_size,
     media::VideoFrame::StorageType storage_type,
     media::VideoPixelFormat pixel_format,
-    base::TimeDelta timestamp = base::TimeDelta());
+    base::TimeDelta timestamp);
 
 }  // namespace blink
 

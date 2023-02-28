@@ -18,7 +18,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
   return CreateTestFrame(coded_size, visible_rect, natural_size, storage_type,
                          storage_type == media::VideoFrame::STORAGE_OWNED_MEMORY
                              ? media::PIXEL_FORMAT_I420
-                             : media::PIXEL_FORMAT_NV12);
+                             : media::PIXEL_FORMAT_NV12,
+                         base::TimeDelta());
 }
 
 scoped_refptr<media::VideoFrame> CreateTestFrame(
