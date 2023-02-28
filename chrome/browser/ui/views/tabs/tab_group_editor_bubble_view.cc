@@ -617,8 +617,8 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 void TabGroupEditorBubbleView::UpdateGroup() {
   const absl::optional<int> selected_element =
       color_selector_->GetSelectedElement();
-  const TabStripModel *const model = browser_->tab_strip_model();
-  TabGroup *const tab_group = model->group_model()->GetTabGroup(group_);
+  TabGroup* const tab_group =
+      browser_->tab_strip_model()->group_model()->GetTabGroup(group_);
 
   const tab_groups::TabGroupVisualData* current_visual_data =
       tab_group->visual_data();
@@ -673,8 +673,6 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
     saved_tab_group_service->UnsaveGroup(group_);
   }
-
-  UpdateGroup();
 }
 
 void TabGroupEditorBubbleView::NewTabInGroupPressed() {

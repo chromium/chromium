@@ -82,6 +82,8 @@
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -945,6 +947,22 @@ void MoveTabsToNewWindow(Browser* browser,
       Browser::Create(Browser::CreateParams(browser->profile(), true));
 
   if (group.has_value()) {
+    SavedTabGroupKeyedService* const service =
+        SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+    if (service && service->model()->Contains(group.value())) {
+      // If the group we are looking to move is saved:
+      // 1) Stop listening to changes on it
+      // 2) Close the group in the browser
+      // 3) Open the group in a new browser and link it to the saved guid.
+      const base::GUID& saved_guid =
+          service->model()->Get(group.value())->saved_guid();
+
+      service->DisconnectLocalTabGroup(group.value());
+      browser->tab_strip_model()->CloseAllTabsInGroup(group.value());
+      service->OpenSavedTabGroupInBrowser(new_browser, saved_guid);
+      return;
+    }
+
     const tab_groups::TabGroupVisualData* old_visual_data =
         browser->tab_strip_model()
             ->group_model()
