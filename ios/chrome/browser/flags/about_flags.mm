@@ -550,12 +550,11 @@ const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
      std::size(kTabInactivityThresholdThreeWeeks), nullptr},
 };
 
-const FeatureEntry::FeatureParam kTileAblationMVTOnlyForNewUsers[] = {
-    {kTileAblationMVTAndShortcutsForNewUsersParam, "true"}};
-const FeatureEntry::FeatureVariation
-    kTileAblationMVTAndShortcutsForNewUsersVariations[] = {
-        {"Hide Only Most Visited", kTileAblationMVTOnlyForNewUsers,
-         std::size(kTileAblationMVTOnlyForNewUsers), nullptr}};
+const FeatureEntry::FeatureParam kTileAblationMVTOnly[] = {
+    {kTileAblationMVTOnlyParam, "true"}};
+const FeatureEntry::FeatureVariation kTileAblationVariations[] = {
+    {"Hide Only Most Visited", kTileAblationMVTOnly,
+     std::size(kTileAblationMVTOnly), nullptr}};
 
 const FeatureEntry::FeatureParam
     kCredentialProviderExtensionPromoOnPasswordSaved[] = {
@@ -877,14 +876,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFeedHeaderSettings,
                                     kFeedHeaderSettingsVariations,
                                     "FeedHeaderSettings")},
-    {"enable-hiding-mvt-shortcuts",
-     flag_descriptions::kTileAblationMVTAndShortcutsForNewUsersName,
-     flag_descriptions::kTileAblationMVTAndShortcutsForNewUsersDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kTileAblationMVTAndShortcutsForNewUsers,
-         kTileAblationMVTAndShortcutsForNewUsersVariations,
-         "TileAblationMVTAndShortcutsForNewUser")},
+    {"enable-tile-ablation", flag_descriptions::kTileAblationName,
+     flag_descriptions::kTileAblationDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTileAblation,
+                                    kTileAblationVariations,
+                                    "TileAblation")},
     {"shared-highlighting-amp",
      flag_descriptions::kIOSSharedHighlightingAmpName,
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,

@@ -44,9 +44,8 @@ TEST_F(TileAblationFieldTrialTest, TestDefault) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
-      field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName));
-  EXPECT_FALSE(
-      base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers));
+      field_trial_constants::kTileAblationFieldTrialName));
+  EXPECT_FALSE(IsTileAblationEnabled());
 
   TileAblationBehavior experiment_type = GetTileAblationBehavior();
 
@@ -58,7 +57,7 @@ TEST_F(TileAblationFieldTrialTest, TestControl) {
   auto feature_list = std::make_unique<base::FeatureList>();
 
   std::map<variations::VariationID, int> weight_by_id = {
-      {field_trial_constants::kShowMVTAndShortcutsControlID, 100}};
+      {field_trial_constants::kTileAblationControlID, 100}};
 
   tile_ablation_field_trial::CreateTileAblationTrialForTesting(
       std::move(weight_by_id), low_entropy_provider_, feature_list.get());
@@ -68,9 +67,8 @@ TEST_F(TileAblationFieldTrialTest, TestControl) {
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
-      field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName));
-  EXPECT_FALSE(
-      base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers));
+      field_trial_constants::kTileAblationFieldTrialName));
+  EXPECT_FALSE(IsTileAblationEnabled());
 
   TileAblationBehavior experiment_type = GetTileAblationBehavior();
 
@@ -92,9 +90,8 @@ TEST_F(TileAblationFieldTrialTest, TileAblationMVTOnlyGroup) {
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
-      field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName));
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers));
+      field_trial_constants::kTileAblationFieldTrialName));
+  EXPECT_TRUE(IsTileAblationEnabled());
 
   TileAblationBehavior experiment_type = GetTileAblationBehavior();
 
@@ -116,9 +113,8 @@ TEST_F(TileAblationFieldTrialTest, TileAblationMVTAndShortcutsGroup) {
   // configurations we are testing, and check assertions.
   scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
-      field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName));
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers));
+      field_trial_constants::kTileAblationFieldTrialName));
+  EXPECT_TRUE(IsTileAblationEnabled());
 
   TileAblationBehavior experiment_type = GetTileAblationBehavior();
 

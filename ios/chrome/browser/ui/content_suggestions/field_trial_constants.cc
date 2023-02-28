@@ -6,12 +6,11 @@
 
 namespace field_trial_constants {
 
-const char kTileAblationMVTAndShortcutsFieldTrialName[] =
-    "TileAblationMVTAndShortcutsForNewUser";
+const char kTileAblationFieldTrialName[] = "TileAblationFieldTrialName";
 
 const variations::VariationID kTileAblationMVTOnlyID = 3360855;
 const variations::VariationID kTileAblationMVTAndShortcutsID = 3360856;
-const variations::VariationID kShowMVTAndShortcutsControlID = 3360857;
+const variations::VariationID kTileAblationControlID = 3360857;
 
 const char kTileAblationMVTOnlyGroup[] = "TileAblationMVTOnly-V1";
 const char kTileAblationMVTAndShortcutsGroup[] =

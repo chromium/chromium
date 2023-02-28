@@ -50,11 +50,10 @@ enum class TileAblationBehavior {
   kDisabled = 2,
 };
 
-// Feature param under kTileAblationMVTAndShortcutsForNewUsers to hide MVT only
-// or both.
-extern const char kTileAblationMVTAndShortcutsForNewUsersParam[];
+// Feature param to only hide the MVT tiles in tile ablation.
+extern const char kTileAblationMVTOnlyParam[];
 // Feature to hide the MVT and Shortcuts tiles for new users.
-BASE_DECLARE_FEATURE(kTileAblationMVTAndShortcutsForNewUsers);
+BASE_DECLARE_FEATURE(kTileAblation);
 
 // Feature to show the Trending Queries module.
 BASE_DECLARE_FEATURE(kTrendingQueriesModule);
@@ -82,7 +81,7 @@ bool IsDiscoverFeedEnabled();
 
 // Whether the MVTs and Shortcuts should be hidden or not.
 TileAblationBehavior GetTileAblationBehavior();
-bool IsTileAblationMVTAndShortcutsEnabled();
+bool IsTileAblationEnabled();
 bool ShouldHideShortcuts();
 bool ShouldHideMostVisited();
 

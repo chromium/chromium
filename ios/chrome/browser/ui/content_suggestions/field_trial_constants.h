@@ -11,13 +11,13 @@ namespace field_trial_constants {
 
 // Name of the field trial to configure improved default suggestions experiment
 // for popular sites.
-extern const char kTileAblationMVTAndShortcutsFieldTrialName[];
+extern const char kTileAblationFieldTrialName[];
 
 // Variation IDs for the improved popular sites default suggestions experiment
 // arms.
 extern const variations::VariationID kTileAblationMVTOnlyID;
 extern const variations::VariationID kTileAblationMVTAndShortcutsID;
-extern const variations::VariationID kShowMVTAndShortcutsControlID;
+extern const variations::VariationID kTileAblationControlID;
 
 // Group names for the improved popular sites default suggestions experiment.
 extern const char kTileAblationMVTOnlyGroup[];
