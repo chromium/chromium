@@ -17,13 +17,51 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
 #if !BUILDFLAG(IS_CHROMEOS)
+namespace {
+
+// Generates a ContextMenuParams for the Autofill context menu options.
+content::ContextMenuParams CreateContextMenuParams(
+    absl::optional<autofill::FormRendererId> form_renderer_id = absl::nullopt,
+    autofill::FieldRendererId field_render_id = autofill::FieldRendererId(0)) {
+  content::ContextMenuParams rv;
+  rv.is_editable = true;
+  rv.page_url = GURL("http://test.page/");
+  rv.input_field_type = blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  if (form_renderer_id) {
+    rv.form_renderer_id = form_renderer_id->value();
+  }
+  rv.field_renderer_id = field_render_id.value();
+  return rv;
+}
+
+class TestAutofillManager : public BrowserAutofillManager {
+ public:
+  TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
+      : BrowserAutofillManager(driver, client, "en-US") {}
+
+  testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
+    return forms_seen_waiter_.Wait(min_num_awaited_calls);
+  }
+
+ private:
+  TestAutofillManagerWaiter forms_seen_waiter_{
+      *this,
+      {AutofillManagerEvent::kFormsSeen}};
+};
+}  // namespace
+
 class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -51,10 +89,16 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  TestAutofillManager* GetAutofillManager() {
+    return autofill_manager_injector_[web_contents()->GetPrimaryMainFrame()];
+  }
+
  protected:
+  test::AutofillEnvironment autofill_environment_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
   base::test::ScopedFeatureList feature_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
 // Awaits for the feedback dialog to be active. `callback` gets triggered
@@ -126,17 +170,65 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        FeedbackDialogArgsAutofillMetadata) {
-  AutofillManager* manager = ContentAutofillDriver::GetForRenderFrameHost(
-                                 web_contents()->GetPrimaryMainFrame())
-                                 ->autofill_manager();
-  ASSERT_TRUE(manager);
   std::string expected_metadata;
-  base::JSONWriter::Write(data_logs::FetchAutofillFeedbackData(manager),
-                          &expected_metadata);
+  base::JSONWriter::Write(
+      data_logs::FetchAutofillFeedbackData(GetAutofillManager()),
+      &expected_metadata);
 
   // Test that none feedback dialog exists.
   ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
 
+  // Display feedback dialog.
+  autofill_context_menu_manager_->ExecuteCommand(
+      AutofillContextMenuManager::CommandId(
+          IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK));
+
+  ui::WebDialogDelegate* feedback_dialog = FeedbackDialog::GetInstanceForTest();
+  // Test that a feedback dialog object has been created.
+  ASSERT_NE(nullptr, feedback_dialog);
+
+  // Extract autofill metadata from dialog arguments and check for correctness.
+  std::string dialog_args_str = feedback_dialog->GetDialogArgs();
+  absl::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  ASSERT_TRUE(value.has_value() && value->is_dict());
+  const std::string* autofill_metadata =
+      value->GetDict().FindString("autofillMetadata");
+  ASSERT_TRUE(autofill_metadata);
+  EXPECT_EQ(*autofill_metadata, expected_metadata);
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
+                       IncludesTriggerFormAndFieldSignatures) {
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  LocalFrameToken frame_token(rfh->GetFrameToken().value());
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  form.host_frame = frame_token;
+  for (auto& field : form.fields) {
+    field.host_frame = frame_token;
+  }
+  GetAutofillManager()->OnFormsSeen(
+      /*updated_forms=*/{form},
+      /*removed_forms=*/{});
+  GetAutofillManager()->WaitForFormsSeen(1);
+  ASSERT_TRUE(GetAutofillManager()->FindCachedFormById(form.global_id()));
+
+  // Set up expected trigger form and field signatures.
+  std::string expected_metadata;
+  base::Value::Dict extra_logs;
+  auto form_structure = std::make_unique<FormStructure>(form);
+  extra_logs.Set("trigger_form_signature",
+                 form_structure->FormSignatureAsStr());
+  extra_logs.Set("trigger_field_signature",
+                 form_structure->field(0)->FieldSignatureAsStr());
+  base::JSONWriter::Write(data_logs::FetchAutofillFeedbackData(
+                              GetAutofillManager(), std::move(extra_logs)),
+                          &expected_metadata);
+
+  // Set up context menu params with the correct trigger form and field.
+  autofill_context_menu_manager_->set_params_for_testing(
+      CreateContextMenuParams(form.global_id().renderer_id,
+                              form.fields[0].global_id().renderer_id));
   // Display feedback dialog.
   autofill_context_menu_manager_->ExecuteCommand(
       AutofillContextMenuManager::CommandId(

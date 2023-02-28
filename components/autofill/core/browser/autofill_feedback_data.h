@@ -52,7 +52,9 @@ namespace data_logs {
 //     ...
 //   ]
 // }
-base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager);
+base::Value::Dict FetchAutofillFeedbackData(
+    AutofillManager* manager,
+    base::Value::Dict extra_logs = base::Value::Dict());
 
 }  // namespace data_logs
 }  // namespace autofill

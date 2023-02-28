@@ -92,7 +92,8 @@ base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
 }
 }  // namespace
 
-base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager) {
+base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager,
+                                            base::Value::Dict extra_logs) {
   base::Value::Dict dict;
   base::Value::List form_structures;
   form_structures.reserve(manager->form_structures().size());
@@ -127,6 +128,11 @@ base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager) {
   if (!last_autofill_event_data.empty()) {
     dict.Set("last_autofill_event", std::move(last_autofill_event_data));
   }
+
+  if (!extra_logs.empty()) {
+    dict.Merge(std::move(extra_logs));
+  }
+
   return dict;
 }
 
