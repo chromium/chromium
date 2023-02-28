@@ -252,6 +252,7 @@ void GlobalSettings::Reset() {
   install_sources.reset();
   allowed_types.reset();
   manifest_v2_setting = ManifestV2Setting::kDefault;
+  unpublished_availability_setting = UnpublishedAvailability::kAllowUnpublished;
 }
 
 }  // namespace internal

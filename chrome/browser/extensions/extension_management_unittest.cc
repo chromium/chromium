@@ -16,25 +16,25 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
-#include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -290,13 +290,12 @@ class ExtensionManagementServiceTest : public testing::Test {
   }
 
  protected:
-  // Create an extension with specified |location|, |version|, |id| and
-  // |update_url|.
-  scoped_refptr<const Extension> CreateExtension(
+  scoped_refptr<const Extension> CreateExtensionHelper(
       ManifestLocation location,
       const std::string& version,
       const std::string& id,
-      const std::string& update_url) {
+      const std::string& update_url,
+      int flags) {
     base::Value::Dict manifest_dict;
     manifest_dict.Set(manifest_keys::kName, "test");
     manifest_dict.Set(manifest_keys::kVersion, version);
@@ -305,19 +304,72 @@ class ExtensionManagementServiceTest : public testing::Test {
     std::string error;
     scoped_refptr<const Extension> extension =
         Extension::Create(base::FilePath(), location, std::move(manifest_dict),
-                          Extension::NO_FLAGS, id, &error);
+                          flags, id, &error);
     CHECK(extension.get()) << error;
     return extension;
+  }
+
+  // Create an extension with specified |location|, |version|, |id| and
+  // |update_url|. The extension created is NOT marked as originating from CWS.
+  scoped_refptr<const Extension> CreateExtension(
+      ManifestLocation location,
+      const std::string& version,
+      const std::string& id,
+      const std::string& update_url) {
+    return CreateExtensionHelper(location, version, id, update_url,
+                                 Extension::NO_FLAGS);
+  }
+
+  scoped_refptr<const Extension> CreateOffstoreExtension(
+      const std::string& id) {
+    return CreateExtensionHelper(ManifestLocation::kUnpacked, "0.1", id,
+                                 kNonExistingUpdateUrl, Extension::NO_FLAGS);
+  }
+  scoped_refptr<const Extension> CreateNormalExtension(const std::string& id) {
+    return CreateExtensionHelper(ManifestLocation::kInternal, "0.1", id,
+                                 extension_urls::kChromeWebstoreUpdateURL,
+                                 Extension::FROM_WEBSTORE);
+  }
+
+  scoped_refptr<const Extension> CreateForcedExtension(const std::string& id) {
+    scoped_refptr<const Extension> extension =
+        CreateExtensionHelper(ManifestLocation::kExternalPolicy, "0.1", id,
+                              kExampleUpdateUrl, Extension::FROM_WEBSTORE);
+    base::Value::Dict forced_list_pref;
+    ExternalPolicyLoader::AddExtension(forced_list_pref, id, kExampleUpdateUrl);
+    SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
+    return extension;
+  }
+
+  void SetExtensionLastUpdateTime(const std::string& id,
+                                  base::Time update_time) {
+    auto* extension_prefs = ExtensionPrefs::Get(profile_.get());
+    extension_prefs->SetTimePref(
+        id,
+        {"last_update_time", PrefType::kTime, PrefScope::kExtensionSpecific},
+        update_time);
   }
 
   bool IsUpdateUrlOverridden(const ExtensionId& extension_id) {
     return extension_management_->IsUpdateUrlOverridden(extension_id);
   }
 
+  void SetCWSInfoService(CWSInfoServiceInterface* cws_info_service) {
+    extension_management_->cws_info_service_ = cws_info_service;
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<ExtensionManagement> extension_management_;
+};
+
+class MockCWSInfoService : public extensions::CWSInfoServiceInterface {
+ public:
+  MOCK_METHOD(absl::optional<bool>,
+              IsLiveInCWS,
+              (const Extension&),
+              (override));
 };
 
 class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
@@ -1197,6 +1249,113 @@ TEST_F(ExtensionManagementServiceTest, ManifestV2EnabledForExtensionOnly) {
       2, kTargetExtension, Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION));
   EXPECT_FALSE(extension_management_->IsAllowedManifestVersion(
       2, kTargetExtension, Manifest::Type::TYPE_HOSTED_APP));
+}
+
+// Verifies that extensions that do not update CWS are always allowed by
+// the ExtensionUnpublishedAvailability policy check function since this policy
+// ignores them.
+TEST_F(ExtensionManagementServiceTest,
+       UnpublishedCheckForNonCWSUpdateExtensions) {
+  // Create test extensions that don't update from CWS.
+  scoped_refptr<const Extension> offstore_extension =
+      CreateOffstoreExtension(kNonExistingExtension);
+  scoped_refptr<const Extension> forced_extension =
+      CreateForcedExtension(kTargetExtension3);
+  // Create mock CWS service. Verify it is not queried for these policy
+  // checks.
+  testing::NiceMock<MockCWSInfoService> mock_cws_info_service;
+  SetCWSInfoService(&mock_cws_info_service);
+  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS).Times(0);
+  // Verify that the extensions are allowed regardless of policy setting.
+  SetPref(true, pref_names::kExtensionUnpublishedAvailability,
+          base::Value(static_cast<int>(
+              internal::GlobalSettings::UnpublishedAvailability::
+                  kAllowUnpublished)));
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      offstore_extension.get()));
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      forced_extension.get()));
+
+  SetPref(true, pref_names::kExtensionUnpublishedAvailability,
+          base::Value(static_cast<int>(
+              internal::GlobalSettings::UnpublishedAvailability::
+                  kDisableUnpublished)));
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      offstore_extension.get()));
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      forced_extension.get()));
+  SetCWSInfoService(nullptr);
+}
+
+// Verifies that a CWS extensions is allowed if the
+// ExtensionUnpublishedAvailability policy setting is kAllowUnpublished.
+TEST_F(ExtensionManagementServiceTest,
+       UnpublishedCheckWithPolicySettingAllowUnpublished) {
+  // Configure the policy.
+  SetPref(true, pref_names::kExtensionUnpublishedAvailability,
+          base::Value(static_cast<int>(
+              internal::GlobalSettings::UnpublishedAvailability::
+                  kAllowUnpublished)));
+  // Create a test extension.
+  scoped_refptr<const Extension> normal_extension =
+      CreateNormalExtension(kTargetExtension);
+  // CWS publish state should not be queried when this extension is checked.
+  testing::NiceMock<MockCWSInfoService> mock_cws_info_service;
+  SetCWSInfoService(&mock_cws_info_service);
+  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS).Times(0);
+  // Verify that the extension is allowed.
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      normal_extension.get()));
+  SetCWSInfoService(nullptr);
+}
+
+// If ExtensionUnpublishedAvailability policy setting is
+// kDisableUnpublished, verify that:
+// - an extension is allowed if is being installed or has been installed
+//   within the last 24 hours from CWS
+// - an extension is allowed if it is currently published in CWS or if the
+//   CWS publish information is missing
+// - an extension is disallowed if it is not currently published in CWS
+TEST_F(ExtensionManagementServiceTest,
+       UnpublishedCheckWithPolicySettingDisableUnpublished) {
+  // Configure the policy.
+  SetPref(true, pref_names::kExtensionUnpublishedAvailability,
+          base::Value(static_cast<int>(
+              internal::GlobalSettings::UnpublishedAvailability::
+                  kDisableUnpublished)));
+  // Create a test extension.
+  scoped_refptr<const Extension> normal_extension =
+      CreateNormalExtension(kTargetExtension);
+  // Create mock CWSInfoService to verify when IsLiveInCWS check is called.
+  testing::NiceMock<MockCWSInfoService> mock_cws_info_service;
+  SetCWSInfoService(&mock_cws_info_service);
+  // CWS publish state should not be queried if this extension is being
+  // installed or if it was recently installed (< 24 hours ago).
+  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS).Times(0);
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      normal_extension.get()));
+  SetExtensionLastUpdateTime(normal_extension->id(),
+                             base::Time::Now() - base::Hours(23));
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      normal_extension.get()));
+  // CWS publish state should be queried if this extension was installed more
+  // than 1 day ago.
+  SetExtensionLastUpdateTime(normal_extension->id(),
+                             base::Time::Now() - base::Hours(25));
+  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS)
+      .WillOnce(testing::Return(absl::optional<bool>(true)))
+      .WillOnce(testing::Return(absl::optional<bool>(false)))
+      .WillOnce(testing::Return(absl::optional<bool>()));
+  // Verify that the extension is allowed when it is live in CWS.
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      normal_extension.get()));
+  // Verify that the extension is disallowed when it is not live in CWS.
+  EXPECT_FALSE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      normal_extension.get()));
+  // Verify that the extensions is allowed if CWS publish status is missing.
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      normal_extension.get()));
+  SetCWSInfoService(nullptr);
 }
 
 // Tests the flag value indicating that extensions are blocklisted by default.

@@ -488,6 +488,7 @@ static_library("extensions") {
     "corrupted_extension_reinstaller.h",
     "crx_installer.cc",
     "crx_installer.h",
+    "cws_info_service.h",
     "data_deleter.cc",
     "data_deleter.h",
     "dev_mode_bubble_delegate.cc",

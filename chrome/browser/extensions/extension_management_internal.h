@@ -158,6 +158,12 @@ struct GlobalSettings {
     kEnabled,
     kEnabledForForceInstalled,
   };
+
+  enum class UnpublishedAvailability {
+    kAllowUnpublished = 0,
+    kDisableUnpublished = 1,
+  };
+
   GlobalSettings();
 
   GlobalSettings(const GlobalSettings&) = delete;
@@ -177,6 +183,9 @@ struct GlobalSettings {
 
   // An enum setting indicates if manifest v2 is allowed.
   ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kDefault;
+
+  UnpublishedAvailability unpublished_availability_setting =
+      UnpublishedAvailability::kAllowUnpublished;
 };
 
 }  // namespace internal
