@@ -93,11 +93,13 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
-      "//third_party/material_web_components:build_grdp",
+      "//third_party/material_web_components:build_lit_grdp",
+      "//third_party/material_web_components:build_mwc_grdp",
       "//third_party/web-animations-js:build_grdp",
     ]
     grdp_files += [
-      "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
+      "$root_gen_dir/third_party/material_web_components/lit_resources.grdp",
+      "$root_gen_dir/third_party/material_web_components/mwc_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
       "$target_gen_dir/cros_styles_resources.grdp",
     ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from 'lit';
+import '@material/web/button/text-button.js';
 
-// Temporarily log `html` to make sure lit imports work correctly. This will
-// soon be replaced with an example usage of cros-components.
-console.log(html);
+customElements.whenDefined('md-text-button').then(() => {
+  document.documentElement.classList.remove('loading');
+});

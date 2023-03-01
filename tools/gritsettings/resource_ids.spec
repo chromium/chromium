@@ -1100,7 +1100,7 @@
     "messages": [4850],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_resources.grd": {
-    "META": {"sizes": {"includes": [900]}},
+    "META": {"sizes": {"includes": [1100]}},
     "includes": [4900],
   },
   "weblayer/weblayer_resources.grd": {
