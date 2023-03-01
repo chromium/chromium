@@ -10,9 +10,9 @@
 @namespace "http://www.w3.org/1999/xhtml";
 
 html::view-transition {
+  top: 0;
+  left: 0;
   position: fixed;
-  inset: 0;
-  pointer-events: none;
 }
 
 html::view-transition-group(*) {
@@ -23,8 +23,6 @@ html::view-transition-group(*) {
   /* The transform applied to the container includes any translation necessary
      for the original element's transform-origin. */
   transform-origin: top left;
-
-  pointer-events: auto;
 }
 
 ::view-transition-image-pair(*) {

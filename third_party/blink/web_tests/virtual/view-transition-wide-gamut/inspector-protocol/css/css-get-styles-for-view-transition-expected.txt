@@ -93,35 +93,19 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : position
-                                        value : fixed
-                                    }
-                                    [1] : {
                                         name : top
                                         value : 0px
                                     }
-                                    [2] : {
-                                        name : right
-                                        value : 0px
-                                    }
-                                    [3] : {
-                                        name : bottom
-                                        value : 0px
-                                    }
-                                    [4] : {
+                                    [1] : {
                                         name : left
                                         value : 0px
                                     }
-                                    [5] : {
-                                        name : pointer-events
-                                        value : none
+                                    [2] : {
+                                        name : position
+                                        value : fixed
                                     }
                                 ]
                                 shorthandEntries : [
-                                    [0] : {
-                                        name : inset
-                                        value : 0px
-                                    }
                                 ]
                             }
                             supports : [
@@ -172,10 +156,6 @@ The test verifies functionality of querying style information for view-transitio
                                     [3] : {
                                         name : transform-origin
                                         value : left top
-                                    }
-                                    [4] : {
-                                        name : pointer-events
-                                        value : auto
                                     }
                                 ]
                                 shorthandEntries : [
@@ -250,12 +230,12 @@ The test verifies functionality of querying style information for view-transitio
                             style : {
                                 cssProperties : [
                                     [0] : {
-                                        name : right
-                                        value : 0px
+                                        name : width
+                                        value : 800px
                                     }
                                     [1] : {
-                                        name : bottom
-                                        value : 0px
+                                        name : height
+                                        value : 600px
                                     }
                                 ]
                                 shorthandEntries : [
@@ -310,10 +290,6 @@ The test verifies functionality of querying style information for view-transitio
                                     [3] : {
                                         name : transform-origin
                                         value : left top
-                                    }
-                                    [4] : {
-                                        name : pointer-events
-                                        value : auto
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1690,35 +1666,19 @@ Dumping styles for : ::view-transition with id undefined{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : position
-                                value : fixed
-                            }
-                            [1] : {
                                 name : top
                                 value : 0px
                             }
-                            [2] : {
-                                name : right
-                                value : 0px
-                            }
-                            [3] : {
-                                name : bottom
-                                value : 0px
-                            }
-                            [4] : {
+                            [1] : {
                                 name : left
                                 value : 0px
                             }
-                            [5] : {
-                                name : pointer-events
-                                value : none
+                            [2] : {
+                                name : position
+                                value : fixed
                             }
                         ]
                         shorthandEntries : [
-                            [0] : {
-                                name : inset
-                                value : 0px
-                            }
                         ]
                     }
                     supports : [
@@ -1774,10 +1734,6 @@ Dumping styles for : ::view-transition-group with id root{
                             [3] : {
                                 name : transform-origin
                                 value : left top
-                            }
-                            [4] : {
-                                name : pointer-events
-                                value : auto
                             }
                         ]
                         shorthandEntries : [
@@ -1852,12 +1808,12 @@ Dumping styles for : ::view-transition-group with id root{
                     style : {
                         cssProperties : [
                             [0] : {
-                                name : right
-                                value : 0px
+                                name : width
+                                value : 800px
                             }
                             [1] : {
-                                name : bottom
-                                value : 0px
+                                name : height
+                                value : 600px
                             }
                         ]
                         shorthandEntries : [
@@ -2486,10 +2442,6 @@ Dumping styles for : ::view-transition-group with id shared{
                             [3] : {
                                 name : transform-origin
                                 value : left top
-                            }
-                            [4] : {
-                                name : pointer-events
-                                value : auto
                             }
                         ]
                         shorthandEntries : [

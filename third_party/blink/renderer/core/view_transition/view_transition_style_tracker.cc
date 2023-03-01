@@ -1315,6 +1315,12 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
   // transition element only -- no roots involved. Everything is done in the
   // `element_data_map_` loop.
 
+  auto root_size_in_css = LayoutSize(GetSnapshotRootSize());
+  // Note that we want the size in css space, which means we need to undo
+  // the effective zoom.
+  root_size_in_css.Scale(
+      1 / document_->GetLayoutView()->StyleRef().EffectiveZoom());
+
   for (auto& root_name : AllRootTags()) {
     // This is case 3 above.
     bool name_is_old_root =
@@ -1325,11 +1331,7 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
       continue;
     }
 
-    // TODO(vmpstr): For animations, we need to re-target the layout size if it
-    // changes, but right now we only use the latest layout view size.
-    // Note that we don't set the writing-mode since it would inherit from the
-    // :root anyway, so there is no reason to put it on the pseudo elements.
-    builder.AddContainerStyles(root_name, "right: 0; bottom: 0;");
+    builder.AddContainerStyles(root_name, root_size_in_css);
 
     bool name_is_new_root =
         new_root_data_ && new_root_data_->names.Contains(root_name);
@@ -1412,14 +1414,9 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
         builder.AddAnimationAndBlending(
             view_transition_name, element_data->cached_container_properties);
       } else if (element_data->new_snapshot_id.IsValid() && name_is_old_root) {
-        auto layout_view_size = LayoutSize(GetSnapshotRootSize());
-        // Note that we want the size in css space, which means we need to undo
-        // the effective zoom.
-        layout_view_size.Scale(
-            1 / document_->GetLayoutView()->StyleRef().EffectiveZoom());
         builder.AddAnimationAndBlending(
             view_transition_name,
-            ContainerProperties(layout_view_size, gfx::Transform()));
+            ContainerProperties(root_size_in_css, gfx::Transform()));
       }
     }
   }

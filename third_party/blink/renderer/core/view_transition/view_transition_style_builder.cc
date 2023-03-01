@@ -124,6 +124,18 @@ void ViewTransitionStyleBuilder::AddContainerStyles(const String& tag,
   AddRules(kGroupTagName, tag, rules);
 }
 
+void ViewTransitionStyleBuilder::AddContainerStyles(const String& tag,
+                                                    const LayoutSize& size) {
+  StringBuilder rule_builder;
+  rule_builder.AppendFormat(
+      R"CSS(
+        width: %.3fpx;
+        height: %.3fpx;
+      )CSS",
+      size.Width().ToFloat(), size.Height().ToFloat());
+  AddContainerStyles(tag, rule_builder.ReleaseString());
+}
+
 void ViewTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
     const ContainerProperties& properties,
