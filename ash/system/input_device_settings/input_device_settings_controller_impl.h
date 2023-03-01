@@ -80,15 +80,19 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   void DispatchKeyboardConnected(DeviceId id);
   void DispatchKeyboardDisconnected(DeviceId id);
+  void DispatchKeyboardSettingsChanged(DeviceId id);
 
   void DispatchTouchpadConnected(DeviceId id);
   void DispatchTouchpadDisconnected(DeviceId id);
+  void DispatchTouchpadSettingsChanged(DeviceId id);
 
   void DispatchMouseConnected(DeviceId id);
   void DispatchMouseDisconnected(DeviceId id);
+  void DispatchMouseSettingsChanged(DeviceId id);
 
   void DispatchPointingStickConnected(DeviceId id);
   void DispatchPointingStickDisconnected(DeviceId id);
+  void DispatchPointingStickSettingsChanged(DeviceId id);
 
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 

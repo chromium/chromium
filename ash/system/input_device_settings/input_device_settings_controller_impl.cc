@@ -141,7 +141,26 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     return;
   }
   active_pref_service_ = pref_service;
-  // TODO(michaelcheco): Initialize settings and notify observers.
+  for (const auto& [id, keyboard] : keyboards_) {
+    keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
+                                                       keyboard.get());
+    DispatchKeyboardSettingsChanged(id);
+  }
+  for (const auto& [id, touchpad] : touchpads_) {
+    touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
+                                                       touchpad.get());
+    DispatchTouchpadSettingsChanged(id);
+  }
+  for (const auto& [id, mouse] : mice_) {
+    mouse_pref_handler_->InitializeMouseSettings(active_pref_service_,
+                                                 mouse.get());
+    DispatchMouseSettingsChanged(id);
+  }
+  for (const auto& [id, pointing_stick] : pointing_sticks_) {
+    pointing_stick_pref_handler_->InitializePointingStickSettings(
+        active_pref_service_, pointing_stick.get());
+    DispatchPointingStickSettingsChanged(id);
+  }
 }
 
 const mojom::KeyboardSettings*
@@ -260,6 +279,15 @@ void InputDeviceSettingsControllerImpl::DispatchKeyboardDisconnected(
   }
 }
 
+void InputDeviceSettingsControllerImpl::DispatchKeyboardSettingsChanged(
+    DeviceId id) {
+  DCHECK(base::Contains(keyboards_, id));
+  const auto& keyboard = *keyboards_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnKeyboardSettingsUpdated(keyboard);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::DispatchTouchpadConnected(DeviceId id) {
   DCHECK(base::Contains(touchpads_, id));
   const auto& touchpad = *touchpads_.at(id);
@@ -274,6 +302,15 @@ void InputDeviceSettingsControllerImpl::DispatchTouchpadDisconnected(
   const auto& touchpad = *touchpads_.at(id);
   for (auto& observer : observers_) {
     observer.OnTouchpadDisconnected(touchpad);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchTouchpadSettingsChanged(
+    DeviceId id) {
+  DCHECK(base::Contains(touchpads_, id));
+  const auto& touchpad = *touchpads_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnTouchpadSettingsUpdated(touchpad);
   }
 }
 
@@ -293,6 +330,15 @@ void InputDeviceSettingsControllerImpl::DispatchMouseDisconnected(DeviceId id) {
   }
 }
 
+void InputDeviceSettingsControllerImpl::DispatchMouseSettingsChanged(
+    DeviceId id) {
+  DCHECK(base::Contains(mice_, id));
+  const auto& mouse = *mice_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnMouseSettingsUpdated(mouse);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::DispatchPointingStickConnected(
     DeviceId id) {
   DCHECK(base::Contains(pointing_sticks_, id));
@@ -308,6 +354,15 @@ void InputDeviceSettingsControllerImpl::DispatchPointingStickDisconnected(
   const auto& pointing_stick = *pointing_sticks_.at(id);
   for (auto& observer : observers_) {
     observer.OnPointingStickDisconnected(pointing_stick);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchPointingStickSettingsChanged(
+    DeviceId id) {
+  DCHECK(base::Contains(pointing_sticks_, id));
+  const auto& pointing_stick = *pointing_sticks_.at(id);
+  for (auto& observer : observers_) {
+    observer.OnPointingStickSettingsUpdated(pointing_stick);
   }
 }
 

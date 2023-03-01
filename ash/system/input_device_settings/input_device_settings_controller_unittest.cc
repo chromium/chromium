@@ -35,6 +35,7 @@ const ui::InputDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
                                             "kSampleKeyboardUsb"};
 
 constexpr char kUserEmail[] = "example1@abc.com";
+constexpr char kUserEmail2[] = "joy@abc.com";
 }  // namespace
 
 class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
@@ -208,6 +209,32 @@ TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenFlagDisabled) {
                 prefs::kPointingStickDeviceSettingsDictPref));
   EXPECT_EQ(base::Value::Dict(), active_pref_service->GetDict(
                                      prefs::kTouchpadDeviceSettingsDictPref));
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       InitializeSettingsWhenUserSessionChanges) {
+  controller()->OnKeyboardListUpdated({kSampleKeyboardUsb}, {});
+
+  EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
+  const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  const AccountId account_id_2 = AccountId::FromUserEmail(kUserEmail2);
+
+  std::unique_ptr<TestingPrefServiceSimple> pref_service =
+      std::make_unique<TestingPrefServiceSimple>();
+  ash::RegisterUserProfilePrefs(pref_service->registry(), /*for_test=*/true);
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_2 =
+      std::make_unique<TestingPrefServiceSimple>();
+  ash::RegisterUserProfilePrefs(pref_service_2->registry(), /*for_test=*/true);
+
+  GetSessionControllerClient()->SetUserPrefService(account_id,
+                                                   std::move(pref_service));
+  SimulateUserLogin(account_id);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 2u);
+  GetSessionControllerClient()->SetUserPrefService(account_id_2,
+                                                   std::move(pref_service_2));
+  SimulateUserLogin(account_id_2);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 3u);
 }
 
 }  // namespace ash
