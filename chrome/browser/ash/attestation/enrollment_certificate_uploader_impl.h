@@ -13,13 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 namespace ash {
 namespace attestation {
 
-class AttestationFlow;
+class AttestationFeatures;
 
 // A class which uploads enterprise enrollment certificates.
 class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
@@ -63,6 +64,12 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Gets a certificate. If |force_new_key| is false, fetches existing
   // certificate if any. Otherwise, fetches new certificate.
   void GetCertificate(bool force_new_key);
+
+  // Checks the Attestation Features and gets a suitable certificate.
+  void OnGetFeaturesReady(
+      bool force_new_key,
+      AttestationFlow::CertificateCallback callback,
+      const ash::attestation::AttestationFeatures* features);
 
   // Handles failure of getting a certificate.
   void HandleGetCertificateFailure(AttestationStatus status);

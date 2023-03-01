@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -96,6 +97,7 @@ class EnrollmentCertificateUploaderTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper settings_helper_;
+  ScopedStubAttestationFeatures attestation_features_;
   StrictMock<MockAttestationFlow> attestation_flow_;
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
 
@@ -261,14 +263,20 @@ TEST_F(EnrollmentCertificateUploaderTest,
   Run(/*expected_status=*/CertStatus::kInvalidClient);
 }
 
-TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificate) {
+TEST_F(EnrollmentCertificateUploaderTest, UploadValidRsaCertificate) {
   std::string valid_certificate;
   ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &valid_certificate));
   InSequence s;
+  // When only RSA is supported, we should use RSA.
+  attestation_features_.Get()->Clear();
+  attestation_features_.Get()->set_is_available(true);
+  attestation_features_.Get()->set_is_rsa_supported(true);
+  attestation_features_.Get()->set_is_ecc_supported(false);
 
   EXPECT_CALL(attestation_flow_,
               GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
-                             /*force_new_key=*/false, _, _, _, _))
+                             /*force_new_key=*/false,
+                             ::attestation::KEY_TYPE_RSA, _, _, _))
       .Times(1)
       .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
         CertCallbackSuccess(std::move(callback), valid_certificate);
@@ -279,6 +287,56 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadValidCertificate) {
       .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
 
   Run(/*expected_status=*/CertStatus::kSuccess);
+}
+
+TEST_F(EnrollmentCertificateUploaderTest, UploadValidEccCertificate) {
+  std::string valid_certificate;
+  ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &valid_certificate));
+  InSequence s;
+  // When both ECC/RSA are supported, we should prefer ECC.
+  attestation_features_.Get()->Clear();
+  attestation_features_.Get()->set_is_available(true);
+  attestation_features_.Get()->set_is_rsa_supported(true);
+  attestation_features_.Get()->set_is_ecc_supported(true);
+
+  EXPECT_CALL(attestation_flow_,
+              GetCertificate(PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, _, _,
+                             /*force_new_key=*/false,
+                             ::attestation::KEY_TYPE_ECC, _, _, _))
+      .Times(1)
+      .WillOnce(WithArgs<7>(Invoke([valid_certificate](CertCallback callback) {
+        CertCallbackSuccess(std::move(callback), valid_certificate);
+      })));
+  EXPECT_CALL(policy_client_,
+              UploadEnterpriseEnrollmentCertificate(valid_certificate, _))
+      .Times(1)
+      .WillOnce(WithArgs<1>(Invoke(ResultCallbackSuccess)));
+
+  Run(/*expected_status=*/CertStatus::kSuccess);
+}
+
+TEST_F(EnrollmentCertificateUploaderTest, GetFeaturesNoAttestationAvailable) {
+  InSequence s;
+  // When both ECC/RSA are supported, we should prefer ECC.
+  attestation_features_.Get()->Clear();
+  attestation_features_.Get()->set_is_available(false);
+
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
+      .Times(0);
+  Run(/*expected_status=*/CertStatus::kFailedToFetch);
+}
+
+TEST_F(EnrollmentCertificateUploaderTest, GetFeaturesNoAvailableCryptoKeyType) {
+  InSequence s;
+  // When both ECC/RSA are supported, we should prefer ECC.
+  attestation_features_.Get()->Clear();
+  attestation_features_.Get()->set_is_available(true);
+  attestation_features_.Get()->set_is_rsa_supported(false);
+  attestation_features_.Get()->set_is_ecc_supported(false);
+
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
+      .Times(0);
+  Run(/*expected_status=*/CertStatus::kFailedToFetch);
 }
 
 TEST_F(EnrollmentCertificateUploaderTest,
