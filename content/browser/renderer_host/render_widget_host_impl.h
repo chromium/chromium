@@ -1209,7 +1209,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
 
   // The SiteInstanceGroup this RenderWidgetHost belongs to.
-  base::SafeRef<SiteInstanceGroup> site_instance_group_;
+  // TODO(https://crbug.com/1420333) Turn this into base::SafeRef
+  base::WeakPtr<SiteInstanceGroup> site_instance_group_;
 
   // The ID of the corresponding object in the Renderer Instance.
   const int routing_id_;

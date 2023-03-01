@@ -386,7 +386,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   FrameTree::RenderViewHostMapId render_view_host_map_id_;
 
   // The SiteInstanceGroup this RenderViewHostImpl belongs to.
-  base::SafeRef<SiteInstanceGroup> site_instance_group_;
+  // TODO(https://crbug.com/1420333) Turn this into base::SafeRef
+  base::WeakPtr<SiteInstanceGroup> site_instance_group_;
 
   // Provides information for selecting the session storage namespace for this
   // view.

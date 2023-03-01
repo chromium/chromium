@@ -286,7 +286,7 @@ RenderViewHostImpl::RenderViewHostImpl(
     : render_widget_host_(std::move(widget)),
       delegate_(delegate),
       render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(group)),
-      site_instance_group_(group->GetSafeRef()),
+      site_instance_group_(group->GetWeakPtrToAllowDangling()),
       storage_partition_config_(storage_partition_config),
       routing_id_(routing_id),
       main_frame_routing_id_(main_frame_routing_id),
@@ -475,7 +475,7 @@ bool RenderViewHostImpl::CreateRenderView(
     if (is_speculative_ &&
         frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
         frame_tree_node->current_frame_host()->GetSiteInstance()->group() ==
-            &*site_instance_group_) {
+            site_instance_group_.get()) {
       // The speculative RenderViewHost has the same SiteInstanceGroup as the
       // current RenderFrameHost. This means when the speculative
       // RenderFrameHost commits, it must do a local RenderFrame swap with the
