@@ -50,19 +50,6 @@ public class BackgroundScheduler {
         scheduleImpl(triggerConditions, delayStartMs, DateUtils.WEEK_IN_MILLIS, !OVERWRITE);
     }
 
-    /**
-     * Method for rescheduling a background task for offline pages in the event of OS upgrade or
-     * GooglePlayServices upgrade.
-     * We use the least restrictive trigger conditions.  A wakeup will cause the queue to be
-     * checked, and the trigger conditions will be replaced by the current trigger conditions
-     * needed.
-     */
-    public void reschedule() {
-        // TODO(crbug.com/1414628): Investigate if this can be deleted.
-        TriggerConditions triggerConditions = new TriggerConditions(false, 0, false);
-        scheduleBackup(triggerConditions, DateUtils.MINUTE_IN_MILLIS * 5);
-    }
-
     protected void scheduleImpl(TriggerConditions triggerConditions, long delayStartMs,
             long executionDeadlineMs, boolean overwrite) {
         PersistableBundle taskExtras = new PersistableBundle();
