@@ -81,7 +81,7 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     // Dictionary Key Name
     static const char kBrowserKey[];
 
-    static base::Value BuildBrowserDictionary(bool include_device_info);
+    static base::Value::Dict BuildBrowserDictionary(bool include_device_info);
 
     static std::string GetBrowserIdPath();
     static std::string GetUserAgentPath();

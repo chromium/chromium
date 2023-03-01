@@ -114,25 +114,6 @@ class RequestPayloadBuilder {
 
 class ResponseValueBuilder {
  public:
-  static absl::optional<base::Value> CreateUploadFailure(
-      const ::reporting::SequenceInformation& sequence_information) {
-    if (!sequence_information.has_sequencing_id() ||
-        !sequence_information.has_generation_id() ||
-        !sequence_information.has_priority()) {
-      return absl::nullopt;
-    }
-
-    base::Value upload_failure{base::Value::Type::DICT};
-    upload_failure.SetKey(kFailedUploadedRecord,
-                          BuildSequenceInformationValue(sequence_information));
-
-    // Set to internal error (error::INTERNAL == 13).
-    upload_failure.SetIntKey(GetFailureStatusCodePath(), 13);
-    upload_failure.SetStringKey(GetFailureStatusMessagePath(),
-                                "FailingForTests");
-    return upload_failure;
-  }
-
   static base::Value::Dict CreateResponse(
       const base::Value& sequence_information,
       absl::optional<base::Value> upload_failure) {
@@ -173,18 +154,6 @@ class ResponseValueBuilder {
   }
 
  private:
-  static base::Value BuildSequenceInformationValue(
-      const ::reporting::SequenceInformation& sequence_information) {
-    base::Value sequence_information_value{base::Value::Type::DICT};
-    sequence_information_value.SetIntKey(kSequencingIdKey,
-                                         sequence_information.sequencing_id());
-    sequence_information_value.SetIntKey(kGenerationIdKey,
-                                         sequence_information.generation_id());
-    sequence_information_value.SetIntKey(kPriorityKey,
-                                         sequence_information.priority());
-    return sequence_information_value;
-  }
-
   static std::string GetPath(base::StringPiece base, base::StringPiece leaf) {
     return base::JoinString({base, leaf}, ".");
   }
@@ -257,27 +226,26 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
 
   base::Value GenerateSingleRecord(base::StringPiece encrypted_wrapped_record,
                                    ::reporting::Priority priority = kPriority) {
-    base::Value record_dictionary{base::Value::Type::DICT};
+    base::Value::Dict record_dictionary;
     std::string base64_encode;
     base::Base64Encode(encrypted_wrapped_record, &base64_encode);
-    record_dictionary.SetStringKey(kEncryptedWrappedRecordKey, base64_encode);
+    record_dictionary.Set(kEncryptedWrappedRecordKey, base64_encode);
 
-    base::Value* const sequencing_dictionary = record_dictionary.SetKey(
-        kSequenceInformationKey, base::Value{base::Value::Type::DICT});
-    sequencing_dictionary->SetStringKey(
-        kSequencingIdKey, base::NumberToString(GetNextSequenceId()));
-    sequencing_dictionary->SetStringKey(kGenerationIdKey,
-                                        base::NumberToString(kGenerationId));
-    sequencing_dictionary->SetIntKey(kPriorityKey, priority);
+    base::Value::Dict* const sequencing_dictionary =
+        record_dictionary.EnsureDict(kSequenceInformationKey);
+    sequencing_dictionary->Set(kSequencingIdKey,
+                               base::NumberToString(GetNextSequenceId()));
+    sequencing_dictionary->Set(kGenerationIdKey,
+                               base::NumberToString(kGenerationId));
+    sequencing_dictionary->Set(kPriorityKey, priority);
 
-    base::Value* const encryption_info_dictionary = record_dictionary.SetKey(
-        kEncryptionInfoKey, base::Value{base::Value::Type::DICT});
-    encryption_info_dictionary->SetStringKey(kEncryptionKey,
-                                             kEncryptionKeyValue);
-    encryption_info_dictionary->SetStringKey(
-        kPublicKeyIdKey, base::NumberToString(kPublicKeyIdValue));
+    base::Value::Dict* const encryption_info_dictionary =
+        record_dictionary.EnsureDict(kEncryptionInfoKey);
+    encryption_info_dictionary->Set(kEncryptionKey, kEncryptionKeyValue);
+    encryption_info_dictionary->Set(kPublicKeyIdKey,
+                                    base::NumberToString(kPublicKeyIdValue));
 
-    return record_dictionary;
+    return base::Value(std::move(record_dictionary));
   }
 
   static base::Value::Dict GenerateContext(base::StringPiece key,

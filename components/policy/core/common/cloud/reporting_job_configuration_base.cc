@@ -112,21 +112,20 @@ const char
         "chromeVersion";
 
 // static
-base::Value
+base::Value::Dict
 ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserDictionary(
     bool include_device_info) {
-  base::Value browser_dictionary{base::Value::Type::DICT};
+  base::Value::Dict browser_dictionary;
 
   base::FilePath browser_id;
   if (base::PathService::Get(base::DIR_EXE, &browser_id)) {
-    browser_dictionary.SetStringKey(kBrowserId, browser_id.AsUTF8Unsafe());
+    browser_dictionary.Set(kBrowserId, browser_id.AsUTF8Unsafe());
   }
 
   if (include_device_info)
-    browser_dictionary.SetStringKey(kMachineUser, GetOSUsername());
+    browser_dictionary.Set(kMachineUser, GetOSUsername());
 
-  browser_dictionary.SetStringKey(kChromeVersion,
-                                  version_info::GetVersionNumber());
+  browser_dictionary.Set(kChromeVersion, version_info::GetVersionNumber());
   return browser_dictionary;
 }
 
