@@ -914,8 +914,7 @@ class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
-                       // TODO(crbug.com/1323032): Re-enable this test
-                       DISABLED_SetupProgessStepsDisplayCorrectly) {
+                       SetupProgessStepsDisplayCorrectly) {
   SimulateNetworkConnected();
   TriggerDemoModeOnWelcomeScreen();
   UseOnlineModeOnNetworkScreen();
