@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
@@ -647,6 +648,21 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         mState = State.RUNNING_HIDE_TRANSITION;
+    }
+
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        if (mButton == null || mAnimationImage == null) return;
+
+        // ImageView's scale type does not take into account the layout's direction, FIT_START
+        // always aligns from the left and FIT_END always aligns from the right.
+        if (layoutDirection == LAYOUT_DIRECTION_LTR) {
+            mButton.setScaleType(ScaleType.FIT_START);
+            mAnimationImage.setScaleType(ScaleType.FIT_START);
+        } else {
+            mButton.setScaleType(ScaleType.FIT_END);
+            mAnimationImage.setScaleType(ScaleType.FIT_END);
+        }
     }
 
     private void showIcon(boolean animate) {

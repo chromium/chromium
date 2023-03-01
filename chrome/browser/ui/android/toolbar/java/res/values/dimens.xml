@@ -17,8 +17,17 @@ found in the LICENSE file.
          (matches toolbar_height_no_shadow). -->
     <dimen name="ntp_search_box_bounds_vertical_inset_modern">-4dp</dimen>
 
-    <!-- Toolbar Phone - padding of the optional button when menu button is present -->
-    <dimen name="toolbar_phone_optional_button_padding">12dp</dimen>
+    <!-- Toolbar Tablet - padding of the optional button when menu button is present -->
+    <dimen name="toolbar_tablet_optional_button_padding">12dp</dimen>
+
+    <!-- Toolbar Phone - Optional toolbar button dimensions -->
+    <!-- Padding of button's background, only visible when showing a contextual action. -->
+    <dimen name="toolbar_phone_optional_button_background_start_padding">12dp</dimen>
+    <dimen name="toolbar_phone_optional_button_background_vertical_padding">8dp</dimen>
+    <!-- Padding of optional button, used to adjust button's icon within its clickable area. -->
+    <dimen name="toolbar_phone_optional_button_foreground_start_padding">20dp</dimen>
+    <dimen name="toolbar_phone_optional_button_foreground_vertical_padding">16dp</dimen>
+    <!-- Maximum width of optional button when expanded into an action chip. -->
     <dimen name="toolbar_phone_optional_button_action_chip_max_width">175dp</dimen>
 
     <!-- Home Button Menu dimensions-->
