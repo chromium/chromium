@@ -274,8 +274,6 @@ public class CompositorViewHolder extends FrameLayout
 
     private View mUrlBar;
 
-    private ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
-
     private PrefService mPrefService;
 
     /**
@@ -577,8 +575,9 @@ public class CompositorViewHolder extends FrameLayout
      * class manages adding and removing observers from this object as needed.
      */
     public void setApplicationViewportInsetSupplier(ApplicationViewportInsetSupplier supplier) {
-        assert mApplicationViewportInsetSupplier == null;
-        mApplicationViewportInsetSupplier = supplier;
+        assert mApplicationBottomInsetSupplier == null;
+        mApplicationBottomInsetSupplier = supplier;
+        mApplicationBottomInsetSupplier.addObserver(mBottomInsetObserver);
         updateApplicationViewportInsetSuppliers();
     }
 
@@ -588,23 +587,22 @@ public class CompositorViewHolder extends FrameLayout
     // keyboard resizes only the visual viewport (otherwise the visual viewport and web contents
     // size are resized together).
     private void updateApplicationViewportInsetSuppliers() {
-        if (mApplicationViewportInsetSupplier == null) return;
+        if (mApplicationBottomInsetSupplier == null) return;
 
         if (oskResizesVisualViewport()) {
             if (mAutofillUiBottomInsetSupplier != null) {
-                mApplicationViewportInsetSupplier.addStackingSupplier(
-                        mAutofillUiBottomInsetSupplier);
+                mApplicationBottomInsetSupplier.addStackingSupplier(mAutofillUiBottomInsetSupplier);
             }
             if (mInsetObserverView != null) {
-                mApplicationViewportInsetSupplier.addStackingSupplier(
+                mApplicationBottomInsetSupplier.addStackingSupplier(
                         mInsetObserverView.getSupplierForBottomInset());
             }
         } else {
             if (mAutofillUiBottomInsetSupplier != null) {
-                mApplicationViewportInsetSupplier.removeSupplier(mAutofillUiBottomInsetSupplier);
+                mApplicationBottomInsetSupplier.removeSupplier(mAutofillUiBottomInsetSupplier);
             }
             if (mInsetObserverView != null) {
-                mApplicationViewportInsetSupplier.removeSupplier(
+                mApplicationBottomInsetSupplier.removeSupplier(
                         mInsetObserverView.getSupplierForBottomInset());
             }
         }
@@ -674,8 +672,6 @@ public class CompositorViewHolder extends FrameLayout
                     R.id.control_container, mControlContainer.getToolbarResourceAdapter());
         }
 
-        mApplicationBottomInsetSupplier = windowAndroid.getApplicationBottomInsetProvider();
-        mApplicationBottomInsetSupplier.addObserver(mBottomInsetObserver);
         mPrefService = prefService;
     }
 

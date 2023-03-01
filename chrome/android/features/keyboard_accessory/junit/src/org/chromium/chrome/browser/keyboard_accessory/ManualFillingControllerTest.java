@@ -307,7 +307,7 @@ public class ManualFillingControllerTest {
         MockitoAnnotations.initMocks(this);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
         mInsetSupplier.addStackingSupplier(mKeyboardInsetSupplier);
-        when(mMockWindow.getApplicationBottomInsetProvider()).thenReturn(mInsetSupplier);
+        when(mMockWindow.getApplicationBottomInsetSupplier()).thenReturn(mInsetSupplier);
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
         when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);

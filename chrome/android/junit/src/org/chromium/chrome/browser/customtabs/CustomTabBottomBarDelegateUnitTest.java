@@ -99,7 +99,7 @@ public class CustomTabBottomBarDelegateUnitTest {
         when(mIntent.getParcelableExtra(
                      CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION))
                 .thenReturn(mSwipeUpPendingIntent);
-        when(mWindowAndroid.getApplicationBottomInsetProvider()).thenReturn(mViewportInsetSupplier);
+        when(mWindowAndroid.getApplicationBottomInsetSupplier()).thenReturn(mViewportInsetSupplier);
         mIntentDataProvider = new CustomTabIntentDataProvider(
                 mIntent, mActivity, CustomTabsIntent.COLOR_SCHEME_LIGHT);
         mBottomBarDelegate = new CustomTabBottomBarDelegate(mActivity, mWindowAndroid,

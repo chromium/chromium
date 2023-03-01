@@ -116,7 +116,7 @@ public class CustomTabBottomBarDelegate
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
 
         Callback<Integer> insetObserver = this::onViewPortInsetChange;
-        mWindowAndroid.getApplicationBottomInsetProvider().addObserver(insetObserver);
+        mWindowAndroid.getApplicationBottomInsetSupplier().addObserver(insetObserver);
         mAutofillUiBottomInsetSupplier.addObserver(insetObserver);
     }
 
@@ -439,7 +439,7 @@ public class CustomTabBottomBarDelegate
     private void onViewPortInsetChange(Integer integer) {
         if (mBottomBarView == null) return;
         hideBottomBar(hasNonZeroInset(mAutofillUiBottomInsetSupplier)
-                || hasNonZeroInset(mWindowAndroid.getApplicationBottomInsetProvider()));
+                || hasNonZeroInset(mWindowAndroid.getApplicationBottomInsetSupplier()));
     }
 
     private static boolean hasNonZeroInset(Supplier<Integer> insetSupplier) {

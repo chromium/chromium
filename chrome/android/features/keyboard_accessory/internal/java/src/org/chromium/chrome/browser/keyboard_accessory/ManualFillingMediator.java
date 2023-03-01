@@ -376,7 +376,7 @@ class ManualFillingMediator
         float height = webContents.getHeight(); // In dip. Includes top control elements only.
 
         // WebContents height ignores the soft keyboard — subtract the keyboard height:
-        height -= mWindowAndroid.getApplicationBottomInsetProvider().get()
+        height -= mWindowAndroid.getApplicationBottomInsetSupplier().get()
                 / mWindowAndroid.getDisplay().getDipScale();
 
         // Don't consider the impact of the accessory as shown already. If we have space for a bar,

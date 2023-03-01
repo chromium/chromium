@@ -645,7 +645,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     getControlContainerHeightResource());
 
             mBottomContainer.initialize(getBrowserControlsManager(),
-                    getWindowAndroid().getApplicationBottomInsetProvider(),
+                    getWindowAndroid().getApplicationBottomInsetSupplier(),
                     mManualFillingComponentSupplier.get().getBottomInsetSupplier());
 
             ShareDelegate shareDelegate =
@@ -2032,7 +2032,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         compositorViewHolder.setAutofillUiBottomInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
         compositorViewHolder.setApplicationViewportInsetSupplier(
-                getWindowAndroid().getApplicationBottomInsetProvider());
+                getWindowAndroid().getApplicationBottomInsetSupplier());
 
         compositorViewHolder.setTopUiThemeColorProvider(
                 mRootUiCoordinator.getTopUiThemeColorProvider());
