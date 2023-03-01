@@ -16,7 +16,7 @@ BrowserUrlOpener* g_instance = nullptr;
 
 // static
 BrowserUrlOpener* BrowserUrlOpener::Get() {
-  CHECK(g_instance);
+  DCHECK(g_instance);
   return g_instance;
 }
 
