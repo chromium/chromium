@@ -384,7 +384,7 @@ TEST(WinUtil, IsGuid) {
 
 TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
   constexpr int kRunEntries = 6;
-  constexpr wchar_t kRunEntryPrefix[] = L"win_util_unittest";
+  const std::wstring kRunEntryPrefix(base::ASCIIToWide(test::GetTestName()));
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -411,7 +411,7 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
 
 TEST(WinUtil, DeleteRegValue) {
   constexpr int kRegValues = 6;
-  constexpr wchar_t kRegValuePrefix[] = L"win_util_unittest";
+  const std::wstring kRegValuePrefix(base::ASCIIToWide(test::GetTestName()));
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -436,7 +436,7 @@ TEST(WinUtil, ForEachServiceWithPrefix) {
   }
 
   constexpr int kNumServices = 6;
-  constexpr wchar_t kServiceNamePrefix[] = L"win_util_unittest";
+  const std::wstring kServiceNamePrefix(base::ASCIIToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {
     std::wstring service_name(kServiceNamePrefix);
@@ -463,7 +463,7 @@ TEST(WinUtil, DeleteService) {
   }
 
   constexpr int kNumServices = 6;
-  constexpr wchar_t kServiceNamePrefix[] = L"win_util_unittest";
+  const std::wstring kServiceNamePrefix(base::ASCIIToWide(test::GetTestName()));
 
   for (int count = 0; count < kNumServices; ++count) {
     std::wstring service_name(kServiceNamePrefix);

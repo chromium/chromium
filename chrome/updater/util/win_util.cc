@@ -1055,7 +1055,13 @@ void ForEachServiceWithPrefix(
         continue;
       }
 
-      if (base::StartsWith(display_name, display_name_prefix)) {
+      const bool display_name_starts_with_prefix =
+          base::StartsWith(display_name, display_name_prefix);
+      VLOG(1) << __func__ << ": " << service_name
+              << " matches: " << service_name_prefix << ": " << display_name
+              << ": " << display_name_starts_with_prefix << ": "
+              << display_name_prefix;
+      if (display_name_starts_with_prefix) {
         callback.Run(service_name);
       }
     }
@@ -1083,6 +1089,7 @@ void ForEachServiceWithPrefix(
     return false;
   }
 
+  VLOG(1) << __func__ << ": " << service_name << ": " << is_service_deleted;
   return is_service_deleted;
 }
 
