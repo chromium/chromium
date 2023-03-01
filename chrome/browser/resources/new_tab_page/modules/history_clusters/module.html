@@ -33,6 +33,9 @@
   <ntp-history-clusters-tile id="main-tile" large-format
                              visit="[[cluster.visits.0]]">
   </ntp-history-clusters-tile>
+  <ntp-history-clusters-suggest-tile id="related-searches-tile"
+                                 related-searches="[[cluster.relatedSearches]]">
+  </ntp-history-clusters-suggest-tile>
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
     <div id="layout1" class="layout">Layout 1</div>
   </template>

@@ -44,7 +44,20 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           visits: [],
           label: undefined,
           labelMatchPositions: [],
-          relatedSearches: [],
+          relatedSearches: [
+            {
+              query: 'Test Query',
+              url: {url: 'https://www.google.com/search?q=test'},
+            },
+            {
+              query: 'Test Query 2',
+              url: {url: 'https://www.google.com/search?q=test2'},
+            },
+            {
+              query: 'Test Query 3',
+              url: {url: 'https://www.google.com/search?q=test3'},
+            },
+          ],
           imageUrl: undefined,
           fromPersistence: false,
           debugInfo: undefined,
@@ -200,6 +213,29 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     assertTrue(!!tileElement);
 
     assertEquals($$(tileElement, '#title')!.innerHTML, 'Test Title 0');
+  });
+
+  test('Related searches element populated with correct data', async () => {
+    handler.setResultFor(
+        'getCluster', Promise.resolve({cluster: createSampleCluster(3, 2)}));
+
+    const moduleElement = await historyClustersDescriptor.initialize(0) as
+        HistoryClustersModuleElement;
+
+    document.body.append(moduleElement);
+    assertTrue(!!moduleElement);
+
+    await handler.whenCalled('getCluster');
+    await waitAfterNextRender(moduleElement);
+
+    const suggestTileElement =
+        $$(moduleElement, 'ntp-history-clusters-suggest-tile');
+    assertTrue(!!suggestTileElement);
+
+    assertEquals($$(suggestTileElement, '.title')!.innerHTML, 'Test Query');
+
+    assertEquals(
+        suggestTileElement.shadowRoot!.querySelectorAll('.title').length, 3);
   });
 
   test('Header element populated with correct data', async () => {
