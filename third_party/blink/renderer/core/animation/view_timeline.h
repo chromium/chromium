@@ -63,10 +63,6 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   // a fractional offset.
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
 
-  AnimationTimeline::TimeDelayPair ComputeEffectiveAnimationDelays(
-      const Animation* animation,
-      const Timing& timing) const override;
-
   CSSNumericValue* startOffset() const;
   CSSNumericValue* endOffset() const;
 

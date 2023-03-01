@@ -222,16 +222,14 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   }
   void SetRangeStart(const absl::optional<TimelineOffset>& range_start) {
     range_start_ = range_start;
-    if (content_) {
-      content_->InvalidateNormalizedTiming();
-    }
+    OnRangeUpdate();
   }
   void SetRangeEnd(const absl::optional<TimelineOffset>& range_end) {
     range_end_ = range_end;
-    if (content_) {
-      content_->InvalidateNormalizedTiming();
-    }
+    OnRangeUpdate();
   }
+
+  void OnRangeUpdate();
 
   Document* GetDocument() const;
 
@@ -436,6 +434,14 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // TODO(crbug.com/1310961): Investigate if we need a similar fix for
   // non-native paint worklets.
   void UpdateCompositedPaintStatus();
+
+  // Updates the start time for a running animation that is linked to a view
+  //  timeline. As the animation is linked to a timeline range (cover by
+  // default), we don't necessarily know the start time when calling play
+  // internal. Instead, we calculate the start time and iteration duration once
+  // notified that the animation is ready. The start time must also be updated
+  // if changing the animation range on a running or finished animation.
+  void UpdateStartTimeForViewTimeline();
 
   String id_;
 

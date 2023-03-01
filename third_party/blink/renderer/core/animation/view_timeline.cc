@@ -500,36 +500,6 @@ double ViewTimeline::ToFractionalOffset(
   return (offset - align_subject_start_view_end) / range;
 }
 
-AnimationTimeline::TimeDelayPair ViewTimeline::ComputeEffectiveAnimationDelays(
-    const Animation* animation,
-    const Timing& timing) const {
-  absl::optional<AnimationTimeDelta> duration = GetDuration();
-  if (!duration)
-    return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
-  double range_start =
-      animation->GetRangeStart()
-          ? ToFractionalOffset(animation->GetRangeStart().value())
-          : 0;
-  double range_end = animation->GetRangeEnd()
-                         ? ToFractionalOffset(animation->GetRangeEnd().value())
-                         : 1;
-
-  // Timeline range is relative to cover 0% to 100% range.
-  double timeline_range = range_end - range_start;
-
-  // Animation delays are effectively insets on the animation range.
-  // Delays must be expressed as percentages. Time-based delays are ignored.
-  double start_delay =
-      timing.start_delay.relative_delay.value_or(0) * timeline_range;
-  double end_delay =
-      timing.end_delay.relative_delay.value_or(0) * timeline_range;
-
-  // TODO(kevers): Check if additional safeguards are required for delays
-  // summing > 100%.
-  return std::make_pair((range_start + start_delay) * duration.value(),
-                        (1 - range_end + end_delay) * duration.value());
-}
-
 CSSNumericValue* ViewTimeline::startOffset() const {
   absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
   if (!scroll_offsets)

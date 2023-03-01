@@ -786,6 +786,8 @@ void Animation::NotifyReady(AnimationTimeDelta ready_time) {
 // Refer to Step 8.3 'pending play task' in the following spec:
 // https://www.w3.org/TR/web-animations-1/#playing-an-animation-section
 void Animation::CommitPendingPlay(AnimationTimeDelta ready_time) {
+  UpdateStartTimeForViewTimeline();
+
   DCHECK(start_time_ || hold_time_);
   DCHECK(pending_play_);
   pending_play_ = false;
@@ -2201,6 +2203,41 @@ void Animation::SetCompositorPending(bool effect_changed) {
     // animation to force Paint to re-evaluate whether the background should be
     // painted via a paint worklet.
     UpdateCompositedPaintStatus();
+  }
+}
+
+void Animation::UpdateStartTimeForViewTimeline() {
+  auto* view_timeline = DynamicTo<ViewTimeline>(timeline_.Get());
+  if (!view_timeline || !effect()) {
+    return;
+  }
+
+  absl::optional<TimelineOffset> boundary;
+  double default_offset;
+  if (EffectivePlaybackRate() >= 0) {
+    boundary = GetRangeStart();
+    default_offset = 0;
+  } else {
+    boundary = GetRangeEnd();
+    default_offset = 1;
+  }
+
+  double relative_offset =
+      boundary ? view_timeline->ToFractionalOffset(boundary.value())
+               : default_offset;
+  AnimationTimeDelta duration = timeline_->GetDuration().value();
+  start_time_ = duration * relative_offset;
+}
+
+void Animation::OnRangeUpdate() {
+  SetOutdated();
+  if (content_) {
+    // Animation range affects intrinsic iteration duration, which in turn
+    // affects iteration duration in normalized timing.
+    content_->InvalidateNormalizedTiming();
+  }
+  if (start_time_) {
+    UpdateStartTimeForViewTimeline();
   }
 }
 

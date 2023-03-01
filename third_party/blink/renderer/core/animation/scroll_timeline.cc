@@ -432,21 +432,4 @@ void ScrollTimeline::UpdateCompositorTimeline() {
           GetResolvedScrollOffsets());
 }
 
-ScrollTimeline::TimeDelayPair ScrollTimeline::ComputeEffectiveAnimationDelays(
-    const Animation* animation,
-    const Timing& timing) const {
-  absl::optional<AnimationTimeDelta> duration = GetDuration();
-  if (!duration) {
-    return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
-  }
-
-  // Animation delays are effectively insets on the animation range.
-  // Delays must be expressed as percentages. Time-based delays are ignored.
-  double start_delay = timing.start_delay.relative_delay.value_or(0);
-  double end_delay = timing.end_delay.relative_delay.value_or(0);
-
-  return std::make_pair(start_delay * duration.value(),
-                        end_delay * duration.value());
-}
-
 }  // namespace blink
