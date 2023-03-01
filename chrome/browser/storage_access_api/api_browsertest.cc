@@ -216,8 +216,34 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     load_observer.Wait();
   }
 
+  void NavigateToPageWithTwoFrames(const std::string& host) {
+    GURL main_url(https_server_.GetURL(host, "/two_iframes_blank.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  }
+
+  void NavigateFirstFrameTo(const GURL& url) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(NavigateIframeToURL(web_contents, "iframe1", url));
+  }
+
+  void NavigateSecondFrameTo(const GURL& url) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(NavigateIframeToURL(web_contents, "iframe2", url));
+  }
+
   GURL EchoCookiesURL(const std::string& host) {
     return https_server().GetURL(host, "/echoheader?cookie");
+  }
+
+  std::string CookiesFromFetch(content::RenderFrameHost* render_frame_host,
+                               const std::string& subresource_host) {
+    return content::EvalJs(render_frame_host,
+                           base::StringPrintf(
+                               "fetch('%s').then((resp) => resp.text())",
+                               EchoCookiesURL(subresource_host).spec().c_str()))
+        .ExtractString();
   }
 
   // Reads cookies via `document.cookie` in the provided RFH, and via a
@@ -229,11 +255,7 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
       const std::string& subresource_host) {
     return {
         content::EvalJs(render_frame_host, "document.cookie").ExtractString(),
-        content::EvalJs(
-            render_frame_host,
-            base::StringPrintf("fetch('%s').then((resp) => resp.text())",
-                               EchoCookiesURL(subresource_host).spec().c_str()))
-            .ExtractString(),
+        CookiesFromFetch(render_frame_host, subresource_host),
     };
   }
 
@@ -267,6 +289,12 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
 
   content::RenderFrameHost* GetNestedFrame() {
     return ChildFrameAt(GetFrame(), 0);
+  }
+
+  content::RenderFrameHost* GetFirstFrame() { return GetFrame(); }
+
+  content::RenderFrameHost* GetSecondFrame() {
+    return ChildFrameAt(GetPrimaryMainFrame(), 1);
   }
 
   net::test_server::EmbeddedTestServer& https_server() { return https_server_; }
@@ -391,6 +419,50 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
                   blink::mojom::WebFeature::
                       kStorageAccessAPI_requestStorageAccess_Method),
               Gt(0));
+}
+
+// Validate that cross-site sibling iframes cannot take advantage of each
+// other's granted permission.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       ThirdPartyCookiesCrossSiteSiblingIFrameRequestsAccess) {
+  SetBlockThirdPartyCookies(true);
+
+  // Set cross-site cookies on all hosts.
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+  SetCrossSiteCookieOnHost(kHostC);
+
+  NavigateToPageWithTwoFrames(kHostA);
+
+  // Navigate the first iframe to kHostB and grant Storage Access.
+  NavigateFirstFrameTo(EchoCookiesURL(kHostB));
+  EXPECT_EQ(ReadCookiesAndContent(GetFirstFrame(), kHostB),
+            NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFirstFrame()));
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFirstFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFirstFrame()));
+  EXPECT_EQ(ReadCookies(GetFirstFrame(), kHostB),
+            CookieBundle("cross-site=b.test"));
+
+  // Navigate the second iframe to kHostC and grant Storage Access.
+  NavigateSecondFrameTo(EchoCookiesURL(kHostC));
+  EXPECT_EQ(ReadCookiesAndContent(GetSecondFrame(), kHostC),
+            NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetSecondFrame()));
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetSecondFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetSecondFrame()));
+  EXPECT_EQ(ReadCookies(GetSecondFrame(), kHostC),
+            CookieBundle("cross-site=c.test"));
+
+  // Verify same-origin subresource request has cookie access whereas the
+  // cross-origin subresource request does not for iframe1.
+  EXPECT_EQ(CookiesFromFetch(GetFirstFrame(), kHostB), "cross-site=b.test");
+  EXPECT_EQ(CookiesFromFetch(GetFirstFrame(), kHostC), "None");
+
+  // Verify same-origin subresource request has cookie access whereas the
+  // cross-origin subresource request does not for iframe2.
+  EXPECT_EQ(CookiesFromFetch(GetSecondFrame(), kHostC), "cross-site=c.test");
+  EXPECT_EQ(CookiesFromFetch(GetSecondFrame(), kHostB), "None");
 }
 
 // Validate that the Storage Access API does not override any explicit user
