@@ -482,6 +482,8 @@ component("bluetooth") {
         "floss/bluetooth_advertisement_floss.h",
         "floss/bluetooth_device_floss.cc",
         "floss/bluetooth_device_floss.h",
+        "floss/bluetooth_gatt_characteristic_floss.cc",
+        "floss/bluetooth_gatt_characteristic_floss.h",
         "floss/bluetooth_gatt_connection_floss.cc",
         "floss/bluetooth_gatt_connection_floss.h",
         "floss/bluetooth_gatt_service_floss.cc",

@@ -70,7 +70,10 @@ BluetoothRemoteGattDescriptorFloss::GetCharacteristic() const {
 
 device::BluetoothRemoteGattCharacteristic::Permissions
 BluetoothRemoteGattDescriptorFloss::GetPermissions() const {
-  return descriptor_->permissions;
+  const auto& [props, perms] =
+      BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
+          /*properties=*/0, descriptor_->permissions);
+  return perms;
 }
 
 void BluetoothRemoteGattDescriptorFloss::ReadRemoteDescriptor(

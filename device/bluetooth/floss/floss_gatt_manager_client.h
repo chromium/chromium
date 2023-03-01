@@ -102,6 +102,28 @@ struct DEVICE_BLUETOOTH_EXPORT GattDescriptor {
 };
 
 struct DEVICE_BLUETOOTH_EXPORT GattCharacteristic {
+  enum Property {
+    GATT_CHAR_PROP_BIT_BROADCAST = (1 << 0),
+    GATT_CHAR_PROP_BIT_READ = (1 << 1),
+    GATT_CHAR_PROP_BIT_WRITE_NR = (1 << 2),
+    GATT_CHAR_PROP_BIT_WRITE = (1 << 3),
+    GATT_CHAR_PROP_BIT_NOTIFY = (1 << 4),
+    GATT_CHAR_PROP_BIT_INDICATE = (1 << 5),
+    GATT_CHAR_PROP_BIT_AUTH = (1 << 6),
+    GATT_CHAR_PROP_BIT_EXT_PROP = (1 << 7),
+  };
+
+  enum Permission {
+    GATT_PERM_READ = (1 << 0),
+    GATT_PERM_READ_ENCRYPTED = (1 << 1),
+    GATT_PERM_READ_ENC_MITM = (1 << 2),
+    GATT_PERM_WRITE = (1 << 4),
+    GATT_PERM_WRITE_ENCRYPTED = (1 << 5),
+    GATT_PERM_WRITE_ENC_MITM = (1 << 6),
+    GATT_PERM_WRITE_SIGNED = (1 << 7),
+    GATT_PERM_WRITE_SIGNED_MITM = (1 << 8),
+  };
+
   device::BluetoothUUID uuid;
   int32_t instance_id;
   int32_t properties;

@@ -51,6 +51,7 @@
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_local_gatt_characteristic_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_remote_gatt_characteristic_bluez.h"
+#include "device/bluetooth/floss/bluetooth_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -82,61 +83,6 @@ using device::BluetoothTransport;
 using device::BluetoothUUID;
 
 namespace {
-
-// https://android.googlesource.com/platform/system/bt/+/master/stack/include/gatt_api.h
-constexpr int32_t GATT_CHAR_PROP_BIT_BROADCAST = (1 << 0);
-constexpr int32_t GATT_CHAR_PROP_BIT_READ = (1 << 1);
-constexpr int32_t GATT_CHAR_PROP_BIT_WRITE_NR = (1 << 2);
-constexpr int32_t GATT_CHAR_PROP_BIT_WRITE = (1 << 3);
-constexpr int32_t GATT_CHAR_PROP_BIT_NOTIFY = (1 << 4);
-constexpr int32_t GATT_CHAR_PROP_BIT_INDICATE = (1 << 5);
-constexpr int32_t GATT_CHAR_PROP_BIT_AUTH = (1 << 6);
-constexpr int32_t GATT_CHAR_PROP_BIT_EXT_PROP = (1 << 7);
-constexpr int32_t GATT_PERM_READ = (1 << 0);
-constexpr int32_t GATT_PERM_READ_ENCRYPTED = (1 << 1);
-constexpr int32_t GATT_PERM_READ_ENC_MITM = (1 << 2);
-constexpr int32_t GATT_PERM_WRITE = (1 << 4);
-constexpr int32_t GATT_PERM_WRITE_ENCRYPTED = (1 << 5);
-constexpr int32_t GATT_PERM_WRITE_ENC_MITM = (1 << 6);
-constexpr int32_t GATT_PERM_WRITE_SIGNED = (1 << 7);
-constexpr int32_t GATT_PERM_WRITE_SIGNED_MITM = (1 << 8);
-constexpr std::pair<int32_t, device::BluetoothGattCharacteristic::Permission>
-    kPermissionMapping[] = {
-        {GATT_PERM_READ, device::BluetoothGattCharacteristic::PERMISSION_READ},
-        {GATT_PERM_READ_ENCRYPTED,
-         device::BluetoothGattCharacteristic::PERMISSION_READ_ENCRYPTED},
-        {GATT_PERM_READ_ENC_MITM, device::BluetoothGattCharacteristic::
-                                      PERMISSION_READ_ENCRYPTED_AUTHENTICATED},
-        {GATT_PERM_WRITE,
-         device::BluetoothGattCharacteristic::PERMISSION_WRITE},
-        {GATT_PERM_WRITE_ENCRYPTED,
-         device::BluetoothGattCharacteristic::PERMISSION_WRITE_ENCRYPTED},
-        {GATT_PERM_WRITE_ENC_MITM,
-         device::BluetoothGattCharacteristic::
-             PERMISSION_WRITE_ENCRYPTED_AUTHENTICATED},
-        {GATT_PERM_WRITE_SIGNED_MITM,
-         device::BluetoothGattCharacteristic::
-             PERMISSION_WRITE_ENCRYPTED_AUTHENTICATED},
-};
-constexpr std::pair<int32_t, device::BluetoothGattCharacteristic::Properties>
-    kPropertyMapping[] = {
-        {GATT_CHAR_PROP_BIT_BROADCAST,
-         device::BluetoothGattCharacteristic::PROPERTY_BROADCAST},
-        {GATT_CHAR_PROP_BIT_READ,
-         device::BluetoothGattCharacteristic::PROPERTY_READ},
-        {GATT_CHAR_PROP_BIT_WRITE_NR,
-         device::BluetoothGattCharacteristic::PROPERTY_WRITE_WITHOUT_RESPONSE},
-        {GATT_CHAR_PROP_BIT_WRITE,
-         device::BluetoothGattCharacteristic::PROPERTY_WRITE},
-        {GATT_CHAR_PROP_BIT_NOTIFY,
-         device::BluetoothGattCharacteristic::PROPERTY_NOTIFY},
-        {GATT_CHAR_PROP_BIT_INDICATE,
-         device::BluetoothGattCharacteristic::PROPERTY_INDICATE},
-        {GATT_CHAR_PROP_BIT_AUTH, device::BluetoothGattCharacteristic::
-                                      PROPERTY_AUTHENTICATED_SIGNED_WRITES},
-        {GATT_CHAR_PROP_BIT_EXT_PROP,
-         device::BluetoothGattCharacteristic::PROPERTY_EXTENDED_PROPERTIES},
-};
 
 constexpr uint32_t kGattReadPermission =
     BluetoothGattCharacteristic::Permission::PERMISSION_READ |
@@ -190,28 +136,6 @@ constexpr base::TimeDelta kPowerIntentTimeout = base::Seconds(8);
 
 // Client name for logging in BLE scanning.
 constexpr char kScanClientName[] = "ARC";
-
-device::BluetoothGattCharacteristic::Permissions ConvertToBlueZGattPermissions(
-    int32_t permissions) {
-  device::BluetoothGattCharacteristic::Permissions result =
-      device::BluetoothGattCharacteristic::PERMISSION_NONE;
-  for (const auto& permission_pair : kPermissionMapping) {
-    if (permissions & permission_pair.first)
-      result |= permission_pair.second;
-  }
-  return result;
-}
-
-device::BluetoothGattCharacteristic::Properties ConvertToBlueZGattProperties(
-    int32_t properties) {
-  device::BluetoothGattCharacteristic::Properties result =
-      device::BluetoothGattCharacteristic::PROPERTY_NONE;
-  for (const auto& property_pair : kPropertyMapping) {
-    if (properties & property_pair.first)
-      result |= property_pair.second;
-  }
-  return result;
-}
 
 arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
     const device::BluetoothGattService::GattErrorCode& error_code,
@@ -1981,18 +1905,13 @@ void ArcBluetoothBridge::AddCharacteristic(int32_t service_handle,
     std::move(callback).Run(kInvalidGattAttributeHandle);
     return;
   }
-  device::BluetoothGattCharacteristic::Properties bluez_properties =
-      ConvertToBlueZGattProperties(properties);
-  // "WRITE_SIGNED" is defined as a permission in android, while it is a
-  // property in BlueZ. Thus, extra translation is required here.
-  if (permissions & GATT_PERM_WRITE_SIGNED ||
-      permissions & GATT_PERM_WRITE_SIGNED_MITM) {
-    bluez_properties |= device::BluetoothGattCharacteristic::
-        PROPERTY_AUTHENTICATED_SIGNED_WRITES;
-  }
+
+  const auto& [bluez_properties, bluez_permissions] =
+      floss::BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
+          static_cast<uint8_t>(properties), static_cast<uint16_t>(permissions));
   base::WeakPtr<BluetoothLocalGattCharacteristic> characteristic =
       BluetoothLocalGattCharacteristic::Create(
-          uuid, bluez_properties, ConvertToBlueZGattPermissions(permissions),
+          uuid, bluez_properties, bluez_permissions,
           bluetooth_adapter_->GetGattService(gatt_identifier_[service_handle]));
   int32_t characteristic_handle =
       CreateGattAttributeHandle(characteristic.get());
@@ -2029,9 +1948,13 @@ void ArcBluetoothBridge::AddDescriptor(int32_t service_handle,
       service->GetCharacteristic(gatt_identifier_[last_characteristic_handle]);
   DCHECK(characteristic);
 
+  const auto& [unused, bluez_permissions] =
+      floss::BluetoothGattCharacteristicFloss::ConvertPropsAndPermsFromFloss(
+          /*properties=*/0, static_cast<uint16_t>(permissions));
+
   base::WeakPtr<BluetoothLocalGattDescriptor> descriptor =
-      BluetoothLocalGattDescriptor::Create(
-          uuid, ConvertToBlueZGattPermissions(permissions), characteristic);
+      BluetoothLocalGattDescriptor::Create(uuid, bluez_permissions,
+                                           characteristic);
   std::move(callback).Run(CreateGattAttributeHandle(descriptor.get()));
 }
 
