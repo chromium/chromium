@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -27,6 +28,7 @@
 namespace {
 
 using AcceleratorActionMap = ui::AcceleratorMap<ash::AcceleratorAction>;
+using ::ash::mojom::AcceleratorConfigResult;
 
 void AppendAcceleratorData(
     std::vector<ash::AcceleratorData>& data,

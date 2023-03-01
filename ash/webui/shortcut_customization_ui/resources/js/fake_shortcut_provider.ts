@@ -90,35 +90,35 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   addUserAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods.setResult(
-        'addUserAccelerator', AcceleratorConfigResult.SUCCESS);
+        'addUserAccelerator', AcceleratorConfigResult.kSuccess);
     return this.methods.resolveMethod('addUserAccelerator');
   }
 
   replaceAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods.setResult(
-        'replaceAccelerator', AcceleratorConfigResult.SUCCESS);
+        'replaceAccelerator', AcceleratorConfigResult.kSuccess);
     return this.methods.resolveMethod('replaceAccelerator');
   }
 
   removeAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods.setResult(
-        'removeAccelerator', AcceleratorConfigResult.SUCCESS);
+        'removeAccelerator', AcceleratorConfigResult.kSuccess);
     return this.methods.resolveMethod('removeAccelerator');
   }
 
   restoreAllDefaults(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods.setResult(
-        'restoreAllDefaults', AcceleratorConfigResult.SUCCESS);
+        'restoreAllDefaults', AcceleratorConfigResult.kSuccess);
     return this.methods.resolveMethod('restoreAllDefaults');
   }
 
   restoreActionDefaults(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods.setResult(
-        'restoreActionDefaults', AcceleratorConfigResult.SUCCESS);
+        'restoreActionDefaults', AcceleratorConfigResult.kSuccess);
     return this.methods.resolveMethod('restoreActionDefaults');
   }
 

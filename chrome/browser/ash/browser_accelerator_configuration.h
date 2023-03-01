@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerator_configuration.h"
+#include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -34,19 +35,19 @@ class ASH_EXPORT BrowserAcceleratorConfiguration
       AcceleratorActionId action_id) override;
   bool IsMutable() const override;
   bool IsDeprecated(const ui::Accelerator& accelerator) const override;
-  AcceleratorConfigResult AddUserAccelerator(
+  mojom::AcceleratorConfigResult AddUserAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) override;
-  AcceleratorConfigResult RemoveAccelerator(
+  mojom::AcceleratorConfigResult RemoveAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) override;
-  AcceleratorConfigResult ReplaceAccelerator(
+  mojom::AcceleratorConfigResult ReplaceAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& old_acc,
       const ui::Accelerator& new_acc) override;
-  AcceleratorConfigResult RestoreDefault(
+  mojom::AcceleratorConfigResult RestoreDefault(
       AcceleratorActionId action_id) override;
-  AcceleratorConfigResult RestoreAllDefaults() override;
+  mojom::AcceleratorConfigResult RestoreAllDefaults() override;
 
  private:
   std::vector<ui::Accelerator> accelerators_;

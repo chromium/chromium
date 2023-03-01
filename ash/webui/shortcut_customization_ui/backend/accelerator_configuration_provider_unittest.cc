@@ -13,6 +13,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/session/session_controller_impl.h"
@@ -47,6 +48,8 @@ using NonConfigurableActionToParts =
                    const std::vector<mojom::TextAcceleratorPartPtr&>>;
 
 namespace {
+
+using mojom::AcceleratorConfigResult;
 
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayout2Tag[] = "2";

@@ -1,0 +1,26 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+// This file provides shared enums related to accelerator configurations and
+// their operations.
+
+// Enum of different states as a result from attempting to modify an
+// accelerator.
+enum AcceleratorConfigResult {
+  // No errors.
+  kSuccess = 0,
+  // Error - cannot modify a locked action.
+  kActionLocked = 1,
+  // Error - cannot modify a locked accelerator.
+  kAcceleratorLocked = 2,
+  // Error - an existing action already contains the accelerator.
+  kConflict = 3,
+  // Error - action ID cannot be found, indicating that the shortcut does not
+  // exist.
+  kNotFound = 4,
+  // Error - the key is not allowed to be used as an accelerator activation key.
+  kKeyNotAllowed = 5
+};

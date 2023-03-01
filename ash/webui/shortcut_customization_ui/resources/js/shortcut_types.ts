@@ -5,6 +5,7 @@
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 
+import * as AcceleratorConfigurationTypes from '../mojom-webui/ash/public/mojom/accelerator_configuration.mojom-webui.js';
 import * as AcceleratorInfoTypes from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js';
 import {SearchHandler, SearchHandlerInterface, SearchResult} from '../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
 import {AcceleratorConfigurationProviderInterface, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
@@ -61,14 +62,10 @@ export const AcceleratorState = AcceleratorInfoTypes.AcceleratorState;
  * Enumeration of accelerator config results from adding/replacing/removing an
  * accelerator.
  */
-export enum AcceleratorConfigResult {
-  SUCCESS,
-  ACTION_LOCKED,
-  ACCELERATOR_LOCKED,
-  CONFLICT,
-  NOT_FOUND,
-  DUPLICATE,
-}
+export type AcceleratorConfigResult =
+    AcceleratorConfigurationTypes.AcceleratorConfigResult;
+export const AcceleratorConfigResult =
+    AcceleratorConfigurationTypes.AcceleratorConfigResult;
 
 /**
  * Type alias for Accelerator.

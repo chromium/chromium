@@ -453,7 +453,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
               (getAccelerator(newAcceleratorInfo)))
           .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
-            if (result === AcceleratorConfigResult.SUCCESS) {
+            if (result === AcceleratorConfigResult.kSuccess) {
               this.lookupManager.replaceAccelerator(
                   this.source, this.action,
                   this.acceleratorInfo.layoutProperties.standardAccelerator
@@ -470,7 +470,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
               this.source, this.action, getAccelerator(newAcceleratorInfo))
           .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
-            if (result === AcceleratorConfigResult.SUCCESS) {
+            if (result === AcceleratorConfigResult.kSuccess) {
               this.lookupManager.addAccelerator(
                   this.source, this.action, newAcceleratorInfo);
               this.fireUpdateEvent();

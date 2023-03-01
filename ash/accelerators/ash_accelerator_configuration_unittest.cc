@@ -11,6 +11,7 @@
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,6 +25,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::ash::mojom::AcceleratorConfigResult;
 
 class UpdatedAcceleratorsObserver
     : public ash::AshAcceleratorConfiguration::Observer {

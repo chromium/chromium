@@ -95,33 +95,33 @@ suite('fakeShortcutProviderTest', function() {
   test('AddUserAcceleratorFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
     return getProvider().addUserAccelerator().then((result) => {
-      assertEquals(AcceleratorConfigResult.SUCCESS, result);
+      assertEquals(AcceleratorConfigResult.kSuccess, result);
     });
   });
 
   test('ReplaceAcceleratorFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
     return getProvider().replaceAccelerator().then((result) => {
-      assertEquals(AcceleratorConfigResult.SUCCESS, result);
+      assertEquals(AcceleratorConfigResult.kSuccess, result);
     });
   });
 
   test('RemoveAcceleratorFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
     return getProvider().removeAccelerator().then((result) => {
-      assertEquals(AcceleratorConfigResult.SUCCESS, result);
+      assertEquals(AcceleratorConfigResult.kSuccess, result);
     });
   });
 
   test('RestoreAllDefaultsFake', () => {
     return getProvider().restoreAllDefaults().then((result) => {
-      assertEquals(AcceleratorConfigResult.SUCCESS, result);
+      assertEquals(AcceleratorConfigResult.kSuccess, result);
     });
   });
 
   test('RestoreActionDefaultsFake', () => {
     return getProvider().restoreActionDefaults().then((result) => {
-      assertEquals(AcceleratorConfigResult.SUCCESS, result);
+      assertEquals(AcceleratorConfigResult.kSuccess, result);
     });
   });
 });

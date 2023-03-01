@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/shell.h"
@@ -32,6 +33,8 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
+
+using mojom::AcceleratorConfigResult;
 
 std::vector<std::u16string> SplitStringOnOffsets(
     const std::u16string& input,

@@ -139,7 +139,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         .removeAccelerator(
             this.source, this.action, getAccelerator(this.acceleratorInfo))
         .then((result: AcceleratorConfigResult) => {
-          if (result === AcceleratorConfigResult.SUCCESS) {
+          if (result === AcceleratorConfigResult.kSuccess) {
             this.lookupManager.removeAccelerator(
                 this.source, this.action, getAccelerator(this.acceleratorInfo));
 

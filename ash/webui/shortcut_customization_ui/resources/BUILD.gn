@@ -144,8 +144,15 @@ copy_generated_mojo("copy_accelerator_info_mojo") {
   mojo_files = [ "accelerator_info.mojom-webui.js" ]
 }
 
+copy_generated_mojo("copy_accelerator_configuration_mojo") {
+  deps = [ "//ash/public/mojom:accelerator_configuration_webui_js" ]
+  dir = "ash/public/mojom"
+  mojo_files = [ "accelerator_configuration.mojom-webui.js" ]
+}
+
 ts_definitions("build_mojo_dts") {
   extra_deps = [
+    ":copy_accelerator_configuration_mojo",
     ":copy_accelerator_info_mojo",
     ":copy_shortcuts_mojo",
     ":copy_shortcuts_search_mojo",
@@ -168,16 +175,20 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$out_folder"
   tsconfig_base = "tsconfig_base.json"
-  in_files = js_files + css_wrapper_files + html_wrapper_files +
-             rebase_path(get_target_outputs(":copy_shortcuts_mojo"),
-                         root_dir,
-                         root_build_dir) +
-             rebase_path(get_target_outputs(":copy_shortcuts_search_mojo"),
-                         root_dir,
-                         root_build_dir) +
-             rebase_path(get_target_outputs(":copy_accelerator_info_mojo"),
-                         root_dir,
-                         root_build_dir)
+  in_files =
+      js_files + css_wrapper_files + html_wrapper_files +
+      rebase_path(get_target_outputs(":copy_shortcuts_mojo"),
+                  root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_shortcuts_search_mojo"),
+                  root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_accelerator_info_mojo"),
+                  root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_accelerator_configuration_mojo"),
+                  root_dir,
+                  root_build_dir)
 
   deps = [
     "//third_party/polymer/v3_0:library",
@@ -196,6 +207,7 @@ ts_library("build_ts") {
 
   extra_deps = [
     ":build_mojo_dts",
+    ":copy_accelerator_configuration_mojo",
     ":copy_accelerator_info_mojo",
     ":copy_shortcuts_mojo",
     ":copy_shortcuts_search_mojo",
@@ -223,6 +235,7 @@ generate_grd("build_grd") {
 
 generate_grd("build_mojo_grdp") {
   deps = [
+    "//ash/public/mojom:accelerator_configuration_webui_js",
     "//ash/public/mojom:accelerator_info_webui_js",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings_webui_js",
     "//ash/webui/shortcut_customization_ui/mojom:mojom_webui_js",
@@ -230,6 +243,7 @@ generate_grd("build_mojo_grdp") {
 
   input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
   input_files = [
+    "mojom-webui/ash/public/mojom/accelerator_configuration.mojom-webui.js",
     "mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js",
     "mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js",
     "mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js",

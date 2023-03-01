@@ -17,6 +17,7 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    ":accelerator_configuration",
     ":accelerator_info",
     ":input_device_settings",
     "//chromeos/ash/components/proximity_auth/public/mojom",
@@ -83,4 +84,17 @@ mojom("input_device_settings") {
     "//mojo/public/mojom/base",
     "//ui/chromeos/events/mojom",
   ]
+}
+
+# This is a separate target so that downstream WebUI targets can take
+# advantage of JS module Mojom files, without having to generate WebUI Mojom
+# files for all dependencies (and their dependencies) in //ash/public/mojom.
+mojom("accelerator_configuration") {
+  disable_variants = true
+
+  webui_module_path = "/ash/public/mojom"
+
+  sources = [ "accelerator_configuration.mojom" ]
+
+  public_deps = []
 }
