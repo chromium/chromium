@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -84,6 +85,9 @@ class ClickToCallBrowserTest : public SharingBrowserTest {
       const base::HistogramTester& histograms) {
     return histograms.GetTotalCountsForPrefix(HistogramName(""));
   }
+
+ private:
+  base::test::ScopedFeatureList features_{kClickToCall};
 };
 
 // TODO(himanshujaju): Add UI checks.
@@ -489,6 +493,9 @@ class ClickToCallPolicyTest
 
     provider_.UpdateChromePolicy(policies);
   }
+
+ private:
+  base::test::ScopedFeatureList features_{kClickToCall};
 };
 
 IN_PROC_BROWSER_TEST_P(ClickToCallPolicyTest, RunTest) {
