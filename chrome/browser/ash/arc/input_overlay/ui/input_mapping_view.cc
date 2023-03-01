@@ -12,7 +12,9 @@
 namespace arc::input_overlay {
 namespace {
 // UI specs.
-constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x99);
+constexpr SkColor kEditModeBgColorAlpha =
+    SkColorSetA(SK_ColorBLACK, 0x99 /*60%*/);
+constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
 }  // namespace
 
 InputMappingView::InputMappingView(
@@ -40,19 +42,19 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       mode == DisplayMode::kPreMenu) {
     return;
   }
-  if (!AllowReposition()) {
-    switch (mode) {
-      case DisplayMode::kView:
-        SetBackground(nullptr);
-        break;
-      case DisplayMode::kEdit:
-        SetBackground(views::CreateSolidBackground(kEditModeBgColor));
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+  switch (mode) {
+    case DisplayMode::kView:
+      SetBackground(nullptr);
+      break;
+    case DisplayMode::kEdit:
+      SetBackground(views::CreateSolidBackground(
+          AllowReposition() ? kEditModeBgColor : kEditModeBgColorAlpha));
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
+
   for (auto* view : children()) {
     auto* action_view = static_cast<ActionView*>(view);
     action_view->SetDisplayMode(mode);
