@@ -1914,16 +1914,8 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // If the navigation should end up in a different StoragePartition, create a
   // new BrowsingInstance, as we can only have one StoragePartition per
   // BrowsingInstance.
-  //
-  // Skip this check if effective URLs are involved. This ensures same-site
-  // navigations to non-app sites from an isolated hosted app stay in the same
-  // StoragePartition and process. This behavior is covered in
-  // IsolatedAppTest.IsolatedAppProcessModel.
   if (DoesNavigationChangeStoragePartition(current_instance,
-                                           destination_url_info) &&
-      !current_instance
-           ->IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
-               browser_context, is_main_frame, destination_url_info.url)) {
+                                           destination_url_info)) {
     return BrowsingContextGroupSwap::CreateSecuritySwap();
   }
 

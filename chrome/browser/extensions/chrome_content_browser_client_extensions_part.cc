@@ -97,13 +97,12 @@ namespace extensions {
 namespace {
 
 // Used by the GetPrivilegeRequiredByUrl() and GetProcessPrivilege() functions
-// below.  Extension, and isolated apps require different privileges to be
+// below.  Extensions and hosted apps require different privileges to be
 // granted to their RenderProcessHosts.  This classification allows us to make
 // sure URLs are served by hosts with the right set of privileges.
 enum RenderProcessHostPrivilege {
   PRIV_NORMAL,
   PRIV_HOSTED,
-  PRIV_ISOLATED,
   PRIV_EXTENSION,
 };
 
@@ -124,8 +123,6 @@ RenderProcessHostPrivilege GetPrivilegeRequiredByUrl(
 
   const Extension* extension =
       registry->enabled_extensions().GetByID(url.host());
-  if (extension && AppIsolationInfo::HasIsolatedStorage(extension))
-    return PRIV_ISOLATED;
   if (extension && extension->is_hosted_app())
     return PRIV_HOSTED;
   return PRIV_EXTENSION;
@@ -143,8 +140,6 @@ RenderProcessHostPrivilege GetProcessPrivilege(
   for (const std::string& extension_id : extension_ids) {
     const Extension* extension =
         registry->enabled_extensions().GetByID(extension_id);
-    if (extension && AppIsolationInfo::HasIsolatedStorage(extension))
-      return PRIV_ISOLATED;
     if (extension && extension->is_hosted_app())
       return PRIV_HOSTED;
   }
@@ -292,6 +287,11 @@ bool ChromeContentBrowserClientExtensionsPart::
     return false;
   size_t candidate_active_contents_count =
       candidate_site_instance->GetRelatedActiveContentsCount();
+
+  // Intentionally only checks for hosted app effective URLs and not NTP-based
+  // effective URLs (which ChromeContentBrowserClient::GetEffectiveURL would
+  // include as well). This avoids keeping same-site popups in the NTP's
+  // process, per https://crbug.com/859062.
   bool src_has_effective_url = HasEffectiveUrl(browser_context, candidate_url);
   bool dest_has_effective_url =
       HasEffectiveUrl(browser_context, destination_url);

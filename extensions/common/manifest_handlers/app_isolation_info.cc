@@ -50,46 +50,7 @@ bool AppIsolationHandler::Parse(Extension* extension, std::u16string* error) {
     return true;
   }
 
-  // Other apps only get it if it is requested _and_ experimental APIs are
-  // enabled.
-  if (!extension->is_app() ||
-      !PermissionsParser::HasAPIPermission(
-          extension, mojom::APIPermissionID::kExperimental)) {
-    return true;
-  }
-
-  // We should only be parsing if the extension has the key in the manifest,
-  // or is a platform app (which we already handled).
-  DCHECK(extension->manifest()->FindPath(keys::kIsolation));
-
-  const base::Value* isolation_list = nullptr;
-  if (!extension->manifest()->GetList(keys::kIsolation, &isolation_list)) {
-    *error = manifest_errors::kInvalidIsolation;
-    return false;
-  }
-
-  bool has_isolated_storage = false;
-  const base::Value::List& list = isolation_list->GetList();
-  for (size_t i = 0; i < list.size(); ++i) {
-    if (!list[i].is_string()) {
-      *error = ErrorUtils::FormatErrorMessageUTF16(
-          manifest_errors::kInvalidIsolationValue, base::NumberToString(i));
-      return false;
-    }
-
-    const std::string& isolation_string = list[i].GetString();
-    // Check for isolated storage.
-    if (isolation_string == manifest_values::kIsolatedStorage) {
-      has_isolated_storage = true;
-    } else {
-      DLOG(WARNING) << "Did not recognize isolation type: " << isolation_string;
-    }
-  }
-
-  if (has_isolated_storage)
-    extension->SetManifestData(keys::kIsolation,
-                               std::make_unique<AppIsolationInfo>(true));
-
+  // No other apps get isolated storage, so no parsing is needed.
   return true;
 }
 

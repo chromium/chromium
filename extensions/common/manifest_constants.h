@@ -177,7 +177,6 @@ extern const char kBrowserActionCommandEvent[];
 extern const char kIncognitoNotAllowed[];
 extern const char kIncognitoSplit[];
 extern const char kIncognitoSpanning[];
-extern const char kIsolatedStorage[];
 extern const char kKeybindingPlatformChromeOs[];
 extern const char kKeybindingPlatformDefault[];
 extern const char kKeybindingPlatformLinux[];

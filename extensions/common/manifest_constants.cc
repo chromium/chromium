@@ -176,7 +176,6 @@ const char kBrowserActionCommandEvent[] = "_execute_browser_action";
 const char kIncognitoNotAllowed[] = "not_allowed";
 const char kIncognitoSplit[] = "split";
 const char kIncognitoSpanning[] = "spanning";
-const char kIsolatedStorage[] = "storage";
 const char kKeybindingPlatformChromeOs[] = "chromeos";
 const char kKeybindingPlatformDefault[] = "default";
 const char kKeybindingPlatformLinux[] = "linux";
