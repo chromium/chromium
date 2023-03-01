@@ -5,9 +5,11 @@
 #include "components/image_service/image_service.h"
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/image_service/features.h"
+#include "components/image_service/metrics_util.h"
 #include "components/image_service/mojom/image_service.mojom-shared.h"
 #include "components/image_service/mojom/image_service.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -76,6 +78,8 @@ class ImageServiceTest : public testing::Test {
   std::unique_ptr<optimization_guide::ImageServiceTestOptGuide> test_opt_guide_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<ImageService> image_service_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 // Helper method that stores `image_url` into `out_image_url`.
@@ -143,6 +147,16 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   EXPECT_EQ(test_opt_guide_->on_demand_call_request_context_,
             optimization_guide::proto::CONTEXT_JOURNEYS);
 
+  // Test histograms with literal names to validate client-sliced names.
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "PageImageService.Backend",
+                PageImageServiceBackend::kOptimizationGuide),
+            1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "PageImageService.Backend.Journeys",
+                PageImageServiceBackend::kOptimizationGuide),
+            1);
+
   // Verify the decision can be parsed and sent back to the original caller.
   optimization_guide::OptimizationGuideDecisionWithMetadata decision;
   {
@@ -162,6 +176,16 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
       GURL("https://page-url.com"),
       {{optimization_guide::proto::SALIENT_IMAGE, decision}});
   EXPECT_EQ(image_url_response, GURL("https://image-url.com/foo.png"));
+
+  // Test histograms with literal names to validate client-sliced names.
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "PageImageService.Backend.OptimizationGuide.Result",
+                PageImageServiceOptimizationGuideResult::kSuccess),
+            1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "PageImageService.Backend.OptimizationGuide.Result.Journeys",
+                PageImageServiceOptimizationGuideResult::kSuccess),
+            1);
 }
 
 }  // namespace image_service

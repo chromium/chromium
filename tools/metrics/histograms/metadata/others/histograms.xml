@@ -140,6 +140,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Update" summary="interest group update"/>
 </variants>
 
+<variants name="PageImageServiceClientId">
+  <variant name="" summary="all requests"/>
+  <variant name=".Bookmarks" summary="from Bookmarks"/>
+  <variant name=".Journeys" summary="from Journeys inside History"/>
+  <variant name=".JourneysSidePanel" summary="from Journeys inside Side Panel"/>
+  <variant name=".NtpQuests" summary="from the Quests module on the NTP"/>
+  <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
+</variants>
+
 <variants name="ProcessName">
   <variant name="BrowserProcess" summary=""/>
   <variant name="GPUProcess" summary=""/>
@@ -9551,6 +9560,35 @@ chromium-metrics-reviews@google.com.
     &quot;Index&quot; (the request was for the '/' or '/index.html' resource).
     This is reported for every HTTP request handled.
   </summary>
+</histogram>
+
+<histogram name="PageImageService.Backend.OptimizationGuide.Result{ClientId}"
+    enum="PageImageServiceOptimizationGuideResult" expires_after="2023-08-08">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>Internals&gt;OptimizationGuide</component>
+  <summary>
+    Records the result of requests to the Optimization Guide Salient Images
+    backend.
+
+    Recorded for each request to Optimization Guide, so the total count of this
+    UMA should match that bucket count in PageImageService.Backend.
+  </summary>
+  <token key="ClientId" variants="PageImageServiceClientId"/>
+</histogram>
+
+<histogram name="PageImageService.Backend{ClientId}"
+    enum="PageImageServiceBackend" expires_after="2023-08-08">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the backend chosen for the request. For requests with no valid
+    backend, this is still recorded as the &quot;No Valid Backend&quot; bucket.
+
+    Only recorded for requests that have passed the permission gate.
+  </summary>
+  <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>
 
 <histogram name="PaintHolding.CommitTrigger2" enum="PaintHoldingCommitTrigger2"

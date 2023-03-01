@@ -10,6 +10,8 @@ source_set("image_service") {
     "image_service.h",
     "image_service_handler.cc",
     "image_service_handler.h",
+    "metrics_util.cc",
+    "metrics_util.h",
   ]
   public_deps = [ "mojom:mojo_bindings" ]
   deps = [

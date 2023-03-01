@@ -75,6 +75,7 @@ class ImageService : public KeyedService {
 
   // Callback for `FetchOptimizationGuideImage`.
   void OnOptimizationGuideImageFetched(
+      mojom::ClientId client_id,
       ResultCallback callback,
       const GURL& url,
       const base::flat_map<

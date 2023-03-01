@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_service/features.h"
+#include "components/image_service/metrics_util.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -211,6 +212,9 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
           search_metadata->template_url->GetEngineType(
               template_url_service->search_terms_data()) ==
               SEARCH_ENGINE_GOOGLE) {
+        UmaHistogramEnumerationForClient(kBackendHistogramName,
+                                         PageImageServiceBackend::kSuggest,
+                                         client_id);
         return FetchSuggestImage(/*search_query=*/search_metadata->search_terms,
                                  /*entity_id=*/"", std::move(callback));
       }
@@ -220,10 +224,16 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
   if (options.optimization_guide_images && opt_guide_ &&
       base::FeatureList::IsEnabled(
           kImageServiceOptimizationGuideSalientImages)) {
+    UmaHistogramEnumerationForClient(
+        kBackendHistogramName, PageImageServiceBackend::kOptimizationGuide,
+        client_id);
     return FetchOptimizationGuideImage(client_id, page_url,
                                        std::move(callback));
   }
 
+  UmaHistogramEnumerationForClient(kBackendHistogramName,
+                                   PageImageServiceBackend::kNoValidBackend,
+                                   client_id);
   std::move(callback).Run(GURL());
 }
 
@@ -253,9 +263,8 @@ void ImageService::OnSuggestImageFetched(
 void ImageService::FetchOptimizationGuideImage(mojom::ClientId client_id,
                                                const GURL& page_url,
                                                ResultCallback callback) {
-  if (!opt_guide_) {
-    return std::move(callback).Run(GURL());
-  }
+  DCHECK(opt_guide_) << "FetchOptimizationGuideImage is never called when "
+                        "opt_guide_ is nullptr.";
 
   optimization_guide::proto::RequestContext request_context;
   switch (client_id) {
@@ -286,11 +295,12 @@ void ImageService::FetchOptimizationGuideImage(mojom::ClientId client_id,
       // The callback.md documentation says this is subtle, not ideal, but OK,
       // so long as the RepeatingCallback is only ever called once in practice.
       base::BindRepeating(&ImageService::OnOptimizationGuideImageFetched,
-                          weak_factory_.GetWeakPtr(),
+                          weak_factory_.GetWeakPtr(), client_id,
                           base::Passed(std::move(callback))));
 }
 
 void ImageService::OnOptimizationGuideImageFetched(
+    mojom::ClientId client_id,
     ResultCallback callback,
     const GURL& url,
     const base::flat_map<
@@ -307,14 +317,25 @@ void ImageService::OnOptimizationGuideImageFetched(
 
   auto iter = decisions.find(optimization_guide::proto::SALIENT_IMAGE);
   if (iter == decisions.end()) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kDecisionMissing, client_id);
     return std::move(callback).Run(GURL());
   }
 
   optimization_guide::OptimizationGuideDecisionWithMetadata decision =
       iter->second;
-  if ((decision.decision !=
-       optimization_guide::OptimizationGuideDecision::kTrue) ||
-      !decision.metadata.any_metadata().has_value()) {
+  if (decision.decision !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kNoImage, client_id);
+    return std::move(callback).Run(GURL());
+  }
+  if (!decision.metadata.any_metadata().has_value()) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
     return std::move(callback).Run(GURL());
   }
 
@@ -322,6 +343,9 @@ void ImageService::OnOptimizationGuideImageFetched(
       optimization_guide::proto::SalientImageMetadata>(
       decision.metadata.any_metadata().value());
   if (!parsed_any) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
     return std::move(callback).Run(GURL());
   }
 
@@ -331,12 +355,18 @@ void ImageService::OnOptimizationGuideImageFetched(
     if (thumbnail.has_image_url()) {
       GURL image_url(thumbnail.image_url());
       if (image_url.is_valid()) {
+        UmaHistogramEnumerationForClient(
+            kBackendOptimizationGuideResultHistogramName,
+            PageImageServiceOptimizationGuideResult::kSuccess, client_id);
         return std::move(callback).Run(image_url);
       }
     }
   }
 
   // Fail if we can't find any.
+  UmaHistogramEnumerationForClient(
+      kBackendOptimizationGuideResultHistogramName,
+      PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
   std::move(callback).Run(GURL());
 }
 

@@ -78076,6 +78076,25 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PageImageServiceBackend">
+  <int value="0" label="No Valid Backend"/>
+  <int value="1" label="Suggest"/>
+  <int value="2" label="Optimization Guide"/>
+</enum>
+
+<enum name="PageImageServiceOptimizationGuideResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Decision missing">
+    The entire Decision for Images is missing.
+  </int>
+  <int value="2" label="No Image">
+    No image was available for the requested Page URL.
+  </int>
+  <int value="3" label="Response malformed">
+    The response was malformed in some unexpected way.
+  </int>
+</enum>
+
 <enum name="PageInfoDialogAccessType">
   <int value="0" label="Click on lock without confirmation chip context"/>
   <int value="1" label="Click on lock while confirmation chip is displayed"/>
