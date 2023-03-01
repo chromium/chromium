@@ -956,6 +956,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tabmodel/internal:java",
       "//chrome/browser/tabpersistence:junit",
       "//chrome/browser/thumbnail:java",
+      "//chrome/browser/touch_to_fill/common/android:junit",
       "//chrome/browser/touch_to_fill/payments/android/internal:junit",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu/internal:junit",

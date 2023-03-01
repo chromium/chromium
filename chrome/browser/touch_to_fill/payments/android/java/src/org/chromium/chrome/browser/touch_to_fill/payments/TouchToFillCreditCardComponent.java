@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 import android.content.Context;
 
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
@@ -45,8 +46,11 @@ interface TouchToFillCreditCardComponent {
      * @param context A {@link Context} to create views and retrieve resources.
      * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles interaction events.
+     * @param bottomSheetFocusHelper that restores the focus to the element that was focused before
+     *         the bottom sheet.
      */
-    void initialize(Context context, BottomSheetController sheetController, Delegate delegate);
+    void initialize(Context context, BottomSheetController sheetController, Delegate delegate,
+            BottomSheetFocusHelper bottomSheetFocusHelper);
 
     /**
      * Displays a new bottom sheet.

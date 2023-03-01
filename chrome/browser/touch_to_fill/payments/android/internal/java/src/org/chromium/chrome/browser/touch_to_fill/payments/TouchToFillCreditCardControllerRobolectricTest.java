@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
@@ -38,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -47,6 +49,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TouchToFillCreditCardOutcome;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillFeatures;
@@ -80,9 +83,10 @@ public class TouchToFillCreditCardControllerRobolectricTest {
 
     @Mock
     private BottomSheetController mBottomSheetController;
-
     @Mock
-    TouchToFillCreditCardComponent.Delegate mDelegateMock;
+    private TouchToFillCreditCardComponent.Delegate mDelegateMock;
+    @Mock
+    private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     public TouchToFillCreditCardControllerRobolectricTest() {
         mCoordinator = new TouchToFillCreditCardCoordinator();
@@ -91,19 +95,32 @@ public class TouchToFillCreditCardControllerRobolectricTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         Mockito.when(mBottomSheetController.requestShowContent(
                              any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
 
-        mCoordinator.initialize(mContext, mBottomSheetController, mDelegateMock);
+        mCoordinator.initialize(
+                mContext, mBottomSheetController, mDelegateMock, mBottomSheetFocusHelper);
         mTouchToFillCreditCardModel = mCoordinator.getModelForTesting();
     }
 
-    @Before
+    @Test
+    public void testAddsTheBottomSheetHeperToObserveTheSheet() {
+        mCoordinator.showSheet(new CreditCard[] {VISA}, false);
+
+        verify(mBottomSheetFocusHelper, times(1)).registerForOneTimeUse();
+    }
+
+    @Test
     public void testCreatesValidDefaultModel() {
         assertNotNull(mTouchToFillCreditCardModel.get(SHEET_ITEMS));
         assertNotNull(mTouchToFillCreditCardModel.get(DISMISS_HANDLER));
         assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(false));
+
+        mCoordinator.showSheet(new CreditCard[] {VISA}, false);
+
+        assertThat(mTouchToFillCreditCardModel.get(VISIBLE), is(true));
     }
 
     @Test
