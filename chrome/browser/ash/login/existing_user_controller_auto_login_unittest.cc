@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -46,8 +46,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
  protected:
   ExistingUserControllerAutoLoginTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
-        mock_user_manager_(new MockUserManager()),
-        scoped_user_manager_(base::WrapUnique(mock_user_manager_)) {
+        scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {
     auth_metrics_recorder_ = ash::AuthMetricsRecorder::CreateForTesting();
   }
 
@@ -62,11 +61,9 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
     ON_CALL(*mock_login_display_host_, GetExistingUserController())
         .WillByDefault(Return(existing_user_controller_.get()));
 
-    EXPECT_CALL(*mock_user_manager_, Shutdown()).Times(AnyNumber());
-    EXPECT_CALL(*mock_user_manager_, FindUser(_)).WillRepeatedly(ReturnNull());
-    EXPECT_CALL(*mock_user_manager_, FindUser(auto_login_account_id_))
-        .WillRepeatedly(Return(mock_user_manager_->CreatePublicAccountUser(
-            auto_login_account_id_)));
+    auto* user_manager =
+        static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+    user_manager->AddPublicAccountUser(auto_login_account_id_);
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
@@ -151,7 +148,6 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   // Required by ExistingUserController:
   FakeSessionManagerClient fake_session_manager_client_;
   ScopedCrosSettingsTestHelper settings_helper_;
-  MockUserManager* mock_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
 
