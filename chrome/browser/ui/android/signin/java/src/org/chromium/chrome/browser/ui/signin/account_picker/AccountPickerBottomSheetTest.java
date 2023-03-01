@@ -173,7 +173,7 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(
                     sActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
-                    mAccountPickerDelegateMock);
+                    mAccountPickerDelegateMock, new AccountPickerBottomSheetDefaultStrings());
         });
 
         checkZeroAccountBottomSheet();
@@ -347,7 +347,7 @@ public class AccountPickerBottomSheetTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(
                     sActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
-                    mAccountPickerDelegateMock);
+                    mAccountPickerDelegateMock, new AccountPickerBottomSheetDefaultStrings());
         });
         checkZeroAccountBottomSheet();
 
@@ -789,10 +789,14 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void buildAndShowCollapsedBottomSheet() {
+        AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
+                mAccountPickerDelegateMock.getEntryPoint() == EntryPoint.SEND_TAB_TO_SELF
+                ? new AccountPickerBottomSheetSendTabToSelfStrings()
+                : new AccountPickerBottomSheetDefaultStrings();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(
                     sActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
-                    mAccountPickerDelegateMock);
+                    mAccountPickerDelegateMock, accountPickerBottomSheetStrings);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_selected_account)::isShown);

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
+import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -22,16 +23,19 @@ import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -154,10 +158,22 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     public void onStreamCreated() {}
 
     @Override
-    public void showSignInActivity() {
+    public void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
             SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                    mActivityContext, SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
+                    mActivityContext, signinAccessPoint);
+        }
+    }
+
+    @Override
+    public void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
+            BottomSheetController bottomSheetController, WindowAndroid windowAndroid) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_BOC_SIGN_IN_INTERSTITIAL)) {
+            SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
+            SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
+            SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
+                    windowAndroid, bottomSheetController, Profile.getLastUsedRegularProfile());
+            signinCoordinator.show();
         }
     }
 

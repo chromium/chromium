@@ -2097,6 +2097,9 @@ extern const char kFeedBackToTopDescription[];
 extern const char kFeedBottomSyncBannerName[];
 extern const char kFeedBottomSyncBannerDescription[];
 
+extern const char kFeedBoCSigninInterstitialName[];
+extern const char kFeedBoCSigninInterstitialDescription[];
+
 extern const char kFeedHeaderStickToTopName[];
 extern const char kFeedHeaderStickToTopDescription[];
 

@@ -17,7 +17,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -102,7 +104,13 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void showSignInActivity() {
+    public void showSyncConsentActivity(int signinAccessPoint) {
         // TODO(crbug.com/1395449)
+    }
+
+    @Override
+    public void showSignInInterstitial(int signinAccessPoint,
+            BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid) {
+        // Unused. Added to FeedActionDelegate
     }
 }

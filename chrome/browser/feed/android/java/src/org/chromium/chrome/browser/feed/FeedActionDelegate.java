@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.feed;
 
 import org.chromium.base.Callback;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Interface for Feed actions implemented by the Browser.*/
 public interface FeedActionDelegate {
@@ -73,5 +76,11 @@ public interface FeedActionDelegate {
     /**
      * Shows a sign in activity as a result of a feed user action.
      */
-    void showSignInActivity();
+    void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint);
+
+    /**
+     * Shows a sign in interstitial as a result of a feed user action.
+     */
+    void showSignInInterstitial(@SigninAccessPoint int signinAccessPoint,
+            BottomSheetController mBottomSheetController, WindowAndroid mWindowAndroid);
 }

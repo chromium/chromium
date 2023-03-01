@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetSendTabToSelfStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -180,7 +181,8 @@ public class SendTabToSelfCoordinator {
             case EntryPointDisplayReason.OFFER_SIGN_IN: {
                 MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_SIGNIN_PROMO);
                 new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController,
-                        new SendTabToSelfAccountPickerDelegate(this::onSignInComplete, mProfile));
+                        new SendTabToSelfAccountPickerDelegate(this::onSignInComplete, mProfile),
+                        new AccountPickerBottomSheetSendTabToSelfStrings());
                 return;
             }
         }

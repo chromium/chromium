@@ -3665,6 +3665,11 @@ const char kFeedBottomSyncBannerDescription[] =
     "Enables the Sync promo banner to be"
     " shown at bottom of Chrome Feed.";
 
+const char kFeedBoCSigninInterstitialName[] = "Show Signin Interstitial";
+const char kFeedBoCSigninInterstitialDescription[] =
+    "Enables the sign in interstitial to be"
+    " shown in a bottom sheet when triggered.";
+
 const char kFeedHeaderStickToTopName[] = "Feed header stick to top";
 const char kFeedHeaderStickToTopDescription[] =
     "Stick feed header to top on scroll.";

@@ -1,0 +1,114 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+package org.chromium.chrome.browser.feed.signinbottomsheet;
+
+import android.accounts.Account;
+import android.view.View;
+
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.ui.base.WindowAndroid;
+
+/** Coordinator for displaying the signin flow in the bottom sheet. */
+public class SigninBottomSheetCoordinator
+        implements AccountPickerDelegate, AccountPickerBottomSheetStrings {
+    private final Profile mProfile;
+    private final WindowAndroid mWindowAndroid;
+    private final BottomSheetController mController;
+    private final SigninManager mSigninManager;
+    private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
+
+    public SigninBottomSheetCoordinator(
+            WindowAndroid windowAndroid, BottomSheetController controller, Profile profile) {
+        mWindowAndroid = windowAndroid;
+        mController = controller;
+        mProfile = profile;
+        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+    }
+
+    @Override
+    public void destroy() {}
+
+    @Override
+    public void signIn(
+            String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+        Account account = AccountUtils.createAccountFromName(accountEmail);
+        AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
+            mSigninManager.signin(account, new SigninManager.SignInCallback() {
+                @Override
+                public void onSignInComplete() {
+                    RecordHistogram.recordBooleanHistogram(
+                            "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", true);
+                    mController.hideContent(mController.getCurrentSheetContent(), true);
+                }
+
+                @Override
+                public void onSignInAborted() {
+                    RecordHistogram.recordBooleanHistogram(
+                            "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", false);
+                    // onSignInErrorCallback is called by the WebSigninBridge which is not
+                    // implemented in this signin flow as we do not need to wait for cookies to
+                    // propagate before proceeding with the Feed refresh. Instead of calling
+                    // AccountPickerBottomSheetMediator.onSigninFailed() from the signin bridge we
+                    // directly perform the creation of the "try again" bottom sheet view:
+                    mAccountPickerBottomSheetCoordinator.setTryAgainBottomSheetView();
+                }
+            });
+        });
+    }
+
+    @Override
+    public @EntryPoint int getEntryPoint() {
+        return EntryPoint.FEED_ACTION;
+    }
+
+    public void show() {
+        mAccountPickerBottomSheetCoordinator =
+                new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController, this, this);
+    }
+
+    @VisibleForTesting
+    public View getBottomSheetViewForTesting() {
+        return mAccountPickerBottomSheetCoordinator.getBottomSheetViewForTesting();
+    }
+
+    /** Returns the title string for the bottom sheet dialog. */
+    @Override
+    public @StringRes int getTitle() {
+        return R.string.signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin;
+    }
+
+    /** Returns the subtitle string for the bottom sheet dialog. */
+    @Override
+    public @StringRes int getSubtitle() {
+        return R.string.signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin;
+    }
+
+    /** Returns the cancel button string for the bottom sheet dialog. */
+    @Override
+    public @StringRes int getCancelButton() {
+        return R.string.cancel;
+    }
+
+    @VisibleForTesting
+    public void setAccountPickerBottomSheetCoordinator(
+            AccountPickerBottomSheetCoordinator accountPickerBottomSheetCoordinator) {
+        this.mAccountPickerBottomSheetCoordinator = accountPickerBottomSheetCoordinator;
+    }
+}

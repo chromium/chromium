@@ -195,8 +195,15 @@ public interface SurfaceActionsHandler {
     @Deprecated
     default void navigateNewTabInGroup(String url, View actionSourceView) {}
 
-    /**
-     * Requests that a sign-in prompt be shown.
-     */
-    default void showSignInPrompt() {}
+    /** Requests that a sign-in prompt be shown. */
+    @Deprecated
+    default void showSignInPrompt() {
+        showSyncConsentPrompt();
+    }
+
+    /** Requests that a sync consent prompt be shown. */
+    default void showSyncConsentPrompt() {}
+
+    /** Requests that a sign-in interstitial bottom sheet be shown. */
+    default void showSignInInterstitial() {}
 }

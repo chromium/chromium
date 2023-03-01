@@ -65,6 +65,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
@@ -362,8 +363,14 @@ public class FeedStream implements Stream {
         }
 
         @Override
-        public void showSignInPrompt() {
-            mActionDelegate.showSignInActivity();
+        public void showSyncConsentPrompt() {
+            mActionDelegate.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
+        }
+
+        @Override
+        public void showSignInInterstitial() {
+            mActionDelegate.showSignInInterstitial(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO,
+                    mBottomSheetController, mWindowAndroid);
         }
     }
 

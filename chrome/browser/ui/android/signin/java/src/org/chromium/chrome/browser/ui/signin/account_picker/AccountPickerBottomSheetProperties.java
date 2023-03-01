@@ -115,6 +115,10 @@ class AccountPickerBottomSheetProperties {
     // PropertyKey indicating the entry point that triggered the bottom sheet.
     static final ReadableIntPropertyKey ENTRY_POINT = new ReadableIntPropertyKey("entry_point");
 
+    // PropertyKey indicating the title, subtitle, and cancel text for the bottom sheet.
+    static final ReadableObjectPropertyKey<AccountPickerBottomSheetStrings> BOTTOM_SHEET_STRINGS =
+            new ReadableObjectPropertyKey("bottom_sheet_strings");
+
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
             ON_SELECTED_ACCOUNT_CLICKED,
             SELECTED_ACCOUNT_DATA,
@@ -122,6 +126,7 @@ class AccountPickerBottomSheetProperties {
             ON_DISMISS_CLICKED,
             VIEW_STATE,
             ENTRY_POINT,
+            BOTTOM_SHEET_STRINGS,
     };
 
     /**
@@ -132,7 +137,8 @@ class AccountPickerBottomSheetProperties {
      */
     static PropertyModel createModel(Runnable onSelectedAccountClicked,
             Runnable onContinueAsClicked, OnClickListener onDismissClicked,
-            @EntryPoint int entryPoint) {
+            @EntryPoint int entryPoint,
+            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
@@ -140,6 +146,7 @@ class AccountPickerBottomSheetProperties {
                 .with(ON_DISMISS_CLICKED, onDismissClicked)
                 .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
                 .with(ENTRY_POINT, entryPoint)
+                .with(BOTTOM_SHEET_STRINGS, accountPickerBottomSheetStrings)
                 .build();
     }
 

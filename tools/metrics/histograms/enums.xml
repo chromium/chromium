@@ -59011,6 +59011,7 @@ from previous Chrome versions.
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
   <int value="-1586295595" label="SidePanelWebView:disabled"/>
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>
+  <int value="-1585618394" label="FeedBoCSigninInterstitial:disabled"/>
   <int value="-1584944853" label="TrilinearFiltering:enabled"/>
   <int value="-1584795743" label="AccessibilityOSSettingsVisibility:enabled"/>
   <int value="-1584499823" label="EnableZeroStateSuggestions:enabled"/>
@@ -59205,6 +59206,7 @@ from previous Chrome versions.
   <int value="-1477686864" label="OmniboxRichAutocompletion:enabled"/>
   <int value="-1477560322" label="kiosk"/>
   <int value="-1476930281" label="Windows10CustomTitlebar:enabled"/>
+  <int value="-1475773986" label="FeedBoCSigninInterstitial:enabled"/>
   <int value="-1474724634"
       label="OverrideLanguagePrefsForHrefTranslate:enabled"/>
   <int value="-1473878093" label="HideArcMediaNotifications:disabled"/>

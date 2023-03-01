@@ -57,7 +57,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             new ObservableSupplierImpl<>();
 
     AccountPickerBottomSheetMediator(WindowAndroid windowAndroid,
-            AccountPickerDelegate accountPickerDelegate, Runnable onDismissButtonClicked) {
+            AccountPickerDelegate accountPickerDelegate, Runnable onDismissButtonClicked,
+            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         mAccountPickerDelegate = accountPickerDelegate;
@@ -65,7 +66,9 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
         mModel = AccountPickerBottomSheetProperties.createModel(this::onSelectedAccountClicked,
                 this::onContinueAsClicked,
-                view -> onDismissButtonClicked.run(), accountPickerDelegate.getEntryPoint());
+                view
+                -> onDismissButtonClicked.run(),
+                accountPickerDelegate.getEntryPoint(), accountPickerBottomSheetStrings);
         mModelPropertyChangedObserver = (source, propertyKey) -> {
             if (AccountPickerBottomSheetProperties.VIEW_STATE == propertyKey) {
                 mBackPressStateChangedSupplier.set(
@@ -179,6 +182,10 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         mProfileDataCache.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
         mModel.removeObserver(mModelPropertyChangedObserver);
+    }
+
+    public void setTryAgainBottomSheetView() {
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
     }
 
     private void updateAccounts(List<Account> accounts) {
