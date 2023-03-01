@@ -257,6 +257,22 @@ class CompositorFrameSinkSupportTest : public testing::Test {
                                   /*flags=*/0));
   }
 
+  bool HasAnimationManagerForNavigation(NavigationID id) const {
+    return manager_.navigation_to_animation_manager_.contains(id);
+  }
+
+  void ProcessCompositorFrameTransitionDirective(
+      CompositorFrameSinkSupport* support,
+      const CompositorFrameTransitionDirective& directive,
+      Surface* surface) {
+    support->ProcessCompositorFrameTransitionDirective(directive, surface);
+  }
+
+  bool SupportHasSurfaceAnimationManager(
+      CompositorFrameSinkSupport* support) const {
+    return !!support->surface_animation_manager_;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
@@ -1897,6 +1913,39 @@ TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
                                           testing::IsFalse()),
                            _, _, _));
   begin_frame_source.TestOnBeginFrame(args_animate_only);
+}
+
+TEST_F(CompositorFrameSinkSupportTest,
+       ReleaseTransitionDirectiveClearsFrameSinkManagerEntry) {
+  auto result = support_->MaybeSubmitCompositorFrame(
+      local_surface_id_, MakeDefaultCompositorFrame(), absl::nullopt, 0,
+      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+  EXPECT_EQ(SubmitResult::ACCEPTED, result);
+
+  NavigationID navigation_id = NavigationID::Create();
+  Surface* surface = support_->GetLastCreatedSurfaceForTesting();
+  ASSERT_TRUE(surface);
+
+  std::unique_ptr<SurfaceAnimationManager> animation_manager =
+      SurfaceAnimationManager::CreateWithSave(
+          CompositorFrameTransitionDirective(
+              navigation_id, /*sequence_id=*/1,
+              CompositorFrameTransitionDirective::Type::kSave),
+          surface, &shared_bitmap_manager_, base::DoNothing());
+  ASSERT_TRUE(animation_manager);
+
+  EXPECT_FALSE(HasAnimationManagerForNavigation(navigation_id));
+  manager_.CacheSurfaceAnimationManager(navigation_id,
+                                        std::move(animation_manager));
+  EXPECT_TRUE(HasAnimationManagerForNavigation(navigation_id));
+
+  CompositorFrameTransitionDirective release_directive(
+      navigation_id, /*sequence_id=*/2,
+      CompositorFrameTransitionDirective::Type::kRelease);
+  ProcessCompositorFrameTransitionDirective(support_.get(), release_directive,
+                                            surface);
+  EXPECT_FALSE(HasAnimationManagerForNavigation(navigation_id));
+  EXPECT_FALSE(SupportHasSurfaceAnimationManager(support_.get()));
 }
 
 TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {

@@ -272,6 +272,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       std::unique_ptr<SurfaceAnimationManager> manager);
   std::unique_ptr<SurfaceAnimationManager> TakeSurfaceAnimationManager(
       NavigationID navigation_id);
+  void ClearSurfaceAnimationManager(NavigationID navigation_id);
 
   FrameCounter* frame_counter() {
     return frame_counter_ ? &frame_counter_.value() : nullptr;
@@ -279,6 +280,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
  private:
   friend class FrameSinkManagerTest;
+  friend class CompositorFrameSinkSupportTest;
 
   // Metadata for a CompositorFrameSink.
   struct FrameSinkData {

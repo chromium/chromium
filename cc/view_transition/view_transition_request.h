@@ -49,7 +49,8 @@ class CC_EXPORT ViewTransitionRequest {
 
   // Creates a Type::kRelease type of request.
   static std::unique_ptr<ViewTransitionRequest> CreateRelease(
-      uint32_t document_tag);
+      uint32_t document_tag,
+      viz::NavigationID navigation_id);
 
   ViewTransitionRequest(ViewTransitionRequest&) = delete;
   ~ViewTransitionRequest();

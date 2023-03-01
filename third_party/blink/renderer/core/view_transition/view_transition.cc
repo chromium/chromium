@@ -333,7 +333,7 @@ void ViewTransition::SkipTransitionInternal(
   if (static_cast<int>(state_) >
       static_cast<int>(State::kCaptureTagDiscovery)) {
     delegate_->AddPendingRequest(
-        ViewTransitionRequest::CreateRelease(document_tag_));
+        ViewTransitionRequest::CreateRelease(document_tag_, navigation_id_));
   }
 
   // We always need to call the transition state callback (mojo seems to require
@@ -666,8 +666,8 @@ void ViewTransition::ProcessCurrentState() {
                       script_bound_state_->finished_promise_property);
         }
 
-        delegate_->AddPendingRequest(
-            ViewTransitionRequest::CreateRelease(document_tag_));
+        delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
+            document_tag_, navigation_id_));
         delegate_->OnTransitionFinished(this);
 
         style_tracker_ = nullptr;

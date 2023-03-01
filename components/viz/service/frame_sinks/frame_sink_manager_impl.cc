@@ -835,6 +835,11 @@ FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationID navigation_id) {
   return manager;
 }
 
+void FrameSinkManagerImpl::ClearSurfaceAnimationManager(
+    NavigationID navigation_id) {
+  navigation_to_animation_manager_.erase(navigation_id);
+}
+
 void FrameSinkManagerImpl::StartFrameCountingForTest(
     base::TimeTicks start_time,
     base::TimeDelta bucket_size) {
