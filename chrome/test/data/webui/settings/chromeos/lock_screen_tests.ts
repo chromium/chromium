@@ -2,24 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SettingsLockScreenElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-suite('LockScreenPage', function() {
-  let lockScreenPage = null;
+suite('<settings-lock-screen>', function() {
+  let lockScreenPage: SettingsLockScreenElement|null = null;
 
   setup(function() {
-    PolymerTest.clearBody();
     lockScreenPage = document.createElement('settings-lock-screen');
     document.body.appendChild(lockScreenPage);
     flush();
   });
 
   teardown(function() {
-    lockScreenPage.remove();
+    lockScreenPage!.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -33,8 +35,8 @@ suite('LockScreenPage', function() {
     flush();
 
     const deepLinkElement =
-        lockScreenPage.shadowRoot.querySelector('#enableLockScreen')
-            .shadowRoot.querySelector('cr-toggle');
+        lockScreenPage!.shadowRoot!.querySelector('#enableLockScreen')!
+            .shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -44,7 +46,8 @@ suite('LockScreenPage', function() {
 
   test('Lock screen options disabled by policy', async () => {
     const unlockTypeRadioGroup =
-        lockScreenPage.shadowRoot.querySelector('#unlockType');
+        lockScreenPage!.shadowRoot!.querySelector<CrRadioGroupElement>(
+            '#unlockType');
     assertTrue(!!unlockTypeRadioGroup, 'Unlock type radio group not found');
 
     await flushTasks();

@@ -75,7 +75,7 @@ test_files = [
   "kerberos_page_test.js",
   "keyboard_and_text_input_page_tests.js",
   "keyboard_shortcut_banner_test.js",
-  "lock_screen_tests.js",
+  "lock_screen_tests.ts",
   "manage_accessibility_page_tests.js",
   "manage_users_page_tests.js",
   "multidevice_combined_setup_item_tests.js",

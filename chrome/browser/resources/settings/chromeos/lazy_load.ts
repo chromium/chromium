@@ -89,6 +89,7 @@ export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsShar
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
 export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
+export {SettingsLockScreenElement} from './os_people_page/lock_screen.js';
 export {PrinterType} from './os_printing_page/cups_printer_types.js';
 export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';

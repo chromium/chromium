@@ -52,7 +52,7 @@ import {getTemplate} from './lock_screen.html.js';
 const SettingsLockScreenElementBase =
     RouteObserverMixin(LockStateMixin(DeepLinkingMixin(PolymerElement)));
 
-class SettingsLockScreenElement extends SettingsLockScreenElementBase {
+export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   static get is() {
     return 'settings-lock-screen' as const;
   }
