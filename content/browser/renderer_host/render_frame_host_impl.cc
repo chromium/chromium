@@ -4058,9 +4058,20 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   return frame_tree_node_->GetFencedFrameNonce();
 }
 
+bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
+  RuntimeFeatureStateDocumentData* rfs_document_data_for_storage_key =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(GetMainFrame());
+
+  DCHECK(rfs_document_data_for_storage_key);
+
+  return rfs_document_data_for_storage_key->runtime_feature_read_context()
+      .IsThirdPartyStoragePartitioningEnabled();
+}
+
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     const url::Origin& new_rfh_origin,
-    const base::UnguessableToken* nonce) {
+    const base::UnguessableToken* nonce,
+    bool is_third_party_storage_partitioning_allowed) {
   if (nonce) {
     // If the nonce isn't null, we can use the simpler form of the constructor.
     return blink::StorageKey::CreateWithNonce(new_rfh_origin, *nonce);
@@ -4121,7 +4132,8 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   }
 
   return blink::StorageKey::Create(new_rfh_origin, top_level_site,
-                                   ancestor_chain_bit);
+                                   ancestor_chain_bit,
+                                   is_third_party_storage_partitioning_allowed);
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
@@ -4151,11 +4163,11 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   if (creator_frame) {
     // If we're given a parent/opener frame, copy the
     // RuntimeFeatureStateReadContext.
-    RuntimeFeatureStateDocumentData* document_data =
+    RuntimeFeatureStateDocumentData* rfs_document_data_from_creator =
         RuntimeFeatureStateDocumentData::GetForCurrentDocument(creator_frame);
-    DCHECK(document_data);
+    DCHECK(rfs_document_data_from_creator);
     RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
-        this, document_data->runtime_feature_read_context());
+        this, rfs_document_data_from_creator->runtime_feature_read_context());
   } else {
     // Otherwise create a RuntimeFeatureStateContext. We need to construct a
     // RuntimeFeatureStateContext because its constructor initializes default
@@ -4164,8 +4176,11 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
         this, blink::RuntimeFeatureStateContext());
   }
 
+  // For the StorageKey, we want the main frame's
+  // RuntimeFeatureStateReadContext.
   SetStorageKey(CalculateStorageKey(
-      new_frame_origin, base::OptionalToPtr(isolation_info_.nonce())));
+      new_frame_origin, base::OptionalToPtr(isolation_info_.nonce()),
+      IsMainFrameThirdPartyStoragePartitioningEnabled()));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
@@ -12390,7 +12405,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
 
   url::Origin origin = GetLastCommittedOrigin();
   blink::StorageKey storage_key_to_commit = CalculateStorageKey(
-      origin, base::OptionalToPtr(provisional_storage_key.nonce()));
+      origin, base::OptionalToPtr(provisional_storage_key.nonce()),
+      IsMainFrameThirdPartyStoragePartitioningEnabled());
   SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();

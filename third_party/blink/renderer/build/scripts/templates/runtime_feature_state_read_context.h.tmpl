@@ -35,7 +35,7 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   }
 
   {% for feature in browser_read_access_features %}
-  bool Is{{feature.name}}Enabled() {
+  bool Is{{feature.name}}Enabled() const {
     return IsEnabled(
         blink::mojom::RuntimeFeatureState::k{{feature.name}});
   }

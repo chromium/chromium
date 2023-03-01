@@ -32,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -709,6 +710,139 @@ TEST_F(NavigationRequestTest, StorageKeyToCommit) {
                 url::Origin::Create(kUrl),
                 child_document->GetMainFrame()->credentialless_iframes_nonce()),
             child_document->storage_key());
+}
+
+// Test that the StorageKey's value is correctly affected by the
+// RuntimeFeatureStateContext.
+TEST_F(NavigationRequestTest, RuntimeFeatureStateStorageKey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Because the StorageKey's (and Storage Partitioning's) usage of
+  // RuntimeFeatureState is only meant to disable partitioning (i.e.:
+  // first-party only), we need the make sure the net::features is always
+  // enabled.
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  // This lambda performs the navigation and compares the commit_params'
+  // StorageKey against the passed in one. If `disable_sp` is true then it will
+  // also disable ThirdPartyStoragePartitioningEnabled in the RFSC. It returns
+  // the new TestRenderFrameHost* to the navigated frame.
+  auto NavigateAndCompareKeys =
+      [](NavigationSimulator* navigation, const blink::StorageKey& key,
+         bool disable_sp = false) -> TestRenderFrameHost* {
+    navigation->Start();
+
+    NavigationRequest* request =
+        NavigationRequest::From(navigation->GetNavigationHandle());
+
+    if (disable_sp) {
+      request->GetMutableRuntimeFeatureStateContext()
+          .SetThirdPartyStoragePartitioningEnabled(false);
+    }
+
+    navigation->ReadyToCommit();
+
+    EXPECT_EQ(key, request->commit_params().storage_key);
+
+    navigation->Commit();
+    return static_cast<TestRenderFrameHost*>(
+        navigation->GetFinalRenderFrameHost());
+  };
+
+  // Throughout the test we'll be creating a frame tree with a main frame, a
+  // child frame, and a grandchild frame.
+  GURL main_url("https://main.com");
+  GURL b_url("https://b.com");
+  GURL c_url("https://c.com");
+
+  url::Origin main_origin = url::Origin::Create(main_url);
+  url::Origin b_origin = url::Origin::Create(b_url);
+  url::Origin c_origin = url::Origin::Create(c_url);
+
+  // Begin by testing with Storage Partitioning enabled.
+
+  auto main_navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(main_url, contents());
+
+  // By definition the main frame's StorageKey will always be first party
+  blink::StorageKey main_frame_key =
+      blink::StorageKey::CreateFirstParty(main_origin);
+
+  NavigateAndCompareKeys(main_navigation.get(), main_frame_key);
+
+  TestRenderFrameHost* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+
+  auto child_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(b_url, child_frame);
+
+  // The child and grandchild should both be third-party keys.
+  blink::StorageKey child_frame_key =
+      blink::StorageKey::Create(b_origin, net::SchemefulSite(main_origin),
+                                blink::mojom::AncestorChainBit::kCrossSite);
+
+  child_frame = NavigateAndCompareKeys(child_navigation.get(), child_frame_key);
+
+  TestRenderFrameHost* grandchild_frame =
+      child_frame->AppendChild("grandchild");
+
+  auto grandchild_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(c_url, grandchild_frame);
+
+  blink::StorageKey grandchild_frame_key =
+      blink::StorageKey::Create(c_origin, net::SchemefulSite(main_origin),
+                                blink::mojom::AncestorChainBit::kCrossSite);
+  grandchild_frame =
+      NavigateAndCompareKeys(grandchild_navigation.get(), grandchild_frame_key);
+
+  // Only the RuntimeFeatureStateContext in the main frame's matters. So
+  // disabling Storage Partitioning in the child_frame shouldn't affect the
+  // child's or the grandchild's StorageKey.
+  child_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(b_url, child_frame);
+
+  child_frame = NavigateAndCompareKeys(child_navigation.get(), child_frame_key,
+                                       /*disable_sp=*/true);
+
+  grandchild_frame = child_frame->AppendChild("grandchild");
+
+  grandchild_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(c_url, grandchild_frame);
+
+  grandchild_frame =
+      NavigateAndCompareKeys(grandchild_navigation.get(), grandchild_frame_key);
+
+  // Disabling Storage Partitioning on the main frame should cause the child's
+  // and grandchild's StorageKey to be first-party.
+  main_navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(main_url, contents());
+
+  NavigateAndCompareKeys(main_navigation.get(), main_frame_key,
+                         /*disable_sp=*/true);
+
+  child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+
+  child_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(b_url, child_frame);
+
+  // The child and grandchild should both be first-party keys.
+  blink::StorageKey child_frame_key_1p =
+      blink::StorageKey::CreateFirstParty(b_origin);
+
+  child_frame =
+      NavigateAndCompareKeys(child_navigation.get(), child_frame_key_1p);
+
+  grandchild_frame = child_frame->AppendChild("grandchild");
+
+  blink::StorageKey grandchild_frame_key_1p =
+      blink::StorageKey::CreateFirstParty(c_origin);
+
+  grandchild_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(c_url, grandchild_frame);
+
+  grandchild_frame = NavigateAndCompareKeys(grandchild_navigation.get(),
+                                            grandchild_frame_key_1p);
 }
 
 TEST_F(NavigationRequestTest,
