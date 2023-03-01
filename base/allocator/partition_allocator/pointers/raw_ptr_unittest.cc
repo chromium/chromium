@@ -2378,6 +2378,12 @@ constexpr RawPtrHooks raw_ptr_hooks{
 
 class HookableRawPtrImplTest : public testing::Test {
  protected:
+  static void SetUpTestSuite() {
+    // Force-initialize the thread local registry in gtest to avoid
+    // unexpected raw_ptr<T> operations while the tests are running.
+    SCOPED_TRACE("dummy");
+  }
+
   void SetUp() override {
     g_counting_hooks = &hooks_;
     InstallRawPtrHooks(&raw_ptr_hooks);
