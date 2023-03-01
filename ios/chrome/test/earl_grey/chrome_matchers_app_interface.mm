@@ -134,10 +134,16 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 }
 
 UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
-  for (UIWindow* window in UIApplication.sharedApplication.windows) {
-    if ([window.accessibilityIdentifier isEqualToString:accessibility_id])
-      return window;
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+    for (UIWindow* window in windowScene.windows) {
+      if ([window.accessibilityIdentifier isEqualToString:accessibility_id]) {
+        return window;
+      }
+    }
   }
+
   return nil;
 }
 

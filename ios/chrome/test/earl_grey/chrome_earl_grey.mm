@@ -85,13 +85,7 @@ UIWindow* GetAnyKeyWindow() {
   }
   DCHECK(foregroundScenes <= 1);
 
-  NSArray<UIWindow*>* windows =
-      [GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication].windows;
-  for (UIWindow* window in windows) {
-    if (window.isKeyWindow)
-      return window;
-  }
-  return nil;
+  return [ChromeEarlGreyAppInterface keyWindow];
 }
 }  // namespace chrome_test_util
 

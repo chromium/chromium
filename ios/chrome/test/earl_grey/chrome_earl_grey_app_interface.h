@@ -221,6 +221,9 @@
 // Returns the number of open incognito tabs, in window with given number.
 + (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber;
 
+// Returns a key window from the connected scenes.
++ (UIWindow*)keyWindow;
+
 #pragma mark - WebState Utilities (EG2)
 
 // Attempts to tap the element with `element_id` within window.frames[0] of the

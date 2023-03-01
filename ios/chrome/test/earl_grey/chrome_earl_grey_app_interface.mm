@@ -515,6 +515,22 @@ NSString* SerializedValue(const base::Value* value) {
       windowNumber);
 }
 
++ (UIWindow*)keyWindow {
+  NSSet<UIScene*>* scenes = UIApplication.sharedApplication.connectedScenes;
+  for (UIScene* scene in scenes) {
+    UIWindowScene* windowScene =
+        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+
+    for (UIWindow* window in windowScene.windows) {
+      if (window.isKeyWindow) {
+        return window;
+      }
+    }
+  }
+
+  return nil;
+}
+
 #pragma mark - WebState Utilities (EG2)
 
 + (NSError*)tapWebStateElementInIFrameWithID:(NSString*)elementID {
@@ -1320,8 +1336,15 @@ int watchRunNumber = 0;
           if (!watchingButtons.count || runNumber != watchRunNumber)
             return;
 
-          [self findButtonsWithLabelsInViews:[UIApplication sharedApplication]
-                                                 .windows];
+          NSMutableArray<UIWindow*>* windows = [[NSMutableArray alloc] init];
+          for (UIScene* scene in UIApplication.sharedApplication
+                   .connectedScenes) {
+            UIWindowScene* windowScene =
+                base::mac::ObjCCastStrict<UIWindowScene>(scene);
+            [windows addObjectsFromArray:windowScene.windows];
+          }
+
+          [self findButtonsWithLabelsInViews:windows];
 
           if (watchingButtons.count && timeout.is_positive()) {
             [self scheduleNextWatchForButtonsWithTimeout:timeout -
