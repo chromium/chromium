@@ -3202,7 +3202,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DISABLE_CAPS_LOCK" translateable="false" desc="Label for accelerator action - Disable Caps Lock.">
         Disable Caps Lock
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_EXIT" translateable="false" desc="Label for accelerator action - Sign out.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_EXIT" desc="Label for accelerator action - Sign out.">
         Sign out
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_CAMERA_PREVIEW" translateable="false" desc="Label for accelerator action - Focus on the camera preview.">
@@ -3232,7 +3232,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LAUNCH_APP" translateable="false" desc="Label for accelerator action - Click or tap shelf icons 1-8.">
         Click or tap shelf icons 1-8
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LAUNCH_LAST_APP" translateable="false" desc="Label for accelerator action - Click or tap last icon on shelf.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LAUNCH_LAST_APP" desc="Label for accelerator action - Click or tap last icon on shelf.">
         Click or tap last icon on shelf
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_PRESSED" translateable="false" desc="Label for accelerator action - Lock pressed.">
@@ -3241,8 +3241,8 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_RELEASED" translateable="false" desc="Label for accelerator action - Lock released.">
         Lock released
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_SCREEN" translateable="false" desc="Label for accelerator action - Lock screen.">
-        Lock screen
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_SCREEN" desc="Label for accelerator action - Lock device.">
+        Lock device
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MAGNIFIER_ZOOM_IN" desc="Label for accelerator action - Zoom in when magnifier is on.">
         Zoom in when magnifier is on
@@ -3289,23 +3289,23 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_WINDOW" translateable="false" desc="Label for accelerator action - Open new window.">
         Open new window
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CALCULATOR" translateable="false" desc="Label for accelerator action - Open calculator.">
-        Open calculator
+       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CALCULATOR" desc="Label for accelerator action - Open Calculator app.">
+        Open Calculator app
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH" translateable="false" desc="Label for accelerator action - Open Crosh window.">
+       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH" desc="Label for accelerator action - Open Crosh window.">
         Open Crosh window
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_DIAGNOSTICS" translateable="false" desc="Label for accelerator action - Open Diagnostics App.">
-        Open Diagnostics App
+       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_DIAGNOSTICS" desc="Label for accelerator action - Open Diagnostics App.">
+        Open Diagnostics app
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FEEDBACK_PAGE" translateable="false" desc="Label for accelerator action - Submit feedback.">
+       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FEEDBACK_PAGE" desc="Label for accelerator action - Submit feedback.">
         Submit feedback
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FILE_MANAGER" translateable="false" desc="Label for accelerator action - Open new window.">
+       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FILE_MANAGER" desc="Label for accelerator action - Open Files app.">
         Open Files app
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_GET_HELP" translateable="false" desc="Label for accelerator action - Open Help Center.">
-        Open Help Center
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_GET_HELP" desc="Label for accelerator action - Open Help in Explore app.">
+        Open Help in Explore app
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_POWER_PRESSED" translateable="false" desc="Label for accelerator action - Power pressed.">
         Power pressed
@@ -3340,22 +3340,22 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_IME_MENU_BUBBLE" translateable="false" desc="Label for accelerator action - Show list of available input methods.">
         Show list of available input methods
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_SHORTCUT_VIEWER" translateable="false" desc="Label for accelerator action - See Keyboard Shortcut Helper.">
-        See Keyboard Shortcut Helper
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_SHORTCUT_VIEWER" desc="Label for accelerator action - Open Keyboard shortcuts app.">
+        Open Keyboard shortcuts app
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_STYLUS_TOOLS" translateable="false" desc="Label for accelerator action - Show stylus tools.">
         Show stylus tools
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_TASK_MANAGER" translateable="false" desc="Label for accelerator action - Open task manager.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_TASK_MANAGER" desc="Label for accelerator action - Open task manager.">
         Open task manager
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_AMBIENT_MODE" translateable="false" desc="Label for accelerator action - Start ambient mode.">
         Start ambient mode
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_ASSISTANT" translateable="false" desc="Label for accelerator action - Toggle Google assistant.">
-        Toggle Google assistant.
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_ASSISTANT" desc="Label for accelerator action - Open/close Google assistant.">
+        Open/close Google assistant
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SUSPEND" translateable="false" desc="Label for accelerator action - Put device in sleep mode.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SUSPEND" desc="Label for accelerator action - Put device in sleep mode.">
         Put device in sleep mode
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWAP_PRIMARY_DISPLAY" translateable="false" desc="Label for accelerator action - Swap primary monitor.">
@@ -3370,26 +3370,26 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_NEXT_IME" translateable="false" desc="Label for accelerator action - Switch to next available language.">
         Switch to next available language
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_NEXT_USER" translateable="false" desc="Label for accelerator action - Switch to next user.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_NEXT_USER" desc="Label for accelerator action - Switch to next user.">
         Switch to next user
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_PREVIOUS_USER" translateable="false" desc="Label for accelerator action - Switch to previous user.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_PREVIOUS_USER" desc="Label for accelerator action - Switch to previous user.">
         Switch to previous user
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT" translateable="false" desc="Label for accelerator action - Take partial screenshot/recording.">
-        Take partial screenshot/recording
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT" desc="Label for accelerator action - Take partial screenshot or screen recording.">
+        Take partial screenshot or screen recording
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_SCREENSHOT" translateable="false" desc="Label for accelerator action - Take screenshot or recording.">
-        Take screenshot or recording
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_SCREENSHOT" desc="Label for accelerator action - Take full screenshot or screen recording.">
+        Take full screenshot or screen recording
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" translateable="false" desc="Label for accelerator action - Take window screenshot or recording.">
-        Take window screenshot or recording
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Label for accelerator action - Take window screenshot or screen recording.">
+        Take window screenshot or screen recording
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_APP_LIST" translateable="false" desc="Label for accelerator action - Open/close launcher.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_APP_LIST" desc="Label for accelerator action - Open/close launcher.">
         Open/close launcher
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CALENDAR" translateable="false" desc="Label for accelerator action - Open/close calender.">
-        Open/close calender
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CALENDAR" desc="Label for accelerator action - Open/close calendar.">
+        Open/close calendar
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAPS_LOCK" translateable="false" desc="Label for accelerator action - Turn Caps Lock on and off.">
         Turn Caps Lock on and off
@@ -3397,8 +3397,8 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CLIPBOARD_HISTORY" translateable="false" desc="Label for accelerator action - Open Clipboard.">
         Open Clipboard
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION" translateable="false" desc="Label for accelerator action - Open/close dictation.">
-        Open/close dictation
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION" desc="Label for accelerator action - Turn on/off dictation (type with your voice)">
+        Turn on/off dictation (type with your voice)
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DOCKED_MAGNIFIER" desc="Label for accelerator action - Turn magnifier on or off.">
         Turn magnifier on or off
@@ -3421,11 +3421,11 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MIRROR_MODE" translateable="false" desc="Label for accelerator action - Mirror monitors.">
         Mirror monitors
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW" translateable="false" desc="Label for accelerator action - Overview mode.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW" desc="Label for accelerator action - Overview mode.">
         Overview mode
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_RESIZE_LOCK_MENU" translateable="false" desc="Label for accelerator action - Toggle menu to resize lock mode.">
-        Toggle menu to resize lock mode
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_RESIZE_LOCK_MENU" desc="Label for accelerator action - Turn on/off menu to resize lock mode.">
+        Turn on/off menu to resize lock mode
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK" desc="Label for accelerator action - Turn on/off ChromeVox (spoken feedback).">
         Turn on/off ChromeVox (spoken feedback)
@@ -3433,8 +3433,8 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_WIFI" translateable="false" desc="Label for accelerator action - Turn wifi on or off.">
         Turn wifi on or off
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_UNPIN" translateable="false" desc="Label for accelerator action - Unpin an app.">
-        Unpin an app
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_UNPIN" desc="Label for accelerator action - Unpin app from shelf.">
+        Unpin app from shelf
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN" translateable="false" desc="Label for accelerator action - Turn volume down.">
         Turn volume down
@@ -3565,11 +3565,11 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FAST_FORWARD_MEDIA" translateable="false" desc="Label for accelerator action - Fast forward media.">
         Fast forward media
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" translateable="false" desc="Label for accelerator action - Open Quick Settings.">
-        Open Quick Settings
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" desc="Label for accelerator action - Open Quick Settings by selecting the time.">
+        Open Quick Settings by selecting the time
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" translateable="false" desc="Label for accelerator action - See notifications.">
-        See notifications
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" desc="Label for accelerator action - Open notifications.">
+        Open notifications
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_TAB" translateable="false" desc="Label for accelerator action - Close the current tab.">
         Close the current tab
@@ -3754,11 +3754,11 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SAVE_LINK_AS_BOOKMARK" translateable="false" desc="Label for accelerator description - Save the link as a bookmark.">
         Save the link as a bookmark
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP" translateable="false" desc="Label for accelerator description - Click icons 1-8 on your shelf.">
-        Click icons 1-8 on your shelf
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP" desc="Label for accelerator description - Click or tap shelf icons 1-8.">
+        Click or tap shelf icons 1-8
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_FILE" translateable="false" desc="Label for accelerator description - Preview a file in the Files app.">
-        Preview a file in the Files app
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_FILE" desc="Label for accelerator description - Preview file in Files app.">
+        Preview file in Files app
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_HIGHLIGHTED_ITEM_ON_SHELF" desc="Label for accelerator description - Open highlighted item from shelf.">
         Open highlighted item from shelf
@@ -3781,8 +3781,8 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK" translateable="false" desc="Label for accelerator description - Go to desk 1 to 8.">
         Go to desk 1 to 8
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DISPLAY_HIDDEN_FILES" translateable="false" desc="Label for accelerator description - Display hidden files.">
-        Display hidden files in the Files app
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DISPLAY_HIDDEN_FILES" desc="Label for accelerator description - Show hidden files in Files app.">
+        Show hidden files in Files app
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_RIGHT_CLICK_MENU" desc="Label for accelerator description - Open right-click menu for highlighted item.">
         Open right-click menu for highlighted item
