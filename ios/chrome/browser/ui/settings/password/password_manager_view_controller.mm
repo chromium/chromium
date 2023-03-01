@@ -1610,7 +1610,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 // Hide the loading spinner if it is showing.
 - (void)hideLoadingSpinnerBackground {
   DCHECK(self.spinnerView);
-  PasswordManagerViewController* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   [self.spinnerView stopWaitingWithCompletion:^{
     [UIView animateWithDuration:0.2
         animations:^{
