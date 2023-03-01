@@ -376,7 +376,7 @@ bool ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
     const base::Feature& feature,
     feature_engagement::Tracker* tracker) {
   // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (!IsInBlueDotExperimentEnabledGroup() || IsChromeLikelyDefaultBrowser()) {
+  if (!IsBlueDotPromoEnabled() || IsChromeLikelyDefaultBrowser()) {
     return false;
   }
 
@@ -415,14 +415,21 @@ bool IsInModifiedStringsGroup() {
   return !paramValue.empty();
 }
 
-bool IsInBlueDotExperiment() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo);
-}
-
-bool IsInBlueDotExperimentEnabledGroup() {
+bool AreDefaultBrowserPromosEnabled() {
   if (base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo)) {
     return kBlueDotPromoUserGroupParam.Get() ==
-           BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled;
+           BlueDotPromoUserGroup::kAllDBPromosEnabled;
+  }
+
+  return true;
+}
+
+bool IsBlueDotPromoEnabled() {
+  if (base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo)) {
+    return kBlueDotPromoUserGroupParam.Get() ==
+               BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled ||
+           kBlueDotPromoUserGroupParam.Get() ==
+               BlueDotPromoUserGroup::kAllDBPromosEnabled;
   }
 
   return false;

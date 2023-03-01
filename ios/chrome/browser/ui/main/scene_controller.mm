@@ -1153,7 +1153,7 @@ void InjectNTP(Browser* browser) {
   // Don't show the default browser promo if the user is in the default browser
   // blue dot experiment.
   // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (IsInBlueDotExperiment()) {
+  if (!AreDefaultBrowserPromosEnabled()) {
     return;
   }
 

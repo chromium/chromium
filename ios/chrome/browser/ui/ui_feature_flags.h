@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kDefaultBrowserBlueDotPromo);
 // default browser promos, which are already shipped.
 enum class BlueDotPromoUserGroup {
   kAllDBPromosDisabled,
+  kAllDBPromosEnabled,
   kOnlyBlueDotPromoEnabled,
 };
 extern const base::FeatureParam<BlueDotPromoUserGroup>
