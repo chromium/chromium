@@ -15,10 +15,13 @@ import {ModuleDescriptor} from '../module_descriptor.js';
 import {HistoryClustersProxyImpl} from './history_clusters_proxy.js';
 import {getTemplate} from './module.html.js';
 
-export const LAYOUT_1_3_MIN_IMAGE_VISITS = 2;
-export const LAYOUT_2_IMAGE_VISITS = 1;
+export const LAYOUT_1_MIN_IMAGE_VISITS = 2;
+export const LAYOUT_1_MIN_VISITS = 2;
+export const LAYOUT_2_MIN_IMAGE_VISITS = 1;
 export const LAYOUT_2_MIN_VISITS = 3;
+export const LAYOUT_3_MIN_IMAGE_VISITS = 2;
 export const LAYOUT_3_MIN_VISITS = 4;
+export const MIN_RELATED_SEARCHES = 3;
 
 /**
  * Available module UI layouts. This enum must match the numbering for
@@ -76,7 +79,9 @@ function recordSelectedLayout(option: HistoryClusterLayoutType) {
 async function createElement(): Promise<HistoryClustersModuleElement|null> {
   const data =
       await HistoryClustersProxyImpl.getInstance().handler.getCluster();
-  if (!data.cluster) {
+  // Do not show module if no cluster or not enough related search results.
+  if (!data.cluster ||
+      data.cluster.relatedSearches.length < MIN_RELATED_SEARCHES) {
     recordSelectedLayout(HistoryClusterLayoutType.NONE);
     return null;
   }
@@ -96,16 +101,19 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
   const visitCount = visits.length - 1;
 
   // Calculate which layout to use.
-  if (imageCount >= LAYOUT_1_3_MIN_IMAGE_VISITS) {
+  if (imageCount >= LAYOUT_3_MIN_IMAGE_VISITS) {
     // Layout 1 and 3 require the same number of images.
     // Decide which one to use by checking if there are enough total
     // visits for layout 3.
     if (visitCount >= LAYOUT_3_MIN_VISITS) {
       element.layoutType = HistoryClusterLayoutType.LAYOUT_3;
     } else {
+      // If we have enough image visits, we have enough total visits
+      // for layout 1, since all visits shown are image visits.
       element.layoutType = HistoryClusterLayoutType.LAYOUT_1;
     }
-  } else if (imageCount === LAYOUT_2_IMAGE_VISITS &&
+  } else if (
+      imageCount === LAYOUT_2_MIN_IMAGE_VISITS &&
       visitCount >= LAYOUT_2_MIN_VISITS) {
     element.layoutType = HistoryClusterLayoutType.LAYOUT_2;
   } else {
