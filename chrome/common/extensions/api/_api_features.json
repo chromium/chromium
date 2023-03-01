@@ -188,7 +188,6 @@
     "channel": "stable",
     "dependencies": ["manifest:browser_action"],
     "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Dev
       // The extensions below here only use openPopup on a user action,
       // so are safe, and can be removed when the allowlist on that
       // capability is lifted. See crbug.com/436489 for context.
@@ -311,17 +310,10 @@
     "dependencies": ["permission:declarativeContent"],
     "contexts": ["blessed_extension"]
   },
-  "desktopCapture": [{
+  "desktopCapture": {
     "dependencies": ["permission:desktopCapture"],
     "contexts": ["blessed_extension"]
-  }, {
-    "dependencies": ["permission:desktopCapturePrivate"],
-    "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Stable
-    ],
-    "contexts": ["blessed_extension"]
-  }],
+  },
   "developerPrivate": [{
     "dependencies": ["permission:developerPrivate", "permission:management"],
     "contexts": ["blessed_extension"]

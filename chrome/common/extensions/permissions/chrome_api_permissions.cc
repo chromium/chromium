@@ -168,8 +168,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kMediaPlayerPrivate, "mediaPlayerPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kMediaRouterPrivate, "mediaRouterPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kNetworkingCastPrivate, "networking.castPrivate"},
     {APIPermissionID::kPasswordsPrivate, "passwordsPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},

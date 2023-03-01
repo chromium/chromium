@@ -125,7 +125,7 @@ enum APIPermissionID {
   kManagement = 98,
   kMediaGalleries = 99,
   kMediaPlayerPrivate = 100,
-  kMediaRouterPrivate = 101,
+  kDeleted_MediaRouterPrivate = 101,
   kMetricsPrivate = 102,
   kMDns = 103,
   kDeleted_MusicManagerPrivate = 104,

@@ -36641,7 +36641,7 @@ Called by update_extension_permission.py.-->
   <int value="98" label="kManagement"/>
   <int value="99" label="kMediaGalleries"/>
   <int value="100" label="kMediaPlayerPrivate"/>
-  <int value="101" label="kMediaRouterPrivate"/>
+  <int value="101" label="kDeleted_MediaRouterPrivate"/>
   <int value="102" label="kMetricsPrivate"/>
   <int value="103" label="kMDns"/>
   <int value="104" label="kDeleted_MusicManagerPrivate"/>
