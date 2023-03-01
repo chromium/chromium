@@ -1092,6 +1092,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 #pragma mark - JavaScript
 
+- (void)retrieveExistingFramesInContentWorld:(WKContentWorld*)contentWorld {
+  web::RegisterExistingFrames(self.webView, contentWorld);
+}
+
 - (void)executeJavaScript:(NSString*)javascript
         completionHandler:(void (^)(id result, NSError* error))completion {
   __block void (^stack_completion_block)(id result, NSError* error) =

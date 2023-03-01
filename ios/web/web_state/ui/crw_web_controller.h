@@ -277,6 +277,9 @@ class WebStateImpl;
 // Handles a navigation did replace state message for the current webpage.
 - (void)handleNavigationDidReplaceStateMessage:(base::Value*)message;
 
+// Retrieves the existing web frames in `contentWorld`.
+- (void)retrieveExistingFramesInContentWorld:(WKContentWorld*)contentWorld;
+
 // Do not use these executeJavaScript functions directly, prefer
 // WebFrame::CallJavaScriptFunction if possible, otherwise use
 // WebState::ExecuteJavaScript and WebState::ExecuteUserJavaScript.

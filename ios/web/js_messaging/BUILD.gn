@@ -80,6 +80,20 @@ source_set("java_script_content_world_header") {
   sources = [ "java_script_content_world.h" ]
 }
 
+source_set("java_script_content_world_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [
+    "java_script_content_world_util.h",
+    "java_script_content_world_util.mm",
+  ]
+}
+
 source_set("java_script_feature_manager_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
@@ -149,6 +163,7 @@ source_set("unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
+    ":java_script_content_world_util",
     ":java_script_feature",
     ":java_script_feature_util",
     ":js_messaging",
@@ -171,6 +186,7 @@ source_set("unittests") {
 
   sources = [
     "java_script_content_world_unittest.mm",
+    "java_script_content_world_util_unittest.mm",
     "java_script_feature_manager_unittest.mm",
     "java_script_feature_unittest.mm",
     "page_script_util_unittest.mm",
