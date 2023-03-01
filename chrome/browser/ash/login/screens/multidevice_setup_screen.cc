@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,14 @@
 namespace ash {
 
 namespace {
+
+// Passing "--quick-start-phone-instance-id" on the command line will implement
+// the Unified Setup UI enhancements with the ID provided in the switch. This is
+// for testing only and in the future this ID will be retrieved and saved to the
+// OOBE WizardContext on the QuickStartScreen, not the MultideviceSetupScreen.
+// TODO(b/234655072): Delete this once quick start flow is implemented.
+constexpr char kQuickStartPhoneInstanceIDSwitch[] =
+    "quick-start-phone-instance-id";
 
 constexpr const char kAcceptedSetupUserAction[] = "setup-accepted";
 constexpr const char kDeclinedSetupUserAction[] = "setup-declined";
@@ -88,6 +97,15 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     skipped_ = true;
     return true;
+  }
+
+  // TODO(b/234655072): Delete this once quick start flow is implemented. This
+  // is for testing only and context.quick_start_phone_instance_id should be set
+  // from the QuickStartScreen.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kQuickStartPhoneInstanceIDSwitch)) {
+    context.quick_start_phone_instance_id =
+        command_line->GetSwitchValueASCII(kQuickStartPhoneInstanceIDSwitch);
   }
 
   // Do not skip if potential host exists but none is set yet.

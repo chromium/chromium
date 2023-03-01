@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
@@ -19,15 +18,6 @@
 namespace ash::quick_start {
 
 namespace {
-
-// Passing "--quick-start-phone-instance-id" on the command line will implement
-// the Unified Setup UI enhancements with the ID provided in the switch. This is
-// for testing only and in the future this ID will be received during the Gaia
-// credentials exchange.
-// TODO(b/234655072): Delete this and get ID from the |bootstrap_controller_|
-// Gaia credentials exchange instead.
-constexpr char kQuickStartPhoneInstanceIDSwitch[] =
-    "quick-start-phone-instance-id";
 
 TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
     std::vector<uint8_t> blob) {
@@ -69,13 +59,7 @@ void TargetDeviceBootstrapController::GetFeatureSupportStatusAsync(
 }
 
 std::string TargetDeviceBootstrapController::GetPhoneInstanceId() {
-  // TODO(b/234655072): Delete kQuickStartPhoneInstanceIDSwitch and get the ID
-  // from the Gaia credentials exchange instead.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kQuickStartPhoneInstanceIDSwitch)) {
-    return command_line->GetSwitchValueASCII(kQuickStartPhoneInstanceIDSwitch);
-  }
-
+  // TODO(b/234655072): Get the ID from the Gaia credentials exchange.
   return "";
 }
 

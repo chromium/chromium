@@ -190,16 +190,9 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
-  // Ensure GetPhoneInstanceId() returns an empty string when no command line
-  // switch is set.
+  // TODO(b/234655072): Build out this unittest once phone instance ID is
+  // retrieved from Gaia credentials exchange.
   ASSERT_TRUE(bootstrap_controller_->GetPhoneInstanceId().empty());
-
-  std::string kExpectedPhoneInstanceID = "someArbitraryInstanceID";
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--quick-start-phone-instance-id=" + kExpectedPhoneInstanceID});
-
-  EXPECT_EQ(bootstrap_controller_->GetPhoneInstanceId(),
-            kExpectedPhoneInstanceID);
 }
 
 }  // namespace ash::quick_start
