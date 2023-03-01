@@ -503,22 +503,25 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
           kStandardPromoStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
 
-      // TODO(crbug.com/1418068): Remove after minimum version required is >=
+      // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
-      self.primaryButton.configuration.contentInsets =
-          NSDirectionalEdgeInsetsMake(
-              kStandardPromoStyle.kButtonTitleVerticalContentInset,
-              kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-              kStandardPromoStyle.kButtonTitleVerticalContentInset,
-              kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-#else
-      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
-          kStandardPromoStyle.kButtonTitleVerticalContentInset,
-          kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-          kStandardPromoStyle.kButtonTitleVerticalContentInset,
-          kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+      if (@available(iOS 15, *)) {
+        self.primaryButton.configuration.contentInsets =
+            NSDirectionalEdgeInsetsMake(
+                kStandardPromoStyle.kButtonTitleVerticalContentInset,
+                kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+                kStandardPromoStyle.kButtonTitleVerticalContentInset,
+                kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+      }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      else {
+        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+            kStandardPromoStyle.kButtonTitleVerticalContentInset,
+            kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+            kStandardPromoStyle.kButtonTitleVerticalContentInset,
+            kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+      }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
       constraintsToActivate = self.standardLayoutConstraints;
       break;
@@ -562,22 +565,25 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
           kTitledPromoStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
 
-      // TODO(crbug.com/1418068): Remove after minimum version required is >=
+      // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
-      self.primaryButton.configuration.contentInsets =
-          NSDirectionalEdgeInsetsMake(
-              kTitledPromoStyle.kButtonTitleVerticalContentInset,
-              kTitledPromoStyle.kButtonTitleHorizontalContentInset,
-              kTitledPromoStyle.kButtonTitleVerticalContentInset,
-              kTitledPromoStyle.kButtonTitleHorizontalContentInset);
-#else
-      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
-          kTitledPromoStyle.kButtonTitleVerticalContentInset,
-          kTitledPromoStyle.kButtonTitleHorizontalContentInset,
-          kTitledPromoStyle.kButtonTitleVerticalContentInset,
-          kTitledPromoStyle.kButtonTitleHorizontalContentInset);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+      if (@available(iOS 15, *)) {
+        self.primaryButton.configuration.contentInsets =
+            NSDirectionalEdgeInsetsMake(
+                kTitledPromoStyle.kButtonTitleVerticalContentInset,
+                kTitledPromoStyle.kButtonTitleHorizontalContentInset,
+                kTitledPromoStyle.kButtonTitleVerticalContentInset,
+                kTitledPromoStyle.kButtonTitleHorizontalContentInset);
+      }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      else {
+        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+            kTitledPromoStyle.kButtonTitleVerticalContentInset,
+            kTitledPromoStyle.kButtonTitleHorizontalContentInset,
+            kTitledPromoStyle.kButtonTitleVerticalContentInset,
+            kTitledPromoStyle.kButtonTitleHorizontalContentInset);
+      }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
       constraintsToActivate = self.titledLayoutConstraints;
       break;
@@ -615,21 +621,24 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
           kTitledCompactPromoStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = NO;
 
-      // TODO(crbug.com/1418068): Remove after minimum version required is >=
+      // TODO(crbug.com/1418068): Simplify after minimum version required is >=
       // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
-      self.primaryButton.configuration.contentInsets =
-          NSDirectionalEdgeInsetsMake(
-              kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-              kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
-              kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-              kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
-#else
-      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
-          kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-          kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
-          kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-          kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
+      if (@available(iOS 15, *)) {
+        self.primaryButton.configuration.contentInsets =
+            NSDirectionalEdgeInsetsMake(
+                kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+                kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
+                kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+                kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
+      }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      else {
+        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+            kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+            kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
+            kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+            kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
+      }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
 
       constraintsToActivate = self.titledCompactLayoutConstraints;
