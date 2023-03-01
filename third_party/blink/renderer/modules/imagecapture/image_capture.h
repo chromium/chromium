@@ -60,6 +60,10 @@ class MODULES_EXPORT ImageCapture final
   ScriptPromise takePhoto(ScriptState*, const PhotoSettings*);
   ScriptPromise grabFrame(ScriptState*);
 
+  bool CheckAndApplyMediaTrackConstraintsToSettings(
+      media::mojom::blink::PhotoSettings*,
+      const MediaTrackConstraints*,
+      ScriptPromiseResolver*);
   void GetMediaTrackCapabilities(MediaTrackCapabilities*) const;
   void SetMediaTrackConstraints(ScriptPromiseResolver*,
                                 const MediaTrackConstraints* constraints);

@@ -516,6 +516,310 @@ void ImageCapture::GotPhotoState(
   std::move(callback).Run(false);
 }
 
+bool ImageCapture::CheckAndApplyMediaTrackConstraintsToSettings(
+    media::mojom::blink::PhotoSettings* settings,
+    const MediaTrackConstraints* constraints,
+    ScriptPromiseResolver* resolver) {
+  MediaTrackConstraintSet* temp_constraint_set =
+      current_constraint_set_ ? current_constraint_set_.Get()
+                              : MediaTrackConstraintSet::Create();
+
+  for (const MediaTrackConstraintSet* constraint_set :
+       AllSupportedConstraintSets(constraints)) {
+    // TODO(crbug.com/1408091): Add support for the basic constraint set and for
+    // advanced constraint sets beyond the first one and remove check.
+    DCHECK_EQ(constraint_set, constraints->advanced()[0]);
+
+    if (absl::optional<String> name =
+            GetConstraintWithNonExistingCapability(constraint_set)) {
+      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+          name.value(), "Unsupported constraint"));
+      return false;
+    }
+
+    // TODO(mcasas): support other Mode types beyond simple string i.e. the
+    // equivalents of "sequence<DOMString>"" or "ConstrainDOMStringParameters".
+    settings->has_white_balance_mode =
+        constraint_set->hasWhiteBalanceMode() &&
+        constraint_set->whiteBalanceMode()->IsString();
+    if (settings->has_white_balance_mode) {
+      const auto white_balance_mode =
+          constraint_set->whiteBalanceMode()->GetAsString();
+      if (capabilities_->whiteBalanceMode().Find(white_balance_mode) ==
+          kNotFound) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "whiteBalanceMode", "Unsupported whiteBalanceMode."));
+        return false;
+      }
+      temp_constraint_set->setWhiteBalanceMode(
+          constraint_set->whiteBalanceMode());
+      settings->white_balance_mode = ParseMeteringMode(white_balance_mode);
+    }
+    settings->has_exposure_mode = constraint_set->hasExposureMode() &&
+                                  constraint_set->exposureMode()->IsString();
+    if (settings->has_exposure_mode) {
+      const auto exposure_mode = constraint_set->exposureMode()->GetAsString();
+      if (capabilities_->exposureMode().Find(exposure_mode) == kNotFound) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "exposureMode", "Unsupported exposureMode."));
+        return false;
+      }
+      temp_constraint_set->setExposureMode(constraint_set->exposureMode());
+      settings->exposure_mode = ParseMeteringMode(exposure_mode);
+    }
+
+    settings->has_focus_mode = constraint_set->hasFocusMode() &&
+                               constraint_set->focusMode()->IsString();
+    if (settings->has_focus_mode) {
+      const auto focus_mode = constraint_set->focusMode()->GetAsString();
+      if (capabilities_->focusMode().Find(focus_mode) == kNotFound) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "focusMode", "Unsupported focusMode."));
+        return false;
+      }
+      temp_constraint_set->setFocusMode(constraint_set->focusMode());
+      settings->focus_mode = ParseMeteringMode(focus_mode);
+    }
+
+    // TODO(mcasas): support ConstrainPoint2DParameters.
+    if (constraint_set->hasPointsOfInterest() &&
+        constraint_set->pointsOfInterest()->IsPoint2DSequence()) {
+      for (const auto& point :
+           constraint_set->pointsOfInterest()->GetAsPoint2DSequence()) {
+        auto mojo_point = media::mojom::blink::Point2D::New();
+        mojo_point->x = point->x();
+        mojo_point->y = point->y();
+        settings->points_of_interest.push_back(std::move(mojo_point));
+      }
+      temp_constraint_set->setPointsOfInterest(
+          constraint_set->pointsOfInterest());
+    }
+
+    // TODO(mcasas): support ConstrainDoubleRange where applicable.
+    settings->has_exposure_compensation =
+        constraint_set->hasExposureCompensation() &&
+        constraint_set->exposureCompensation()->IsDouble();
+    if (settings->has_exposure_compensation) {
+      const auto exposure_compensation =
+          constraint_set->exposureCompensation()->GetAsDouble();
+      if (exposure_compensation <
+              capabilities_->exposureCompensation()->min() ||
+          exposure_compensation >
+              capabilities_->exposureCompensation()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "exposureCompensation",
+            "exposureCompensation setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setExposureCompensation(
+          constraint_set->exposureCompensation());
+      settings->exposure_compensation = exposure_compensation;
+    }
+
+    settings->has_exposure_time = constraint_set->hasExposureTime() &&
+                                  constraint_set->exposureTime()->IsDouble();
+    if (settings->has_exposure_time) {
+      const auto exposure_time = constraint_set->exposureTime()->GetAsDouble();
+      if (exposure_time < capabilities_->exposureTime()->min() ||
+          exposure_time > capabilities_->exposureTime()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "exposureTime", "exposureTime setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setExposureTime(constraint_set->exposureTime());
+      settings->exposure_time = exposure_time;
+    }
+    settings->has_color_temperature =
+        constraint_set->hasColorTemperature() &&
+        constraint_set->colorTemperature()->IsDouble();
+    if (settings->has_color_temperature) {
+      const auto color_temperature =
+          constraint_set->colorTemperature()->GetAsDouble();
+      if (color_temperature < capabilities_->colorTemperature()->min() ||
+          color_temperature > capabilities_->colorTemperature()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "colorTemperature", "colorTemperature setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setColorTemperature(
+          constraint_set->colorTemperature());
+      settings->color_temperature = color_temperature;
+    }
+    settings->has_iso =
+        constraint_set->hasIso() && constraint_set->iso()->IsDouble();
+    if (settings->has_iso) {
+      const auto iso = constraint_set->iso()->GetAsDouble();
+      if (iso < capabilities_->iso()->min() ||
+          iso > capabilities_->iso()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "iso", "iso setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setIso(constraint_set->iso());
+      settings->iso = iso;
+    }
+
+    settings->has_brightness = constraint_set->hasBrightness() &&
+                               constraint_set->brightness()->IsDouble();
+    if (settings->has_brightness) {
+      const auto brightness = constraint_set->brightness()->GetAsDouble();
+      if (brightness < capabilities_->brightness()->min() ||
+          brightness > capabilities_->brightness()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "brightness", "brightness setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setBrightness(constraint_set->brightness());
+      settings->brightness = brightness;
+    }
+    settings->has_contrast =
+        constraint_set->hasContrast() && constraint_set->contrast()->IsDouble();
+    if (settings->has_contrast) {
+      const auto contrast = constraint_set->contrast()->GetAsDouble();
+      if (contrast < capabilities_->contrast()->min() ||
+          contrast > capabilities_->contrast()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "contrast", "contrast setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setContrast(constraint_set->contrast());
+      settings->contrast = contrast;
+    }
+    settings->has_saturation = constraint_set->hasSaturation() &&
+                               constraint_set->saturation()->IsDouble();
+    if (settings->has_saturation) {
+      const auto saturation = constraint_set->saturation()->GetAsDouble();
+      if (saturation < capabilities_->saturation()->min() ||
+          saturation > capabilities_->saturation()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "saturation", "saturation setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setSaturation(constraint_set->saturation());
+      settings->saturation = saturation;
+    }
+    settings->has_sharpness = constraint_set->hasSharpness() &&
+                              constraint_set->sharpness()->IsDouble();
+    if (settings->has_sharpness) {
+      const auto sharpness = constraint_set->sharpness()->GetAsDouble();
+      if (sharpness < capabilities_->sharpness()->min() ||
+          sharpness > capabilities_->sharpness()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "sharpness", "sharpness setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setSharpness(constraint_set->sharpness());
+      settings->sharpness = sharpness;
+    }
+
+    settings->has_focus_distance = constraint_set->hasFocusDistance() &&
+                                   constraint_set->focusDistance()->IsDouble();
+    if (settings->has_focus_distance) {
+      const auto focus_distance =
+          constraint_set->focusDistance()->GetAsDouble();
+      if (focus_distance < capabilities_->focusDistance()->min() ||
+          focus_distance > capabilities_->focusDistance()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "focusDistance", "focusDistance setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setFocusDistance(constraint_set->focusDistance());
+      settings->focus_distance = focus_distance;
+    }
+
+    settings->has_pan =
+        constraint_set->hasPan() && constraint_set->pan()->IsDouble();
+    if (settings->has_pan) {
+      if (!IsPageVisible()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSecurityError, "the page is not visible"));
+        return false;
+      }
+      const auto pan = constraint_set->pan()->GetAsDouble();
+      if (pan < capabilities_->pan()->min() ||
+          pan > capabilities_->pan()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "pan", "pan setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setPan(constraint_set->pan());
+      settings->pan = pan;
+    }
+
+    settings->has_tilt =
+        constraint_set->hasTilt() && constraint_set->tilt()->IsDouble();
+    if (settings->has_tilt) {
+      if (!IsPageVisible()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSecurityError, "the page is not visible"));
+        return false;
+      }
+      const auto tilt = constraint_set->tilt()->GetAsDouble();
+      if (tilt < capabilities_->tilt()->min() ||
+          tilt > capabilities_->tilt()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "tilt", "tilt setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setTilt(constraint_set->tilt());
+      settings->tilt = tilt;
+    }
+
+    settings->has_zoom =
+        constraint_set->hasZoom() && constraint_set->zoom()->IsDouble();
+    if (settings->has_zoom) {
+      if (!IsPageVisible()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSecurityError, "the page is not visible"));
+        return false;
+      }
+      const auto zoom = constraint_set->zoom()->GetAsDouble();
+      if (zoom < capabilities_->zoom()->min() ||
+          zoom > capabilities_->zoom()->max()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "zoom", "zoom setting out of range"));
+        return false;
+      }
+      temp_constraint_set->setZoom(constraint_set->zoom());
+      settings->zoom = zoom;
+    }
+
+    // TODO(mcasas): support ConstrainBooleanParameters where applicable.
+    settings->has_torch =
+        constraint_set->hasTorch() && constraint_set->torch()->IsBoolean();
+    if (settings->has_torch) {
+      const auto torch = constraint_set->torch()->GetAsBoolean();
+      if (torch && !capabilities_->torch()) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "torch", "torch not supported"));
+        return false;
+      }
+      temp_constraint_set->setTorch(constraint_set->torch());
+      settings->torch = torch;
+    }
+
+    settings->has_background_blur_mode =
+        constraint_set->hasBackgroundBlur() &&
+        constraint_set->backgroundBlur()->IsBoolean();
+    if (settings->has_background_blur_mode) {
+      const auto background_blur =
+          constraint_set->backgroundBlur()->GetAsBoolean();
+      if (!base::Contains(capabilities_->backgroundBlur(), background_blur)) {
+        resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
+            "backgroundBlur", "backgroundBlur setting value not supported"));
+        return false;
+      }
+      temp_constraint_set->setBackgroundBlur(constraint_set->backgroundBlur());
+      settings->background_blur_mode =
+          background_blur ? BackgroundBlurMode::BLUR : BackgroundBlurMode::OFF;
+    }
+  }
+
+  current_constraint_set_ = temp_constraint_set;
+
+  return true;
+}
+
 void ImageCapture::GetMediaTrackCapabilities(
     MediaTrackCapabilities* capabilities) const {
   // Merge any present |capabilities_| members into |capabilities|.
@@ -602,297 +906,12 @@ void ImageCapture::SetMediaTrackConstraints(
     return;
   }
 
-  const auto& constraint_set_vector = constraints->advanced();
-  DCHECK_GT(constraint_set_vector.size(), 0u);
-  // TODO(mcasas): add support more than one single advanced constraint.
-  const MediaTrackConstraintSet* constraint_set = constraint_set_vector[0];
+  auto settings = media::mojom::blink::PhotoSettings::New();
 
-  if (absl::optional<String> name =
-          GetConstraintWithNonExistingCapability(constraint_set)) {
-    resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-        name.value(), "Unsupported constraint"));
+  if (!CheckAndApplyMediaTrackConstraintsToSettings(&*settings, constraints,
+                                                    resolver)) {
     return;
   }
-
-  auto settings = media::mojom::blink::PhotoSettings::New();
-  MediaTrackConstraintSet* temp_constraint_set =
-      current_constraint_set_ ? current_constraint_set_.Get()
-                              : MediaTrackConstraintSet::Create();
-
-  // TODO(mcasas): support other Mode types beyond simple string i.e. the
-  // equivalents of "sequence<DOMString>"" or "ConstrainDOMStringParameters".
-  settings->has_white_balance_mode =
-      constraint_set->hasWhiteBalanceMode() &&
-      constraint_set->whiteBalanceMode()->IsString();
-  if (settings->has_white_balance_mode) {
-    const auto white_balance_mode =
-        constraint_set->whiteBalanceMode()->GetAsString();
-    if (capabilities_->whiteBalanceMode().Find(white_balance_mode) ==
-        kNotFound) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "whiteBalanceMode", "Unsupported whiteBalanceMode."));
-      return;
-    }
-    temp_constraint_set->setWhiteBalanceMode(
-        constraint_set->whiteBalanceMode());
-    settings->white_balance_mode = ParseMeteringMode(white_balance_mode);
-  }
-  settings->has_exposure_mode = constraint_set->hasExposureMode() &&
-                                constraint_set->exposureMode()->IsString();
-  if (settings->has_exposure_mode) {
-    const auto exposure_mode = constraint_set->exposureMode()->GetAsString();
-    if (capabilities_->exposureMode().Find(exposure_mode) == kNotFound) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "exposureMode", "Unsupported exposureMode."));
-      return;
-    }
-    temp_constraint_set->setExposureMode(constraint_set->exposureMode());
-    settings->exposure_mode = ParseMeteringMode(exposure_mode);
-  }
-
-  settings->has_focus_mode =
-      constraint_set->hasFocusMode() && constraint_set->focusMode()->IsString();
-  if (settings->has_focus_mode) {
-    const auto focus_mode = constraint_set->focusMode()->GetAsString();
-    if (capabilities_->focusMode().Find(focus_mode) == kNotFound) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "focusMode", "Unsupported focusMode."));
-      return;
-    }
-    temp_constraint_set->setFocusMode(constraint_set->focusMode());
-    settings->focus_mode = ParseMeteringMode(focus_mode);
-  }
-
-  // TODO(mcasas): support ConstrainPoint2DParameters.
-  if (constraint_set->hasPointsOfInterest() &&
-      constraint_set->pointsOfInterest()->IsPoint2DSequence()) {
-    for (const auto& point :
-         constraint_set->pointsOfInterest()->GetAsPoint2DSequence()) {
-      auto mojo_point = media::mojom::blink::Point2D::New();
-      mojo_point->x = point->x();
-      mojo_point->y = point->y();
-      settings->points_of_interest.push_back(std::move(mojo_point));
-    }
-    temp_constraint_set->setPointsOfInterest(
-        constraint_set->pointsOfInterest());
-  }
-
-  // TODO(mcasas): support ConstrainDoubleRange where applicable.
-  settings->has_exposure_compensation =
-      constraint_set->hasExposureCompensation() &&
-      constraint_set->exposureCompensation()->IsDouble();
-  if (settings->has_exposure_compensation) {
-    const auto exposure_compensation =
-        constraint_set->exposureCompensation()->GetAsDouble();
-    if (exposure_compensation < capabilities_->exposureCompensation()->min() ||
-        exposure_compensation > capabilities_->exposureCompensation()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "exposureCompensation", "exposureCompensation setting out of range"));
-      return;
-    }
-    temp_constraint_set->setExposureCompensation(
-        constraint_set->exposureCompensation());
-    settings->exposure_compensation = exposure_compensation;
-  }
-
-  settings->has_exposure_time = constraint_set->hasExposureTime() &&
-                                constraint_set->exposureTime()->IsDouble();
-  if (settings->has_exposure_time) {
-    const auto exposure_time = constraint_set->exposureTime()->GetAsDouble();
-    if (exposure_time < capabilities_->exposureTime()->min() ||
-        exposure_time > capabilities_->exposureTime()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "exposureTime", "exposureTime setting out of range"));
-      return;
-    }
-    temp_constraint_set->setExposureTime(constraint_set->exposureTime());
-    settings->exposure_time = exposure_time;
-  }
-  settings->has_color_temperature =
-      constraint_set->hasColorTemperature() &&
-      constraint_set->colorTemperature()->IsDouble();
-  if (settings->has_color_temperature) {
-    const auto color_temperature =
-        constraint_set->colorTemperature()->GetAsDouble();
-    if (color_temperature < capabilities_->colorTemperature()->min() ||
-        color_temperature > capabilities_->colorTemperature()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "colorTemperature", "colorTemperature setting out of range"));
-      return;
-    }
-    temp_constraint_set->setColorTemperature(
-        constraint_set->colorTemperature());
-    settings->color_temperature = color_temperature;
-  }
-  settings->has_iso =
-      constraint_set->hasIso() && constraint_set->iso()->IsDouble();
-  if (settings->has_iso) {
-    const auto iso = constraint_set->iso()->GetAsDouble();
-    if (iso < capabilities_->iso()->min() ||
-        iso > capabilities_->iso()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "iso", "iso setting out of range"));
-      return;
-    }
-    temp_constraint_set->setIso(constraint_set->iso());
-    settings->iso = iso;
-  }
-
-  settings->has_brightness = constraint_set->hasBrightness() &&
-                             constraint_set->brightness()->IsDouble();
-  if (settings->has_brightness) {
-    const auto brightness = constraint_set->brightness()->GetAsDouble();
-    if (brightness < capabilities_->brightness()->min() ||
-        brightness > capabilities_->brightness()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "brightness", "brightness setting out of range"));
-      return;
-    }
-    temp_constraint_set->setBrightness(constraint_set->brightness());
-    settings->brightness = brightness;
-  }
-  settings->has_contrast =
-      constraint_set->hasContrast() && constraint_set->contrast()->IsDouble();
-  if (settings->has_contrast) {
-    const auto contrast = constraint_set->contrast()->GetAsDouble();
-    if (contrast < capabilities_->contrast()->min() ||
-        contrast > capabilities_->contrast()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "contrast", "contrast setting out of range"));
-      return;
-    }
-    temp_constraint_set->setContrast(constraint_set->contrast());
-    settings->contrast = contrast;
-  }
-  settings->has_saturation = constraint_set->hasSaturation() &&
-                             constraint_set->saturation()->IsDouble();
-  if (settings->has_saturation) {
-    const auto saturation = constraint_set->saturation()->GetAsDouble();
-    if (saturation < capabilities_->saturation()->min() ||
-        saturation > capabilities_->saturation()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "saturation", "saturation setting out of range"));
-      return;
-    }
-    temp_constraint_set->setSaturation(constraint_set->saturation());
-    settings->saturation = saturation;
-  }
-  settings->has_sharpness =
-      constraint_set->hasSharpness() && constraint_set->sharpness()->IsDouble();
-  if (settings->has_sharpness) {
-    const auto sharpness = constraint_set->sharpness()->GetAsDouble();
-    if (sharpness < capabilities_->sharpness()->min() ||
-        sharpness > capabilities_->sharpness()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "sharpness", "sharpness setting out of range"));
-      return;
-    }
-    temp_constraint_set->setSharpness(constraint_set->sharpness());
-    settings->sharpness = sharpness;
-  }
-
-  settings->has_focus_distance = constraint_set->hasFocusDistance() &&
-                                 constraint_set->focusDistance()->IsDouble();
-  if (settings->has_focus_distance) {
-    const auto focus_distance = constraint_set->focusDistance()->GetAsDouble();
-    if (focus_distance < capabilities_->focusDistance()->min() ||
-        focus_distance > capabilities_->focusDistance()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "focusDistance", "focusDistance setting out of range"));
-      return;
-    }
-    temp_constraint_set->setFocusDistance(constraint_set->focusDistance());
-    settings->focus_distance = focus_distance;
-  }
-
-  settings->has_pan =
-      constraint_set->hasPan() && constraint_set->pan()->IsDouble();
-  if (settings->has_pan) {
-    if (!IsPageVisible()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSecurityError, "the page is not visible"));
-      return;
-    }
-    const auto pan = constraint_set->pan()->GetAsDouble();
-    if (pan < capabilities_->pan()->min() ||
-        pan > capabilities_->pan()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "pan", "pan setting out of range"));
-      return;
-    }
-    temp_constraint_set->setPan(constraint_set->pan());
-    settings->pan = pan;
-  }
-
-  settings->has_tilt =
-      constraint_set->hasTilt() && constraint_set->tilt()->IsDouble();
-  if (settings->has_tilt) {
-    if (!IsPageVisible()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSecurityError, "the page is not visible"));
-      return;
-    }
-    const auto tilt = constraint_set->tilt()->GetAsDouble();
-    if (tilt < capabilities_->tilt()->min() ||
-        tilt > capabilities_->tilt()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "tilt", "tilt setting out of range"));
-      return;
-    }
-    temp_constraint_set->setTilt(constraint_set->tilt());
-    settings->tilt = tilt;
-  }
-
-  settings->has_zoom =
-      constraint_set->hasZoom() && constraint_set->zoom()->IsDouble();
-  if (settings->has_zoom) {
-    if (!IsPageVisible()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSecurityError, "the page is not visible"));
-      return;
-    }
-    const auto zoom = constraint_set->zoom()->GetAsDouble();
-    if (zoom < capabilities_->zoom()->min() ||
-        zoom > capabilities_->zoom()->max()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "zoom", "zoom setting out of range"));
-      return;
-    }
-    temp_constraint_set->setZoom(constraint_set->zoom());
-    settings->zoom = zoom;
-  }
-
-  // TODO(mcasas): support ConstrainBooleanParameters where applicable.
-  settings->has_torch =
-      constraint_set->hasTorch() && constraint_set->torch()->IsBoolean();
-  if (settings->has_torch) {
-    const auto torch = constraint_set->torch()->GetAsBoolean();
-    if (torch && !capabilities_->torch()) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "torch", "torch not supported"));
-      return;
-    }
-    temp_constraint_set->setTorch(constraint_set->torch());
-    settings->torch = torch;
-  }
-
-  settings->has_background_blur_mode =
-      constraint_set->hasBackgroundBlur() &&
-      constraint_set->backgroundBlur()->IsBoolean();
-  if (settings->has_background_blur_mode) {
-    const auto background_blur =
-        constraint_set->backgroundBlur()->GetAsBoolean();
-    if (!base::Contains(capabilities_->backgroundBlur(), background_blur)) {
-      resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
-          "backgroundBlur", "backgroundBlur setting value not supported"));
-      return;
-    }
-    temp_constraint_set->setBackgroundBlur(constraint_set->backgroundBlur());
-    settings->background_blur_mode =
-        background_blur ? BackgroundBlurMode::BLUR : BackgroundBlurMode::OFF;
-  }
-
-  current_constraint_set_ = temp_constraint_set;
 
   service_requests_.insert(resolver);
 
