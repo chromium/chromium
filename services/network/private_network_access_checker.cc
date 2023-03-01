@@ -9,6 +9,7 @@
 #include "net/base/transport_info.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
@@ -78,9 +79,7 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),
       target_address_space_(request.target_ip_address_space),
-      is_same_origin_(
-          request.request_initiator.has_value() &&
-          request.request_initiator.value().IsSameOriginWith(request.url)) {
+      request_initiator_(request.request_initiator) {
   SetRequestUrl(request.url);
 
   if (!client_security_state_ ||
@@ -191,6 +190,12 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kBlockedByLoadOption;
   }
 
+  if (is_potentially_trustworthy_same_origin_ &&
+      base::FeatureList::IsEnabled(
+          features::kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin)) {
+    return Result::kAllowedPotentiallyTrustworthySameOrigin;
+  }
+
   if (!client_security_state_) {
     return Result::kAllowedMissingClientSecurityState;
   }
@@ -260,17 +265,17 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     case Policy::kPreflightWarn:
       return Result::kBlockedByPolicyPreflightWarn;
     case Policy::kPreflightBlock:
-      return is_same_origin_ &&
-                     base::FeatureList::IsEnabled(
-                         features::kPrivateNetworkAccessAllowSecureSameOrigin)
-                 ? Result::kAllowedSecureSameOrigin
-                 : Result::kBlockedByPolicyPreflightBlock;
+      return Result::kBlockedByPolicyPreflightBlock;
   }
 }
 
 void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
   is_request_url_scheme_http_ = url.scheme_piece() == url::kHttpScheme;
   request_url_private_ip_ = ParsePrivateIpFromUrl(url);
+
+  is_potentially_trustworthy_same_origin_ =
+      IsUrlPotentiallyTrustworthy(url) && request_initiator_.has_value() &&
+      request_initiator_.value().IsSameOriginWith(url);
 }
 
 }  // namespace network

@@ -2942,7 +2942,7 @@ crbug.com/626703 [ Mac12 ] virtual/third-party-storage-partitioning/external/wpt
 crbug.com/626703 [ Mac13 ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
-crbug.com/626703 [ Linux ] virtual/pna-allow-secure-same-origin/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
+crbug.com/626703 [ Linux ] virtual/lna-allow-potentially-trustworthy-same-origin/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-opacity.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line-002.html [ Failure ]

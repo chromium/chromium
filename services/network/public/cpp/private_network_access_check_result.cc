@@ -41,8 +41,8 @@ base::StringPiece PrivateNetworkAccessCheckResultToStringPiece(Result result) {
       return "allowed-by-policy-preflight-warn";
     case Result::kBlockedByInconsistentIpAddressSpace:
       return "blocked-by-inconsistent-ip-address-space";
-    case Result::kAllowedSecureSameOrigin:
-      return "allowed-secure-same-origin";
+    case Result::kAllowedPotentiallyTrustworthySameOrigin:
+      return "allowed-potentially-trustworthy-same-origin";
   }
 }
 
@@ -60,7 +60,7 @@ absl::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
     case Result::kAllowedByPolicyWarn:
     case Result::kAllowedByTargetIpAddressSpace:
     case Result::kAllowedByPolicyPreflightWarn:
-    case Result::kAllowedSecureSameOrigin:
+    case Result::kAllowedPotentiallyTrustworthySameOrigin:
       return absl::nullopt;
     case Result::kBlockedByLoadOption:
       // TODO(https:/crbug.com/1254689): Return better error than this, which

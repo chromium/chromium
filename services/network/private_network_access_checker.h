@@ -16,6 +16,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -173,7 +174,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // Set by `Check()`, reset by `ResetForRedirect()`.
   absl::optional<mojom::IPAddressSpace> response_address_space_;
 
-  const bool is_same_origin_;
+  // The request initiator origin.
+  absl::optional<url::Origin> request_initiator_;
+
+  // The request is from/to a potentially trustworthy and same origin.
+  bool is_potentially_trustworthy_same_origin_;
 };
 
 }  // namespace network
