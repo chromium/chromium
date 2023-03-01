@@ -13678,16 +13678,6 @@ should be kept until we use this API.  -->
   </token>
 </histogram>
 
-<histogram name="Toolbar.Menu.NewIncognitoTabPresentationDuration" units="ms"
-    expires_after="M85">
-  <owner>peterlaurens@chromium.org</owner>
-  <summary>
-    The number of millseconds between the user requesting a new incognito tab,
-    e.g. by tapping the New Incognito Tab entry in the main tools menu, and it
-    completing its animation on screen.
-  </summary>
-</histogram>
-
 <histogram name="Toolbar.ShowToolsMenuResponsiveness" units="ms"
     expires_after="M77">
   <owner>peterlaurens@chromium.org</owner>
@@ -13706,16 +13696,6 @@ should be kept until we use this API.  -->
     The number of millseconds between the user requesting a new incognito tab,
     from within the tab switcher, e.g. by tapping the New Tab button from the
     tab switcher UI, and it completing its animation on screen.
-  </summary>
-</histogram>
-
-<histogram name="Toolbar.TabSwitcher.NewTabPresentationDuration" units="ms"
-    expires_after="M85">
-  <owner>peterlaurens@chromium.org</owner>
-  <summary>
-    The number of millseconds between the user requesting a new tab, from within
-    the tab switcher UI, e.g. by tapping the New Tab button from the tab
-    switcher UI, and it completing its animation on screen.
   </summary>
 </histogram>
 

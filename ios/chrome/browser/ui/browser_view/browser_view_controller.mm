@@ -10,7 +10,6 @@
 
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -765,7 +764,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
                      focusOmnibox:(BOOL)focusOmnibox
                     inheritOpener:(BOOL)inheritOpener {
-  const base::TimeTicks startTime = base::TimeTicks::Now();
   const BOOL offTheRecord = _isOffTheRecord;
   ProceduralBlock oldForegroundTabWasAddedCompletionBlock =
       self.foregroundTabWasAddedCompletionBlock;
@@ -773,13 +771,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.foregroundTabWasAddedCompletionBlock = ^{
     if (oldForegroundTabWasAddedCompletionBlock) {
       oldForegroundTabWasAddedCompletionBlock();
-    }
-    const base::TimeDelta duration = base::TimeTicks::Now() - startTime;
-    if (offTheRecord) {
-      UMA_HISTOGRAM_TIMES("Toolbar.Menu.NewIncognitoTabPresentationDuration",
-                          duration);
-    } else {
-      UMA_HISTOGRAM_TIMES("Toolbar.Menu.NewTabPresentationDuration", duration);
     }
     if (focusOmnibox) {
       [omniboxCommandHandler focusOmnibox];
