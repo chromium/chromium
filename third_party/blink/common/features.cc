@@ -243,7 +243,7 @@ BASE_FEATURE(kNavigationPredictor,
 // Anchor Element Interaction
 BASE_FEATURE(kAnchorElementInteraction,
              "AnchorElementInteraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
