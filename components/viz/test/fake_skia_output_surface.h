@@ -76,6 +76,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void EndPaint(
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+      const gfx::Rect& update_rect,
       bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context,
                           const gfx::ColorSpace& yuv_color_space) override;

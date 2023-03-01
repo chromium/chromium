@@ -199,12 +199,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   friend class DelegatedInkPointPixelTestHelper;
   friend class DelegatedInkDisplayTest;
 
-  enum SurfaceInitializationMode {
-    SURFACE_INITIALIZATION_MODE_PRESERVE,
-    SURFACE_INITIALIZATION_MODE_SCISSORED_CLEAR,
-    SURFACE_INITIALIZATION_MODE_FULL_SURFACE_CLEAR,
-  };
-
   struct RenderPassRequirements {
     gfx::Size size;
     bool generate_mipmap = false;
@@ -280,14 +274,16 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void BindFramebufferToTexture(
       const AggregatedRenderPassId render_pass_id) = 0;
   virtual void SetScissorTestRect(const gfx::Rect& scissor_rect) = 0;
-  virtual void PrepareSurfaceForPass(
-      SurfaceInitializationMode initialization_mode,
-      const gfx::Rect& render_pass_scissor) = 0;
+  // |render_pass_update_rect| is in render pass backing buffer space.
+  virtual void BeginDrawingRenderPass(
+      bool needs_clear,
+      const gfx::Rect& render_pass_update_rect) = 0;
   // |clip_region| is a (possibly null) pointer to a quad in the same
   // space as the quad. When non-null only the area of the quad that overlaps
   // with clip_region will be drawn.
   virtual void DoDrawQuad(const DrawQuad* quad,
                           const gfx::QuadF* clip_region) = 0;
+  virtual void FinishDrawingRenderPass() {}
   virtual void BeginDrawingFrame() = 0;
   virtual void FinishDrawingFrame() = 0;
   // If a pass contains a single tile draw quad and can be drawn without
@@ -295,9 +291,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // return that quad, otherwise return null.
   virtual const DrawQuad* CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass);
-  virtual void FinishDrawingQuadList() {}
   virtual bool FlippedFramebuffer() const = 0;
-  virtual void EnsureScissorTestEnabled() = 0;
   virtual void EnsureScissorTestDisabled() = 0;
   virtual void DidChangeVisibility() = 0;
   virtual void CopyDrawnRenderPass(

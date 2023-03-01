@@ -5327,7 +5327,7 @@ TEST_P(DelegatedInkWithPredictionTest, TrailExtendsBeyondPresentationArea) {
 }
 
 // Confirm that the trail appears on top of everything, including batched quads
-// that are drawn as part of the call to FinishDrawingQuadList.
+// that are drawn as part of the call to FinishDrawingRenderPass.
 TEST_P(DelegatedInkWithPredictionTest, DelegatedInkTrailAfterBatchedQuads) {
   gfx::Rect rect(this->device_viewport_size_);
 
