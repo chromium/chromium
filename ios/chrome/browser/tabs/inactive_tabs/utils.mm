@@ -14,10 +14,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Move the web state from `source` list at `source_index` to `destination` web
-// state list at `destination_index`.
 void MoveTab(WebStateList* source,
              int source_index,
              WebStateList* destination,
@@ -28,8 +24,6 @@ void MoveTab(WebStateList* source,
                               WebStateList::InsertionFlags::INSERT_FORCE_INDEX,
                               WebStateOpener());
 }
-
-}  // namespace
 
 void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {

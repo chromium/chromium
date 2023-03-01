@@ -6,6 +6,14 @@
 #define IOS_CHROME_BROWSER_TABS_INACTIVE_TABS_UTILS_H_
 
 class Browser;
+class WebStateList;
+
+// Move the web state from `source` list at `source_index` to `destination` web
+// state list at `destination_index`.
+void MoveTab(WebStateList* source,
+             int source_index,
+             WebStateList* destination,
+             int destination_index);
 
 // Move tabs from the active browser's web state list to the inactive browser's
 // web state list. Each of the active tabs is added at the end of the inactive

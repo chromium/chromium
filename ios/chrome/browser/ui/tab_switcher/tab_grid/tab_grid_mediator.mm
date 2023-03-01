@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
@@ -461,8 +462,9 @@ void RecordTabGridCloseTabsCount(int count) {
   int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/NO);
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
-    // If this is a search result, it may contain items from other windows -
-    // check other windows first before giving up.
+    // If this is a search result, it may contain items from other windows or
+    // from the inactive browser - check inactive browser and other windows
+    // before giving up.
     BrowserList* browserList =
         BrowserListFactory::GetForBrowserState(self.browserState);
     Browser* browser = GetBrowserForTabWithId(
@@ -472,26 +474,36 @@ void RecordTabGridCloseTabsCount(int count) {
       return;
     }
 
-    itemWebStateList = browser->GetWebStateList();
-    index = GetTabIndex(itemWebStateList, itemID, /*pinned=*/NO);
-    SceneState* targetSceneState =
-        SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
-    SceneState* currentSceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    if (browser->IsInactive()) {
+      WebStateList* inactiveWebStateList = browser->GetWebStateList();
+      int selectedInactiveTabIndex =
+          GetTabIndex(inactiveWebStateList, itemID, /*pinned=*/NO);
+      index = itemWebStateList->count();
+      MoveTab(inactiveWebStateList, selectedInactiveTabIndex, itemWebStateList,
+              index);
+    } else {
+      // Other windows case.
+      itemWebStateList = browser->GetWebStateList();
+      index = GetTabIndex(itemWebStateList, itemID, /*pinned=*/NO);
+      SceneState* targetSceneState =
+          SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+      SceneState* currentSceneState =
+          SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
 
-    UISceneActivationRequestOptions* options =
-        [[UISceneActivationRequestOptions alloc] init];
-    options.requestingScene = currentSceneState.scene;
+      UISceneActivationRequestOptions* options =
+          [[UISceneActivationRequestOptions alloc] init];
+      options.requestingScene = currentSceneState.scene;
 
-    [[UIApplication sharedApplication]
-        requestSceneSessionActivation:targetSceneState.scene.session
-                         userActivity:nil
-                              options:options
-                         errorHandler:^(NSError* error) {
-                           LOG(ERROR) << base::SysNSStringToUTF8(
-                               error.localizedDescription);
-                           NOTREACHED();
-                         }];
+      [[UIApplication sharedApplication]
+          requestSceneSessionActivation:targetSceneState.scene.session
+                           userActivity:nil
+                                options:options
+                           errorHandler:^(NSError* error) {
+                             LOG(ERROR) << base::SysNSStringToUTF8(
+                                 error.localizedDescription);
+                             NOTREACHED();
+                           }];
+    }
   }
 
   web::WebState* selectedWebState = itemWebStateList->GetWebStateAt(index);
