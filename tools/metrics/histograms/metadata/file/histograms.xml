@@ -839,6 +839,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.SyncStatusTrackerMemoryUsage" units="KiB"
+    expires_after="M118">
+  <owner>msalomao@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Memory used by the Sync Status Tracker.</summary>
+</histogram>
+
 <histogram name="FileBrowser.TeamDrivesCount" units="Team Drives"
     expires_after="M120">
   <owner>simmonsjosh@google.com</owner>
