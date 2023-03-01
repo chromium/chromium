@@ -566,7 +566,7 @@ bool FakeChromeUserManager::IsCurrentUserNew() const {
 }
 
 bool FakeChromeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
-  return false;
+  return current_user_ephemeral_;
 }
 
 bool FakeChromeUserManager::IsCurrentUserCryptohomeDataEphemeral() const {

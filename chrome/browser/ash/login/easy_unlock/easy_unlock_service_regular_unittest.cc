@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
@@ -390,18 +389,7 @@ TEST_F(EasyUnlockServiceRegularTest, NotAllowedWhenProhibited) {
 
 TEST_F(EasyUnlockServiceRegularTest, NotAllowedForEphemeralAccounts) {
   InitializeService(true /* should_initialize_all_dependencies */);
-
-  // Only MockUserManager allows for stubbing
-  // IsCurrentUserNonCryptohomeDataEphemeral() to return false so we use one
-  // here in place of `fake_chrome_user_manager_`. Injecting it into a local
-  // ScopedUserManager sets it up as the global UserManager instance.
-  auto mock_user_manager =
-      std::make_unique<testing::NiceMock<MockUserManager>>();
-  ON_CALL(*mock_user_manager, IsCurrentUserNonCryptohomeDataEphemeral())
-      .WillByDefault(Return(false));
-  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(mock_user_manager));
-
+  fake_chrome_user_manager_->set_current_user_ephemeral(true);
   EXPECT_FALSE(easy_unlock_service_regular_->IsAllowed());
 }
 
