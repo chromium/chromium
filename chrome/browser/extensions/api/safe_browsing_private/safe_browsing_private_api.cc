@@ -42,7 +42,8 @@ SafeBrowsingPrivateGetReferrerChainFunction::
 ExtensionFunction::ResponseAction
 SafeBrowsingPrivateGetReferrerChainFunction::Run() {
   std::unique_ptr<api::safe_browsing_private::GetReferrerChain::Params> params =
-      api::safe_browsing_private::GetReferrerChain::Params::Create(args());
+      api::safe_browsing_private::GetReferrerChain::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::WebContents* contents = nullptr;

@@ -60,7 +60,7 @@ OffscreenCreateDocumentFunction::~OffscreenCreateDocumentFunction() = default;
 
 ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
   std::unique_ptr<api::offscreen::CreateDocument::Params> params(
-      api::offscreen::CreateDocument::Params::Create(args()));
+      api::offscreen::CreateDocument::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 

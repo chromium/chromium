@@ -245,7 +245,7 @@ BluetoothPrivateSetAdapterStateFunction::
     ~BluetoothPrivateSetAdapterStateFunction() {}
 
 bool BluetoothPrivateSetAdapterStateFunction::CreateParams() {
-  params_ = bt_private::SetAdapterState::Params::Create(args());
+  params_ = bt_private::SetAdapterState::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -356,7 +356,7 @@ BluetoothPrivateSetPairingResponseFunction::
     ~BluetoothPrivateSetPairingResponseFunction() {}
 
 bool BluetoothPrivateSetPairingResponseFunction::CreateParams() {
-  params_ = bt_private::SetPairingResponse::Params::Create(args());
+  params_ = bt_private::SetPairingResponse::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -415,7 +415,7 @@ BluetoothPrivateDisconnectAllFunction::
     ~BluetoothPrivateDisconnectAllFunction() {}
 
 bool BluetoothPrivateDisconnectAllFunction::CreateParams() {
-  params_ = bt_private::DisconnectAll::Params::Create(args());
+  params_ = bt_private::DisconnectAll::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -465,7 +465,7 @@ BluetoothPrivateForgetDeviceFunction::~BluetoothPrivateForgetDeviceFunction() =
     default;
 
 bool BluetoothPrivateForgetDeviceFunction::CreateParams() {
-  params_ = bt_private::ForgetDevice::Params::Create(args());
+  params_ = bt_private::ForgetDevice::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -502,7 +502,7 @@ BluetoothPrivateSetDiscoveryFilterFunction::
     ~BluetoothPrivateSetDiscoveryFilterFunction() = default;
 
 bool BluetoothPrivateSetDiscoveryFilterFunction::CreateParams() {
-  params_ = SetDiscoveryFilter::Params::Create(args());
+  params_ = SetDiscoveryFilter::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -582,7 +582,7 @@ BluetoothPrivateConnectFunction::BluetoothPrivateConnectFunction() = default;
 BluetoothPrivateConnectFunction::~BluetoothPrivateConnectFunction() = default;
 
 bool BluetoothPrivateConnectFunction::CreateParams() {
-  params_ = bt_private::Connect::Params::Create(args());
+  params_ = bt_private::Connect::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -628,7 +628,7 @@ BluetoothPrivatePairFunction::BluetoothPrivatePairFunction() = default;
 
 BluetoothPrivatePairFunction::~BluetoothPrivatePairFunction() = default;
 bool BluetoothPrivatePairFunction::CreateParams() {
-  params_ = bt_private::Pair::Params::Create(args());
+  params_ = bt_private::Pair::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -674,7 +674,7 @@ BluetoothPrivateRecordPairingFunction::
     ~BluetoothPrivateRecordPairingFunction() = default;
 
 bool BluetoothPrivateRecordPairingFunction::CreateParams() {
-  params_ = bt_private::RecordPairing::Params::Create(args());
+  params_ = bt_private::RecordPairing::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -705,7 +705,7 @@ BluetoothPrivateRecordReconnectionFunction::
     ~BluetoothPrivateRecordReconnectionFunction() = default;
 
 bool BluetoothPrivateRecordReconnectionFunction::CreateParams() {
-  params_ = bt_private::RecordReconnection::Params::Create(args());
+  params_ = bt_private::RecordReconnection::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -735,7 +735,7 @@ BluetoothPrivateRecordDeviceSelectionFunction::
     ~BluetoothPrivateRecordDeviceSelectionFunction() = default;
 
 bool BluetoothPrivateRecordDeviceSelectionFunction::CreateParams() {
-  params_ = bt_private::RecordDeviceSelection::Params::Create(args());
+  params_ = bt_private::RecordDeviceSelection::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 

@@ -194,7 +194,7 @@ std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
 
   base::Value::List args;
   args.Append(base::Value(request.ToValue()));
-  return api::printing::SubmitJob::Params::Create(args);
+  return api::printing::SubmitJob::Params::CreateDeprecated(args);
 }
 
 absl::optional<printing::PrinterSemanticCapsAndDefaults>

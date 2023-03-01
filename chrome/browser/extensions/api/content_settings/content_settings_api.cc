@@ -80,7 +80,8 @@ ContentSettingsContentSettingClearFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Clear::Params> params(Clear::Params::Create(args()));
+  std::unique_ptr<Clear::Params> params(
+      Clear::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
@@ -118,7 +119,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Get::Params> params(Get::Params::Create(args()));
+  std::unique_ptr<Get::Params> params(Get::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
@@ -189,7 +190,7 @@ ContentSettingsContentSettingSetFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Set::Params> params(Set::Params::Create(args()));
+  std::unique_ptr<Set::Params> params(Set::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {

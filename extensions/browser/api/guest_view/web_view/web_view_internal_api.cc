@@ -305,7 +305,8 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
   using api::extension_types::ImageDetails;
 
   std::unique_ptr<web_view_internal::CaptureVisibleRegion::Params> params(
-      web_view_internal::CaptureVisibleRegion::Params::Create(args()));
+      web_view_internal::CaptureVisibleRegion::Params::CreateDeprecated(
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::unique_ptr<ImageDetails> image_details;
@@ -416,7 +417,7 @@ std::string WebViewInternalCaptureVisibleRegionFunction::GetErrorMessage(
 
 ExtensionFunction::ResponseAction WebViewInternalNavigateFunction::Run() {
   std::unique_ptr<web_view_internal::Navigate::Params> params(
-      web_view_internal::Navigate::Params::Create(args()));
+      web_view_internal::Navigate::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   std::string src = params->src;
   guest_->NavigateGuest(src, true /* force_navigation */);
@@ -576,7 +577,7 @@ WebViewInternalAddContentScriptsFunction::
 ExecuteCodeFunction::ResponseAction
 WebViewInternalAddContentScriptsFunction::Run() {
   std::unique_ptr<web_view_internal::AddContentScripts::Params> params(
-      web_view_internal::AddContentScripts::Params::Create(args()));
+      web_view_internal::AddContentScripts::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (!params->instance_id)
@@ -617,7 +618,8 @@ WebViewInternalRemoveContentScriptsFunction::
 ExecuteCodeFunction::ResponseAction
 WebViewInternalRemoveContentScriptsFunction::Run() {
   std::unique_ptr<web_view_internal::RemoveContentScripts::Params> params(
-      web_view_internal::RemoveContentScripts::Params::Create(args()));
+      web_view_internal::RemoveContentScripts::Params::CreateDeprecated(
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (!params->instance_id)
@@ -647,7 +649,7 @@ WebViewInternalSetNameFunction::~WebViewInternalSetNameFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalSetNameFunction::Run() {
   std::unique_ptr<web_view_internal::SetName::Params> params(
-      web_view_internal::SetName::Params::Create(args()));
+      web_view_internal::SetName::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   guest_->SetName(params->frame_name);
   return RespondNow(NoArguments());
@@ -664,7 +666,8 @@ WebViewInternalSetAllowTransparencyFunction::
 ExtensionFunction::ResponseAction
 WebViewInternalSetAllowTransparencyFunction::Run() {
   std::unique_ptr<web_view_internal::SetAllowTransparency::Params> params(
-      web_view_internal::SetAllowTransparency::Params::Create(args()));
+      web_view_internal::SetAllowTransparency::Params::CreateDeprecated(
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   guest_->SetAllowTransparency(params->allow);
   return RespondNow(NoArguments());
@@ -681,7 +684,7 @@ WebViewInternalSetAllowScalingFunction::
 ExtensionFunction::ResponseAction
 WebViewInternalSetAllowScalingFunction::Run() {
   std::unique_ptr<web_view_internal::SetAllowScaling::Params> params(
-      web_view_internal::SetAllowScaling::Params::Create(args()));
+      web_view_internal::SetAllowScaling::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   guest_->SetAllowScaling(params->allow);
   return RespondNow(NoArguments());
@@ -695,7 +698,7 @@ WebViewInternalSetZoomFunction::~WebViewInternalSetZoomFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalSetZoomFunction::Run() {
   std::unique_ptr<web_view_internal::SetZoom::Params> params(
-      web_view_internal::SetZoom::Params::Create(args()));
+      web_view_internal::SetZoom::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   guest_->SetZoom(params->zoom_factor);
   return RespondNow(NoArguments());
@@ -709,7 +712,7 @@ WebViewInternalGetZoomFunction::~WebViewInternalGetZoomFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalGetZoomFunction::Run() {
   std::unique_ptr<web_view_internal::GetZoom::Params> params(
-      web_view_internal::GetZoom::Params::Create(args()));
+      web_view_internal::GetZoom::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   double zoom_factor = guest_->GetZoom();
@@ -724,7 +727,7 @@ WebViewInternalSetZoomModeFunction::~WebViewInternalSetZoomModeFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalSetZoomModeFunction::Run() {
   std::unique_ptr<web_view_internal::SetZoomMode::Params> params(
-      web_view_internal::SetZoomMode::Params::Create(args()));
+      web_view_internal::SetZoomMode::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ZoomController::ZoomMode zoom_mode = ZoomController::ZOOM_MODE_DEFAULT;
@@ -754,7 +757,7 @@ WebViewInternalGetZoomModeFunction::~WebViewInternalGetZoomModeFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalGetZoomModeFunction::Run() {
   std::unique_ptr<web_view_internal::GetZoomMode::Params> params(
-      web_view_internal::GetZoomMode::Params::Create(args()));
+      web_view_internal::GetZoomMode::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   web_view_internal::ZoomMode zoom_mode = web_view_internal::ZOOM_MODE_NONE;
@@ -788,7 +791,7 @@ void WebViewInternalFindFunction::ForwardResponse(base::Value::Dict results) {
 
 ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
   std::unique_ptr<web_view_internal::Find::Params> params(
-      web_view_internal::Find::Params::Create(args()));
+      web_view_internal::Find::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Convert the std::string search_text to string16.
@@ -818,7 +821,7 @@ WebViewInternalStopFindingFunction::~WebViewInternalStopFindingFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalStopFindingFunction::Run() {
   std::unique_ptr<web_view_internal::StopFinding::Params> params(
-      web_view_internal::StopFinding::Params::Create(args()));
+      web_view_internal::StopFinding::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Set the StopFindAction.
@@ -852,7 +855,7 @@ WebViewInternalLoadDataWithBaseUrlFunction::
 ExtensionFunction::ResponseAction
 WebViewInternalLoadDataWithBaseUrlFunction::Run() {
   std::unique_ptr<web_view_internal::LoadDataWithBaseUrl::Params> params(
-      web_view_internal::LoadDataWithBaseUrl::Params::Create(args()));
+      web_view_internal::LoadDataWithBaseUrl::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // If a virtual URL was provided, use it. Otherwise, the user will be shown
@@ -877,7 +880,7 @@ WebViewInternalGoFunction::~WebViewInternalGoFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalGoFunction::Run() {
   std::unique_ptr<web_view_internal::Go::Params> params(
-      web_view_internal::Go::Params::Create(args()));
+      web_view_internal::Go::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   bool successful = guest_->Go(params->relative_index);
@@ -903,7 +906,7 @@ WebViewInternalSetPermissionFunction::~WebViewInternalSetPermissionFunction() {
 
 ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
   std::unique_ptr<web_view_internal::SetPermission::Params> params(
-      web_view_internal::SetPermission::Params::Create(args()));
+      web_view_internal::SetPermission::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   WebViewPermissionHelper::PermissionResponseAction action =
@@ -950,7 +953,7 @@ WebViewInternalOverrideUserAgentFunction::
 ExtensionFunction::ResponseAction
 WebViewInternalOverrideUserAgentFunction::Run() {
   std::unique_ptr<web_view_internal::OverrideUserAgent::Params> params(
-      web_view_internal::OverrideUserAgent::Params::Create(args()));
+      web_view_internal::OverrideUserAgent::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   guest_->SetUserAgentOverride(params->user_agent_override);
@@ -976,7 +979,7 @@ WebViewInternalSetAudioMutedFunction::~WebViewInternalSetAudioMutedFunction() =
 
 ExtensionFunction::ResponseAction WebViewInternalSetAudioMutedFunction::Run() {
   std::unique_ptr<web_view_internal::SetAudioMuted::Params> params(
-      web_view_internal::SetAudioMuted::Params::Create(args()));
+      web_view_internal::SetAudioMuted::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   guest_->web_contents()->SetAudioMuted(params->mute);
@@ -991,7 +994,7 @@ WebViewInternalIsAudioMutedFunction::~WebViewInternalIsAudioMutedFunction() =
 
 ExtensionFunction::ResponseAction WebViewInternalIsAudioMutedFunction::Run() {
   std::unique_ptr<web_view_internal::IsAudioMuted::Params> params(
-      web_view_internal::IsAudioMuted::Params::Create(args()));
+      web_view_internal::IsAudioMuted::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::WebContents* web_contents = guest_->web_contents();
@@ -1006,7 +1009,7 @@ WebViewInternalGetAudioStateFunction::~WebViewInternalGetAudioStateFunction() =
 
 ExtensionFunction::ResponseAction WebViewInternalGetAudioStateFunction::Run() {
   std::unique_ptr<web_view_internal::GetAudioState::Params> params(
-      web_view_internal::GetAudioState::Params::Create(args()));
+      web_view_internal::GetAudioState::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::WebContents* web_contents = guest_->web_contents();
@@ -1041,8 +1044,8 @@ WebViewInternalSetSpatialNavigationEnabledFunction::
 ExtensionFunction::ResponseAction
 WebViewInternalSetSpatialNavigationEnabledFunction::Run() {
   std::unique_ptr<web_view_internal::SetSpatialNavigationEnabled::Params>
-      params(web_view_internal::SetSpatialNavigationEnabled::Params::Create(
-          args()));
+      params(web_view_internal::SetSpatialNavigationEnabled::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   guest_->SetSpatialNavigationEnabled(params->spatial_nav_enabled);
@@ -1058,7 +1061,8 @@ WebViewInternalIsSpatialNavigationEnabledFunction::
 ExtensionFunction::ResponseAction
 WebViewInternalIsSpatialNavigationEnabledFunction::Run() {
   std::unique_ptr<web_view_internal::IsSpatialNavigationEnabled::Params> params(
-      web_view_internal::IsSpatialNavigationEnabled::Params::Create(args()));
+      web_view_internal::IsSpatialNavigationEnabled::Params::CreateDeprecated(
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return RespondNow(

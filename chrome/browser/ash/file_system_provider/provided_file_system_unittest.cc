@@ -97,7 +97,7 @@ class FakeEventRouter : public extensions::EventRouter {
 
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      std::unique_ptr<Params> params(Params::Create(list));
+      std::unique_ptr<Params> params(Params::CreateDeprecated(list));
       ASSERT_TRUE(params.get());
       file_system_->GetRequestManager()->FulfillRequest(
           request_id,

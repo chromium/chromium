@@ -57,7 +57,7 @@ TestNotifyFailFunction::~TestNotifyFailFunction() = default;
 
 ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
   std::unique_ptr<NotifyFail::Params> params(
-      NotifyFail::Params::Create(args()));
+      NotifyFail::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   TestApiObserverRegistry::GetInstance()->NotifyTestFailed(
       browser_context(), params->message);
@@ -67,7 +67,7 @@ ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
 TestLogFunction::~TestLogFunction() = default;
 
 ExtensionFunction::ResponseAction TestLogFunction::Run() {
-  std::unique_ptr<Log::Params> params(Log::Params::Create(args()));
+  std::unique_ptr<Log::Params> params(Log::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   VLOG(1) << params->message;
   return RespondNow(NoArguments());
@@ -77,7 +77,7 @@ TestSendMessageFunction::TestSendMessageFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
   std::unique_ptr<PassMessage::Params> params(
-      PassMessage::Params::Create(args()));
+      PassMessage::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   bool listener_will_respond =
       TestApiObserverRegistry::GetInstance()->NotifyTestMessage(
@@ -117,7 +117,7 @@ TestSendScriptResultFunction::~TestSendScriptResultFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
   std::unique_ptr<api::test::SendScriptResult::Params> params(
-      api::test::SendScriptResult::Params::Create(args()));
+      api::test::SendScriptResult::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   TestApiObserverRegistry::GetInstance()->NotifyScriptResult(params->result);
@@ -153,7 +153,7 @@ TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() = default;
 
 ExtensionFunction::ResponseAction TestWaitForRoundTripFunction::Run() {
   std::unique_ptr<WaitForRoundTrip::Params> params(
-      WaitForRoundTrip::Params::Create(args()));
+      WaitForRoundTrip::Params::CreateDeprecated(args()));
   return RespondNow(OneArgument(base::Value(params->message)));
 }
 

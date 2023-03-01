@@ -174,7 +174,7 @@ WallpaperSetWallpaperFunction::~WallpaperSetWallpaperFunction() {
 
 ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  params_ = set_wallpaper::Params::Create(args());
+  params_ = set_wallpaper::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (params_->details.data) {

@@ -103,7 +103,7 @@ ArcAppsPrivateLaunchAppFunction::~ArcAppsPrivateLaunchAppFunction() = default;
 
 ExtensionFunction::ResponseAction ArcAppsPrivateLaunchAppFunction::Run() {
   std::unique_ptr<api::arc_apps_private::LaunchApp::Params> params(
-      api::arc_apps_private::LaunchApp::Params::Create(args()));
+      api::arc_apps_private::LaunchApp::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   ArcAppListPrefs* prefs =
       ArcAppListPrefs::Get(Profile::FromBrowserContext(browser_context()));

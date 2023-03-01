@@ -121,7 +121,7 @@ ExtensionFunction::ResponseAction LockScreenDataGetContentFunction::Run() {
     return RespondNow(Error("Not available"));
 
   std::unique_ptr<api::lock_screen_data::GetContent::Params> params(
-      api::lock_screen_data::GetContent::Params::Create(args()));
+      api::lock_screen_data::GetContent::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   storage->GetItemContent(
@@ -151,7 +151,7 @@ LockScreenDataSetContentFunction::~LockScreenDataSetContentFunction() = default;
 
 ExtensionFunction::ResponseAction LockScreenDataSetContentFunction::Run() {
   std::unique_ptr<api::lock_screen_data::SetContent::Params> params(
-      api::lock_screen_data::SetContent::Params::Create(args()));
+      api::lock_screen_data::SetContent::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   lock_screen_data::LockScreenItemStorage* storage =
@@ -185,7 +185,7 @@ LockScreenDataDeleteFunction::~LockScreenDataDeleteFunction() = default;
 
 ExtensionFunction::ResponseAction LockScreenDataDeleteFunction::Run() {
   std::unique_ptr<api::lock_screen_data::Delete::Params> params(
-      api::lock_screen_data::Delete::Params::Create(args()));
+      api::lock_screen_data::Delete::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   lock_screen_data::LockScreenItemStorage* storage =

@@ -82,7 +82,7 @@ ImageWriterPrivateWriteFromUrlFunction::Run() {
   }
 #endif
   std::unique_ptr<image_writer_api::WriteFromUrl::Params> params(
-      image_writer_api::WriteFromUrl::Params::Create(args()));
+      image_writer_api::WriteFromUrl::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL url(params->image_url);
@@ -200,7 +200,7 @@ ImageWriterPrivateDestroyPartitionsFunction::Run() {
 #endif
 
   std::unique_ptr<image_writer_api::DestroyPartitions::Params> params(
-      image_writer_api::DestroyPartitions::Params::Create(args()));
+      image_writer_api::DestroyPartitions::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

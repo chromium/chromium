@@ -196,9 +196,9 @@ TEST(JsonSchemaCompilerArrayTest, IntegerArrayParamsCreate) {
   integer_array.Append(4);
   integer_array.Append(8);
   params_value.Append(std::move(integer_array));
-  std::unique_ptr<arrays::IntegerArray::Params> params(
+  absl::optional<arrays::IntegerArray::Params> params(
       arrays::IntegerArray::Params::Create(params_value));
-  EXPECT_TRUE(params.get());
+  EXPECT_TRUE(params.has_value());
   ASSERT_EQ(3u, params->nums.size());
   EXPECT_EQ(2, params->nums[0]);
   EXPECT_EQ(4, params->nums[1]);
@@ -212,9 +212,9 @@ TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
   any_array.Append("test");
   any_array.Append(CreateItemValue(2));
   params_value.Append(std::move(any_array));
-  std::unique_ptr<arrays::AnyArray::Params> params(
+  absl::optional<arrays::AnyArray::Params> params(
       arrays::AnyArray::Params::Create(params_value));
-  EXPECT_TRUE(params.get());
+  EXPECT_TRUE(params.has_value());
   ASSERT_EQ(3u, params->anys.size());
   ASSERT_TRUE(params->anys[0].is_int());
   EXPECT_EQ(1, params->anys[0].GetInt());
@@ -226,9 +226,9 @@ TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
-  std::unique_ptr<arrays::ObjectArray::Params> params(
+  absl::optional<arrays::ObjectArray::Params> params(
       arrays::ObjectArray::Params::Create(params_value));
-  EXPECT_TRUE(params.get());
+  EXPECT_TRUE(params.has_value());
   ASSERT_EQ(2u, params->objects.size());
   EXPECT_EQ(1, params->objects[0].additional_properties["val"]);
   EXPECT_EQ(2, params->objects[1].additional_properties["val"]);
@@ -240,9 +240,9 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayParamsCreate) {
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
-  std::unique_ptr<arrays::RefArray::Params> params(
+  absl::optional<arrays::RefArray::Params> params(
       arrays::RefArray::Params::Create(params_value));
-  EXPECT_TRUE(params.get());
+  EXPECT_TRUE(params.has_value());
   ASSERT_EQ(2u, params->refs.size());
   EXPECT_EQ(1, params->refs[0].val);
   EXPECT_EQ(2, params->refs[1].val);

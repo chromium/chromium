@@ -109,7 +109,7 @@ void AudioAPI::OnDevicesChanged(const DeviceInfoList& devices) {
 
 ExtensionFunction::ResponseAction AudioGetDevicesFunction::Run() {
   std::unique_ptr<audio::GetDevices::Params> params(
-      audio::GetDevices::Params::Create(args()));
+      audio::GetDevices::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -138,7 +138,7 @@ void AudioGetDevicesFunction::OnResponse(
 
 ExtensionFunction::ResponseAction AudioSetActiveDevicesFunction::Run() {
   std::unique_ptr<audio::SetActiveDevices::Params> params(
-      audio::SetActiveDevices::Params::Create(args()));
+      audio::SetActiveDevices::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -165,7 +165,7 @@ void AudioSetActiveDevicesFunction::OnResponse(bool success) {
 
 ExtensionFunction::ResponseAction AudioSetPropertiesFunction::Run() {
   std::unique_ptr<audio::SetProperties::Params> params(
-      audio::SetProperties::Params::Create(args()));
+      audio::SetProperties::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -196,7 +196,7 @@ void AudioSetPropertiesFunction::OnResponse(bool success) {
 
 ExtensionFunction::ResponseAction AudioSetMuteFunction::Run() {
   std::unique_ptr<audio::SetMute::Params> params(
-      audio::SetMute::Params::Create(args()));
+      audio::SetMute::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =
@@ -223,7 +223,7 @@ void AudioSetMuteFunction::OnResponse(bool success) {
 
 ExtensionFunction::ResponseAction AudioGetMuteFunction::Run() {
   std::unique_ptr<audio::GetMute::Params> params(
-      audio::GetMute::Params::Create(args()));
+      audio::GetMute::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   AudioService* service =

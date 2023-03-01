@@ -59,7 +59,7 @@ void DocumentScanScanFunction::SetMojoInterfaceForTesting(
 }
 
 ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
-  params_ = document_scan::Scan::Params::Create(args());
+  params_ = document_scan::Scan::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   if (!user_gesture())

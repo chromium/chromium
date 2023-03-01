@@ -145,7 +145,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown())
     return RespondNow(Error(kUnknownErrorDoNotUse));
 
-  std::unique_ptr<Create::Params> params(Create::Params::Create(args()));
+  std::unique_ptr<Create::Params> params(
+      Create::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL url = extension()->GetResourceURL(params->url);

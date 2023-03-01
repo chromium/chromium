@@ -85,7 +85,7 @@ FileManagerPrivateInternalGetContentMetadataFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetContentMetadataFunction::Run() {
   using api::file_manager_private_internal::GetContentMetadata::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->blob_uuid.empty()) {

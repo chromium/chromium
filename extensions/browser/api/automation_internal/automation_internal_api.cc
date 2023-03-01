@@ -533,7 +533,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info);
 
   using api::automation_internal::EnableTab::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   content::WebContents* contents = nullptr;
   AutomationInternalApiDelegate* automation_api_delegate =
@@ -611,7 +611,7 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
 ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   using api::automation_internal::EnableTree::Params;
 
-  std::unique_ptr<Params> params(Params::Create(args()));
+  std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
@@ -701,7 +701,7 @@ AutomationInternalPerformActionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->interact);
 
   using api::automation_internal::PerformAction::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   int request_id = params->args.request_id.value_or(-1);
@@ -779,7 +779,7 @@ AutomationInternalQuerySelectorFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info);
 
   using api::automation_internal::QuerySelector::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(

@@ -28,7 +28,7 @@ void PrintingSubmitJobFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseAction PrintingSubmitJobFunction::Run() {
   std::unique_ptr<api::printing::SubmitJob::Params> params(
-      api::printing::SubmitJob::Params::Create(args()));
+      api::printing::SubmitJob::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   PrintingAPIHandler::Get(browser_context())
       ->SubmitJob(ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
@@ -58,7 +58,7 @@ PrintingCancelJobFunction::~PrintingCancelJobFunction() = default;
 
 ExtensionFunction::ResponseAction PrintingCancelJobFunction::Run() {
   std::unique_ptr<api::printing::CancelJob::Params> params(
-      api::printing::CancelJob::Params::Create(args()));
+      api::printing::CancelJob::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   absl::optional<std::string> error =
       PrintingAPIHandler::Get(browser_context())
@@ -97,7 +97,7 @@ void PrintingGetPrinterInfoFunction::GetQuotaLimitHeuristics(
 
 ExtensionFunction::ResponseAction PrintingGetPrinterInfoFunction::Run() {
   std::unique_ptr<api::printing::GetPrinterInfo::Params> params(
-      api::printing::GetPrinterInfo::Params::Create(args()));
+      api::printing::GetPrinterInfo::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   PrintingAPIHandler::Get(browser_context())
       ->GetPrinterInfo(

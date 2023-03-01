@@ -176,7 +176,7 @@ VpnProviderCreateConfigFunction::~VpnProviderCreateConfigFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
   std::unique_ptr<api_vpn::CreateConfig::Params> params(
-      api_vpn::CreateConfig::Params::Create(args()));
+      api_vpn::CreateConfig::Params::CreateDeprecated(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -203,7 +203,7 @@ VpnProviderDestroyConfigFunction::~VpnProviderDestroyConfigFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
   std::unique_ptr<api_vpn::DestroyConfig::Params> params(
-      api_vpn::DestroyConfig::Params::Create(args()));
+      api_vpn::DestroyConfig::Params::CreateDeprecated(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -229,7 +229,7 @@ VpnProviderSetParametersFunction::~VpnProviderSetParametersFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
   std::unique_ptr<api_vpn::SetParameters::Params> params(
-      api_vpn::SetParameters::Params::Create(args()));
+      api_vpn::SetParameters::Params::CreateDeprecated(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -262,7 +262,7 @@ VpnProviderSendPacketFunction::~VpnProviderSendPacketFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderSendPacketFunction::Run() {
   std::unique_ptr<api_vpn::SendPacket::Params> params(
-      api_vpn::SendPacket::Params::Create(args()));
+      api_vpn::SendPacket::Params::CreateDeprecated(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }
@@ -291,7 +291,7 @@ VpnProviderNotifyConnectionStateChangedFunction::
 ExtensionFunction::ResponseAction
 VpnProviderNotifyConnectionStateChangedFunction::Run() {
   std::unique_ptr<api_vpn::NotifyConnectionStateChanged::Params> params(
-      api_vpn::NotifyConnectionStateChanged::Params::Create(args()));
+      api_vpn::NotifyConnectionStateChanged::Params::CreateDeprecated(args()));
   if (!params) {
     return RespondNow(Error("Invalid arguments."));
   }

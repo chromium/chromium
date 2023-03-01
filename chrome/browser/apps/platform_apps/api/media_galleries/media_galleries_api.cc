@@ -396,7 +396,7 @@ MediaGalleriesGetMediaFileSystemsFunction::Run() {
     return RespondNow(Error(kDeprecatedError));
 
   std::unique_ptr<GetMediaFileSystems::Params> params(
-      GetMediaFileSystems::Params::Create(args()));
+      GetMediaFileSystems::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   MediaGalleries::GetMediaFileSystemsInteractivity interactive =
       MediaGalleries::GET_MEDIA_FILE_SYSTEMS_INTERACTIVITY_NO;
@@ -797,7 +797,7 @@ ExtensionFunction::ResponseAction MediaGalleriesAddGalleryWatchFunction::Run() {
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
   std::unique_ptr<AddGalleryWatch::Params> params(
-      AddGalleryWatch::Params::Create(args()));
+      AddGalleryWatch::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   MediaGalleriesPreferences* preferences =
@@ -873,7 +873,7 @@ MediaGalleriesRemoveGalleryWatchFunction::Run() {
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
   std::unique_ptr<RemoveGalleryWatch::Params> params(
-      RemoveGalleryWatch::Params::Create(args()));
+      RemoveGalleryWatch::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   MediaGalleriesPreferences* preferences =

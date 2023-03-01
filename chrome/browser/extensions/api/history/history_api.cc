@@ -251,7 +251,8 @@ HistoryFunctionWithCallback::HistoryFunctionWithCallback() {}
 HistoryFunctionWithCallback::~HistoryFunctionWithCallback() {}
 
 ExtensionFunction::ResponseAction HistoryGetVisitsFunction::Run() {
-  std::unique_ptr<GetVisits::Params> params(GetVisits::Params::Create(args()));
+  std::unique_ptr<GetVisits::Params> params(
+      GetVisits::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL url;
@@ -282,7 +283,8 @@ void HistoryGetVisitsFunction::QueryComplete(history::QueryURLResult result) {
 }
 
 ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
-  std::unique_ptr<Search::Params> params(Search::Params::Create(args()));
+  std::unique_ptr<Search::Params> params(
+      Search::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::u16string search_text = base::UTF8ToUTF16(params->query.text);
@@ -320,7 +322,8 @@ void HistorySearchFunction::SearchComplete(history::QueryResults results) {
 }
 
 ExtensionFunction::ResponseAction HistoryAddUrlFunction::Run() {
-  std::unique_ptr<AddUrl::Params> params(AddUrl::Params::Create(args()));
+  std::unique_ptr<AddUrl::Params> params(
+      AddUrl::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL url;
@@ -336,7 +339,8 @@ ExtensionFunction::ResponseAction HistoryAddUrlFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction HistoryDeleteUrlFunction::Run() {
-  std::unique_ptr<DeleteUrl::Params> params(DeleteUrl::Params::Create(args()));
+  std::unique_ptr<DeleteUrl::Params> params(
+      DeleteUrl::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string error;
@@ -368,7 +372,7 @@ ExtensionFunction::ResponseAction HistoryDeleteUrlFunction::Run() {
 
 ExtensionFunction::ResponseAction HistoryDeleteRangeFunction::Run() {
   std::unique_ptr<DeleteRange::Params> params(
-      DeleteRange::Params::Create(args()));
+      DeleteRange::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string error;

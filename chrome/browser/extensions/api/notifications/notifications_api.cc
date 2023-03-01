@@ -552,7 +552,7 @@ NotificationsCreateFunction::~NotificationsCreateFunction() {
 
 ExtensionFunction::ResponseAction
 NotificationsCreateFunction::RunNotificationsApi() {
-  params_ = api::notifications::Create::Params::Create(args());
+  params_ = api::notifications::Create::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   const std::string extension_id(extension_->id());
@@ -586,7 +586,7 @@ NotificationsUpdateFunction::~NotificationsUpdateFunction() {
 
 ExtensionFunction::ResponseAction
 NotificationsUpdateFunction::RunNotificationsApi() {
-  params_ = api::notifications::Update::Params::Create(args());
+  params_ = api::notifications::Update::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   // We are in update.  If the ID doesn't exist, succeed but call the callback
@@ -627,7 +627,7 @@ NotificationsClearFunction::~NotificationsClearFunction() {
 
 ExtensionFunction::ResponseAction
 NotificationsClearFunction::RunNotificationsApi() {
-  params_ = api::notifications::Clear::Params::Create(args());
+  params_ = api::notifications::Clear::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   bool cancel_result = GetDisplayHelper()->Close(

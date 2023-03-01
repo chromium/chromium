@@ -460,7 +460,8 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kUnmountSuccess: {
       using extensions::api::file_system_provider_internal::
           UnmountRequestedSuccess::Params;
-      std::unique_ptr<Params> params = Params::Create(std::move(args));
+      std::unique_ptr<Params> params =
+          Params::CreateDeprecated(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -474,7 +475,8 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGetEntryMetadataSuccess: {
       using extensions::api::file_system_provider_internal::
           GetMetadataRequestedSuccess::Params;
-      std::unique_ptr<Params> params = Params::Create(std::move(args));
+      std::unique_ptr<Params> params =
+          Params::CreateDeprecated(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -488,7 +490,8 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGetActionsSuccess: {
       using extensions::api::file_system_provider_internal::
           GetActionsRequestedSuccess::Params;
-      std::unique_ptr<Params> params = Params::Create(std::move(args));
+      std::unique_ptr<Params> params =
+          Params::CreateDeprecated(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -502,7 +505,8 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kReadDirectorySuccess: {
       using extensions::api::file_system_provider_internal::
           ReadDirectoryRequestedSuccess::Params;
-      std::unique_ptr<Params> params = Params::Create(std::move(args));
+      std::unique_ptr<Params> params =
+          Params::CreateDeprecated(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -518,7 +522,8 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
       TRACE_EVENT0("file_system_provider", "ReadFileSuccessWithProfile");
       using extensions::api::file_system_provider_internal::
           ReadFileRequestedSuccess::Params;
-      std::unique_ptr<Params> params = Params::Create(std::move(args));
+      std::unique_ptr<Params> params =
+          Params::CreateDeprecated(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -532,7 +537,8 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGenericSuccess: {
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      std::unique_ptr<Params> params = Params::Create(std::move(args));
+      std::unique_ptr<Params> params =
+          Params::CreateDeprecated(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -546,7 +552,8 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     case mojom::FSPOperationResponse::kGenericFailure: {
       using extensions::api::file_system_provider_internal::
           OperationRequestedError::Params;
-      std::unique_ptr<Params> params = Params::Create(std::move(args));
+      std::unique_ptr<Params> params =
+          Params::CreateDeprecated(std::move(args));
       if (!params) {
         error = kDeserializationError;
         break;
@@ -577,7 +584,7 @@ void FileSystemProviderServiceAsh::MountFinishedWithProfile(
 
   using extensions::api::file_system_provider_internal::RespondToMountRequest::
       Params;
-  std::unique_ptr<Params> params = Params::Create(std::move(args));
+  std::unique_ptr<Params> params = Params::CreateDeprecated(std::move(args));
   if (!params) {
     std::move(callback).Run(kDeserializationError);
     return;

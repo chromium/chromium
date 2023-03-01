@@ -223,7 +223,7 @@ EnterpriseReportingPrivateGetPersistentSecretFunction::Run() {
   std::unique_ptr<
       api::enterprise_reporting_private::GetPersistentSecret::Params>
       params(api::enterprise_reporting_private::GetPersistentSecret::Params::
-                 Create(args()));
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   bool force_create = params->reset_secret ? *params->reset_secret : false;
   base::ThreadPool::PostTask(
@@ -275,8 +275,8 @@ EnterpriseReportingPrivateGetDeviceDataFunction::
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceDataFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::GetDeviceData::Params>
-      params(api::enterprise_reporting_private::GetDeviceData::Params::Create(
-          args()));
+      params(api::enterprise_reporting_private::GetDeviceData::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -331,8 +331,8 @@ EnterpriseReportingPrivateSetDeviceDataFunction::
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateSetDeviceDataFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::SetDeviceData::Params>
-      params(api::enterprise_reporting_private::SetDeviceData::Params::Create(
-          args()));
+      params(api::enterprise_reporting_private::SetDeviceData::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -471,8 +471,8 @@ EnterpriseReportingPrivateGetCertificateFunction::
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetCertificateFunction::Run() {
   std::unique_ptr<api::enterprise_reporting_private::GetCertificate::Params>
-      params(api::enterprise_reporting_private::GetCertificate::Params::Create(
-          args()));
+      params(api::enterprise_reporting_private::GetCertificate::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // If AutoSelectCertificateForUrl is not set at the machine level, this
@@ -534,8 +534,8 @@ EnterpriseReportingPrivateEnqueueRecordFunction::Run() {
   }
 
   std::unique_ptr<api::enterprise_reporting_private::EnqueueRecord::Params>
-      params(api::enterprise_reporting_private::EnqueueRecord::Params::Create(
-          args()));
+      params(api::enterprise_reporting_private::EnqueueRecord::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Parse params
@@ -656,9 +656,8 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
   }
 
   std::unique_ptr<api::enterprise_reporting_private::GetFileSystemInfo::Params>
-      params(
-          api::enterprise_reporting_private::GetFileSystemInfo::Params::Create(
-              args()));
+      params(api::enterprise_reporting_private::GetFileSystemInfo::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Verify that all file paths are UTF8.
@@ -736,8 +735,8 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
   }
 
   std::unique_ptr<api::enterprise_reporting_private::GetSettings::Params>
-      params(api::enterprise_reporting_private::GetSettings::Params::Create(
-          args()));
+      params(api::enterprise_reporting_private::GetSettings::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Verify that all paths strings are UTF8.
@@ -814,7 +813,8 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
   }
 
   std::unique_ptr<api::enterprise_reporting_private::GetAvInfo::Params> params(
-      api::enterprise_reporting_private::GetAvInfo::Params::Create(args()));
+      api::enterprise_reporting_private::GetAvInfo::Params::CreateDeprecated(
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   StartSignalCollection(
@@ -866,8 +866,8 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
   }
 
   std::unique_ptr<api::enterprise_reporting_private::GetHotfixes::Params>
-      params(api::enterprise_reporting_private::GetHotfixes::Params::Create(
-          args()));
+      params(api::enterprise_reporting_private::GetHotfixes::Params::
+                 CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   StartSignalCollection(

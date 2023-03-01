@@ -58,7 +58,8 @@ ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::ChangeSavedPassword::Params::Create(args());
+      api::passwords_private::ChangeSavedPassword::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto new_id = GetDelegate(browser_context())
@@ -81,7 +82,8 @@ ResponseAction PasswordsPrivateRemoveSavedPasswordFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::RemoveSavedPassword::Params::Create(args());
+      api::passwords_private::RemoveSavedPassword::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())
       ->RemoveSavedPassword(parameters->id, parameters->from_stores);
@@ -95,7 +97,8 @@ ResponseAction PasswordsPrivateRemovePasswordExceptionFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::RemovePasswordException::Params::Create(args());
+      api::passwords_private::RemovePasswordException::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())->RemovePasswordException(parameters->id);
   return RespondNow(NoArguments());
@@ -118,8 +121,8 @@ ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  auto parameters =
-      api::passwords_private::RequestPlaintextPassword::Params::Create(args());
+  auto parameters = api::passwords_private::RequestPlaintextPassword::Params::
+      CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
@@ -144,8 +147,9 @@ void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
   Respond(Error(base::StringPrintf(
       "Could not obtain plaintext password. Either the user is not "
       "authenticated or no password with id = %d could be found.",
-      api::passwords_private::RequestPlaintextPassword::Params::Create(args())
-          ->id)));
+      api::passwords_private::RequestPlaintextPassword::Params::
+          CreateDeprecated(args())
+              ->id)));
 }
 
 // PasswordsPrivateRequestCredentialDetailsFunction
@@ -154,8 +158,8 @@ ResponseAction PasswordsPrivateRequestCredentialsDetailsFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  auto parameters =
-      api::passwords_private::RequestCredentialsDetails::Params::Create(args());
+  auto parameters = api::passwords_private::RequestCredentialsDetails::Params::
+      CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
@@ -257,7 +261,8 @@ ResponseAction PasswordsPrivateMovePasswordsToAccountFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::MovePasswordsToAccount::Params::Create(args());
+      api::passwords_private::MovePasswordsToAccount::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())
       ->MovePasswordsToAccount(parameters->ids, GetSenderWebContents());
@@ -271,7 +276,7 @@ ResponseAction PasswordsPrivateImportPasswordsFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::ImportPasswords::Params::Create(args());
+      api::passwords_private::ImportPasswords::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   GetDelegate(browser_context())
       ->ImportPasswords(
@@ -352,7 +357,8 @@ ResponseAction PasswordsPrivateOptInForAccountStorageFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::OptInForAccountStorage::Params::Create(args());
+      api::passwords_private::OptInForAccountStorage::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   GetDelegate(browser_context())
@@ -398,7 +404,8 @@ ResponseAction PasswordsPrivateMuteInsecureCredentialFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::MuteInsecureCredential::Params::Create(args());
+      api::passwords_private::MuteInsecureCredential::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())
@@ -420,8 +427,8 @@ ResponseAction PasswordsPrivateUnmuteInsecureCredentialFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  auto parameters =
-      api::passwords_private::UnmuteInsecureCredential::Params::Create(args());
+  auto parameters = api::passwords_private::UnmuteInsecureCredential::Params::
+      CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())
@@ -443,9 +450,8 @@ ResponseAction PasswordsPrivateRecordChangePasswordFlowStartedFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  auto parameters =
-      api::passwords_private::RecordChangePasswordFlowStarted::Params::Create(
-          args());
+  auto parameters = api::passwords_private::RecordChangePasswordFlowStarted::
+      Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
@@ -523,7 +529,8 @@ ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
   }
 
   auto parameters =
-      api::passwords_private::GetUrlCollection::Params::Create(args());
+      api::passwords_private::GetUrlCollection::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   const absl::optional<api::passwords_private::UrlCollection> url_collection =
@@ -545,7 +552,8 @@ ResponseAction PasswordsPrivateAddPasswordFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  auto parameters = api::passwords_private::AddPassword::Params::Create(args());
+  auto parameters =
+      api::passwords_private::AddPassword::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())

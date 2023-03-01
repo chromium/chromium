@@ -269,7 +269,7 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
     return RespondNow(Error(kSetFromIncognitoError));
 
   std::unique_ptr<fonts::ClearFont::Params> params(
-      fonts::ClearFont::Params::Create(args()));
+      fonts::ClearFont::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
@@ -285,7 +285,7 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
 
 ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
   std::unique_ptr<fonts::GetFont::Params> params(
-      fonts::GetFont::Params::Create(args()));
+      fonts::GetFont::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
@@ -323,7 +323,7 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
     return RespondNow(Error(kSetFromIncognitoError));
 
   std::unique_ptr<fonts::SetFont::Params> params(
-      fonts::SetFont::Params::Create(args()));
+      fonts::SetFont::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,

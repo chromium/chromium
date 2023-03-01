@@ -279,7 +279,7 @@ OmniboxSendSuggestionsFunction::OmniboxSendSuggestionsFunction() = default;
 OmniboxSendSuggestionsFunction::~OmniboxSendSuggestionsFunction() = default;
 
 ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
-  params_ = SendSuggestions::Params::Create(args());
+  params_ = SendSuggestions::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (is_from_service_worker() && !params_->suggest_results.empty()) {
@@ -345,7 +345,7 @@ void OmniboxSendSuggestionsFunction::NotifySuggestionsReady() {
 
 ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
   std::unique_ptr<SetDefaultSuggestion::Params> params(
-      SetDefaultSuggestion::Params::Create(args()));
+      SetDefaultSuggestion::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!params->suggestion.description_styles) {

@@ -103,7 +103,7 @@ PrinterProviderInternalReportPrintResultFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintResultFunction::Run() {
   std::unique_ptr<internal_api::ReportPrintResult::Params> params(
-      internal_api::ReportPrintResult::Params::Create(args()));
+      internal_api::ReportPrintResult::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   PrinterProviderInternalAPI::GetFactoryInstance()
@@ -121,7 +121,7 @@ PrinterProviderInternalReportPrinterCapabilityFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
   std::unique_ptr<internal_api::ReportPrinterCapability::Params> params(
-      internal_api::ReportPrinterCapability::Params::Create(args()));
+      internal_api::ReportPrinterCapability::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (params->capability) {
@@ -147,7 +147,7 @@ PrinterProviderInternalReportPrintersFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintersFunction::Run() {
   std::unique_ptr<internal_api::ReportPrinters::Params> params(
-      internal_api::ReportPrinters::Params::Create(args()));
+      internal_api::ReportPrinters::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (params->printers) {
@@ -174,7 +174,7 @@ PrinterProviderInternalGetPrintDataFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalGetPrintDataFunction::Run() {
   std::unique_ptr<internal_api::GetPrintData::Params> params(
-      internal_api::GetPrintData::Params::Create(args()));
+      internal_api::GetPrintData::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const PrinterProviderPrintJob* job =
@@ -222,7 +222,7 @@ PrinterProviderInternalReportUsbPrinterInfoFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportUsbPrinterInfoFunction::Run() {
   std::unique_ptr<internal_api::ReportUsbPrinterInfo::Params> params(
-      internal_api::ReportUsbPrinterInfo::Params::Create(args()));
+      internal_api::ReportUsbPrinterInfo::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   PrinterProviderInternalAPI::GetFactoryInstance()

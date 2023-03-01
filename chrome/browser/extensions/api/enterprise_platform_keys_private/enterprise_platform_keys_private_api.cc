@@ -74,7 +74,7 @@ EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::Run() {
   std::unique_ptr<api_epkp::ChallengeMachineKey::Params> params(
-      api_epkp::ChallengeMachineKey::Params::Create(args()));
+      api_epkp::ChallengeMachineKey::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   ash::attestation::TpmChallengeKeyCallback callback =
       base::BindOnce(&EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::
@@ -120,7 +120,7 @@ EnterprisePlatformKeysPrivateChallengeUserKeyFunction::
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysPrivateChallengeUserKeyFunction::Run() {
   std::unique_ptr<api_epkp::ChallengeUserKey::Params> params(
-      api_epkp::ChallengeUserKey::Params::Create(args()));
+      api_epkp::ChallengeUserKey::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   ash::attestation::TpmChallengeKeyCallback callback = base::BindOnce(
       &EnterprisePlatformKeysPrivateChallengeUserKeyFunction::OnChallengedKey,

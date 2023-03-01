@@ -29,7 +29,8 @@ DnsResolveFunction::~DnsResolveFunction() = default;
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(args()));
+  std::unique_ptr<Resolve::Params> params(
+      Resolve::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Intentionally pass host only (no scheme or non-zero port) to only get a

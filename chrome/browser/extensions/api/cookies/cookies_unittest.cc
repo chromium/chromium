@@ -180,7 +180,8 @@ TEST_F(ExtensionCookiesTest, DomainMatching) {
     base::Value::Dict dict;
     dict.Set(keys::kDomainKey, tests[i].filter);
     args.Append(std::move(dict));
-    std::unique_ptr<GetAll::Params> params(GetAll::Params::Create(args));
+    std::unique_ptr<GetAll::Params> params(
+        GetAll::Params::CreateDeprecated(args));
 
     cookies_helpers::MatchFilter filter(&params->details);
     std::unique_ptr<net::CanonicalCookie> cookie =

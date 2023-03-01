@@ -17,7 +17,7 @@ namespace extensions {
 ExtensionFunction::ResponseAction SpeechRecognitionPrivateStartFunction::Run() {
   // Extract arguments.
   std::unique_ptr<api::speech_recognition_private::Start::Params> params(
-      api::speech_recognition_private::Start::Params::Create(args()));
+      api::speech_recognition_private::Start::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   const api::speech_recognition_private::StartOptions* options =
       &params->options;
@@ -57,7 +57,7 @@ void SpeechRecognitionPrivateStartFunction::OnStart(
 ExtensionFunction::ResponseAction SpeechRecognitionPrivateStopFunction::Run() {
   // Extract arguments.
   std::unique_ptr<api::speech_recognition_private::Stop::Params> params(
-      api::speech_recognition_private::Stop::Params::Create(args()));
+      api::speech_recognition_private::Stop::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   const api::speech_recognition_private::StopOptions* options =
       &params->options;

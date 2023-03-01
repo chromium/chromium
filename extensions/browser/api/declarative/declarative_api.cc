@@ -206,7 +206,7 @@ EventsEventAddRulesFunction::~EventsEventAddRulesFunction() = default;
 
 bool EventsEventAddRulesFunction::CreateParams() {
   ConvertBinaryListElementsToBase64(mutable_args());
-  params_ = AddRules::Params::Create(args());
+  params_ = AddRules::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -250,7 +250,7 @@ EventsEventRemoveRulesFunction::EventsEventRemoveRulesFunction() = default;
 EventsEventRemoveRulesFunction::~EventsEventRemoveRulesFunction() = default;
 
 bool EventsEventRemoveRulesFunction::CreateParams() {
-  params_ = RemoveRules::Params::Create(args());
+  params_ = RemoveRules::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 
@@ -292,7 +292,7 @@ EventsEventGetRulesFunction::EventsEventGetRulesFunction() = default;
 EventsEventGetRulesFunction::~EventsEventGetRulesFunction() = default;
 
 bool EventsEventGetRulesFunction::CreateParams() {
-  params_ = GetRules::Params::Create(args());
+  params_ = GetRules::Params::CreateDeprecated(args());
   return params_ != nullptr;
 }
 

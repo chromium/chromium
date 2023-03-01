@@ -143,7 +143,7 @@ NetworkingPrivateGetPropertiesFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetPropertiesFunction::Run() {
   std::unique_ptr<private_api::GetProperties::Params> params =
-      private_api::GetProperties::Params::Create(args());
+      private_api::GetProperties::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -178,7 +178,7 @@ NetworkingPrivateGetManagedPropertiesFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetManagedPropertiesFunction::Run() {
   std::unique_ptr<private_api::GetManagedProperties::Params> params =
-      private_api::GetManagedProperties::Params::Create(args());
+      private_api::GetManagedProperties::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -212,7 +212,7 @@ NetworkingPrivateGetStateFunction::~NetworkingPrivateGetStateFunction() =
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
   std::unique_ptr<private_api::GetState::Params> params =
-      private_api::GetState::Params::Create(args());
+      private_api::GetState::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -245,7 +245,7 @@ NetworkingPrivateSetPropertiesFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSetPropertiesFunction::Run() {
   std::unique_ptr<private_api::SetProperties::Params> params =
-      private_api::SetProperties::Params::Create(args());
+      private_api::SetProperties::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   base::Value::Dict properties = params->properties.ToValue();
@@ -287,7 +287,7 @@ NetworkingPrivateCreateNetworkFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateCreateNetworkFunction::Run() {
   std::unique_ptr<private_api::CreateNetwork::Params> params =
-      private_api::CreateNetwork::Params::Create(args());
+      private_api::CreateNetwork::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->shared &&
@@ -333,7 +333,7 @@ NetworkingPrivateForgetNetworkFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateForgetNetworkFunction::Run() {
   std::unique_ptr<private_api::ForgetNetwork::Params> params =
-      private_api::ForgetNetwork::Params::Create(args());
+      private_api::ForgetNetwork::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -366,7 +366,7 @@ NetworkingPrivateGetNetworksFunction::~NetworkingPrivateGetNetworksFunction() =
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
   std::unique_ptr<private_api::GetNetworks::Params> params =
-      private_api::GetNetworks::Params::Create(args());
+      private_api::GetNetworks::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string network_type = private_api::ToString(params->filter.network_type);
@@ -406,7 +406,7 @@ NetworkingPrivateGetVisibleNetworksFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetVisibleNetworksFunction::Run() {
   std::unique_ptr<private_api::GetVisibleNetworks::Params> params =
-      private_api::GetVisibleNetworks::Params::Create(args());
+      private_api::GetVisibleNetworks::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // getVisibleNetworks is deprecated - allow it only for apps with
@@ -524,7 +524,7 @@ NetworkingPrivateEnableNetworkTypeFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateEnableNetworkTypeFunction::Run() {
   std::unique_ptr<private_api::EnableNetworkType::Params> params =
-      private_api::EnableNetworkType::Params::Create(args());
+      private_api::EnableNetworkType::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -550,7 +550,7 @@ NetworkingPrivateDisableNetworkTypeFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateDisableNetworkTypeFunction::Run() {
   std::unique_ptr<private_api::DisableNetworkType::Params> params =
-      private_api::DisableNetworkType::Params::Create(args());
+      private_api::DisableNetworkType::Params::CreateDeprecated(args());
 
   GetDelegate(browser_context())
       ->DisableNetworkType(
@@ -575,7 +575,7 @@ NetworkingPrivateRequestNetworkScanFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateRequestNetworkScanFunction::Run() {
   std::unique_ptr<private_api::RequestNetworkScan::Params> params =
-      private_api::RequestNetworkScan::Params::Create(args());
+      private_api::RequestNetworkScan::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string network_type = private_api::ToString(params->network_type);
   GetDelegate(browser_context())
@@ -600,7 +600,7 @@ NetworkingPrivateStartConnectFunction::
 
 ExtensionFunction::ResponseAction NetworkingPrivateStartConnectFunction::Run() {
   std::unique_ptr<private_api::StartConnect::Params> params =
-      private_api::StartConnect::Params::Create(args());
+      private_api::StartConnect::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -633,7 +633,7 @@ NetworkingPrivateStartDisconnectFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateStartDisconnectFunction::Run() {
   std::unique_ptr<private_api::StartDisconnect::Params> params =
-      private_api::StartDisconnect::Params::Create(args());
+      private_api::StartDisconnect::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -672,7 +672,7 @@ NetworkingPrivateStartActivateFunction::Run() {
   }
 
   std::unique_ptr<private_api::StartActivate::Params> params =
-      private_api::StartActivate::Params::Create(args());
+      private_api::StartActivate::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -705,7 +705,7 @@ NetworkingPrivateGetCaptivePortalStatusFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetCaptivePortalStatusFunction::Run() {
   std::unique_ptr<private_api::GetCaptivePortalStatus::Params> params =
-      private_api::GetCaptivePortalStatus::Params::Create(args());
+      private_api::GetCaptivePortalStatus::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -746,7 +746,7 @@ NetworkingPrivateUnlockCellularSimFunction::Run() {
   }
 
   std::unique_ptr<private_api::UnlockCellularSim::Params> params =
-      private_api::UnlockCellularSim::Params::Create(args());
+      private_api::UnlockCellularSim::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -785,7 +785,7 @@ NetworkingPrivateSetCellularSimStateFunction::Run() {
   }
 
   std::unique_ptr<private_api::SetCellularSimState::Params> params =
-      private_api::SetCellularSimState::Params::Create(args());
+      private_api::SetCellularSimState::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -826,7 +826,8 @@ NetworkingPrivateSelectCellularMobileNetworkFunction::Run() {
   }
 
   std::unique_ptr<private_api::SelectCellularMobileNetwork::Params> params =
-      private_api::SelectCellularMobileNetwork::Params::Create(args());
+      private_api::SelectCellularMobileNetwork::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())

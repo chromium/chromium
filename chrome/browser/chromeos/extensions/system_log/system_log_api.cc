@@ -39,7 +39,7 @@ SystemLogAddFunction::SystemLogAddFunction() = default;
 SystemLogAddFunction::~SystemLogAddFunction() = default;
 
 ExtensionFunction::ResponseAction SystemLogAddFunction::Run() {
-  auto parameters = api::system_log::Add::Params::Create(args());
+  auto parameters = api::system_log::Add::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
   const api::system_log::MessageOptions& options = parameters->options;
 

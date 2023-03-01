@@ -450,7 +450,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using api::file_manager_private_internal::GetEntryProperties::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -546,7 +546,7 @@ FileManagerPrivateInternalPinDriveFileFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   using extensions::api::file_manager_private_internal::PinDriveFile::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -610,7 +610,7 @@ FileManagerPrivateSearchDriveFunction::FileManagerPrivateSearchDriveFunction() {
 
 ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
   using extensions::api::file_manager_private::SearchDrive::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!drive::util::GetIntegrationServiceByProfile(
@@ -676,7 +676,7 @@ FileManagerPrivateSearchDriveMetadataFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateSearchDriveMetadataFunction::Run() {
   using api::file_manager_private::SearchDriveMetadata::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -857,7 +857,7 @@ FileManagerPrivateInternalGetDownloadUrlFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDownloadUrlFunction::Run() {
   using extensions::api::file_manager_private_internal::GetDownloadUrl::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -943,7 +943,7 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotMetadata(
 ExtensionFunction::ResponseAction
 FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
   using api::file_manager_private::NotifyDriveDialogResult::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   file_manager::EventRouter* const event_router =

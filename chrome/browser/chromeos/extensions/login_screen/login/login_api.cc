@@ -106,7 +106,7 @@ LoginLaunchManagedGuestSessionFunction::Run() {
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
   auto parameters =
-      api::login::LaunchManagedGuestSession::Params::Create(args());
+      api::login::LaunchManagedGuestSession::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =
@@ -132,7 +132,8 @@ ExtensionFunction::ResponseAction LoginExitCurrentSessionFunction::Run() {
   }
 #endif
 
-  auto parameters = api::login::ExitCurrentSession::Params::Create(args());
+  auto parameters =
+      api::login::ExitCurrentSession::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =
@@ -200,7 +201,7 @@ LoginUnlockManagedGuestSessionFunction::Run() {
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
   auto parameters =
-      api::login::UnlockManagedGuestSession::Params::Create(args());
+      api::login::UnlockManagedGuestSession::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =
@@ -240,7 +241,8 @@ ExtensionFunction::ResponseAction LoginUnlockCurrentSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
-  auto parameters = api::login::UnlockCurrentSession::Params::Create(args());
+  auto parameters =
+      api::login::UnlockCurrentSession::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =
@@ -261,7 +263,8 @@ ExtensionFunction::ResponseAction LoginLaunchSamlUserSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
-  auto parameters = api::login::LaunchSamlUserSession::Params::Create(args());
+  auto parameters =
+      api::login::LaunchSamlUserSession::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =
@@ -286,7 +289,8 @@ LoginLaunchSharedManagedGuestSessionFunction::Run() {
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
   auto parameters =
-      api::login::LaunchSharedManagedGuestSession::Params::Create(args());
+      api::login::LaunchSharedManagedGuestSession::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback = base::BindOnce(
@@ -305,7 +309,8 @@ ExtensionFunction::ResponseAction LoginEnterSharedSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
-  auto parameters = api::login::EnterSharedSession::Params::Create(args());
+  auto parameters =
+      api::login::EnterSharedSession::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =
@@ -324,7 +329,8 @@ ExtensionFunction::ResponseAction LoginUnlockSharedSessionFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return RespondNow(Error(kCannotBeCalledFromLacros));
 #else
-  auto parameters = api::login::EnterSharedSession::Params::Create(args());
+  auto parameters =
+      api::login::EnterSharedSession::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =
@@ -368,7 +374,7 @@ LoginSetDataForNextLoginAttemptFunction::Run() {
 #endif
 
   auto parameters =
-      api::login::SetDataForNextLoginAttempt::Params::Create(args());
+      api::login::SetDataForNextLoginAttempt::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   auto callback =

@@ -61,7 +61,7 @@ HidGetDevicesFunction::~HidGetDevicesFunction() = default;
 
 ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
   std::unique_ptr<api::hid::GetDevices::Params> parameters =
-      hid::GetDevices::Params::Create(args());
+      hid::GetDevices::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
@@ -100,7 +100,7 @@ HidConnectFunction::~HidConnectFunction() = default;
 
 ExtensionFunction::ResponseAction HidConnectFunction::Run() {
   std::unique_ptr<api::hid::Connect::Params> parameters =
-      hid::Connect::Params::Create(args());
+      hid::Connect::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   HidDeviceManager* device_manager = HidDeviceManager::Get(browser_context());
@@ -145,7 +145,7 @@ HidDisconnectFunction::~HidDisconnectFunction() = default;
 
 ExtensionFunction::ResponseAction HidDisconnectFunction::Run() {
   std::unique_ptr<api::hid::Disconnect::Params> parameters =
-      hid::Disconnect::Params::Create(args());
+      hid::Disconnect::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   ApiResourceManager<HidConnectionResource>* connection_manager =
@@ -191,7 +191,7 @@ HidReceiveFunction::HidReceiveFunction() = default;
 HidReceiveFunction::~HidReceiveFunction() = default;
 
 bool HidReceiveFunction::ReadParameters() {
-  parameters_ = hid::Receive::Params::Create(args());
+  parameters_ = hid::Receive::Params::CreateDeprecated(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -221,7 +221,7 @@ HidSendFunction::HidSendFunction() = default;
 HidSendFunction::~HidSendFunction() = default;
 
 bool HidSendFunction::ReadParameters() {
-  parameters_ = hid::Send::Params::Create(args());
+  parameters_ = hid::Send::Params::CreateDeprecated(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -251,7 +251,7 @@ HidReceiveFeatureReportFunction::HidReceiveFeatureReportFunction() = default;
 HidReceiveFeatureReportFunction::~HidReceiveFeatureReportFunction() = default;
 
 bool HidReceiveFeatureReportFunction::ReadParameters() {
-  parameters_ = hid::ReceiveFeatureReport::Params::Create(args());
+  parameters_ = hid::ReceiveFeatureReport::Params::CreateDeprecated(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);
@@ -283,7 +283,7 @@ HidSendFeatureReportFunction::HidSendFeatureReportFunction() = default;
 HidSendFeatureReportFunction::~HidSendFeatureReportFunction() = default;
 
 bool HidSendFeatureReportFunction::ReadParameters() {
-  parameters_ = hid::SendFeatureReport::Params::Create(args());
+  parameters_ = hid::SendFeatureReport::Params::CreateDeprecated(args());
   if (!parameters_)
     return false;
   set_connection_id(parameters_->connection_id);

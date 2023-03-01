@@ -86,7 +86,7 @@ EchoPrivateGetRegistrationCodeFunction::
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
   std::unique_ptr<echo_api::GetRegistrationCode::Params> params =
-      echo_api::GetRegistrationCode::Params::Create(args());
+      echo_api::GetRegistrationCode::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Possible ECHO code type and corresponding key name in StatisticsProvider.
@@ -137,7 +137,7 @@ EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   std::unique_ptr<echo_api::SetOfferInfo::Params> params =
-      echo_api::SetOfferInfo::Params::Create(args());
+      echo_api::SetOfferInfo::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -156,7 +156,7 @@ EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
   std::unique_ptr<echo_api::GetOfferInfo::Params> params =
-      echo_api::GetOfferInfo::Params::Create(args());
+      echo_api::GetOfferInfo::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -217,7 +217,7 @@ EchoPrivateGetUserConsentFunction::~EchoPrivateGetUserConsentFunction() =
 
 ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
   std::unique_ptr<echo_api::GetUserConsent::Params> params =
-      echo_api::GetUserConsent::Params::Create(args());
+      echo_api::GetUserConsent::Params::CreateDeprecated(args());
 
   // Verify that the passed origin URL is valid.
   GURL service_origin = GURL(params->consent_requester.origin);

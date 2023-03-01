@@ -73,7 +73,7 @@ void PageCaptureSaveAsMHTMLFunction::SetTestDelegate(TestDelegate* delegate) {
 }
 
 ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
-  params_ = SaveAsMHTML::Params::Create(args());
+  params_ = SaveAsMHTML::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   std::string error;

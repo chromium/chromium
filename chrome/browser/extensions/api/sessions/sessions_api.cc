@@ -207,7 +207,7 @@ api::sessions::Session SessionsGetRecentlyClosedFunction::CreateSessionModel(
 
 ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   std::unique_ptr<GetRecentlyClosed::Params> params(
-      GetRecentlyClosed::Params::Create(args()));
+      GetRecentlyClosed::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   int max_results = api::sessions::MAX_SESSION_RESULTS;
   if (params->filter && params->filter->max_results)
@@ -377,7 +377,7 @@ api::sessions::Device SessionsGetDevicesFunction::CreateDeviceModel(
   int max_results = api::sessions::MAX_SESSION_RESULTS;
   // Already validated in RunAsync().
   std::unique_ptr<GetDevices::Params> params(
-      GetDevices::Params::Create(args()));
+      GetDevices::Params::CreateDeprecated(args()));
   if (params->filter && params->filter->max_results)
     max_results = *params->filter->max_results;
 
@@ -413,7 +413,7 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
   }
 
   std::unique_ptr<GetDevices::Params> params(
-      GetDevices::Params::Create(args()));
+      GetDevices::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->filter && params->filter->max_results) {
     EXTENSION_FUNCTION_VALIDATE(*params->filter->max_results >= 0 &&
@@ -588,7 +588,8 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
 }
 
 ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
-  std::unique_ptr<Restore::Params> params(Restore::Params::Create(args()));
+  std::unique_ptr<Restore::Params> params(
+      Restore::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

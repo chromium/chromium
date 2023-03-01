@@ -53,7 +53,7 @@ PdfViewerPrivateIsAllowedLocalFileAccessFunction::
 ExtensionFunction::ResponseAction
 PdfViewerPrivateIsAllowedLocalFileAccessFunction::Run() {
   std::unique_ptr<IsAllowedLocalFileAccess::Params> params(
-      IsAllowedLocalFileAccess::Params::Create(args()));
+      IsAllowedLocalFileAccess::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   PrefService* prefs =
@@ -96,7 +96,7 @@ PdfViewerPrivateSetPdfOcrPrefFunction::
 
 ExtensionFunction::ResponseAction PdfViewerPrivateSetPdfOcrPrefFunction::Run() {
   std::unique_ptr<SetPdfOcrPref::Params> params(
-      SetPdfOcrPref::Params::Create(args()));
+      SetPdfOcrPref::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   PrefService* prefs =

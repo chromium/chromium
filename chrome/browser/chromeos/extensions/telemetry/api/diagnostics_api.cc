@@ -47,7 +47,7 @@ DiagnosticsApiFunctionBase::GetRemoteService() {
 
 template <class Params>
 std::unique_ptr<Params> DiagnosticsApiFunctionBase::GetParams() {
-  auto params = Params::Create(args());
+  auto params = Params::CreateDeprecated(args());
   if (!params) {
     SetBadMessage();
     Respond(BadMessage());
@@ -356,7 +356,8 @@ void OsDiagnosticsRunSignalStrengthRoutineFunction::RunIfAllowed() {
 
 void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
   std::unique_ptr<api::os_diagnostics::RunSmartctlCheckRoutine::Params> params(
-      api::os_diagnostics::RunSmartctlCheckRoutine::Params::Create(args()));
+      api::os_diagnostics::RunSmartctlCheckRoutine::Params::CreateDeprecated(
+          args()));
 
   crosapi::mojom::UInt32ValuePtr percentage_used;
   if (params && params->request && params->request->percentage_used_threshold) {

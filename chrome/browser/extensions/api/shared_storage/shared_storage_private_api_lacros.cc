@@ -52,7 +52,7 @@ SharedStoragePrivateSetFunction::~SharedStoragePrivateSetFunction() = default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
   std::unique_ptr<shared_api::Set::Params> params =
-      shared_api::Set::Params::Create(args());
+      shared_api::Set::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||
@@ -96,7 +96,7 @@ SharedStoragePrivateRemoveFunction::~SharedStoragePrivateRemoveFunction() =
 
 ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
   std::unique_ptr<shared_api::Remove::Params> params =
-      shared_api::Remove::Params::Create(args());
+      shared_api::Remove::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||

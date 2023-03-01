@@ -22,7 +22,7 @@ typedef extensions::api::downloads_internal::DetermineFilename::Params
 ExtensionFunction::ResponseAction
 DownloadsInternalDetermineFilenameFunction::Run() {
   std::unique_ptr<DetermineFilenameParams> params(
-      DetermineFilenameParams::Create(args()));
+      DetermineFilenameParams::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());

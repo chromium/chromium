@@ -773,7 +773,7 @@ FileSystemChooseEntryFunction::~FileSystemChooseEntryFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   std::unique_ptr<ChooseEntry::Params> params(
-      ChooseEntry::Params::Create(args()));
+      ChooseEntry::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   base::FilePath suggested_name;
@@ -1046,7 +1046,7 @@ FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
 
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   consent_provider_ =
@@ -1127,7 +1127,7 @@ FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
 
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   NOTIMPLEMENTED();

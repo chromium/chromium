@@ -121,9 +121,8 @@ AccessibilityPrivateEnableMouseEventsFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateForwardKeyEventsToSwitchAccessFunction::Run() {
   std::unique_ptr<accessibility_private::ForwardKeyEventsToSwitchAccess::Params>
-      params =
-          accessibility_private::ForwardKeyEventsToSwitchAccess::Params::Create(
-              args());
+      params = accessibility_private::ForwardKeyEventsToSwitchAccess::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   return RespondNow(Error("Forwarding key events is no longer supported."));
@@ -144,7 +143,7 @@ AccessibilityPrivateGetBatteryDescriptionFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateGetDlcContentsFunction::Run() {
   std::unique_ptr<accessibility_private::GetDlcContents::Params> params(
-      accessibility_private::GetDlcContents::Params::Create(args()));
+      accessibility_private::GetDlcContents::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::DlcType dlc = params->dlc;
 
@@ -172,7 +171,7 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
   std::unique_ptr<
       accessibility_private::GetLocalizedDomKeyStringForKeyCode::Params>
       params = accessibility_private::GetLocalizedDomKeyStringForKeyCode::
-          Params::Create(args());
+          Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ui::KeyboardCode key_code = static_cast<ui::KeyboardCode>(params->key_code);
@@ -215,7 +214,7 @@ AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
   std::unique_ptr<
       accessibility_private::HandleScrollableBoundsForPointFound::Params>
       params = accessibility_private::HandleScrollableBoundsForPointFound::
-          Params::Create(args());
+          Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
                    params->rect.height);
@@ -247,7 +246,7 @@ void AccessibilityPrivateInstallPumpkinForDictationFunction::
 ExtensionFunction::ResponseAction
 AccessibilityPrivateIsFeatureEnabledFunction::Run() {
   std::unique_ptr<accessibility_private::IsFeatureEnabled::Params> params =
-      accessibility_private::IsFeatureEnabled::Params::Create(args());
+      accessibility_private::IsFeatureEnabled::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::AccessibilityFeature params_feature = params->feature;
   bool enabled;
@@ -293,8 +292,8 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateMagnifierCenterOnPointFunction::Run() {
   std::unique_ptr<accessibility_private::MagnifierCenterOnPoint::Params>
-      params =
-          accessibility_private::MagnifierCenterOnPoint::Params::Create(args());
+      params = accessibility_private::MagnifierCenterOnPoint::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   gfx::Point point_in_screen(params->point.x, params->point.y);
 
@@ -308,7 +307,8 @@ AccessibilityPrivateMagnifierCenterOnPointFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
   std::unique_ptr<accessibility_private::MoveMagnifierToRect::Params> params =
-      accessibility_private::MoveMagnifierToRect::Params::Create(args());
+      accessibility_private::MoveMagnifierToRect::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params);
   gfx::Rect bounds(params->rect.left, params->rect.top, params->rect.width,
                    params->rect.height);
@@ -323,7 +323,7 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
   using extensions::api::accessibility_private::OpenSettingsSubpage::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const std::unique_ptr<Params> params(Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // TODO(chrome-a11y-core): we can't open a settings page when you're on the
@@ -341,8 +341,8 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
   std::unique_ptr<accessibility_private::PerformAcceleratorAction::Params>
-      params = accessibility_private::PerformAcceleratorAction::Params::Create(
-          args());
+      params = accessibility_private::PerformAcceleratorAction::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   ash::AcceleratorAction accelerator_action;
   switch (params->accelerator_action) {
@@ -365,7 +365,8 @@ AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
   std::unique_ptr<accessibility_private::SendSyntheticKeyEvent::Params> params =
-      accessibility_private::SendSyntheticKeyEvent::Params::Create(args());
+      accessibility_private::SendSyntheticKeyEvent::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SyntheticKeyboardEvent* key_data = &params->key_event;
 
@@ -414,8 +415,8 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   std::unique_ptr<accessibility_private::SendSyntheticMouseEvent::Params>
-      params = accessibility_private::SendSyntheticMouseEvent::Params::Create(
-          args());
+      params = accessibility_private::SendSyntheticMouseEvent::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SyntheticMouseEvent* mouse_data = &params->mouse_event;
 
@@ -517,7 +518,7 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetFocusRingsFunction::Run() {
   std::unique_ptr<accessibility_private::SetFocusRings::Params> params(
-      accessibility_private::SetFocusRings::Params::Create(args()));
+      accessibility_private::SetFocusRings::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* accessibility_manager = AccessibilityManager::Get();
@@ -604,7 +605,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetHighlightsFunction::Run() {
   std::unique_ptr<accessibility_private::SetHighlights::Params> params(
-      accessibility_private::SetHighlights::Params::Create(args()));
+      accessibility_private::SetHighlights::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::vector<gfx::Rect> rects;
@@ -664,8 +665,9 @@ ExtensionFunction::ResponseAction
 AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::Run() {
   std::unique_ptr<
       accessibility_private::SetNativeChromeVoxArcSupportForCurrentApp::Params>
-      params = accessibility_private::
-          SetNativeChromeVoxArcSupportForCurrentApp::Params::Create(args());
+      params =
+          accessibility_private::SetNativeChromeVoxArcSupportForCurrentApp::
+              Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   arc::ArcAccessibilityHelperBridge* bridge =
@@ -704,7 +706,8 @@ void AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetPointScanStateFunction::Run() {
   std::unique_ptr<accessibility_private::SetPointScanState::Params> params =
-      accessibility_private::SetPointScanState::Params::Create(args());
+      accessibility_private::SetPointScanState::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::PointScanState params_state = params->state;
 
@@ -725,7 +728,8 @@ AccessibilityPrivateSetPointScanStateFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
   std::unique_ptr<accessibility_private::SetSelectToSpeakState::Params> params =
-      accessibility_private::SetSelectToSpeakState::Params::Create(args());
+      accessibility_private::SetSelectToSpeakState::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SelectToSpeakState params_state = params->state;
   ash::SelectToSpeakState state;
@@ -753,8 +757,8 @@ AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetVirtualKeyboardVisibleFunction::Run() {
   std::unique_ptr<accessibility_private::SetVirtualKeyboardVisible::Params>
-      params = accessibility_private::SetVirtualKeyboardVisible::Params::Create(
-          args());
+      params = accessibility_private::SetVirtualKeyboardVisible::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ash::AccessibilityController::Get()->SetVirtualKeyboardVisible(
@@ -766,8 +770,8 @@ AccessibilityPrivateSetVirtualKeyboardVisibleFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateShowConfirmationDialogFunction::Run() {
   std::unique_ptr<accessibility_private::ShowConfirmationDialog::Params>
-      params =
-          accessibility_private::ShowConfirmationDialog::Params::Create(args());
+      params = accessibility_private::ShowConfirmationDialog::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::u16string title = base::UTF8ToUTF16(params->title);
@@ -818,7 +822,8 @@ AccessibilityPrivateToggleDictationFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
   std::unique_ptr<accessibility_private::UpdateDictationBubble::Params> params(
-      accessibility_private::UpdateDictationBubble::Params::Create(args()));
+      accessibility_private::UpdateDictationBubble::Params::CreateDeprecated(
+          args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::DictationBubbleProperties& properties =
       params->properties;
@@ -875,8 +880,8 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
   std::unique_ptr<accessibility_private::UpdateSelectToSpeakPanel::Params>
-      params = accessibility_private::UpdateSelectToSpeakPanel::Params::Create(
-          args());
+      params = accessibility_private::UpdateSelectToSpeakPanel::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!params->show) {
@@ -899,8 +904,8 @@ AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
   std::unique_ptr<accessibility_private::UpdateSwitchAccessBubble::Params>
-      params = accessibility_private::UpdateSwitchAccessBubble::Params::Create(
-          args());
+      params = accessibility_private::UpdateSwitchAccessBubble::Params::
+          CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!params->show) {

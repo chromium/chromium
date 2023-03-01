@@ -142,7 +142,7 @@ std::string GetAllowlistedExtensionID() {
 
 ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   std::unique_ptr<api::tab_capture::Capture::Params> params =
-      TabCapture::Capture::Params::Create(args());
+      TabCapture::Capture::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -222,7 +222,7 @@ ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
 
 ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
   std::unique_ptr<api::tab_capture::GetMediaStreamId::Params> params =
-      TabCapture::GetMediaStreamId::Params::Create(args());
+      TabCapture::GetMediaStreamId::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   content::WebContents* target_contents = nullptr;

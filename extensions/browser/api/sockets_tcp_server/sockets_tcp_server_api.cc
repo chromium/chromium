@@ -84,7 +84,7 @@ SocketsTcpServerCreateFunction::~SocketsTcpServerCreateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerCreateFunction::Work() {
   std::unique_ptr<sockets_tcp_server::Create::Params> params =
-      sockets_tcp_server::Create::Params::Create(args());
+      sockets_tcp_server::Create::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   auto* socket = new ResumableTCPServerSocket(browser_context(), GetOriginId());
@@ -105,7 +105,7 @@ SocketsTcpServerUpdateFunction::~SocketsTcpServerUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerUpdateFunction::Work() {
   std::unique_ptr<sockets_tcp_server::Update::Params> params =
-      sockets_tcp_server::Update::Params::Create(args());
+      sockets_tcp_server::Update::Params::CreateDeprecated(args());
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
@@ -124,7 +124,7 @@ SocketsTcpServerSetPausedFunction::~SocketsTcpServerSetPausedFunction() =
 
 ExtensionFunction::ResponseAction SocketsTcpServerSetPausedFunction::Work() {
   std::unique_ptr<sockets_tcp_server::SetPaused::Params> params =
-      api::sockets_tcp_server::SetPaused::Params::Create(args());
+      api::sockets_tcp_server::SetPaused::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   TCPServerSocketEventDispatcher* socket_event_dispatcher =
@@ -156,7 +156,7 @@ SocketsTcpServerListenFunction::SocketsTcpServerListenFunction() = default;
 SocketsTcpServerListenFunction::~SocketsTcpServerListenFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerListenFunction::Work() {
-  params_ = api::sockets_tcp_server::Listen::Params::Create(args());
+  params_ = api::sockets_tcp_server::Listen::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
   socket_event_dispatcher_ =
@@ -217,7 +217,7 @@ SocketsTcpServerDisconnectFunction::~SocketsTcpServerDisconnectFunction() =
 
 ExtensionFunction::ResponseAction SocketsTcpServerDisconnectFunction::Work() {
   std::unique_ptr<sockets_tcp_server::Disconnect::Params> params =
-      sockets_tcp_server::Disconnect::Params::Create(args());
+      sockets_tcp_server::Disconnect::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
@@ -235,7 +235,7 @@ SocketsTcpServerCloseFunction::~SocketsTcpServerCloseFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerCloseFunction::Work() {
   std::unique_ptr<sockets_tcp_server::Close::Params> params =
-      sockets_tcp_server::Close::Params::Create(args());
+      sockets_tcp_server::Close::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
@@ -253,7 +253,7 @@ SocketsTcpServerGetInfoFunction::~SocketsTcpServerGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerGetInfoFunction::Work() {
   std::unique_ptr<sockets_tcp_server::GetInfo::Params> params =
-      sockets_tcp_server::GetInfo::Params::Create(args());
+      sockets_tcp_server::GetInfo::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);

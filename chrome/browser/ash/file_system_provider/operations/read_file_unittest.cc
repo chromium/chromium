@@ -166,7 +166,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   list.Append(has_more);
   list.Append(execution_time);
 
-  std::unique_ptr<Params> params(Params::Create(std::move(list)));
+  std::unique_ptr<Params> params(Params::CreateDeprecated(std::move(list)));
   ASSERT_TRUE(params.get());
   std::unique_ptr<RequestValue> request_value(
       RequestValue::CreateForReadFileSuccess(std::move(params)));

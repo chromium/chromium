@@ -34,9 +34,9 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsAsTypes) {
     base::Value::List args;
     args.Append("one");
 
-    std::unique_ptr<enums::TakesEnumAsType::Params> params(
+    absl::optional<enums::TakesEnumAsType::Params> params(
         enums::TakesEnumAsType::Params::Create(args));
-    ASSERT_TRUE(params.get());
+    ASSERT_TRUE(params.has_value());
     EXPECT_EQ(enums::ENUMERATION_ONE, params->enumeration);
 
     EXPECT_EQ(args, enums::ReturnsEnumAsType::Results::Create(
@@ -75,7 +75,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsArrayAsType) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("one"), base::Value("two")));
-    std::unique_ptr<enums::TakesEnumArrayAsType::Params> params(
+    absl::optional<enums::TakesEnumArrayAsType::Params> params(
         enums::TakesEnumArrayAsType::Params::Create(params_value));
     ASSERT_TRUE(params);
     EXPECT_EQ(2U, params->values.size());
@@ -85,7 +85,7 @@ TEST(JsonSchemaCompilerEnumsTest, EnumsArrayAsType) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("invalid")));
-    std::unique_ptr<enums::TakesEnumArrayAsType::Params> params(
+    absl::optional<enums::TakesEnumArrayAsType::Params> params(
         enums::TakesEnumArrayAsType::Params::Create(params_value));
     EXPECT_FALSE(params);
   }
@@ -144,17 +144,17 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("two");
-    std::unique_ptr<enums::TakesEnum::Params> params(
+    absl::optional<enums::TakesEnum::Params> params(
         enums::TakesEnum::Params::Create(params_value));
-    EXPECT_TRUE(params.get());
+    EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::ENUMERATION_TWO, params->state);
   }
   {
     base::Value::List params_value;
     params_value.Append("invalid");
-    std::unique_ptr<enums::TakesEnum::Params> params(
+    absl::optional<enums::TakesEnum::Params> params(
         enums::TakesEnum::Params::Create(params_value));
-    EXPECT_FALSE(params.get());
+    EXPECT_FALSE(params.has_value());
   }
 }
 
@@ -162,7 +162,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumArrayParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("one"), base::Value("two")));
-    std::unique_ptr<enums::TakesEnumArray::Params> params(
+    absl::optional<enums::TakesEnumArray::Params> params(
         enums::TakesEnumArray::Params::Create(params_value));
     ASSERT_TRUE(params);
     EXPECT_EQ(2U, params->values.size());
@@ -172,7 +172,7 @@ TEST(JsonSchemaCompilerEnumsTest, TakesEnumArrayParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append(List(base::Value("invalid")));
-    std::unique_ptr<enums::TakesEnumArray::Params> params(
+    absl::optional<enums::TakesEnumArray::Params> params(
         enums::TakesEnumArray::Params::Create(params_value));
     EXPECT_FALSE(params);
   }
@@ -182,24 +182,24 @@ TEST(JsonSchemaCompilerEnumsTest, TakesOptionalEnumParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append("three");
-    std::unique_ptr<enums::TakesOptionalEnum::Params> params(
+    absl::optional<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
-    EXPECT_TRUE(params.get());
+    EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::ENUMERATION_THREE, params->state);
   }
   {
     base::Value::List params_value;
-    std::unique_ptr<enums::TakesOptionalEnum::Params> params(
+    absl::optional<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
-    EXPECT_TRUE(params.get());
+    EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::ENUMERATION_NONE, params->state);
   }
   {
     base::Value::List params_value;
     params_value.Append("invalid");
-    std::unique_ptr<enums::TakesOptionalEnum::Params> params(
+    absl::optional<enums::TakesOptionalEnum::Params> params(
         enums::TakesOptionalEnum::Params::Create(params_value));
-    EXPECT_FALSE(params.get());
+    EXPECT_FALSE(params.has_value());
   }
 }
 
@@ -208,26 +208,26 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
     base::Value::List params_value;
     params_value.Append("one");
     params_value.Append("ham");
-    std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
+    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
-    EXPECT_TRUE(params.get());
+    EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::ENUMERATION_ONE, params->state);
     EXPECT_EQ(enums::OTHER_ENUMERATION_HAM, params->type);
   }
   {
     base::Value::List params_value;
     params_value.Append("one");
-    std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
+    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
-    EXPECT_TRUE(params.get());
+    EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::ENUMERATION_ONE, params->state);
     EXPECT_EQ(enums::OTHER_ENUMERATION_NONE, params->type);
   }
   {
     base::Value::List params_value;
-    std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
+    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
-    EXPECT_TRUE(params.get());
+    EXPECT_TRUE(params.has_value());
     EXPECT_EQ(enums::ENUMERATION_NONE, params->state);
     EXPECT_EQ(enums::OTHER_ENUMERATION_NONE, params->type);
   }
@@ -235,9 +235,9 @@ TEST(JsonSchemaCompilerEnumsTest, TakesMultipleOptionalEnumsParamsCreate) {
     base::Value::List params_value;
     params_value.Append("three");
     params_value.Append("invalid");
-    std::unique_ptr<enums::TakesMultipleOptionalEnums::Params> params(
+    absl::optional<enums::TakesMultipleOptionalEnums::Params> params(
         enums::TakesMultipleOptionalEnums::Params::Create(params_value));
-    EXPECT_FALSE(params.get());
+    EXPECT_FALSE(params.has_value());
   }
 }
 

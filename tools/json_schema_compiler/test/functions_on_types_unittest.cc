@@ -15,7 +15,7 @@ namespace functions_on_types = test::api::functions_on_types;
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
   {
     base::Value::List params_value;
-    std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
+    absl::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->keys);
@@ -23,14 +23,14 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
   {
     base::Value::List params_value;
     params_value.Append(9);
-    std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
+    absl::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
     EXPECT_FALSE(params);
   }
   {
     base::Value::List params_value;
     params_value.Append("test");
-    std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
+    absl::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->keys);
@@ -42,7 +42,7 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
     keys_object_value.Set("string", "string");
     base::Value::List params_value;
     params_value.Append(keys_object_value.Clone());
-    std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
+    absl::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->keys);
@@ -67,8 +67,8 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, ChromeSettingGetParamsCreate) {
   details_value.Set("incognito", true);
   base::Value::List params_value;
   params_value.Append(std::move(details_value));
-  std::unique_ptr<functions_on_types::ChromeSetting::Get::Params> params(
+  absl::optional<functions_on_types::ChromeSetting::Get::Params> params(
       functions_on_types::ChromeSetting::Get::Params::Create(params_value));
-  EXPECT_TRUE(params.get());
+  EXPECT_TRUE(params.has_value());
   EXPECT_TRUE(*params->details.incognito);
 }

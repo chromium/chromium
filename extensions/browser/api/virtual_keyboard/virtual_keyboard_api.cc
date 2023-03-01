@@ -26,7 +26,7 @@ void VirtualKeyboardRestrictFeaturesFunction::OnRestrictFeatures(
 ExtensionFunction::ResponseAction
 VirtualKeyboardRestrictFeaturesFunction::Run() {
   std::unique_ptr<api::virtual_keyboard::RestrictFeatures::Params> params =
-      api::virtual_keyboard::RestrictFeatures::Params::Create(args());
+      api::virtual_keyboard::RestrictFeatures::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   using ::ash::input_method::InputMethodManager;

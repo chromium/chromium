@@ -706,8 +706,11 @@ class _Generator(object):
       c.Concat(self._GeneratePropertyFunctions('Params', function.params))
       (c.Append('Params::Params() = default;')
         .Append('Params::~Params() = default;')
+        .Append('Params::Params(Params&& rhs) = default;')
+        .Append('Params& Params::operator=(Params&& rhs) = default;')
         .Append()
         .Cblock(self._GenerateFunctionParamsCreate(function))
+        .Cblock(self._GenerateFunctionParamsCreateDeprecated(function))
       )
 
     # Results::Create function
@@ -819,7 +822,7 @@ class _Generator(object):
       raise NotImplementedError('Conversion of %s to base::Value not '
                                 'implemented' % repr(type_.type_))
 
-  def _GenerateParamsCheck(self, function, var):
+  def _GenerateParamsCheck(self, function, var, failure_value):
     """Generates a check for the correct number of arguments when creating
     Params.
     """
@@ -838,10 +841,11 @@ class _Generator(object):
     (c.Concat(self._AppendError16(
         'u"expected %%(total)d arguments, got " '
         '+ base::NumberToString16(%%(var)s.size())'))
-      .Append('return nullptr;')
+      .Append('return %(failure_value)s;')
       .Eblock('}')
       .Substitute({
         'var': var,
+        'failure_value': failure_value,
         'required': num_required,
         'total': len(function.params),
     }))
@@ -856,13 +860,70 @@ class _Generator(object):
     c = Code()
 
     (c.Append('// static')
-      .Sblock('std::unique_ptr<Params> Params::Create(%s) {' %
+      .Sblock('absl::optional<Params> Params::Create(%s) {' %
                   self._GenerateParams([
                       'const base::Value::List& args']))
     )
     if self._generate_error_messages:
       c.Append('DCHECK(error);')
-    (c.Concat(self._GenerateParamsCheck(function, 'args'))
+
+    failure_value = 'absl::nullopt'
+    # As the default constructor of Params is private, std::optional is not
+    # allowed to construct the type in place, however we pass a default as a
+    # rvalue, which is precisely of the same effect.
+    (c.Concat(self._GenerateParamsCheck(function, 'args', failure_value))
+      .Append('absl::optional<Params> params((Params()));')
+    )
+
+    for param in function.params:
+      c.Concat(self._InitializePropertyToDefault(param, 'params'))
+
+    for i, param in enumerate(function.params):
+      # Any failure will cause this function to return. If any argument is
+      # incorrect or missing, those following it are not processed. Note that
+      # for optional arguments, we allow missing arguments and proceed because
+      # there may be other arguments following it.
+      c.Append()
+      value_var = param.unix_name + '_value'
+      (c.Append('if (%(i)s < args.size() &&')
+        .Sblock('    !args[%(i)s].is_none()) {')
+        .Append('const base::Value& %(value_var)s = args[%(i)s];')
+        .Concat(self._GeneratePopulatePropertyFromValue(
+            param, value_var, 'params', failure_value))
+        .Eblock('}')
+      )
+      if not param.optional:
+        (c.Sblock('else {')
+          .Concat(self._AppendError16('u"\'%%(key)s\' is required"'))
+          .Append('return %s;' % failure_value)
+          .Eblock('}'))
+      c.Substitute({'value_var': value_var, 'i': i, 'key': param.name})
+    (c.Append()
+      .Append('return params;')
+      .Eblock('}')
+      .Append()
+    )
+
+    return c
+
+  def _GenerateFunctionParamsCreateDeprecated(self, function):
+    """Generate function to create an instance of Params. The generated
+    function takes a const base::Value::List& of arguments.
+
+    E.g for function "Bar", generate Bar::Params::CreateDeprecated()
+    """
+    c = Code()
+
+    (c.Append('// static')
+      .Sblock('std::unique_ptr<Params> Params::CreateDeprecated(%s) {' %
+                  self._GenerateParams([
+                      'const base::Value::List& args']))
+    )
+    if self._generate_error_messages:
+      c.Append('DCHECK(error);')
+
+    failure_value = 'nullptr'
+    (c.Concat(self._GenerateParamsCheck(function, 'args', failure_value))
       .Append('std::unique_ptr<Params> params(new Params());')
     )
 
@@ -874,7 +935,6 @@ class _Generator(object):
       # incorrect or missing, those following it are not processed. Note that
       # for optional arguments, we allow missing arguments and proceed because
       # there may be other arguments following it.
-      failure_value = 'std::unique_ptr<Params>()'
       c.Append()
       value_var = param.unix_name + '_value'
       (c.Append('if (%(i)s < args.size() &&')

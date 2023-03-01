@@ -57,7 +57,7 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
 
 ExtensionFunction::ResponseAction
 DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::Run() {
-  params_ = Params::Create(args());
+  params_ = Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (!crx_file::id_util::IdIsValid(params_->details.id)) {

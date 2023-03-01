@@ -51,7 +51,8 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
   mutable_args().erase(args().begin());
 
   std::unique_ptr<api::desktop_capture::ChooseDesktopMedia::Params> params =
-      api::desktop_capture::ChooseDesktopMedia::Params::Create(args());
+      api::desktop_capture::ChooseDesktopMedia::Params::CreateDeprecated(
+          args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // |target_render_frame_host| is the RenderFrameHost for which the stream is

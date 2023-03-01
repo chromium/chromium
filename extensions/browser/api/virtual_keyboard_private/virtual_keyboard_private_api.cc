@@ -70,7 +70,7 @@ VirtualKeyboardPrivateInsertTextFunction::Run() {
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSendKeyEventFunction::Run() {
   std::unique_ptr<keyboard::SendKeyEvent::Params> params(
-      keyboard::SendKeyEvent::Params::Create(args()));
+      keyboard::SendKeyEvent::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(params->key_event.modifiers);
   const keyboard::VirtualKeyboardEvent& event = params->key_event;
@@ -149,7 +149,7 @@ VirtualKeyboardPrivateOpenSuggestionSettingsFunction::Run() {
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetContainerBehaviorFunction::Run() {
   std::unique_ptr<keyboard::SetContainerBehavior::Params> params =
-      keyboard::SetContainerBehavior::Params::Create(args());
+      keyboard::SetContainerBehavior::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   gfx::Rect target_bounds = KeyboardBoundsToRect(params->options.bounds);
@@ -170,7 +170,7 @@ void VirtualKeyboardPrivateSetContainerBehaviorFunction::OnSetContainerBehavior(
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetDraggableAreaFunction::Run() {
   std::unique_ptr<keyboard::SetDraggableArea::Params> params =
-      keyboard::SetDraggableArea::Params::Create(args());
+      keyboard::SetDraggableArea::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!delegate()->SetDraggableArea(params->bounds))
     return RespondNow(Error(kSetDraggableAreaFailed));
@@ -180,7 +180,7 @@ VirtualKeyboardPrivateSetDraggableAreaFunction::Run() {
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetKeyboardStateFunction::Run() {
   std::unique_ptr<keyboard::SetKeyboardState::Params> params =
-      keyboard::SetKeyboardState::Params::Create(args());
+      keyboard::SetKeyboardState::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!delegate()->SetRequestedKeyboardState(params->state))
     return RespondNow(Error(kVirtualKeyboardNotEnabled));
@@ -190,7 +190,7 @@ VirtualKeyboardPrivateSetKeyboardStateFunction::Run() {
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetOccludedBoundsFunction::Run() {
   std::unique_ptr<keyboard::SetOccludedBounds::Params> params =
-      keyboard::SetOccludedBounds::Params::Create(args());
+      keyboard::SetOccludedBounds::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::vector<gfx::Rect> occluded_bounds;
@@ -206,7 +206,7 @@ VirtualKeyboardPrivateSetOccludedBoundsFunction::Run() {
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetHitTestBoundsFunction::Run() {
   std::unique_ptr<keyboard::SetHitTestBounds::Params> params =
-      keyboard::SetHitTestBounds::Params::Create(args());
+      keyboard::SetHitTestBounds::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::vector<gfx::Rect> hit_test_bounds;
@@ -222,7 +222,7 @@ VirtualKeyboardPrivateSetHitTestBoundsFunction::Run() {
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction::Run() {
   std::unique_ptr<keyboard::SetAreaToRemainOnScreen::Params> params =
-      keyboard::SetAreaToRemainOnScreen::Params::Create(args());
+      keyboard::SetAreaToRemainOnScreen::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const gfx::Rect bounds = KeyboardBoundsToRect(params->bounds);
@@ -234,7 +234,7 @@ VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction::Run() {
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateSetWindowBoundsInScreenFunction::Run() {
   std::unique_ptr<keyboard::SetWindowBoundsInScreen::Params> params =
-      keyboard::SetWindowBoundsInScreen::Params::Create(args());
+      keyboard::SetWindowBoundsInScreen::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const gfx::Rect bounds_in_screen = KeyboardBoundsToRect(params->bounds);
@@ -249,7 +249,7 @@ VirtualKeyboardPrivateSetWindowBoundsInScreenFunction ::
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateGetClipboardHistoryFunction::Run() {
   std::unique_ptr<keyboard::GetClipboardHistory::Params> params =
-      keyboard::GetClipboardHistory::Params::Create(args());
+      keyboard::GetClipboardHistory::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::set<std::string> item_id_filter;
   if (params->options.item_ids) {
@@ -277,7 +277,7 @@ VirtualKeyboardPrivateGetClipboardHistoryFunction ::
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivatePasteClipboardItemFunction::Run() {
   std::unique_ptr<keyboard::PasteClipboardItem::Params> params =
-      keyboard::PasteClipboardItem::Params::Create(args());
+      keyboard::PasteClipboardItem::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!delegate()->PasteClipboardItem(params->item_id))
@@ -291,7 +291,7 @@ VirtualKeyboardPrivatePasteClipboardItemFunction ::
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateDeleteClipboardItemFunction::Run() {
   std::unique_ptr<keyboard::DeleteClipboardItem::Params> params =
-      keyboard::DeleteClipboardItem::Params::Create(args());
+      keyboard::DeleteClipboardItem::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!delegate()->DeleteClipboardItem(params->item_id))

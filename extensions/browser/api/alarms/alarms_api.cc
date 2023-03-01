@@ -93,7 +93,7 @@ AlarmsCreateFunction::~AlarmsCreateFunction() = default;
 
 ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
   std::unique_ptr<alarms::Create::Params> params(
-      alarms::Create::Params::Create(args()));
+      alarms::Create::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   const std::string& alarm_name = params->name.value_or(kDefaultAlarmName);
   std::vector<std::string> warnings;
@@ -128,7 +128,7 @@ void AlarmsCreateFunction::Callback() {
 
 ExtensionFunction::ResponseAction AlarmsGetFunction::Run() {
   std::unique_ptr<alarms::Get::Params> params(
-      alarms::Get::Params::Create(args()));
+      alarms::Get::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string name = params->name.value_or(kDefaultAlarmName);
@@ -168,7 +168,7 @@ void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
 
 ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {
   std::unique_ptr<alarms::Clear::Params> params(
-      alarms::Clear::Params::Create(args()));
+      alarms::Clear::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   std::string name = params->name.value_or(kDefaultAlarmName);

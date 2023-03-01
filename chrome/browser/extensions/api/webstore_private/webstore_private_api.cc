@@ -452,7 +452,7 @@ std::u16string WebstorePrivateBeginInstallWithManifest3Function::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateBeginInstallWithManifest3Function::Run() {
-  params_ = Params::Create(args());
+  params_ = Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   profile_ = Profile::FromBrowserContext(browser_context());
@@ -953,7 +953,7 @@ WebstorePrivateCompleteInstallFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateCompleteInstallFunction::Run() {
   std::unique_ptr<CompleteInstall::Params> params(
-      CompleteInstall::Params::Create(args()));
+      CompleteInstall::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
@@ -1092,7 +1092,7 @@ WebstorePrivateSetStoreLoginFunction::~WebstorePrivateSetStoreLoginFunction() {}
 
 ExtensionFunction::ResponseAction WebstorePrivateSetStoreLoginFunction::Run() {
   std::unique_ptr<SetStoreLogin::Params> params(
-      SetStoreLogin::Params::Create(args()));
+      SetStoreLogin::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   SetWebstoreLogin(Profile::FromBrowserContext(browser_context()),
                    params->login);
@@ -1178,7 +1178,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
   std::unique_ptr<IsPendingCustodianApproval::Params> params(
-      IsPendingCustodianApproval::Params::Create(args()));
+      IsPendingCustodianApproval::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!Profile::FromBrowserContext(browser_context())->IsChild())
@@ -1277,7 +1277,7 @@ WebstorePrivateGetExtensionStatusFunction::
 ExtensionFunction::ResponseAction
 WebstorePrivateGetExtensionStatusFunction::Run() {
   std::unique_ptr<GetExtensionStatus::Params> params(
-      GetExtensionStatus::Params::Create(args()));
+      GetExtensionStatus::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const ExtensionId& extension_id = params->id;

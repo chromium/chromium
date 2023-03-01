@@ -48,7 +48,8 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
     return RespondNow(NoArguments());
   }
 
-  const auto params = crash_report_private::ReportError::Params::Create(args());
+  const auto params =
+      crash_report_private::ReportError::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   auto processor = JsErrorReportProcessor::Get();

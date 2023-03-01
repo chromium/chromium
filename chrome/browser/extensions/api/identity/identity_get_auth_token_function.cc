@@ -137,7 +137,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   }
 
   std::unique_ptr<api::identity::GetAuthToken::Params> params(
-      api::identity::GetAuthToken::Params::Create(args()));
+      api::identity::GetAuthToken::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   ComputeInteractivityStatus(params->details);
 

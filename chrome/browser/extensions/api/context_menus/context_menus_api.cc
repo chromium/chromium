@@ -33,7 +33,7 @@ ExtensionFunction::ResponseAction ContextMenusCreateFunction::Run() {
   MenuItem::Id id(browser_context()->IsOffTheRecord(),
                   MenuItem::ExtensionKey(extension_id()));
   std::unique_ptr<api::context_menus::Create::Params> params(
-      api::context_menus::Create::Params::Create(args()));
+      api::context_menus::Create::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (params->create_properties.id) {
@@ -66,7 +66,7 @@ ExtensionFunction::ResponseAction ContextMenusUpdateFunction::Run() {
   MenuItem::Id item_id(browser_context()->IsOffTheRecord(),
                        MenuItem::ExtensionKey(extension_id()));
   std::unique_ptr<api::context_menus::Update::Params> params(
-      api::context_menus::Update::Params::Create(args()));
+      api::context_menus::Update::Params::CreateDeprecated(args()));
 
   EXTENSION_FUNCTION_VALIDATE(params.get());
   if (params->id.as_string)
@@ -87,7 +87,7 @@ ExtensionFunction::ResponseAction ContextMenusUpdateFunction::Run() {
 
 ExtensionFunction::ResponseAction ContextMenusRemoveFunction::Run() {
   std::unique_ptr<api::context_menus::Remove::Params> params(
-      api::context_menus::Remove::Params::Create(args()));
+      api::context_menus::Remove::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   MenuManager* manager = MenuManager::Get(browser_context());

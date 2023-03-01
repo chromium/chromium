@@ -17,7 +17,7 @@ BrowserOpenTabFunction::~BrowserOpenTabFunction() {}
 
 ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
   std::unique_ptr<browser::OpenTab::Params> params(
-      browser::OpenTab::Params::Create(args()));
+      browser::OpenTab::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   extensions::ExtensionTabUtil::OpenTabParams options;

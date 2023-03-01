@@ -136,7 +136,7 @@ InputMethodPrivateGetCurrentInputMethodFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetCurrentInputMethodFunction::Run() {
   std::unique_ptr<SetCurrentInputMethod::Params> params(
-      SetCurrentInputMethod::Params::Create(args()));
+      SetCurrentInputMethod::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
@@ -209,7 +209,7 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateAddWordToDictionaryFunction::Run() {
   std::unique_ptr<AddWordToDictionary::Params> params(
-      AddWordToDictionary::Params::Create(args()));
+      AddWordToDictionary::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   SpellcheckService* spellcheck =
       SpellcheckServiceFactory::GetForContext(browser_context());
@@ -240,7 +240,7 @@ InputMethodPrivateAddWordToDictionaryFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetXkbLayoutFunction::Run() {
   std::unique_ptr<SetXkbLayout::Params> params(
-      SetXkbLayout::Params::Create(args()));
+      SetXkbLayout::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   auto* manager = ash::input_method::InputMethodManager::Get();
   ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
@@ -273,7 +273,7 @@ InputMethodPrivateHideInputViewFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateOpenOptionsPageFunction::Run() {
   std::unique_ptr<OpenOptionsPage::Params> params(
-      OpenOptionsPage::Params::Create(args()));
+      OpenOptionsPage::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
@@ -323,7 +323,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
         kErrorInputContextHandlerNotAvailable, static_function_name())));
 
   std::unique_ptr<GetSurroundingText::Params> params(
-      GetSurroundingText::Params::Create(args()));
+      GetSurroundingText::Params::CreateDeprecated(args()));
   if (params->before_length < 0 || params->after_length < 0)
     return RespondNow(Error(InformativeError(
         base::StringPrintf("%s before_length = %d, after_length = %d.",
@@ -367,7 +367,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
-  const auto params = GetSettings::Params::Create(args());
+  const auto params = GetSettings::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const base::Value::Dict& input_methods =
@@ -383,7 +383,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
-  const auto params = SetSettings::Params::Create(args());
+  const auto params = SetSettings::Params::CreateDeprecated(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ScopedDictPrefUpdate update(
@@ -414,7 +414,8 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = SetCompositionRange::Params::Create(args());
+  const auto parent_params =
+      SetCompositionRange::Params::CreateDeprecated(args());
   const auto& params = parent_params->parameters;
   std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
@@ -457,7 +458,8 @@ InputMethodPrivateGetTextFieldBoundsFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params = GetTextFieldBounds::Params::Create(args());
+  const auto parent_params =
+      GetTextFieldBounds::Params::CreateDeprecated(args());
   const auto& params = parent_params->parameters;
   const gfx::Rect rect =
       engine->InputMethodEngine::GetTextFieldBounds(params.context_id, &error);
@@ -486,7 +488,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
 ExtensionFunction::ResponseAction
 InputMethodPrivateOnAutocorrectFunction::Run() {
   std::unique_ptr<OnAutocorrect::Params> parent_params(
-      OnAutocorrect::Params::Create(args()));
+      OnAutocorrect::Params::CreateDeprecated(args()));
   const OnAutocorrect::Params::Parameters& params = parent_params->parameters;
   std::string error;
   ash::input_method::NativeInputMethodEngine* engine =

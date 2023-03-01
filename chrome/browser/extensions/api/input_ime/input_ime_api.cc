@@ -117,7 +117,7 @@ void InputImeEventRouterFactory::RemoveProfile(Profile* profile) {
 
 ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
   std::unique_ptr<KeyEventHandled::Params> params(
-      KeyEventHandled::Params::Create(args()));
+      KeyEventHandled::Params::CreateDeprecated(args()));
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
@@ -136,7 +136,7 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SetComposition::Params> parent_params(
-      SetComposition::Params::Create(args()));
+      SetComposition::Params::CreateDeprecated(args()));
   const SetComposition::Params::Parameters& params = parent_params->parameters;
   std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
@@ -180,7 +180,7 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<CommitText::Params> parent_params(
-      CommitText::Params::Create(args()));
+      CommitText::Params::CreateDeprecated(args()));
   const CommitText::Params::Parameters& params = parent_params->parameters;
   if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
                           &error)) {
@@ -200,7 +200,7 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
   std::unique_ptr<SendKeyEvents::Params> parent_params(
-      SendKeyEvents::Params::Create(args()));
+      SendKeyEvents::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(parent_params);
   const SendKeyEvents::Params::Parameters& params = parent_params->parameters;
 

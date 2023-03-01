@@ -36,7 +36,7 @@ ExtensionFunction::ResponseAction SidePanelApiFunction::Run() {
 
 ExtensionFunction::ResponseAction SidePanelGetOptionsFunction::RunFunction() {
   std::unique_ptr<api::side_panel::GetOptions::Params> params(
-      api::side_panel::GetOptions::Params::Create(args()));
+      api::side_panel::GetOptions::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   auto tab_id = params->options.tab_id
                     ? absl::optional<int>(*(params->options.tab_id))
@@ -48,7 +48,7 @@ ExtensionFunction::ResponseAction SidePanelGetOptionsFunction::RunFunction() {
 
 ExtensionFunction::ResponseAction SidePanelSetOptionsFunction::RunFunction() {
   std::unique_ptr<api::side_panel::SetOptions::Params> params(
-      api::side_panel::SetOptions::Params::Create(args()));
+      api::side_panel::SetOptions::Params::CreateDeprecated(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   // TODO(crbug.com/1328645): Validate the relative extension path exists.
   GetService()->SetOptions(*extension(), std::move(params->options));
