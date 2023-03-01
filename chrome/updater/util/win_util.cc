@@ -1093,4 +1093,9 @@ void ForEachServiceWithPrefix(
   return is_service_deleted;
 }
 
+bool WrongUser(UpdaterScope scope) {
+  return IsSystemInstall(scope) ? !::IsUserAnAdmin()
+                                : ::IsUserAnAdmin() && IsUACOn();
+}
+
 }  // namespace updater

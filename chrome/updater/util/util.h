@@ -210,6 +210,12 @@ CallbackT OnCurrentSequence(CallbackT callback) {
   return base::BindPostTaskToCurrentDefault(std::move(callback));
 }
 
+// Returns whether the user currently running the program is the right user for
+// the scope. This can be useful to avoid installing system updaters that are
+// owned by non-root accounts, or avoiding the installation of a user level
+// updater as root.
+bool WrongUser(UpdaterScope scope);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_UTIL_H_

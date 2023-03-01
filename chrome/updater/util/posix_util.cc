@@ -160,4 +160,8 @@ bool CopyDir(const base::FilePath& from_path,
   return true;
 }
 
+bool WrongUser(UpdaterScope scope) {
+  return (scope == UpdaterScope::kSystem) != (geteuid() == 0);
+}
+
 }  // namespace updater

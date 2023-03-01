@@ -137,7 +137,10 @@ void AppUninstall::FirstTaskRun() {
   }
 
   if (command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
-    CHECK(global_prefs_);
+    if (!global_prefs_) {
+      VLOG(0) << "Failed to acquire global prefs; shutting down.";
+      Shutdown(kErrorFailedToLockPrefsMutex);
+    }
     auto persisted_data = base::MakeRefCounted<PersistedData>(
         updater_scope(), global_prefs_->GetPrefService());
     const bool should_uninstall = ShouldUninstall(

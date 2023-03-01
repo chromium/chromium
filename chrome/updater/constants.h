@@ -376,6 +376,9 @@ inline constexpr int kErrorFailedToInstallSystemdUnit = 40;
 // Failed to remove one or more Systemd units during uninstallation.
 inline constexpr int kErrorFailedToRemoveSystemdUnit = 41;
 
+// Running as the wrong user for the provided UpdaterScope.
+inline constexpr int kErrorWrongUser = 42;
+
 inline constexpr int kErrorTagParsing = 50;
 
 // Metainstaller errors.

@@ -89,6 +89,12 @@ int UpdaterPrefsImpl::CountServerStarts() {
 }
 
 scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
+  if (WrongUser(scope)) {
+    VLOG(0) << "Current user is incompatible with scope " << scope
+            << "; GlobalPrefs will not be created.";
+    return nullptr;
+  }
+
   std::unique_ptr<ScopedPrefsLock> lock =
       AcquireGlobalPrefsLock(scope, base::Minutes(2));
   if (!lock)

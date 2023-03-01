@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/setup.h"
+#include "chrome/updater/util/util.h"
 
 namespace updater {
 
@@ -26,6 +28,9 @@ void AppUpdate::Initialize() {}
 void AppUpdate::Uninitialize() {}
 
 void AppUpdate::FirstTaskRun() {
+  if (WrongUser(updater_scope())) {
+    Shutdown(kErrorWrongUser);
+  }
   InstallCandidate(updater_scope(),
                    base::BindOnce(&AppUpdate::SetupDone, this));
 }
