@@ -30284,6 +30284,15 @@ should be able to be added at any place in this file.
   <description>The user opened the side panel.</description>
 </action>
 
+<action name="SidePanel.SideSearch.NewTabButtonClicked">
+  <owner>pengchaocai@chromium.org</owner>
+  <owner>chrome-cros@google.com</owner>
+  <description>
+    Recorded when the new tab button is clicked with the side search side panel
+    entry showing.
+  </description>
+</action>
+
 <action name="SidePanel.SideSearch.Shown">
   <owner>tluk@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
