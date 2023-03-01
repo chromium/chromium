@@ -1625,15 +1625,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListInternalApp.Activate"
-    enum="AppListInternalAppName" expires_after="M81">
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    The internal app in apps grid was opened by the user. This is gathered per
-    click of an internal app.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
     units="characters" expires_after="2023-07-02">
   <owner>wrong@chromium.org</owner>
@@ -1981,16 +1972,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the ARC ghost window is launched when the ARC app are
     restored during the system startup phase.
-  </summary>
-</histogram>
-
-<histogram name="Apps.Bounced" enum="BooleanBounced" expires_after="2020-12-14">
-  <owner>ajlinker@chromium.org</owner>
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    Records whether an application has bounced (been uninstalled in less than
-    seven days). Recorded when an application is uninstalled.
   </summary>
 </histogram>
 

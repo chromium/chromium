@@ -13,8 +13,6 @@
 
 namespace apps {
 
-class AppUpdate;
-
 // The default app's histogram name. This is used for logging so do
 // not change the order of this enum.
 // https://docs.google.com/document/d/1WJ-BjlVOM87ygIsdDBCyXxdKw3iS5EtNGm1fWiWhfIs
@@ -94,8 +92,6 @@ void RecordAppLaunch(const std::string& app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void RecordBuiltInAppSearchResult(const std::string& app_id);
 #endif
-
-void RecordAppBounce(const apps::AppUpdate& app);
 
 void RecordAppsPerNotification(int count);
 

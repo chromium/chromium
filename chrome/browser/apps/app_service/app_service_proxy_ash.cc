@@ -435,8 +435,6 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
     bool report_abuse,
     UninstallDialog* uninstall_dialog) {
   if (uninstall) {
-    app_registry_cache_.ForOneApp(app_id, RecordAppBounce);
-
     auto* publisher = GetPublisher(app_type);
     DCHECK(publisher);
     publisher->Uninstall(app_id, uninstall_source, clear_site_data,
