@@ -985,11 +985,30 @@ void WebFeedSubscriptionCoordinator::QueryWebFeed(
                          base::Unretained(this), std::move(callback))));
 }
 
+void WebFeedSubscriptionCoordinator::QueryWebFeedId(
+    const std::string& id,
+    base::OnceCallback<void(QueryWebFeedResult)> callback) {
+  // TODO(crbug/1409701) Combine subscription status into result callback. This
+  // would require binding a start call via WithModel and updating the local
+  // state to match the result from the server,
+  QueryWebFeedTask::Request request;
+  request.web_feed_id = id;
+
+  feed_stream_->GetTaskQueue().AddTask(
+      FROM_HERE,
+      std::make_unique<QueryWebFeedTask>(
+          feed_stream_, token_generator_.Token(), std::move(request),
+          base::BindOnce(&WebFeedSubscriptionCoordinator::QueryWebFeedComplete,
+                         base::Unretained(this), std::move(callback))));
+}
+
 void WebFeedSubscriptionCoordinator::QueryWebFeedComplete(
     base::OnceCallback<void(QueryWebFeedResult)> callback,
     QueryWebFeedResult result) {
   QueryWebFeedResult callback_result;
   callback_result.web_feed_id = result.web_feed_id;
+  callback_result.url = result.url;
+  callback_result.title = result.title;
   callback_result.request_status = result.request_status;
   feed_stream_->GetMetricsReporter().OnQueryAttempt(callback_result);
   std::move(callback).Run(std::move(callback_result));

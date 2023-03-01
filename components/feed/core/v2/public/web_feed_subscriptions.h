@@ -28,10 +28,17 @@ class WebFeedSubscriptions {
     feedwire::webfeed::WebFeedChangeReason change_reason;
   };
   struct QueryWebFeedResult {
+    QueryWebFeedResult();
+    QueryWebFeedResult(const QueryWebFeedResult& query_web_feed_result);
+    ~QueryWebFeedResult();
     WebFeedQueryRequestStatus request_status =
         WebFeedQueryRequestStatus::kUnknown;
     // The id of the queried web feed.
     std::string web_feed_id;
+    // The title of the queried web feed.
+    std::string title;
+    // The url of the queried web feed.
+    std::string url;
   };
   // Follow a web feed given information about a web page. Calls `callback` when
   // complete. The callback parameter reports whether the url is now considered
@@ -116,6 +123,11 @@ class WebFeedSubscriptions {
   // return the WebFeed Id based on the Uri provided.
   virtual void QueryWebFeed(
       const GURL& url,
+      base::OnceCallback<void(QueryWebFeedResult)> callback) = 0;
+
+  // return the WebFeed Id based on the id provided.
+  virtual void QueryWebFeedId(
+      const std::string& web_feed_id,
       base::OnceCallback<void(QueryWebFeedResult)> callback) = 0;
 
   // Output debugging information for snippets-internals.

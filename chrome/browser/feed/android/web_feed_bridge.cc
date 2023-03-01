@@ -137,7 +137,9 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
     JNIEnv* env,
     const WebFeedSubscriptions::QueryWebFeedResult& result) {
   return Java_QueryResult_Constructor(
-      env, base::android::ConvertUTF8ToJavaString(env, result.web_feed_id));
+      env, base::android::ConvertUTF8ToJavaString(env, result.web_feed_id),
+      base::android::ConvertUTF8ToJavaString(env, result.title),
+      base::android::ConvertUTF8ToJavaString(env, result.url));
 }
 
 base::android::ScopedJavaLocalRef<jobject> ToJava(
@@ -385,5 +387,20 @@ static void JNI_WebFeedBridge_QueryWebFeed(
   subscriptions->QueryWebFeed(
       GURL(base::android::ConvertJavaStringToUTF8(env, url)),
       std::move(callback));
+}
+
+static void JNI_WebFeedBridge_QueryWebFeedId(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& id,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
+      AdaptQueryWebFeedResultCallback(j_callback);
+  WebFeedSubscriptions* subscriptions = GetSubscriptions();
+  if (!subscriptions) {
+    std::move(callback).Run({});
+    return;
+  }
+  subscriptions->QueryWebFeedId(base::android::ConvertJavaStringToUTF8(env, id),
+                                std::move(callback));
 }
 }  // namespace feed

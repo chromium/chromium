@@ -112,8 +112,17 @@ public class WebFeedBridge {
      * @param url The URL for which the status is being requested.
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
-    public static void queryWebFeedId(String url, Callback<QueryResult> callback) {
+    public static void queryWebFeed(String url, Callback<QueryResult> callback) {
         WebFeedBridgeJni.get().queryWebFeed(url, callback);
+    }
+
+    /**
+     * Returns the Web Feed id for the web feed associated with this page.
+     * @param url The URL for which the status is being requested.
+     * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
+     */
+    public static void queryWebFeedId(String id, Callback<QueryResult> callback) {
+        WebFeedBridgeJni.get().queryWebFeedId(id, callback);
     }
 
     /**
@@ -189,11 +198,15 @@ public class WebFeedBridge {
     /** Container for results from an QueryWebFeed request. */
     public static class QueryResult {
         @CalledByNative("QueryResult")
-        public QueryResult(String webFeedId) {
+        public QueryResult(String webFeedId, String title, String url) {
             this.webFeedId = webFeedId;
+            this.title = title;
+            this.url = url;
         }
         // Result of the operation.
         public final String webFeedId;
+        public final String title;
+        public final String url;
     }
 
     /**
@@ -290,5 +303,6 @@ public class WebFeedBridge {
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
         void incrementFollowedFromWebPageMenuCount();
         void queryWebFeed(String url, Callback<QueryResult> callback);
+        void queryWebFeedId(String id, Callback<QueryResult> callback);
     }
 }

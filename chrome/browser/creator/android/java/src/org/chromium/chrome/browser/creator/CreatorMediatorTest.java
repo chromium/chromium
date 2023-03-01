@@ -95,7 +95,6 @@ public class CreatorMediatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private final String mTitle = "Example";
     private final String mUrl = JUnitTestGURLs.EXAMPLE_URL;
     private final byte[] mWebFeedId = "webFeedId".getBytes();
     private CreatorCoordinator mCreatorCoordinator;
@@ -119,7 +118,7 @@ public class CreatorMediatorTest {
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCreatorCoordinator = new CreatorCoordinator(mActivity, mWebFeedId, mSnackbarManager,
-                mWindowAndroid, mProfile, mTitle, mUrl, mCreatorWebContents, mCreatorOpenTab,
+                mWindowAndroid, mProfile, mUrl, mCreatorWebContents, mCreatorOpenTab,
                 mShareDelegateSupplier, SingleWebFeedEntryPoint.OTHER);
         mCreatorModel = mCreatorCoordinator.getCreatorModel();
 

@@ -25,6 +25,7 @@ class QueryWebFeedTask : public offline_pages::Task {
  public:
   struct Request {
     GURL web_feed_url;
+    std::string web_feed_id;
   };
   QueryWebFeedTask(
       FeedStream* stream,
@@ -51,6 +52,7 @@ class QueryWebFeedTask : public offline_pages::Task {
 
   WebFeedSubscriptions::QueryWebFeedResult result_;
   GURL url_;
+  std::string web_feed_id_;
 };
 }  // namespace feed
 
