@@ -288,11 +288,9 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles) {
 #endif  // BUILDFLAG(IS_ANDROID)
   if (!use_download_collection) {
     // Create a file at |path|, and a .crdownload file at |path1|.
-    ASSERT_EQ(0, base::WriteFile(path, "", 0));
-    ASSERT_EQ(
-        0, base::WriteFile(
-               base::FilePath(path1.value() + FILE_PATH_LITERAL(".crdownload")),
-               "", 0));
+    ASSERT_TRUE(base::WriteFile(path, ""));
+    ASSERT_TRUE(base::WriteFile(
+        base::FilePath(path1.value() + FILE_PATH_LITERAL(".crdownload")), ""));
   }
 
   ASSERT_TRUE(IsPathInUse(path));
@@ -322,7 +320,7 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles_Overwrite) {
 #endif  // BUILDFLAG(IS_ANDROID)
   if (!use_download_collection) {
     // Create a file at |path|.
-    ASSERT_EQ(0, base::WriteFile(path, "", 0));
+    ASSERT_TRUE(base::WriteFile(path, ""));
   }
   ASSERT_TRUE(IsPathInUse(path));
 
@@ -348,7 +346,7 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictWithSource) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   if (!use_download_collection) {
-    ASSERT_EQ(0, base::WriteFile(path, "", 0));
+    ASSERT_TRUE(base::WriteFile(path, ""));
   }
   ASSERT_TRUE(IsPathInUse(path));
   EXPECT_CALL(*item, GetURL())
@@ -684,8 +682,8 @@ TEST_F(DownloadPathReservationTrackerTest, TruncationConflict) {
   // "aaa...aaaaaaa.txt" (truncated path) and
   // "aaa...aaa (1).txt" (truncated and first uniquification try) exists.
   // "aaa...aaa (2).txt" should be used.
-  ASSERT_EQ(0, base::WriteFile(path0, "", 0));
-  ASSERT_EQ(0, base::WriteFile(path1, "", 0));
+  ASSERT_TRUE(base::WriteFile(path0, ""));
+  ASSERT_TRUE(base::WriteFile(path1, ""));
 
   base::FilePath reserved_path;
   PathValidationResult result = PathValidationResult::NAME_TOO_LONG;
