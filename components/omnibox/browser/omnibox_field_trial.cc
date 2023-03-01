@@ -686,15 +686,15 @@ bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconAnswers(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconAnswers",
-    true);
+    false);
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconIcons(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconIcons",
-    true);
+    false);
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconEntities(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconEntities",
-    true);
+    false);
 const base::FeatureParam<double>
     OmniboxFieldTrial::kSquareSuggestIconEntitiesScale(
         &omnibox::kSquareSuggestIcons,
