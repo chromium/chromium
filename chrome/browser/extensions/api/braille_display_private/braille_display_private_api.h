@@ -105,7 +105,7 @@ class BrailleDisplayPrivateWriteDotsFunction : public AsyncApiFunction {
   bool Respond() override;
 
  private:
-  std::unique_ptr<braille_display_private::WriteDots::Params> params_;
+  absl::optional<braille_display_private::WriteDots::Params> params_;
 };
 
 class BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction

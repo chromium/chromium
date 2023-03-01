@@ -162,7 +162,7 @@ BrailleDisplayPrivateWriteDotsFunction::
 }
 
 bool BrailleDisplayPrivateWriteDotsFunction::Prepare() {
-  params_ = WriteDots::Params::CreateDeprecated(args());
+  params_ = WriteDots::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
   EXTENSION_FUNCTION_VALIDATE(
       params_->cells.size() >=
