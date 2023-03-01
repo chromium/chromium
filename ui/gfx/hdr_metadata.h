@@ -5,6 +5,7 @@
 #ifndef UI_GFX_HDR_METADATA_H_
 #define UI_GFX_HDR_METADATA_H_
 
+#include <stdint.h>
 #include <string>
 
 #include "skia/ext/skcolorspace_primaries.h"
@@ -17,7 +18,7 @@ struct SkColorSpacePrimaries;
 namespace gfx {
 
 // High dynamic range mode.
-enum class HDRMode {
+enum class HDRMode : uint8_t {
   // HLG and PQ content is HDR and tone mapped. All other content is clipped to
   // SDR luminance.
   kDefault,
@@ -97,7 +98,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
 // HDR metadata types as described in
 // https://w3c.github.io/media-capabilities/#enumdef-hdrmetadatatype
-enum class HdrMetadataType {
+enum class HdrMetadataType : uint8_t {
   kNone,
   kSmpteSt2086,
   kSmpteSt2094_10,

@@ -13,7 +13,7 @@ namespace gfx {
 
 // The format needs to be taken into account when mapping a buffer into the
 // client's address space.
-enum class BufferFormat {
+enum class BufferFormat : uint8_t {
   R_8,
   R_16,
   RG_88,

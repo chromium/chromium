@@ -12,7 +12,7 @@
 #include "gpu/gpu_export.h"
 
 namespace gfx {
-enum class BufferFormat;
+enum class BufferFormat : uint8_t;
 }
 
 namespace gl {

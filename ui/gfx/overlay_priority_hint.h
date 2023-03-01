@@ -5,11 +5,13 @@
 #ifndef UI_GFX_OVERLAY_PRIORITY_HINT_H_
 #define UI_GFX_OVERLAY_PRIORITY_HINT_H_
 
+#include <stdint.h>
+
 namespace gfx {
 
 // Provides a hint to a system compositor how it should prioritize this
 // overlay. Used only by Wayland.
-enum OverlayPriorityHint {
+enum OverlayPriorityHint : uint8_t {
   // Overlay promotion is not necessary for this surface.
   kNone = 0,
   // The overlay could be considered as a candidate for promotion.

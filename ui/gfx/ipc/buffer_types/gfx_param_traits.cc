@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 
 namespace IPC {
@@ -32,7 +33,8 @@ bool ParamTraits<gfx::BufferUsageAndFormat>::Read(
 void ParamTraits<gfx::BufferUsageAndFormat>::Log(
     const gfx::BufferUsageAndFormat& p,
     std::string* l) {
-  l->append(base::StringPrintf("(%d, %d)", p.usage, p.format));
+  l->append(base::StringPrintf("(%d, %u)", p.usage,
+                               base::strict_cast<uint32_t>(p.format)));
 }
 
 }  // namespace IPC
