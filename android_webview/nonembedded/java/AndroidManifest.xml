@@ -65,7 +65,7 @@ by a child template that "extends" this file.
                   android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX"
                   android:value="true"/>
               <meta-data
-                  android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH:DEV"
+                  android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH"
                   android:value="true"/>
             </service>
             <!-- WebView Developer UI Activities. If you change these Activities, please update
