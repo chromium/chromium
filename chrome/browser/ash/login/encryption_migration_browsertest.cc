@@ -531,4 +531,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   RunFullMigrationFlowTest();
 }
 
+// TODO(b/271142350): Add test coverage for EncryptionMigrationScreen obtaining
+// the wake lock.
+
 }  // namespace ash

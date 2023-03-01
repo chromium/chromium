@@ -5267,7 +5267,6 @@ source_set("unit_tests") {
     "login/saml/password_sync_token_verifier_unittest.cc",
     "login/screens/arc_vm_data_migration_screen_unittest.cc",
     "login/screens/chromevox_hint/chromevox_hint_detector_unittest.cc",
-    "login/screens/encryption_migration_screen_unittest.cc",
     "login/screens/network_screen_unittest.cc",
     "login/screens/recommend_apps/recommend_apps_fetcher_impl_unittest.cc",
     "login/screens/reset_screen_unittest.cc",
