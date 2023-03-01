@@ -252,8 +252,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         }
 
         mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
-                mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount,
-                /* shouldScrollToTop */ false);
+                mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount);
     }
 
     private class StreamsMediatorImpl implements Stream.StreamsMediator {
