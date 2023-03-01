@@ -214,7 +214,7 @@ public class TouchToFillCreditCardViewTest {
 
         onView(withId(R.id.touch_to_fill_button_title)).perform(click());
 
-        verify(mDelegateMock).suggestionSelected(VISA.getGUID());
+        verify(mDelegateMock).suggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
     }
 
     @Test

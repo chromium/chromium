@@ -37,8 +37,9 @@ interface TouchToFillCreditCardComponent {
         /**
          * Called when the user selects a card.
          * @param uniqueId A backend id of the card.
+         * @param isVirtual A boolean to identify if the card is a virtual card.
          */
-        void suggestionSelected(String uniqueId);
+        void suggestionSelected(String uniqueId, boolean isVirtual);
     }
 
     /**

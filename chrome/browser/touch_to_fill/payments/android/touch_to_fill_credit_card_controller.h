@@ -48,9 +48,9 @@ class TouchToFillCreditCardController
   void OnDismissed(JNIEnv* env, bool dismissed_by_user) override;
   void ScanCreditCard(JNIEnv* env) override;
   void ShowCreditCardSettings(JNIEnv* env) override;
-  void SuggestionSelected(
-      JNIEnv* env,
-      base::android::JavaParamRef<jstring> unique_id) override;
+  void SuggestionSelected(JNIEnv* env,
+                          base::android::JavaParamRef<jstring> unique_id,
+                          bool is_virtual) override;
 
  private:
   // Gets or creates the Java counterpart.
