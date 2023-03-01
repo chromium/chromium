@@ -706,15 +706,21 @@ void OmniboxEditModel::StartPrefetch() {
     return;
   }
 
-  const bool interaction_clobber_focus_type =
-      base::FeatureList::IsEnabled(
-          omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
-      !BaseSearchProvider::IsNTPPage(page_classification);
+  const bool is_ntp_page = BaseSearchProvider::IsNTPPage(page_classification);
+  const bool interaction_clobber_focus_type = base::FeatureList::IsEnabled(
+      omnibox::kOmniboxOnClobberFocusTypeOnContent);
 
-  AutocompleteInput input(u"", page_classification,
+  GURL current_url = client()->GetURL();
+  std::u16string text = base::UTF8ToUTF16(current_url.spec());
+
+  if (is_ntp_page || interaction_clobber_focus_type) {
+    text.clear();
+  }
+
+  AutocompleteInput input(text, page_classification,
                           client()->GetSchemeClassifier());
-  input.set_current_url(client()->GetURL());
-  input.set_focus_type(interaction_clobber_focus_type
+  input.set_current_url(current_url);
+  input.set_focus_type(interaction_clobber_focus_type && !is_ntp_page
                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                            : metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller()->StartPrefetch(input);
