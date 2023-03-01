@@ -15,7 +15,7 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (execute_command, read_JSON_message,
+from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
                           send_JSON_command, subscribe)
 
 
@@ -90,6 +90,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -101,6 +102,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -133,6 +135,7 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -144,6 +147,7 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -186,6 +190,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -207,6 +212,7 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(
         "params": {
             "context": iframe_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }

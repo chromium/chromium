@@ -341,6 +341,12 @@ export class BrowsingContextImpl {
           return;
         }
 
+        // `timestamp` from the event is MonotonicTime, not real time, so
+        // the best Mapper can do is to set the timestamp to the epoch time
+        // of the event arrived.
+        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
+        const timestamp = new Date().getTime();
+
         if (params.name === 'init') {
           this.#documentChanged(params.loaderId);
           this.#targetDefers.documentInitialized.resolve();
@@ -366,6 +372,7 @@ export class BrowsingContextImpl {
                 params: {
                   context: this.contextId,
                   navigation: this.#loaderId,
+                  timestamp,
                   url: this.#url,
                 },
               },
@@ -381,6 +388,7 @@ export class BrowsingContextImpl {
                 params: {
                   context: this.contextId,
                   navigation: this.#loaderId,
+                  timestamp,
                   url: this.#url,
                 },
               },

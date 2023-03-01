@@ -15,7 +15,7 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (execute_command, read_JSON_message,
+from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
                           send_JSON_command, subscribe, wait_for_event)
 
 
@@ -93,6 +93,7 @@ async def test_browsingContext_noInitialLoadEvents(websocket):
         'params': {
             'context': context_id,
             'navigation': navigation,
+            'timestamp': ANY_TIMESTAMP,
             'url': url
         }
     } == resp
@@ -433,6 +434,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
         "params": {
             "context": new_context_id,
             "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
             "url": "about:blank"
         }
     } == dom_content_loaded_event
@@ -443,6 +445,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
         "params": {
             "context": new_context_id,
             "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
             "url": "about:blank"
         }
     } == load_event
@@ -607,6 +610,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
         "params": {
             "context": context_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -618,6 +622,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
         "params": {
             "context": context_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -650,6 +655,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": context_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -661,6 +667,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         "params": {
             "context": context_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>",
         }
     }
@@ -703,6 +710,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
         "params": {
             "context": context_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }
@@ -724,6 +732,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
         "params": {
             "context": context_id,
             "navigation": navigation_id,
+            "timestamp": ANY_TIMESTAMP,
             "url": "data:text/html,<h2>test</h2>"
         }
     }

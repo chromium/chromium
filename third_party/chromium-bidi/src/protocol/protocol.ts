@@ -723,6 +723,7 @@ export namespace BrowsingContext {
   export type NavigationInfo = {
     context: CommonDataTypes.BrowsingContext;
     navigation: Navigation | null;
+    timestamp: number;
     url: string;
   };
 
