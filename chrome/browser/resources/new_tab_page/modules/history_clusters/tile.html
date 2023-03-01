@@ -5,20 +5,23 @@
     background: var(--google-grey-100);
     border-radius: 25px;
     color: var(--google-grey-900);
+    height: 100%;
+    width: 100%;
   }
 
   :host([large-format]) #content {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
   }
 
   :host([medium-format]) #content {
     display: flex;
     flex-direction: row;
-    height: 100%;
-    width: 100%;
+  }
+
+  :host([small-format]) #content {
+    display: flex;
+    flex-direction: column;
   }
 
   #image {
@@ -36,6 +39,10 @@
     height: 128px;
     margin: 8px;
     width: 128px;
+  }
+
+  :host([small-format]) #image {
+    display: none;
   }
 
   /* TODO(crbug.com/1418528): Add favicon */
@@ -67,12 +74,28 @@
     padding: 18px 16px 32px 8px;
   }
 
+  :host([small-format]) #title {
+    height: 60px;
+    max-width: 136px;
+    padding: 18px 16px 32px 16px;
+  }
+
   #info-container {
     color: var(--google-grey-700);
     display: flex;
     flex-direction: row;
     font-size: 11px;
     margin-inline-start: 24px;
+  }
+
+  :host([small-format]) #info-container {
+    margin-inline-start: 16px;
+  }
+
+  #label,
+  #date {
+    bottom: -2px;
+    position: relative;
   }
 
   :host([large-format]) #label {
@@ -83,10 +106,9 @@
     max-width: 90px;
   }
 
-  #label,
-  #date {
-    bottom: -2px;
-    position: relative;
+  :host([small-format]) #label,
+  #dot {
+    display: none;
   }
 
   #dot {

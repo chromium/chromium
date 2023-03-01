@@ -15,6 +15,14 @@
     cursor: pointer;
     font-size: 13px;
   }
+
+  #small-tiles {
+    display: flex;
+    flex-direction: row;
+    height: 144px;
+    justify-content: space-between;
+    width: 352px;
+  }
 </style>
 <div id="content">
   <ntp-module-header
@@ -36,6 +44,14 @@
   <ntp-history-clusters-suggest-tile id="related-searches-tile"
                                  related-searches="[[cluster.relatedSearches]]">
   </ntp-history-clusters-suggest-tile>
+  <div id="small-tiles">
+      <ntp-history-clusters-tile small-format
+                               visit="[[smallTileVisits_.0]]">
+      </ntp-history-clusters-tile>
+      <ntp-history-clusters-tile small-format
+                               visit="[[smallTileVisits_.1]]">
+      </ntp-history-clusters-tile>
+  </div>
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
     <div id="layout1" class="layout">Layout 1</div>
   </template>

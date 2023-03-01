@@ -49,8 +49,14 @@ export class HistoryClustersModuleElement extends I18nMixin
   static get properties() {
     return {
       layoutType: Number,
+
       /** The cluster displayed by this element. */
       cluster: Object,
+
+      smallTileVisits_: {
+        type: Object,
+        computed: 'computeSmallTileVisits_(cluster)',
+      },
     };
   }
 
@@ -64,6 +70,18 @@ export class HistoryClustersModuleElement extends I18nMixin
   private onShowAllClick_() {
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
         this.cluster.label || '');
+  }
+
+  private computeSmallTileVisits_(): URLVisit[]|null {
+    if (this.layoutType === HistoryClusterLayoutType.LAYOUT_2) {
+      // Layout 2: First non-SRP non image visits
+      return [this.cluster.visits[3], this.cluster.visits[4]];
+    } else if (this.layoutType === HistoryClusterLayoutType.LAYOUT_3) {
+      // Layout 3: First non-SRP non image visits
+      return [this.cluster.visits[4], this.cluster.visits[5]];
+    } else {
+      return null;
+    }
   }
 }
 
