@@ -2339,6 +2339,20 @@
         {}
        ]
       ],
+      "multicol-parallel-flow-after-spanner-in-inline.html": [
+       "2c0981239b961b5fe7a8041dab2636e32e1ce945",
+       [
+        null,
+        {}
+       ]
+      ],
+      "multicol-table-caption-parallel-flow-after-spanner-in-inline.html": [
+       "8de7e2f0d83779accf2f5716669451348b9d798a",
+       [
+        null,
+        {}
+       ]
+      ],
       "multicol-with-monolithic-oof-with-multicol-with-oof.html": [
        "43133fc2331f92550ff5417813b0e9e7354547ba",
        [
@@ -152486,6 +152500,32 @@
        {}
       ]
      ],
+     "parallel-flow-after-spanner-001.html": [
+      "38cc5c10157861af3cbcadc7e57fb7aba63ed7f6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "parallel-flow-after-spanner-002.html": [
+      "f766be584d9217c2092b5bcf7f449b69b753a966",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "relative-child-overflowing-column-gap.html": [
       "4359e7f7a71c1116eb80e0408c190baae59d72a4",
       [
@@ -265376,16 +265416,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "d1e4d0ad058da9f83752e9943489d52d56dba9e8",
-     []
-    ],
-    "mtime.json": [
-     "b75363f1f9f90c9793756c1e23c5937e5f847c8f",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -286563,11 +286593,11 @@
         []
        ],
        "ref-common.css": [
-        "92d77de0e5da9dac150abfdead25b2ab8345c7f0",
+        "10da2b7920676ef2c3351522d88d2259134ba612",
         []
        ],
        "test-common.css": [
-        "218dfcb77060426b0588dd5b28979a4a038befd4",
+        "776105f11a45408fdba64fa72a32ee05e6f4a502",
         []
        ]
       },
@@ -311407,7 +311437,7 @@
       []
      ],
      "declarations-trim-whitespace-expected.txt": [
-      "57d37ec9c701a51e3dcf9a7e30cf1b11e3083d13",
+      "7569a9a5e78dee3faaf08e11b476048b1b166ee1",
       []
      ],
      "declarations-trim-whitespace.html.ini": [
@@ -323473,7 +323503,7 @@
       []
      ],
      "variable-definition-expected.txt": [
-      "5aec1a69e4c6b98f8296a68fe7546dd98ac083bb",
+      "b9e3d25419abb5eefdb13b3bd57e7be9be94f8a2",
       []
      ],
      "variable-definition.html.ini": [
@@ -327467,7 +327497,7 @@
       []
      ],
      "serialize-custom-props-expected.txt": [
-      "5dbde36cf866c4473fb005971edb4dfca1829cbc",
+      "77a18e128edea5dcf703ac55113425949e5a3281",
       []
      ],
      "serialize-custom-props.html.ini": [
@@ -455173,7 +455203,7 @@
       ]
      ],
      "variable-definition.html": [
-      "aaaaf6be23201d8176cd00c34027229e263abdc3",
+      "d38b64c72efe82967be1b6ee1af1bd09431b21f8",
       [
        null,
        {}
@@ -555660,13 +555690,6 @@
        {
         "timeout": "long"
        }
-      ]
-     ],
-     "loaf-iframe-popup.html": [
-      "9cdb2c334108743124fcc8306a955277735b9745",
-      [
-       null,
-       {}
       ]
      ],
      "loaf-timeline.html": [
