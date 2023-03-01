@@ -300,7 +300,7 @@ bool IsPasswordCheckupEnabled() {
 }
 
 - (void)insecureCredentialsDidChange {
-  // Compromised passwords changes has no effect on UI while check is running.
+  // Insecure password changes have no effect on UI while check is running.
   if (_passwordCheckManager->GetPasswordCheckState() ==
       PasswordCheckState::kRunning)
     return;
@@ -341,8 +341,7 @@ bool IsPasswordCheckupEnabled() {
   }
 }
 
-// Updates the `_consumer` Password Check UI State and Unmuted Compromised
-// Passwords.
+// Updates the `_consumer` Password Check UI State and Insecure Passwords.
 - (void)updateConsumerPasswordCheckState:
     (PasswordCheckState)passwordCheckState {
   DCHECK(self.consumer);
