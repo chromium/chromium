@@ -463,4 +463,8 @@ bool IsChromeRefresh2023() {
   return base::FeatureList::IsEnabled(kChromeRefresh2023);
 }
 
+BASE_FEATURE(kUseNanosecondsForMotionEvent,
+             "UseNanosecondsForMotionEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

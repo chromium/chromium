@@ -42,7 +42,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& motion_event,
-      jlong time_ms,
+      jlong time_ns,
       jint android_action,
       jint pointer_count,
       jint history_size,
@@ -72,7 +72,7 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   void OnMouseEvent(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
-                    jlong time_ms,
+                    jlong time_ns,
                     jint android_action,
                     jfloat x,
                     jfloat y,
@@ -105,7 +105,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& motion_event,
-      jlong time_ms);
+      jlong time_ns);
 
   jboolean OnKeyUp(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,

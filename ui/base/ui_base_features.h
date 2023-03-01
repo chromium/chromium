@@ -212,6 +212,11 @@ bool IsLacrosColorManagementEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
 
+// Сreating a MotionEvent from Java MotionEvent use the event time in
+// nanoseconds instead of milliseconds.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUseNanosecondsForMotionEvent);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

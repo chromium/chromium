@@ -18,6 +18,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.EventForwarder;
 
 /**
@@ -78,8 +79,8 @@ public class ContentUiEventHandler implements UserData {
     private void onMouseWheelEvent(MotionEvent event) {
         assert mNativeContentUiEventHandler != 0;
         ContentUiEventHandlerJni.get().sendMouseWheelEvent(mNativeContentUiEventHandler,
-                ContentUiEventHandler.this, event.getEventTime(), event.getX(), event.getY(),
-                event.getAxisValue(MotionEvent.AXIS_HSCROLL),
+                ContentUiEventHandler.this, MotionEventUtils.getEventTimeNano(event), event.getX(),
+                event.getY(), event.getAxisValue(MotionEvent.AXIS_HSCROLL),
                 event.getAxisValue(MotionEvent.AXIS_VSCROLL));
     }
 
@@ -93,9 +94,10 @@ public class ContentUiEventHandler implements UserData {
             event = newEvent;
         }
         ContentUiEventHandlerJni.get().sendMouseEvent(mNativeContentUiEventHandler,
-                ContentUiEventHandler.this, event.getEventTime(), event.getActionMasked(),
-                event.getX(), event.getY(), event.getPointerId(0), event.getPressure(0),
-                event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
+                ContentUiEventHandler.this, MotionEventUtils.getEventTimeNano(event),
+                event.getActionMasked(), event.getX(), event.getY(), event.getPointerId(0),
+                event.getPressure(0), event.getOrientation(0),
+                event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                 EventForwarder.getMouseEventActionButton(event), event.getButtonState(),
                 event.getMetaState(), event.getToolType(0));
         if (didOffsetEvent) event.recycle();
@@ -181,9 +183,9 @@ public class ContentUiEventHandler implements UserData {
     interface Natives {
         long init(ContentUiEventHandler caller, WebContents webContents);
         void sendMouseWheelEvent(long nativeContentUiEventHandler, ContentUiEventHandler caller,
-                long timeMs, float x, float y, float ticksX, float ticksY);
+                long timeNs, float x, float y, float ticksX, float ticksY);
         void sendMouseEvent(long nativeContentUiEventHandler, ContentUiEventHandler caller,
-                long timeMs, int action, float x, float y, int pointerId, float pressure,
+                long timeNs, int action, float x, float y, int pointerId, float pressure,
                 float orientation, float tilt, int changedButton, int buttonState, int metaState,
                 int toolType);
         void sendScrollEvent(long nativeContentUiEventHandler, ContentUiEventHandler caller,
