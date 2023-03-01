@@ -200,6 +200,12 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 // Tests that only the selected web state is loaded Restore-after-Crash.  This
 // is only possible in EG2.
 - (void)testRestoreOneWebstateOnlyAfterCrash {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1420401): re-enable this test on iPad device.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad device.");
+  }
+#endif
   // Visit the background page.
   int visitCounter = 0;
   self.testServer->RegisterRequestHandler(
