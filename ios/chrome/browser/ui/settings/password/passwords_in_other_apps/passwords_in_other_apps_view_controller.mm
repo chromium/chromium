@@ -434,16 +434,17 @@ CGFloat const kContentOptimalWidth = 327;
   if (!_actionButton) {
     _actionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
 
-    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
-    _actionButton.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
-        kButtonHorizontalMargin);
-#else
+    if (@available(iOS 15, *)) {
+      _actionButton.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+          kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
+          kButtonHorizontalMargin);
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     _actionButton.contentEdgeInsets =
         UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     [_actionButton
         setBackgroundColor:[UIColor
@@ -464,7 +465,7 @@ CGFloat const kContentOptimalWidth = 327;
     _actionButton.accessibilityIdentifier =
         kPasswordsInOtherAppsActionAccessibilityIdentifier;
 
-    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     _actionButton.titleEdgeInsets = UIEdgeInsetsMake(

@@ -88,17 +88,20 @@ const CGFloat kHighlightViewBackgroundAlpha = 0.25;
   if ((self = [super initWithFrame:frame])) {
     DCHECK(URL.is_valid());
 
-    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
-    self.configuration.contentInsets =
-        NSDirectionalEdgeInsetsMake(linkHeightExpansion, linkWidthExpansion,
-                                    linkHeightExpansion, linkWidthExpansion);
-#else
-    self.contentEdgeInsets =
-        UIEdgeInsetsMake(linkHeightExpansion, linkWidthExpansion,
-                         linkHeightExpansion, linkWidthExpansion);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+    if (@available(iOS 15, *)) {
+      self.configuration.contentInsets =
+          NSDirectionalEdgeInsetsMake(linkHeightExpansion, linkWidthExpansion,
+                                      linkHeightExpansion, linkWidthExpansion);
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      self.contentEdgeInsets =
+          UIEdgeInsetsMake(linkHeightExpansion, linkWidthExpansion,
+                           linkHeightExpansion, linkWidthExpansion);
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     self.backgroundColor = [UIColor clearColor];
     self.exclusiveTouch = YES;
