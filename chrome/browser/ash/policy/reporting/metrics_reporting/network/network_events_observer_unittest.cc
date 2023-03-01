@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -128,19 +129,12 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_InitiallyLowSignal) {
 
   NetworkEventsObserver network_events_observer;
   MetricData result_metric_data;
-  bool event_reported = false;
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  auto cb = base::BindLambdaForTesting([&](MetricData metric_data) {
-    event_reported = true;
-    result_metric_data = std::move(metric_data);
-    run_loop->Quit();
-  });
+  base::test::RepeatingTestFuture<MetricData> test_future;
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
   network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
-  run_loop->Run();
+  result_metric_data = test_future.Take();
 
-  ASSERT_TRUE(event_reported);
   ASSERT_TRUE(result_metric_data.has_event_data());
   EXPECT_THAT(result_metric_data.event_data().type(),
               Eq(MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW));
@@ -150,7 +144,6 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_InitiallyLowSignal) {
   service_path = network_handler_test_helper_.ConfigureService(
       service_config_very_low_signal);
   ASSERT_THAT(service_path, Eq(kWifiServicePath));
-  event_reported = false;
 
   network_events_observer.OnSignalStrengthChanged(
       kWifiGuid,
@@ -158,7 +151,7 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_InitiallyLowSignal) {
   base::RunLoop().RunUntilIdle();
 
   // Low signal strength event already reported.
-  ASSERT_FALSE(event_reported);
+  ASSERT_TRUE(test_future.IsEmpty());
 
   std::string service_config_good_signal = base::StringPrintf(
       kWifiConfig, kWifiGuid, shill::kStateReady, kGoodSignalStrengthRssi);
@@ -166,13 +159,11 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_InitiallyLowSignal) {
       network_handler_test_helper_.ConfigureService(service_config_good_signal);
   ASSERT_THAT(service_path, Eq(kWifiServicePath));
 
-  run_loop = std::make_unique<base::RunLoop>();
   network_events_observer.OnSignalStrengthChanged(
       kWifiGuid,
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
-  run_loop->Run();
+  result_metric_data = test_future.Take();
 
-  ASSERT_TRUE(event_reported);
   ASSERT_TRUE(result_metric_data.has_event_data());
   EXPECT_THAT(result_metric_data.event_data().type(),
               Eq(MetricEventType::NETWORK_SIGNAL_STRENGTH_RECOVERED));
@@ -193,11 +184,9 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_NotConnected) {
   ASSERT_THAT(idle_service_path, Eq(kWifiIdleServicePath));
 
   NetworkEventsObserver network_events_observer;
-  bool event_reported = false;
-  auto cb =
-      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+  base::test::RepeatingTestFuture<MetricData> test_future;
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
   network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
@@ -206,7 +195,7 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_NotConnected) {
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(event_reported);
+  ASSERT_TRUE(test_future.IsEmpty());
 }
 
 TEST_F(NetworkEventsObserverTest, WifiSignalStrength_Connecting) {
@@ -224,11 +213,9 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_Connecting) {
   ASSERT_THAT(service_path, Eq(kWifiServicePath));
 
   NetworkEventsObserver network_events_observer;
-  bool event_reported = false;
-  auto cb =
-      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+  base::test::RepeatingTestFuture<MetricData> test_future;
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
   network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
@@ -237,7 +224,7 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_Connecting) {
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(event_reported);
+  ASSERT_TRUE(test_future.IsEmpty());
 }
 
 TEST_F(NetworkEventsObserverTest, CellularSignalStrength) {
@@ -248,11 +235,9 @@ TEST_F(NetworkEventsObserverTest, CellularSignalStrength) {
   ASSERT_THAT(service_path, Eq(kWifiServicePath));
 
   NetworkEventsObserver network_events_observer;
-  bool event_reported = false;
-  auto cb =
-      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+  base::test::RepeatingTestFuture<MetricData> test_future;
 
-  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.SetOnEventObservedCallback(test_future.GetCallback());
   network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
@@ -261,7 +246,7 @@ TEST_F(NetworkEventsObserverTest, CellularSignalStrength) {
       ::chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(event_reported);
+  ASSERT_TRUE(test_future.IsEmpty());
 }
 
 TEST_F(NetworkEventsObserverTest, SignalStrengthInvalidGuid) {
