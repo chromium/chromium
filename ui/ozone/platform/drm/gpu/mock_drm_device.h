@@ -394,6 +394,7 @@ class MockDrmDevice : public DrmDevice {
 
   std::set<uint32_t> framebuffer_ids_;
   std::map<uint32_t, uint32_t> crtc_fb_;
+  std::map<uint64_t, uint64_t> capabilities_;
 
   base::queue<PageFlipRequest::PageFlipCallback> callbacks_;
 
