@@ -17,20 +17,3 @@ source_set("deprecated") {
     "url_verification_constants.h",
   ]
 }
-
-# A separate target is needed for util to prevent cyclic dependency, as
-# "web_state:web_state_impl_header" depends on ":deprecated" target.
-source_set("deprecated_web_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [
-    ":deprecated",
-    "//ios/web/public",
-    "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui",
-  ]
-  sources = [
-    "crw_web_controller_util.h",
-    "crw_web_controller_util.mm",
-  ]
-}

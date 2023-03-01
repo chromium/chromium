@@ -34,6 +34,7 @@ class GURL;
 @protocol CRWScrollableContent;
 @protocol CRWWebViewDownload;
 @protocol CRWFindInteraction;
+@protocol CRWSwipeRecognizerProvider;
 @protocol CRWWebViewDownloadDelegate;
 @protocol CRWWebViewProxy;
 typedef id<CRWWebViewProxy> CRWWebViewProxyType;
@@ -437,6 +438,11 @@ class WebState : public base::SupportsUserData {
   // Returns true if this operation succeeds, and false otherwise.
   virtual bool SetSessionStateData(NSData* data) = 0;
   virtual NSData* SessionStateData() = 0;
+
+  // Sets the CRWSwipeRecognizerProvider delegate, used to create a dependency
+  // between the underlying WKWebView's gestures and the delegate gestures.
+  virtual void SetSwipeRecognizerProvider(
+      id<CRWSwipeRecognizerProvider> delegate) = 0;
 
   // Gets or sets the web state's permission for a specific type, for example
   // camera or microphone, on the device.

@@ -859,6 +859,11 @@ NSData* WebStateImpl::RealizedWebState::SessionStateData() const {
   return [web_controller_ sessionStateData];
 }
 
+void WebStateImpl::RealizedWebState::SetSwipeRecognizerProvider(
+    id<CRWSwipeRecognizerProvider> delegate) {
+  web_controller_.swipeRecognizerProvider = delegate;
+}
+
 PermissionState WebStateImpl::RealizedWebState::GetStateForPermission(
     Permission permission) const {
   return [web_controller_ stateForPermission:permission];

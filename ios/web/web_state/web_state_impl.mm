@@ -636,6 +636,11 @@ NSData* WebStateImpl::SessionStateData() {
   return LIKELY(pimpl_) ? pimpl_->SessionStateData() : nil;
 }
 
+void WebStateImpl::SetSwipeRecognizerProvider(
+    id<CRWSwipeRecognizerProvider> delegate) {
+  RealizedState()->SetSwipeRecognizerProvider(delegate);
+}
+
 PermissionState WebStateImpl::GetStateForPermission(
     Permission permission) const {
   return LIKELY(pimpl_) ? pimpl_->GetStateForPermission(permission)

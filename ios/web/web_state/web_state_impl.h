@@ -336,6 +336,8 @@ class WebStateImpl final : public WebState {
   void CloseWebState() final;
   bool SetSessionStateData(NSData* data) final;
   NSData* SessionStateData() final;
+  void SetSwipeRecognizerProvider(
+      id<CRWSwipeRecognizerProvider> delegate) final;
   PermissionState GetStateForPermission(Permission permission) const final
       API_AVAILABLE(ios(15.0));
   void SetStateForPermission(PermissionState state, Permission permission) final

@@ -218,6 +218,9 @@ NSData* ContentWebState::SessionStateData() {
   return nil;
 }
 
+void ContentWebState::SetSwipeRecognizerProvider(
+    id<CRWSwipeRecognizerProvider> delegate) {}
+
 PermissionState ContentWebState::GetStateForPermission(
     Permission permission) const {
   return PermissionState();

@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
-#import "ios/web/public/deprecated/crw_web_controller_util.h"
 #import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -90,7 +89,7 @@
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
 
   DCHECK(_sideSwipeController);
-  web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
+  webState->SetSwipeRecognizerProvider(_sideSwipeController);
 
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerCoordinator);
@@ -161,7 +160,7 @@
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
-  web_deprecated::SetSwipeRecognizerProvider(webState, nil);
+  webState->SetSwipeRecognizerProvider(nil);
 
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
 
