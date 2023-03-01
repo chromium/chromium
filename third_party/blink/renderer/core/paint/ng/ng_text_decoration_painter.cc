@@ -39,6 +39,7 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
     absl::optional<TextDecorationInfo>& result,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
+    absl::optional<PhysicalRect> decoration_rect_override,
     const AppliedTextDecoration* decoration_override) {
   result.reset();
 
@@ -80,8 +81,10 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
                    effective_selection_decoration, decoration_override,
                    &scaled_font, MinimumThickness1(false), scaling_factor);
   } else {
+    PhysicalRect decoration_rect =
+        decoration_rect_override.value_or(decoration_rect_);
     result.emplace(
-        decoration_rect_.offset, decoration_rect_.Width(), style,
+        decoration_rect.offset, decoration_rect.Width(), style,
         text_painter_.InlineContext(), effective_selection_decoration,
         decoration_override, &text_item_.ScaledFont(),
         MinimumThickness1(text_item_.Type() != NGFragmentItem::kSvgText));

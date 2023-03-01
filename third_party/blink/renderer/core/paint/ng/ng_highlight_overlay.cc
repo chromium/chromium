@@ -19,7 +19,9 @@ namespace {
 
 using HighlightLayerType = NGHighlightOverlay::HighlightLayerType;
 using HighlightLayer = NGHighlightOverlay::HighlightLayer;
+using HighlightRange = NGHighlightOverlay::HighlightRange;
 using HighlightEdge = NGHighlightOverlay::HighlightEdge;
+using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
 
 unsigned GetTextContentOffset(const Text& text, unsigned offset) {
@@ -125,20 +127,54 @@ int8_t HighlightLayer::ComparePaintOrder(
       other_entry->highlight);
 }
 
+HighlightRange::HighlightRange(unsigned from, unsigned to)
+    : from(from), to(to) {
+  DCHECK_LT(from, to);
+}
+
+bool HighlightRange::operator==(const HighlightRange& other) const {
+  return from == other.from && to == other.to;
+}
+
+bool HighlightRange::operator!=(const HighlightRange& other) const {
+  return !operator==(other);
+}
+
+String HighlightRange::ToString() const {
+  StringBuilder result{};
+  result.Append("[");
+  result.AppendNumber(from);
+  result.Append(",");
+  result.AppendNumber(to);
+  result.Append(")");
+  return result.ToString();
+}
+
 String HighlightEdge::ToString() const {
   StringBuilder result{};
-  result.AppendNumber(offset);
+  result.AppendNumber(Offset());
   result.Append(type == HighlightEdgeType::kStart ? "<" : ">");
   result.Append(layer.ToString());
   return result.ToString();
 }
 
+unsigned HighlightEdge::Offset() const {
+  switch (type) {
+    case HighlightEdgeType::kStart:
+      return range.from;
+    case HighlightEdgeType::kEnd:
+      return range.to;
+  }
+}
+
 bool HighlightEdge::LessThan(const HighlightEdge& other,
                              const HighlightRegistry& registry) const {
-  if (offset < other.offset)
+  if (Offset() < other.Offset()) {
     return true;
-  if (offset > other.offset)
+  }
+  if (Offset() > other.Offset()) {
     return false;
+  }
   if (type > other.type)
     return true;
   if (type < other.type)
@@ -147,41 +183,54 @@ bool HighlightEdge::LessThan(const HighlightEdge& other,
 }
 
 bool HighlightEdge::operator==(const HighlightEdge& other) const {
-  return offset == other.offset && type == other.type && layer == other.layer;
+  return Offset() == other.Offset() && type == other.type &&
+         layer == other.layer;
 }
 
 bool HighlightEdge::operator!=(const HighlightEdge& other) const {
   return !operator==(other);
 }
 
-HighlightPart::HighlightPart(HighlightLayer layer,
-                             unsigned from,
-                             unsigned to,
-                             Vector<HighlightLayer> decorations)
-    : layer(layer), from(from), to(to), decorations(decorations) {
-  DCHECK_LT(from, to);
+HighlightDecoration::HighlightDecoration(HighlightLayer layer,
+                                         HighlightRange range)
+    : layer(layer), range(range) {}
+
+String HighlightDecoration::ToString() const {
+  StringBuilder result{};
+  result.Append(layer.ToString());
+  result.Append(range.ToString());
+  return result.ToString();
 }
 
-HighlightPart::HighlightPart(HighlightLayer layer, unsigned from, unsigned to)
-    : HighlightPart(layer, from, to, Vector<HighlightLayer>{}) {}
+bool HighlightDecoration::operator==(const HighlightDecoration& other) const {
+  return layer == other.layer && range == other.range;
+}
+
+bool HighlightDecoration::operator!=(const HighlightDecoration& other) const {
+  return !operator==(other);
+}
+
+HighlightPart::HighlightPart(HighlightLayer layer,
+                             HighlightRange range,
+                             Vector<HighlightDecoration> decorations)
+    : layer(layer), range(range), decorations(decorations) {}
+
+HighlightPart::HighlightPart(HighlightLayer layer, HighlightRange range)
+    : HighlightPart(layer, range, Vector<HighlightDecoration>{}) {}
 
 String HighlightPart::ToString() const {
   StringBuilder result{};
   result.Append(layer.ToString());
-  result.Append("[");
-  result.AppendNumber(from);
-  result.Append(",");
-  result.AppendNumber(to);
-  result.Append(")");
-  for (const HighlightLayer& current_layer : decorations) {
+  result.Append(range.ToString());
+  for (const HighlightDecoration& decoration : decorations) {
     result.Append("+");
-    result.Append(current_layer.ToString());
+    result.Append(decoration.ToString());
   }
   return result.ToString();
 }
 
 bool HighlightPart::operator==(const HighlightPart& other) const {
-  return layer == other.layer && from == other.from && to == other.to &&
+  return layer == other.layer && range == other.range &&
          decorations == other.decorations;
 }
 
@@ -241,10 +290,10 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
 
   if (selection) {
     DCHECK_LT(selection->start, selection->end);
-    result.emplace_back(selection->start,
+    result.emplace_back(HighlightRange{selection->start, selection->end},
                         HighlightLayer{HighlightLayerType::kSelection},
                         HighlightEdgeType::kStart);
-    result.emplace_back(selection->end,
+    result.emplace_back(HighlightRange{selection->start, selection->end},
                         HighlightLayer{HighlightLayerType::kSelection},
                         HighlightEdgeType::kEnd);
   }
@@ -291,11 +340,11 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
           GetTextContentOffset(*text_node, marker->EndOffset());
       if (content_start >= content_end)
         continue;
-      result.emplace_back(content_start,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kCustom,
                                          custom_marker->GetHighlightName()},
                           HighlightEdgeType::kStart);
-      result.emplace_back(content_end,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kCustom,
                                          custom_marker->GetHighlightName()},
                           HighlightEdgeType::kEnd);
@@ -310,10 +359,10 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
           GetTextContentOffset(*text_node, marker->EndOffset());
       if (content_start >= content_end)
         continue;
-      result.emplace_back(content_start,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kGrammar},
                           HighlightEdgeType::kStart);
-      result.emplace_back(content_end,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kGrammar},
                           HighlightEdgeType::kEnd);
     }
@@ -327,10 +376,10 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
           GetTextContentOffset(*text_node, marker->EndOffset());
       if (content_start >= content_end)
         continue;
-      result.emplace_back(content_start,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kSpelling},
                           HighlightEdgeType::kStart);
-      result.emplace_back(content_end,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kSpelling},
                           HighlightEdgeType::kEnd);
     }
@@ -344,10 +393,10 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
           GetTextContentOffset(*text_node, marker->EndOffset());
       if (content_start >= content_end)
         continue;
-      result.emplace_back(content_start,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kTargetText},
                           HighlightEdgeType::kStart);
-      result.emplace_back(content_end,
+      result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kTargetText},
                           HighlightEdgeType::kEnd);
     }
@@ -367,36 +416,41 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
     const Vector<HighlightEdge>& edges) {
   DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
   const HighlightLayer originating_layer{HighlightLayerType::kOriginating};
+  const HighlightDecoration originating_decoration{
+      originating_layer, {originating.from, originating.to}};
   Vector<HighlightPart> result{};
-  Vector<bool> active(layers.size());
+  Vector<absl::optional<HighlightRange>> active(layers.size());
   absl::optional<unsigned> prev_offset{};
   if (edges.empty()) {
     result.push_back(HighlightPart{originating_layer,
-                                   originating.from,
-                                   originating.to,
-                                   {originating_layer}});
+                                   {originating.from, originating.to},
+                                   {originating_decoration}});
     return result;
   }
-  if (originating.from < edges.front().offset) {
-    result.push_back(
-        HighlightPart{originating_layer,
-                      originating.from,
-                      ClampOffset(edges.front().offset, originating),
-                      {originating_layer}});
+  if (originating.from < edges.front().Offset()) {
+    result.push_back(HighlightPart{
+        originating_layer,
+        {originating.from, ClampOffset(edges.front().Offset(), originating)},
+        {originating_decoration}});
   }
   for (const HighlightEdge& edge : edges) {
     // If there is actually some text between the previous and current edges...
-    if (prev_offset.has_value() && *prev_offset < edge.offset) {
+    if (prev_offset.has_value() && *prev_offset < edge.Offset()) {
       // ...and the range overlaps with the fragment being painted...
-      unsigned from = ClampOffset(*prev_offset, originating);
-      unsigned to = ClampOffset(edge.offset, originating);
-      if (from < to) {
+      unsigned part_from = ClampOffset(*prev_offset, originating);
+      unsigned part_to = ClampOffset(edge.Offset(), originating);
+      if (part_from < part_to) {
         // ...then find the topmost layer and enqueue a new part to be painted.
-        HighlightPart part{originating_layer, from, to, {originating_layer}};
+        HighlightPart part{
+            originating_layer, {part_from, part_to}, {originating_decoration}};
         for (wtf_size_t i = 0; i < layers.size(); i++) {
           if (active[i]) {
+            unsigned decoration_from =
+                ClampOffset(active[i]->from, originating);
+            unsigned decoration_to = ClampOffset(active[i]->to, originating);
             part.layer = layers[i];
-            part.decorations.push_back(layers[i]);
+            part.decorations.push_back(HighlightDecoration{
+                layers[i], {decoration_from, decoration_to}});
           }
         }
         result.push_back(part);
@@ -409,15 +463,18 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
     DCHECK(active[edge_layer_index] ? edge.type == HighlightEdgeType::kEnd
                                     : edge.type == HighlightEdgeType::kStart)
         << "edge should be kStart iff the layer is active or else kEnd";
-    active[edge_layer_index] = edge.type == HighlightEdgeType::kStart;
-    prev_offset.emplace(edge.offset);
+    if (edge.type == HighlightEdgeType::kStart) {
+      active[edge_layer_index].emplace(edge.range);
+    } else {
+      active[edge_layer_index].reset();
+    }
+    prev_offset.emplace(edge.Offset());
   }
-  if (edges.back().offset < originating.to) {
-    result.push_back(
-        HighlightPart{originating_layer,
-                      ClampOffset(edges.back().offset, originating),
-                      originating.to,
-                      {originating_layer}});
+  if (edges.back().Offset() < originating.to) {
+    result.push_back(HighlightPart{
+        originating_layer,
+        {ClampOffset(edges.back().Offset(), originating), originating.to},
+        {originating_decoration}});
   }
   return result;
 }

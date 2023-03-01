@@ -36,7 +36,9 @@ namespace {
 
 using HighlightLayerType = NGHighlightOverlay::HighlightLayerType;
 using HighlightLayer = NGHighlightOverlay::HighlightLayer;
+using HighlightRange = NGHighlightOverlay::HighlightRange;
 using HighlightEdge = NGHighlightOverlay::HighlightEdge;
+using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
 
 DocumentMarkerVector ComputeMarkersToPaint(Node* node) {
@@ -570,26 +572,6 @@ NGHighlightPainter::NGHighlightPainter(
                 layers[i].PseudoArgument()),
         });
       }
-      if (layers_[i].decorations_in_effect != TextDecorationLine::kNone) {
-        // Cache the TextDecorationInfo for up to two highlight layers that have
-        // line decorations, e.g. originating content might have a line-through
-        // and underline, and spelling error might have a spelling decoration.
-        //
-        // Since highlights can break text into many parts that are painted in
-        // overlay order, and within each part the decorations are ordered by
-        // type *then* by overlay, computing TextDecorationInfo on the fly can
-        // be very wasteful.
-        for (CachedDecorationInfo& cached_decorations : decoration_cache_) {
-          if (!cached_decorations.id.has_value()) {
-            cached_decorations.id = layers_[i].id;
-            decoration_painter_.UpdateDecorationInfo(cached_decorations.info,
-                                                     *layers_[i].style,
-                                                     layers_[i].text_style);
-            DCHECK(cached_decorations.info);
-            break;
-          }
-        }
-      }
     }
   }
 }
@@ -917,13 +899,19 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
     const AppliedTextDecoration* decoration_override) {
+  // When painting decorations on the spelling/grammar fast path, the part and
+  // the decoration have the same range, so we can use the same rect for both
+  // clipping the canvas and painting the decoration.
+  const HighlightRange range{paint_start_offset, paint_end_offset};
+  const HighlightPart part{HighlightLayer{LayerFor(marker_type)}, range};
+  const PhysicalRect rect = RectInWritingModeSpace(range);
+
   absl::optional<TextDecorationInfo> decoration_info{};
   decoration_painter_.UpdateDecorationInfo(decoration_info, style, text_style,
-                                           decoration_override);
+                                           rect, decoration_override);
 
   GraphicsContextStateSaver saver{paint_info_.context};
-  ClipToPartDecorations({HighlightLayer{LayerFor(marker_type)},
-                         paint_start_offset, paint_end_offset});
+  ClipToPartDecorations(rect);
 
   text_painter_.PaintDecorationsExceptLineThrough(
       fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
@@ -950,10 +938,10 @@ void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
       continue;
 
     PaintDecorationsExceptLineThrough(part);
-    text_painter_.Paint(fragment_paint_info_.Slice(part.from, part.to),
-                        part.to - part.from, text_style, node_id,
-                        foreground_auto_dark_mode_,
-                        NGTextPainter::kTextProperOnly);
+    text_painter_.Paint(
+        fragment_paint_info_.Slice(part.range.from, part.range.to),
+        part.range.to - part.range.from, text_style, node_id,
+        foreground_auto_dark_mode_, NGTextPainter::kTextProperOnly);
     PaintDecorationsOnlyLineThrough(part);
     PaintSpellingGrammarDecorations(part);
   }
@@ -1049,10 +1037,10 @@ void NGHighlightPainter::PaintHighlightOverlays(
       // paint with clipping (NGTextPainter::PaintSelectedText)
 
       PaintDecorationsExceptLineThrough(part);
-      text_painter_.Paint(fragment_paint_info_.Slice(part.from, part.to),
-                          part.to - part.from, layer.text_style, node_id,
-                          foreground_auto_dark_mode_,
-                          TextPainterBase::kTextProperOnly);
+      text_painter_.Paint(
+          fragment_paint_info_.Slice(part.range.from, part.range.to),
+          part.range.to - part.range.from, layer.text_style, node_id,
+          foreground_auto_dark_mode_, TextPainterBase::kTextProperOnly);
       PaintDecorationsOnlyLineThrough(part);
       PaintSpellingGrammarDecorations(part);
     }
@@ -1080,14 +1068,15 @@ void NGHighlightPainter::PaintHighlightOverlays(
   }
 }
 
-void NGHighlightPainter::ClipToPartDecorations(const HighlightPart& part) {
+PhysicalRect NGHighlightPainter::RectInWritingModeSpace(
+    const NGHighlightOverlay::HighlightRange& range) {
   const StringView text = cursor_.CurrentText();
-  PhysicalRect local_rect = fragment_item_.LocalRect(text, part.from, part.to);
-  PhysicalRect part_rect{box_origin_ + local_rect.offset, local_rect.size};
-  gfx::RectF clip_rect{part_rect};
+  return MarkerRectForForeground(fragment_item_, text, range.from, range.to) +
+         box_origin_;
+}
 
-  if (writing_mode_rotation_)
-    clip_rect = writing_mode_rotation_->Inverse().MapRect(clip_rect);
+void NGHighlightPainter::ClipToPartDecorations(const PhysicalRect& part_rect) {
+  gfx::RectF clip_rect{part_rect};
 
   // Whether it’s best to clip to selection rect on both axes or only inline
   // depends on the situation, but the latter can improve the appearance of
@@ -1122,8 +1111,8 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     TextDecorationLine lines_to_paint) {
   GraphicsContextStateSaver state_saver(paint_info_.context, false);
 
-  for (const HighlightLayer& decoration_layer_id : part.decorations) {
-    wtf_size_t decoration_layer_index = layers_.Find(decoration_layer_id);
+  for (const HighlightDecoration& decoration : part.decorations) {
+    wtf_size_t decoration_layer_index = layers_.Find(decoration.layer);
     DCHECK_NE(decoration_layer_index, kNotFound);
 
     LayerPaintState& decoration_layer = layers_[decoration_layer_index];
@@ -1139,26 +1128,35 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
     // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
     if (text_painter_.GetSvgState() &&
-        decoration_layer_id.type != HighlightLayerType::kOriginating) {
+        decoration.layer.type != HighlightLayerType::kOriginating) {
       continue;
     }
 
-    absl::optional<TextDecorationInfo> decoration_info_if_cache_miss{};
-    TextDecorationInfo& decoration_info =
-        DecorationInfoForLayer(decoration_layer, decoration_info_if_cache_miss);
+    // Paint the decoration over the range of the originating fragment or active
+    // highlight, but clip it to the range of the part.
+    const PhysicalRect decoration_rect =
+        RectInWritingModeSpace(decoration.range);
+    const PhysicalRect part_rect = part.range != decoration.range
+                                       ? RectInWritingModeSpace(part.range)
+                                       : decoration_rect;
+
+    absl::optional<TextDecorationInfo> decoration_info{};
+    decoration_painter_.UpdateDecorationInfo(
+        decoration_info, *decoration_layer.style, decoration_layer.text_style,
+        decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
-      ClipToPartDecorations(part);
+      ClipToPartDecorations(part_rect);
     }
 
     if (part.layer.type != HighlightLayerType::kOriginating) {
-      if (decoration_layer_id.type == HighlightLayerType::kOriginating) {
+      if (decoration.layer.type == HighlightLayerType::kOriginating) {
         wtf_size_t part_layer_index = layers_.Find(part.layer);
-        decoration_info.SetHighlightOverrideColor(
+        decoration_info->SetHighlightOverrideColor(
             layers_[part_layer_index].text_style.current_color);
       } else {
-        decoration_info.SetHighlightOverrideColor(
+        decoration_info->SetHighlightOverrideColor(
             HighlightPaintingUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
                 decoration_layer.style, decoration_layer.id.PseudoId(),
@@ -1168,9 +1166,10 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
     }
 
     text_painter_.PaintDecorationsExceptLineThrough(
-        fragment_paint_info_.Slice(part.from, part.to), fragment_item_,
-        paint_info_, *decoration_layer.style, decoration_layer.text_style,
-        decoration_info, lines_to_paint, decoration_rect_);
+        fragment_paint_info_.Slice(part.range.from, part.range.to),
+        fragment_item_, paint_info_, *decoration_layer.style,
+        decoration_layer.text_style, *decoration_info, lines_to_paint,
+        decoration_rect_);
   }
 }
 
@@ -1178,8 +1177,8 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
     const HighlightPart& part) {
   GraphicsContextStateSaver state_saver(paint_info_.context, false);
 
-  for (const HighlightLayer& decoration_layer_id : part.decorations) {
-    wtf_size_t decoration_layer_index = layers_.Find(decoration_layer_id);
+  for (const HighlightDecoration& decoration : part.decorations) {
+    wtf_size_t decoration_layer_index = layers_.Find(decoration.layer);
     DCHECK_NE(decoration_layer_index, kNotFound);
 
     LayerPaintState& decoration_layer = layers_[decoration_layer_index];
@@ -1196,26 +1195,35 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
     // TODO(crbug.com/1147859) is SVG spec ready for highlight decorations?
     // TODO(crbug.com/1147859) https://github.com/w3c/svgwg/issues/894
     if (text_painter_.GetSvgState() &&
-        decoration_layer_id.type != HighlightLayerType::kOriginating) {
+        decoration.layer.type != HighlightLayerType::kOriginating) {
       continue;
     }
 
-    absl::optional<TextDecorationInfo> decoration_info_if_cache_miss{};
-    TextDecorationInfo& decoration_info =
-        DecorationInfoForLayer(decoration_layer, decoration_info_if_cache_miss);
+    // Paint the decoration over the range of the originating fragment or active
+    // highlight, but clip it to the range of the part.
+    const PhysicalRect decoration_rect =
+        RectInWritingModeSpace(decoration.range);
+    const PhysicalRect part_rect = part.range != decoration.range
+                                       ? RectInWritingModeSpace(part.range)
+                                       : decoration_rect;
+
+    absl::optional<TextDecorationInfo> decoration_info{};
+    decoration_painter_.UpdateDecorationInfo(
+        decoration_info, *decoration_layer.style, decoration_layer.text_style,
+        decoration_rect);
 
     if (!state_saver.Saved()) {
       state_saver.Save();
-      ClipToPartDecorations(part);
+      ClipToPartDecorations(part_rect);
     }
 
     if (part.layer.type != HighlightLayerType::kOriginating) {
-      if (decoration_layer_id.type == HighlightLayerType::kOriginating) {
+      if (decoration.layer.type == HighlightLayerType::kOriginating) {
         wtf_size_t part_layer_index = layers_.Find(part.layer);
-        decoration_info.SetHighlightOverrideColor(
+        decoration_info->SetHighlightOverrideColor(
             layers_[part_layer_index].text_style.current_color);
       } else {
-        decoration_info.SetHighlightOverrideColor(
+        decoration_info->SetHighlightOverrideColor(
             HighlightPaintingUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
                 decoration_layer.style, decoration_layer.id.PseudoId(),
@@ -1226,7 +1234,7 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
 
     text_painter_.PaintDecorationsOnlyLineThrough(
         fragment_item_, paint_info_, *decoration_layer.style,
-        decoration_layer.text_style, decoration_info, decoration_rect_);
+        decoration_layer.text_style, *decoration_info, decoration_rect_);
   }
 }
 
@@ -1238,11 +1246,11 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
   const StringView text = cursor_.CurrentText();
   absl::optional<PhysicalRect> marker_rect{};
 
-  for (const HighlightLayer& decoration_layer_id : part.decorations) {
-    switch (decoration_layer_id.type) {
+  for (const HighlightDecoration& decoration : part.decorations) {
+    switch (decoration.layer.type) {
       case HighlightLayerType::kSpelling:
       case HighlightLayerType::kGrammar: {
-        wtf_size_t i = layers_.Find(decoration_layer_id);
+        wtf_size_t i = layers_.Find(decoration.layer);
         DCHECK_NE(i, kNotFound);
         const LayerPaintState& decoration_layer = layers_[i];
 
@@ -1254,20 +1262,20 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
         }
 
         if (!marker_rect) {
-          marker_rect =
-              MarkerRectForForeground(fragment_item_, text, part.from, part.to);
+          marker_rect = MarkerRectForForeground(fragment_item_, text,
+                                                part.range.from, part.range.to);
         }
 
         DocumentMarkerPainter::PaintDocumentMarker(
             paint_info_, box_origin_, originating_style_,
-            decoration_layer_id.type == HighlightLayerType::kSpelling
+            decoration.layer.type == HighlightLayerType::kSpelling
                 ? DocumentMarker::kSpelling
                 : DocumentMarker::kGrammar,
             *marker_rect,
             HighlightPaintingUtils::HighlightTextDecorationColor(
                 layout_object_->GetDocument(), originating_style_, node_,
                 layers_[i - 1].text_style.current_color,
-                decoration_layer_id.type == HighlightLayerType::kSpelling
+                decoration.layer.type == HighlightLayerType::kSpelling
                     ? kPseudoIdSpellingError
                     : kPseudoIdGrammarError));
       } break;
@@ -1276,19 +1284,6 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
         break;
     }
   }
-}
-
-TextDecorationInfo& NGHighlightPainter::DecorationInfoForLayer(
-    const LayerPaintState& layer,
-    absl::optional<TextDecorationInfo>& result_if_cache_miss) {
-  for (CachedDecorationInfo& cached_decorations : decoration_cache_) {
-    if (cached_decorations.id == layer.id) {
-      return cached_decorations.info.value();
-    }
-  }
-  decoration_painter_.UpdateDecorationInfo(result_if_cache_miss, *layer.style,
-                                           layer.text_style);
-  return result_if_cache_miss.value();
 }
 
 NGHighlightPainter::LayerPaintState::LayerPaintState(
