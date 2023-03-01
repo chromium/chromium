@@ -206,6 +206,9 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   if (segment_id == SegmentId::CROSS_DEVICE_USER_SEGMENT) {
     group_name = CrossDeviceUserSegment::GetSubsegmentName(subsegment_rank);
   }
+  if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER) {
+    group_name = SearchUserModel::GetSubsegmentName(subsegment_rank);
+  }
 
   if (!group_name) {
     return;

@@ -823,14 +823,10 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
   EXPECT_EQ("output", expected[0].name());
 }
 
-TEST_F(MetadataUtilsTest, HasMigratedToMultiOutput) {
+TEST_F(MetadataUtilsTest, HasConfigMigratedToMultiOutput) {
   auto config =
       CreateTestConfig(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
-  EXPECT_FALSE(metadata_utils::HasMigratedToMultiOutput(config.get()));
-
-  config =
-      CreateTestConfig(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER);
-  EXPECT_TRUE(metadata_utils::HasMigratedToMultiOutput(config.get()));
+  EXPECT_FALSE(metadata_utils::HasConfigMigratedToMultiOutput(config.get()));
 }
 
 }  // namespace segmentation_platform
