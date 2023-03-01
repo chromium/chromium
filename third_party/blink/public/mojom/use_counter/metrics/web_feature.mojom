@@ -3616,7 +3616,7 @@ enum WebFeature {
   kTabSharingBarSwitchToCapturee = 4285,
   kAutomaticLazyAds = 4286,
   kAutomaticLazyEmbeds = 4287,
-  kTouchActionChangedAtPointerDown = 4288,
+  kOBSOLETE_TouchActionChangedAtPointerDown = 4288,
   kDeviceOrientationPermissionRequested = 4289,
   kDeviceOrientationUsedWithoutPermissionRequest = 4290,
   kDeviceMotionPermissionRequested = 4291,
