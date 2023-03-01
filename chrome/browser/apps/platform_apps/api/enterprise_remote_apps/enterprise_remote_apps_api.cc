@@ -52,7 +52,7 @@ EnterpriseRemoteAppsAddFolderFunction::
 
 ExtensionFunction::ResponseAction EnterpriseRemoteAppsAddFolderFunction::Run() {
   auto parameters =
-      api::enterprise_remote_apps::AddFolder::Params::CreateDeprecated(args());
+      api::enterprise_remote_apps::AddFolder::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   chromeos::remote_apps::mojom::RemoteApps* remote_apps_api =
@@ -88,8 +88,7 @@ EnterpriseRemoteAppsAddAppFunction::~EnterpriseRemoteAppsAddAppFunction() =
     default;
 
 ExtensionFunction::ResponseAction EnterpriseRemoteAppsAddAppFunction::Run() {
-  auto parameters =
-      api::enterprise_remote_apps::AddApp::Params::CreateDeprecated(args());
+  auto parameters = api::enterprise_remote_apps::AddApp::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   chromeos::remote_apps::mojom::RemoteApps* remote_apps_api =
@@ -142,7 +141,7 @@ EnterpriseRemoteAppsDeleteAppFunction::
 
 ExtensionFunction::ResponseAction EnterpriseRemoteAppsDeleteAppFunction::Run() {
   auto parameters =
-      api::enterprise_remote_apps::DeleteApp::Params::CreateDeprecated(args());
+      api::enterprise_remote_apps::DeleteApp::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   chromeos::remote_apps::mojom::RemoteApps* remote_apps_api =
@@ -177,8 +176,7 @@ EnterpriseRemoteAppsSortLauncherFunction::
 ExtensionFunction::ResponseAction
 EnterpriseRemoteAppsSortLauncherFunction::Run() {
   auto parameters =
-      api::enterprise_remote_apps::SortLauncher::Params::CreateDeprecated(
-          args());
+      api::enterprise_remote_apps::SortLauncher::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   chromeos::remote_apps::mojom::RemoteApps* remote_apps_api =
