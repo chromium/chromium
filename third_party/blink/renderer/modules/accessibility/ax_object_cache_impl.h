@@ -284,7 +284,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   // will Invalidate() the AXObject so that it is refreshed with a new object
   // when safe to do so.
   AXObject* Get(const Node*);
-  AXObject* Get(const LayoutObject*);
+  // Get an AXObject* backed by the passed-in LayoutObject, or the
+  // LayoutObject's DOM node, whiever is available.
+  // If |parent_for_repair| is provided, and the object had been detached from
+  // its parent, it will be set as the new parent.
+  AXObject* Get(const LayoutObject*, AXObject* parent_for_repair = nullptr);
 
   // Get an AXObject* in a way that is safe for the current calling context:
   // - No calls into layout during an unclean layout phase

@@ -843,18 +843,23 @@ void AXObjectCacheImpl::SetAXMode(const ui::AXMode& ax_mode) {
   ax_mode_ = ax_mode;
 }
 
-AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
+AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
+                                 AXObject* parent_for_repair) {
   if (!layout_object)
     return nullptr;
 
+  if (Node* node = layout_object->GetNode()) {
+    // If there is a node, it is preferred for backing the AXObject.
+    DCHECK(!layout_object_mapping_.Contains(layout_object));
+    return Get(node);
+  }
+
   auto it_id = layout_object_mapping_.find(layout_object);
-  AXID ax_id = it_id != layout_object_mapping_.end() ? it_id->value : 0;
+  if (it_id == layout_object_mapping_.end()) {
+    return nullptr;
+  }
+  AXID ax_id = it_id->value;
   DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
-
-  Node* node = layout_object->GetNode();
-
-  if (!ax_id)
-    return node ? Get(node) : nullptr;
 
   if (IsDisplayLocked(layout_object) ||
       !IsLayoutObjectRelevantForAccessibility(*layout_object)) {
@@ -863,35 +868,31 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
     // but now it's in a locked subtree so we should remove the entry with its
     // layout object and replace it with an AXNodeObject created from the node
     // instead. Do this later at a safe time.
-    if (node) {
-      Invalidate(node->GetDocument(), ax_id);
-    } else {
-      // Happens if pseudo content no longer relevant.
-      Remove(const_cast<LayoutObject*>(layout_object));
-      return nullptr;
-    }
+    Remove(const_cast<LayoutObject*>(layout_object));
+    return nullptr;
   }
 
   auto it_result = objects_.find(ax_id);
   AXObject* result = it_result != objects_.end() ? it_result->value : nullptr;
-#if DCHECK_IS_ON()
   DCHECK(result) << "Had AXID for Node but no entry in objects_";
   DCHECK(result->IsAXNodeObject());
   // Do not allow detached objects except when disposing entire tree.
   DCHECK(!result->IsDetached() || has_been_disposed_)
       << "Detached AXNodeObject in map: "
-      << "AXID#" << ax_id << " Node=" << node;
-  if (result->IsMissingParent()) {
-    AXObject* computed_parent =
-        AXObject::ComputeNonARIAParent(*this, layout_object->GetNode());
-    // TODO(https://crbug.com/1413932) resolve and restore to NOTREACHED().
-    DCHECK(false) << "Had AXObject but was missing parent: " << layout_object
-                  << " " << result->ToString(true, true)
-                  << "\nComputed parent: "
-                  << (computed_parent ? computed_parent->ToString(true, true)
-                                      : "null");
+      << "AXID#" << ax_id << " LayoutObject=" << layout_object;
+
+  if (result->CachedParentObject()) {
+    DCHECK(!parent_for_repair ||
+           parent_for_repair == result->CachedParentObject())
+        << "If there is both a previous parent, and a parent supplied for "
+           "repair, they must match.";
+  } else {
+    result->SetParent(parent_for_repair);
   }
-#endif
+
+  DCHECK(!result->IsMissingParent())
+      << "Had AXObject but is missing parent: " << layout_object << " "
+      << result->ToString(true, true);
 
   return result;
 }
@@ -1351,6 +1352,8 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   DCHECK(objects_.find(axid) == objects_.end());
 
   if (node) {
+    DCHECK(!node_object_mapping_.Contains(node))
+        << "Already have an AXObject for " << node;
     node_object_mapping_.Set(node, axid);
   } else {
     DCHECK(!layout_object_mapping_.Contains(layout_object))
@@ -1385,8 +1388,7 @@ AXObject* AXObjectCacheImpl::GetOrCreate(LayoutObject* layout_object,
   if (!layout_object)
     return nullptr;
 
-  if (AXObject* obj = Get(layout_object)) {
-    DCHECK(!parent_if_known || parent_if_known == obj->CachedParentObject());
+  if (AXObject* obj = Get(layout_object, parent_if_known)) {
     return obj;
   }
 
@@ -1427,7 +1429,10 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     // parent before AddChildren() executes. There should be no previous parent.
     DCHECK(parent->RoleValue() == ax::mojom::blink::Role::kStaticText ||
            parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
-    DCHECK(!obj->CachedParentObject() || obj->CachedParentObject() == parent);
+    DCHECK(!obj->CachedParentObject() || obj->CachedParentObject() == parent)
+        << "Mismatched old and new parent:"
+        << "\n* Old parent: " << obj->CachedParentObject()->ToString(true, true)
+        << "\n* New parent: " << parent->ToString(true, true);
     DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
         << "Unexpected parent of inline text box: " << parent->RoleValue();
 #endif
