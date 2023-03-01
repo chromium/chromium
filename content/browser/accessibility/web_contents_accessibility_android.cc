@@ -308,30 +308,19 @@ void WebContentsAccessibilityAndroid::SetAXMode(
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
 
-  if (!features::IsComputeAXModeEnabled() &&
-      !features::IsAutoDisableAccessibilityEnabled()) {
+  if (!features::IsComputeAXModeEnabled()) {
     return;
   }
 
-  if (features::IsAutoDisableAccessibilityEnabled()) {
-    if (!is_accessibility_enabled) {
-      accessibility_state->DisableAccessibility();
-    } else {
-      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-    }
-  }
-
-  if (features::IsComputeAXModeEnabled()) {
-    if (screen_reader_mode) {
-      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-    } else {
-      // Remove the mode flags present in kAXModeComplete but not in
-      // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
-      // not touching any other flags.
-      ui::AXMode remove_mode_flags(ui::kAXModeComplete.flags() &
-                                   ~ui::kAXModeBasic.flags());
-      accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
-    }
+  if (screen_reader_mode) {
+    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
+  } else {
+    // Remove the mode flags present in kAXModeComplete but not in
+    // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
+    // not touching any other flags.
+    ui::AXMode remove_mode_flags(ui::kAXModeComplete.flags() &
+                                 ~ui::kAXModeBasic.flags());
+    accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
   }
 }
 

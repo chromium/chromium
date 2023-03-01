@@ -1071,15 +1071,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
     }
 
-    // TODO(mschillaci,jacklynch): Move into {refreshNativeState} once {BrowserAccessibilityState.
-    //                             Listener} provides more granularity.
-    public void updateAXModeFromNativeAccessibilityState() {
-        if (!isNativeInitialized()) return;
-        // Update the AXMode based on screen reader status.
-        WebContentsAccessibilityImplJni.get().setAXMode(
-                mNativeObj, AccessibilityState.isScreenReaderEnabled(), isAccessibilityEnabled());
-    }
-
     // Returns true if the hover event is to be consumed by accessibility feature.
     @CalledByNative
     private boolean onHoverEvent(int action) {
