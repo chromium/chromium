@@ -8,10 +8,10 @@
 
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"

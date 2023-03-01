@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 
 #include <utility>
 

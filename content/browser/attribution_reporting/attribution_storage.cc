@@ -5,7 +5,6 @@
 #include "content/browser/attribution_reporting/attribution_storage.h"
 
 #include "base/check.h"
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 
 namespace content {
