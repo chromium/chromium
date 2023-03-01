@@ -347,6 +347,13 @@ bool NotificationsApiFunction::CreateNotification(
   notification.set_never_timeout(options->require_interaction &&
                                  *options->require_interaction);
 
+  // For a progress notification the message parameter won't be displayed in the
+  // notification. Therefore, its value is passed to progress_status which will
+  // be displayed.
+  if (type == message_center::NOTIFICATION_TYPE_PROGRESS) {
+    notification.set_progress_status(message);
+  }
+
   if (ShouldShowOverCurrentFullscreenWindow(GetProfile(),
                                             notification.origin_url())) {
     notification.set_fullscreen_visibility(
@@ -466,6 +473,14 @@ bool NotificationsApiFunction::UpdateNotification(
       return false;
     }
     notification->set_progress(progress);
+  }
+
+  // For a progress notification the message parameter won't be displayed in the
+  // notification. Therefore, its value is passed to progress_status which will
+  // be displayed.
+  if (options->message &&
+      notification->type() == message_center::NOTIFICATION_TYPE_PROGRESS) {
+    notification->set_progress_status(base::UTF8ToUTF16(*options->message));
   }
 
   if (options->items && !options->items->empty()) {
