@@ -7,6 +7,6 @@ FAIL --foo-5: bar !important; assert_equals: expected "bar" but got " bar "
 FAIL --foo-6: bar !important ; assert_equals: expected "bar" but got " bar "
 PASS --foo-7:bar!important;
 PASS --foo-8:bar!important ;
-FAIL --foo-9:bar (then ws until end of rule) assert_equals: expected "bar" but got "bar "
+FAIL --foo-9:bar (then ws until end of rule) assert_equals: expected "bar" but got "bar\n    "
 Harness: the test ran to completion.
 

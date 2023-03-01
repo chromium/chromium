@@ -253,7 +253,7 @@ suite('NewTabPageAppTest', () => {
           (await backgroundManager.whenCalled('setBackgroundColor')).value);
       assertStyle(
           $$(app, '#content')!, '--color-new-tab-page-attribution-foreground',
-          'rgba(0, 0, 255, 1)');
+          'rgba(0, 0, 255, 1.00)');
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
       assertStyle($$(app, '#backgroundImageAttribution')!, 'display', 'none');
@@ -352,7 +352,7 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertTrue(app.$.logo.singleColored);
-      assertStyle(app.$.logo, '--ntp-logo-color', 'rgba(255, 0, 0, 1)');
+      assertStyle(app.$.logo, '--ntp-logo-color', 'rgba(255, 0, 0, 1.00)');
     });
 
     test('theme updates add shortcut color', async () => {
