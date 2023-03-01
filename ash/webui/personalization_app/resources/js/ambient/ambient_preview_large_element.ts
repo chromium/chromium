@@ -53,30 +53,16 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
 
   private collageImages_: Url[];
 
-  /**
-   * Return the array of images that form the collage.
-   * When topic source is Google Photos:
-   *   - if `previewImages_` is non-empty but contains fewer than 4
-   *     images, only return one of them; otherwise return the first 4.
-   *   - if `previewImages_` is empty:
-   *        - e.g. user selected art gallery albums
-   *        - if `previewAlbums_` contains fewer than 4 albums, return one of
-   *        their previews; otherwise return the first 4.
-   *
-   * If isPersonalizationJellyEnabled flag is on, max number of collage image
-   * will be 3 instead of 4.
-   */
+  /** Returns the array of images that form the collage. */
   private computeCollageImages_(): Url[] {
     const maxLength = this.isPersonalizationJellyEnabled_ ? 3 : 4;
     switch (this.topicSource_) {
       case TopicSource.kArtGallery:
         if (this.isPersonalizationJellyEnabled_ &&
             isNonEmptyArray(this.previewImages_)) {
-          return this.previewImages_.slice(0, maxLength);
+          return this.previewImages_.slice(0, 2);
         }
-        return (this.previewAlbums_ || [])
-            .map(album => album.url)
-            .slice(0, maxLength);
+        return (this.previewAlbums_ || []).map(album => album.url).slice(0, 2);
       case TopicSource.kGooglePhotos:
         if (isNonEmptyArray(this.previewImages_)) {
           return this.previewImages_.length < maxLength ?
