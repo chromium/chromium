@@ -1963,12 +1963,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
   BrowserList* const browser_list = BrowserList::GetInstance();
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   EXPECT_EQ(browser_list->size(), 2U);
+
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
+  Browser* const new_browser = browser_change_observer.Wait();
+
+  EXPECT_EQ(new_browser, browser_list->GetLastActive());
   EXPECT_EQ(browser_list->size(), 3U);
-  Browser* const new_browser = browser_list->GetLastActive();
   EXPECT_NE(new_browser, browser());
   EXPECT_NE(new_browser, app_browser);
   EXPECT_TRUE(new_browser->is_type_app());
@@ -1979,12 +1984,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
       .SetAppUserDisplayMode(app_id, web_app::mojom::UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
+  content::WebContents* new_tab = tab_waiter.Wait();
+
+  ASSERT_TRUE(new_tab);
   EXPECT_EQ(browser_list->GetLastActive(), browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-  EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      app_url);
+  EXPECT_EQ(new_tab, browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(new_tab->GetVisibleURL(), app_url);
 }
 
 #endif

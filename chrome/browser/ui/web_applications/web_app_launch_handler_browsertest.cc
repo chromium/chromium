@@ -18,10 +18,12 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -258,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     EXPECT_EQ(web_contents->GetLastCommittedURL(), in_scope_url);
 
     ASSERT_TRUE(SetUpNextLaunchParamsTargetUrlPromise(browser_1));
-    Browser* browser_2 = LaunchWebAppBrowser(app_id);
+    Browser* browser_2 = LaunchWebAppBrowserAndWait(app_id);
     EXPECT_EQ(browser_1, browser_2);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrlPromise(browser_2),
               start_url.spec());
@@ -291,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
 
     ASSERT_TRUE(SetUpNextLaunchParamsTargetUrlPromise(browser_1));
-    Browser* browser_2 = LaunchWebAppBrowser(app_id);
+    Browser* browser_2 = LaunchWebAppBrowserAndWait(app_id);
     EXPECT_EQ(browser_1, browser_2);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrlPromise(browser_2),
               start_url.spec());
@@ -315,12 +317,23 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   EXPECT_EQ(GetLaunchHandler(app_id),
             (LaunchHandler{ClientMode::kFocusExisting}));
 
+  ui_test_utils::UrlLoadObserver url_observer(
+      WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppLaunchUrl(
+          app_id),
+      content::NotificationService::AllSources());
+
   // Launch the app three times in quick succession.
   Browser* browser_1 = LaunchWebAppBrowser(app_id);
   Browser* browser_2 = LaunchWebAppBrowser(app_id);
-  Browser* browser_3 = LaunchWebAppBrowserAndWait(app_id);
+  Browser* browser_3 = LaunchWebAppBrowser(app_id);
   EXPECT_EQ(browser_1, browser_2);
   EXPECT_EQ(browser_2, browser_3);
+
+  url_observer.Wait();
+  // Wait for all launches to complete.
+  WebAppProvider::GetForTest(profile())
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
 
   // Check that all 3 LaunchParams got enqueued.
   content::WebContents* web_contents =
@@ -357,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
             (LaunchHandler{ClientMode::kNavigateExisting}));
 
   // Launch the app three times in quick succession.
-  Browser* browser_1 = LaunchWebAppBrowser(app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(app_id);
+  Browser* browser_1 = LaunchWebAppBrowserAndWait(app_id);
+  Browser* browser_2 = LaunchWebAppBrowserAndWait(app_id);
   Browser* browser_3 = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_EQ(browser_1, browser_2);
   EXPECT_EQ(browser_2, browser_3);
@@ -397,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 
   // Launch the web app and immediately navigate it out of scope during its
   // initial navigation.
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   GURL out_of_scope_url = embedded_test_server()->GetURL("/empty.html");
   NavigateToURLAndWait(app_browser, out_of_scope_url);
   content::WebContents* web_contents =
@@ -428,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
   AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
 
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -490,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest,
   AppId app_id = InstallWebAppFromPage(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
 
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 

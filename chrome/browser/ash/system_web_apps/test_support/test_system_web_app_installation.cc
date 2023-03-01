@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_url_data_source.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -826,6 +827,8 @@ TestSystemWebAppInstallation::CreateWebAppProvider(Profile* profile) {
   profile_ = profile;
 
   auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
+  provider->SetWebAppUiManager(
+      std::make_unique<web_app::WebAppUiManagerImpl>(profile));
   provider->Start();
 
   return provider;
