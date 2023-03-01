@@ -180,7 +180,7 @@ public class ManualFillingUiCaptureTest {
     }
 
     private void waitForSuggestionsInSheet() {
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame));
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet));
         RecyclerViewTestUtils.waitForStableRecyclerView(
                 mActivityTestRule.getActivity().findViewById(R.id.passwords_sheet));
     }
