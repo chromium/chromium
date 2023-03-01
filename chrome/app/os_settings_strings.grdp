@@ -1004,6 +1004,24 @@
   <message name="IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL" desc="Label for button to open ChromeVox tutorial.">
     ChromeVox tutorial
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_GENERAL_LABEL" desc="Label for general ChromeVox settings.">
+    General
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_USE_VERBOSE_MODE" desc="In the ChromeVox settings subpage, the label for the toggle to enable verbose descriptions (An option for ChromeVox to speak more verbosely when giving descriptions to the user).">
+    Enable verbose descriptions
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUTO_READ" desc="In the ChromeVox settings subpage, the label for the toggle to automatically read page after it finishes loading." >
+    Automatically read page after it finishes loading
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_SPEAK_TEXT_UNDER_MOUSE" desc="In the ChromeVox settings subpage, the label for the toggle to enable a setting which speaks text under the mouse cursor." >
+    Speak text under the mouse
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_USE_PITCH_CHANGES" desc="In the ChromeVox settings subpage, the label for the toggle to change pitch when speaking element types and formatted text." >
+    Change pitch when speaking element types and formatted text
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_ANNOUNCE_RICH_TEXT_ATTRIBUTES" desc="In the ChromeVox settings subpage, the label for the toggle to automatically announce rich text styles." >
+    Announce text styling
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
     Full-screen magnifier
   </message>

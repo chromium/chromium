@@ -5,9 +5,61 @@ found in the LICENSE file.
 -->
 
 <style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
   h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box {
+    margin-inline-end: var(--cr-section-padding);
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
   }
 </style>
 
-<h2>$i18n{chromeVoxLabel}</h2>
+<h2>$i18n{chromeVoxGeneralLabel}</h2>
+<div class="sub-item">
+  <settings-toggle-button
+      id="useVerboseModeToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.use_verbose_mode}}"
+      label="$i18n{chromeVoxUseVerboseMode}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="autoReadToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.auto_read}}"
+      label="$i18n{chromeVoxAutoRead}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="speakTextUnderMouseToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.speak_text_under_mouse}}"
+      label="$i18n{chromeVoxSpeakTextUnderMouse}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="usePitchChangesToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.use_pitch_changes}}"
+      label="$i18n{chromeVoxUsePitchChanges}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="announceRichTextAttributesToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.announce_rich_text_attributes}}"
+      label="$i18n{chromeVoxAnnounceRichTextAttributes}">
+  </settings-toggle-button>
+</div>
