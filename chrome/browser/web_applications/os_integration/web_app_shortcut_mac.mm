@@ -998,9 +998,8 @@ bool WebAppShortcutCreator::BuildShortcut(
 
   // Write the PkgInfo file.
   constexpr char kPkgInfoData[] = "APPL????";
-  constexpr size_t kPkgInfoDataSize = std::size(kPkgInfoData) - 1;
-  if (base::WriteFile(destination_contents_path.Append("PkgInfo"), kPkgInfoData,
-                      kPkgInfoDataSize) != kPkgInfoDataSize) {
+  if (!base::WriteFile(destination_contents_path.Append("PkgInfo"),
+                       kPkgInfoData)) {
     RecordCreateShortcut(CreateShortcutResult::kFailToWritePkgInfoFile);
     LOG(ERROR) << "Failed to write PkgInfo file: " << destination_contents_path;
     return false;

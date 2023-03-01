@@ -782,11 +782,7 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
 
     base::FilePath web_bundle_path;
     CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path));
-    CHECK_EQ(static_cast<size_t>(base::WriteFile(
-                 web_bundle_path, reinterpret_cast<char*>(signed_bundle.data()),
-                 signed_bundle.size())),
-             signed_bundle.size());
-
+    CHECK(base::WriteFile(web_bundle_path, signed_bundle));
     return web_bundle_path;
   }
 

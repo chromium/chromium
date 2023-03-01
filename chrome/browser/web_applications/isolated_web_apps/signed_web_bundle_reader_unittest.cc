@@ -125,9 +125,7 @@ class SignedWebBundleReaderTest : public testing::Test {
     base::FilePath temp_file_path;
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-    EXPECT_EQ(test_file_data.size(), static_cast<size_t>(base::WriteFile(
-                                         temp_file_path, test_file_data.data(),
-                                         test_file_data.size())));
+    EXPECT_TRUE(base::WriteFile(temp_file_path, test_file_data));
 
     in_process_data_decoder_.service()
         .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(

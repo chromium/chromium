@@ -94,8 +94,10 @@ bool SaveIconWithCheckSum(const base::FilePath& icon_file,
   GetImageCheckSum(image, &digest);
 
   base::FilePath cheksum_file(icon_file.ReplaceExtension(kIconChecksumFileExt));
-  return base::WriteFile(cheksum_file, reinterpret_cast<const char*>(&digest),
-                         sizeof(digest)) == sizeof(digest);
+  // Passing digest as one element in a span of digest fields, therefore the 1u,
+  // and then having as_bytes converting it to a new span of uint8_t's.
+  return base::WriteFile(cheksum_file,
+                         base::as_bytes(base::make_span(&digest, 1u)));
 }
 
 // Returns true if |icon_file| is missing or different from |image|.

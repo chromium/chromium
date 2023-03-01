@@ -18,8 +18,7 @@ namespace {
 
 void CreateFileAndWriteData(const base::FilePath& file_path,
                             const base::StringPiece& data) {
-  const int size = base::saturated_cast<int>(data.size());
-  ASSERT_EQ(base::WriteFile(file_path, data.data(), size), size);
+  ASSERT_TRUE(base::WriteFile(file_path, data));
 }
 
 }  // namespace
