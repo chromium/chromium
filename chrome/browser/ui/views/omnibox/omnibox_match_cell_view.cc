@@ -72,11 +72,24 @@ int GetEntityImageSize() {
 
 // The radius of the rounded square backgrounds of icons, answers, and entities.
 int GetIconAndImageCornerRadius() {
-  // When both params are disabled, icons and images won't have rounded square
+  // When all params are disabled, icons and images won't have rounded square
   // backgrounds.
   DCHECK(OmniboxFieldTrial::kSquareSuggestIconAnswers.Get() ||
-         OmniboxFieldTrial::kSquareSuggestIconIcons.Get());
+         OmniboxFieldTrial::kSquareSuggestIconIcons.Get() ||
+         OmniboxFieldTrial::kSquareSuggestIconEntities.Get());
   return 4;
+}
+
+// The size of entities relative to their background. 0.5 means entities take up
+// half of the space.
+double GetEntityBackgroundScale() {
+  // When `kSquareSuggestIconEntities` is disabled, entities shouldn't be
+  // scaled.
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconEntities.Get());
+  double scale = OmniboxFieldTrial::kSquareSuggestIconEntitiesScale.Get();
+  DCHECK_GT(scale, 0);
+  DCHECK_LT(scale, 1);
+  return scale;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -341,21 +354,40 @@ void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image) {
   }
 }
 
-void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
-  answer_image_view_->SetImage(image);
+void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
+                                    const AutocompleteMatch& match) {
+  // Weather icons are also sourced remotely and therefore fall into this flow.
+  // Other answers don't.
+  bool is_weather_answer =
+      match.answer &&
+      match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER;
 
-  // Usually, answer images are square. But if that's not the case, setting
-  // answer_image_view_ size proportional to the image size preserves
-  // the aspect ratio.
   int width = image.width();
   int height = image.height();
-  if (width == height)
-    return;
   const int max = std::max(width, height);
-  int imageSize = GetEntityImageSize();
-  width = imageSize * width / max;
-  height = imageSize * height / max;
-  answer_image_view_->SetImageSize(gfx::Size(width, height));
+
+  if (OmniboxFieldTrial::kSquareSuggestIconEntities.Get() &&
+      !is_weather_answer) {
+    answer_image_view_->SetImage(
+        gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+            max / GetEntityBackgroundScale(), GetIconAndImageCornerRadius(),
+            GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
+            gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+                GetIconAndImageCornerRadius(), image)));
+
+  } else {
+    answer_image_view_->SetImage(image);
+
+    // Usually, answer images are square. But if that's not the case, setting
+    // answer_image_view_ size proportional to the image size preserves
+    // the aspect ratio.
+    if (width == height)
+      return;
+    int imageSize = GetEntityImageSize();
+    width = imageSize * width / max;
+    height = imageSize * height / max;
+    answer_image_view_->SetImageSize(gfx::Size(width, height));
+  }
 }
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
