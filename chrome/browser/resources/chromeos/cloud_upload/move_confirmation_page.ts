@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
@@ -75,6 +76,12 @@ export class MoveConfirmationPageElement extends HTMLElement {
     this.shadowRoot!.getElementById('app-name')!.innerText = appName;
     this.shadowRoot!.getElementById('provider-short-name')!.innerText =
         shortName;
+
+    const animationUrl = this.cloudProvider === CloudProvider.ONE_DRIVE ?
+        'move_confirmation_animation_onedrive.json' :
+        'move_confirmation_animation_drive.json';
+    this.shadowRoot!.querySelector('cr-lottie')!.setAttribute(
+        'animation-url', animationUrl);
   }
 
   private onMoveButtonClick(): void {

@@ -22,6 +22,8 @@ build_webui("build") {
     "images/one_drive_success.svg",
     "images/welcome.svg",
     "main.html",
+    "move_confirmation_animation_drive.json",
+    "move_confirmation_animation_onedrive.json",
   ]
   web_component_files = [
     "base_setup_page.ts",

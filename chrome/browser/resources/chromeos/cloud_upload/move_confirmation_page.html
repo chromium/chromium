@@ -3,14 +3,16 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    padding: 32px;
     width: 512px;
   }
 
-  /* TODO(petermarshall): Possibly change font based on the specs */
+  .body-wrapper {
+    padding: 32px;
+  }
+
   .title {
     color: var(--cros-text-color-primary);
-    font: var(--cros-display-7-font);
+    font: var(--cros-display-6-font);
   }
 
   .normal-text {
@@ -37,21 +39,29 @@
     justify-content: flex-end;
     margin-top: 32px;
   }
+
+  cr-lottie {
+    height: 236px;
+  }
 </style>
 
 <!-- TODO(b/258071752): Use localized strings -->
-<div class="title">
-  Move file to <span id="provider-name"></span> to open
-</div>
-<div class="normal-text">
-  The <span id="app-name"></span> app requires files to be in
-  <span id="provider-short-name"></span>. We can move your files
-  whenever you choose to open them.
-</div>
-<cr-checkbox id="always-move-checkbox">
-  <span class="checkbox-text">Do this automatically next time</span>
-</cr-checkbox>
-<div id="button-container">
-  <cr-button class="cancel-button">$i18n{cancel}</cr-button>
-  <cr-button class="action-button">Move & open file</cr-button>
+<cr-lottie id="animation" aria-hidden="true" autoplay>
+</cr-lottie>
+<div class="body-wrapper">
+  <div class="title">
+    Move file to <span id="provider-name"></span> to open
+  </div>
+  <div class="normal-text">
+    The <span id="app-name"></span> app requires files to be in
+    <span id="provider-short-name"></span>. We can move your files
+    whenever you choose to open them.
+  </div>
+  <cr-checkbox id="always-move-checkbox">
+    <span class="checkbox-text">Do this automatically next time</span>
+  </cr-checkbox>
+  <div id="button-container">
+    <cr-button class="cancel-button">$i18n{cancel}</cr-button>
+    <cr-button class="action-button">Move & open file</cr-button>
+  </div>
 </div>

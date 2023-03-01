@@ -860,9 +860,9 @@ const int kDialogWidthForDriveSetup = 512;
 const int kDialogHeightForDriveSetup = 220;
 
 const int kDialogWidthForMoveConfirmation = 512;
-const int kDialogHeightForMoveConfirmationWithCheckbox = 260;
+const int kDialogHeightForMoveConfirmationWithCheckbox = 500;
 
-const int kDialogHeightForMoveConfirmationWithoutCheckbox = 208;
+const int kDialogHeightForMoveConfirmationWithoutCheckbox = 448;
 }  // namespace
 
 void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
