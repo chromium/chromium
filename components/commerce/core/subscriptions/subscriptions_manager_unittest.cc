@@ -83,25 +83,28 @@ class MockSubscriptionsServerProxy : public SubscriptionsServerProxy {
               (override));
 
   // Mock the server responses for Create and Delete requests.
-  void MockManageResponses(bool succeeded) {
+  void MockManageResponses(bool succeeded,
+                           std::string subscription_id = "111") {
     ON_CALL(*this, Create)
-        .WillByDefault(
-            [succeeded](std::unique_ptr<std::vector<CommerceSubscription>>
-                            subscriptions,
-                        ManageSubscriptionsFetcherCallback callback) {
-              std::move(callback).Run(
-                  succeeded ? SubscriptionsRequestStatus::kSuccess
-                            : SubscriptionsRequestStatus::kServerParseError);
-            });
+        .WillByDefault([succeeded, subscription_id](
+                           std::unique_ptr<std::vector<CommerceSubscription>>
+                               subscriptions,
+                           ManageSubscriptionsFetcherCallback callback) {
+          std::move(callback).Run(
+              succeeded ? SubscriptionsRequestStatus::kSuccess
+                        : SubscriptionsRequestStatus::kServerParseError,
+              BuildSubscriptions(subscription_id));
+        });
     ON_CALL(*this, Delete)
-        .WillByDefault(
-            [succeeded](std::unique_ptr<std::vector<CommerceSubscription>>
-                            subscriptions,
-                        ManageSubscriptionsFetcherCallback callback) {
-              std::move(callback).Run(
-                  succeeded ? SubscriptionsRequestStatus::kSuccess
-                            : SubscriptionsRequestStatus::kServerParseError);
-            });
+        .WillByDefault([succeeded, subscription_id](
+                           std::unique_ptr<std::vector<CommerceSubscription>>
+                               subscriptions,
+                           ManageSubscriptionsFetcherCallback callback) {
+          std::move(callback).Run(
+              succeeded ? SubscriptionsRequestStatus::kSuccess
+                        : SubscriptionsRequestStatus::kServerParseError,
+              BuildSubscriptions(subscription_id));
+        });
   }
 
   // Mock the server fetch responses for Get requests. |subscription_id| is used
@@ -359,7 +362,6 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe) {
                                     AreExpectedSubscriptions("333"), _));
     EXPECT_CALL(*mock_server_proxy_,
                 Create(AreExpectedSubscriptions("222"), _));
-    EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
   }
@@ -400,7 +402,6 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
                                     AreExpectedSubscriptions("333"), _));
     EXPECT_CALL(*mock_server_proxy_,
                 Create(AreExpectedSubscriptions("222"), _));
-    EXPECT_CALL(*mock_server_proxy_, Get).Times(0);
     EXPECT_CALL(*mock_storage_, UpdateStorage).Times(0);
   }
 
@@ -508,7 +509,6 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasStuckRequestRunning) {
                                     AreExpectedSubscriptions("333"), _));
     EXPECT_CALL(*mock_server_proxy_,
                 Create(AreExpectedSubscriptions("222"), _));
-    EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
   }
@@ -548,7 +548,6 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasPendingUnsubscribeRequest) {
                                     AreExpectedSubscriptions("333"), _));
     EXPECT_CALL(*mock_server_proxy_,
                 Delete(AreExpectedSubscriptions("222"), _));
-    EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
     // Subscribe calls.
@@ -556,7 +555,6 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasPendingUnsubscribeRequest) {
                                     AreExpectedSubscriptions("444"), _));
     EXPECT_CALL(*mock_server_proxy_,
                 Create(AreExpectedSubscriptions("222"), _));
-    EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
   }
@@ -651,7 +649,6 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
                                     AreExpectedSubscriptions("333"), _));
     EXPECT_CALL(*mock_server_proxy_,
                 Delete(AreExpectedSubscriptions("222"), _));
-    EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
   }

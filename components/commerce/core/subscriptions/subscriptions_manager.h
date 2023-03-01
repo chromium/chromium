@@ -219,9 +219,11 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
       SubscriptionsRequestStatus status,
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
 
-  void HandleManageSubscriptionsResponse(SubscriptionType type,
-                                         SubscriptionsRequestCallback callback,
-                                         SubscriptionsRequestStatus status);
+  void HandleManageSubscriptionsResponse(
+      SubscriptionType type,
+      SubscriptionsRequestCallback callback,
+      SubscriptionsRequestStatus status,
+      std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
 
   void HandleLookup(CommerceSubscription subscription,
                     base::OnceCallback<void(bool)> callback);

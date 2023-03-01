@@ -36,6 +36,7 @@ constexpr base::FeatureParam<std::string> kServiceBaseUrl{
     &commerce::kShoppingList, kBaseUrlParam, kDefaultServiceBaseUrl};
 
 const char kGetQueryParams[] = "?requestParams.subscriptionType=";
+const char kManageQueryParams[] = "?requestSnapshotParams.subscriptionType=";
 const char kPriceTrackGetParam[] = "PRICE_TRACK";
 
 // For generating server requests and deserializing the responses.
@@ -73,8 +74,15 @@ SubscriptionsServerProxy::~SubscriptionsServerProxy() = default;
 void SubscriptionsServerProxy::Create(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     ManageSubscriptionsFetcherCallback callback) {
-  if (subscriptions->size() == 0) {
-    std::move(callback).Run(SubscriptionsRequestStatus::kSuccess);
+  CHECK(subscriptions->size() > 0);
+  std::string service_url = kServiceBaseUrl.Get() + kManageQueryParams;
+  if ((*subscriptions)[0].type == SubscriptionType::kPriceTrack) {
+    service_url += kPriceTrackGetParam;
+  } else {
+    VLOG(1) << "Unsupported type for Create query";
+    std::move(callback).Run(
+        SubscriptionsRequestStatus::kInvalidArgument,
+        std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
 
@@ -127,9 +135,8 @@ void SubscriptionsServerProxy::Create(
           }
         })");
 
-  auto fetcher =
-      CreateEndpointFetcher(GURL(kServiceBaseUrl.Get()), kPostHttpMethod,
-                            post_data, traffic_annotation);
+  auto fetcher = CreateEndpointFetcher(GURL(service_url), kPostHttpMethod,
+                                       post_data, traffic_annotation);
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
       &SubscriptionsServerProxy::HandleManageSubscriptionsResponses,
@@ -139,8 +146,15 @@ void SubscriptionsServerProxy::Create(
 void SubscriptionsServerProxy::Delete(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     ManageSubscriptionsFetcherCallback callback) {
-  if (subscriptions->size() == 0) {
-    std::move(callback).Run(SubscriptionsRequestStatus::kSuccess);
+  CHECK(subscriptions->size() > 0);
+  std::string service_url = kServiceBaseUrl.Get() + kManageQueryParams;
+  if ((*subscriptions)[0].type == SubscriptionType::kPriceTrack) {
+    service_url += kPriceTrackGetParam;
+  } else {
+    VLOG(1) << "Unsupported type for Delete query";
+    std::move(callback).Run(
+        SubscriptionsRequestStatus::kInvalidArgument,
+        std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
 
@@ -192,9 +206,8 @@ void SubscriptionsServerProxy::Delete(
           }
         })");
 
-  auto fetcher =
-      CreateEndpointFetcher(GURL(kServiceBaseUrl.Get()), kPostHttpMethod,
-                            post_data, traffic_annotation);
+  auto fetcher = CreateEndpointFetcher(GURL(service_url), kPostHttpMethod,
+                                       post_data, traffic_annotation);
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
       &SubscriptionsServerProxy::HandleManageSubscriptionsResponses,
@@ -274,7 +287,9 @@ void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(
     std::unique_ptr<EndpointResponse> responses) {
   if (responses->http_status_code != net::HTTP_OK || responses->error_type) {
     VLOG(1) << "Server failed to parse manage-subscriptions request";
-    std::move(callback).Run(SubscriptionsRequestStatus::kServerParseError);
+    std::move(callback).Run(
+        SubscriptionsRequestStatus::kServerParseError,
+        std::make_unique<std::vector<CommerceSubscription>>());
     return;
   }
   data_decoder::DataDecoder::ParseJsonIsolated(
@@ -289,17 +304,23 @@ void SubscriptionsServerProxy::OnManageSubscriptionsJsonParsed(
   if (result.has_value() && result->is_dict()) {
     if (auto* status_value = result->GetDict().FindDict(kStatusKey)) {
       if (auto status_code = status_value->FindInt(kStatusCodeKey)) {
-        std::move(callback).Run(
-            *status_code == kBackendCanonicalCodeSuccess
-                ? SubscriptionsRequestStatus::kSuccess
-                : SubscriptionsRequestStatus::kServerInternalError);
+        if (*status_code == kBackendCanonicalCodeSuccess) {
+          std::move(callback).Run(SubscriptionsRequestStatus::kSuccess,
+                                  GetSubscriptionsFromParsedJson(result));
+        } else {
+          std::move(callback).Run(
+              SubscriptionsRequestStatus::kServerInternalError,
+              std::make_unique<std::vector<CommerceSubscription>>());
+        }
         return;
       }
     }
   }
 
   VLOG(1) << "Fail to get status code from response";
-  std::move(callback).Run(SubscriptionsRequestStatus::kServerInternalError);
+  std::move(callback).Run(
+      SubscriptionsRequestStatus::kServerInternalError,
+      std::make_unique<std::vector<CommerceSubscription>>());
 }
 
 void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
@@ -322,24 +343,27 @@ void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
 void SubscriptionsServerProxy::OnGetSubscriptionsJsonParsed(
     GetSubscriptionsFetcherCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
+  auto subscriptions = GetSubscriptionsFromParsedJson(result);
+  if (subscriptions->size() == 0) {
+    VLOG(1) << "User has no subscriptions";
+  }
+  std::move(callback).Run(SubscriptionsRequestStatus::kSuccess,
+                          std::move(subscriptions));
+}
+
+std::unique_ptr<std::vector<CommerceSubscription>>
+SubscriptionsServerProxy::GetSubscriptionsFromParsedJson(
+    const data_decoder::DataDecoder::ValueOrError& result) {
   auto subscriptions = std::make_unique<std::vector<CommerceSubscription>>();
   if (result.has_value() && result->is_dict()) {
-    // TODO(crbug.com/1346107): Check whether the request succeeds. If not, we
-    // may have to fetch again.
     if (auto* subscriptions_json = result->FindListKey(kSubscriptionsKey)) {
       for (const auto& subscription_json : subscriptions_json->GetList()) {
         if (auto subscription = Deserialize(subscription_json))
           subscriptions->push_back(*subscription);
       }
-      std::move(callback).Run(SubscriptionsRequestStatus::kSuccess,
-                              std::move(subscriptions));
-      return;
     }
   }
-
-  VLOG(1) << "User has no subscriptions";
-  std::move(callback).Run(SubscriptionsRequestStatus::kSuccess,
-                          std::move(subscriptions));
+  return subscriptions;
 }
 
 base::Value SubscriptionsServerProxy::Serialize(

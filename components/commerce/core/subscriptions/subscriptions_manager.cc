@@ -378,12 +378,14 @@ void SubscriptionsManager::HandleGetSubscriptionsResponse(
 void SubscriptionsManager::HandleManageSubscriptionsResponse(
     SubscriptionType type,
     SubscriptionsRequestCallback callback,
-    SubscriptionsRequestStatus status) {
+    SubscriptionsRequestStatus status,
+    std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {
   if (status != SubscriptionsRequestStatus::kSuccess) {
     VLOG(1) << "Fail to create or delete subscriptions on server";
     std::move(callback).Run(status);
   } else {
-    GetRemoteSubscriptionsAndUpdateStorage(type, std::move(callback));
+    storage_->UpdateStorage(type, std::move(callback),
+                            std::move(remote_subscriptions));
   }
 }
 
