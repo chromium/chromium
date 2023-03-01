@@ -1,0 +1,33 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Contains information about App and Service running state in ARC.
+struct SystemAppRunningState {
+  // ARC app running as the top app.
+  bool top_layer_app;
+  // No minimized ARC app running.
+  bool foreground_app;
+  // Minimized ARC app running.
+  bool background_app;
+  // Performance sensitive ARC app running.
+  bool performance_sensitive_app;
+  // App's running as background service.
+  bool background_service;
+};
+
+// Chrome implements this interface to handle updates from ARC.
+interface SystemStateHost {
+  // Notifies Chrome the ARC app system-wide state.
+  UpdateAppRunningState@0(SystemAppRunningState state);
+};
+
+// ARC implements this interface to interact with Chrome.
+interface SystemStateInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<SystemStateHost> host_remote) => ();
+};

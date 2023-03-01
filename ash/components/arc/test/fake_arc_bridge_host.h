@@ -137,6 +137,9 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnStorageManagerInstanceReady(
       mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote)
       override;
+  void OnSystemStateInstanceReady(
+      mojo::PendingRemote<mojom::SystemStateInstance> system_state_remote)
+      override;
   void OnSystemUiInstanceReady(
       mojo::PendingRemote<mojom::SystemUiInstance> system_ui_remote) override;
   void OnTimerInstanceReady(

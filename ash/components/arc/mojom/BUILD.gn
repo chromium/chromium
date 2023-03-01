@@ -60,6 +60,7 @@ mojom("mojom") {
     "screen_capture.mojom",
     "sharesheet.mojom",
     "storage_manager.mojom",
+    "system_state.mojom",
     "system_ui.mojom",
     "timer.mojom",
     "tracing.mojom",

@@ -52,6 +52,7 @@ import "ash/components/arc/mojom/rotation_lock.mojom";
 import "ash/components/arc/mojom/screen_capture.mojom";
 import "ash/components/arc/mojom/sharesheet.mojom";
 import "ash/components/arc/mojom/storage_manager.mojom";
+import "ash/components/arc/mojom/system_state.mojom";
 import "ash/components/arc/mojom/system_ui.mojom";
 import "ash/components/arc/mojom/timer.mojom";
 import "ash/components/arc/mojom/tracing.mojom";
@@ -63,9 +64,9 @@ import "ash/components/arc/mojom/wake_lock.mojom";
 import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
 
-// Next MinVersion: 64
+// Next MinVersion: 65
 // Deprecated method IDs: 101, 105, 121, 132, 136, 153, 154, 160
-// Next method ID: 169
+// Next method ID: 170
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -259,6 +260,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the StorageManagerInstance interface is ready.
   [MinVersion=12] OnStorageManagerInstanceReady@118(
       pending_remote<StorageManagerInstance> instance_remote);
+
+  // Notifies Chrome that the SystemStateInstance interface is ready.
+  [MinVersion=64] OnSystemStateInstanceReady@169(
+      pending_remote<SystemStateInstance> instance_remote);
 
   // Notifies Chrome that the SystemUiInstance interface is ready.
   [MinVersion=62] OnSystemUiInstanceReady@167(

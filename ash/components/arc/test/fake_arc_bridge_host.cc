@@ -50,6 +50,7 @@
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
+#include "ash/components/arc/mojom/system_state.mojom.h"
 #include "ash/components/arc/mojom/system_ui.mojom.h"
 #include "ash/components/arc/mojom/timer.mojom.h"
 #include "ash/components/arc/mojom/tracing.mojom.h"
@@ -219,6 +220,9 @@ void FakeArcBridgeHost::OnSharesheetInstanceReady(
 void FakeArcBridgeHost::OnStorageManagerInstanceReady(
     mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote) {
 }
+
+void FakeArcBridgeHost::OnSystemStateInstanceReady(
+    mojo::PendingRemote<mojom::SystemStateInstance> system_state_remote) {}
 
 void FakeArcBridgeHost::OnSystemUiInstanceReady(
     mojo::PendingRemote<mojom::SystemUiInstance> system_ui_remote) {}
