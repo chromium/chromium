@@ -2799,6 +2799,15 @@
       status: "experimental",
       base_feature: "none",
     },
+    // Legacy callback-based getStats() has limited availability unless this
+    // Deprecation Trial is enabled.
+    // TODO(https://crbug.com/822696): Remove when origin trial ends.
+    {
+      name: "RTCLegacyCallbackBasedGetStats",
+      origin_trial_feature_name: "RTCLegacyCallbackBasedGetStats",
+      status: "experimental",
+      base_feature: "none",
+    },
     // getStats() no longer return the legacy "track" or "stream" stats objects
     // unless this Deprecation Trial is enabled.
     // TODO(https://crbug.com/1374215): Remove when origin trial ends.

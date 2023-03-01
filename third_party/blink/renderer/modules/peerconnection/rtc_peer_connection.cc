@@ -1679,8 +1679,21 @@ ScriptPromise RTCPeerConnection::LegacyCallbackBasedGetStats(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  Deprecation::CountDeprecation(
-      context, WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
+  bool deprecation_trial_enabled =
+      RuntimeEnabledFeatures::RTCLegacyCallbackBasedGetStatsEnabled(context);
+  if (deprecation_trial_enabled) {
+    // The deprecation trial is enabled, allow API usage without the warning.
+    // TODO(https://crbug.com/822696): In M122, delete this API.
+    UseCounter::Count(context,
+                      WebFeature::kRTCPeerConnectionLegacyGetStatsTrial);
+  } else {
+    // The deprecation trial is NOT enabled: show a deprecation warning.
+    // TODO(https://crbug.com/822696): In M114 add a base::Feature to control
+    // the throwing of an exception here. The plan is to throw in Canary/Beta in
+    // M114 and to throw in Stable in M117.
+    Deprecation::CountDeprecation(
+        context, WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
+  }
   auto* stats_request = MakeGarbageCollected<RTCStatsRequestImpl>(
       GetExecutionContext(), this, success_callback, selector);
   // FIXME: Add passing selector as part of the statsRequest.
