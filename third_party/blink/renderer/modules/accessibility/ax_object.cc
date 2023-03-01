@@ -713,6 +713,7 @@ void AXObject::Detach() {
   parent_ = nullptr;
   ax_object_cache_ = nullptr;
   children_dirty_ = false;
+  id_ = 0;
 }
 
 bool AXObject::IsDetached() const {
@@ -795,6 +796,7 @@ bool AXObject::IsMissingParent() const {
 
 void AXObject::RepairMissingParent() const {
   DCHECK(IsMissingParent());
+  DCHECK(!AXObjectCache().HasBeenDisposed());
 
   SetParent(ComputeParent());
 
@@ -5351,6 +5353,7 @@ bool AXObject::NeedsToUpdateChildren() const {
 void AXObject::SetNeedsToUpdateChildren() const {
   DCHECK(!IsDetached()) << "Cannot update children on a detached node: "
                         << ToString(true, true);
+  DCHECK(!AXObjectCache().HasBeenDisposed());
   if (children_dirty_ || !CanHaveChildren())
     return;
   children_dirty_ = true;
@@ -5358,6 +5361,12 @@ void AXObject::SetNeedsToUpdateChildren() const {
 }
 
 void AXObject::ClearChildren() const {
+  // No need for additional work here when clearing the entire cache at once.
+  if (AXObjectCache().HasBeenDisposed()) {
+    children_.clear();
+    return;
+  }
+
   // Detach all weak pointers from immediate children to their parents.
   // First check to make sure the child's parent wasn't already reassigned.
   // In addition, the immediate children are different from children_, and are
@@ -5393,7 +5402,7 @@ void AXObject::ClearChildren() const {
     // AbstractInlineTextBoxes present at that time. Other types of objects do
     // not need this treatment --they are removed based on signals from Blink.
     if (child->IsAXInlineTextBox() && !AXObjectCache().HasBeenDisposed()) {
-      AXObjectCache().Remove(child->GetInlineTextBox(), false);
+      AXObjectCache().Remove(child, /* notify_parent */ false);
       continue;
     }
     // Check parent first, as the child might be several levels down if there

@@ -72,7 +72,7 @@ void AXMenuList::Detach() {
     // removal of objects.
     if (!AXObjectCache().HasBeenDisposed()) {
       auto& cache = AXObjectCache();
-      cache.RemoveSubtree(children_[0]);
+      cache.RemoveSubtree(children_[0], /* notify parent */ true);
     }
     children_.clear();
   }

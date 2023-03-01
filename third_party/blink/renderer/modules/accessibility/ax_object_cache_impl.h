@@ -155,13 +155,19 @@ class MODULES_EXPORT AXObjectCacheImpl
   void LocationChanged(const LayoutObject*) override;
   void ImageLoaded(const LayoutObject*) override;
 
+  // Removes AXObject backed by passed-in object, if there is one.
+  // It will also notify the parent that its children have changed, so that the
+  // parent will recompute its children and be reserialized.
   void Remove(AccessibleNode*) override;
   void Remove(LayoutObject*) override;
   void Remove(Node*) override;
   void Remove(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
-  void Remove(AbstractInlineTextBox*, bool notify_parent);
-  void RemoveSubtree(AXObject* object);
+  // Remove an AXObject or its subtree, and if |notify_parent| is true,
+  // recompute the parent's children and reserialize the parent.
+  void Remove(AXObject*, bool notify_parent);
+  void RemoveSubtree(AXObject*, bool notify_parent);
+  void RemoveSubtree(Node*, bool notify_parent);
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.
@@ -561,13 +567,20 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
 
-  // Call Remove() when an AXObject should be removed from the cache.
+  // Removes AXObject backed by passed-in object, if there is one.
   // It will also notify the parent that its children have changed, so that the
-  // parent will recompute its children and be reserialized.
-  void Remove(AXObject*);
-  // These helpers not be called directly.
-  void Remove(AXID, bool notify_parent = true);
-  void RemoveAXID(AXObject*);
+  // parent will recompute its children and be reserialized, unless
+  // |notify_parent| is passed in as false.
+  void Remove(AccessibleNode*, bool notify_parent);
+  void Remove(LayoutObject*, bool notify_parent);
+  void Remove(Node*, bool notify_parent);
+  void Remove(AbstractInlineTextBox*, bool notify_parent);
+
+  // Helper to remove the object from the cache.
+  // Most callers should be using Remove(AXObject) instead.
+  void Remove(AXID, bool notify_parent);
+  // Helper to clean up any references to the AXObject's AXID.
+  void RemoveReferencesToAXID(AXID);
 
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
@@ -735,9 +748,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   // When a <tr> or <td> is inserted or removed, the containing table may have
   // gained or lost rows or columns.
   void ContainingTableRowsOrColsMaybeChanged(Node*);
-
-  // Must be called an entire subtree of accessible objects are no longer valid.
-  void RemoveAXObjectsInLayoutSubtree(AXObject* subtree, int depth);
 
   // Object for HTML validation alerts. Created at most once per object cache.
   AXObject* GetOrCreateValidationMessageObject();
@@ -914,7 +924,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   Deque<ui::AXEvent> pending_events_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
-  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveAXID);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveReferencesToAXID);
 };
 
 // This is the only subclass of AXObjectCache.
