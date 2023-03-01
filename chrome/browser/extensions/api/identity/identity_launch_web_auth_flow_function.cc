@@ -80,9 +80,9 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
     return RespondNow(ExtensionFunction::Error(ErrorToString(error)));
   }
 
-  std::unique_ptr<api::identity::LaunchWebAuthFlow::Params> params(
-      api::identity::LaunchWebAuthFlow::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::identity::LaunchWebAuthFlow::Params> params =
+      api::identity::LaunchWebAuthFlow::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL auth_url(params->details.url);
   WebAuthFlow::Mode mode =

@@ -136,9 +136,9 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
     return RespondNow(Error(error.ToString()));
   }
 
-  std::unique_ptr<api::identity::GetAuthToken::Params> params(
-      api::identity::GetAuthToken::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::identity::GetAuthToken::Params> params =
+      api::identity::GetAuthToken::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   ComputeInteractivityStatus(params->details);
 
   enable_granular_permissions_ =
