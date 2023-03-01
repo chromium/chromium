@@ -376,7 +376,7 @@ int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context) {
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
-    const std::u16string& rp_for_display,
+    const std::u16string& top_frame_for_display,
     const absl::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox,
@@ -416,11 +416,11 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   accessible_title_ =
       idp_title.has_value()
           ? l10n_util::GetStringFUTF16(
-                SelectSingleIdpTitleResourceId(rp_context_), rp_for_display,
-                idp_title.value())
+                SelectSingleIdpTitleResourceId(rp_context_),
+                top_frame_for_display, idp_title.value())
           : l10n_util::GetStringFUTF16(
                 IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-                rp_for_display);
+                top_frame_for_display);
 
   SetAccessibleTitle(accessible_title_);
 
@@ -488,12 +488,12 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 }
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
-    const std::u16string& rp_for_display,
+    const std::u16string& top_frame_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
   std::u16string title = l10n_util::GetStringFUTF16(
-      SelectSingleIdpTitleResourceId(rp_context_), rp_for_display,
+      SelectSingleIdpTitleResourceId(rp_context_), top_frame_for_display,
       idp_display_data.idp_etld_plus_one);
   UpdateHeader(idp_display_data.idp_metadata, title, show_back_button);
 
@@ -515,10 +515,10 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 }
 
 void AccountSelectionBubbleView::ShowFailureDialog(
-    const std::u16string& rp_for_display,
+    const std::u16string& top_frame_for_display,
     const std::u16string& idp_for_display) {
   const std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_FAILURE_DIALOG_TITLE, rp_for_display, idp_for_display);
+      IDS_FAILURE_DIALOG_TITLE, top_frame_for_display, idp_for_display);
   title_label_->SetText(title);
 
   SizeToContents();

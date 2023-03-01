@@ -105,7 +105,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // |sign_in_mode| represents whether this is an auto re-authn flow.
   virtual void ShowAccountsDialog(
       WebContents* rp_web_contents,
-      const std::string& rp_for_display,
+      const std::string& top_frame_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -116,7 +116,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
   virtual void ShowFailureDialog(WebContents* rp_web_contents,
-                                 const std::string& rp_for_display,
+                                 const std::string& top_frame_for_display,
                                  const std::string& idp_for_display,
                                  DismissCallback dismiss_callback);
 

@@ -294,13 +294,13 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.RP_FOR_DISPLAY || key == HeaderProperties.IDP_FOR_DISPLAY
+        if (key == HeaderProperties.TOP_FRAME_FOR_DISPLAY || key == HeaderProperties.IDP_FOR_DISPLAY
                 || key == HeaderProperties.TYPE) {
             Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
             HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
             String title = computeHeaderTitle(resources, headerType,
-                    model.get(HeaderProperties.RP_FOR_DISPLAY),
+                    model.get(HeaderProperties.TOP_FRAME_FOR_DISPLAY),
                     model.get(HeaderProperties.IDP_FOR_DISPLAY));
             headerTitleText.setText(title);
 

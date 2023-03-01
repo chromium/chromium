@@ -64,7 +64,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
-      const std::u16string& rp_for_display,
+      const std::u16string& top_frame_for_display,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox,
@@ -81,12 +81,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                           const std::u16string& title) override;
 
   void ShowSingleAccountConfirmDialog(
-      const std::u16string& rp_for_display,
+      const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool show_back_button) override;
 
-  void ShowFailureDialog(const std::u16string& rp_for_display,
+  void ShowFailureDialog(const std::u16string& top_frame_for_display,
                          const std::u16string& idp_for_display) override;
 
   // Populates `idp_images` when an IDP image has been fetched.

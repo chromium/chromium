@@ -140,7 +140,7 @@ class TestDialogController
 
   void ShowAccountsDialog(
       WebContents* rp_web_contents,
-      const std::string& rp_for_display,
+      const std::string& top_frame_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,

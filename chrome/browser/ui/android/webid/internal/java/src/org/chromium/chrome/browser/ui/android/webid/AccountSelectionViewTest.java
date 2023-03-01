@@ -103,7 +103,7 @@ public class AccountSelectionViewTest {
         mModel.set(ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
@@ -120,7 +120,7 @@ public class AccountSelectionViewTest {
         mModel.set(ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
@@ -135,7 +135,7 @@ public class AccountSelectionViewTest {
         mModel.set(ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY_AUTO_REAUTHN)
-                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());

@@ -40,11 +40,12 @@
 
 namespace {
 
-const std::u16string kRpETLDPlusOne = u"rp-example.com";
+const std::u16string kTopFrameETLDPlusOne = u"top-frame-example.com";
 const std::u16string kIdpETLDPlusOne = u"idp-example.com";
 const std::u16string kTitleSignIn =
-    u"Sign in to rp-example.com with idp-example.com";
-const std::u16string kTitleSignInWithoutIdp = u"Sign in to rp-example.com";
+    u"Sign in to top-frame-example.com with idp-example.com";
+const std::u16string kTitleSignInWithoutIdp =
+    u"Sign in to top-frame-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
 const std::u16string kTitleSigningInWithAutoReauthn = u"Signing you in…";
 
@@ -124,7 +125,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
         exclude_title ? absl::nullopt
                       : absl::make_optional<std::u16string>(kIdpETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
-        kRpETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
+        kTopFrameETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
         show_auto_reauthn_checkbox, anchor_widget_->GetContentsView(),
         shared_url_loader_factory(),
         /*observer=*/nullptr);
@@ -140,8 +141,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, content::IdentityProviderMetadata(),
         CreateTestClientMetadata(terms_of_service_url), {account});
-    dialog_->ShowSingleAccountConfirmDialog(kRpETLDPlusOne, account, idp_data,
-                                            show_back_button);
+    dialog_->ShowSingleAccountConfirmDialog(kTopFrameETLDPlusOne, account,
+                                            idp_data, show_back_button);
   }
 
   void CreateMultiIdpAccountPicker(

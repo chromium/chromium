@@ -170,7 +170,7 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.IDP_BRAND_ICON, mBrandIcon)
                 .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                 .with(HeaderProperties.IDP_FOR_DISPLAY, idpForDisplay)
-                .with(HeaderProperties.RP_FOR_DISPLAY, rpForDisplay)
+                .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, rpForDisplay)
                 .with(HeaderProperties.TYPE, headerType)
                 .build();
     }
