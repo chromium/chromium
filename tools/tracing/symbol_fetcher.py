@@ -163,7 +163,7 @@ def _IsAndroidVersionCodeInFile(cloud_storage_bucket, version_code,
         'Failed to download version code file: %s', gcs_version_code_file)
     return False
 
-  with open(local_version_code_file) as version_file:
+  with open(local_version_code_file, encoding='utf-8') as version_file:
     return version_code in version_file.read()
 
 

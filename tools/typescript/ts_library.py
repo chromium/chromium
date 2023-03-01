@@ -26,7 +26,8 @@ def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
   if not os.path.exists(gen_dir):
     os.makedirs(gen_dir)
 
-  with open(os.path.join(gen_dir, tsconfig_file), 'w') as generated_tsconfig:
+  with open(os.path.join(gen_dir, tsconfig_file), 'w',
+            encoding='utf-8') as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
 
@@ -246,7 +247,7 @@ def main(argv):
   if args.in_files is not None:
 
     manifest_path = os.path.join(args.gen_dir, f'{args.output_suffix}.manifest')
-    with open(manifest_path, 'w') as manifest_file:
+    with open(manifest_path, 'w', encoding='utf-8') as manifest_file:
       manifest_data = {}
       manifest_data['base_dir'] = args.out_dir
       manifest_files = args.in_files
