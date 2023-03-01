@@ -107,7 +107,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // |native_window| is needed to show this dialog.
   void SubmitJob(gfx::NativeWindow native_window,
                  scoped_refptr<const extensions::Extension> extension,
-                 std::unique_ptr<api::printing::SubmitJob::Params> params,
+                 absl::optional<api::printing::SubmitJob::Params> params,
                  SubmitJobCallback callback);
 
   // Returns an error message if an error occurred.
