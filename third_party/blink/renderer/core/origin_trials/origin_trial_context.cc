@@ -549,6 +549,8 @@ Vector<OriginTrialFeature> OriginTrialContext::RestrictedFeaturesForTrial(
       restricted.push_back(OriginTrialFeature::kFencedFrames);
     if (!base::FeatureList::IsEnabled(features::kSharedStorageAPI))
       restricted.push_back(OriginTrialFeature::kSharedStorageAPI);
+    if (!base::FeatureList::IsEnabled(features::kFencedFramesAPIChanges))
+      restricted.push_back(OriginTrialFeature::kFencedFramesAPIChanges);
     return restricted;
   }
 
