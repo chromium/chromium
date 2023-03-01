@@ -54,6 +54,8 @@ KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
               profile));
   return new HashRealTimeService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
+      base::BindRepeating(&HashRealTimeServiceFactory::GetNetworkContext,
+                          profile),
       VerdictCacheManagerFactory::GetForProfile(profile),
       base::BindRepeating(
           &HashRealTimeServiceFactory::IsEnhancedProtectionEnabled, profile));
@@ -62,6 +64,12 @@ KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
 // static
 bool HashRealTimeServiceFactory::IsEnhancedProtectionEnabled(Profile* profile) {
   return safe_browsing::IsEnhancedProtectionEnabled(*(profile->GetPrefs()));
+}
+
+// static
+network::mojom::NetworkContext* HashRealTimeServiceFactory::GetNetworkContext(
+    Profile* profile) {
+  return g_browser_process->safe_browsing_service()->GetNetworkContext(profile);
 }
 
 }  // namespace safe_browsing

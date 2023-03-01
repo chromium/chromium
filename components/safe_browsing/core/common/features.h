@@ -165,6 +165,14 @@ BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 // `kFileTypePoliciesTag`.
 const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
 
+// Enables sending real time hash lookup requests over OHTTP to anonymize the
+// source of the requests.
+BASE_DECLARE_FEATURE(kHashRealTimeOverOhttp);
+
+// This parameter controls the relay URL that will forward the lookup requests
+// to the Safe Browsing server.
+extern const base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl;
+
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 

@@ -12,15 +12,18 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -33,16 +36,83 @@ namespace {
 // prefixes matched.
 constexpr char kUrlWithMatchingHashPrefix1[] = "https://example.a23549";
 constexpr char kUrlWithMatchingHashPrefix2[] = "https://example.a3945";
+
+constexpr char kTestRelayUrl[] = "https://ohttp.endpoint.test";
+
+// A class for testing requests sent via OHTTP. Call |AddResponse| and
+// |SetInterceptor| to set up response before |GetViaObliviousHttp| is
+// triggered.
+class OhttpTestNetworkContext : public network::TestNetworkContext {
+ public:
+  void GetViaObliviousHttp(
+      network::mojom::ObliviousHttpRequestPtr request,
+      mojo::PendingRemote<network::mojom::ObliviousHttpClient> client)
+      override {
+    ++total_requests_;
+    remote_.Bind(std::move(client));
+    GURL resource_url = request->resource_url;
+    if (interceptor_) {
+      interceptor_.Run(std::move(request));
+    }
+    auto it = responses_.find(resource_url);
+    ASSERT_TRUE(it != responses_.end());
+    remote_->OnCompleted(responses_[resource_url].body,
+                         responses_[resource_url].net_error);
+    remote_.reset();
+  }
+
+  void AddResponse(std::string resource_url,
+                   absl::optional<std::string> body,
+                   int net_error) {
+    Response response;
+    response.body = body;
+    response.net_error = net_error;
+    responses_[GURL(resource_url)] = std::move(response);
+  }
+
+  using Interceptor = base::RepeatingCallback<void(
+      const network::mojom::ObliviousHttpRequestPtr&)>;
+  void SetInterceptor(const Interceptor& interceptor) {
+    interceptor_ = interceptor;
+  }
+
+  size_t total_requests() const { return total_requests_; }
+
+ private:
+  struct Response {
+    absl::optional<std::string> body;
+    int net_error;
+  };
+
+  std::map<GURL, Response> responses_;
+  size_t total_requests_ = 0;
+  Interceptor interceptor_;
+  mojo::Remote<network::mojom::ObliviousHttpClient> remote_;
+};
+
 }  // namespace
 
 class HashRealTimeServiceTest : public PlatformTest {
  public:
+  HashRealTimeServiceTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kHashRealTimeOverOhttp,
+        {{"SafeBrowsingHashRealTimeOverOhttpRelayUrl", kTestRelayUrl}});
+  }
+
+  network::mojom::NetworkContext* GetNetworkContext() {
+    return &network_context_;
+  }
+
   void CreateHashRealTimeService() {
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory_.get());
+    auto network_context_callback = base::BindRepeating(
+        [](HashRealTimeServiceTest* test) { return test->GetNetworkContext(); },
+        base::Unretained(this));
     content_setting_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &test_pref_service_, /*is_off_the_record=*/false,
         /*store_last_modified=*/false, /*restore_session=*/false,
@@ -56,7 +126,8 @@ class HashRealTimeServiceTest : public PlatformTest {
       cache_manager_ptr = cache_manager_.get();
     }
     service_ = std::make_unique<HashRealTimeService>(
-        test_shared_loader_factory_, cache_manager_ptr, base::NullCallback());
+        test_shared_loader_factory_, network_context_callback,
+        cache_manager_ptr, base::NullCallback());
   }
   void SetUp() override {
     PlatformTest::SetUp();
@@ -122,7 +193,7 @@ class HashRealTimeServiceTest : public PlatformTest {
       const std::unique_ptr<V5::SearchHashesResponse>& response) {
     std::string expected_response_str;
     response->SerializeToString(&expected_response_str);
-    test_url_loader_factory_->AddResponse(request_url, expected_response_str);
+    network_context_.AddResponse(request_url, expected_response_str, net::OK);
   }
   void SetUpLookupResponse(const std::string& request_url,
                            const std::vector<V5::FullHash>& full_hashes) {
@@ -215,9 +286,12 @@ class HashRealTimeServiceTest : public PlatformTest {
       }
     }
     std::string expected_url = GetExpectedRequestUrl(request);
-    test_url_loader_factory_->SetInterceptor(base::BindLambdaForTesting(
-        [&](const network::ResourceRequest& resource_request) {
-          ASSERT_EQ(expected_url, resource_request.url.spec());
+    network_context_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::mojom::ObliviousHttpRequestPtr& ohttp_request) {
+          EXPECT_EQ(ohttp_request->method, net::HttpRequestHeaders::kGetMethod);
+          EXPECT_EQ(ohttp_request->relay_url, GURL(kTestRelayUrl));
+          EXPECT_EQ(ohttp_request->resource_url, GURL(expected_url));
+          EXPECT_EQ(ohttp_request->key_config, "");
         }));
 
     // Set up request response.
@@ -246,7 +320,7 @@ class HashRealTimeServiceTest : public PlatformTest {
                              int expected_prefix_count,
                              int expected_threat_info_size,
                              bool expected_found_unmatched_full_hashes) {
-    auto num_requests = test_url_loader_factory_->total_requests();
+    auto num_requests = network_context_.total_requests();
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
     StartSuccessRequest(url, cached_hash_prefixes, response_callback,
                         response_full_hashes, expected_threat_type);
@@ -263,20 +337,21 @@ class HashRealTimeServiceTest : public PlatformTest {
     CheckPostRequestMetrics(expected_threat_info_size);
     ResetMetrics();
 
-    EXPECT_EQ(test_url_loader_factory_->total_requests(), num_requests + 1u);
+    EXPECT_EQ(network_context_.total_requests(), num_requests + 1u);
   }
   // Starts a lookup on |url| that is expected to fail. The simulated server
   // response body can be specified either by |response_full_hashes| or by
-  // |custom_response|. |status| represents the simulated server response code.
-  // Confirms that the lookup fails.
+  // |custom_response|. |net_error| represents the simulated OHTTP handler error
+  // code. Confirms that the lookup fails.
   void RunRequestFailureTest(
       const GURL& url,
       const absl::optional<std::vector<V5::FullHash>>& response_full_hashes,
       const absl::optional<std::string>& custom_response,
-      net::HttpStatusCode status,
+      net::Error net_error,
       int expected_prefix_count,
+      int expected_network_result,
       HashRealTimeService::OperationResult expected_operation_result) {
-    auto num_requests = test_url_loader_factory_->total_requests();
+    auto num_requests = network_context_.total_requests();
 
     // Set up request and response.
     auto request = std::make_unique<V5::SearchHashesRequest>();
@@ -289,10 +364,10 @@ class HashRealTimeServiceTest : public PlatformTest {
           /*request_url=*/expected_url,
           /*full_hashes=*/response_full_hashes.value());
     } else if (custom_response.has_value()) {
-      test_url_loader_factory_->AddResponse(expected_url,
-                                            custom_response.value());
+      network_context_.AddResponse(expected_url, custom_response.value(),
+                                   net_error);
     } else {
-      test_url_loader_factory_->AddResponse(expected_url, "", status);
+      network_context_.AddResponse(expected_url, absl::nullopt, net_error);
     }
 
     // Start lookup.
@@ -308,13 +383,13 @@ class HashRealTimeServiceTest : public PlatformTest {
     CheckPreRequestMetrics(/*expect_cache_hit_all_prefixes=*/false);
     CheckRequestMetrics(
         /*expected_prefix_count=*/expected_prefix_count,
-        /*expected_network_result=*/status,
+        /*expected_network_result=*/expected_network_result,
         /*expected_operation_result=*/
         expected_operation_result, /*expected_found_unmatched_full_hashes=*/
         absl::nullopt);
     ResetMetrics();
 
-    EXPECT_EQ(test_url_loader_factory_->total_requests(), num_requests + 1u);
+    EXPECT_EQ(network_context_.total_requests(), num_requests + 1u);
   }
   // Starts a lookup on |url| that should already be found entirely in the cache
   // and therefore not require a request to be sent. Confirms that the lookup's
@@ -323,7 +398,7 @@ class HashRealTimeServiceTest : public PlatformTest {
   void RunFullyCachedRequestTest(const GURL& url,
                                  SBThreatType expected_threat_type,
                                  int expected_threat_info_size) {
-    auto num_requests = test_url_loader_factory_->total_requests();
+    auto num_requests = network_context_.total_requests();
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
     // Confirm request response will be called once with the relevant threat
     // type.
@@ -340,7 +415,7 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_threat_info_size=*/expected_threat_info_size);
     ResetMetrics();
 
-    EXPECT_EQ(test_url_loader_factory_->total_requests(), num_requests);
+    EXPECT_EQ(network_context_.total_requests(), num_requests);
   }
   void RunSimpleRequest(const GURL& url,
                         const std::vector<V5::FullHash>& response_full_hashes) {
@@ -372,9 +447,11 @@ class HashRealTimeServiceTest : public PlatformTest {
         threat_type, HashRealTimeService::kLeastSeverity);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<HashRealTimeService> service_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  OhttpTestNetworkContext network_context_;
   std::string key_param_;
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
@@ -723,7 +800,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_Error) {
   RunRequestFailureTest(
       /*url=*/url, /*response_full_hashes=*/absl::nullopt,
       /*custom_response=*/absl::nullopt,
-      /*status=*/net::HTTP_INTERNAL_SERVER_ERROR, /*expected_prefix_count=*/1,
+      /*net_error=*/net::ERR_FAILED, /*expected_prefix_count=*/1,
+      /*expected_network_result=*/net::ERR_FAILED,
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kNetworkError);
 }
@@ -732,7 +810,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
   RunRequestFailureTest(
       /*url=*/url, /*response_full_hashes=*/absl::nullopt,
       /*custom_response=*/"howdy",
-      /*status=*/net::HTTP_OK, /*expected_prefix_count=*/1,
+      /*net_error=*/net::OK, /*expected_prefix_count=*/1,
+      /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kParseError);
 }
@@ -744,7 +823,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
       absl::optional<std::vector<V5::FullHash>>({CreateFullHashProto(
           {V5::ThreatType::SOCIAL_ENGINEERING}, short_full_hash)}),
       /*custom_response=*/absl::nullopt,
-      /*status=*/net::HTTP_OK, /*expected_prefix_count=*/1,
+      /*net_error=*/net::OK, /*expected_prefix_count=*/1,
+      /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kIncorrectFullHashLengthError);
 }
@@ -757,7 +837,9 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
   RunRequestFailureTest(
       /*url=*/url, /*response_full_hashes=*/{},
       /*custom_response=*/response_str,
-      /*status=*/net::HTTP_OK, /*expected_prefix_count=*/1,
+      /*net_error=*/net::OK,
+      /*expected_prefix_count=*/1,
+      /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kNoCacheDurationError);
 }
@@ -981,8 +1063,7 @@ TEST_F(HashRealTimeServiceTest, TestBackoffMode) {
     }
     std::string request_url = GetExpectedRequestUrl(request);
     if (make_fail) {
-      test_url_loader_factory_->AddResponse(request_url, "",
-                                            net::HTTP_INTERNAL_SERVER_ERROR);
+      network_context_.AddResponse(request_url, "", net::ERR_FAILED);
     } else {
       SetUpLookupResponse(request_url, {});
     }
@@ -1083,6 +1164,60 @@ TEST_F(HashRealTimeServiceTest, TestIsThreatTypeMoreSevere) {
   for (const auto& test_case : min_severity_test_cases) {
     EXPECT_TRUE(IsThreatTypeMoreSevereThanLeastSeverity(test_case));
   }
+}
+
+class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
+ public:
+  HashRealTimeServiceDirectFetchTest() {
+    feature_list_.InitAndDisableFeature(kHashRealTimeOverOhttp);
+  }
+
+ protected:
+  std::string GetResourceUrl(const GURL& url) {
+    auto request = std::make_unique<V5::SearchHashesRequest>();
+    for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
+      request->add_hash_prefixes(hash_prefix);
+    }
+    return GetExpectedRequestUrl(request);
+  }
+
+  std::string GetResponseStr(const GURL& url, V5::ThreatType threat_type) {
+    std::vector<V5::FullHash> response_full_hashes;
+    response_full_hashes.push_back(
+        CreateFullHashProto({threat_type}, UrlToSingleFullHash(url)));
+    auto response = std::make_unique<V5::SearchHashesResponse>();
+    response->mutable_full_hashes()->Assign(response_full_hashes.begin(),
+                                            response_full_hashes.end());
+    auto* cache_duration = response->mutable_cache_duration();
+    cache_duration->set_seconds(300);
+    std::string response_str;
+    response->SerializeToString(&response_str);
+    return response_str;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(HashRealTimeServiceDirectFetchTest, TestLookup_Success) {
+  GURL url = GURL("https://example.test");
+  std::string expected_url = GetResourceUrl(url);
+  test_url_loader_factory_->AddResponse(
+      expected_url, GetResponseStr(url, V5::ThreatType::SOCIAL_ENGINEERING));
+  test_url_loader_factory_->SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request) {
+        ASSERT_EQ(expected_url, resource_request.url.spec());
+      }));
+
+  base::MockCallback<HPRTLookupResponseCallback> response_callback;
+  EXPECT_CALL(response_callback,
+              Run(/*is_lookup_successful=*/true,
+                  /*sb_threat_type=*/testing::Optional(
+                      SBThreatType::SB_THREAT_TYPE_URL_PHISHING)))
+      .Times(1);
+
+  service_->StartLookup(url, response_callback.Get(),
+                        base::SequencedTaskRunner::GetCurrentDefault());
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace safe_browsing

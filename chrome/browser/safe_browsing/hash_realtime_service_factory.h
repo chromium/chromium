@@ -7,6 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 class KeyedService;
 class Profile;
@@ -46,6 +47,8 @@ class HashRealTimeServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   static bool IsEnhancedProtectionEnabled(Profile* profile);
+
+  static network::mojom::NetworkContext* GetNetworkContext(Profile* profile);
 };
 
 }  // namespace safe_browsing
