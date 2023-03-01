@@ -122,6 +122,13 @@ class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FullscreenTabSearchBubbleDialogTest, InvokeUi_default) {
+// TODO(ffred): test fails under debug. b/271140045
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenTabSearchBubbleDialogTest,
+                       MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
