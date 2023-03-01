@@ -6892,3 +6892,6 @@ crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeou
 # Consistently crashing; disabling whilst we investigate
 crbug.com/1414607 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-no-url-end-to-end.js [ Crash Failure Pass ]
 crbug.com/1414607 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Crash Failure Pass ]
+
+# Disabling some cross-frame timeline tests while investigating
+crbug.com/1420471 external/wpt/performance-timeline/tentative/* [ Failure Pass Timeout ]
