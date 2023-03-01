@@ -315,7 +315,7 @@ class RingBufferAnnotationSnapshot final {
       int next_value;
       base::StringPiece str(reinterpret_cast<const char*>(&bytes[0]),
                             bytes.size());
-      if (!HexStringToInt(str, &next_value)) {
+      if (!base::HexStringToInt(str, &next_value)) {
         fprintf(stderr,
                 "Couldn't parse value: [%.*s]\n",
                 base::checked_cast<int>(bytes.size()),

@@ -62,8 +62,8 @@ bool ReadCPUsOnline(uint32_t* first_cpu, uint8_t* cpu_count) {
     std::string left, right;
     if (SplitStringFirst(range, '-', &left, &right)) {
       unsigned int start, end;
-      if (!StringToUint(base::StringPiece(left), &start) ||
-          !StringToUint(base::StringPiece(right), &end) || end <= start) {
+      if (!base::StringToUint(base::StringPiece(left), &start) ||
+          !base::StringToUint(base::StringPiece(right), &end) || end <= start) {
         LOG(ERROR) << "format error: " << range;
         return false;
       }
@@ -78,7 +78,7 @@ bool ReadCPUsOnline(uint32_t* first_cpu, uint8_t* cpu_count) {
       }
     } else {
       unsigned int cpuno;
-      if (!StringToUint(base::StringPiece(range), &cpuno)) {
+      if (!base::StringToUint(base::StringPiece(range), &cpuno)) {
         LOG(ERROR) << "format error";
         return false;
       }
@@ -399,13 +399,13 @@ void SystemSnapshotLinux::ReadKernelVersion(const std::string& version_string) {
     return;
   }
 
-  if (!StringToInt(base::StringPiece(versions[0]), &os_version_major_)) {
+  if (!base::StringToInt(base::StringPiece(versions[0]), &os_version_major_)) {
     LOG(WARNING) << "no kernel version";
     return;
   }
   DCHECK_GE(os_version_major_, 3);
 
-  if (!StringToInt(base::StringPiece(versions[1]), &os_version_minor_)) {
+  if (!base::StringToInt(base::StringPiece(versions[1]), &os_version_minor_)) {
     LOG(WARNING) << "no major revision";
     return;
   }
@@ -415,8 +415,8 @@ void SystemSnapshotLinux::ReadKernelVersion(const std::string& version_string) {
   if (minor_rev_end == std::string::npos) {
     minor_rev_end = versions[2].size();
   }
-  if (!StringToInt(base::StringPiece(versions[2].c_str(), minor_rev_end),
-                   &os_version_bugfix_)) {
+  if (!base::StringToInt(base::StringPiece(versions[2].c_str(), minor_rev_end),
+                         &os_version_bugfix_)) {
     LOG(WARNING) << "no minor revision";
     return;
   }

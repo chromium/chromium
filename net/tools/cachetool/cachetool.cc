@@ -401,7 +401,7 @@ std::string GetMD5ForResponseBody(disk_cache::Entry* entry) {
     }
 
     bytes_read += rv;
-    MD5Update(&ctx, base::StringPiece(buffer->data(), rv));
+    base::MD5Update(&ctx, base::StringPiece(buffer->data(), rv));
   }
 
   NOTREACHED();

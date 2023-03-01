@@ -667,7 +667,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
         std::make_unique<TestSearchResult>();
     result->set_display_type(ash::SearchResultDisplayType::kList);
     result->set_display_score(score);
-    result->SetTitle(ASCIIToUTF16(title));
+    result->SetTitle(base::ASCIIToUTF16(title));
     result->set_best_match(true);
     result->SetCategory(ash::AppListSearchResultCategory::kWeb);
     GetSearchModel()->results()->Add(std::move(result));

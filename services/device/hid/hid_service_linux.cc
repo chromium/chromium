@@ -271,19 +271,19 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
       return;
 
     uint32_t int_property = 0;
-    if (!HexStringToUInt(base::StringPiece(parts[0]), &int_property) ||
+    if (!base::HexStringToUInt(parts[0], &int_property) ||
         int_property > std::numeric_limits<uint16_t>::max()) {
       return;
     }
     auto bus_type = BusTypeFromLinuxBusId(int_property);
 
-    if (!HexStringToUInt(base::StringPiece(parts[1]), &int_property) ||
+    if (!base::HexStringToUInt(parts[1], &int_property) ||
         int_property > std::numeric_limits<uint16_t>::max()) {
       return;
     }
     uint16_t vendor_id = int_property;
 
-    if (!HexStringToUInt(base::StringPiece(parts[2]), &int_property) ||
+    if (!base::HexStringToUInt(parts[2], &int_property) ||
         int_property > std::numeric_limits<uint16_t>::max()) {
       return;
     }

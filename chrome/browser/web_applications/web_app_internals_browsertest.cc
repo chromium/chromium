@@ -55,8 +55,9 @@ constexpr char kBadIconErrorTemplate[] = R"({
 
 // Drops all CR and LF characters.
 std::string TrimLineEndings(base::StringPiece text) {
-  return CollapseWhitespaceASCII(text,
-                                 /*trim_sequences_with_line_breaks=*/true);
+  return base::CollapseWhitespaceASCII(
+      text,
+      /*trim_sequences_with_line_breaks=*/true);
 }
 
 }  // namespace
