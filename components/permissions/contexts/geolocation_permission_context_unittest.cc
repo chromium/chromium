@@ -59,7 +59,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
@@ -73,9 +72,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "components/permissions/contexts/geolocation_permission_context_mac.h"
-#endif
-
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -199,7 +195,7 @@ class GeolocationPermissionContextTests
   std::vector<std::unique_ptr<MockPermissionPromptFactory>>
       mock_permission_prompt_factories_;
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 
@@ -350,7 +346,7 @@ void GeolocationPermissionContextTests::SetUp() {
   MockLocationSettings::SetLocationSettingsDialogStatus(false /* enabled */,
                                                         GRANTED);
   MockLocationSettings::ClearHasShownLocationSettingsDialog();
-#elif PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#elif BUILDFLAG(IS_MAC)
   fake_geolocation_manager_ =
       std::make_unique<device::FakeGeolocationManager>();
   fake_geolocation_manager_->SetSystemPermission(
@@ -1121,7 +1117,7 @@ TEST_F(GeolocationPermissionContextTests, GeolocationStatusSystemDisabled) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
 TEST_F(GeolocationPermissionContextTests,
        AllSystemAndSitePermissionCombinations) {
   GURL requesting_frame("https://www.example.com/geolocation");

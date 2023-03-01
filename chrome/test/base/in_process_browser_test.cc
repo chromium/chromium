@@ -91,9 +91,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
-#endif
-
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -182,7 +179,7 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
 class ChromeBrowserMainExtraPartsBrowserProcessInjection
     : public ChromeBrowserMainExtraParts {
  public:
@@ -208,7 +205,7 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
   ChromeBrowserMainExtraPartsBrowserProcessInjection& operator=(
       const ChromeBrowserMainExtraPartsBrowserProcessInjection&) = delete;
 };
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // For browser tests that depend on AccountManager on Lacros - e.g. tests that
@@ -534,7 +531,7 @@ size_t InProcessBrowserTest::GetTestPreCount() {
 void InProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
   BrowserTestBase::CreatedBrowserMainParts(parts);
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsBrowserProcessInjection>());
 #endif

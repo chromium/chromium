@@ -33,7 +33,6 @@ static_library("browser_util") {
     "//components/prefs",
     "//components/version_info",
     "//content/public/browser",
-    "//services/device/public/cpp/geolocation",
   ]
 }
 

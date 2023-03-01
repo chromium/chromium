@@ -337,7 +337,7 @@ bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
 
 device::GeolocationManager*
 HeadlessContentBrowserClient::GetGeolocationManager() {
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   return browser_->browser_main_parts()->GetGeolocationManager();
 #else
   return nullptr;

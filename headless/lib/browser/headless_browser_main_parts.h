@@ -12,7 +12,6 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/prefs/pref_registry_simple.h"
@@ -22,6 +21,10 @@
 #if defined(HEADLESS_USE_POLICY)
 #include "headless/lib/browser/policy/headless_browser_policy_connector.h"
 #endif
+
+namespace device {
+class GeolocationManager;
+}  // namespace device
 
 namespace headless {
 
@@ -42,7 +45,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   void PreCreateMainMessageLoop() override;
 #endif
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
@@ -50,7 +53,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 #endif
   void QuitMainMessageLoop();
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   device::GeolocationManager* GetGeolocationManager();
   void SetGeolocationManagerForTesting(
       std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
@@ -70,7 +73,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void CreatePrefService();
 #endif
 
-  raw_ptr<HeadlessBrowserImpl> browser_;  // Not owned.
+  raw_ptr<HeadlessBrowserImpl> browser_;    // Not owned.
 
 #if defined(HEADLESS_USE_POLICY)
   std::unique_ptr<policy::HeadlessBrowserPolicyConnector> policy_connector_;
@@ -82,7 +85,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 #endif
 };

@@ -33,6 +33,10 @@
 #include "headless/lib/browser/policy/headless_policies.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #endif
@@ -93,7 +97,7 @@ void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
 #endif
 }
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
 device::GeolocationManager* HeadlessBrowserMainParts::GetGeolocationManager() {
   return geolocation_manager_.get();
 }

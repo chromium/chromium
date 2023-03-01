@@ -41,10 +41,10 @@
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -59,10 +59,10 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   delegates.geolocation_permission_context_delegate =
       std::make_unique<GeolocationPermissionContextDelegate>(profile);
 #endif  // BUILDFLAG(IS_ANDROID)
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   delegates.geolocation_manager =
       g_browser_process->platform_part()->geolocation_manager();
-#endif
+#endif  // BUILDFLAG(IS_MAC)
   delegates.media_stream_device_enumerator =
       MediaCaptureDevicesDispatcher::GetInstance();
   delegates.camera_pan_tilt_zoom_permission_context_delegate =

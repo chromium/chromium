@@ -44,7 +44,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -54,11 +53,10 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
-#include "chrome/browser/browser_process_platform_part.h"
-#endif
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
 
 using content::WebContents;
@@ -106,10 +104,10 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
 
   bool IsGeolocationAccessed();
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
   bool IsGeolocationAllowedOnASystemLevel();
   bool IsGeolocationPermissionDetermined();
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
@@ -185,7 +183,7 @@ class ContentSettingMediaImageModel : public ContentSettingImageModel {
   bool DidMicAccessFailBecauseOfSystemLevelBlock();
   bool IsCameraAccessPendingOnSystemLevelPrompt();
   bool IsMicAccessPendingOnSystemLevelPrompt();
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
@@ -580,7 +578,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
       return true;
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
   set_icon(vector_icons::kLocationOnIcon,
            is_allowed ? gfx::kNoneIcon : vector_icons::kBlockedBadgeIcon);
@@ -592,7 +590,7 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
   return true;
 }
 
-#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+#if BUILDFLAG(IS_MAC)
 bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
   device::GeolocationManager* geolocation_manager =
       g_browser_process->platform_part()->geolocation_manager();
@@ -611,7 +609,7 @@ bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
   return permission != device::LocationSystemPermissionStatus::kNotDetermined;
 }
 
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingGeolocationImageModel::CreateBubbleModelImpl(
@@ -834,7 +832,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     }
     return true;
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
   DCHECK(IsMicAccessed() || IsCamAccessed());
 
@@ -900,7 +898,7 @@ bool ContentSettingMediaImageModel::IsMicAccessPendingOnSystemLevelPrompt() {
           IsMicAccessed() && !IsMicBlockedOnSiteLevel());
 }
 
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingMediaImageModel::CreateBubbleModelImpl(
