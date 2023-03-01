@@ -337,8 +337,8 @@ gfx::Size GetMaximumCursorSize(const DrmWrapper& drm) {
   uint64_t width = 0, height = 0;
   // Querying cursor dimensions is optional and is unsupported on older Chrome
   // OS kernels.
-  if (drm.GetCapability(DRM_CAP_CURSOR_WIDTH, &width) != 0 ||
-      drm.GetCapability(DRM_CAP_CURSOR_HEIGHT, &height) != 0) {
+  if (!drm.GetCapability(DRM_CAP_CURSOR_WIDTH, &width) ||
+      !drm.GetCapability(DRM_CAP_CURSOR_HEIGHT, &height)) {
     return gfx::Size(kDefaultCursorWidth, kDefaultCursorHeight);
   }
   return gfx::Size(width, height);

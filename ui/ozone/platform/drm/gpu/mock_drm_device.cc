@@ -350,10 +350,13 @@ bool MockDrmDevice::InitializeStateWithResult(const MockDrmState& state,
   UpdateStateBesidesPlaneManager(state);
 
   if (use_atomic) {
+    SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerAtomic>(this);
   } else {
+    SetCapability(DRM_CLIENT_CAP_ATOMIC, 0);
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
   }
+  SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
 
   return plane_manager_->Initialize();
 }
@@ -546,6 +549,11 @@ void MockDrmDevice::DestroyPropertyBlob(uint32_t id) {
 }
 
 bool MockDrmDevice::GetCapability(uint64_t capability, uint64_t* value) const {
+  const auto it = capabilities_.find(capability);
+  if (it == capabilities_.end())
+    return false;
+
+  *value = it->second;
   return true;
 }
 
@@ -728,6 +736,7 @@ void MockDrmDevice::SetDriverName(absl::optional<std::string> name) {
 }
 
 bool MockDrmDevice::SetCapability(uint64_t capability, uint64_t value) {
+  capabilities_.insert({capability, value});
   return true;
 }
 
