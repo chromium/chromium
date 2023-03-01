@@ -1589,6 +1589,12 @@ enum class ToolbarKind {
 #pragma mark - FindInPageCommands
 
 - (void)openFindInPage {
+  if (_toolbarAccessoryPresenter.isPresenting) {
+    _nextToolbarToPresent = ToolbarKind::kFindInPage;
+    [self closeTextZoom];
+    return;
+  }
+
   if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
     [self showSystemFindPanel];
   } else {
@@ -1603,13 +1609,13 @@ enum class ToolbarKind {
     return;
   }
 
-  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
+  AbstractFindTabHelper* helper =
+      GetConcreteFindTabHelperFromWebState(currentWebState);
   DCHECK(helper);
   if (helper->IsFindUIActive()) {
     helper->StopFinding();
   } else {
     [self.findBarCoordinator stop];
-    self.findBarCoordinator = nil;
   }
 }
 
@@ -1639,12 +1645,17 @@ enum class ToolbarKind {
     helper->DismissFindNavigator();
   } else {
     [self.findBarCoordinator stop];
-    self.findBarCoordinator = nil;
   }
 }
 
 - (void)defocusFindInPage {
-  [self.findBarCoordinator defocusFindBar];
+  if (ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+    // The System Find Panel UI cannot be "defocused" so closing Find in Page
+    // altogether instead.
+    [self closeFindInPage];
+  } else {
+    [self.findBarCoordinator defocusFindBar];
+  }
 }
 
 - (void)searchFindInPage {
@@ -1699,12 +1710,6 @@ enum class ToolbarKind {
 
 - (void)showFindBar {
   if (!self.canShowFindBar) {
-    return;
-  }
-
-  if (_toolbarAccessoryPresenter.isPresenting) {
-    _nextToolbarToPresent = ToolbarKind::kFindInPage;
-    [self closeTextZoom];
     return;
   }
 
@@ -1851,12 +1856,10 @@ enum class ToolbarKind {
 - (void)toolbarAccessoryCoordinatorDidDismissUI:
     (ChromeCoordinator*)coordinator {
   if (self.findBarCoordinator) {
-    [self.findBarCoordinator stop];
     self.findBarCoordinator = nil;
   }
 
   if (self.textZoomCoordinator) {
-    [self.textZoomCoordinator stop];
     self.textZoomCoordinator = nil;
   }
 
@@ -1881,16 +1884,27 @@ enum class ToolbarKind {
 #pragma mark - TextZoomCommands
 
 - (void)openTextZoom {
-  if (_toolbarAccessoryPresenter.isPresenting) {
-    _nextToolbarToPresent = ToolbarKind::kTextZoom;
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  DCHECK(currentWebState);
+  AbstractFindTabHelper* findTabHelper =
+      GetConcreteFindTabHelperFromWebState(currentWebState);
+  DCHECK(findTabHelper);
+  if (findTabHelper->IsFindUIActive()) {
+    // If Find UI is active, close Find in Page.
     [self closeFindInPage];
-    return;
+    if (_toolbarAccessoryPresenter.isPresenting) {
+      // If the Chrome Find Bar is presented (as opposed to the System Find
+      // Panel UI) then open Text Zoom asynchronously once the Find Bar is
+      // dismissed.
+      _nextToolbarToPresent = ToolbarKind::kTextZoom;
+      return;
+    }
   }
 
   TextZoomCoordinator* textZoomCoordinator = self.textZoomCoordinator;
   if (textZoomCoordinator) {
     [textZoomCoordinator stop];
-    self.textZoomCoordinator = nil;
   }
 
   self.textZoomCoordinator = [self newTextZoomCoordinator];
@@ -1908,7 +1922,6 @@ enum class ToolbarKind {
     }
   }
   [self.textZoomCoordinator stop];
-  self.textZoomCoordinator = nil;
 }
 
 - (void)showTextZoomUIIfActive {
@@ -1930,7 +1943,6 @@ enum class ToolbarKind {
 
 - (void)hideTextZoomUI {
   [self.textZoomCoordinator stop];
-  self.textZoomCoordinator = nil;
 }
 
 - (TextZoomCoordinator*)newTextZoomCoordinator {
