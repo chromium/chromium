@@ -79,8 +79,7 @@ gl::GLContextAttribs GenerateGLContextAttribs(
     attribs.client_minor_es_version = 0;
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableES3GLContext)) {
+  if (gl::GetGlWorkarounds().disable_es3gl_context) {
     // Forcefully disable ES3 contexts
     attribs.client_major_es_version = 2;
     attribs.client_minor_es_version = 0;

@@ -43,6 +43,23 @@ GL_EXPORT bool UsePassthroughCommandDecoder(
 
 GL_EXPORT bool PassthroughCommandDecoderSupported();
 
+// Defines a set of workarounds that can be passed to ui/gl using the
+// SetGlWorkarounds function below.
+struct GlWorkarounds {
+  bool disable_d3d11 = false;
+  bool disable_es3gl_context = false;
+  bool disable_es3gl_context_for_testing = false;
+  bool disable_direct_composition = false;
+  bool disable_direct_composition_video_overlays = false;
+};
+
+// Obtains the global GlWorkarounds. For use by ui/gl code to determine which
+// workarounds have been set by a call to SetGlWorkarounds.
+GL_EXPORT const GlWorkarounds& GetGlWorkarounds();
+
+// Sets the GlWorkarounds. This should be called from the code hosting ui/gl.
+GL_EXPORT void SetGlWorkarounds(const GlWorkarounds& workarounds);
+
 #if BUILDFLAG(IS_WIN)
 // Calculates present during in 100 ns from number of frames per second.
 GL_EXPORT unsigned int FrameRateToPresentDuration(float frame_rate);

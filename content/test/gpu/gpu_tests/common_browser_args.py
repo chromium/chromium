@@ -10,7 +10,7 @@ AUTOPLAY_POLICY_NO_USER_GESTURE_REQUIRED =\
 DISABLE_ACCELERATED_2D_CANVAS = '--disable-accelerated-2d-canvas'
 DISABLE_DEVICE_DISCOVERY_NOTIFICATIONS = '--disable-features=MediaRouter'
 DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
-    '--disable-direct-composition-video-overlays'
+    '--disable_direct_composition_video_overlays=1'
 DISABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=1'
 DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS = '--disable-domain-blocking-for-3d-apis'
 DISABLE_D3D11_VIDEO_DECODER = '--disable_d3d11_video_decoder=1'

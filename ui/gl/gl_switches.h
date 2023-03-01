@@ -54,9 +54,6 @@ GL_EXPORT extern const char kSwapChainFormatBGRA[];
 
 namespace switches {
 
-GL_EXPORT extern const char kDisableD3D11[];
-GL_EXPORT extern const char kDisableES3GLContext[];
-GL_EXPORT extern const char kDisableES3GLContextForTesting[];
 GL_EXPORT extern const char kDisableGpuDriverBugWorkarounds[];
 GL_EXPORT extern const char kDisableGpuVsync[];
 GL_EXPORT extern const char kEnableGPUServiceLogging[];
@@ -73,9 +70,7 @@ GL_EXPORT extern const char kUseGpuInTests[];
 GL_EXPORT extern const char kEnableSgiVideoSync[];
 GL_EXPORT extern const char kDisableGLExtensions[];
 GL_EXPORT extern const char kEnableSwapBuffersWithBounds[];
-GL_EXPORT extern const char kDisableDirectComposition[];
 GL_EXPORT extern const char kEnableDirectCompositionVideoOverlays[];
-GL_EXPORT extern const char kDisableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kUseAdapterLuid[];
 
 GL_EXPORT extern const char kDirectCompositionVideoSwapChainFormat[];

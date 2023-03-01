@@ -34,6 +34,9 @@
 namespace gl {
 namespace {
 
+// The global set of workarounds.
+GlWorkarounds g_workarounds;
+
 int GetIntegerv(unsigned int name) {
   int value = 0;
   glGetIntegerv(name, &value);
@@ -121,6 +124,14 @@ bool PassthroughCommandDecoderSupported() {
   // The passthrough command buffer is only supported on top of ANGLE/EGL
   return false;
 #endif  // defined(USE_EGL)
+}
+
+const GlWorkarounds& GetGlWorkarounds() {
+  return g_workarounds;
+}
+
+void SetGlWorkarounds(const GlWorkarounds& workarounds) {
+  g_workarounds = workarounds;
 }
 
 #if BUILDFLAG(IS_WIN)
