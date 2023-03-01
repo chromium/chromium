@@ -540,14 +540,13 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 drawable.setColorFilter(
                         SemanticColorUtils.getDefaultIconColor(mActivity), PorterDuff.Mode.SRC_IN);
                 viewHolder.imageView.setImageDrawable(drawable);
-                viewHolder.itemLayout.getLayoutParams().height =
+                viewHolder.itemLayout.setMinimumHeight(
                         mActivity.getResources().getDimensionPixelSize(
-                                R.dimen.recent_tabs_show_history_item_size);
+                                R.dimen.recent_tabs_show_history_item_size));
                 return;
             }
-            viewHolder.itemLayout.getLayoutParams().height =
-                    mActivity.getResources().getDimensionPixelSize(
-                            R.dimen.recent_tabs_foreign_session_group_item_height);
+            viewHolder.itemLayout.setMinimumHeight(mActivity.getResources().getDimensionPixelSize(
+                    R.dimen.recent_tabs_foreign_session_group_item_height));
             RecentlyClosedEntry entry = getChild(childPosition);
             if (!(entry instanceof RecentlyClosedTab)) {
                 int tabCount = 0;
