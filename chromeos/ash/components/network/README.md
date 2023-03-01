@@ -3,7 +3,9 @@
 ChromeOS networking consists of several key components, shown in the diagram
 below:
 
-![ChromeOS Connectivity Layers](docs/cros_connectivity_layers.svg){width="1200" height="864"}
+![ChromeOS Connectivity Layers](https://screenshot.googleplex.com/8c7M59NKf8DwBn4.png)
+
+Note: Connectivity Layers SVG image with links can be found here docs/cros_connectivity_layers.svg
 
 This document describes the Chrome layer (light blue rectangle above). This
 layer is implemented within `//chromeos/ash/components/network`. To describe
