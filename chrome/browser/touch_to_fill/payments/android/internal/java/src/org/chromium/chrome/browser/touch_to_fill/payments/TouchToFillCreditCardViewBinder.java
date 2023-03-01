@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.VIRTUAL_CARD_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
@@ -87,6 +88,9 @@ class TouchToFillCreditCardViewBinder {
         } else if (propertyKey == CARD_EXPIRATION) {
             TextView expirationDate = view.findViewById(R.id.description_line_2);
             expirationDate.setText(model.get(CARD_EXPIRATION));
+        } else if (propertyKey == VIRTUAL_CARD_LABEL) {
+            TextView virtualCardLabel = view.findViewById(R.id.description_line_2);
+            virtualCardLabel.setText(model.get(VIRTUAL_CARD_LABEL));
         } else if (propertyKey == ON_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
         } else {
@@ -130,7 +134,8 @@ class TouchToFillCreditCardViewBinder {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
         } else if (propertyKey == CARD_ICON_ID || propertyKey == CARD_NAME
-                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION) {
+                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION
+                || propertyKey == VIRTUAL_CARD_LABEL) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

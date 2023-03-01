@@ -146,20 +146,31 @@ class TouchToFillCreditCardMediator {
     }
 
     private PropertyModel createCardModel(CreditCard card) {
-        return new PropertyModel
-                .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
-                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
-                        card.getIssuerIconDrawableId())
-                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
-                        card.getCardNameForAutofillDisplay())
-                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
-                        card.getObfuscatedLastFourDigits())
-                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
-                        mContext.getString(
-                                        R.string.autofill_credit_card_two_line_label_from_card_number)
-                                .replace("$1", card.getFormattedExpirationDate(mContext)))
-                .with(ON_CLICK_ACTION, () -> { this.onSelectedCreditCard(card); })
-                .build();
+        PropertyModel.Builder creditCardModelBuilder =
+                new PropertyModel
+                        .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
+                                card.getIssuerIconDrawableId())
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
+                                card.getCardNameForAutofillDisplay())
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
+                                card.getObfuscatedLastFourDigits())
+                        .with(ON_CLICK_ACTION, () -> this.onSelectedCreditCard(card));
+
+        // For virtual cards, show the "Virtual card" label on the second line, and for non-virtual
+        // cards, show the expiration date.
+        if (card.getIsVirtual()) {
+            creditCardModelBuilder.with(
+                    TouchToFillCreditCardProperties.CreditCardProperties.VIRTUAL_CARD_LABEL,
+                    mContext.getString(R.string.autofill_virtual_card_number_switch_label));
+        } else {
+            creditCardModelBuilder.with(
+                    TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
+                    mContext.getString(
+                                    R.string.autofill_credit_card_two_line_label_from_card_number)
+                            .replace("$1", card.getFormattedExpirationDate(mContext)));
+        }
+        return creditCardModelBuilder.build();
     }
 
     private ListItem buildHeader(boolean hasOnlyLocalCards) {

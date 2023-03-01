@@ -295,6 +295,24 @@ public class AutofillTestHelper {
         return new CreditCard("", "", true, false, name, number, "", month, year, "", 0, "", "");
     }
 
+    /** Creates a virtual credit card. */
+    public static CreditCard createVirtualCreditCard(String name, String number, String month,
+            String year, String network, int iconId, String cardNameForAutofillDisplay,
+            String obfuscatedLastFourDigits) {
+        return new CreditCard(/* guid= */ "", /* origin= */ "", /* isLocal= */ false,
+                /* isCached= */ false, /* isVirtual= */ true,
+                /* name= */ name, /* number= */ number, /* networkAndLastFourDigits= */ "",
+                /* month= */ month, /* year= */ year,
+                /* basicCardIssuerNetwork =*/network, /* issuerIconDrawableId= */ iconId,
+                /* billingAddressId= */ "",
+                /* serverId= */ "", /* instrumentId= */ 0, /* cardLabel= */ "", /* nickname= */ "",
+                /* cardArtUrl= */ null,
+                /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.ENROLLED,
+                /* productDescription= */ "",
+                /* cardNameForAutofillDisplay= */ cardNameForAutofillDisplay,
+                /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits);
+    }
+
     public static CreditCard createCreditCard(String name, String number, String month, String year,
             boolean isLocal, String nameForAutofillDisplay, String obfuscatedLastFourDigits,
             int iconId) {

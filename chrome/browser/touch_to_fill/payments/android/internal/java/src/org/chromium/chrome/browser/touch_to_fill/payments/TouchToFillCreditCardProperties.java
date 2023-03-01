@@ -49,11 +49,13 @@ class TouchToFillCreditCardProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("card_number");
         static final PropertyModel.ReadableObjectPropertyKey<String> CARD_EXPIRATION =
                 new PropertyModel.ReadableObjectPropertyKey<>("card_expiration");
+        static final PropertyModel.ReadableObjectPropertyKey<String> VIRTUAL_CARD_LABEL =
+                new PropertyModel.ReadableObjectPropertyKey<>("virtual_card_label");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_action");
 
-        static final PropertyKey[] ALL_KEYS = {
-                CARD_ICON_ID, CARD_NAME, CARD_NUMBER, CARD_EXPIRATION, ON_CLICK_ACTION};
+        static final PropertyKey[] ALL_KEYS = {CARD_ICON_ID, CARD_NAME, CARD_NUMBER,
+                CARD_EXPIRATION, VIRTUAL_CARD_LABEL, ON_CLICK_ACTION};
 
         private CreditCardProperties() {}
     }

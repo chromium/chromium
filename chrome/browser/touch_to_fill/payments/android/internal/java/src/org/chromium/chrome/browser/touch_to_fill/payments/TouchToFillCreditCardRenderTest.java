@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
@@ -88,6 +89,11 @@ public class TouchToFillCreditCardRenderTest {
     private static final CreditCard AMERICAN_EXPRESS = createCreditCard("American Express",
             "378282246310005", "10", AutofillTestHelper.nextYear(), true, "American Express",
             "• • • • 0005", R.drawable.amex_card);
+    private static final CreditCard MASTERCARD_VIRTUAL_CARD = createVirtualCreditCard(
+            /* name= */ "MasterCard-GPay", /* number= */ "5454545454545454", /* month= */ "11",
+            /* year= */ AutofillTestHelper.nextYear(), /* network= */ "Mastercard",
+            /* iconId= */ R.drawable.mc_card, /* cardNameForAutofillDisplay= */ "MasterCard-GPay",
+            /* obfuscatedLastFourDigits= */ "• • • • 5454");
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillCreditCardCoordinator mCoordinator;
@@ -241,14 +247,15 @@ public class TouchToFillCreditCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testShowsLocalAndServerCards() throws IOException {
+    public void testShowsLocalAndServerAndVirtualCards() throws IOException {
         runOnUiThreadBlocking(() -> {
-            mCoordinator.showSheet(new CreditCard[] {VISA, SERVER_MASTER_CARD}, true);
+            mCoordinator.showSheet(
+                    new CreditCard[] {VISA, MASTERCARD_VIRTUAL_CARD, SERVER_MASTER_CARD}, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
-        mRenderTestRule.render(
-                bottomSheetView, "touch_to_fill_credit_card_sheet_shows_local_and_server_cards");
+        mRenderTestRule.render(bottomSheetView,
+                "touch_to_fill_credit_card_sheet_shows_local_and_server_and_virtual_cards");
     }
 }
