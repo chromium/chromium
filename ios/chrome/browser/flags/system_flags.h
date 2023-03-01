@@ -84,6 +84,13 @@ bool MustClearApplicationGroupSandbox();
 // to display. Always returns nil for users in stable/beta.
 NSString* GetForcedPromoToDisplay();
 
+// Returns the selected device segment the user wants to simulate as a string;
+// the string should either be nil or one of the options from synthetic trial
+// "Segmentation_DeviceSwitcher."
+// The value could be set both from Experimental Settings and command line
+// switches, but the former takes precedence.
+std::string GetSegmentForForcedDeviceSwitcherExperience();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_SYSTEM_FLAGS_H_

@@ -43,6 +43,11 @@ const char kEnableDiscoverFeed[] = "enable-discover-feed";
 // Enables the upgrade sign-in promo.
 const char kEnableUpgradeSigninPromo[] = "enable-upgrade-signin-promo";
 
+// Enables device switcher experience for the segment specified in the argument,
+// e.g. "Android."
+const char kForceDeviceSwitcherExperienceCommandLineFlag[] =
+    "force-device-switcher-experience";
+
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 

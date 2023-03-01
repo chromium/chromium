@@ -129,6 +129,11 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
+// Title and description for the flag to turn on "Bring Your Own Tabs" prompt
+// for new Android switchers.
+extern const char kBringYourOwnTabsIOSName[];
+extern const char kBringYourOwnTabsIOSDescription[];
+
 // Title and description for the flag to enable experience kit calendar events.
 extern const char kCalendarExperienceKitName[];
 extern const char kCalendarExperienceKitDescription[];

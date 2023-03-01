@@ -166,6 +166,26 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Force Device Switcher Experience</string>
+			<key>Key</key>
+			<string>ForceExperienceForDeviceSwitcher</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>AndroidPhone</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Disabled</string>
+				<string>Android Phone</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Debug Settings</string>

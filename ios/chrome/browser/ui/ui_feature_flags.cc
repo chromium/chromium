@@ -59,6 +59,15 @@ BASE_FEATURE(kIOSEditMenuPartialTranslate,
              "IOSEditMenuPartialTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool ShouldShowPartialTranslateInIncognito() {
+  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+    return false;
+  }
+  return !base::GetFieldTrialParamByFeatureAsBool(
+      kIOSEditMenuPartialTranslate,
+      kIOSEditMenuPartialTranslateNoIncognitoParam, false);
+}
+
 BASE_FEATURE(kIOSNewOmniboxImplementation,
              "kIOSNewOmniboxImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -174,13 +183,20 @@ bool ShouldAddToHomeScreen(bool in_incognito) {
       kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, false);
 }
 
-bool ShouldShowPartialTranslateInIncognito() {
-  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
-    return false;
+BASE_FEATURE(kBringYourOwnTabsIOS,
+             "BringYourOwnTabsIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kBringYourOwnTabsIOSParam[] = "bottom-message";
+
+BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType() {
+  if (base::FeatureList::IsEnabled(kBringYourOwnTabsIOS)) {
+    bool showBottomMessagePrompt = base::GetFieldTrialParamByFeatureAsBool(
+        kBringYourOwnTabsIOS, kBringYourOwnTabsIOSParam, false);
+    return showBottomMessagePrompt ? BringYourOwnTabsPromptType::kBottomMessage
+                                   : BringYourOwnTabsPromptType::kHalfSheet;
   }
-  return !base::GetFieldTrialParamByFeatureAsBool(
-      kIOSEditMenuPartialTranslate,
-      kIOSEditMenuPartialTranslateNoIncognitoParam, false);
+  return BringYourOwnTabsPromptType::kDisabled;
 }
 
 BASE_FEATURE(kIndicateAccountStorageErrorInAccountCell,
