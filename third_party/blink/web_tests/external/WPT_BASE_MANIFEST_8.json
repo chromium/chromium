@@ -186826,6 +186826,19 @@
         {}
        ]
       ],
+      "text-wrap-balance-002.html": [
+       "7366c6ac0f10ada47f67c7ad35fc073016bccf96",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/text-wrap-balance-002-ref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
       "textarea-break-spaces-001.html": [
        "ad81e99768f9816c6e8a659c13aed81c4f22d940",
        [
@@ -265330,6 +265343,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "a1e193688671bd8510694a000fecdd9d52c7c9f3",
+     []
+    ],
+    "mtime.json": [
+     "c48e201bc2cbf5f25bc986074a10496b224993a0",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -272028,7 +272051,7 @@
      []
     ],
     "cookieStore_set_arguments.https.any.js.ini": [
-     "80dac74846b590570cf7becd21759bc8da6d7ee4",
+     "73913514099c776a0be2e01d547d07088352184a",
      []
     ],
     "cookieStore_subscribe_arguments.https.any.js.ini": [
@@ -280165,6 +280188,10 @@
       []
      ],
      "mix-blend-mode": {
+      "mix-blend-mode-blended-with-3D-transform.html.ini": [
+       "d68e73936c69a114c63326185b25db0961eeeafc",
+       []
+      ],
       "mix-blend-mode-blended-with-transform-and-perspective.html.ini": [
        "0e16a4f7db73d3f607983bff2be5c2f8506bba1a",
        []
@@ -315668,6 +315695,10 @@
         "19e42688a2d94abe4444bff9b573210ac73978c5",
         []
        ],
+       "text-wrap-balance-002-ref.html": [
+        "d8c1834d9572e33a8f4b5306871fb725dbd9ce5d",
+        []
+       ],
        "textarea-pre-wrap-001-ref.html": [
         "31070ea92815e4d3a3ece48ed69da03de02f671e",
         []
@@ -323040,6 +323071,10 @@
       "4e3305394609ca29539c799503a5784780e76ab1",
       []
      ],
+     "signs-abs-computed.html.ini": [
+      "587ce779c0748789d712791c27ec759ed8535133",
+      []
+     ],
      "support": {
       "1x1-green.png": [
        "b98ca0ba0a03c580ac339e4a3653539cfa8edc71",
@@ -328058,6 +328093,10 @@
      ],
      "backdrop-filter-fixed-clip.html.ini": [
       "b8c47131bc2a711b730c6d0082a75f24d1dd2ffb",
+      []
+     ],
+     "backdrop-filter-isolation-fixed.html.ini": [
+      "372f0ca40b08a1bf82ee389d8ca6d880d34664b2",
       []
      ],
      "backdrop-filter-isolation-ref.html": [
@@ -336037,6 +336076,10 @@
       ]
      },
      "basic": {
+      "accept-header.any.js.ini": [
+       "5eb1392f883bf0f9607ab40b11c3ec8804d6f901",
+       []
+      ],
       "header-value-combining.any.js.ini": [
        "c369f79ee515139b677017516568c2a2b4349fa6",
        []
@@ -340500,6 +340543,10 @@
      ]
     },
     "model": {
+     "move-fullscreen-element.html.ini": [
+      "c6b7285aefd579fa9fc74677dbc2d6a1d1520bab",
+      []
+     ],
      "move-to-fullscreen-iframe.html.ini": [
       "ae455d4f5972189067f7e0660726582dc8415a39",
       []
@@ -355403,7 +355450,7 @@
         []
        ],
        "select-event.html.ini": [
-        "4089304f9e349d4d4a79a999342e2751e5d30a07",
+        "ecd25576f12afc9814efc5b58187aeff4779dc5e",
         []
        ]
       },
@@ -362690,7 +362737,7 @@
      []
     ],
     "cross-origin-iframe.sub.html.ini": [
-     "49c5d9b0639187d7cd2e5e53309c1984628f6c86",
+     "fbd62ca7f6f9a1f7a9c192d582ac898268adcb3d",
      []
     ],
     "idlharness.window-expected.txt": [
@@ -363554,6 +363601,10 @@
      []
     ],
     "tentative": {
+     "loaf-visibility.html.ini": [
+      "60ce4deae28d3344ecd0b184d4220b1a3b198108",
+      []
+     ],
      "resources": {
       "utils.js": [
        "47c138b1e62ebfbe9287e903e4e7be438674dc34",
@@ -368012,7 +368063,7 @@
      []
     ],
     "show-consume-activation.https.html.ini": [
-     "010bac320b3480158f84dcd984c2c24379934998",
+     "d20c4ae976a5db0da76cfb55d40a9a5b6b0cafe5",
      []
     ],
     "show-method-optional-promise-rejects.https-expected.txt": [
@@ -368182,6 +368233,36 @@
      ],
      "worker-with-performance-observer.js": [
       "a72fe81c47feace765613a0962f2a7e63f71fa25",
+      []
+     ]
+    },
+    "tentative": {
+     "include-frames-originA-A-A.html.ini": [
+      "ab4725f057281b36fdfefd11c99b88d771b1e7c5",
+      []
+     ],
+     "include-frames-originA-A.html.ini": [
+      "fb74bce3d543122be54dd3ba29a4a4c7a77e7aa8",
+      []
+     ],
+     "include-frames-originA-AA.html.ini": [
+      "cfd6e957ce4a4cdea5f646b3eb9169e4b0705048",
+      []
+     ],
+     "include-frames-originA-AB.html.ini": [
+      "4341bf6b7e7d57b29d4b6db2c1ba91c38df8c067",
+      []
+     ],
+     "include-frames-originA-B-A.html.ini": [
+      "723bed5984c000e45aafb91774cdfdf0ca8c05ff",
+      []
+     ],
+     "include-frames-originA-B-B.html.ini": [
+      "ae1f6f1c905a3e21962f34077bdabd2c3a7935db",
+      []
+     ],
+     "include-frames-originA-B.html.ini": [
+      "dcb0f7e436e8279ba46c14eca5cde04ae88100be",
       []
      ]
     }
@@ -369009,6 +369090,10 @@
     ],
     "pointerevent_touch-action-inherit_highest-parent-none_touch.html.ini": [
      "fd989a7c28fc0a88b7877a32ceb0440982a1dacb",
+     []
+    ],
+    "pointerevent_touch-action-inherit_parent-none_touch.html.ini": [
+     "c105ab09d9a41a7beae2e8f8f2ce32b12a555917",
      []
     ],
     "pointerevent_touch-action-modified_touch.html.ini": [
@@ -376463,7 +376548,7 @@
       []
      ],
      "unregister-immediately-during-extendable-events.https.html.ini": [
-      "4507f109d4a7c9681a8acaa819e15213d5906200",
+      "621324d5e4481e2aca3d208c225c2a5b90f2c87e",
       []
      ],
      "unregister-then-register-new-script.https-expected.txt": [
@@ -378230,7 +378315,7 @@
      []
     ],
     "requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.js.ini": [
-     "6da875227824216b8abdaf8eb39aaf4c87f1ae04",
+     "3eed5f610bd34acf2fc1e6228a2a01f5f3cb1a2c",
      []
     ],
     "requestStorageAccess-cross-origin-iframe.sub.https.window.js.ini": [
@@ -385547,6 +385632,10 @@
      "8f4ebc0a35286b5f6c08ba755922bf1c57283013",
      []
     ],
+    "hard_swish.https.any.js.ini": [
+     "2cfeab2201d0bd861211e3c919afac377a18a0a0",
+     []
+    ],
     "idlharness.https.any.js.ini": [
      "0bdd77500603cd5554127480ea6a0dfe451e8f2b",
      []
@@ -385657,6 +385746,10 @@
        "3738e19f7c641020309de975b4474fd652fbcb35",
        []
       ],
+      "hard_swish.json": [
+       "8d7812d21e23a1e9aef93dfd14bf2872d556550e",
+       []
+      ],
       "leaky_relu.json": [
        "a95a9a0cfcee9bd549f2e1aed40429592b2049ba",
        []
@@ -385763,7 +385856,7 @@
       ]
      },
      "utils.js": [
-      "858424a36d427f8f297a46b154b66a086aefd32d",
+      "266ef3ac08927bfcef8753147924fa1cf18732f0",
       []
      ]
     },
@@ -393035,6 +393128,10 @@
     ],
     "responsexml-media-type.htm.ini": [
      "e3fe1d97dfd89bec67a00bb1667903a6126ec631",
+     []
+    ],
+    "send-accept-language.htm.ini": [
+     "145cf50b0340cff737f326ff4e2f4e76c53b9c83",
      []
     ],
     "send-authentication-cors-setrequestheader-no-cred-expected.txt": [
@@ -407442,7 +407539,7 @@
      ]
     ],
     "mixed-content-and-allowed-schemes.https.window.js": [
-     "b5efd4b9167a07ca4d694e88421a075bd3b914ca",
+     "87a84bf9fb5456473cee8fdb00da8f122a6265c3",
      [
       "background-fetch/mixed-content-and-allowed-schemes.https.window.html",
       {
@@ -407460,7 +407557,7 @@
      ]
     ],
     "port-blocking.https.window.js": [
-     "24af8d991d5e0ed363d221af7e71789c3fdfe600",
+     "358f382b64993209b96f2ad0ac8cf0d9d412380f",
      [
       "background-fetch/port-blocking.https.window.html",
       {
@@ -622478,6 +622575,57 @@
         [
          "title",
          "test WebNN API gemm operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "hard_swish.https.any.js": [
+     "052c7f2a208013ffca4d5c4ddb09404cd69d17d5",
+     [
+      "webnn/hard_swish.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API tanh operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/hard_swish.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API tanh operation"
         ],
         [
          "global",

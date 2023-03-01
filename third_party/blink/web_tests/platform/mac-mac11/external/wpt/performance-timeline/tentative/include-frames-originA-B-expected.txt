@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL GetEntries of a parent Frame of origin A and its child frame of origin B assert_equals: Total entries should be 3. expected 3 but got 4
+Harness: the test ran to completion.
+

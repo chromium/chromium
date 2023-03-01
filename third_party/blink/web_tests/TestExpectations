@@ -2925,6 +2925,9 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/long-animation-frame/tentative/loaf-iframe-popup.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-zero-resolution-rendering-2.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-zero-resolution-rendering.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Failure Timeout ]
