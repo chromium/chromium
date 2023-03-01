@@ -184,6 +184,16 @@
     padding-inline-start: 12px;
   }
 
+  /* For more info, see https://webaim.org/techniques/css/invisiblecontent/ */
+  .only-visible-to-screen-reader {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+  }
+
   .check-container {
     margin-inline-end: 12px;
     width: 16px;
@@ -296,7 +306,8 @@
 <if expr="enable_screen_ai_service">
   <template is="dom-if" if="[[pdfOcrEnabled]]">
     <button id="pdf-ocr-button"
-        class="dropdown-item" on-click="onPdfOcrClick_" role="checkbox"
+        class="dropdown-item only-visible-to-screen-reader"
+        on-click="onPdfOcrClick_" role="checkbox"
         aria-checked="[[getAriaChecked_(pdfOcrAlwaysActive_)]]">
       <span class="check-container">
         <iron-icon icon="pdf:check" hidden="[[!pdfOcrAlwaysActive_]]">
