@@ -22,7 +22,6 @@ script_test("wpt_tests_ios") {
   data = [
     "//third_party/blink/tools/run_wpt_tests.py",
     "//third_party/wpt_tools/",
-    "//third_party/blink/tools/wpt_process_results.py",
     "//third_party/blink/tools/blinkpy/",
     "//build/skia_gold_common/",
     "//third_party/blink/web_tests/external/",
