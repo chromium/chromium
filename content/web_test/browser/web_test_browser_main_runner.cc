@@ -238,6 +238,7 @@ void WebTestBrowserMainRunner::Initialize() {
                                  "MAP nonexistent.*.test ~NOTFOUND,"
                                  "MAP web-platform.test:443 127.0.0.1:8444,"
                                  "MAP not-web-platform.test:443 127.0.0.1:8444,"
+                                 "MAP devtools.test:443 127.0.0.1:8443,"
                                  "MAP *.test. 127.0.0.1,"
                                  "MAP *.test 127.0.0.1");
 

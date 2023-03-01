@@ -1,0 +1,3 @@
+Check that the dialogShown event works after enabling the FedCm domain
+OK
+

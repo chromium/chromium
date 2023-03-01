@@ -10857,3 +10857,10 @@ experimental domain Preload
   event ruleSetRemoved
     parameters
       RuleSetId id
+
+# This domain allows interacting with the FedCM dialog.
+experimental domain FedCm
+  event dialogShown
+
+  command enable
+  command disable

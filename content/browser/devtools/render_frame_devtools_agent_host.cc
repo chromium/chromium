@@ -28,6 +28,7 @@
 #include "content/browser/devtools/protocol/device_access_handler.h"
 #include "content/browser/devtools/protocol/dom_handler.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
+#include "content/browser/devtools/protocol/fedcm_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/input_handler.h"
@@ -373,6 +374,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
     session->CreateAndAddHandler<protocol::TracingHandler>(GetIOContext());
   }
   session->CreateAndAddHandler<protocol::LogHandler>();
+  session->CreateAndAddHandler<protocol::FedCmHandler>();
 #if !BUILDFLAG(IS_ANDROID)
   session->CreateAndAddHandler<protocol::WebAuthnHandler>();
 #endif  // !BUILDFLAG(IS_ANDROID)

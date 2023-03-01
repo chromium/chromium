@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
@@ -979,6 +980,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      weak_ptr_factory_.GetWeakPtr(), auto_reauthn),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
+  devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host());
 
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(

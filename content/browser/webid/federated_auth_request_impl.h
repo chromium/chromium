@@ -87,6 +87,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
 
+  // For use by the devtools protocol for browser automation.
+  IdentityRequestDialogController* GetDialogController() {
+    return request_dialog_controller_.get();
+  }
+
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderConfigPtr,
                             bool auto_reauthn,

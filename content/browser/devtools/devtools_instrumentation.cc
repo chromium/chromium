@@ -17,6 +17,7 @@
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/device_access_handler.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
+#include "content/browser/devtools/protocol/fedcm_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/input_handler.h"
 #include "content/browser/devtools/protocol/log_handler.h"
@@ -1839,6 +1840,14 @@ void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
   DispatchToAgents(ftn,
                    &protocol::DeviceAccessHandler::CleanUpDeviceRequestPrompt,
                    prompt_info);
+}
+
+void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host) {
+  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+  if (!ftn) {
+    return;
+  }
+  DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown);
 }
 
 }  // namespace devtools_instrumentation
