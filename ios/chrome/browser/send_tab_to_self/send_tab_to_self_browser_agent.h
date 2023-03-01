@@ -10,6 +10,7 @@
 #import <string>
 #import <vector>
 
+#import "base/scoped_observation.h"
 #import "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
@@ -88,6 +89,18 @@ class SendTabToSelfBrowserAgent
 
   // The WebState that is being observed for activation, if any.
   web::WebState* pending_web_state_ = nullptr;
+
+  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
+
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
+
+  base::ScopedObservation<send_tab_to_self::SendTabToSelfModel,
+                          send_tab_to_self::SendTabToSelfModelObserver>
+      model_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_BROWSER_AGENT_H_
