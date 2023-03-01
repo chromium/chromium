@@ -87,11 +87,9 @@ config("skia_config") {
   if (skia_support_gpu) {
     workaround_header = "gpu/config/gpu_driver_bug_workaround_autogen.h"
     defines += [
-      "SK_SUPPORT_GPU=1",
+      "SK_GANESH",
       "SK_GPU_WORKAROUNDS_HEADER=\"$workaround_header\"",
     ]
-  } else {
-    defines += [ "SK_SUPPORT_GPU=0" ]
   }
 
   if (is_android) {
