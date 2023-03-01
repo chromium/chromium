@@ -65,6 +65,7 @@ source_set("unit_tests") {
     ":message_stream",
     ":test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/services/quick_pair",

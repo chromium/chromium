@@ -49,6 +49,10 @@ class FakeBluetoothAdapter
 
   void NotifyDeviceChanged(device::BluetoothDevice* device);
 
+  void NotifyDeviceConnectedStateChanged(device::BluetoothDevice* device,
+                                         bool is_now_connected);
+  void NotifyDeviceAdded(device::BluetoothDevice* device);
+
   bool IsPowered() const override;
 
   bool IsPresent() const override;
