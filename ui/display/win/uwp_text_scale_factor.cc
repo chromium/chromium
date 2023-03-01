@@ -52,12 +52,6 @@ bool g_default_instance_cleaned_up = false;
 bool CreateUiSettingsComObject(ComPtr<IUISettings2>& ptr) {
   DCHECK(!ptr);
 
-  // Need to do this check before using WinRT functions.
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    DLOG(ERROR) << "Failed loading functions from combase.dll";
-    return false;
-  }
-
   // Create the COM object.
   auto hstring = base::win::ScopedHString::Create(
       RuntimeClass_Windows_UI_ViewManagement_UISettings);

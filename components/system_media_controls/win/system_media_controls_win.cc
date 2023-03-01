@@ -91,10 +91,6 @@ bool SystemMediaControlsWin::Initialize() {
 
   attempted_to_initialize_ = true;
 
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    return false;
-  }
-
   Microsoft::WRL::ComPtr<ISystemMediaTransportControlsInterop> interop;
   HRESULT hr = base::win::GetActivationFactory<
       ISystemMediaTransportControlsInterop,

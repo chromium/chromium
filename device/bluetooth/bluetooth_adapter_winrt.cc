@@ -666,13 +666,6 @@ void BluetoothAdapterWinrt::InitForTests(
     ComPtr<IBluetoothAdapterStatics> bluetooth_adapter_statics,
     ComPtr<IDeviceInformationStatics> device_information_statics,
     ComPtr<IRadioStatics> radio_statics) {
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    CompleteInit(std::move(init_callback), std::move(bluetooth_adapter_statics),
-                 std::move(device_information_statics),
-                 std::move(radio_statics));
-    return;
-  }
-
   auto statics = PerformSlowInitTasks();
 
   // This allows any passed in values (which would be fakes) to replace
@@ -696,9 +689,6 @@ void BluetoothAdapterWinrt::InitForTests(
 BluetoothAdapterWinrt::StaticsInterfaces
 BluetoothAdapterWinrt::PerformSlowInitTasks() {
   base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    return BluetoothAdapterWinrt::StaticsInterfaces();
-  }
   ComPtr<IBluetoothAdapterStatics> adapter_statics;
   HRESULT hr = base::win::GetActivationFactory<
       IBluetoothAdapterStatics,

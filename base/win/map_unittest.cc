@@ -186,10 +186,6 @@ const wchar_t kTestValue[] = L"Test value";
 const std::map<int, double, internal::Less> g_one{{1, 10.7}};
 const std::map<int, double, internal::Less> g_two{{1, 10.7}, {2, 20.3}};
 
-bool ResolveCoreWinRT() {
-  return base::win::ResolveCoreWinRTDelayload();
-}
-
 HRESULT GetPropertyValueStaticsActivationFactory(
     IPropertyValueStatics** statics) {
   return base::win::GetActivationFactory<
@@ -499,7 +495,6 @@ TEST(MapTest, First) {
 TEST(MapTest, Properties) {
   // This test case validates Map against Windows property key system,
   // which is used to store WinRT device properties.
-  ASSERT_TRUE(ResolveCoreWinRT());
   ScopedWinrtInitializer winrt_initializer;
   ASSERT_TRUE(winrt_initializer.Succeeded());
 

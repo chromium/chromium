@@ -230,12 +230,6 @@ bool InitializeUWPSupport() {
     // 10.0.10240.0.
     DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
-    // Provide access to Core WinRT/UWP functions.
-    if (!base::win::ResolveCoreWinRTDelayload()) {
-      // Failed loading functions from combase.dll.
-      DLOG(WARNING) << "Failed to initialize WinRT/UWP";
-      return false;
-    }
     return true;
   }();
 

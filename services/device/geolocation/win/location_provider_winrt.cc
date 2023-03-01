@@ -487,7 +487,6 @@ std::unique_ptr<LocationProvider> NewSystemLocationProvider(
     GeolocationManager* geolocation_manager) {
   if (!base::FeatureList::IsEnabled(
           features::kWinrtGeolocationImplementation) ||
-      !base::win::ResolveCoreWinRTDelayload() ||
       !IsSystemLocationSettingEnabled()) {
     return nullptr;
   }

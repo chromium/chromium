@@ -174,12 +174,6 @@ absl::optional<CaptionStyle> InitializeFromSystemSettings() {
   TRACE_EVENT0("ui", "InitializeFromSystemSettings");
   DCHECK(base::FeatureList::IsEnabled(features::kSystemCaptionStyle));
 
-  // Need to do this check before using WinRT functions.
-  bool can_use_scoped_hstring = base::win::ResolveCoreWinRTDelayload();
-
-  if (!can_use_scoped_hstring)
-    return absl::nullopt;
-
   base::win::ScopedHString closed_caption_properties_string =
       base::win::ScopedHString::Create(
           RuntimeClass_Windows_Media_ClosedCaptioning_ClosedCaptionProperties);

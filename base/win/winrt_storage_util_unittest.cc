@@ -21,10 +21,6 @@ namespace win {
 TEST(WinrtStorageUtilTest, CreateBufferFromData) {
   ScopedCOMInitializer com_initializer(ScopedCOMInitializer::kMTA);
 
-  if (!ResolveCoreWinRTDelayload()) {
-    return;
-  }
-
   const std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   Microsoft::WRL::ComPtr<ABI::Windows::Storage::Streams::IBuffer> buffer;
   ASSERT_HRESULT_SUCCEEDED(

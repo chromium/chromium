@@ -822,15 +822,6 @@ void MidiManagerWinrt::InitializeOnComRunner() {
 
   DCHECK(service()->task_service()->IsOnTaskRunner(kComTaskRunner));
 
-  bool preload_success = base::win::ResolveCoreWinRTDelayload();
-  if (!preload_success) {
-    service()->task_service()->PostBoundTask(
-        kDefaultTaskRunner,
-        base::BindOnce(&MidiManagerWinrt::CompleteInitialization,
-                       base::Unretained(this), Result::INITIALIZATION_ERROR));
-    return;
-  }
-
   port_manager_in_ = std::make_unique<MidiInPortManager>(this);
   port_manager_out_ = std::make_unique<MidiOutPortManager>(this);
 

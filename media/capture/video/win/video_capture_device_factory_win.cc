@@ -283,15 +283,6 @@ DevicesInfo::const_iterator FindNonDirectShowDeviceInfoByNameAndModel(
       });
 }
 
-bool IsEnclosureLocationSupported() {
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    DLOG(ERROR) << "Failed loading functions from combase.dll";
-    return false;
-  }
-
-  return true;
-}
-
 void FindAndSetDefaultVideoCamera(
     std::vector<VideoCaptureDeviceInfo>* devices_info) {
   // When available, the default video camera should be external with
@@ -565,18 +556,14 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
     devices_info = GetDevicesInfoDirectShow(devices_info);
   }
 
-  if (IsEnclosureLocationSupported()) {
-    origin_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-    com_thread_.init_com_with_mta(true);
-    com_thread_.Start();
-    com_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP,
-                       base::Unretained(this), std::move(devices_info),
-                       std::move(callback)));
-  } else {
-    DeviceInfoReady(std::move(devices_info), std::move(callback));
-  }
+  origin_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+  com_thread_.init_com_with_mta(true);
+  com_thread_.Start();
+  com_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP,
+                     base::Unretained(this), std::move(devices_info),
+                     std::move(callback)));
 }
 
 void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(

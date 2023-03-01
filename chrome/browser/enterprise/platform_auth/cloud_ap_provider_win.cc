@@ -14,7 +14,9 @@
 #include <windows.security.authentication.web.core.h>
 #include <wrl/client.h>
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/check.h"
@@ -85,9 +87,6 @@ class WebAccountSupportFinder
   void Find() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
-
-    if (!base::win::ResolveCoreWinRTDelayload())
-      return;  // Unsupported.
 
     // Get the `WebAuthenticationCoreManager`.
     ComPtr<IWebAuthenticationCoreManagerStatics> auth_manager;

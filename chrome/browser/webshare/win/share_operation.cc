@@ -4,6 +4,18 @@
 
 #include "chrome/browser/webshare/win/share_operation.h"
 
+#include <shlobj.h>
+#include <windows.applicationmodel.datatransfer.h>
+#include <windows.foundation.collections.h>
+#include <windows.foundation.h>
+#include <windows.storage.h>
+#include <windows.storage.streams.h>
+#include <wininet.h>
+#include <wrl/client.h>
+#include <wrl/event.h>
+
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
@@ -25,16 +37,6 @@
 #include "ui/base/win/internal_constants.h"
 #include "ui/views/win/hwnd_util.h"
 #include "url/gurl.h"
-
-#include <shlobj.h>
-#include <windows.applicationmodel.datatransfer.h>
-#include <windows.foundation.collections.h>
-#include <windows.foundation.h>
-#include <windows.storage.h>
-#include <windows.storage.streams.h>
-#include <wininet.h>
-#include <wrl/client.h>
-#include <wrl/event.h>
 
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage2;
@@ -60,10 +62,7 @@ using Microsoft::WRL::Callback;
 using Microsoft::WRL::ComPtr;
 using Microsoft::WRL::Make;
 
-namespace ABI {
-namespace Windows {
-namespace Foundation {
-namespace Collections {
+namespace ABI::Windows::Foundation::Collections {
 
 // Define template specializations for the types used. These uuids were randomly
 // generated.
@@ -76,10 +75,7 @@ struct __declspec(uuid("30BE4864-5EE5-4111-916E-15126649F3C9"))
     VectorChangedEventHandler<IStorageItem*>
     : VectorChangedEventHandler_impl<IStorageItem*> {};
 
-}  // namespace Collections
-}  // namespace Foundation
-}  // namespace Windows
-}  // namespace ABI
+}  // namespace ABI::Windows::Foundation::Collections
 
 namespace webshare {
 namespace {
@@ -372,12 +368,6 @@ base::WeakPtr<ShareOperation> ShareOperation::AsWeakPtr() {
 void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
-
-  // Ensure that the required WinRT functionality is available/loaded.
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    Complete(blink::mojom::ShareError::INTERNAL_ERROR);
-    return;
-  }
 
   // If the corresponding web_contents have already been cleaned up, cancel
   // the operation.

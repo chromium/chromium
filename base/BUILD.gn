@@ -3418,7 +3418,6 @@ test("base_unittests") {
       "win/com_init_balancer_unittest.cc",
       "win/com_init_check_hook_unittest.cc",
       "win/com_init_util_unittest.cc",
-      "win/core_winrt_util_unittest.cc",
       "win/dark_mode_support_unittest.cc",
       "win/dispatch_stub.cc",
       "win/dispatch_stub.h",

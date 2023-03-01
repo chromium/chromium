@@ -238,15 +238,11 @@ bool IsWindows10OrGreaterTabletMode(HWND hwnd) {
            IsDeviceUsedAsATablet(/*reason=*/nullptr);
   }
 
-  if (!ResolveCoreWinRTDelayload()) {
-    return false;
-  }
-
   ScopedHString view_settings_guid = ScopedHString::Create(
       RuntimeClass_Windows_UI_ViewManagement_UIViewSettings);
   Microsoft::WRL::ComPtr<IUIViewSettingsInterop> view_settings_interop;
-  HRESULT hr = win::RoGetActivationFactory(
-      view_settings_guid.get(), IID_PPV_ARGS(&view_settings_interop));
+  HRESULT hr = ::RoGetActivationFactory(view_settings_guid.get(),
+                                        IID_PPV_ARGS(&view_settings_interop));
   if (FAILED(hr))
     return false;
 

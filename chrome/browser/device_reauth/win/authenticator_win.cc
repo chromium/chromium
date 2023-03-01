@@ -89,11 +89,6 @@ void ReportCantCheckAvailability(
 void GetBiometricAvailabilityFromWindows(
     AvailabilityCallback callback,
     scoped_refptr<base::SequencedTaskRunner> thread) {
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    ReportCantCheckAvailability(thread, std::move(callback));
-    return;
-  }
-
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();

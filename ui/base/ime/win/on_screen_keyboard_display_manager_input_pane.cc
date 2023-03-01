@@ -90,9 +90,6 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
     if (input_pane2_)
       return true;
-    if (!base::win::ResolveCoreWinRTDelayload()) {
-      return false;
-    }
 
     base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
 

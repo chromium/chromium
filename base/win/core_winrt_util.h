@@ -13,14 +13,7 @@
 #include "base/base_export.h"
 #include "base/win/scoped_hstring.h"
 
-namespace base {
-namespace win {
-
-// Provides access to Core WinRT functions which may not be available on
-// Windows 7. Loads functions dynamically at runtime to prevent library
-// dependencies.
-
-BASE_EXPORT bool ResolveCoreWinRTDelayload();
+namespace base::win {
 
 // The following stubs are provided for when component build is enabled, in
 // order to avoid the propagation of delay-loading CoreWinRT to other modules.
@@ -43,7 +36,6 @@ HRESULT GetActivationFactory(InterfaceType** factory) {
                                            IID_PPV_ARGS(factory));
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win
 
 #endif  // BASE_WIN_CORE_WINRT_UTIL_H_

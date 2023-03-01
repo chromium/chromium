@@ -40,11 +40,6 @@ HRESULT GetDataTransferManagerHandles(
     HWND hwnd,
     IDataTransferManagerInterop** data_transfer_manager_interop,
     IDataTransferManager** data_transfer_manager) {
-  // If the required WinRT functionality is not available, fail the operation.
-  if (!base::win::ResolveCoreWinRTDelayload()) {
-    return E_FAIL;
-  }
-
   // IDataTransferManagerInterop is semi-hidden behind a CloakedIid
   // structure on the DataTransferManager, excluding it from things
   // used by RoGetActivationFactory like GetIids(). Because of this,
