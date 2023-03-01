@@ -5,7 +5,7 @@ Version: 22.01
 Date: 2022-07-15
 License: Public Domain
 Security Critical: yes
-CPEPrefix: unknown
+CPEPrefix: cpe:2.3:a:7-zip:7-zip:22.01:
 
 Description:
 This contains a part of LZMA SDK 22.01.
