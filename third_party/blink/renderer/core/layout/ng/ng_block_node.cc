@@ -1449,14 +1449,19 @@ void NGBlockNode::PlaceChildrenInFlowThread(
   // design document for legacy multicol:
   // https://www.chromium.org/developers/design-documents/multi-column-layout
 
-  NGBoxStrut border_scrollbar_padding = ComputeBorders(space, *this) +
-                                        ComputeScrollbars(space, *this) +
-                                        ComputePadding(space, Style());
+  NGBoxStrut border_scrollbar_padding;
   WritingModeConverter converter(space.GetWritingDirection(),
                                  physical_fragment.Size());
-  LayoutUnit column_row_inline_size =
-      converter.ToLogical(physical_fragment.Size()).inline_size -
-      border_scrollbar_padding.InlineSum();
+  LayoutUnit column_row_inline_size;
+  const bool copy_back = !RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled();
+  if (copy_back) {
+    border_scrollbar_padding = ComputeBorders(space, *this) +
+                               ComputeScrollbars(space, *this) +
+                               ComputePadding(space, Style());
+    column_row_inline_size =
+        converter.ToLogical(physical_fragment.Size()).inline_size -
+        border_scrollbar_padding.InlineSum();
+  }
 
   const NGBlockBreakToken* previous_column_break_token = nullptr;
   LayoutMultiColumnSet* pending_column_set = nullptr;
@@ -1479,29 +1484,34 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       // We also create break tokens for spanners, so we need to check.
       if (token->InputNode() == *this) {
         previous_column_break_token = token;
-        flow_thread_offset =
-            previous_column_break_token->ConsumedBlockSizeForLegacy();
+        if (copy_back) {
+          flow_thread_offset =
+              previous_column_break_token->ConsumedBlockSizeForLegacy();
 
-        // We're usually resuming layout into a column set that has already been
-        // started in an earlier fragment, but in some cases the column set
-        // starts exactly at the outer fragmentainer boundary (right after a
-        // spanner that took up all remaining space in the earlier fragment),
-        // and when this happens, we need to initialize the set now.
-        pending_column_set = flow_thread->PendingColumnSetForNG();
+          // We're usually resuming layout into a column set that has already
+          // been started in an earlier fragment, but in some cases the column
+          // set starts exactly at the outer fragmentainer boundary (right after
+          // a spanner that took up all remaining space in the earlier
+          // fragment), and when this happens, we need to initialize the set
+          // now.
+          pending_column_set = flow_thread->PendingColumnSetForNG();
 
-        // If we resume with column content (without being interrupted by a
-        // spanner) in this multicol fragment, we need to add another
-        // fragmentainer group to the column set that we're resuming.
-        should_append_fragmentainer_group = true;
+          // If we resume with column content (without being interrupted by a
+          // spanner) in this multicol fragment, we need to add another
+          // fragmentainer group to the column set that we're resuming.
+          should_append_fragmentainer_group = true;
+        }
       }
     }
   } else {
-    // This is the first fragment generated for the multicol container (there
-    // may be multiple fragments if we're nested inside another fragmentation
-    // context).
-    flow_thread->StartLayoutFromNG();
-    pending_column_set =
-        DynamicTo<LayoutMultiColumnSet>(flow_thread->FirstMultiColumnBox());
+    if (copy_back) {
+      // This is the first fragment generated for the multicol container (there
+      // may be multiple fragments if we're nested inside another fragmentation
+      // context).
+      flow_thread->StartLayoutFromNG();
+      pending_column_set =
+          DynamicTo<LayoutMultiColumnSet>(flow_thread->FirstMultiColumnBox());
+    }
   }
 
   for (const auto& child : physical_fragment.Children()) {
@@ -1510,33 +1520,34 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     if (child_box && child_box != box_) {
       CopyChildFragmentPosition(child_fragment, child.offset,
                                 physical_fragment);
+      if (!copy_back) {
+        continue;
+      }
       if (!child_box->IsColumnSpanAll())
         continue;
       LayoutBox* placeholder = child_box->SpannerPlaceholder();
-      if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-        if (!child_fragment.BreakToken()) {
-          // Last fragment for this spanner. Update its placeholder.
-          placeholder->SetLocation(child_box->Location());
-          placeholder->SetSize(child_box->Size());
-        }
+      if (!child_fragment.BreakToken()) {
+        // Last fragment for this spanner. Update its placeholder.
+        placeholder->SetLocation(child_box->Location());
+        placeholder->SetSize(child_box->Size());
+      }
 
-        flow_thread->SkipColumnSpanner(child_box, flow_thread_offset);
+      flow_thread->SkipColumnSpanner(child_box, flow_thread_offset);
 
-        if (auto* previous_column_set = DynamicTo<LayoutMultiColumnSet>(
-                placeholder->PreviousSiblingMultiColumnBox())) {
-          previous_column_set->FinishLayoutFromNG();
-        }
+      if (auto* previous_column_set = DynamicTo<LayoutMultiColumnSet>(
+              placeholder->PreviousSiblingMultiColumnBox())) {
+        previous_column_set->FinishLayoutFromNG();
+      }
 
-        if (pending_column_set) {
-          // The legacy tree builder (the flow thread code) sometimes
-          // incorrectly keeps column sets that shouldn't be there anymore. If
-          // we have two column spanners, that are in fact adjacent, even though
-          // there's a spurious column set between them, the column set hasn't
-          // been initialized correctly (since we still have a
-          // pending_column_set at this point). Say hello to the column set that
-          // shouldn't exist, so that it gets some initialization.
-          pending_column_set->SetIsIgnoredByNG();
-        }
+      if (pending_column_set) {
+        // The legacy tree builder (the flow thread code) sometimes
+        // incorrectly keeps column sets that shouldn't be there anymore. If
+        // we have two column spanners, that are in fact adjacent, even though
+        // there's a spurious column set between them, the column set hasn't
+        // been initialized correctly (since we still have a
+        // pending_column_set at this point). Say hello to the column set that
+        // shouldn't exist, so that it gets some initialization.
+        pending_column_set->SetIsIgnoredByNG();
       }
 
       LayoutBox* next_box = placeholder->NextSiblingMultiColumnBox();
@@ -1561,9 +1572,10 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     }
 
     DCHECK(!child_box);
-    LogicalSize logical_size = FragmentainerLogicalCapacity(child_fragment);
 
-    if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    if (copy_back) {
+      LogicalSize logical_size = FragmentainerLogicalCapacity(child_fragment);
+
       if (has_processed_first_column_in_flow_thread) {
         // Non-uniform fragmentainer widths not supported by legacy layout.
         DCHECK_EQ(flow_thread->LogicalWidth(), logical_size.inline_size);
@@ -1625,6 +1637,8 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       }
 
       flow_thread->SetCurrentColumnBlockSizeFromNG(logical_size.block_size);
+
+      flow_thread_offset += logical_size.block_size;
     }
 
     // Each anonymous child of a multicol container constitutes one column.
@@ -1654,7 +1668,6 @@ void NGBlockNode::PlaceChildrenInFlowThread(
                                    previous_column_break_token);
     }
 
-    flow_thread_offset += logical_size.block_size;
     previous_column_break_token = child_fragment.BreakToken();
   }
 

@@ -744,12 +744,14 @@ void LayoutMultiColumnFlowThread::SetColumnCountFromNG(unsigned column_count) {
 
 void LayoutMultiColumnFlowThread::StartLayoutFromNG() {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   last_set_worked_on_ = DynamicTo<LayoutMultiColumnSet>(FirstMultiColumnBox());
 }
 
 LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
     const {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   if (last_set_worked_on_ &&
       !last_set_worked_on_->FirstFragmentainerGroup().IsLogicalHeightKnown()) {
     DCHECK_EQ(last_set_worked_on_->FragmentainerGroups().size(), 1u);
