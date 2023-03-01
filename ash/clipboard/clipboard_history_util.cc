@@ -208,11 +208,9 @@ bool IsEnabledInCurrentMode() {
   }
 }
 
-ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem* item,
-                                           const std::string& file_name) {
-  DCHECK_EQ(item->display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
-  const int copied_files_count = GetCountOfCopiedFiles(item->data());
-
+ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {
+  DCHECK_EQ(item.display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
+  const int copied_files_count = GetCountOfCopiedFiles(item.data());
   if (copied_files_count == 0)
     return ui::ImageModel();
 
@@ -222,10 +220,10 @@ ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem* item,
       &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
   int icon_index = std::min(copied_files_count - 2, (int)icons.size() - 1);
 
-  const auto* vector_icon =
-      copied_files_count == 1
-          ? &chromeos::GetIconForPath(base::FilePath(file_name))
-          : icons[icon_index];
+  const auto* vector_icon = copied_files_count == 1
+                                ? &chromeos::GetIconForPath(base::FilePath(
+                                      base::UTF16ToUTF8(item.display_text())))
+                                : icons[icon_index];
   return ui::ImageModel::FromVectorIcon(*vector_icon, ui::kColorSysSecondary);
 }
 

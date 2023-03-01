@@ -27,6 +27,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/window_util.h"
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -45,6 +46,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -58,6 +60,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/color/color_provider_source.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -537,7 +540,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     item_dict.Set(kTimeCopiedKey, item.time_copied().ToJsTimeIgnoringNull());
     if (const auto maybe_image_data_url = item.GetImageDataUrl();
         maybe_image_data_url.has_value()) {
-      item_dict.Set(kImageDataKey, maybe_image_data_url.value());
+      item_dict.Set(kImageDataKey, std::move(maybe_image_data_url.value()));
     }
     switch (item.display_format()) {
       case ClipboardHistoryItem::DisplayFormat::kText:
@@ -551,6 +554,22 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
         item_dict.Set(kDisplayFormatKey, kHtmlFormat);
         break;
       case ClipboardHistoryItem::DisplayFormat::kFile:
+        DCHECK(!item_dict.contains(kImageDataKey));
+
+        const auto& icon = item.icon();
+        DCHECK(icon.has_value());
+
+        const auto* active_window = window_util::GetActiveWindow();
+        const auto* color_provider =
+            ColorUtil::GetColorProviderSourceForWindow(
+                active_window ? active_window
+                              : Shell::Get()->GetPrimaryRootWindow())
+                ->GetColorProvider();
+        DCHECK(color_provider);
+
+        item_dict.Set(
+            kImageDataKey,
+            webui::GetBitmapDataUrl(*icon->Rasterize(color_provider).bitmap()));
         item_dict.Set(kTextDataKey, item.display_text());
         item_dict.Set(kDisplayFormatKey, kFileFormat);
         break;

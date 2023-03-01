@@ -6,7 +6,8 @@
 
 #include <array>
 
-#include "ash/clipboard/clipboard_history_util.h"
+#include "ash/clipboard/clipboard_history_item.h"
+#include "base/check.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
@@ -35,12 +36,12 @@ ClipboardHistoryFileItemView::CreateContentsView() {
 
   // `file_icon` should be `contents_view`'s first child.
   if (const auto* item = GetClipboardHistoryItem()) {
+    DCHECK(item->icon().has_value());
     views::ImageView* file_icon = contents_view->AddChildViewAt(
         std::make_unique<views::ImageView>(), /*index=*/0);
     file_icon->SetImageSize(kIconSize);
     file_icon->SetProperty(views::kMarginsKey, kIconMargin);
-    file_icon->SetImage(clipboard_history_util::GetIconForFileClipboardItem(
-        item, base::UTF16ToUTF8(text())));
+    file_icon->SetImage(item->icon().value());
   }
 
   return contents_view;

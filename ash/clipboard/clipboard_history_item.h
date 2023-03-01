@@ -48,6 +48,7 @@ class ASH_EXPORT ClipboardHistoryItem {
   ui::ClipboardData ReplaceEquivalentData(ui::ClipboardData&& new_data);
 
   // Returns the data URL for this item's PNG or bitmap image, if any.
+  // TODO(b/266947643): Move data URL logic to `ChromeVirtualKeyboardDelegate`.
   absl::optional<std::string> GetImageDataUrl() const;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -62,6 +63,7 @@ class ASH_EXPORT ClipboardHistoryItem {
     return html_preview_;
   }
   const std::u16string& display_text() const { return display_text_; }
+  const absl::optional<ui::ImageModel>& icon() const { return icon_; }
 
  private:
   // Unique identifier.
@@ -87,6 +89,10 @@ class ASH_EXPORT ClipboardHistoryItem {
 
   // The text that should be displayed on this item's menu entry.
   const std::u16string display_text_;
+
+  // Cached image model for the item's icon. Currently, there will be no value
+  // for non-file items.
+  const absl::optional<ui::ImageModel> icon_;
 };
 
 }  // namespace ash
