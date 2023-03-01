@@ -554,11 +554,18 @@ about is good! But see the note below on
 
 ## Documenting Histograms
 
-Document histograms in [histograms.xml](./histograms.xml). There is also a
-[google-internal version of the file](http://go/chrome-histograms-internal) for
-the rare case in which the histogram is confidential (added only to Chrome code,
-not Chromium code; or, an accurate description about how to interpret the
-histogram would reveal information about Google's plans).
+Document histograms in an appropriate [metadata/foo/histograms.xml](https://source.chromium.org/search?q=f:metadata%2F.*%2Fhistograms.xml&ss=chromium%2Fchromium%2Fsrc)
+file.
+
+There is also a [google-internal version of the file](https://goto.google.com/chrome-histograms-internal)
+for two cases:
+
+* The histogram is confidential (an accurate description about how to interpret
+  the histogram would reveal information about Google's plans). In this case,
+  you must only document the histogram in the internal version.
+* The corresponding code that emits the histogram is internal (added only to
+  Chrome code, not to Chromium code). In this case, you may document the
+  histogram in either the internal or external version.
 
 ### Add Histogram and Documentation in the Same Changelist
 
