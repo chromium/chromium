@@ -4333,35 +4333,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Pip.FreeResizeFinishArea" units="%"
-    expires_after="2021-06-16">
-  <owner>takise@chromium.org</owner>
-  <owner>linben@chromium.org</owner>
-  <summary>
-    Area of a Picture-in-picture window when ending a free-resize, as a
-    percentage of the area it takes up on the display it is on.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Pip.FreeResizeInitialArea" units="%"
-    expires_after="2021-06-16">
-  <owner>takise@chromium.org</owner>
-  <owner>linben@chromium.org</owner>
-  <summary>
-    Initial area of a Picture-in-picture window when beginning a free-resize, as
-    a percentage of the area it takes up on the display it is on.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Pip.Position" enum="AshPipPosition"
-    expires_after="2021-06-16">
-  <owner>takise@chromium.org</owner>
-  <owner>linben@chromium.org</owner>
-  <summary>
-    The position that a Picture-in-picture window was moved to by a user drag.
-  </summary>
-</histogram>
-
 <histogram name="Ash.PowerButtonScreenshot.DelayBetweenAccelKeyPressed"
     units="ms" expires_after="2020-11-15">
   <owner>zentaro@chromium.org</owner>

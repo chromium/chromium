@@ -10,11 +10,6 @@
 namespace ash {
 
 constexpr char kAshPipEventsHistogramName[] = "Ash.Pip.Events";
-constexpr char kAshPipFreeResizeInitialAreaHistogramName[] =
-    "Ash.Pip.FreeResizeInitialArea";
-constexpr char kAshPipFreeResizeFinishAreaHistogramName[] =
-    "Ash.Pip.FreeResizeFinishArea";
-constexpr char kAshPipPositionHistogramName[] = "Ash.Pip.Position";
 constexpr char kAshPipAndroidPipUseTimeHistogramName[] =
     "Ash.Pip.AndroidPipUseTime";
 
