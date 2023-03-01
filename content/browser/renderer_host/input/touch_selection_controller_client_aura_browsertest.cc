@@ -797,6 +797,22 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   // Tap once more on the insertion handle; the quick menu should disappear.
   generator.GestureTapAt(handle_center);
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Tap once more on the insertion handle; the quick menu should appear.
+  generator.GestureTapAt(handle_center);
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Tap at a different point inside the textfield and wait for the insertion
+  // handle to appear.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_SHOWN);
+  generator.GestureTapAt({point.x() + 40, point.y() + 5});
+  selection_controller_client()->Wait();
+
+  // Check that insertion is active, but the quick menu is not showing.
+  EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
+            rwhva->selection_controller()->active_status());
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
 
 // Tests that the quick menu is hidden whenever a touch point is active.
