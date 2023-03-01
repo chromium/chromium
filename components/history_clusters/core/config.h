@@ -337,6 +337,11 @@ struct Config {
   // considered to be fully frozen and triggerability can be finalized.
   base::TimeDelta cluster_triggerability_cutoff_duration = base::Minutes(120);
 
+  // Whether to continue fetching persisted clusters when updating cluster
+  // triggerability even if all returned clusters had their triggerability
+  // calculated already.
+  bool fetch_persisted_clusters_after_filtered_clusters_empty = true;
+
   // WebUI features and params.
 
   // Whether show either the hide visits thumbs-down or menu item on individual

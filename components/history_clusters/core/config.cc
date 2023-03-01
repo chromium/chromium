@@ -356,6 +356,12 @@ Config::Config() {
             internal::kHistoryClustersNavigationContextClustering,
             "cluster_triggerability_cutoff_duration_minutes",
             cluster_triggerability_cutoff_duration.InMinutes()));
+
+    fetch_persisted_clusters_after_filtered_clusters_empty =
+        GetFieldTrialParamByFeatureAsBool(
+            internal::kHistoryClustersNavigationContextClustering,
+            "fetch_persisted_clusters_after_filtered_clusters_empty",
+            fetch_persisted_clusters_after_filtered_clusters_empty);
   }
 
   // WebUI features and params.

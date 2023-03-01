@@ -1264,6 +1264,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="History.Clusters.Backend.UpdateClusterTriggerability.DidUpdateClusterTriggerability{Segment}"
+    enum="Boolean" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    On navigation, context clusters are created, grown, and persisted.
+
+    On startup and every 1 hour afterwards, these context clusters have their
+    triggability calculated. Context clusters older than 2 hours are not updated
+    are not re-updated after the initial triggability is calculated. However, if
+    there are unclustered visits (due to visits from before the user had context
+    clustering enabled or synced visits without a cluster ID), they will also be
+    context clustered with their triggerability calculated as well.
+
+    When a user visits the Journeys WebUI, persisted clusters (both those with
+    and without triggerability calculated) are fetched. Clusters are then
+    augmented with appropriate metadata needed for displaying on the Journeys
+    WebUI (e.g. ranking, deduping, labeling).
+
+    When the keyword cache used to match omnibox inputs and show journey chips
+    or suggestions in the omnibox needs updating, context clusters (both those
+    with and without triggerability calculated) are fetched.
+
+    This histogram records whether there was at least one cluster's
+    triggerability was updated {Segment}.
+
+    Recorded for every batch of clusters to be updated; can be recorded more
+    than once every hour (Finch-configurable).
+  </summary>
+  <token key="Segment">
+    <variant name="" summary="during a run of the task"/>
+    <variant name=".AfterFilteredClustersEmpty"
+        summary="after a call to fetch persisted clusters returned only
+                 clusters that have all had their triggerability calculated
+                 already"/>
+  </token>
+</histogram>
+
+<histogram
     name="History.Clusters.Backend.UpdateClusterTriggerability.HadUnclusteredVisitsToCluster"
     enum="Boolean" expires_after="2023-10-01">
   <owner>sophiechang@chromium.org</owner>
@@ -1292,8 +1332,8 @@ chromium-metrics-reviews@google.com.
     in the first run of this task. When this trends to all false, this
     additional step can get deleted.
 
-    Recorded for every batch of visits clustered; can be recorded more than once
-    every hour.
+    Recorded for every batch of clusters to be updated; can be recorded more
+    than once every hour.
   </summary>
 </histogram>
 
@@ -1325,8 +1365,8 @@ chromium-metrics-reviews@google.com.
     This histogram records the latency breakdown for updating cluster
     triggerability.
 
-    Recorded for every batch of visits clustered; can be recorded more than once
-    every hour.
+    Recorded for every batch of clusters to be updated; can be recorded more
+    than once every hour.
 
     This slice records the time between the main thread requesting and
     {Segment}.
