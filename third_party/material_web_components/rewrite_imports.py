@@ -8,6 +8,15 @@ import re
 import sys
 import json
 
+from pathlib import Path
+
+_HERE_DIR = Path(__file__).parent
+_SOURCE_MAP_CREATOR = (_HERE_DIR / 'rewrite_imports.mjs').resolve()
+
+_NODE_PATH = (_HERE_DIR.parent.parent / 'third_party' / 'node').resolve()
+sys.path.append(str(_NODE_PATH))
+import node
+
 _CWD = os.getcwd()
 
 # TODO(crbug.com/1320176): Consider either integrating this functionality into
@@ -51,16 +60,30 @@ def main(argv):
 
     for f in args.in_files:
         output = []
+        line_no = 0
+        changed_lines_list = list()
         for line in open(os.path.join(args.base_dir, f), 'r').readlines():
+            # Keep line counter to pass in rewrite info to rewrite_imports.js
+            line_no += 1
             # Investigate JS parsing if this is insufficient.
             match = re.match(r'^(import .*["\'])(.*)(["\'];)$', line)
             if match and _map_import(match.group(2)):
                 new_import = _map_import(match.group(2))
                 line = f"{match.group(1)}{new_import}{match.group(3)}\n"
+                generated_column = len(match.group(1)) + len(match.group(2))
+                rewritten_column = len(match.group(1)) + len(new_import)
+                changed_line = {
+                    "lineNum": line_no,
+                    "generatedColumn": generated_column,
+                    "rewrittenColumn": rewritten_column
+                }
+                changed_lines_list.append(changed_line)
             output.append(line)
         with open(os.path.join(args.out_dir, f), 'w') as out_file:
             out_file.write(''.join(output))
         manifest['files'].append(f)
+
+        node.RunNode([str(_SOURCE_MAP_CREATOR), args.base_dir, f, args.out_dir, json.dumps(changed_lines_list)])
 
     with open(args.manifest_out, 'w') as manifest_file:
         json.dump(manifest, manifest_file)
