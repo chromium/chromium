@@ -536,6 +536,54 @@ id<GREYMatcher> notPracticallyVisible() {
   }
 }
 
+// Tests that the pull to refresh (iphone) or the refresh button (ipad) lands
+// the user on the top of the NTP even with a previously saved scroll position.
+- (void)testReload {
+  // Scroll to have a position to restored.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  // Save the position before navigating.
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  CGFloat previousPosition = collectionView.contentOffset.y;
+
+  // Navigate and come back.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL pageURL = self.testServer->GetURL(kPageURL);
+
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
+  [ChromeEarlGrey goBack];
+
+  // Check that the new position is the same.
+  GREYAssertEqual(previousPosition, collectionView.contentOffset.y,
+                  @"NTP is not at the same position.");
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Have to scroll up to the top since tapping on reload button does not
+    // automatically scroll to the top when feed is off or if feed returns no
+    // contents (e.g. upstream bots). TODO(crbug.com/1406940): Look into why the
+    // Feed only scrolls up when there is content.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+    // Tap on reload button.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ReloadButton()]
+        performAction:grey_tap()];
+  } else {
+    // Get back to the top of the page and then pull down to trigger Pull To
+    // Refresh
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+  }
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
+}
+
 // Tests that the position of the collection view is restored when navigating
 // back to the NTP.
 - (void)testPositionRestored {

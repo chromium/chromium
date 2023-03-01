@@ -114,6 +114,9 @@
 // Resets hierarchy of views and view controllers.
 - (void)resetViewHierarchy;
 
+// Resets any relevant NTP states due for a content reload.
+- (void)resetStateUponReload;
+
 // Sets the NTP collection view's scroll position to `contentOffset`, unless it
 // is beyond the top of the feed. In that case, sets the scroll position to the
 // top of the feed.
