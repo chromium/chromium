@@ -57,7 +57,7 @@ public class BookmarkOpenerTest {
 
     private BookmarkModel mBookmarkModel;
     private BookmarkActivity mBookmarkActivity;
-    private BookmarkManager mManager;
+    private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private RecyclerView mItemsContainer;
 
     private TabModelSelector mTabModelSelector;
@@ -88,10 +88,10 @@ public class BookmarkOpenerTest {
             mItemsContainer = mActivityTestRule.getActivity().findViewById(
                     R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mManager = ((BookmarkPage) mActivityTestRule.getActivity()
-                                .getActivityTab()
-                                .getNativePage())
-                               .getManagerForTesting();
+            mBookmarkManagerCoordinator = ((BookmarkPage) mActivityTestRule.getActivity()
+                                                   .getActivityTab()
+                                                   .getNativePage())
+                                                  .getManagerForTesting();
         } else {
             // Phone
             mBookmarkActivity = ActivityTestUtils.waitForActivity(
@@ -100,12 +100,12 @@ public class BookmarkOpenerTest {
                             mActivityTestRule.getActivity(), R.id.all_bookmarks_menu_id));
             mItemsContainer = mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mManager = mBookmarkActivity.getManagerForTesting();
+            mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
         }
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false);
-            mBookmarkOpener = mManager.getBookmarkOpenerForTesting();
+            mBookmarkOpener = mBookmarkManagerCoordinator.getBookmarkOpenerForTesting();
         });
     }
 
@@ -130,7 +130,7 @@ public class BookmarkOpenerTest {
     }
 
     private BookmarkDelegate getBookmarkDelegate() {
-        return mManager.getBookmarkDelegateForTesting();
+        return mBookmarkManagerCoordinator.getBookmarkDelegateForTesting();
     }
 
     @Test

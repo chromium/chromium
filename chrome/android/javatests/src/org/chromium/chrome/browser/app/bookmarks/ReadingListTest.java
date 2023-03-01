@@ -52,7 +52,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter;
-import org.chromium.chrome.browser.bookmarks.BookmarkManager;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
@@ -100,7 +100,7 @@ public class ReadingListTest {
     private static final String TEST_PAGE_URL_FOO = "/chrome/test/data/android/test.html";
     private static final int TEST_PORT = 12345;
 
-    private BookmarkManager mManager;
+    private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private BookmarkModel mBookmarkModel;
     private RecyclerView mItemsContainer;
     // Constant but can only be initialized after parameterized test runner setup because this would
@@ -147,10 +147,10 @@ public class ReadingListTest {
             mItemsContainer = mActivityTestRule.getActivity().findViewById(
                     R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mManager = ((BookmarkPage) mActivityTestRule.getActivity()
-                                .getActivityTab()
-                                .getNativePage())
-                               .getManagerForTesting();
+            mBookmarkManagerCoordinator = ((BookmarkPage) mActivityTestRule.getActivity()
+                                                   .getActivityTab()
+                                                   .getNativePage())
+                                                  .getManagerForTesting();
         } else {
             // phone
             mBookmarkActivity = ActivityTestUtils.waitForActivity(
@@ -159,7 +159,7 @@ public class ReadingListTest {
                             mActivityTestRule.getActivity(), R.id.all_bookmarks_menu_id));
             mItemsContainer = mBookmarkActivity.findViewById(R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
-            mManager = mBookmarkActivity.getManagerForTesting();
+            mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
         }
 
         TestThreadUtils.runOnUiThreadBlocking(
@@ -203,7 +203,7 @@ public class ReadingListTest {
     }
 
     private BookmarkDelegate getBookmarkDelegate() {
-        return mManager.getBookmarkDelegateForTesting();
+        return mBookmarkManagerCoordinator.getBookmarkDelegateForTesting();
     }
 
     @Test
@@ -213,7 +213,7 @@ public class ReadingListTest {
             throws InterruptedException, ExecutionException {
         openBookmarkManager();
         BookmarkDelegate delegate = getBookmarkDelegate();
-        BookmarkToolbar toolbar = mManager.getToolbarForTesting();
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
 
         // We should default to the root bookmark.
         Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
@@ -463,7 +463,7 @@ public class ReadingListTest {
                 (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
         onView(withText(TEST_PAGE_TITLE_GOOGLE)).perform(longClick());
 
-        BookmarkToolbar toolbar = mManager.getToolbarForTesting();
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
         Assert.assertTrue("Read later items should have move option",
                 toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
         Assert.assertTrue("Read later items should have edit option",
@@ -499,7 +499,7 @@ public class ReadingListTest {
 
         TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
 
-        BookmarkToolbar toolbar = mManager.getToolbarForTesting();
+        BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
         Assert.assertFalse("Menu items shouldn't be visible in search.",
                 toolbar.getMenu().findItem(R.id.selection_mode_move_menu_id).isVisible());
         Assert.assertFalse("Menu items shouldn't be visible in search.",
