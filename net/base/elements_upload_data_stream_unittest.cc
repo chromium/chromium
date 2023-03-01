@@ -197,8 +197,7 @@ TEST_F(ElementsUploadDataStreamTest, File) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
 
   element_readers_.push_back(std::make_unique<UploadFileElementReader>(
       base::SingleThreadTaskRunner::GetCurrentDefault().get(), temp_file_path,
@@ -231,8 +230,7 @@ TEST_F(ElementsUploadDataStreamTest, FileSmallerThanLength) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
   const uint64_t kFakeSize = kTestDataSize * 2;
 
   UploadFileElementReader::ScopedOverridingContentLengthForTests
@@ -352,8 +350,7 @@ TEST_F(ElementsUploadDataStreamTest, FileAndBytes) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
 
   const uint64_t kFileRangeOffset = 1;
   const uint64_t kFileRangeLength = 4;
@@ -482,7 +479,7 @@ TEST_F(ElementsUploadDataStreamTest, ReadAsyncWithExactSizeBuffer) {
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(kTestDataSize);
   int bytes_read =
       stream->Read(buf.get(), kTestDataSize, CompletionOnceCallback());
-  ASSERT_EQ(static_cast<int>(kTestDataSize), bytes_read);  // Not an error.
+  ASSERT_TRUE(bytes_read);  // Not an error.
   EXPECT_EQ(kTestDataSize, stream->position());
   ASSERT_TRUE(stream->IsEOF());
 }
@@ -526,8 +523,8 @@ TEST_F(ElementsUploadDataStreamTest, ReadAsync) {
 
   // Consume the first element.
   TestCompletionCallback read_callback1;
-  EXPECT_EQ(static_cast<int>(kTestDataSize),
-            stream->Read(buf.get(), kTestDataSize, read_callback1.callback()));
+  EXPECT_TRUE(
+      stream->Read(buf.get(), kTestDataSize, read_callback1.callback()));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(read_callback1.have_result());
 
@@ -535,7 +532,7 @@ TEST_F(ElementsUploadDataStreamTest, ReadAsync) {
   TestCompletionCallback read_callback2;
   ASSERT_EQ(ERR_IO_PENDING,
             stream->Read(buf.get(), kTestDataSize, read_callback2.callback()));
-  EXPECT_EQ(static_cast<int>(kTestDataSize), read_callback2.WaitForResult());
+  EXPECT_TRUE(read_callback2.WaitForResult());
 
   // Consume the third and the fourth elements.
   TestCompletionCallback read_callback3;
@@ -573,8 +570,7 @@ TEST_F(ElementsUploadDataStreamTest, FileChanged) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
 
   base::File::Info file_info;
   ASSERT_TRUE(base::GetFileInfo(temp_file_path, &file_info));
@@ -591,8 +587,7 @@ TEST_F(ElementsUploadDataStreamTest, MultipleInit) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
 
   // Prepare data.
   element_readers_.push_back(
@@ -636,8 +631,7 @@ TEST_F(ElementsUploadDataStreamTest, MultipleInitAsync) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
   TestCompletionCallback test_callback;
 
   // Prepare data.
@@ -680,8 +674,7 @@ TEST_F(ElementsUploadDataStreamTest, InitToReset) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
 
   // Prepare data.
   element_readers_.push_back(
@@ -741,8 +734,7 @@ TEST_F(ElementsUploadDataStreamTest, InitDuringAsyncInit) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
 
   // Prepare data.
   element_readers_.push_back(
@@ -791,8 +783,7 @@ TEST_F(ElementsUploadDataStreamTest, InitDuringAsyncRead) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
-  ASSERT_EQ(static_cast<int>(kTestDataSize),
-            base::WriteFile(temp_file_path, kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kTestData));
 
   // Prepare data.
   element_readers_.push_back(
