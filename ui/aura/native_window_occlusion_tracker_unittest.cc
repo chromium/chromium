@@ -103,9 +103,10 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     HWND hwnd = native_win_->hwnd();
     base::win::ScopedRegion region(CreateRectRgn(0, 0, 0, 0));
     if (GetWindowRgn(hwnd, region.get()) == COMPLEXREGION) {
-      // On Windows 7, the newly created window has a complex region, which
-      // means it will be ignored during the occlusion calculation. So, force
-      // it to have a simple region so that we get test coverage on win 7.
+      // If the newly created window has a complex region by default, e.g.,
+      // if it has the WS_EX_LAYERED style, it will be ignored during the
+      // occlusion calculation. So, force it to have a simple region so that
+      // we get test coverage for the window.
       RECT bounding_rect;
       EXPECT_TRUE(GetWindowRect(hwnd, &bounding_rect));
       base::win::ScopedRegion rectangular_region(
