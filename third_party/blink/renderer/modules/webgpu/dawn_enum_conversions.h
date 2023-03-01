@@ -9,7 +9,6 @@ class V8GPUBufferBindingType;
 class V8GPUSamplerBindingType;
 class V8GPUTextureSampleType;
 class V8GPUStorageTextureAccess;
-class V8GPUTextureComponentType;
 class V8GPUCompareFunction;
 class V8GPUQueryType;
 class V8GPUPipelineStatisticName;
@@ -48,8 +47,6 @@ WGPUSamplerBindingType AsDawnEnum(const V8GPUSamplerBindingType& webgpu_enum);
 WGPUTextureSampleType AsDawnEnum(const V8GPUTextureSampleType& webgpu_enum);
 WGPUStorageTextureAccess AsDawnEnum(
     const V8GPUStorageTextureAccess& webgpu_enum);
-WGPUTextureComponentType AsDawnEnum(
-    const V8GPUTextureComponentType& webgpu_enum);
 WGPUCompareFunction AsDawnEnum(const V8GPUCompareFunction& webgpu_enum);
 WGPUQueryType AsDawnEnum(const V8GPUQueryType& webgpu_enum);
 WGPUPipelineStatisticName AsDawnEnum(
