@@ -498,7 +498,9 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
         password_manager_util_mac::GetMessageForBiometricLoginPrompt(purpose),
         std::move(callback));
   } else {
-    bool result = password_manager_util_mac::AuthenticateUser(purpose);
+    bool result = password_manager_util_mac::AuthenticateUser(
+        password_manager_util_mac::GetMessageForNonBiometricLoginPrompt(
+            purpose));
     std::move(callback).Run(result);
   }
 #elif BUILDFLAG(IS_CHROMEOS_ASH)

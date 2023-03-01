@@ -13,9 +13,15 @@ namespace password_manager_util_mac {
 
 // Attempts to (re-)authenticate the user of the OS account. Returns true if
 // the user was successfully authenticated.
-bool AuthenticateUser(password_manager::ReauthPurpose purpose);
+bool AuthenticateUser(std::u16string prompt_string);
 
-// Returns message that will appear in the login prompt
+// Returns message that will appear in the login prompt for old authentication
+// API that predates the biometric authentication API.
+std::u16string GetMessageForNonBiometricLoginPrompt(
+    password_manager::ReauthPurpose purpose);
+
+// Returns message that will appear in the login prompt when biometric
+// authentication is used.
 std::u16string GetMessageForBiometricLoginPrompt(
     password_manager::ReauthPurpose purpose);
 

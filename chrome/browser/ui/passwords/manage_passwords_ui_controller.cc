@@ -909,7 +909,8 @@ bool ManagePasswordsUIController::ShowAuthenticationDialog() {
           password_manager::ReauthPurpose::VIEW_PASSWORD));
 #elif BUILDFLAG(IS_MAC)
   return password_manager_util_mac::AuthenticateUser(
-      password_manager::ReauthPurpose::VIEW_PASSWORD);
+      password_manager_util_mac::GetMessageForNonBiometricLoginPrompt(
+          password_manager::ReauthPurpose::VIEW_PASSWORD));
 #else
   NOTREACHED();
   return true;
