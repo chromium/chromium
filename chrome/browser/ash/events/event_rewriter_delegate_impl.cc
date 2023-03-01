@@ -114,6 +114,15 @@ bool EventRewriterDelegateImpl::IsSearchKeyAcceleratorReserved() const {
          active_window->GetProperty(kSearchKeyAcceleratorReservedKey);
 }
 
+bool EventRewriterDelegateImpl::RewriteMetaTopRowKeyComboEvents() const {
+  return !suppress_meta_top_row_key_rewrites_;
+}
+
+void EventRewriterDelegateImpl::SuppressMetaTopRowKeyComboRewrites(
+    bool should_suppress) {
+  suppress_meta_top_row_key_rewrites_ = should_suppress;
+}
+
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
   return deprecation_controller_->NotifyDeprecatedRightClickRewrite();
 }

@@ -33,6 +33,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
 
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override;
+  bool RewriteMetaTopRowKeyComboEvents() const override;
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* result) const override;
   bool TopRowKeysAreFunctionKeys() const override;
@@ -42,6 +43,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
   bool NotifyDeprecatedRightClickRewrite() override;
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override;
   void SuppressModifierKeyRewrites(bool should_suppress) override;
+  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override;
 
  private:
   const PrefService* GetPrefService() const;
@@ -55,6 +57,9 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
 
   // Tracks whether modifier rewrites should be suppressed or not.
   bool suppress_modifier_key_rewrites_ = false;
+
+  // Tracks whether meta + top row key rewrites should be suppressed or not.
+  bool suppress_meta_top_row_key_rewrites_ = false;
 };
 
 }  // namespace ash

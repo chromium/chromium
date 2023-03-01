@@ -42,11 +42,13 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/test_event_processor.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
@@ -2706,6 +2708,71 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayoutsActionUnchanged) {
                });
 }
 
+TEST_F(EventRewriterTest,
+       TestRewriteFunctionKeysCustomLayoutsActionSuppressedUnchanged) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+
+  // An action key on these devices is one where the scan code matches an entry
+  // in the layout map. With Meta + Top Row Key rewrites being suppressed, the
+  // input should be equivalent to the output for all tested keys.
+  const std::string layout = "a1 a2 a3";
+  TestKeyboard("Internal Custom Layout Keyboard", layout,
+               ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true,
+               {
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH, 0xa1},
+                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH, 0xa1}},
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_UP, 0xa2},
+                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_UP, 0xa2}},
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3},
+                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3}},
+               });
+}
+
+TEST_F(EventRewriterTest,
+       TestRewriteFunctionKeysCustomLayoutsActionSuppressedWithTopRowAreFKeys) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+
+  BooleanPrefMember send_function_keys_pref;
+  send_function_keys_pref.Init(prefs::kSendFunctionKeys, prefs());
+  send_function_keys_pref.SetValue(true);
+
+  // An action key on these devices is one where the scan code matches an entry
+  // in the layout map. With Meta + Top Row Key rewrites being suppressed, the
+  // input should be remapped to F-Keys and the Search modifier should not be
+  // removed.
+  const std::string layout = "a1 a2 a3";
+  TestKeyboard("Internal Custom Layout Keyboard", layout,
+               ui::INPUT_DEVICE_INTERNAL, /*has_custom_top_row=*/true,
+               {
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH, 0xa1},
+                    {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN,
+                     ui::DomKey::F1, 0xa1}},
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_UP, 0xa2},
+                    {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN,
+                     ui::DomKey::F2, 0xa2}},
+                   {ui::ET_KEY_PRESSED,
+                    {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN,
+                     ui::EF_COMMAND_DOWN, ui::DomKey::AUDIO_VOLUME_DOWN, 0xa3},
+                    {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN,
+                     ui::DomKey::F3, 0xa3}},
+               });
+}
+
 TEST_F(EventRewriterTest, TestRewriteFunctionKeysCustomLayouts) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
 
@@ -2962,6 +3029,152 @@ TEST_F(EventRewriterTest, TestRewriteFunctionKeysLayout2) {
           {ui::ET_KEY_PRESSED,
            {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12},
            {ui::VKEY_F12, ui::DomCode::F12, ui::EF_ALT_DOWN, ui::DomKey::F12}},
+      });
+}
+
+TEST_F(EventRewriterTest,
+       TestFunctionKeysLayout2SuppressMetaTopRowKeyRewrites) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+
+  // With Meta + Top Row Key rewrites suppressed, F-Keys should be translated to
+  // the equivalent action key and not lose the Search modifier.
+  TestKeyboard(
+      "Internal Keyboard", kKbdTopRowLayout2Tag, ui::INPUT_DEVICE_INTERNAL,
+      /*has_custom_top_row=*/false,
+      {// F1 -> Back
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
+        {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
+         ui::DomKey::BROWSER_BACK}},
+       // F2 -> Refresh
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
+        {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
+         ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH}},
+       // F3 -> Zoom (aka Fullscreen)
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
+        {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
+         ui::DomKey::ZOOM_TOGGLE}},
+       // F4 -> Launch App 1
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4},
+        {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::SELECT_TASK,
+         ui::EF_COMMAND_DOWN, ui::DomKey::LAUNCH_MY_COMPUTER}},
+       // F5 -> Brightness down
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5},
+        {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
+         ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN}},
+       // F6 -> Brightness up
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6},
+        {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP,
+         ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_UP}},
+       // F7 -> Media Play/Pause
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7},
+        {ui::VKEY_MEDIA_PLAY_PAUSE, ui::DomCode::MEDIA_PLAY_PAUSE,
+         ui::EF_COMMAND_DOWN, ui::DomKey::MEDIA_PLAY_PAUSE}},
+       // F8 -> Volume Mute
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8},
+        {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
+         ui::DomKey::AUDIO_VOLUME_MUTE}},
+       // F9 -> Volume Down
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9},
+        {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
+         ui::DomKey::AUDIO_VOLUME_DOWN}},
+       // F10 -> Volume Up
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
+        {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
+         ui::DomKey::AUDIO_VOLUME_UP}},
+       // F11 -> F11
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
+        {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11}},
+       // F12 -> F12
+       {ui::ET_KEY_PRESSED,
+        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12},
+        {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN,
+         ui::DomKey::F12}}});
+}
+
+TEST_F(
+    EventRewriterTest,
+    TestFunctionKeysLayout2SuppressMetaTopRowKeyRewritesWithTreatTopRowAsFKeys) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+
+  // Enable preference treat-top-row-as-function-keys.
+  // That causes action keys to be mapped back to Fn keys.
+  BooleanPrefMember top_row_as_fn_key;
+  top_row_as_fn_key.Init(prefs::kSendFunctionKeys, prefs());
+  top_row_as_fn_key.SetValue(true);
+
+  // With Meta + Top Row Key rewrites suppressed and TopRowAsFKeys enabled,
+  // F-Keys should not be translated and search modifier should be kept.
+  TestKeyboard(
+      "Internal Keyboard", kKbdTopRowLayout2Tag, ui::INPUT_DEVICE_INTERNAL,
+      /*has_custom_top_row=*/false,
+      {
+          // F1 -> Back
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
+           {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1}},
+          // F2 -> Refresh
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2},
+           {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2}},
+          // F3 -> Zoom (aka Fullscreen)
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3},
+           {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3}},
+          // F4 -> Launch App 1
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4},
+           {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4}},
+          // F5 -> Brightness down
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5},
+           {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5}},
+          // F6 -> Brightness up
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6},
+           {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6}},
+          // F7 -> Media Play/Pause
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7},
+           {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7}},
+          // F8 -> Volume Mute
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8},
+           {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8}},
+          // F9 -> Volume Down
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9},
+           {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9}},
+          // F10 -> Volume Up
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN,
+            ui::DomKey::F10},
+           {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN,
+            ui::DomKey::F10}},
+          // F11 -> F11
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN,
+            ui::DomKey::F11},
+           {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN,
+            ui::DomKey::F11}},
+          // F12 -> F12
+          {ui::ET_KEY_PRESSED,
+           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN,
+            ui::DomKey::F12},
+           {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN,
+            ui::DomKey::F12}},
       });
 }
 
@@ -3490,6 +3703,262 @@ TEST_F(EventRewriterTest, TestRewriteActionKeysWilcoLayouts) {
   rewriter_->set_privacy_screen_for_testing(true);
   for (const auto& test : drallion_tests_privacy_screen)
     CheckKeyTestCase(rewriter(), test);
+}
+
+TEST_F(EventRewriterTest,
+       TestRewriteActionKeysWilcoLayoutsSuppressMetaTopRowKeyRewrites) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+
+  // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
+  // unchanged and keep the search modifier.
+  KeyTestCase wilco_standard_tests[] = {
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
+        ui::DomKey::BROWSER_BACK},
+       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
+        ui::DomKey::BROWSER_BACK}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
+        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH},
+       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
+        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
+        ui::DomKey::ZOOM_TOGGLE},
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
+        ui::DomKey::ZOOM_TOGGLE}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
+        ui::DomKey::F4},
+       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
+        ui::DomKey::F4}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
+        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN},
+       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
+        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
+        ui::DomKey::BRIGHTNESS_UP},
+       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
+        ui::DomKey::BRIGHTNESS_UP}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_MUTE},
+       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_MUTE}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_DOWN},
+       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_DOWN}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_UP},
+       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_UP}},
+      // F-Keys do not remove Search when pressed.
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
+       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10}},
+      // F11 -> F11
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11}}};
+
+  // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
+  // unchanged and keep the search modifier.
+  KeyTestCase wilco_1_tests[] = {
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_ZOOM, ui::DomCode::F12,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
+       {ui::VKEY_ZOOM, ui::DomCode::F12,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12}}};
+
+  // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
+  // unchanged and keep the search modifier.
+  KeyTestCase drallion_tests_no_privacy_screen[] = {
+      // Search + Privacy Screen Toggle -> Search + F12
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
+        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}},
+      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED}},
+  };
+  // With |SuppressMetaTopRowKeyComboRewrites|, all action keys should be
+  // unchanged and keep the search modifier.
+  KeyTestCase drallion_tests_privacy_screen[] = {
+      // Search + Privacy Screen Toggle -> F12
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
+        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
+       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
+        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED}},
+      // Ctrl + Zoom (Display toggle) -> Unchanged
+      // Search + Ctrl + Zoom (Display toggle) -> Unchanged
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED}}};
+
+  // Set keyboard layout to Wilco 1.0
+  SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
+  // Standard key tests using Wilco 1.0 keyboard
+  for (const auto& test : wilco_standard_tests) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+  // Wilco 1.0 specific key tests
+  for (const auto& test : wilco_1_tests) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+
+  // Set keyboard layout to Drallion (Wilco 1.5)
+  SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
+
+  // Standard key tests using Drallion keyboard layout
+  for (const auto& test : wilco_standard_tests) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+
+  // Drallion specific key tests (no privacy screen)
+  rewriter_->set_privacy_screen_for_testing(false);
+  for (const auto& test : drallion_tests_no_privacy_screen) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+
+  // Drallion specific key tests (privacy screen supported)
+  rewriter_->set_privacy_screen_for_testing(true);
+  for (const auto& test : drallion_tests_privacy_screen) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+}
+
+TEST_F(
+    EventRewriterTest,
+    TestRewriteActionKeysWilcoLayoutsSuppressMetaTopRowKeyRewritesWithTopRowAreFkeys) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  delegate_->SuppressMetaTopRowKeyComboRewrites(true);
+
+  // Enable preference treat-top-row-as-function-keys.
+  // That causes action keys to be mapped back to Fn keys.
+  BooleanPrefMember top_row_as_fn_key;
+  top_row_as_fn_key.Init(prefs::kSendFunctionKeys, prefs());
+  top_row_as_fn_key.SetValue(true);
+
+  // With |SuppressMetaTopRowKeyComboRewrites| and TopRowAreFKeys, all action
+  // keys should be remapped to F-Keys and keep the Search modifier.
+  KeyTestCase wilco_standard_tests[] = {
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_COMMAND_DOWN,
+        ui::DomKey::BROWSER_BACK},
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BROWSER_REFRESH, ui::DomCode::BROWSER_REFRESH,
+        ui::EF_COMMAND_DOWN, ui::DomKey::BROWSER_REFRESH},
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN, ui::DomKey::F2}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_ZOOM, ui::DomCode::ZOOM_TOGGLE, ui::EF_COMMAND_DOWN,
+        ui::DomKey::ZOOM_TOGGLE},
+       {ui::VKEY_F3, ui::DomCode::F3, ui::EF_COMMAND_DOWN, ui::DomKey::F3}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_MEDIA_LAUNCH_APP1, ui::DomCode::F4, ui::EF_COMMAND_DOWN,
+        ui::DomKey::F4},
+       {ui::VKEY_F4, ui::DomCode::F4, ui::EF_COMMAND_DOWN, ui::DomKey::F4}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BRIGHTNESS_DOWN, ui::DomCode::BRIGHTNESS_DOWN,
+        ui::EF_COMMAND_DOWN, ui::DomKey::BRIGHTNESS_DOWN},
+       {ui::VKEY_F5, ui::DomCode::F5, ui::EF_COMMAND_DOWN, ui::DomKey::F5}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_BRIGHTNESS_UP, ui::DomCode::BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
+        ui::DomKey::BRIGHTNESS_UP},
+       {ui::VKEY_F6, ui::DomCode::F6, ui::EF_COMMAND_DOWN, ui::DomKey::F6}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_VOLUME_MUTE, ui::DomCode::VOLUME_MUTE, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_MUTE},
+       {ui::VKEY_F7, ui::DomCode::F7, ui::EF_COMMAND_DOWN, ui::DomKey::F7}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_VOLUME_DOWN, ui::DomCode::VOLUME_DOWN, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_DOWN},
+       {ui::VKEY_F8, ui::DomCode::F8, ui::EF_COMMAND_DOWN, ui::DomKey::F8}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_VOLUME_UP, ui::DomCode::VOLUME_UP, ui::EF_COMMAND_DOWN,
+        ui::DomKey::AUDIO_VOLUME_UP},
+       {ui::VKEY_F9, ui::DomCode::F9, ui::EF_COMMAND_DOWN, ui::DomKey::F9}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10},
+       {ui::VKEY_F10, ui::DomCode::F10, ui::EF_COMMAND_DOWN, ui::DomKey::F10}},
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_COMMAND_DOWN, ui::DomKey::F11}}};
+
+  // With |SuppressMetaTopRowKeyComboRewrites| and TopRowAreFKeys, all action
+  // keys should be remapped to F-Keys and keep the Search modifier.
+  KeyTestCase wilco_1_tests[] = {
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_ZOOM, ui::DomCode::F12,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::F12},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}}};
+
+  KeyTestCase drallion_tests_no_privacy_screen[] = {
+      // Search + Privacy Screen Toggle -> Search + F12 (Privacy screen not
+      // supported)
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
+        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}},
+      // Search + Ctrl + Zoom (Display toggle) -> Unchanged as Display toggle
+      // should never be remapped to anything else.
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED},
+       {ui::VKEY_ZOOM, ui::DomCode::NONE,
+        ui::EF_COMMAND_DOWN + ui::EF_CONTROL_DOWN, ui::DomKey::UNIDENTIFIED}}};
+
+  KeyTestCase drallion_tests_privacy_screen[] = {
+      // Search + Privacy Screen Toggle -> Remapped to F12 and
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::DomCode::PRIVACY_SCREEN_TOGGLE,
+        ui::EF_COMMAND_DOWN, ui::DomKey::UNIDENTIFIED},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_COMMAND_DOWN, ui::DomKey::F12}},
+  };
+
+  // Set keyboard layout to Wilco 1.0
+  SetupKeyboard("Wilco Keyboard", kKbdTopRowLayoutWilcoTag);
+  // Standard key tests using Wilco 1.0 keyboard
+  for (const auto& test : wilco_standard_tests) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+  // Wilco 1.0 specific key tests
+  for (const auto& test : wilco_1_tests) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+
+  // Set keyboard layout to Drallion (Wilco 1.5)
+  SetupKeyboard("Drallion Keyboard", kKbdTopRowLayoutDrallionTag);
+
+  // Standard key tests using Drallion keyboard layout
+  for (const auto& test : wilco_standard_tests) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+
+  // Drallion specific key tests (no privacy screen)
+  rewriter_->set_privacy_screen_for_testing(false);
+  for (const auto& test : drallion_tests_no_privacy_screen) {
+    CheckKeyTestCase(rewriter(), test);
+  }
+
+  // Drallion specific key tests (privacy screen supported)
+  rewriter_->set_privacy_screen_for_testing(true);
+  for (const auto& test : drallion_tests_privacy_screen) {
+    CheckKeyTestCase(rewriter(), test);
+  }
 }
 
 TEST_F(EventRewriterTest, TestTopRowAsFnKeysForKeyboardWilcoLayouts) {
@@ -4855,6 +5324,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
  private:
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
+  bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
 
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const override {
@@ -4881,6 +5351,7 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
     return false;
   }
   void SuppressModifierKeyRewrites(bool should_suppress) override {}
+  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
 
   std::map<std::string, int> modifier_remapping_;
   base::flat_set<ui::Accelerator> registered_extension_shortcuts_;

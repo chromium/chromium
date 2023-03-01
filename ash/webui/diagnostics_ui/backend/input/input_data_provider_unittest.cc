@@ -576,6 +576,8 @@ class TestEventRewriterChromeOSDelegate
   }
 
   // Not used, only to satisfy interface.
+  bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
+  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* result) const override {
     return false;

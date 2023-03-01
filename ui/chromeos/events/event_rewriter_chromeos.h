@@ -86,6 +86,14 @@ class EventRewriterChromeOS : public EventRewriter {
     // always return false if |should_supress| is true.
     virtual void SuppressModifierKeyRewrites(bool should_supress) = 0;
 
+    // Returns whether or not Meta + Top Row Keys should be rewritten. Should
+    // return correctly with respect to the values set in
+    // |SuppressMetaTopRowKeyRewrites|.
+    virtual bool RewriteMetaTopRowKeyComboEvents() const = 0;
+
+    // Set whether or not Meta + Top Row Keys key events should be rewritten.
+    virtual void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) = 0;
+
     // Returns true if get keyboard remapped preference value successfully and
     // the value will be stored in |value|.
     virtual bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
