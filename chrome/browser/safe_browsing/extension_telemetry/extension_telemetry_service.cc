@@ -96,6 +96,17 @@ void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
       persisted_at_write_interval);
 }
 
+void RecordNumOffstoreExtensions(int num_extensions) {
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.ExtensionTelemetry.FileData.NumOffstoreExtensions",
+      num_extensions);
+}
+
+void RecordCollectionDuration(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      "SafeBrowsing.ExtensionTelemetry.FileData.CollectionDuration", duration);
+}
+
 static_assert(extensions::Manifest::NUM_LOAD_TYPES == 10,
               "ExtensionTelemetryReportRequest::ExtensionInfo::Type "
               "needs to match extensions::Manifest::Type.");
@@ -781,6 +792,7 @@ void ExtensionTelemetryService::StartOffstoreFileDataCollection() {
     return;
   }
 
+  offstore_file_data_collection_start_time_ = base::TimeTicks::Now();
   offstore_extension_dirs_.clear();
   offstore_extension_file_data_contexts_.clear();
   GetOffstoreExtensionDirs();
@@ -824,6 +836,7 @@ void ExtensionTelemetryService::GetOffstoreExtensionDirs() {
       offstore_extension_dirs_[extension->id()] = extension->path();
     }
   }
+  RecordNumOffstoreExtensions(offstore_extension_dirs_.size());
 }
 
 void ExtensionTelemetryService::RemoveUninstalledExtensionsFileDataFromPref() {
@@ -832,10 +845,10 @@ void ExtensionTelemetryService::RemoveUninstalledExtensionsFileDataFromPref() {
   base::Value::Dict& pref_dict = pref_update.Get();
 
   std::vector<extensions::ExtensionId> uninstalled_extensions;
-  for (auto offstore : pref_dict) {
+  for (auto&& offstore : pref_dict) {
     if (offstore_extension_dirs_.find(offstore.first) ==
         offstore_extension_dirs_.end()) {
-      uninstalled_extensions.push_back(offstore.first);
+      uninstalled_extensions.emplace_back(offstore.first);
     }
   }
 
@@ -857,6 +870,12 @@ void ExtensionTelemetryService::CollectOffstoreFileData() {
         base::Seconds(
             kExtensionTelemetryFileDataCollectionIntervalSeconds.Get()),
         this, &ExtensionTelemetryService::StartOffstoreFileDataCollection);
+
+    // Record only if there are off-store extensions installed.
+    if (!offstore_extension_dirs_.empty()) {
+      RecordCollectionDuration(base::TimeTicks::Now() -
+                               offstore_file_data_collection_start_time_);
+    }
     return;
   }
 

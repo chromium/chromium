@@ -732,6 +732,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionTelemetry.FileData.CollectionDuration"
+    units="ms" expires_after="2023-07-23">
+  <owner>richche@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Extension telemetry includes file data such as file hashes for off-store
+    extension files. This histogram measures how long it takes to collect file
+    data for all the offstore extensions installed. It is emitted after each
+    pass of the collection process completes which occurs periodically (every 2
+    hours by default). The histogram is not emitted if there are no off-store
+    extensions installed or if the collection process is interrupted due to the
+    browser session ending or disabling Enhanced Safe Browsing for the profile.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.ExtensionTelemetry.FileData.LargestFileSizeObserved"
     units="bytes" expires_after="2023-07-23">
@@ -783,6 +798,20 @@ chromium-metrics-reviews@google.com.
     extension files. This histogram records the number of successfully processed
     files. Logged by the FileProcessor at periodic intervals (default: once per
     day) for each off-store extension installed.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.FileData.NumOffstoreExtensions"
+    units="extensions" expires_after="2023-07-23">
+  <owner>richche@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Extension telemetry includes file data such as file hashes for off-store
+    extension files. This histogram records the number of off-store extensions
+    installed in a user profile. It is emitted at the start of each pass of the
+    collection process which occurs periodically (every 2 hours by default). The
+    histogram is emitted even if there are no off-store extensions installed.
   </summary>
 </histogram>
 
