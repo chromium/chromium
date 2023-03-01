@@ -306,8 +306,8 @@ class LocalCardMigrationOfferView : public views::View {
  public:
   METADATA_HEADER(LocalCardMigrationOfferView);
   LocalCardMigrationOfferView(LocalCardMigrationDialogController* controller,
-                              LocalCardMigrationDialogView* dialog_view)
-      : controller_(controller) {
+                              LocalCardMigrationDialogView* dialog_view) {
+    DCHECK(controller);
     ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -327,8 +327,8 @@ class LocalCardMigrationOfferView : public views::View {
     int card_list_size = card_list.size();
 
     contents_container->AddChildView(
-        CreateExplanationText(controller_->GetViewState(), card_list_size,
-                              base::UTF8ToUTF16(controller_->GetUserEmail())));
+        CreateExplanationText(controller->GetViewState(), card_list_size,
+                              base::UTF8ToUTF16(controller->GetUserEmail())));
 
     auto* scroll_view = contents_container->AddChildView(
         CreateCardList(card_list, dialog_view, card_list_size != 1));
@@ -345,7 +345,7 @@ class LocalCardMigrationOfferView : public views::View {
         /*user_avatar=*/absl::nullopt,
         base::BindRepeating(
             &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
-            base::Unretained(controller_))));
+            base::Unretained(controller))));
     legal_message_container->ClipHeightTo(0, kLegalMessageScrollViewHeight);
     legal_message_container->SetBorder(
         views::CreateEmptyBorder(kMigrationDialogInsets));
@@ -370,9 +370,7 @@ class LocalCardMigrationOfferView : public views::View {
  private:
   friend class LocalCardMigrationDialogView;
 
-  raw_ptr<LocalCardMigrationDialogController, DanglingUntriaged> controller_;
-
-  raw_ptr<views::View, DanglingUntriaged> card_list_view_ = nullptr;
+  raw_ptr<views::View> card_list_view_ = nullptr;
 };
 
 BEGIN_METADATA(LocalCardMigrationOfferView, views::View)
@@ -482,7 +480,7 @@ void LocalCardMigrationDialogView::ConstructView() {
   DCHECK(controller_->GetViewState() !=
              LocalCardMigrationDialogState::kOffered ||
          children().empty());
-
+  card_list_view_ = nullptr;
   RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
