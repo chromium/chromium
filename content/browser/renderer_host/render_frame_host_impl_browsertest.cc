@@ -38,6 +38,7 @@
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/runtime_feature_state_controller_impl.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -984,7 +985,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Create a test remote to initiate the IPC.
   mojo::Remote<blink::mojom::RuntimeFeatureStateController>
       runtime_feature_state_controller_remote;
-  web_contents()->GetPrimaryMainFrame()->CreateRuntimeFeatureStateController(
+  RuntimeFeatureStateControllerImpl::Create(
+      web_contents()->GetPrimaryMainFrame(),
       runtime_feature_state_controller_remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(runtime_feature_state_controller_remote.is_connected());
 
@@ -1033,7 +1035,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Create a test remote to initiate the IPC.
   mojo::Remote<blink::mojom::RuntimeFeatureStateController>
       runtime_feature_state_controller_remote;
-  web_contents()->GetPrimaryMainFrame()->CreateRuntimeFeatureStateController(
+  RuntimeFeatureStateControllerImpl::Create(
+      web_contents()->GetPrimaryMainFrame(),
       runtime_feature_state_controller_remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(runtime_feature_state_controller_remote.is_connected());
 

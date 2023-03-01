@@ -793,10 +793,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForFrame, base::Unretained(host)));
 
-  map->Add<blink::mojom::RuntimeFeatureStateController>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateRuntimeFeatureStateController,
-      base::Unretained(host)));
-
   map->Add<blink::mojom::SharedWorkerConnector>(
       base::BindRepeating(&BindSharedWorkerConnector, base::Unretained(host)));
 
@@ -1173,6 +1169,9 @@ void PopulateBinderMapWithContext(
   map->Add<media::mojom::FuchsiaMediaCdmProvider>(
       base::BindRepeating(&FuchsiaMediaCdmProviderImpl::Bind));
 #endif
+
+  map->Add<blink::mojom::RuntimeFeatureStateController>(
+      base::BindRepeating(&RuntimeFeatureStateControllerImpl::Create));
 }
 
 void PopulateBinderMap(RenderFrameHostImpl* host, mojo::BinderMap* map) {

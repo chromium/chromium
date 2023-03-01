@@ -10783,14 +10783,6 @@ void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
   non_associated_local_frame_host_receiver_.Bind(std::move(receiver));
 }
 
-void RenderFrameHostImpl::CreateRuntimeFeatureStateController(
-    mojo::PendingReceiver<blink::mojom::RuntimeFeatureStateController>
-        receiver) {
-  runtime_feature_state_controller_ =
-      std::make_unique<RuntimeFeatureStateControllerImpl>(*this,
-                                                          std::move(receiver));
-}
-
 bool RenderFrameHostImpl::CancelPrerendering(
     const PrerenderCancellationReason& reason) {
   // A prerendered page is identified by its root FrameTreeNode id, so if this
