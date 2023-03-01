@@ -27,8 +27,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "use_rust",
-                  "android"
+                  "android",
+                  "checkout_clang_libs"
                 ],
                 "config": "chromium"
               }

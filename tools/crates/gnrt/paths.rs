@@ -59,10 +59,7 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
     if !root.join(p).exists() {
         return Err(io::Error::new(
             io::ErrorKind::Other,
-            format!(
-                "could not find {} (invoked from Chromium checkout root? is use_rust enabled in .gclient?)",
-                p.display()
-            ),
+            format!("could not find {} (invoked from Chromium checkout root?)", p.display()),
         ));
     }
 

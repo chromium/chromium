@@ -57,8 +57,7 @@ of the entry):
         'version': 'version:2@2022-01-01',
       },
     ],
-    'dep_type': 'cipd',
-    'condition': 'checkout_rust_toolchain_deps or use_rust',
+    # ...
   },
 ```
 
@@ -262,7 +261,7 @@ solutions = [
     ...
     "custom_vars": {
       "checkout_bazel": True,
-      "use_rust": True,
+      "checkout_crubit": True,
     },
   },
 ]
