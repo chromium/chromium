@@ -136,6 +136,8 @@ class ServiceWorkerTaskQueue : public KeyedService,
   void ActivateIncognitoSplitModeExtensions(ServiceWorkerTaskQueue* other);
 
   // content::ServiceWorkerContextObserver:
+  void OnRegistrationStored(int64_t registration_id,
+                            const GURL& scope) override;
   void OnReportConsoleMessage(int64_t version_id,
                               const GURL& scope,
                               const content::ConsoleMessage& message) override;
@@ -168,6 +170,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
   static void SetObserverForTest(TestObserver* observer);
 
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
+
+  base::Version RetrieveRegisteredServiceWorkerVersionForTest(
+      const ExtensionId& extension_id) {
+    return RetrieveRegisteredServiceWorkerVersion(extension_id);
+  }
 
  private:
   using SequencedContextId = std::pair<LazyContextId, ActivationSequence>;
@@ -264,6 +271,15 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
   // Current ActivationSequence for each activated extensions.
   std::map<ExtensionId, ActivationSequence> activation_sequences_;
+
+  // A set of pending service worker registrations. These are registrations that
+  // succeeded in the first step (triggering `DidRegisterServiceWorker`), but
+  // have not yet been stored. They are cleared out (and the registration state
+  // is stored) in response to `OnRegistrationStored`.
+  // The key is the service worker scope (which is the associated extension's
+  // base URL), and the value is the activation sequence expected for that
+  // registration.
+  std::map<GURL, ActivationSequence> pending_registrations_;
 
   base::WeakPtrFactory<ServiceWorkerTaskQueue> weak_factory_{this};
 };

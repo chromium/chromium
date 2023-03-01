@@ -2385,6 +2385,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
             service_worker_task_queue->GetNumPendingTasksForTest(context_id));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
             worker_start_failure_observer.status_code());
+
+  // The registration should not have been stored, so we shouldn't cache the
+  // extension version.
+  base::Version stored_version =
+      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersionForTest(
+          extension->id());
+  EXPECT_FALSE(stored_version.IsValid());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,

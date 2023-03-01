@@ -234,6 +234,9 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
       << "DidStartWorkerFail " << context_id.first.extension_id() << ": "
       << static_cast<std::underlying_type_t<blink::ServiceWorkerStatusCode>>(
              status_code);
+
+  // If there was a pending registration for this scope, erase it.
+  pending_registrations_.erase(context_id.first.service_worker_scope());
 }
 
 void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
@@ -468,6 +471,10 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   worker_state->pending_tasks_.clear();
   worker_state_map_.erase(context_id);
 
+  // Erase any registrations that might still have been pending being fully
+  // stored.
+  pending_registrations_.erase(extension->url());
+
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension->id());
 
@@ -551,7 +558,8 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
                       base::Time::Now() - start_time);
 
   worker_state->registration_state_ = RegistrationState::kRegistered;
-  SetRegisteredServiceWorkerInfo(extension->id(), extension->version());
+  pending_registrations_.emplace(extension->url(),
+                                 *GetCurrentSequence(extension->id()));
 
   if (worker_state->has_pending_tasks()) {
     // TODO(lazyboy): If worker for |context_id| is already running, consider
@@ -664,6 +672,33 @@ absl::optional<ActivationSequence> ServiceWorkerTaskQueue::GetCurrentSequence(
   if (iter == activation_sequences_.end())
     return absl::nullopt;
   return iter->second;
+}
+
+void ServiceWorkerTaskQueue::OnRegistrationStored(int64_t registration_id,
+                                                  const GURL& scope) {
+  auto iter = pending_registrations_.find(scope);
+  if (iter == pending_registrations_.end()) {
+    return;
+  }
+
+  // The only registrations we track are the ones for root-scope extension
+  // service workers.
+  DCHECK_EQ(kExtensionScheme, scope.scheme());
+  DCHECK_EQ("/", scope.path());
+
+  ActivationSequence sequence = iter->second;
+  pending_registrations_.erase(iter);
+
+  std::string extension_id = scope.host();
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(extension_id);
+
+  // Check the extension's presence and current sequence; this might be
+  // different if the extension was [un|re]loaded.
+  if (extension && IsCurrentSequence(extension_id, sequence)) {
+    SetRegisteredServiceWorkerInfo(extension->id(), extension->version());
+  }
 }
 
 void ServiceWorkerTaskQueue::OnReportConsoleMessage(
