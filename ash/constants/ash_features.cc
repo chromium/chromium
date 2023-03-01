@@ -1552,6 +1552,11 @@ BASE_FEATURE(kOverviewDeskNavigation,
              "OverviewDeskNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables user to provision PasspointARCSupport credentials.
+BASE_FEATURE(kPasspointARCSupport,
+             "PasspointARCSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
 // TODO(crbug/1254930): Revisit this flag when there is a way to query billboard
@@ -2938,6 +2943,10 @@ bool IsOsSettingsSearchFeedbackEnabled() {
 
 bool IsOverviewDeskNavigationEnabled() {
   return base::FeatureList::IsEnabled(kOverviewDeskNavigation);
+}
+
+bool IsPasspointARCSupportEnabled() {
+  return base::FeatureList::IsEnabled(kPasspointARCSupport);
 }
 
 bool IsPcieBillboardNotificationEnabled() {

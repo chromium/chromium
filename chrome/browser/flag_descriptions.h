@@ -137,6 +137,9 @@ extern const char kTangibleSyncDescription[];
 extern const char kMainThreadCompositingPriorityName[];
 extern const char kMainThreadCompositingPriorityDescription[];
 
+extern const char kPasspointARCSupportName[];
+extern const char kPasspointARCSupportDescription[];
+
 extern const char kPasswordNotesWithBackupName[];
 extern const char kPasswordNotesWithBackupDescription[];
 

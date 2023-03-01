@@ -63747,6 +63747,7 @@ from previous Chrome versions.
   <int value="1094506652" label="UseGoogleLocalNtp:enabled"/>
   <int value="1094889977" label="SidePanelImprovedClobbering:disabled"/>
   <int value="1095061640" label="enable-prominent-url-app-flow"/>
+  <int value="1095166532" label="PasspointARCSupport:disabled"/>
   <int value="1095706700" label="NavigationPredictor:enabled"/>
   <int value="1096477444" label="AssistantVoiceMatch:enabled"/>
   <int value="1097935876" label="CrostiniShowMicSetting:enabled"/>
@@ -64945,6 +64946,7 @@ from previous Chrome versions.
       label="AutofillEnableIbanClientSideUrlFiltering:disabled"/>
   <int value="1780392521"
       label="OmniboxUpdatedConnectionSecurityIndicators:disabled"/>
+  <int value="1781422070" label="PasspointARCSupport:enabled"/>
   <int value="1782210532" label="PerNavigationMojoInterface:disabled"/>
   <int value="1783293530" label="disallow-autofill-sync-credential"/>
   <int value="1783837132" label="enable-threaded-gpu-rasterization"/>

@@ -276,7 +276,9 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     arc_net_host_impl->SetPrefService(profile->GetPrefs());
     arc_net_host_impl->SetCertManager(
         std::make_unique<CertManagerImpl>(profile));
-    arc_net_url_opener_ = std::make_unique<BrowserUrlOpenerImpl>();
+    if (ash::features::IsPasspointARCSupportEnabled()) {
+      arc_net_url_opener_ = std::make_unique<BrowserUrlOpenerImpl>();
+    }
   }
   ArcOemCryptoBridge::GetForBrowserContext(profile);
   ArcPaymentAppBridge::GetForBrowserContext(profile);

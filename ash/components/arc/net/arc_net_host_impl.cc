@@ -15,6 +15,7 @@
 #include "ash/components/arc/net/cert_manager.h"
 #include "ash/components/arc/net/passpoint_dialog_view.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
@@ -996,6 +997,9 @@ base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
 
 void ArcNetHostImpl::AddPasspointCredentials(
     mojom::PasspointCredentialsPtr credentials) {
+  if (!ash::features::IsPasspointARCSupportEnabled()) {
+    return;
+  }
   TranslatePasspointCredentialsToDict(
       std::move(credentials),
       base::BindOnce(&ArcNetHostImpl::AddPasspointCredentialsWithProperties,
@@ -1005,6 +1009,11 @@ void ArcNetHostImpl::AddPasspointCredentials(
 void ArcNetHostImpl::RequestPasspointAppApproval(
     mojom::PasspointApprovalRequestPtr request,
     RequestPasspointAppApprovalCallback callback) {
+  if (!ash::features::IsPasspointARCSupportEnabled()) {
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
   aura::Window* window = GetActiveWindow();
   if (!window) {
     NET_LOG(ERROR) << "Failed to get active window";
