@@ -96,11 +96,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // AutofillPopupController:
   std::vector<Suggestion> GetSuggestions() const override;
 
-  // Disables show thresholds. See the documentation of the member for details.
-  void DisableThresholdForTesting(bool disable_threshold) {
-    disable_threshold_for_testing_ = disable_threshold;
-  }
-
  protected:
   FRIEND_TEST_ALL_PREFIXES(AutofillPopupControllerUnitTest,
                            ProperlyResetController);
@@ -121,8 +116,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // AutofillPopupController:
   void OnSuggestionsChanged() override;
   void SelectSuggestion(absl::optional<size_t> index) override;
-  void AcceptSuggestion(int index) override;
-  void AcceptSuggestionWithoutThreshold(int index) override;
+  void AcceptSuggestion(int index, base::TimeDelta show_threshold) override;
   bool RemoveSuggestion(int list_index) override;
   int GetLineCount() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
@@ -228,11 +222,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // accepting suggestions too quickly after a the popup view was shown (see the
   // `show_threshold` parameter of `AcceptSuggestion`).
   base::TimeTicks time_view_shown_;
-
-  // An override to suppress minimum show thresholds. It should only be set
-  // during tests that cannot mock time (e.g. the autofill interactive
-  // browsertests).
-  bool disable_threshold_for_testing_ = false;
 
   // If set to true, the popup will never be hidden because of stale data or if
   // the user interacts with native UI.

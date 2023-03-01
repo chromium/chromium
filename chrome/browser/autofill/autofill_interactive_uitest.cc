@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/translate/translate_test_utils.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -533,16 +531,6 @@ struct AutofillSuggestionParams {
           .render_frame_host()
           ->GetView()
           ->GetRenderWidgetHost();
-
-  // If `kAutofillPopupUseThresholdForKeyboardAndMobileAccept` is enabled,
-  // then all attempts to accept Autofill suggestions using keyboard "ENTER"
-  // keystrokes will be ignored for the first 500ms after the popup is first
-  // shown. This overrides this threshold.
-  if (base::WeakPtr<AutofillPopupControllerImpl> controller =
-          ChromeAutofillClient::FromWebContents(test->GetWebContents())
-              ->popup_controller_for_testing()) {
-    controller->DisableThresholdForTesting(true);
-  }
 
   constexpr auto kFill = ObservedUiEvents::kFormDataFilled;
 
@@ -2946,7 +2934,11 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   ~AutofillInteractiveIsolationTest() override = default;
 
   bool IsPopupShown() {
-    return !!ChromeAutofillClient::FromWebContents(GetWebContents())
+    return !!static_cast<ChromeAutofillClient*>(
+                 ContentAutofillDriverFactory::FromWebContents(GetWebContents())
+                     ->DriverForFrame(GetWebContents()->GetPrimaryMainFrame())
+                     ->autofill_manager()
+                     ->client())
                  ->popup_controller_for_testing();
   }
 

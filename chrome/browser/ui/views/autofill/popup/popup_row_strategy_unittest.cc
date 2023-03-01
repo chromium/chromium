@@ -110,7 +110,9 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
   void TestContentCallbacks(const PopupCellView& cell, int index) {
     base::RepeatingClosure on_accept_callback = cell.GetOnAcceptedCallback();
     ASSERT_TRUE(on_accept_callback);
-    EXPECT_CALL(controller(), AcceptSuggestion(index));
+    EXPECT_CALL(
+        controller(),
+        AcceptSuggestion(index, /*show_threshold=*/base::Milliseconds(500)));
     on_accept_callback.Run();
 
     base::RepeatingClosure on_select_callback = cell.GetOnSelectedCallback();
