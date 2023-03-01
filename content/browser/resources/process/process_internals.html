@@ -19,22 +19,63 @@ found in the LICENSE file.
     <div id="caption">Process Internals</div>
   </div>
   <div id="content">
+
     <div id="general">
-      <div class="content-header">General info</div>
+      <div class="content-header">General Info</div>
       <div id="general-info">
-        <div id="site-isolation-mode">Site Isolation mode: <span id='isolation-mode'>unknown</span></div>
-        <div id="isolated-origins-container">
-          <div id="user-triggered-isolated-origins"></div>
-          <div id="web-triggered-isolated-origins"></div>
-          <div id="global-isolated-origins"></div>
-        </div>
+        <button id="refresh-process-info">Refresh</button>
+        <div class="description">The information below reflects all profiles in
+         this browser process.</div>
+        <table>
+          <tbody>
+            <tr>
+              <td>Renderer Process Count:</td>
+              <td id="process-count-total"></td>
+              <td class="description">This includes the total count of renderer
+                processes, but not utility or plugin processes.</td>
+            </tr>
+            <tr>
+              <td>Renderer Process Count for Limit:</td>
+              <td id="process-count-for-limit"></td>
+              <td class="description">The number of renderer processes
+                considered against the limit below, possibly ignoring some of
+                the total (e.g., to prevent extensions from using up the limit).
+              </td>
+           </tr>
+            <tr>
+              <td>Renderer Process Limit:</td>
+              <td id="process-limit"></td>
+              <td class="description">A soft limit to the number of renderer
+                processes, after which same-site processes will be reused when
+                possible.</td>
+           </tr>
+            <tr>
+              <td>Over Process Limit?</td>
+              <td id="over-process-limit"></td>
+              <td class="description">Whether processes will be reused for new
+                main-frame documents when possible.</td>
+           </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <div id="site-isolation">
+      <div class="content-header">Site Isolation</div>
+      <div id="site-isolation-mode">Site Isolation mode:
+        <span id='isolation-mode'>unknown</span></div>
+      <div id="isolated-origins-container">
+        <div id="user-triggered-isolated-origins"></div>
+        <div id="web-triggered-isolated-origins"></div>
+        <div id="global-isolated-origins"></div>
+      </div>
+    </div>
+
     <div id="web-contents">
       <div class="content-header">Frame Trees</div>
       <div id="wc-list" class="list pages"></div>
       <div id="tree-view-container">
-        <button id="refresh-button">Refresh</button>
+        <button id="refresh-frame-trees">Refresh</button>
         <div>Legend:</div>
         <div>Frame[<i>process_id</i>:<i>routing_id</i>:<i>agent_scheduling_group_id</i>]:
           SI:<i>site_instance_id</i>, <i>whether process is locked to a

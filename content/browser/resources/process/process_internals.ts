@@ -69,6 +69,36 @@ function setupTabs() {
 }
 
 /**
+ * Collects and displays info about the renderer process count and limit across
+ * all profiles.
+ */
+async function loadProcessCountInfo() {
+  assert(pageHandler);
+  const {info} = await pageHandler.getProcessCountInfo();
+
+  const processCountTotal =
+      document.querySelector<HTMLElement>('#process-count-total');
+  assert(processCountTotal);
+  processCountTotal.innerText = String(info.rendererProcessCountTotal);
+
+  const processCountForLimit =
+      document.querySelector<HTMLElement>('#process-count-for-limit');
+  assert(processCountForLimit);
+  processCountForLimit.innerText = String(info.rendererProcessCountForLimit);
+
+  const processLimit = document.querySelector<HTMLElement>('#process-limit');
+  assert(processLimit);
+  processLimit.innerText = String(info.rendererProcessLimit);
+
+  const overProcessLimit =
+      document.querySelector<HTMLElement>('#over-process-limit');
+  assert(overProcessLimit);
+  overProcessLimit.innerText =
+      (info.rendererProcessCountForLimit >= info.rendererProcessLimit) ? 'Yes' :
+                                                                         'No';
+}
+
+/**
  * Root of the WebContents tree.
  */
 let treeViewRoot: CrTreeElement|null = null;
@@ -318,9 +348,20 @@ function loadIsolatedOriginInfo() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Setup Mojo interface to the backend.
+  // Set up Mojo interface to the backend.
   pageHandler = ProcessInternalsHandler.getRemote();
   assert(pageHandler);
+
+  // Set up the tabbed UI.
+  setupTabs();
+
+  // Populate the process count and limit info.
+  loadProcessCountInfo();
+
+  const refreshProcessInfoButton =
+      document.querySelector<HTMLElement>('#refresh-process-info');
+  assert(refreshProcessInfoButton);
+  refreshProcessInfoButton.addEventListener('click', loadProcessCountInfo);
 
   // Get the Site Isolation mode and populate it.
   pageHandler.getIsolationMode().then((response) => {
@@ -329,16 +370,13 @@ document.addEventListener('DOMContentLoaded', function() {
     assert(isolationMode);
     isolationMode.innerText = response.mode;
   });
-
   loadIsolatedOriginInfo();
-
-  // Setup the tabbed UI
-  setupTabs();
 
   // Start loading the information about WebContents.
   loadWebContentsInfo();
 
-  const refreshButton = document.querySelector<HTMLElement>('#refresh-button');
-  assert(refreshButton);
-  refreshButton.addEventListener('click', loadWebContentsInfo);
+  const refreshFrameTreesButton =
+      document.querySelector<HTMLElement>('#refresh-frame-trees');
+  assert(refreshFrameTreesButton);
+  refreshFrameTreesButton.addEventListener('click', loadWebContentsInfo);
 });

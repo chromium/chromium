@@ -17,7 +17,9 @@
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -177,6 +179,18 @@ ProcessInternalsHandlerImpl::ProcessInternalsHandlerImpl(
     : browser_context_(browser_context), receiver_(this, std::move(receiver)) {}
 
 ProcessInternalsHandlerImpl::~ProcessInternalsHandlerImpl() = default;
+
+void ProcessInternalsHandlerImpl::GetProcessCountInfo(
+    GetProcessCountInfoCallback callback) {
+  ::mojom::ProcessCountInfoPtr info = ::mojom::ProcessCountInfo::New();
+  info->renderer_process_count_total = RenderProcessHostImpl::GetProcessCount();
+  info->renderer_process_count_for_limit =
+      RenderProcessHostImpl::GetProcessCountForLimit();
+  info->renderer_process_limit =
+      RenderProcessHost::GetMaxRendererProcessCount();
+
+  std::move(callback).Run(std::move(info));
+}
 
 void ProcessInternalsHandlerImpl::GetIsolationMode(
     GetIsolationModeCallback callback) {
