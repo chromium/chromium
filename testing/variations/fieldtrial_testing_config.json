@@ -4927,6 +4927,31 @@
             ]
         }
     ],
+    "ExtensionTelemetryOffstoreFileDataStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CollectionIntervalSeconds": "7200",
+                        "MaxFileSizeBytes": "102400",
+                        "MaxFilesToProcess": "50",
+                        "StartupDelaySeconds": "300"
+                    },
+                    "enable_features": [
+                        "SafeBrowsingExtensionTelemetryFileData"
+                    ]
+                }
+            ]
+        }
+    ],
     "FastPairPowerConsumption": [
         {
             "platforms": [
