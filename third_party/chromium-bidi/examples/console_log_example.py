@@ -18,7 +18,8 @@
 import asyncio
 import logging
 
-from _helpers import *
+from _helpers import (get_websocket, read_JSON_message, run_and_wait_command,
+                      send_JSON_command)
 
 logging.basicConfig(
     format="%(message)s",

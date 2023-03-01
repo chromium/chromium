@@ -17,7 +17,7 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_STR
-from test_helpers import *
+from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio

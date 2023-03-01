@@ -22,7 +22,7 @@ import asyncio
 import logging
 from pathlib import Path
 
-from _helpers import *
+from _helpers import get_websocket, run_and_wait_command
 
 logging.basicConfig(
     format="%(message)s",

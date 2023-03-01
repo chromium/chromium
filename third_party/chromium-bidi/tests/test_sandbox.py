@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import *
+from test_helpers import execute_command
 
 
 async def _evaluate(script, sandbox, context_id, websocket):

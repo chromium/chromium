@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import *
+from test_helpers import json, read_JSON_message, send_JSON_command
 
 # Tests for "handle an incoming message" error handling, when the message
 # can't be decoded as known command.
