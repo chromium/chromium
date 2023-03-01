@@ -34,7 +34,7 @@ const int kCurrentVersionNumber = 1;
 side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
     const power_bookmarks::PowerOverview& power_overview,
     const GURL& current_tab_url,
-    bookmarks::BookmarkModel* bookmark_model) {
+    base::WeakPtr<bookmarks::BookmarkModel> bookmark_model) {
   auto* power = power_overview.power();
   DCHECK(power->power_type() ==
          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE);
@@ -120,9 +120,13 @@ UserNotesPageHandler::UserNotesPageHandler(
       page_(std::move(page)),
       profile_(profile),
       service_(PowerBookmarkServiceFactory::GetForBrowserContext(profile_)),
-      bookmark_model_(BookmarkModelFactory::GetForBrowserContext(profile_)),
       browser_(browser),
       user_notes_ui_(user_notes_ui) {
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile_);
+  if (bookmark_model) {
+    bookmark_model_ = bookmark_model->AsWeakPtr();
+  }
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kUserNotesSortByNewest,
@@ -157,7 +161,7 @@ void UserNotesPageHandler::GetNoteOverviews(const std::string& user_input,
       sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
       base::BindOnce(
           [](GetNoteOverviewsCallback callback, const GURL& current_tab_url,
-             bookmarks::BookmarkModel* bookmark_model,
+             base::WeakPtr<bookmarks::BookmarkModel> bookmark_model,
              std::vector<std::unique_ptr<power_bookmarks::PowerOverview>>
                  power_overviews) {
             std::vector<side_panel::mojom::NoteOverviewPtr> results;

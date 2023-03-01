@@ -92,9 +92,14 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   const raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<power_bookmarks::PowerBookmarkService> service_;
-  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   const raw_ptr<Browser> browser_;
+
   raw_ptr<UserNotesSidePanelUI> user_notes_ui_ = nullptr;
+
+  // Use a week pointer here because BookmarkModel may outlive the callback in
+  // `GetNoteOverviews`.
+  base::WeakPtr<bookmarks::BookmarkModel> bookmark_model_;
+
   bool start_creation_after_tab_change_ = false;
   GURL current_tab_url_;
 };
