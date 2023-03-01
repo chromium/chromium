@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_diagnostic.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/web_applications/diagnostics/callback_utils.h"
+#include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"

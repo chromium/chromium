@@ -61,6 +61,8 @@ struct IconBitmaps {
   IconBitmaps& operator=(const IconBitmaps&);
   IconBitmaps& operator=(IconBitmaps&&) noexcept;
 
+  bool operator==(const IconBitmaps&) const;
+
   const std::map<SquareSizePx, SkBitmap>& GetBitmapsForPurpose(
       IconPurpose purpose) const;
   void SetBitmapsForPurpose(IconPurpose purpose,

@@ -1419,6 +1419,10 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
   OverrideManifest(kManifestTemplate, {"/banners/", kInstallableIconList});
   AppId app_id = InstallWebApp();
 
+  if (IsUpdateDialogEnabled()) {
+    AcceptAppIdentityUpdateDialogForTesting();
+  }
+
   OverrideManifest(kManifestTemplate, {"/", kAnotherInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
@@ -2951,9 +2955,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   run_loop.Run();
 }
 
-// TODO(crbug.com/1402886) Currently disabled due to bug in the code.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       DISABLED_CheckIconChangeForOemInstallation) {
+                       CheckIconChangeForOemInstallation) {
   constexpr char kNewName[] = "New app name";
   constexpr char kManifest[] = R"(
     {
@@ -3042,6 +3045,10 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
         }
         return false;
       }));
+
+  if (IsUpdateDialogEnabled()) {
+    AcceptAppIdentityUpdateDialogForTesting();
+  }
 
   OverrideManifest(kManifest, {kAnotherInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),

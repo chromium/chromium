@@ -564,8 +564,10 @@ class WebApp {
   //  - WebAppTest.SampleAppAsDebugValue
   //  - web_app.proto
   // If parsed from manifest, also add to:
-  //  - IsUpdateNeededForManifest() inside manifest_update_utils.h
+  //  - GetManifestDataChanges() inside manifest_update_utils.h
   //  - SetWebAppManifestFields()
+  // If the field relates to the app icons, add revert logic for it in:
+  // - ManifestUpdateCheckCommand::RevertAppIconChanges()
 };
 
 // For logging and debug purposes.

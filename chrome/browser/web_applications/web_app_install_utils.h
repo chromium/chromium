@@ -135,9 +135,6 @@ void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
                                const AppId& app_id,
                                InstallOsHooksOptions* options);
 
-// Returns true if web app is allowed to update its identity (name and/or icon).
-bool CanWebAppUpdateIdentity(const WebApp* web_app);
-
 // Update |web_app_info| using |install_params|.
 void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
                                     WebAppInstallInfo& web_app_info);

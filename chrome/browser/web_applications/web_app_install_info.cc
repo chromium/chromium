@@ -8,6 +8,7 @@
 
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "ui/gfx/skia_util.h"
 
 namespace {
 
@@ -19,6 +20,12 @@ std::string ConvertToString(const T& value) {
 }
 
 }  // namespace
+
+// This definition doesn't get picked up by IconBitmaps::operator==() when in
+// the anonymous namespace but it does as a static free function.
+static bool operator==(const SkBitmap& a, const SkBitmap& b) {
+  return gfx::BitmapsAreEqual(a, b);
+}
 
 apps::IconInfo::Purpose ManifestPurposeToIconInfoPurpose(
     IconPurpose manifest_purpose) {
@@ -44,6 +51,14 @@ IconBitmaps::IconBitmaps(IconBitmaps&&) noexcept = default;
 IconBitmaps& IconBitmaps::operator=(const IconBitmaps&) = default;
 
 IconBitmaps& IconBitmaps::operator=(IconBitmaps&&) noexcept = default;
+
+bool IconBitmaps::operator==(const IconBitmaps& other) const {
+  auto AsTuple = [](const IconBitmaps& icon_bitmaps) {
+    return std::make_tuple(icon_bitmaps.any, icon_bitmaps.maskable,
+                           icon_bitmaps.monochrome);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
 
 const std::map<SquareSizePx, SkBitmap>& IconBitmaps::GetBitmapsForPurpose(
     IconPurpose purpose) const {

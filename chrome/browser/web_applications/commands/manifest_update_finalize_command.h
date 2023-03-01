@@ -39,7 +39,6 @@ class ManifestUpdateFinalizeCommand : public WebAppCommandTemplate<AppLock> {
       const GURL& url,
       const AppId& app_id,
       WebAppInstallInfo install_info,
-      bool app_identity_update_allowed,
       ManifestWriteCallback write_callback,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive);
@@ -70,14 +69,12 @@ class ManifestUpdateFinalizeCommand : public WebAppCommandTemplate<AppLock> {
   const GURL url_;
   const AppId app_id_;
   WebAppInstallInfo install_info_;
-  bool app_identity_update_allowed_;
   ManifestWriteCallback write_callback_;
   // Two KeepAlive objects, to make sure that manifest update writes
   // still happen even though the app window has closed.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
-  ManifestUpdateStage stage_ = ManifestUpdateStage::kAppWindowsClosed;
   base::Value::Dict debug_log_;
 
   base::WeakPtrFactory<ManifestUpdateFinalizeCommand> weak_factory_{this};

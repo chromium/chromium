@@ -10,7 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
-#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
+#include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
@@ -49,8 +49,6 @@ enum class ApiApprovalState;
 // * Operations have the necessary dependencies from the WebAppProvider system.
 class WebAppCommandScheduler {
  public:
-  using ManifestFetchCallback =
-      ManifestUpdateDataFetchCommand::ManifestFetchCallback;
   using ManifestWriteCallback =
       ManifestUpdateFinalizeCommand::ManifestWriteCallback;
   using InstallIsolatedWebAppCallback = base::OnceCallback<void(
@@ -130,11 +128,11 @@ class WebAppCommandScheduler {
 
   // Schedule a command that performs fetching data from the manifest
   // for a manifest update.
-  void ScheduleManifestUpdateDataFetch(
+  void ScheduleManifestUpdateCheck(
       const GURL& url,
       const AppId& app_id,
       base::WeakPtr<content::WebContents> contents,
-      ManifestFetchCallback callback,
+      ManifestUpdateCheckCommand::CompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that performs the data writes into the DB for
@@ -143,7 +141,6 @@ class WebAppCommandScheduler {
       const GURL& url,
       const AppId& app_id,
       WebAppInstallInfo install_info,
-      bool app_identity_update_allowed,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       ManifestWriteCallback callback,
