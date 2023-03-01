@@ -7,9 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
@@ -117,21 +115,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 }
 
-class HeadlessModeBrowserTestWithWindowSize : public HeadlessModeBrowserTest {
- public:
-  static constexpr gfx::Size kWindowSize = {4096, 2160};
-
-  HeadlessModeBrowserTestWithWindowSize() = default;
-  ~HeadlessModeBrowserTestWithWindowSize() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        ::switches::kWindowSize,
-        base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
   DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
       static_cast<DesktopWindowTreeHostWinWrapper*>(
@@ -151,23 +134,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
   gfx::Rect bounds = browser()->window()->GetBounds();
   EXPECT_EQ(bounds.size(), kWindowSize);
 }
-
-class HeadlessModeBrowserTestWithWindowSizeAndScale
-    : public HeadlessModeBrowserTest {
- public:
-  static constexpr gfx::Size kWindowSize = {800, 600};
-
-  HeadlessModeBrowserTestWithWindowSizeAndScale() = default;
-  ~HeadlessModeBrowserTestWithWindowSizeAndScale() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        ::switches::kWindowSize,
-        base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
-    command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1.5");
-  }
-};
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSizeAndScale,
                        WindowSizeWithScale) {

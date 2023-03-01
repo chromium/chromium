@@ -34,6 +34,8 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 @class BridgedContentView;
 @class ModalShowAnimationWithLayer;
@@ -430,6 +432,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   struct HeadlessModeWindow {
     bool visibility_state = false;
     bool fullscreen_state = false;
+    bool initial_bounds_set = false;
+    gfx::Rect bounds;
   };
 
   // This is present iff the window has been created in headless mode.
