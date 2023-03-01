@@ -10,12 +10,15 @@
 #include <string>
 
 #include "base/synchronization/lock.h"
-#include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
+
+namespace base {
+class UnguessableToken;
+}
 
 namespace extensions {
 
@@ -54,22 +57,22 @@ class RendererExtensionRegistry {
   ExtensionIdSet GetIDs() const;
   bool ExtensionBindingsAllowed(const GURL& url) const;
 
-  // ActivationSequence related methods.
+  // Activation sequence-related methods.
   //
-  // Sets ActivationSequence for a Service Worker based |extension|.
+  // Sets the activation sequence for a Service Worker based |extension|.
   void SetWorkerActivationSequence(
       const scoped_refptr<const Extension>& extension,
-      ActivationSequence worker_activation_sequence);
+      base::UnguessableToken worker_activation_sequence);
   // Returns the current activation sequence for worker based extension with
   // |extension_id|. Returns absl::nullopt otherwise.
-  absl::optional<ActivationSequence> GetWorkerActivationSequence(
+  absl::optional<base::UnguessableToken> GetWorkerActivationSequence(
       const ExtensionId& extension_id) const;
 
  private:
   ExtensionSet extensions_;
 
-  // Maps extension id to ActivationSequence, for worker based extensions.
-  std::map<ExtensionId, ActivationSequence> worker_activation_sequences_;
+  // Maps extension id to activation sequence, for worker based extensions.
+  std::map<ExtensionId, base::UnguessableToken> worker_activation_sequences_;
 
   mutable base::Lock lock_;
 };

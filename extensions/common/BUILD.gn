@@ -68,7 +68,6 @@ mojom("mojom") {
   disable_variants = true
 
   sources = [
-    "mojom/activation_sequence.mojom",
     "mojom/api_permission_id.mojom",
     "mojom/app_window.mojom",
     "mojom/automation_query.mojom",
@@ -167,18 +166,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "extensions.mojom.ActivationSequence"
-          cpp = "::extensions::ActivationSequence"
-        },
-      ]
-      traits_headers =
-          [ "//extensions/common/mojom/activation_sequence_mojom_traits.h" ]
-      traits_sources =
-          [ "//extensions/common/mojom/activation_sequence_mojom_traits.cc" ]
-    },
-    {
-      types = [
-        {
           mojom = "extensions.mojom.StackFrame"
           cpp = "::extensions::StackFrame"
         },
@@ -199,7 +186,6 @@ mojom("mojom") {
 # in. TODO(brettw): This reverse dependency should be fixed.
 static_library("common") {
   sources = [
-    "activation_sequence.h",
     "alias.h",
     "api/bluetooth/bluetooth_manifest_data.cc",
     "api/bluetooth/bluetooth_manifest_data.h",

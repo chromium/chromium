@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/lazy_instance.h"
+#include "base/unguessable_token.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
@@ -96,16 +97,17 @@ bool RendererExtensionRegistry::ExtensionBindingsAllowed(
 
 void RendererExtensionRegistry::SetWorkerActivationSequence(
     const scoped_refptr<const Extension>& extension,
-    ActivationSequence worker_activation_sequence) {
+    base::UnguessableToken worker_activation_sequence) {
   DCHECK(content::RenderThread::Get());
   DCHECK(Contains(extension->id()));
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension.get()));
 
   base::AutoLock lock(lock_);
-  worker_activation_sequences_[extension->id()] = worker_activation_sequence;
+  worker_activation_sequences_[extension->id()] =
+      std::move(worker_activation_sequence);
 }
 
-absl::optional<ActivationSequence>
+absl::optional<base::UnguessableToken>
 RendererExtensionRegistry::GetWorkerActivationSequence(
     const ExtensionId& extension_id) const {
   base::AutoLock lock(lock_);

@@ -950,18 +950,6 @@ struct FuzzTraits<base::IdType<TypeMarker, WrappedType, kInvalidValue>> {
 };
 
 template <>
-struct FuzzTraits<base::StrongAlias<extensions::ActivationSequenceTag, int>> {
-  static bool Fuzz(base::StrongAlias<extensions::ActivationSequenceTag, int>* p,
-                   Fuzzer* fuzzer) {
-    int value;
-    if (!FuzzParam(&value, fuzzer))
-      return false;
-    *p = base::StrongAlias<extensions::ActivationSequenceTag, int>(value);
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<gl::GpuPreference> {
   static bool Fuzz(gl::GpuPreference* p, Fuzzer* fuzzer) {
     int preference =

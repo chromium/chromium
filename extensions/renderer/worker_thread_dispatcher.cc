@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
@@ -456,14 +457,14 @@ void WorkerThreadDispatcher::OnDispatchOnDisconnect(
 
 void WorkerThreadDispatcher::AddWorkerData(
     int64_t service_worker_version_id,
-    ActivationSequence activation_sequence,
+    base::UnguessableToken activation_sequence,
     ScriptContext* script_context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system) {
   ServiceWorkerData* data = g_data_tls.Pointer()->Get();
   if (!data) {
-    ServiceWorkerData* new_data =
-        new ServiceWorkerData(service_worker_version_id, activation_sequence,
-                              script_context, std::move(bindings_system));
+    ServiceWorkerData* new_data = new ServiceWorkerData(
+        service_worker_version_id, std::move(activation_sequence),
+        script_context, std::move(bindings_system));
     g_data_tls.Pointer()->Set(new_data);
   }
 

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "extensions/common/activation_sequence.h"
+#include "base/unguessable_token.h"
 #include "extensions/renderer/v8_schema_registry.h"
 
 namespace extensions {
@@ -20,7 +20,7 @@ class ServiceWorkerData {
  public:
   ServiceWorkerData(
       int64_t service_worker_version_id,
-      ActivationSequence activation_sequence,
+      base::UnguessableToken activation_sequence,
       ScriptContext* context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
 
@@ -36,14 +36,14 @@ class ServiceWorkerData {
   int64_t service_worker_version_id() const {
     return service_worker_version_id_;
   }
-  ActivationSequence activation_sequence() const {
+  const base::UnguessableToken& activation_sequence() const {
     return activation_sequence_;
   }
   ScriptContext* context() const { return context_; }
 
  private:
   const int64_t service_worker_version_id_;
-  const ActivationSequence activation_sequence_;
+  const base::UnguessableToken activation_sequence_;
   ScriptContext* const context_ = nullptr;
 
   std::unique_ptr<V8SchemaRegistry> v8_schema_registry_;

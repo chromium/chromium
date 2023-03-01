@@ -12,6 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -25,7 +26,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/network_permissions_updater.h"
 #include "extensions/browser/service_worker_task_queue.h"
-#include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extensions_client.h"
@@ -44,9 +44,9 @@ namespace {
 
 using ::content::BrowserContext;
 
-// Returns the current ActivationSequence of |extension| if the extension is
+// Returns the current activation sequence of |extension| if the extension is
 // Service Worker-based, otherwise returns absl::nullopt.
-absl::optional<ActivationSequence> GetWorkerActivationSequence(
+absl::optional<base::UnguessableToken> GetWorkerActivationSequence(
     BrowserContext* browser_context,
     const Extension& extension) {
   if (BackgroundInfo::IsServiceWorkerBased(&extension)) {

@@ -154,7 +154,7 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
     int thread_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const ExtensionId& extension_id = context_id.first.extension_id();
-  const ActivationSequence& sequence = context_id.second;
+  const base::UnguessableToken& sequence = context_id.second;
   if (!IsCurrentSequence(extension_id, sequence)) {
     // Extension run with |sequence| was already deactivated.
     // TODO(lazyboy): Add a DCHECK that the worker in question is actually
@@ -271,7 +271,7 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
 void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
-    ActivationSequence activation_sequence,
+    const base::UnguessableToken& activation_sequence,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int thread_id) {
@@ -309,7 +309,7 @@ void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
 void ServiceWorkerTaskQueue::DidStopServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
-    ActivationSequence activation_sequence,
+    const base::UnguessableToken& activation_sequence,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int thread_id) {
@@ -384,7 +384,7 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const ExtensionId extension_id = extension->id();
-  ActivationSequence current_sequence(++next_activation_sequence_);
+  base::UnguessableToken current_sequence = base::UnguessableToken::Create();
   activation_sequences_[extension_id] = current_sequence;
   SequencedContextId context_id(
       LazyContextId(browser_context_, extension_id, extension->url()),
@@ -454,7 +454,7 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   const ExtensionId extension_id = extension->id();
   RemoveRegisteredServiceWorkerInfo(extension_id);
-  absl::optional<ActivationSequence> sequence =
+  absl::optional<base::UnguessableToken> sequence =
       GetCurrentSequence(extension_id);
 
   // Extension was never activated, this happens in tests.
@@ -571,7 +571,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
 void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     const ExtensionId& extension_id,
-    ActivationSequence sequence,
+    const base::UnguessableToken& sequence,
     bool success) {
   // Extension run with |sequence| was already deactivated.
   if (!IsCurrentSequence(extension_id, sequence))
@@ -661,12 +661,13 @@ void ServiceWorkerTaskQueue::RunPendingTasksIfWorkerReady(
 
 bool ServiceWorkerTaskQueue::IsCurrentSequence(
     const ExtensionId& extension_id,
-    ActivationSequence sequence) const {
+    const base::UnguessableToken& sequence) const {
   auto current_sequence = GetCurrentSequence(extension_id);
   return current_sequence == sequence;
 }
 
-absl::optional<ActivationSequence> ServiceWorkerTaskQueue::GetCurrentSequence(
+absl::optional<base::UnguessableToken>
+ServiceWorkerTaskQueue::GetCurrentSequence(
     const ExtensionId& extension_id) const {
   auto iter = activation_sequences_.find(extension_id);
   if (iter == activation_sequences_.end())
@@ -686,7 +687,7 @@ void ServiceWorkerTaskQueue::OnRegistrationStored(int64_t registration_id,
   DCHECK_EQ(kExtensionScheme, scope.scheme());
   DCHECK_EQ("/", scope.path());
 
-  ActivationSequence sequence = iter->second;
+  base::UnguessableToken sequence = iter->second;
   pending_registrations_.erase(iter);
 
   std::string extension_id = scope.host();

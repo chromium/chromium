@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
+#include "base/unguessable_token.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/service_worker_context.h"
@@ -235,7 +236,7 @@ void ExtensionServiceWorkerMessageFilter::OnDidInitializeServiceWorkerContext(
 
 void ExtensionServiceWorkerMessageFilter::OnDidStartServiceWorkerContext(
     const ExtensionId& extension_id,
-    ActivationSequence activation_sequence,
+    const base::UnguessableToken& activation_sequence,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int thread_id) {
@@ -259,7 +260,7 @@ void ExtensionServiceWorkerMessageFilter::OnDidStartServiceWorkerContext(
 
 void ExtensionServiceWorkerMessageFilter::OnDidStopServiceWorkerContext(
     const ExtensionId& extension_id,
-    ActivationSequence activation_sequence,
+    const base::UnguessableToken& activation_sequence,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int thread_id) {

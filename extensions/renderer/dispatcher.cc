@@ -548,7 +548,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     std::unique_ptr<IPCMessageSender> ipc_sender =
         IPCMessageSender::CreateWorkerThreadIPCMessageSender(
             worker_dispatcher, service_worker_version_id);
-    ActivationSequence worker_activation_sequence =
+    base::UnguessableToken worker_activation_sequence =
         *RendererExtensionRegistry::Get()->GetWorkerActivationSequence(
             extension->id());
     worker_dispatcher->AddWorkerData(
@@ -1061,7 +1061,7 @@ void Dispatcher::LoadExtensions(
   for (auto& param : loaded_extensions) {
     std::string error;
     std::string id = param->id;
-    absl::optional<ActivationSequence> worker_activation_sequence =
+    absl::optional<base::UnguessableToken> worker_activation_sequence =
         param->worker_activation_sequence;
 
     scoped_refptr<const Extension> extension =

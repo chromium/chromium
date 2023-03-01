@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/public/renderer/worker_thread.h"
-#include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -24,6 +23,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+class UnguessableToken;
 }
 
 namespace content {
@@ -75,7 +75,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   void AddWorkerData(
       int64_t service_worker_version_id,
-      ActivationSequence activation_sequence,
+      base::UnguessableToken activation_sequence,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);
