@@ -149,19 +149,17 @@ TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
   }
 }
 
-TEST_P(ClipboardHistoryItemDisplayTest, GetImageDataUrl) {
-  constexpr const auto* kDataUrlStart = "data:image/png;base64,";
-
-  const auto maybe_image_data_url = item().GetImageDataUrl();
+TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
+  const auto& maybe_image = item().display_image();
   switch (GetDisplayFormat()) {
     case ClipboardHistoryItem::DisplayFormat::kText:
     case ClipboardHistoryItem::DisplayFormat::kFile:
-      EXPECT_FALSE(maybe_image_data_url);
+      EXPECT_FALSE(maybe_image);
       break;
     case ClipboardHistoryItem::DisplayFormat::kPng:
     case ClipboardHistoryItem::DisplayFormat::kHtml:
-      ASSERT_TRUE(maybe_image_data_url);
-      EXPECT_TRUE(base::StartsWith(*maybe_image_data_url, kDataUrlStart));
+      ASSERT_TRUE(maybe_image);
+      EXPECT_TRUE(maybe_image.value().IsImage());
       break;
   }
 }

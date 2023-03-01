@@ -43,7 +43,7 @@ constexpr base::TimeDelta kFadeInDurationMs = base::Milliseconds(200);
 // FadeImageView
 // An ImageView which reacts to updates from ClipboardHistoryResourceManager by
 // fading out the old image, and fading in the new image. Used when HTML is done
-// rendering. Only expected to transition once in its lifetime.
+// rendering. Expected to transition at most once in its lifetime.
 class FadeImageView : public views::ImageView,
                       public ui::ImplicitAnimationObserver,
                       public ClipboardHistoryResourceManager::Observer {
@@ -115,8 +115,8 @@ class FadeImageView : public views::ImageView,
 
   void SetImageFromModel() {
     if (const auto* item = item_resolver_.Run()) {
-      DCHECK(item->html_preview().has_value());
-      SetImage(item->html_preview().value());
+      DCHECK(item->display_image().has_value());
+      SetImage(item->display_image().value());
     }
 
     // When fading in a new image, the ImageView's image has likely changed
@@ -221,40 +221,15 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   std::unique_ptr<views::ImageView> BuildImageView() {
     const auto* clipboard_history_item = container_->GetClipboardHistoryItem();
     DCHECK(clipboard_history_item);
-    switch (container_->data_format_) {
-      case ui::ClipboardInternalFormat::kHtml:
-        return std::make_unique<FadeImageView>(
-            // `Unretained()` is safe because `container_` will ultimately own
-            // this `FadeImageView`.
-            base::BindRepeating(
-                &ClipboardHistoryBitmapItemView::GetClipboardHistoryItem,
-                base::Unretained(container_)),
-            container_->resource_manager_,
-            base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
-                                weak_ptr_factory_.GetWeakPtr()));
-      case ui::ClipboardInternalFormat::kPng: {
-        auto image_view = std::make_unique<views::ImageView>();
-        gfx::Image image;
-        const auto& maybe_png = clipboard_history_item->data().maybe_png();
-        if (maybe_png.has_value()) {
-          image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
-                                                   maybe_png.value().size());
-        } else {
-          // If we have not yet encoded the bitmap to a PNG, just create the
-          // gfx::Image using the available bitmap. No information is lost here.
-          auto maybe_bitmap =
-              clipboard_history_item->data().GetBitmapIfPngNotEncoded();
-          DCHECK(maybe_bitmap.has_value());
-          image = gfx::Image::CreateFrom1xBitmap(maybe_bitmap.value());
-        }
-        ui::ImageModel image_model = ui::ImageModel::FromImage(image);
-        image_view->SetImage(image_model);
-        return image_view;
-      }
-      default:
-        NOTREACHED();
-        return nullptr;
-    }
+    return std::make_unique<FadeImageView>(
+        // `Unretained()` is safe because `this` owns the `FadeImageView` being
+        // created, and `container_` owns `this`.
+        base::BindRepeating(
+            &ClipboardHistoryBitmapItemView::GetClipboardHistoryItem,
+            base::Unretained(container_)),
+        container_->resource_manager_,
+        base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
+                            base::Unretained(this)));
   }
 
   void UpdateImageViewSize() {
@@ -296,8 +271,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
   // Helps to place a border above `image_view_`.
   views::View* border_container_view_ = nullptr;
-
-  base::WeakPtrFactory<BitmapContentsView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)

@@ -47,20 +47,17 @@ class ASH_EXPORT ClipboardHistoryItem {
   // Returns the replaced `data_`.
   ui::ClipboardData ReplaceEquivalentData(ui::ClipboardData&& new_data);
 
-  // Returns the data URL for this item's PNG or bitmap image, if any.
-  // TODO(b/266947643): Move data URL logic to `ChromeVirtualKeyboardDelegate`.
-  absl::optional<std::string> GetImageDataUrl() const;
-
   const base::UnguessableToken& id() const { return id_; }
   const ui::ClipboardData& data() const { return data_; }
   const base::Time time_copied() const { return time_copied_; }
   ui::ClipboardInternalFormat main_format() const { return main_format_; }
   DisplayFormat display_format() const { return display_format_; }
-  void set_html_preview(const ui::ImageModel& html_preview) {
-    html_preview_ = html_preview;
+  void set_display_image(const ui::ImageModel& display_image) {
+    DCHECK(display_image.IsImage());
+    display_image_ = display_image;
   }
-  const absl::optional<ui::ImageModel>& html_preview() const {
-    return html_preview_;
+  const absl::optional<ui::ImageModel>& display_image() const {
+    return display_image_;
   }
   const std::u16string& display_text() const { return display_text_; }
   const absl::optional<ui::ImageModel>& icon() const { return icon_; }
@@ -83,9 +80,11 @@ class ASH_EXPORT ClipboardHistoryItem {
   // to the user.
   const DisplayFormat display_format_;
 
-  // Cached display image. For HTML items, this will be a placeholder image
-  // until the preview is ready; for non-HTML items, there will be no value.
-  absl::optional<ui::ImageModel> html_preview_;
+  // Cached display image. For PNG items, this will be set during construction.
+  // For HTML items, this will be a placeholder image until the real preview is
+  // ready, at which point it will be updated. For other items, there will be no
+  // value.
+  absl::optional<ui::ImageModel> display_image_;
 
   // The text that should be displayed on this item's menu entry.
   const std::u16string display_text_;

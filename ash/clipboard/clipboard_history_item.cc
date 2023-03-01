@@ -16,7 +16,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -48,6 +47,37 @@ ClipboardHistoryItem::DisplayFormat CalculateDisplayFormat(
                  ? ClipboardHistoryItem::DisplayFormat::kFile
                  : ClipboardHistoryItem::DisplayFormat::kText;
   }
+}
+
+absl::optional<ui::ImageModel> DetermineDisplayImage(
+    const ClipboardHistoryItem& item) {
+  absl::optional<ui::ImageModel> maybe_image;
+  switch (item.display_format()) {
+    case ClipboardHistoryItem::DisplayFormat::kText:
+    case ClipboardHistoryItem::DisplayFormat::kFile:
+      break;
+    case ClipboardHistoryItem::DisplayFormat::kPng: {
+      gfx::Image image;
+      if (const auto& maybe_png = item.data().maybe_png()) {
+        image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
+                                                 maybe_png.value().size());
+      } else {
+        // If we have not yet encoded the bitmap to a PNG, just create the
+        // image using the available bitmap. No information is lost here.
+        auto maybe_bitmap = item.data().GetBitmapIfPngNotEncoded();
+        DCHECK(maybe_bitmap.has_value());
+        image = gfx::Image::CreateFrom1xBitmap(maybe_bitmap.value());
+      }
+      maybe_image = ui::ImageModel::FromImage(image);
+      break;
+    }
+    case ClipboardHistoryItem::DisplayFormat::kHtml:
+      // The `ClipboardHistoryResourceManager` will update this preview once an
+      // image model is rendered.
+      maybe_image = clipboard_history_util::GetHtmlPreviewPlaceholder();
+      break;
+  }
+  return maybe_image;
 }
 
 // Returns the text to display for the file system data contained within `data`.
@@ -118,14 +148,9 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       time_copied_(base::Time::Now()),
       main_format_(clipboard_history_util::CalculateMainFormat(data_).value()),
       display_format_(CalculateDisplayFormat(*this)),
+      display_image_(DetermineDisplayImage(*this)),
       display_text_(DetermineDisplayText(*this)),
-      icon_(DetermineIcon(*this)) {
-  if (display_format_ == DisplayFormat::kHtml) {
-    // The `ClipboardHistoryResourceManager` will update this preview once an
-    // image model is rendered.
-    html_preview_ = clipboard_history_util::GetHtmlPreviewPlaceholder();
-  }
-}
+      icon_(DetermineIcon(*this)) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem&) =
     default;
@@ -143,27 +168,6 @@ ui::ClipboardData ClipboardHistoryItem::ReplaceEquivalentData(
   if (data_.maybe_png() && !new_data.maybe_png())
     new_data.SetPngDataAfterEncoding(*data_.maybe_png());
   return std::exchange(data_, std::move(new_data));
-}
-
-absl::optional<std::string> ClipboardHistoryItem::GetImageDataUrl() const {
-  absl::optional<std::string> maybe_url;
-  switch (display_format_) {
-    case DisplayFormat::kText:
-    case DisplayFormat::kFile:
-      break;
-    case DisplayFormat::kPng:
-      if (const auto& maybe_png = data_.maybe_png(); maybe_png.has_value()) {
-        maybe_url = webui::GetPngDataUrl(maybe_png.value().data(),
-                                         maybe_png.value().size());
-      }
-      break;
-    case DisplayFormat::kHtml:
-      DCHECK(html_preview_.has_value());
-      maybe_url =
-          webui::GetBitmapDataUrl(*html_preview_->GetImage().ToSkBitmap());
-      break;
-  }
-  return maybe_url;
 }
 
 }  // namespace ash

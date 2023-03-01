@@ -538,9 +538,9 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     base::Value::Dict item_dict;
     item_dict.Set(kIDKey, item.id().ToString());
     item_dict.Set(kTimeCopiedKey, item.time_copied().ToJsTimeIgnoringNull());
-    if (const auto maybe_image_data_url = item.GetImageDataUrl();
-        maybe_image_data_url.has_value()) {
-      item_dict.Set(kImageDataKey, std::move(maybe_image_data_url.value()));
+    if (const auto& maybe_image = item.display_image()) {
+      item_dict.Set(kImageDataKey, webui::GetBitmapDataUrl(
+                                       *maybe_image->GetImage().ToSkBitmap()));
     }
     switch (item.display_format()) {
       case ClipboardHistoryItem::DisplayFormat::kText:

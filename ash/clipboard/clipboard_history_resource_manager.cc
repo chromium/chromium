@@ -73,9 +73,9 @@ void ClipboardHistoryResourceManager::OnImageModelRendered(
       continue;
     }
 
-    DCHECK(item.html_preview().has_value());
-    if (item.html_preview().value() != image_model) {
-      item.set_html_preview(image_model);
+    DCHECK(item.display_image().has_value());
+    if (item.display_image().value() != image_model) {
+      item.set_display_image(image_model);
     }
   }
 
@@ -174,10 +174,10 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
         base::ranges::find(items, item.id(), &ClipboardHistoryItem::id);
     DCHECK(mutable_item != items.end());
 
-    const auto& existing_preview = it->html_preview();
+    const auto& existing_preview = it->display_image();
     DCHECK(existing_preview.has_value());
 
-    mutable_item->set_html_preview(existing_preview.value());
+    mutable_item->set_display_image(existing_preview.value());
   }
 }
 
