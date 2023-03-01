@@ -65,7 +65,7 @@ BASE_FEATURE(kEnablePasswordManagerWithinFencedFrame,
 // affiliated website.
 BASE_FEATURE(kFillingAcrossAffiliatedWebsites,
              "FillingAcrossAffiliatedWebsites",
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+#if !BUILDFLAG(IS_ANDROID) // Desktop and iOS
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
