@@ -88,7 +88,7 @@ using EnableIfMutable =
 template <template <typename> class SpanT, typename T>
 bool EqualImpl(SpanT<T> a, SpanT<T> b) {
   static_assert(std::is_const<T>::value, "");
-  return absl::equal(a.begin(), a.end(), b.begin(), b.end());
+  return std::equal(a.begin(), a.end(), b.begin(), b.end());
 }
 
 template <template <typename> class SpanT, typename T>

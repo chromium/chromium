@@ -159,7 +159,7 @@ static double GetNominalCPUFrequency() {
     DWORD type = 0;
     DWORD data = 0;
     DWORD data_size = sizeof(data);
-    auto result = RegQueryValueExA(key, "~MHz", 0, &type,
+    auto result = RegQueryValueExA(key, "~MHz", nullptr, &type,
                                    reinterpret_cast<LPBYTE>(&data), &data_size);
     RegCloseKey(key);
     if (result == ERROR_SUCCESS && type == REG_DWORD &&

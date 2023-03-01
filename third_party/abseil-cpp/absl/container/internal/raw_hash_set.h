@@ -675,9 +675,10 @@ struct GroupAArch64Impl {
   void ConvertSpecialToEmptyAndFullToDeleted(ctrl_t* dst) const {
     uint64_t mask = vget_lane_u64(vreinterpret_u64_u8(ctrl), 0);
     constexpr uint64_t msbs = 0x8080808080808080ULL;
-    constexpr uint64_t lsbs = 0x0101010101010101ULL;
-    auto x = mask & msbs;
-    auto res = (~x + (x >> 7)) & ~lsbs;
+    constexpr uint64_t slsbs = 0x0202020202020202ULL;
+    constexpr uint64_t midbs = 0x7e7e7e7e7e7e7e7eULL;
+    auto x = slsbs & (mask >> 6);
+    auto res = (x + midbs) | msbs;
     little_endian::Store64(dst, res);
   }
 
@@ -1889,11 +1890,8 @@ class raw_hash_set {
   //   const char* p = "hello";
   //   s.insert(p);
   //
-  // TODO(romanp): Once we stop supporting gcc 5.1 and below, replace
-  // RequiresInsertable<T> with RequiresInsertable<const T&>.
-  // We are hitting this bug: https://godbolt.org/g/1Vht4f.
   template <
-      class T, RequiresInsertable<T> = 0,
+      class T, RequiresInsertable<const T&> = 0,
       typename std::enable_if<IsDecomposable<const T&>::value, int>::type = 0>
   std::pair<iterator, bool> insert(const T& value) {
     return emplace(value);
@@ -1917,11 +1915,8 @@ class raw_hash_set {
     return insert(std::forward<T>(value)).first;
   }
 
-  // TODO(romanp): Once we stop supporting gcc 5.1 and below, replace
-  // RequiresInsertable<T> with RequiresInsertable<const T&>.
-  // We are hitting this bug: https://godbolt.org/g/1Vht4f.
   template <
-      class T, RequiresInsertable<T> = 0,
+      class T, RequiresInsertable<const T&> = 0,
       typename std::enable_if<IsDecomposable<const T&>::value, int>::type = 0>
   iterator insert(const_iterator, const T& value) {
     return insert(value).first;

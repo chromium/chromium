@@ -41,9 +41,15 @@ enum class OnUndefinedFlag {
 };
 
 std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
-                                        ArgvListAction arg_list_act,
                                         UsageFlagsAction usage_flag_act,
                                         OnUndefinedFlag on_undef_flag);
+
+// To be removed
+inline std::vector<char*> ParseCommandLineImpl(
+    int argc, char* argv[], ArgvListAction /* arg_list_act */,
+    UsageFlagsAction usage_flag_act, OnUndefinedFlag on_undef_flag) {
+  return ParseCommandLineImpl(argc, argv, usage_flag_act, on_undef_flag);
+}
 
 // --------------------------------------------------------------------
 // Inspect original command line

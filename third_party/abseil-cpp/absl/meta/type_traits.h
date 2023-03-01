@@ -41,12 +41,6 @@
 
 #include "absl/base/config.h"
 
-// MSVC constructibility traits do not detect destructor properties and so our
-// implementations should not use them as a source-of-truth.
-#if defined(_MSC_VER) && !defined(__clang__) && !defined(__GNUC__)
-#define ABSL_META_INTERNAL_STD_CONSTRUCTION_TRAITS_DONT_CHECK_DESTRUCTION 1
-#endif
-
 // Defines the default alignment. `__STDCPP_DEFAULT_NEW_ALIGNMENT__` is a C++17
 // feature.
 #if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
@@ -58,56 +52,7 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
-// Defined and documented later on in this file.
-template <typename T>
-struct is_trivially_destructible;
-
-// Defined and documented later on in this file.
-template <typename T>
-struct is_trivially_move_assignable;
-
 namespace type_traits_internal {
-
-// Silence MSVC warnings about the destructor being defined as deleted.
-#if defined(_MSC_VER) && !defined(__GNUC__)
-#pragma warning(push)
-#pragma warning(disable : 4624)
-#endif  // defined(_MSC_VER) && !defined(__GNUC__)
-
-template <class T>
-union SingleMemberUnion {
-  T t;
-};
-
-// Restore the state of the destructor warning that was silenced above.
-#if defined(_MSC_VER) && !defined(__GNUC__)
-#pragma warning(pop)
-#endif  // defined(_MSC_VER) && !defined(__GNUC__)
-
-template <class T>
-struct IsTriviallyMoveConstructibleObject
-    : std::integral_constant<
-          bool, std::is_move_constructible<
-                    type_traits_internal::SingleMemberUnion<T>>::value &&
-                    absl::is_trivially_destructible<T>::value> {};
-
-template <class T>
-struct IsTriviallyCopyConstructibleObject
-    : std::integral_constant<
-          bool, std::is_copy_constructible<
-                    type_traits_internal::SingleMemberUnion<T>>::value &&
-                    absl::is_trivially_destructible<T>::value> {};
-
-template <class T>
-struct IsTriviallyMoveAssignableReference : std::false_type {};
-
-template <class T>
-struct IsTriviallyMoveAssignableReference<T&>
-    : absl::is_trivially_move_assignable<T>::type {};
-
-template <class T>
-struct IsTriviallyMoveAssignableReference<T&&>
-    : absl::is_trivially_move_assignable<T>::type {};
 
 template <typename... Ts>
 struct VoidTImpl {
@@ -157,38 +102,7 @@ template <class To, template <class...> class Op, class... Args>
 struct is_detected_convertible
     : is_detected_convertible_impl<void, To, Op, Args...>::type {};
 
-template <typename T>
-using IsCopyAssignableImpl =
-    decltype(std::declval<T&>() = std::declval<const T&>());
-
-template <typename T>
-using IsMoveAssignableImpl = decltype(std::declval<T&>() = std::declval<T&&>());
-
 }  // namespace type_traits_internal
-
-// MSVC 19.20 has a regression that causes our workarounds to fail, but their
-// std forms now appear to be compliant.
-#if defined(_MSC_VER) && !defined(__clang__) && (_MSC_VER >= 1920)
-
-template <typename T>
-using is_copy_assignable = std::is_copy_assignable<T>;
-
-template <typename T>
-using is_move_assignable = std::is_move_assignable<T>;
-
-#else
-
-template <typename T>
-struct is_copy_assignable : type_traits_internal::is_detected<
-                                type_traits_internal::IsCopyAssignableImpl, T> {
-};
-
-template <typename T>
-struct is_move_assignable : type_traits_internal::is_detected<
-                                type_traits_internal::IsMoveAssignableImpl, T> {
-};
-
-#endif
 
 // void_t()
 //
@@ -270,246 +184,29 @@ struct is_function
           bool, !(std::is_reference<T>::value ||
                   std::is_const<typename std::add_const<T>::type>::value)> {};
 
+// is_copy_assignable()
+// is_move_assignable()
 // is_trivially_destructible()
-//
-// Determines whether the passed type `T` is trivially destructible.
-//
-// This metafunction is designed to be a drop-in replacement for the C++11
-// `std::is_trivially_destructible()` metafunction for platforms that have
-// incomplete C++11 support (such as libstdc++ 4.x). On any platforms that do
-// fully support C++11, we check whether this yields the same result as the std
-// implementation.
-//
-// NOTE: the extensions (__has_trivial_xxx) are implemented in gcc (version >=
-// 4.3) and clang. Since we are supporting libstdc++ > 4.7, they should always
-// be present. These  extensions are documented at
-// https://gcc.gnu.org/onlinedocs/gcc/Type-Traits.html#Type-Traits.
-template <typename T>
-struct is_trivially_destructible
-#ifdef ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE
-    : std::is_trivially_destructible<T> {
-#else
-    : std::integral_constant<bool, __has_trivial_destructor(T) &&
-                                   std::is_destructible<T>::value> {
-#endif
-#ifdef ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE
- private:
-  static constexpr bool compliant = std::is_trivially_destructible<T>::value ==
-                                    is_trivially_destructible::value;
-  static_assert(compliant || std::is_trivially_destructible<T>::value,
-                "Not compliant with std::is_trivially_destructible; "
-                "Standard: false, Implementation: true");
-  static_assert(compliant || !std::is_trivially_destructible<T>::value,
-                "Not compliant with std::is_trivially_destructible; "
-                "Standard: true, Implementation: false");
-#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE
-};
-
 // is_trivially_default_constructible()
-//
-// Determines whether the passed type `T` is trivially default constructible.
-//
-// This metafunction is designed to be a drop-in replacement for the C++11
-// `std::is_trivially_default_constructible()` metafunction for platforms that
-// have incomplete C++11 support (such as libstdc++ 4.x). On any platforms that
-// do fully support C++11, we check whether this yields the same result as the
-// std implementation.
-//
-// NOTE: according to the C++ standard, Section: 20.15.4.3 [meta.unary.prop]
-// "The predicate condition for a template specialization is_constructible<T,
-// Args...> shall be satisfied if and only if the following variable
-// definition would be well-formed for some invented variable t:
-//
-// T t(declval<Args>()...);
-//
-// is_trivially_constructible<T, Args...> additionally requires that the
-// variable definition does not call any operation that is not trivial.
-// For the purposes of this check, the call to std::declval is considered
-// trivial."
-//
-// Notes from https://en.cppreference.com/w/cpp/types/is_constructible:
-// In many implementations, is_nothrow_constructible also checks if the
-// destructor throws because it is effectively noexcept(T(arg)). Same
-// applies to is_trivially_constructible, which, in these implementations, also
-// requires that the destructor is trivial.
-// GCC bug 51452: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51452
-// LWG issue 2116: http://cplusplus.github.io/LWG/lwg-active.html#2116.
-//
-// "T obj();" need to be well-formed and not call any nontrivial operation.
-// Nontrivially destructible types will cause the expression to be nontrivial.
-template <typename T>
-struct is_trivially_default_constructible
-#if defined(ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE)
-    : std::is_trivially_default_constructible<T> {
-#else
-    : std::integral_constant<bool, __has_trivial_constructor(T) &&
-                                   std::is_default_constructible<T>::value &&
-                                   is_trivially_destructible<T>::value> {
-#endif
-#if defined(ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE) && \
-    !defined(                                            \
-        ABSL_META_INTERNAL_STD_CONSTRUCTION_TRAITS_DONT_CHECK_DESTRUCTION)
- private:
-  static constexpr bool compliant =
-      std::is_trivially_default_constructible<T>::value ==
-      is_trivially_default_constructible::value;
-  static_assert(compliant || std::is_trivially_default_constructible<T>::value,
-                "Not compliant with std::is_trivially_default_constructible; "
-                "Standard: false, Implementation: true");
-  static_assert(compliant || !std::is_trivially_default_constructible<T>::value,
-                "Not compliant with std::is_trivially_default_constructible; "
-                "Standard: true, Implementation: false");
-#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
-};
-
 // is_trivially_move_constructible()
-//
-// Determines whether the passed type `T` is trivially move constructible.
-//
-// This metafunction is designed to be a drop-in replacement for the C++11
-// `std::is_trivially_move_constructible()` metafunction for platforms that have
-// incomplete C++11 support (such as libstdc++ 4.x). On any platforms that do
-// fully support C++11, we check whether this yields the same result as the std
-// implementation.
-//
-// NOTE: `T obj(declval<T>());` needs to be well-formed and not call any
-// nontrivial operation.  Nontrivially destructible types will cause the
-// expression to be nontrivial.
-template <typename T>
-struct is_trivially_move_constructible
-#if defined(ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE)
-    : std::is_trivially_move_constructible<T> {
-#else
-    : std::conditional<
-          std::is_object<T>::value && !std::is_array<T>::value,
-          type_traits_internal::IsTriviallyMoveConstructibleObject<T>,
-          std::is_reference<T>>::type::type {
-#endif
-#if defined(ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE) && \
-    !defined(                                            \
-        ABSL_META_INTERNAL_STD_CONSTRUCTION_TRAITS_DONT_CHECK_DESTRUCTION)
- private:
-  static constexpr bool compliant =
-      std::is_trivially_move_constructible<T>::value ==
-      is_trivially_move_constructible::value;
-  static_assert(compliant || std::is_trivially_move_constructible<T>::value,
-                "Not compliant with std::is_trivially_move_constructible; "
-                "Standard: false, Implementation: true");
-  static_assert(compliant || !std::is_trivially_move_constructible<T>::value,
-                "Not compliant with std::is_trivially_move_constructible; "
-                "Standard: true, Implementation: false");
-#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
-};
-
 // is_trivially_copy_constructible()
-//
-// Determines whether the passed type `T` is trivially copy constructible.
-//
-// This metafunction is designed to be a drop-in replacement for the C++11
-// `std::is_trivially_copy_constructible()` metafunction for platforms that have
-// incomplete C++11 support (such as libstdc++ 4.x). On any platforms that do
-// fully support C++11, we check whether this yields the same result as the std
-// implementation.
-//
-// NOTE: `T obj(declval<const T&>());` needs to be well-formed and not call any
-// nontrivial operation.  Nontrivially destructible types will cause the
-// expression to be nontrivial.
-template <typename T>
-struct is_trivially_copy_constructible
-    : std::conditional<
-          std::is_object<T>::value && !std::is_array<T>::value,
-          type_traits_internal::IsTriviallyCopyConstructibleObject<T>,
-          std::is_lvalue_reference<T>>::type::type {
-#if defined(ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE) && \
-    !defined(                                            \
-        ABSL_META_INTERNAL_STD_CONSTRUCTION_TRAITS_DONT_CHECK_DESTRUCTION)
- private:
-  static constexpr bool compliant =
-      std::is_trivially_copy_constructible<T>::value ==
-      is_trivially_copy_constructible::value;
-  static_assert(compliant || std::is_trivially_copy_constructible<T>::value,
-                "Not compliant with std::is_trivially_copy_constructible; "
-                "Standard: false, Implementation: true");
-  static_assert(compliant || !std::is_trivially_copy_constructible<T>::value,
-                "Not compliant with std::is_trivially_copy_constructible; "
-                "Standard: true, Implementation: false");
-#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
-};
-
 // is_trivially_move_assignable()
-//
-// Determines whether the passed type `T` is trivially move assignable.
-//
-// This metafunction is designed to be a drop-in replacement for the C++11
-// `std::is_trivially_move_assignable()` metafunction for platforms that have
-// incomplete C++11 support (such as libstdc++ 4.x). On any platforms that do
-// fully support C++11, we check whether this yields the same result as the std
-// implementation.
-//
-// NOTE: `is_assignable<T, U>::value` is `true` if the expression
-// `declval<T>() = declval<U>()` is well-formed when treated as an unevaluated
-// operand. `is_trivially_assignable<T, U>` requires the assignment to call no
-// operation that is not trivial. `is_trivially_copy_assignable<T>` is simply
-// `is_trivially_assignable<T&, T>`.
-template <typename T>
-struct is_trivially_move_assignable
-    : std::conditional<
-          std::is_object<T>::value && !std::is_array<T>::value &&
-              std::is_move_assignable<T>::value,
-          std::is_move_assignable<type_traits_internal::SingleMemberUnion<T>>,
-          type_traits_internal::IsTriviallyMoveAssignableReference<T>>::type::
-          type {
-#ifdef ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
- private:
-  static constexpr bool compliant =
-      std::is_trivially_move_assignable<T>::value ==
-      is_trivially_move_assignable::value;
-  static_assert(compliant || std::is_trivially_move_assignable<T>::value,
-                "Not compliant with std::is_trivially_move_assignable; "
-                "Standard: false, Implementation: true");
-  static_assert(compliant || !std::is_trivially_move_assignable<T>::value,
-                "Not compliant with std::is_trivially_move_assignable; "
-                "Standard: true, Implementation: false");
-#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
-};
-
 // is_trivially_copy_assignable()
 //
-// Determines whether the passed type `T` is trivially copy assignable.
+// Historical note: Abseil once provided implementations of these type traits
+// for platforms that lacked full support. New code should prefer to use the
+// std variants.
 //
-// This metafunction is designed to be a drop-in replacement for the C++11
-// `std::is_trivially_copy_assignable()` metafunction for platforms that have
-// incomplete C++11 support (such as libstdc++ 4.x). On any platforms that do
-// fully support C++11, we check whether this yields the same result as the std
-// implementation.
-//
-// NOTE: `is_assignable<T, U>::value` is `true` if the expression
-// `declval<T>() = declval<U>()` is well-formed when treated as an unevaluated
-// operand. `is_trivially_assignable<T, U>` requires the assignment to call no
-// operation that is not trivial. `is_trivially_copy_assignable<T>` is simply
-// `is_trivially_assignable<T&, const T&>`.
-template <typename T>
-struct is_trivially_copy_assignable
-#ifdef ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
-    : std::is_trivially_copy_assignable<T> {
-#else
-    : std::integral_constant<
-          bool, __has_trivial_assign(typename std::remove_reference<T>::type) &&
-                    absl::is_copy_assignable<T>::value> {
-#endif
-#ifdef ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
- private:
-  static constexpr bool compliant =
-      std::is_trivially_copy_assignable<T>::value ==
-      is_trivially_copy_assignable::value;
-  static_assert(compliant || std::is_trivially_copy_assignable<T>::value,
-                "Not compliant with std::is_trivially_copy_assignable; "
-                "Standard: false, Implementation: true");
-  static_assert(compliant || !std::is_trivially_copy_assignable<T>::value,
-                "Not compliant with std::is_trivially_copy_assignable; "
-                "Standard: true, Implementation: false");
-#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
-};
+// See the documentation for the STL <type_traits> header for more information:
+// https://en.cppreference.com/w/cpp/header/type_traits
+using std::is_copy_assignable;
+using std::is_move_assignable;
+using std::is_trivially_copy_assignable;
+using std::is_trivially_copy_constructible;
+using std::is_trivially_default_constructible;
+using std::is_trivially_destructible;
+using std::is_trivially_move_assignable;
+using std::is_trivially_move_constructible;
 
 #if defined(__cpp_lib_remove_cvref) && __cpp_lib_remove_cvref >= 201711L
 template <typename T>
@@ -533,52 +230,11 @@ using remove_cvref_t = typename remove_cvref<T>::type;
 #endif
 
 namespace type_traits_internal {
-// is_trivially_copyable()
-//
-// Determines whether the passed type `T` is trivially copyable.
-//
-// This metafunction is designed to be a drop-in replacement for the C++11
-// `std::is_trivially_copyable()` metafunction for platforms that have
-// incomplete C++11 support (such as libstdc++ 4.x). We use the C++17 definition
-// of TriviallyCopyable.
-//
-// NOTE: `is_trivially_copyable<T>::value` is `true` if all of T's copy/move
-// constructors/assignment operators are trivial or deleted, T has at least
-// one non-deleted copy/move constructor/assignment operator, and T is trivially
-// destructible. Arrays of trivially copyable types are trivially copyable.
-//
-// We expose this metafunction only for internal use within absl.
-
-#if defined(ABSL_HAVE_STD_IS_TRIVIALLY_COPYABLE)
-template <typename T>
-struct is_trivially_copyable : std::is_trivially_copyable<T> {};
-#else
-template <typename T>
-class is_trivially_copyable_impl {
-  using ExtentsRemoved = typename std::remove_all_extents<T>::type;
-  static constexpr bool kIsCopyOrMoveConstructible =
-      std::is_copy_constructible<ExtentsRemoved>::value ||
-      std::is_move_constructible<ExtentsRemoved>::value;
-  static constexpr bool kIsCopyOrMoveAssignable =
-      absl::is_copy_assignable<ExtentsRemoved>::value ||
-      absl::is_move_assignable<ExtentsRemoved>::value;
-
- public:
-  static constexpr bool kValue =
-      (__has_trivial_copy(ExtentsRemoved) || !kIsCopyOrMoveConstructible) &&
-      (__has_trivial_assign(ExtentsRemoved) || !kIsCopyOrMoveAssignable) &&
-      (kIsCopyOrMoveConstructible || kIsCopyOrMoveAssignable) &&
-      is_trivially_destructible<ExtentsRemoved>::value &&
-      // We need to check for this explicitly because otherwise we'll say
-      // references are trivial copyable when compiled by MSVC.
-      !std::is_reference<ExtentsRemoved>::value;
-};
-
-template <typename T>
-struct is_trivially_copyable
-    : std::integral_constant<
-          bool, type_traits_internal::is_trivially_copyable_impl<T>::kValue> {};
-#endif
+// An implementation of std::is_trivially_copyable was once provided for
+// internal use within absl.
+// TODO(absl-team): Replace absl::type_traits_internal::is_trivially_copyable
+// with std::is_trivially_copyable and delete this using declaration.
+using std::is_trivially_copyable;
 }  // namespace type_traits_internal
 
 // -----------------------------------------------------------------------------

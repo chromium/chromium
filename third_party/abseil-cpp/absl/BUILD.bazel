@@ -36,9 +36,17 @@ config_setting(
 )
 
 config_setting(
-    name = "mingw_compiler",
+    name = "mingw_unspecified_compiler",
     flag_values = {
         "@bazel_tools//tools/cpp:compiler": "mingw",
+    },
+    visibility = [":__subpackages__"],
+)
+
+config_setting(
+    name = "mingw-gcc_compiler",
+    flag_values = {
+        "@bazel_tools//tools/cpp:compiler": "mingw-gcc",
     },
     visibility = [":__subpackages__"],
 )
@@ -129,5 +137,14 @@ config_setting(
     values = {
         "cpu": "fuchsia",
     },
+    visibility = [":__subpackages__"],
+)
+
+selects.config_setting_group(
+    name = "mingw_compiler",
+    match_any = [
+        ":mingw_unspecified_compiler",
+        ":mingw-gcc_compiler",
+    ],
     visibility = [":__subpackages__"],
 )

@@ -291,18 +291,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
       # Abseil libraries require C++14 as the current minimum standard. When
       # compiled with C++17 (either because it is the compiler's default or
       # explicitly requested), then Abseil requires C++17.
-      _absl_target_compile_features_if_available(${_NAME} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
-    else()
-      # Note: This is legacy (before CMake 3.8) behavior. Setting the
-      # target-level CXX_STANDARD property to ABSL_CXX_STANDARD (which is
-      # initialized by CMAKE_CXX_STANDARD) should have no real effect, since
-      # that is the default value anyway.
-      #
-      # CXX_STANDARD_REQUIRED does guard against the top-level CMake project
-      # not having enabled CMAKE_CXX_STANDARD_REQUIRED (which prevents
-      # "decaying" to an older standard if the requested one isn't available).
-      set_property(TARGET ${_NAME} PROPERTY CXX_STANDARD ${ABSL_CXX_STANDARD})
-      set_property(TARGET ${_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
+      target_compile_features(${_NAME} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
     endif()
 
     # When being installed, we lose the absl_ prefix.  We want to put it back
@@ -339,10 +328,7 @@ Cflags: -I\${includedir}${PC_CFLAGS}\n")
       # Abseil libraries require C++14 as the current minimum standard.
       # Top-level application CMake projects should ensure a consistent C++
       # standard for all compiled sources by setting CMAKE_CXX_STANDARD.
-      _absl_target_compile_features_if_available(${_NAME} INTERFACE ${ABSL_INTERNAL_CXX_STD_FEATURE})
-
-      # (INTERFACE libraries can't have the CXX_STANDARD property set, so there
-      # is no legacy behavior else case).
+      target_compile_features(${_NAME} INTERFACE ${ABSL_INTERNAL_CXX_STD_FEATURE})
     endif()
   endif()
 
@@ -452,18 +438,7 @@ function(absl_cc_test)
     # Abseil libraries require C++14 as the current minimum standard.
     # Top-level application CMake projects should ensure a consistent C++
     # standard for all compiled sources by setting CMAKE_CXX_STANDARD.
-    _absl_target_compile_features_if_available(${_NAME} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
-  else()
-    # Note: This is legacy (before CMake 3.8) behavior. Setting the
-    # target-level CXX_STANDARD property to ABSL_CXX_STANDARD (which is
-    # initialized by CMAKE_CXX_STANDARD) should have no real effect, since
-    # that is the default value anyway.
-    #
-    # CXX_STANDARD_REQUIRED does guard against the top-level CMake project
-    # not having enabled CMAKE_CXX_STANDARD_REQUIRED (which prevents
-    # "decaying" to an older standard if the requested one isn't available).
-    set_property(TARGET ${_NAME} PROPERTY CXX_STANDARD ${ABSL_CXX_STANDARD})
-    set_property(TARGET ${_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
+    target_compile_features(${_NAME} PUBLIC ${ABSL_INTERNAL_CXX_STD_FEATURE})
   endif()
 
   add_test(NAME ${_NAME} COMMAND ${_NAME})

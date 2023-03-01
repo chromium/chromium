@@ -185,6 +185,9 @@ class ScopedMockLog final {
 
   ForwardingSink sink_;
   bool is_capturing_logs_;
+  // Until C++20, the default constructor leaves the underlying value wrapped in
+  // std::atomic uninitialized, so all constructors should be sure to initialize
+  // is_triggered_.
   std::atomic<bool> is_triggered_;
 };
 

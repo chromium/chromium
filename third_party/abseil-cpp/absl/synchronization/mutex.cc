@@ -635,6 +635,21 @@ void Mutex::InternalAttemptToUseMutexInFatalSignalHandler() {
                                  std::memory_order_release);
 }
 
+// --------------------------time support
+
+// Return the current time plus the timeout.  Use the same clock as
+// PerThreadSem::Wait() for consistency.  Unfortunately, we don't have
+// such a choice when a deadline is given directly.
+static absl::Time DeadlineFromTimeout(absl::Duration timeout) {
+#ifndef _WIN32
+  struct timeval tv;
+  gettimeofday(&tv, nullptr);
+  return absl::TimeFromTimeval(tv) + timeout;
+#else
+  return absl::Now() + timeout;
+#endif
+}
+
 // --------------------------Mutexes
 
 // In the layout below, the msb of the bottom byte is currently unused.  Also,
@@ -1403,7 +1418,7 @@ static GraphId DeadlockCheck(Mutex *mu) {
       ABSL_RAW_LOG(ERROR, "Cycle: ");
       int path_len = deadlock_graph->FindPath(
           mu_id, other_node_id, ABSL_ARRAYSIZE(b->path), b->path);
-      for (int j = 0; j != path_len; j++) {
+      for (int j = 0; j != path_len && j != ABSL_ARRAYSIZE(b->path); j++) {
         GraphId id = b->path[j];
         Mutex *path_mu = static_cast<Mutex *>(deadlock_graph->Ptr(id));
         if (path_mu == nullptr) continue;
@@ -1415,6 +1430,9 @@ static GraphId DeadlockCheck(Mutex *mu) {
                     static_cast<int>(sizeof(b->buf) - strlen(b->buf)),
                     symbolize);
         ABSL_RAW_LOG(ERROR, "%s", b->buf);
+      }
+      if (path_len > static_cast<int>(ABSL_ARRAYSIZE(b->path))) {
+        ABSL_RAW_LOG(ERROR, "(long cycle; list truncated)");
       }
       if (synch_deadlock_detection.load(std::memory_order_acquire) ==
           OnDeadlockCycle::kAbort) {
@@ -1531,13 +1549,7 @@ void Mutex::LockWhen(const Condition &cond) {
 }
 
 bool Mutex::LockWhenWithTimeout(const Condition &cond, absl::Duration timeout) {
-  ABSL_TSAN_MUTEX_PRE_LOCK(this, 0);
-  GraphId id = DebugOnlyDeadlockCheck(this);
-  bool res = LockSlowWithDeadline(kExclusive, &cond,
-                                  KernelTimeout(timeout), 0);
-  DebugOnlyLockEnter(this, id);
-  ABSL_TSAN_MUTEX_POST_LOCK(this, 0, 0);
-  return res;
+  return LockWhenWithDeadline(cond, DeadlineFromTimeout(timeout));
 }
 
 bool Mutex::LockWhenWithDeadline(const Condition &cond, absl::Time deadline) {
@@ -1560,12 +1572,7 @@ void Mutex::ReaderLockWhen(const Condition &cond) {
 
 bool Mutex::ReaderLockWhenWithTimeout(const Condition &cond,
                                       absl::Duration timeout) {
-  ABSL_TSAN_MUTEX_PRE_LOCK(this, __tsan_mutex_read_lock);
-  GraphId id = DebugOnlyDeadlockCheck(this);
-  bool res = LockSlowWithDeadline(kShared, &cond, KernelTimeout(timeout), 0);
-  DebugOnlyLockEnter(this, id);
-  ABSL_TSAN_MUTEX_POST_LOCK(this, __tsan_mutex_read_lock, 0);
-  return res;
+  return ReaderLockWhenWithDeadline(cond, DeadlineFromTimeout(timeout));
 }
 
 bool Mutex::ReaderLockWhenWithDeadline(const Condition &cond,
@@ -1590,18 +1597,7 @@ void Mutex::Await(const Condition &cond) {
 }
 
 bool Mutex::AwaitWithTimeout(const Condition &cond, absl::Duration timeout) {
-  if (cond.Eval()) {      // condition already true; nothing to do
-    if (kDebugMode) {
-      this->AssertReaderHeld();
-    }
-    return true;
-  }
-
-  KernelTimeout t{timeout};
-  bool res = this->AwaitCommon(cond, t);
-  ABSL_RAW_CHECK(res || t.has_timeout(),
-                 "condition untrue on return from Await");
-  return res;
+  return AwaitWithDeadline(cond, DeadlineFromTimeout(timeout));
 }
 
 bool Mutex::AwaitWithDeadline(const Condition &cond, absl::Time deadline) {
@@ -2667,7 +2663,7 @@ bool CondVar::WaitCommon(Mutex *mutex, KernelTimeout t) {
 }
 
 bool CondVar::WaitWithTimeout(Mutex *mu, absl::Duration timeout) {
-  return WaitCommon(mu, KernelTimeout(timeout));
+  return WaitWithDeadline(mu, DeadlineFromTimeout(timeout));
 }
 
 bool CondVar::WaitWithDeadline(Mutex *mu, absl::Time deadline) {

@@ -1074,6 +1074,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
 
   // Reads 1 to 3 bytes from p. Zero pads to fill uint32_t.
   static uint32_t Read1To3(const unsigned char* p, size_t len) {
+    // The trick used by this implementation is to avoid branches if possible.
     unsigned char mem0 = p[0];
     unsigned char mem1 = p[len / 2];
     unsigned char mem2 = p[len - 1];
@@ -1083,7 +1084,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
     unsigned char significant0 = mem0;
 #else
     unsigned char significant2 = mem0;
-    unsigned char significant1 = mem1;
+    unsigned char significant1 = len == 2 ? mem0 : mem1;
     unsigned char significant0 = mem2;
 #endif
     return static_cast<uint32_t>(significant0 |                     //
