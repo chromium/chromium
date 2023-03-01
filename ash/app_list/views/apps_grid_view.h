@@ -26,7 +26,6 @@
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/animation/animation_abort_handle.h"
@@ -178,8 +177,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  DropCallbackWithAnimation GetDropCallbackWithAnimation(
-      const ui::DropTargetEvent& event) override;
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
 
   // Updates the visibility of app list items according to |app_list_state|.
   void UpdateControlVisibility(AppListViewState app_list_state);
@@ -370,13 +368,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppDragIconProxy* app_drag_icon_proxy_for_test() const {
     return drag_icon_proxy_.get();
-  }
-
-  ui::Layer* drag_image_layer_for_test() const {
-    if (!drag_image_layer_) {
-      return nullptr;
-    }
-    return drag_image_layer_->root();
   }
 
  protected:
@@ -939,8 +930,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Callback method to clean up the dragging state of the app list.
   void EndDragCallback(const ui::DropTargetEvent& event,
-                       ui::mojom::DragOperation& output_drag_op,
-                       std::unique_ptr<ui::LayerTreeOwner> old_layer_owner);
+                       ui::mojom::DragOperation& output_drag_op);
 
   class ScopedModelUpdate;
 
@@ -1072,10 +1062,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // The location when |current_ghost_view_| was shown.
   GridIndex current_ghost_location_;
-
-  // The layer that contains the icon image for the item under the drag cursor.
-  // Assigned before the dropping animation is scheduled. Not owned.
-  std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_;
 
   struct OpenFolderInfo {
     std::string item_id;
