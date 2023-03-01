@@ -23402,6 +23402,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Nudge_Active_When_MultitaskMenu_Opened">
+  <owner>hewer@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <description>
+    The multitask menu (window layout menu) was opened while the education nudge
+    was showing.
+  </description>
+</action>
+
 <action name="OfflineIndicator.Hidden">
   <owner>sinansahin@google.com</owner>
   <owner>twellington@chromium.org</owner>

@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/wm/features.h"
@@ -181,6 +182,14 @@ void MultitaskMenuNudgeController::DismissNudge() {
 }
 
 void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
+  // Avoid sending prefs through the cros API or recording user actions if the
+  // nudge isn't shown.
+  if (nudge_widget_ && !nudge_widget_->IsClosed()) {
+    return;
+  }
+
+  base::RecordAction(
+      base::UserMetricsAction("Nudge_Active_When_MultitaskMenu_Opened"));
   DismissNudge();
 
   if (g_delegate_instance) {
