@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "goma", "os", "reclient", "xcode")
+load("//lib/builders.star", "cpu", "os", "reclient", "xcode")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -71,7 +71,6 @@ try_.builder(
         "ci/Mac Retina Release (AMD)",
     ],
     os = os.MAC_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(

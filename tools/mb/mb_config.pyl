@@ -1256,7 +1256,7 @@
       'gpu-fyi-try-mac-nvidia-retina-exp': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-mac-nvidia-retina-rel': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-try-mac-amd-retina-dbg': 'gpu_tests_debug_bot_reclient',
-      'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot',
+      'gpu-try-mac-intel-dbg': 'gpu_tests_debug_bot_reclient',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting_reclient',
       'ios-device': 'ios_device_release_compile_only_reclient',
@@ -1279,7 +1279,7 @@
       'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'mac-code-coverage': 'clang_code_coverage_reclient',
       'mac-fieldtrial-tester': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
-      'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
+      'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_trybot_reclient',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient',
@@ -2679,8 +2679,8 @@
       'gpu_tests', 'release_bot_reclient', 'x86', 'no_symbols',
     ],
 
-    'gpu_tests_release_trybot_invert_fieldtrials': [
-      'gpu_tests', 'release_trybot', 'invert_fieldtrials',
+    'gpu_tests_release_trybot_invert_fieldtrials_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient': [

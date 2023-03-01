@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "cpu", "goma", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -382,7 +382,7 @@ gpu_mac_builder(
         "ci/Mac Debug (Intel)",
     ],
     pool = "luci.chromium.gpu.mac.mini.intel.try",
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 def gpu_win_builder(*, name, **kwargs):
