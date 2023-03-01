@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <stddef.h>
+#include <cstdint>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -26,6 +27,7 @@
 #include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/event_utils.h"
@@ -34,6 +36,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 
@@ -46,6 +49,81 @@ const int kHotrodRemoteProductId = 0x21cc;
 // Flag masks for remapping alt+click or search+click to right click.
 constexpr int kAltLeftButton = (EF_ALT_DOWN | EF_LEFT_MOUSE_BUTTON);
 constexpr int kSearchLeftButton = (EF_COMMAND_DOWN | EF_LEFT_MOUSE_BUTTON);
+
+// Index of the remapped flags in the auto repeat usage metric.
+enum class AutoRepeatUsageModifierFlag : uint32_t {
+  kMeta = 0,
+  kControl = 1,
+  kAlt = 2,
+  kShift = 3,
+  kCapsLock = 4,
+  kNumModifierFlags
+};
+
+// Mapping between event flag to `AutoRepeatUsageModifierFlag` index for the
+// auto repeat usage metric.
+constexpr struct AutoRepeatUsageModifierMapping {
+  int event_flag;
+  AutoRepeatUsageModifierFlag auto_repeat_flag;
+} kEventFlagToAutoRepeatMetricFlag[] = {
+    {EF_COMMAND_DOWN, AutoRepeatUsageModifierFlag::kMeta},
+    {EF_CONTROL_DOWN, AutoRepeatUsageModifierFlag::kControl},
+    {EF_ALT_DOWN, AutoRepeatUsageModifierFlag::kAlt},
+    {EF_SHIFT_DOWN, AutoRepeatUsageModifierFlag::kShift},
+    {EF_CAPS_LOCK_ON, AutoRepeatUsageModifierFlag::kCapsLock},
+};
+
+// Amount to shift the bitset of modifiers to so they are left aligned at the
+// top of the 32 bit int.
+constexpr int kAutoRepeatUsageAmountToShiftModifierFlags =
+    ((sizeof(uint32_t) * 8) -
+     static_cast<int>(AutoRepeatUsageModifierFlag::kNumModifierFlags));
+
+// Number of bits reserved for potential new keyboard codes in the future
+// without breaking the auto repeat usage metric.
+constexpr int kAutoRepeatUsageNumBitsReservedForKeyboardCode = 16;
+static_assert(kAutoRepeatUsageAmountToShiftModifierFlags >=
+              kAutoRepeatUsageNumBitsReservedForKeyboardCode);
+
+// Records the usage of auto repeat in a sparse histogram. Keeps track of the
+// keyboard code + the modifier flags.
+// To decode:
+// Top `AutoRepeatUsageModifierFlag::kNumModifierFlags` bits are used to denote
+// modifier flags. See `AutoRepeatUsageModifierFlag` to decode the top bits.
+// The rest of the bits are used to store the `KeyboardCode` for the repeated
+// keypress. Currently, `kAutoRepeatUsageNumBitsReservedForKeyboardCode` are
+// reserved to allow the number of `KeyboardCode` values to expand in the future
+// without breaking this metric.
+void RecordAutoRepeatUsageMetric(
+    const KeyEvent& key_event,
+    const std::unique_ptr<Event>& rewritten_event) {
+  // Use original event if the event has not been rewritten.
+  const KeyEvent* auto_repeat_event = &key_event;
+  if (rewritten_event) {
+    auto_repeat_event = rewritten_event.get()->AsKeyEvent();
+  }
+
+  // Only want to record metrics if its a repeated keypressed event.
+  if (!(auto_repeat_event->flags() & EF_IS_REPEAT) ||
+      !(auto_repeat_event->type() & ET_KEY_PRESSED)) {
+    return;
+  }
+
+  // Apply remapped auto repeat event flags.
+  uint32_t auto_repeat_usage_modifier_flags = 0;
+  for (const auto& [event_flag, auto_repeat_flag] :
+       kEventFlagToAutoRepeatMetricFlag) {
+    if (auto_repeat_event->flags() & event_flag) {
+      auto_repeat_usage_modifier_flags |=
+          (1u << static_cast<uint32_t>(auto_repeat_flag));
+    }
+  }
+
+  UMA_HISTOGRAM_SPARSE("ChromeOS.Inputs.AutoRepeatUsage",
+                       ((auto_repeat_usage_modifier_flags
+                         << kAutoRepeatUsageAmountToShiftModifierFlags) +
+                        auto_repeat_event->key_code()));
+}
 
 using ModifierKeyUsageMetric = EventRewriterChromeOS::ModifierKeyUsageMetric;
 constexpr struct ModifierKeyUsageMapping {
@@ -791,8 +869,10 @@ EventDispatchDetails EventRewriterChromeOS::RewriteEvent(
   if ((event.type() == ET_KEY_PRESSED) || (event.type() == ET_KEY_RELEASED)) {
     std::unique_ptr<Event> rewritten_event;
     const base::Time key_rewrite_start_time = base::Time::Now();
+    DCHECK((&event)->AsKeyEvent());
     const EventRewriteStatus status =
         RewriteKeyEvent(*((&event)->AsKeyEvent()), &rewritten_event);
+    RecordAutoRepeatUsageMetric(*((&event)->AsKeyEvent()), rewritten_event);
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "ChromeOS.Inputs.EventRewriter.KeyRewriteLatency",
         base::Time::Now() - key_rewrite_start_time, base::Microseconds(1),
