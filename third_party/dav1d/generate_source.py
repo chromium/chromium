@@ -20,13 +20,6 @@ _COPYRIGHT = """# Copyright %d The Chromium Authors
 """ % (
     datetime.datetime.now().year)
 
-# .c files which don't need -DBIT_DEPTH specified for each compilation.
-_DAV1D_ENTRY_POINT_SOURCES = [
-    "libdav1d/src/lib.c",
-    "libdav1d/src/thread_task.c",
-    "libdav1d/src/thread_task.h",
-]
-
 
 def _Glob(pattern):
     # Replace path separator. Needed when running on Windows.
@@ -69,14 +62,8 @@ def _WriteGn(fd):
 
     # Generate list of sources which need to be compiled multiple times with the
     # correct -DBIT_DEPTH=8|10 option specified each time.
-    _WriteArray(fd, "c_headers", _Glob("libdav1d/src/*.h"),
-                _DAV1D_ENTRY_POINT_SOURCES + template_sources)
-    _WriteArray(fd, "c_sources", _Glob("libdav1d/src/*.c"),
-                _DAV1D_ENTRY_POINT_SOURCES + template_sources)
-
-    _WriteArray(fd,
-                "entry_point_sources",
-                _DAV1D_ENTRY_POINT_SOURCES,
+    _WriteArray(fd, "c_headers", _Glob("libdav1d/src/*.h"))
+    _WriteArray(fd, "c_sources", _Glob("libdav1d/src/*.c"), template_sources,
                 last_entry=True)
 
 
