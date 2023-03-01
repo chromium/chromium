@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash)
 
@@ -11,4 +12,8 @@ mojom("mojo_bindings") {
   sources = [ "search.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+proto_library("proto") {
+  sources = [ "search_concept.proto" ]
 }

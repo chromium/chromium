@@ -27,6 +27,8 @@ static_library("help_app_ui") {
     "help_app_ui_delegate.h",
     "help_app_untrusted_ui.cc",
     "help_app_untrusted_ui.h",
+    "search/search_concept.cc",
+    "search/search_concept.h",
     "search/search_handler.cc",
     "search/search_handler.h",
     "search/search_metadata.cc",
@@ -43,6 +45,7 @@ static_library("help_app_ui") {
     "//ash/constants",
     "//ash/webui/help_app_ui/search:mojo_bindings",
     "//ash/webui/help_app_ui/search:mojo_bindings_js",
+    "//ash/webui/help_app_ui/search:proto",
     "//ash/webui/resources:help_app_bundle_resources",
     "//ash/webui/resources:help_app_kids_magazine_bundle_resources",
     "//ash/webui/resources:help_app_resources",
@@ -71,6 +74,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "search/search_concept_unittest.cc",
     "search/search_handler_unittest.cc",
     "search/search_tag_registry_unittest.cc",
   ]
@@ -78,6 +82,7 @@ source_set("unit_tests") {
   deps = [
     ":help_app_ui",
     "//ash/webui/help_app_ui/search:mojo_bindings",
+    "//ash/webui/help_app_ui/search:proto",
     "//base/test:test_support",
     "//chromeos/ash/components/local_search_service/public/mojom",
     "//mojo/public/cpp/bindings:bindings",

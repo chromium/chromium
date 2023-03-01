@@ -35,6 +35,8 @@ struct SearchResult {
 };
 
 // The info needed to add one potential search result to the index.
+// Keep this struct in-sync with the `search_concept.proto` under the same
+// folder.
 struct SearchConcept {
   // Unique identifier for this concept.
   string id;
