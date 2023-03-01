@@ -75,6 +75,7 @@ UIView* GetFirstResponderSubview(UIView* view) {
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
 }
 @synthesize contentView = _contentView;
+@dynamic keyboardVisible;
 
 - (instancetype)initWithWebController:(CRWWebController*)webController {
   self = [super init];
@@ -129,14 +130,6 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return [_contentView gestureRecognizers];
 }
 
-- (void)addGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer {
-  [_contentView addGestureRecognizer:gestureRecognizer];
-}
-
-- (void)removeGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer {
-  [_contentView removeGestureRecognizer:gestureRecognizer];
-}
-
 - (BOOL)shouldUseViewContentInset {
   SEL shouldUseInsetSelector = @selector(shouldUseViewContentInset);
   return [_contentView respondsToSelector:shouldUseInsetSelector] &&
@@ -187,11 +180,11 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return [_contentView addSubview:view];
 }
 
-- (UIView*)keyboardAccessory {
+- (BOOL)isKeyboardVisible {
   if (!_contentView)
-    return nil;
+    return NO;
   UIView* firstResponder = GetFirstResponderSubview(_contentView);
-  return firstResponder.inputAccessoryView;
+  return firstResponder.inputAccessoryView != nil;
 }
 
 - (BOOL)becomeFirstResponder {

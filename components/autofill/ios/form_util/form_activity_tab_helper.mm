@@ -171,7 +171,7 @@ void FormActivityTabHelper::FormSubmissionHandler(
   // the main page (using logic from the popup blocker), or if the keyboard
   // is visible.
   BOOL submitted_by_user = message.is_user_interacting() ||
-                           [web_state->GetWebViewProxy() keyboardAccessory];
+                           web_state->GetWebViewProxy().keyboardVisible;
 
   std::string form_name;
   if (maybe_form_name) {

@@ -26,6 +26,7 @@
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
 }
 @synthesize contentView = _contentView;
+@dynamic keyboardVisible;
 
 - (instancetype)init {
   self = [super init];
@@ -76,14 +77,6 @@
   return [_contentView gestureRecognizers];
 }
 
-- (void)addGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer {
-  [_contentView addGestureRecognizer:gestureRecognizer];
-}
-
-- (void)removeGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer {
-  [_contentView removeGestureRecognizer:gestureRecognizer];
-}
-
 - (BOOL)shouldUseViewContentInset {
   return NO;
 }
@@ -114,19 +107,12 @@
   [_contentViewScrollViewProxy setScrollView:contentView];
 }
 
-- (void)clearContentViewAndAddPlaceholder:(BOOL)addPlaceholder {
-  _contentView = nil;
-  if (addPlaceholder) {
-    [_contentViewScrollViewProxy setScrollView:nil];
-  }
-}
-
 - (void)addSubview:(UIView*)view {
   return [_contentView addSubview:view];
 }
 
-- (UIView*)keyboardAccessory {
-  return nil;
+- (BOOL)isKeyboardVisible {
+  return NO;
 }
 
 - (BOOL)becomeFirstResponder {
