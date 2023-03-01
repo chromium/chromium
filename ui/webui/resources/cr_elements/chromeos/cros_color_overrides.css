@@ -83,17 +83,23 @@ To get Chrome OS System Colors, an element must:
   --cr-link-color: var(--cros-tooltip-link-color);
 }
 
-/** Jelly specific styles */
+/** Jelly-specific styles below */
+
+/** General color overrides */
+:host-context(body.jelly-enabled) {
+  /* TODO(b/266837484) --cros-* values will be updated globally. Remove this
+    definition after the swap. */
+  --cros-link-color: var(--cros-sys-primary);
+  --cros-separator-color: var(--cros-sys-separator);
+
+  --cr-link-color: var(--cros-sys-primary);
+  --cr-primary-text-color: var(--cros-sys-on_surface);
+  --cr-secondary-text-color: var(--cros-sys-secondary);
+}
+
+/* Icon button */
 :host-context(body.jelly-enabled) cr-icon-button,
 :host-context(body.jelly-enabled) cr-link-row::part(icon),
 :host-context(body.jelly-enabled) cr-expand-button::part(icon) {
   --cr-icon-button-fill-color: var(--cros-sys-secondary);
-}
-
-:host-context(body.jelly-enabled) {
-  /* TODO: cros-separator-color will be updated globally. Remove this definition
-       after the swap. */
-  --cros-separator-color: var(--cros-sys-separator);
-  --cr-primary-text-color: var(--cros-sys-on_surface);
-  --cr-secondary-text-color: var(--cros-sys-secondary);
 }
