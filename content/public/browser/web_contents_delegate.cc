@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/color_chooser.h"
@@ -155,13 +156,19 @@ void WebContentsDelegate::CreateSmsPrompt(
 
 bool WebContentsDelegate::IsFullscreenForTabOrPending(
     const WebContents* web_contents) {
-  return IsFullscreenForTabOrPending(web_contents, /*display_id=*/nullptr);
+  return false;
 }
 
-bool WebContentsDelegate::IsFullscreenForTabOrPending(
-    const WebContents* web_contents,
-    int64_t* display_id) {
-  return false;
+FullscreenState WebContentsDelegate::GetFullscreenState(
+    const WebContents* web_contents) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  FullscreenState state;
+  state.target_mode =
+      const_cast<WebContentsDelegate*>(this)->IsFullscreenForTabOrPending(
+          web_contents)
+          ? FullscreenMode::kContent
+          : FullscreenMode::kWindowed;
+  return state;
 }
 
 bool WebContentsDelegate::CanEnterFullscreenModeForTab(

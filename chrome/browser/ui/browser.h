@@ -37,6 +37,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/zoom/zoom_observer.h"
+#include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -914,8 +915,8 @@ class Browser : public TabStripModelObserver,
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override;
-  bool IsFullscreenForTabOrPending(const content::WebContents* web_contents,
-                                   int64_t* display_id) override;
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override;
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(

@@ -685,6 +685,75 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       OpeningPopupExitsFullscreen) {
+  ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreen(true));
+  ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
+
+  // Open a popup, which is activated. The opener exits fullscreen to mitigate
+  // usable security concerns. See WebContents::ForSecurityDropFullscreen().
+  BrowserList* browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(1u, browser_list->size());
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  content::ExecuteScriptAsync(tab, "open('.', '', 'popup')");
+  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(popup, browser_list->GetLastActive());
+  ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       CapturedContentEntersFullscreenWithinTab) {
+  // Simulate tab capture, as used by getDisplayMedia() content sharing.
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  base::ScopedClosureRunner capture_closure = tab->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  EXPECT_TRUE(tab->IsBeingVisiblyCaptured());
+
+  // The browser enters fullscreen-within-tab mode synchronously, but the window
+  // is not made fullscreen, and FullscreenNotificationObserver is not notified.
+  content::WebContentsDelegate* delegate = tab->GetDelegate();
+  delegate->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
+  EXPECT_TRUE(delegate->IsFullscreenForTabOrPending(tab));
+  EXPECT_TRUE(tab->IsFullscreen());
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+  EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
+            content::FullscreenMode::kPseudoContent);
+
+  delegate->ExitFullscreenModeForTab(tab);
+  EXPECT_FALSE(delegate->IsFullscreenForTabOrPending(tab));
+  EXPECT_FALSE(tab->IsFullscreen());
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+  EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
+            content::FullscreenMode::kWindowed);
+
+  capture_closure.RunAndReset();
+  EXPECT_FALSE(tab->IsBeingVisiblyCaptured());
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       OpeningPopupDoesNotExitFullscreenWithinTab) {
+  // Simulate visible tab capture and enter fullscreen-within-tab.
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  base::ScopedClosureRunner capture_closure = tab->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
+  EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
+            content::FullscreenMode::kPseudoContent);
+  EXPECT_TRUE(tab->IsFullscreen());
+
+  // Open a popup, which is activated. The opener remains fullscreen-within-tab.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(1u, browser_list->size());
+  content::ExecuteScriptAsync(tab, "open('.', '', 'popup')");
+  Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(popup, browser_list->GetLastActive());
+  EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
+            content::FullscreenMode::kPseudoContent);
+  capture_closure.RunAndReset();
+}
+
 // Configures a two-display screen environment for testing of multi-screen
 // fullscreen behavior.
 class TestScreenEnvironment {

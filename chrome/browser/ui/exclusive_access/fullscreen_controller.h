@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "content/public/browser/fullscreen_types.h"
 #include "ui/display/types/display_constants.h"
 
 class GURL;
@@ -95,14 +96,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // Returns true if the site has entered fullscreen.
   bool IsTabFullscreen() const;
 
-  // Returns true if the tab is/will be in fullscreen mode. Note: This does NOT
-  // indicate whether the browser window is/will be fullscreened as well. See
-  // 'FullscreenWithinTab Note'.
-  // Writes the display ID that tab is tab-fullscreen on or transitioning to to
-  // `display_id`. Only writes when the function returns true and display_id is
-  // non-null.
-  bool IsFullscreenForTabOrPending(const content::WebContents* web_contents,
-                                   int64_t* display_id = nullptr) const;
+  // Returns fullscreen state information about the given `web_contents`.
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const;
 
   // Returns true if |web_contents| is in fullscreen mode as a screen-captured
   // tab. See 'FullscreenWithinTab Note'.

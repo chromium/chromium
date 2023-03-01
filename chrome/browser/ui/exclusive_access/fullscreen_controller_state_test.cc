@@ -519,6 +519,15 @@ void FullscreenControllerStateTest::VerifyWindowStateExpectations(
   if (fullscreen_for_tab != FULLSCREEN_FOR_TAB_NO_EXPECTATION) {
     EXPECT_EQ(GetFullscreenController()->IsWindowFullscreenForTabOrPending(),
               !!fullscreen_for_tab) << GetAndClearDebugLog();
+    if (auto* tab = GetFullscreenController()->exclusive_access_tab()) {
+      content::FullscreenState state =
+          GetFullscreenController()->GetFullscreenState(tab);
+      EXPECT_EQ(
+          state.target_mode == content::FullscreenMode::kContent ||
+              state.target_mode == content::FullscreenMode::kPseudoContent,
+          !!fullscreen_for_tab)
+          << GetAndClearDebugLog();
+    }
   }
 }
 

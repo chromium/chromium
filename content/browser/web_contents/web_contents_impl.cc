@@ -1322,16 +1322,6 @@ std::string WebContentsImpl::GetTitleForMediaControls() {
   return delegate_->GetTitleForMediaControls(this);
 }
 
-bool WebContentsImpl::IsFullscreenOnDisplay(int64_t display_id) const {
-  if (!delegate_)
-    return false;
-  DCHECK_NE(display_id, display::kInvalidDisplayId);
-  int64_t fullscreen_display = display::kInvalidDisplayId;
-  if (!delegate_->IsFullscreenForTabOrPending(this, &fullscreen_display))
-    return false;
-  return fullscreen_display == display_id;
-}
-
 // Returns the NavigationController for the primary FrameTree, i.e. the one
 // whose URL is shown in the omnibox. With MPArch we can have multiple
 // FrameTrees in one WebContents and each has its own NavigationController.
@@ -3823,7 +3813,7 @@ void WebContentsImpl::UpdateUserGestureCarryoverInfo() {
 #endif
 
 bool WebContentsImpl::IsFullscreen() {
-  return delegate_ ? delegate_->IsFullscreenForTabOrPending(this) : false;
+  return delegate_ && delegate_->IsFullscreenForTabOrPending(this);
 }
 
 bool WebContentsImpl::ShouldShowStaleContentOnEviction() {
@@ -5617,25 +5607,28 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
     int64_t display_id) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ForSecurityDropFullscreen",
                         "display_id", display_id);
-  // Kick WebContentses that are "related" to this WebContents out of
-  // fullscreen. This needs to be done with two passes, because it is simple to
-  // walk _up_ the chain of openers and outer contents, but it not simple to
-  // walk _down_ the chain.
+  // Make WebContentses "related" to this instance exit HTML element fullscreen,
+  // ignoring browser fullscreen and fullscreen-within-tab modes. This needs to
+  // be done with two passes, because it is simple to walk _up_ the chain of
+  // openers and outer contents, but it not simple to walk _down_ the chain.
+  auto is_fullscreen = [](WebContentsImpl* tab, int64_t display_id) {
+    if (!tab || !tab->GetDelegate()) {
+      return false;
+    }
+    const FullscreenState state = tab->GetDelegate()->GetFullscreenState(tab);
+    return state.target_mode == FullscreenMode::kContent &&
+           (display_id == display::kInvalidDisplayId ||
+            state.target_display_id == display::kInvalidDisplayId ||
+            state.target_display_id == display_id);
+  };
 
-  // First, determine if any WebContents that is in fullscreen has this
-  // WebContents as an upstream contents. Drop that WebContents out of
-  // fullscreen if it does. This is theoretically quadratic-ish (fullscreen
-  // contentses x each one's opener length) but neither of those is expected to
-  // ever be a large number.
+  // First, determine if any fullscreen WebContents has this WebContents as an
+  // upstream contents. Drop that WebContents out of fullscreen if it does. This
+  // is theoretically quadratic-ish (fullscreen contentses x each one's opener
+  // length) but neither of those is expected to ever be a large number.
   auto fullscreen_set_copy = *FullscreenContentsSet(GetBrowserContext());
   for (auto* fullscreen_contents : fullscreen_set_copy) {
-    // Checking IsFullscreen() for tabs in the fullscreen set may seem
-    // redundant, but teeeeechnically fullscreen is run by the delegate, and
-    // it's possible that the delegate's notion of fullscreen may have changed
-    // outside of WebContents's notice.
-    if (fullscreen_contents->IsFullscreen() &&
-        (display_id == display::kInvalidDisplayId ||
-         fullscreen_contents->IsFullscreenOnDisplay(display_id))) {
+    if (is_fullscreen(fullscreen_contents, display_id)) {
       auto opener_contentses = GetAllOpeningWebContents(fullscreen_contents);
       if (opener_contentses.count(this))
         fullscreen_contents->ExitFullscreen(true);
@@ -5652,10 +5645,9 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
   std::vector<base::WeakPtr<WebContentsImpl>> blocked_contentses;
 
   for (auto* opener : GetAllOpeningWebContents(this)) {
-    // Drop fullscreen if the WebContents is in it, and...
-    if (opener->IsFullscreen() && (display_id == display::kInvalidDisplayId ||
-                                   opener->IsFullscreenOnDisplay(display_id)))
+    if (is_fullscreen(opener, display_id)) {
       opener->ExitFullscreen(true);
+    }
 
     // ...block the WebContents from entering fullscreen until further notice.
     ++opener->fullscreen_blocker_count_;
