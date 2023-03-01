@@ -54,7 +54,7 @@ class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
   DCompPresenter(const DCompPresenter&) = delete;
   DCompPresenter& operator=(const DCompPresenter&) = delete;
 
-  // GLSurfaceEGL implementation.
+  // Presenter implementation.
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
   bool Resize(const gfx::Size& size,

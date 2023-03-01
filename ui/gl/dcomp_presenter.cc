@@ -100,7 +100,7 @@ bool DCompPresenter::Resize(const gfx::Size& size,
                             float scale_factor,
                             const gfx::ColorSpace& color_space,
                             bool has_alpha) {
-  if (!SurfacelessEGL::Resize(size, scale_factor, color_space, has_alpha)) {
+  if (!Presenter::Resize(size, scale_factor, color_space, has_alpha)) {
     return false;
   }
 

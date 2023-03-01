@@ -59,7 +59,6 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
       gpu::SharedImageRepresentationFactory*
           shared_image_representation_factory,
       gpu::SharedContextState* context_state,
-      gl::GLSurface* gl_surface,
       scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
@@ -71,8 +70,6 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
 
   virtual bool ScheduleDCLayer(
       std::unique_ptr<gl::DCLayerOverlayParams> params) = 0;
-
-  virtual gfx::Size GetRootSurfaceSize() const = 0;
 
   virtual void DoPresent(
       const gfx::Rect& rect,
@@ -90,10 +87,12 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
       shared_image_representation_factory_;
 
   const raw_ptr<gpu::SharedContextState> context_state_;
+  gfx::Size size_;
 
  private:
   // Completion callback for |DoPresent|.
   void OnPresentFinished(OutputSurfaceFrame frame,
+                         const gfx::Size& swap_size,
                          gfx::SwapCompletionResult result);
 
   base::WeakPtrFactory<SkiaOutputDeviceDComp> weak_ptr_factory_{this};
@@ -131,7 +130,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
  protected:
   bool ScheduleDCLayer(
       std::unique_ptr<gl::DCLayerOverlayParams> params) override;
-  gfx::Size GetRootSurfaceSize() const override;
   void DoPresent(const gfx::Rect& rect,
                  gl::GLSurface::SwapCompletionCallback completion_callback,
                  BufferPresentedCallback feedback,
@@ -140,7 +138,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompGLSurface final
  private:
   scoped_refptr<gl::GLSurface> gl_surface_;
 
-  gfx::Size size_;
   gfx::ColorSpace color_space_;
   GrGLFramebufferInfo framebuffer_info_ = {};
   sk_sp<SkSurface> sk_surface_;
@@ -182,7 +179,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompPresenter final
  protected:
   bool ScheduleDCLayer(
       std::unique_ptr<gl::DCLayerOverlayParams> params) override;
-  gfx::Size GetRootSurfaceSize() const override;
   void DoPresent(const gfx::Rect& rect,
                  gl::GLSurface::SwapCompletionCallback completion_callback,
                  BufferPresentedCallback feedback,
