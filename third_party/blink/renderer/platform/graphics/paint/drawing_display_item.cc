@@ -121,19 +121,16 @@ DrawingDisplayItem::BackgroundColorInfo DrawingDisplayItem::BackgroundColor()
     return {};
   }
 
-  // TODO(wangxianzhu): Also consider other types of display items, especially
-  // those draw only a solid color.
-  if (GetType() != DisplayItem::kBoxDecorationBackground &&
-      GetType() != DisplayItem::kDocumentBackground &&
-      GetType() != DisplayItem::kDocumentRootBackdrop &&
-      GetType() != DisplayItem::kCaret &&
-      GetType() != DisplayItem::kScrollCorner) {
-    return {};
-  }
-
   bool may_be_solid_color = record_.size() == 1;
   for (const cc::PaintOp& op : record_) {
     if (!IsDrawAreaAnalysisCandidate(op)) {
+      if (GetType() != DisplayItem::kBoxDecorationBackground &&
+          GetType() != DisplayItem::kDocumentBackground &&
+          GetType() != DisplayItem::kDocumentRootBackdrop &&
+          GetType() != DisplayItem::kScrollCorner) {
+        // Only analyze the first op for a display item not of the above types.
+        return {};
+      }
       continue;
     }
     SkRect item_rect;
