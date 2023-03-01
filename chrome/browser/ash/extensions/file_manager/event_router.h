@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
-#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -280,8 +279,6 @@ class EventRouter
       const file_manager_private::ProgressStatus& event_status);
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
-  std::unique_ptr<plugin_vm::PluginVmPolicySubscription>
-      plugin_vm_subscription_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   Profile* profile_;
 

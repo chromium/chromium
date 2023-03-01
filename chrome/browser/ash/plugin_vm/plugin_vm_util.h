@@ -24,7 +24,7 @@ class GURL;
 
 namespace plugin_vm {
 
-class PluginVmPolicySubscription;
+class PluginVmAvailabilitySubscription;
 
 // Name of the pita DLC.
 extern const char kPitaDlc[];
@@ -99,29 +99,34 @@ absl::optional<std::string> GetIdFromDriveUrl(const GURL& url);
 // Returns true if window is PluginVM.
 bool IsPluginvmWindowId(const std::string& window_id);
 
-// A subscription for changes to PluginVm policy that may affect
-// PluginVmFeatures::Get()->IsAllowed.
-class PluginVmPolicySubscription {
+// A subscription for changes to Plugin VM's availability. The callback is
+// called whenever there are changes that would affect either
+// PluginVmFeatures::Get()->IsAllowed() or IsConfigured().
+class PluginVmAvailabilitySubscription {
  public:
-  using PluginVmAllowedChanged = base::RepeatingCallback<void(bool is_allowed)>;
-  PluginVmPolicySubscription(Profile* profile, PluginVmAllowedChanged callback);
-  ~PluginVmPolicySubscription();
+  using AvailabilityChangeCallback =
+      base::RepeatingCallback<void(bool is_allowed, bool is_configured)>;
+  PluginVmAvailabilitySubscription(Profile* profile,
+                                   AvailabilityChangeCallback callback);
+  ~PluginVmAvailabilitySubscription();
 
-  PluginVmPolicySubscription(const PluginVmPolicySubscription&) = delete;
-  PluginVmPolicySubscription& operator=(const PluginVmPolicySubscription&) =
+  PluginVmAvailabilitySubscription(const PluginVmAvailabilitySubscription&) =
       delete;
+  PluginVmAvailabilitySubscription& operator=(
+      const PluginVmAvailabilitySubscription&) = delete;
 
  private:
-  // Internal callback for policy changes.
   void OnPolicyChanged();
+  void OnImageExistsChanged();
 
   Profile* profile_;
 
   // Whether Plugin VM was previously allowed for the profile.
   bool is_allowed_;
+  bool is_configured_;
 
   // The user-provided callback method.
-  PluginVmAllowedChanged callback_;
+  AvailabilityChangeCallback callback_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::CallbackListSubscription device_allowed_subscription_;

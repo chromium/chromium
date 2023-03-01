@@ -142,9 +142,9 @@ class PluginVmManagerImpl : public PluginVmManager,
       PluginVmUninstallerNotification::FailedReason reason =
           PluginVmUninstallerNotification::FailedReason::kUnknown);
 
-  // Called when pluginvm changes availability e.g. installed, uninstalled,
+  // Called when Plugin VM changes availability e.g. installed, uninstalled,
   // policy changes.
-  void OnPluginVmChanged(bool is_allowed);
+  void OnAvailabilityChanged(bool is_allowed, bool is_configured);
 
   Profile* profile_;
   std::string owner_id_;
@@ -192,8 +192,8 @@ class PluginVmManagerImpl : public PluginVmManager,
   // suspending, so delay until an in progress operation finishes.
   bool pending_destroy_disk_image_ = false;
 
-  // We subscribe to events which change our availability.
-  std::unique_ptr<PluginVmPolicySubscription> plugin_vm_subscription_;
+  // For notifying the GuestOsSharePath.
+  std::unique_ptr<PluginVmAvailabilitySubscription> availability_subscription_;
 
   base::WeakPtrFactory<PluginVmManagerImpl> weak_ptr_factory_{this};
 };
