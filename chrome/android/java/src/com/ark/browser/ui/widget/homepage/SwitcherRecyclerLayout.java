@@ -25,7 +25,7 @@ import androidx.core.view.ViewCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.ark.browser.tab.EmptyTabInfoObserver;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.dialog.TabActionDialog;
 import com.zpj.utils.ColorUtils;
@@ -135,12 +135,12 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             viewList.clear();
             notifyDataSetChanged();
         }
-        TabListManager.getInstance().getCurrentTabList().addObserver(new EmptyTabInfoObserver() {
+        TabGroupManager.global().getCurrentTabGroup().addObserver(new EmptyTabInfoObserver() {
 
             @Override
             public void didAddTab(ITab tab, @TabSelectionType int type) {
                 Log.d(TAG, "didAddTab state=" + mState);
-                mPosition = TabListManager.getInstance().getCurrentTabList().getIndex();
+                mPosition = TabGroupManager.global().getCurrentTabGroup().getIndex();
                 mCurrentTouchView = null;
                 initChildren();
             }
@@ -752,7 +752,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     public void goToIdle() {
-        mPosition = TabListManager.getInstance().getCurrentTabList().getIndex();
+        mPosition = TabGroupManager.global().getCurrentTabGroup().getIndex();
         selectChildView();
 //        selectCenterChildView();
         Log.d(TAG, "goToIdle index=" + indexOfChild(mCurrentTouchView) + " count=" + getChildCount());
@@ -783,7 +783,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     public void dragToSwitchTab(float dx, float dy) {
-        mPosition = TabListManager.getInstance().getCurrentTabList().getIndex();
+        mPosition = TabGroupManager.global().getCurrentTabGroup().getIndex();
         selectChildView();
 
         int height = mHeight + mTitleHeight - (int) Math.abs(dy) * 3 / 2;
@@ -837,7 +837,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             selectChildView(mPosition);
         }
 
-//        int position = TabListManager.getInstance().getCurrentTabList().getIndex();
+//        int position = TabGroupManager.global().getCurrentTabList().getIndex();
         mState = STATE_ANIMATION;
 
         int delta = mCurrentTouchView.getRight() + mCurrentTouchView.getLeft() - mWidth;
@@ -1233,7 +1233,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         view.setOnLongClickListener(v -> {
             int pos = mFirstPosition + indexOfChild(v);
             mCurrentTouchView = v;
-            ITab tabInfo = TabListManager.getInstance().getCurrentTabList().getTabAt(pos);
+            ITab tabInfo = TabGroupManager.global().getCurrentTabGroup().getTabAt(pos);
             TabActionDialog.newInstance(tabInfo, mDownX, mDownY).show(getContext());
             return true;
         });

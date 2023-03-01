@@ -25,9 +25,7 @@ import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.tab.TabCacheManager;
-import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.ui.fragment.ArkMainFragment;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperManager;
 import com.ark.browser.utils.ArkLogger;
@@ -47,7 +45,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
-import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.incognito.IncognitoStartup;
@@ -56,7 +53,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -192,7 +188,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     private void onPostResumeWithNative() {
 
         IncognitoStartup.onResumeWithNative(
-                TabListManager.getInstance().isIncognitoSelected(),
+                TabGroupManager.global().isIncognitoSelected(),
                 TABBED_MODE_COMPONENT_NAMES);
 
         ChromeSessionState.setIsInMultiWindowMode(
@@ -313,15 +309,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 //            setTheme(R.style.Theme_Chromium_WithWindowAnimation_LowEnd);
 //        }
 //    }
-
-    public Tab getActivityTab() {
-        ITab tab = TabListManager.getInstance().getCurrentTab();
-        if (tab == null) {
-            return null;
-        }
-        return TabCacheManager.getInstance().findTab(tab.getId());
-    }
-
 
     @Override
     public final void onBackPressedSupport() {

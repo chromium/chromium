@@ -19,7 +19,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.toast.ZToast;
 
@@ -351,7 +351,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void moveTab() {
-        boolean r = TabListManager.moveToNewTab(mTab.getPageInfo());
+        boolean r = TabGroupManager.moveToNewTab(mTab.getPageInfo());
         if (r) {
             ZToast.success("移动页面成功！");
         } else {

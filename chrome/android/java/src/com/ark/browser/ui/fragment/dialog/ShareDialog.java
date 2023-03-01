@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.ark.browser.core.utils.TabPrinter;
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.toast.ZToast;
@@ -62,7 +62,7 @@ public class ShareDialog extends OverDragBottomDialogFragment<ShareDialog> imple
 
     @Override
     public void onClick(View v) {
-        ArkTabImpl tab = (ArkTabImpl) TabListManager.getInstance().getCurrentNativeTab();
+        ArkTabImpl tab = (ArkTabImpl) TabGroupManager.global().getCurrentNativeTab();
         if (tab == null) {
             return;
         }

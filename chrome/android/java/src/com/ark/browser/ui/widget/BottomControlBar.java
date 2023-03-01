@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.tab.PageSnapshotManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 
 import org.chromium.chrome.R;
@@ -79,7 +80,7 @@ public class BottomControlBar extends FrameLayout {
 
                 mDownX = event.getRawX();
                 mDownY = event.getRawY();
-                PageSnapshotManager.getInstance().cacheCurrentPage();
+                PageSnapshotManager.getInstance().cachePage(TabGroupManager.global().getCurrentPageInfo());
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (isMoved) {

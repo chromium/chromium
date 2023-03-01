@@ -25,7 +25,7 @@ import com.ark.browser.model.SearchHistory;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.dialog.SearchEngineSelectDialog;
 import com.ark.browser.ui.fragment.download.DownloadMultiData;
@@ -55,6 +55,7 @@ import com.zpj.utils.KeyboardUtils;
 import com.zpj.widget.toolbar.ZSearchBar;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -68,7 +69,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.chrome.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -302,7 +302,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
                 ivThumbnail.setImageBitmap(null);
             }
             holder.setOnItemClickListener(v -> {
-                TabListManager.getInstance().selectTab(tab);
+                tab.selectTab();
                 dismiss();
 //                GetLauncherEvent.post(fragment -> {
 //                    fragment.goToBrowser(false);
@@ -550,7 +550,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
 
 
     public void resetToolbar() {
-        PageInfo pageInfo = TabListManager.getInstance().getCurrentPageInfo();
+        PageInfo pageInfo = TabGroupManager.global().getCurrentPageInfo();
         if (pageInfo != null) {
             titleTextView.setText(pageInfo.getTitle());
             contentTextView.setText(pageInfo.getUrl());
@@ -762,7 +762,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
 
     private void searchTabInfo() {
         ThreadPool.execute(() -> {
-            List<ITab> all = TabListManager.getInstance().getCurrentTabList().getTabList();
+            List<ITab> all = TabGroupManager.global().getCurrentTabGroup().getTabList();
             List<ITab> tabList = new ArrayList<>();
             if (TextUtils.isEmpty(keyword)) {
                 tabList.addAll(all);

@@ -13,7 +13,7 @@ import androidx.cardview.widget.CardView;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.dialog.TabActionDialog;
 import com.ark.browser.ui.widget.FitWidthImageView;
@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ArkTabAdapter implements Adapter {
 
-    final List<ITab> tabList = TabListManager.getInstance().getCurrentTabList().getTabList();
+    final List<ITab> tabList = TabGroupManager.global().getCurrentTabGroup().getTabList();
 
     @Override
     public View onCreateViewHolder(ViewGroup parent, int position) {
@@ -36,7 +36,7 @@ public class ArkTabAdapter implements Adapter {
 
     @Override
     public void onBindViewHolder(View itemView, int position) {
-        if (TabListManager.getInstance().isLoaded()) {
+        if (TabGroupManager.global().isLoaded()) {
             ITab tab = tabList.get(position);
             updateItem(itemView, tab, null);
         }
@@ -44,7 +44,7 @@ public class ArkTabAdapter implements Adapter {
 
     @Override
     public int getCount() {
-        if (TabListManager.getInstance().isLoaded()) {
+        if (TabGroupManager.global().isLoaded()) {
             return tabList.size();
         }
         return 0;
@@ -52,16 +52,16 @@ public class ArkTabAdapter implements Adapter {
 
     @Override
     public int getPosition() {
-        if (TabListManager.getInstance().isLoaded()) {
-            return TabListManager.getInstance().getCurrentTabList().getIndex();
+        if (TabGroupManager.global().isLoaded()) {
+            return TabGroupManager.global().getCurrentTabGroup().getIndex();
         }
         return 0;
     }
 
     @Override
     public boolean onSwipe(int position) {
-        if (TabListManager.getInstance().isLoaded()) {
-            TabListManager.getInstance().getCurrentTabList().closeTab(tabList.get(position));
+        if (TabGroupManager.global().isLoaded()) {
+            TabGroupManager.global().getCurrentTabGroup().closeTab(tabList.get(position));
         }
         return false;
     }

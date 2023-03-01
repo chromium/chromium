@@ -14,6 +14,8 @@ public class ArkWebManager {
             PAGE_CACHE.remove(id);
             if (arkWeb.isDestroyed()) {
                 arkWeb = null;
+            } else {
+                arkWeb.getWebContents().destroy();
             }
         }
         return arkWeb;

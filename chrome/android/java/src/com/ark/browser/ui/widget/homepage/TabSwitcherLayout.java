@@ -18,7 +18,7 @@ import androidx.cardview.widget.CardView;
 
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.dialog.TabActionDialog;
 import com.ark.browser.ui.fragment.search.SearchFragment;
@@ -75,7 +75,7 @@ public class TabSwitcherLayout extends FrameLayout {
 
             @Override
             public boolean onSwipe(int position) {
-                if (TabListManager.getInstance().getCurrentTabList().getCount() == 0) {
+                if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
                     mEmptyLayout.setAlpha(0f);
                     mEmptyLayout.setVisibility(VISIBLE);
                     mEmptyLayout.animate()
@@ -125,7 +125,7 @@ public class TabSwitcherLayout extends FrameLayout {
             @Override
             public void onOpen(float percent) {
                 setBarAlpha(percent);
-                if (TabListManager.getInstance().getCurrentTabList().getCount() == 0) {
+                if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
                     mEmptyLayout.setAlpha(percent);
                     mEmptyLayout.setVisibility(VISIBLE);
                 } else {
@@ -143,7 +143,7 @@ public class TabSwitcherLayout extends FrameLayout {
             @Override
             public void onAnimIdle(float percent) {
                 setBarAlpha(percent);
-                if (TabListManager.getInstance().getCurrentTabList().getCount() == 0) {
+                if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
                     mEmptyLayout.setAlpha(percent);
                     mEmptyLayout.setVisibility(VISIBLE);
                 } else {
@@ -157,7 +157,7 @@ public class TabSwitcherLayout extends FrameLayout {
                 if (mAlpha > 0) {
                     setBarAlpha(1f - percent);
 
-                    if (TabListManager.getInstance().getCurrentTabList().getCount() == 0) {
+                    if (TabGroupManager.global().getCurrentTabGroup().getCount() == 0) {
                         mEmptyLayout.setAlpha(1 - percent);
                         mEmptyLayout.setVisibility(VISIBLE);
                     } else {
@@ -342,7 +342,7 @@ public class TabSwitcherLayout extends FrameLayout {
     }
 
     public void open() {
-        PageSnapshotManager.getInstance().cacheCurrentPage();
+        PageSnapshotManager.getInstance().cachePage(TabGroupManager.global().getCurrentPageInfo());
         post(mSwitcher::goToIdle);
     }
 

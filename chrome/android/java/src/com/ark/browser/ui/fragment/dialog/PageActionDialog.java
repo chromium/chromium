@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.toast.ZToast;
 
@@ -44,7 +44,7 @@ public class PageActionDialog extends AttachListDialogFragment<String>
         } else {
             pageId = savedInstanceState.getInt(KEY_ID, Tab.INVALID_PAGE_ID);
         }
-        mPageInfo = TabListManager.getInstance().findPageInfoById(pageId);
+        mPageInfo = TabGroupManager.findPageInfoById(pageId);
         if (mPageInfo == null) {
             popThis();
         }
@@ -83,7 +83,7 @@ public class PageActionDialog extends AttachListDialogFragment<String>
                 ZToast.normal("TODO 悬浮打开");
                 break;
             case 3:
-                boolean r = TabListManager.moveToNewTab(mPageInfo);
+                boolean r = TabGroupManager.moveToNewTab(mPageInfo);
                 if (r) {
                     ZToast.success("移动页面成功！");
                 } else {

@@ -11,12 +11,12 @@ import android.view.animation.DecelerateInterpolator;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
+import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
 import com.zpj.fragmentation.dialog.ZDialog;
-import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
 import com.zpj.utils.ClickHelper;
 import com.zpj.utils.ContextUtils;
 import com.zpj.utils.StatusBarUtils;
@@ -147,7 +147,8 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     @Override
     public void onBeforeExpand(int position) {
-        TabListManager.getInstance().selectTab(position, false);
+        ITabGroup tabGroup = TabGroupManager.global().getCurrentTabGroup();
+        tabGroup.selectTabAt(position);
     }
 
     @Override

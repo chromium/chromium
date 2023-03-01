@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.ui.widget.CheckBoxItem;
 import com.ark.browser.ui.widget.DialogHeaderLayout;
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
@@ -85,7 +85,7 @@ public class ExitDialog extends OverDragBottomDialogFragment<ExitDialog> impleme
             PrefsHelper.with().applyBoolean("clear_history_when_exit", clearHistory);
             PrefsHelper.with().applyBoolean("send_background_when_exit", sendToBackground);
             if (closeTabs && !sendToBackground) {
-                TabListManager.getInstance().getCurrentTabList().closeAllTabs();
+                TabGroupManager.global().getCurrentTabGroup().closeAllTabs();
             }
             if (clearHistory) {
                 //todo something

@@ -6,12 +6,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
-import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.settings.AppConfig;
-import com.ark.browser.tab.TabListManager;
-import com.ark.browser.ui.dialog.BookmarkManagerDialog;
-import com.ark.browser.ui.dialog.DownloadManagerDialog;
-import com.ark.browser.ui.dialog.HistoryManagerDialog;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.ui.fragment.collection.CollectionFragment;
 import com.ark.browser.ui.fragment.download.DownloadFragment;
 import com.ark.browser.ui.fragment.manager.ManagerFragment;
@@ -56,7 +52,7 @@ public class MainMenuDialog extends OverDragBottomDialogFragment<MainMenuDialog>
             tvNightMode.setTint(primaryColor);
         }
 
-        if (TabListManager.getInstance().getCurrentTabList().isIncognito()) {
+        if (TabGroupManager.global().isIncognitoSelected()) {
             tvPrivateMode.setTint(primaryColor);
         }
 

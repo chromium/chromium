@@ -1,8 +1,8 @@
 package com.ark.browser.tab.core;
 
 import com.ark.browser.core.ArkWebManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.TabInfo;
-import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
 
 import java.util.ArrayList;
@@ -65,13 +65,13 @@ public class TabImpl implements ITab {
 
         saveTabInfo();
 
-        ITabGroup tabList = TabListManager.getInstance().getTabGroup(tabInfo.isIncognito());
-        TabInfo currentTabInfo = tabList.getCurrentTabInfo();
+        ITabGroup tabGroup = TabGroupManager.getTabGroup(tabInfo.getGroupId());
+        TabInfo currentTabInfo = tabGroup.getCurrentTabInfo();
         ArkLogger.d(TAG, "exitFloatingTabInfo currentTabInfo=" + currentTabInfo + " this=" + this);
         if (currentTabInfo != null
-                && currentTabInfo.getId() == getTabInfo().getId()) {
+                && currentTabInfo.getId() == tabInfo.getId()) {
             ArkLogger.d(TAG, "exitFloatingTabInfo tab=" + getCurrentPageInfo());
-            TabListManager.getInstance().selectTab(this);
+            tabGroup.selectTab(this);
         }
 
         for (IPage page : temp) {

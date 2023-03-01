@@ -6,15 +6,12 @@ import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,30 +19,23 @@ import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.core.ArkNavigationHandler;
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.core.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
 import com.ark.browser.event.LoadUrlEvent;
-import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabCacheManager;
-import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.fragment.dialog.ExitDialog;
-import com.ark.browser.ui.fragment.wallpaper.WallpaperManager;
-import com.ark.browser.ui.widget.BottomControlBar;
-import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
-import com.bumptech.glide.Glide;
 import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.dialog.ZDialog;
-import com.zpj.utils.Callback;
 import com.zpj.utils.FileUtils;
-import com.zpj.utils.PrefsHelper;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -69,11 +59,8 @@ import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.messages.MessagesMetrics;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.PageTransition;
-
-import java.io.File;
 
 public class ArkMainFragment extends BaseFragment implements
         PauseResumeWithNativeObserver, StartStopWithNativeObserver, InsetObserverView.WindowInsetObserver {
@@ -124,22 +111,22 @@ public class ArkMainFragment extends BaseFragment implements
                 return new ArkNavigationHandler() {
                     @Override
                     public boolean canGoForward() {
-                        return TabListManager.getInstance().getCurrentTabList().canGoForward();
+                        return TabGroupManager.global().canGoForward();
                     }
 
                     @Override
                     public boolean goForward() {
-                        return TabListManager.getInstance().getCurrentTabList().goForward();
+                        return TabGroupManager.global().goForward();
                     }
 
                     @Override
                     public boolean canGoBack() {
-                        return TabListManager.getInstance().getCurrentTabList().canGoBack();
+                        return TabGroupManager.global().canGoBack();
                     }
 
                     @Override
                     public boolean goBack() {
-                        return TabListManager.getInstance().getCurrentTabList().goBack();
+                        return TabGroupManager.global().goBack();
                     }
                 };
             }
@@ -200,7 +187,7 @@ public class ArkMainFragment extends BaseFragment implements
                 .doOnChange(this::onSearchEvent)
                 .subscribe();
 
-        TabListManager.getInstance().restore(result -> {
+        TabGroupManager.global().restore(result -> {
             ThreadPool.postOnUIThread(() -> {
                 if (mSwitcherManager != null) {
                     mSwitcherManager.onRestore();
@@ -288,12 +275,10 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onResumeWithNative() {
-        Tab tab = getActivityTab();
-        if (tab != null) {
-            WebContents webContents = tab.getWebContents();
-
+        ArkWebContents web = TabGroupManager.global().getCurrentWeb();
+        if (web != null) {
             // For picture-in-picture mode / auto-darken web contents.
-            if (webContents != null) webContents.notifyRendererPreferenceUpdate();
+            web.notifyRendererPreferenceUpdate();
         }
     }
 
@@ -311,8 +296,8 @@ public class ArkMainFragment extends BaseFragment implements
 
     private void initCompositor() {
         ArkLogger.e(TAG, "initCompositor");
-        TabListManager.getInstance().addObserver(() -> {
-            Tab tab = getActivityTab();
+        TabGroupManager.global().addObserver(() -> {
+            Tab tab = TabGroupManager.global().getCurrentNativeTab();
             ArkLogger.d(TAG, "TabManagerObserver onChange tab=" + tab);
             if (tab != null) {
                 mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
@@ -326,9 +311,9 @@ public class ArkMainFragment extends BaseFragment implements
             @Override
             public ITabGroup getTabList(Tab current) {
                 if (current == null) {
-                    return TabListManager.getInstance().getCurrentTabList();
+                    return TabGroupManager.global().getCurrentTabGroup();
                 }
-                return TabListManager.getInstance().getTabGroup(current.isIncognito());
+                return TabGroupManager.global().getTabGroup(current.isIncognito());
             }
 
             @Override
@@ -357,7 +342,7 @@ public class ArkMainFragment extends BaseFragment implements
 
             @Override
             public void onShutDown() {
-                TabListManager.getInstance().onDestroy();
+                TabGroupManager.global().destroy();
             }
         });
         mViewHolder.onStart();
@@ -404,14 +389,6 @@ public class ArkMainFragment extends BaseFragment implements
         MessagesFactory.attachMessageDispatcher(getWindowAndroid(), mMessageDispatcher);
     }
 
-    public Tab getActivityTab() {
-        ITab tab = TabListManager.getInstance().getCurrentTab();
-        if (tab == null) {
-            return null;
-        }
-        return TabCacheManager.getInstance().findTab(tab.getId());
-    }
-
 
     public ArkCompositorViewHolder getViewHolder() {
         return mViewHolder;
@@ -432,7 +409,7 @@ public class ArkMainFragment extends BaseFragment implements
     }
 
     public void onSearchEvent(LoadUrlEvent event) {
-        ITabGroup tabGroup = TabListManager.getInstance().getTabGroup(event.isIncognito());
+        ITabGroup tabGroup = TabGroupManager.global().getTabGroup(event.isIncognito());
 
         popTo(ArkMainFragment.class, false);
         for (int i = 0; i < getChildFragmentManager().getBackStackEntryCount(); i++) {

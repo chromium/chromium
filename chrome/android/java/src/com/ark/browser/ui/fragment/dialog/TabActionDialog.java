@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.settings.Keys;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.settings.website.SingleWebsiteFragment;
 import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
@@ -50,7 +50,7 @@ public class TabActionDialog extends AttachListDialogFragment<String>
         } else {
             id = savedInstanceState.getInt(Keys.KEY_ID, Tab.INVALID_PAGE_ID);
         }
-        mTab = TabListManager.getInstance().getTabById(id);
+        mTab = TabGroupManager.getTabById(id);
         if (mTab == null) {
             popThis();
         }
@@ -94,7 +94,7 @@ public class TabActionDialog extends AttachListDialogFragment<String>
                 LoadUrlEvent.post(mTab.getCurrentPageInfo(), true, true);
                 break;
             case 2:
-                boolean r = TabListManager.moveToNewTab(mTab.getCurrentPageInfo());
+                boolean r = TabGroupManager.moveToNewTab(mTab.getCurrentPageInfo());
                 if (r) {
                     ZToast.success("移动页面成功！");
                 } else {
@@ -110,7 +110,7 @@ public class TabActionDialog extends AttachListDialogFragment<String>
                 ZToast.success("链接复制成功");
                 break;
             case 5:
-                ITab cloneTab = TabListManager.getInstance().cloneTab(mTab);
+                ITab cloneTab = TabGroupManager.cloneTab(mTab);
                 if (cloneTab == null) {
                     ZToast.error("克隆标签失败！");
                 } else {

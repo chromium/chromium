@@ -83,9 +83,9 @@ chrome_java_sources = [
   "java/src/com/ark/browser/tab/PageInfo.java",
   "java/src/com/ark/browser/tab/PageSnapshotManager.java",
   "java/src/com/ark/browser/tab/TabCacheManager.java",
+  "java/src/com/ark/browser/tab/TabGroupManager.java",
   "java/src/com/ark/browser/tab/TabInfo.java",
   "java/src/com/ark/browser/tab/TabInfoObserver.java",
-  "java/src/com/ark/browser/tab/TabListManager.java",
   "java/src/com/ark/browser/tab/TabManagerObserver.java",
   "java/src/com/ark/browser/tab/core/IPage.java",
   "java/src/com/ark/browser/tab/core/ITab.java",
@@ -106,7 +106,6 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/dialog/SmartSearchDialog.java",
   "java/src/com/ark/browser/ui/dialog/SmartSearchPopupWindow.java",
   "java/src/com/ark/browser/ui/dialog/TestWindow.java",
-  "java/src/com/ark/browser/ui/dialog/UserAgentSelector.java",
 
   "java/src/com/ark/browser/ui/fragment/ArkMainFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/BaseFragment.java",

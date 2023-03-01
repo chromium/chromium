@@ -7,6 +7,7 @@ import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
 import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ThreadPool;
 import com.zpj.utils.FileUtils;
@@ -249,6 +250,18 @@ public interface ITab {
             return;
         }
         selectPage(indexOfPage(page.getId()));
+    }
+
+    default ITabGroup getTabGroup() {
+        return TabGroupManager.getTabGroup(getGroupId());
+    }
+
+    default void selectTab() {
+        selectTab(getCurrentPage());
+    }
+
+    default void selectTab(IPage page) {
+        getTabGroup().selectTab(this, page);
     }
 
     default boolean removePage(IPage page) {

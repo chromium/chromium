@@ -19,7 +19,7 @@ import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.PageSnapshotManager;
-import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.pageinfo.PageInfoFragment;
@@ -76,15 +76,6 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
         return fragment;
     }
 
-    public static HistoryStackDialogFragment newInstance(Tab page) {
-        ITab tab = TabListManager.getInstance().getTabInfo(page);
-        Bundle args = new Bundle();
-        args.putInt(KEY_ID, tab.getId());
-        HistoryStackDialogFragment fragment = new HistoryStackDialogFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public HistoryStackDialogFragment() {
         setMarginTop(ScreenUtils.getStatusBarHeight() * 2);
         setCornerRadiusDp(24);
@@ -121,7 +112,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
         } else {
             id = savedInstanceState.getInt(KEY_ID);
         }
-        mTab = TabListManager.getInstance().getTabById(id);
+        mTab = TabGroupManager.getTabById(id);
         if (mTab == null) {
             popThis();
         } else {
@@ -242,7 +233,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
                                 ZToast.normal("TODO 悬浮打开");
                                 break;
                             case 3:
-                                boolean r = TabListManager.moveToNewTab(pageInfo);
+                                boolean r = TabGroupManager.moveToNewTab(pageInfo);
                                 if (r) {
                                     ZToast.success("移动页面成功！");
                                     startAnim(ivThumbnail, pageInfo);
@@ -325,7 +316,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
 
             @Override
             public void onAnimationStart(Animator animation) {
-                TabListManager.getInstance().selectTab(mTab, list.get(mSelectPosition));
+                mTab.selectTab(list.get(mSelectPosition));
             }
 
             @Override

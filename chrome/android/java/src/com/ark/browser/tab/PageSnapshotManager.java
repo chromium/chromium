@@ -76,14 +76,6 @@ public class PageSnapshotManager {
         });
     }
 
-    public void cacheCurrentPage() {
-        ITab tab = TabListManager.getInstance().getCurrentTab();
-        if (tab == null) {
-            return;
-        }
-        cachePage(tab.getCurrentPageInfo());
-    }
-
     public void cachePage(PageInfo pageInfo) {
         if (pageInfo == null) {
             return;
