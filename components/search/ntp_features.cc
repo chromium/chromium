@@ -248,6 +248,13 @@ BASE_FEATURE(kNtpHistoryClustersModuleCategories,
              "NtpHistoryClustersModuleCategories",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the history clusters module will be loaded but not shown. This is
+// useful to determine if a user would have seen modules in order to
+// counterfactually log or trigger.
+BASE_FEATURE(kNtpHistoryClustersModuleLoad,
+             "NtpHistoryClustersModuleLoad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,

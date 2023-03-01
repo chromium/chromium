@@ -1048,7 +1048,9 @@ void PopulateChromeWebUIFrameBinders(
                                            NewTabPageUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) ||
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleLoad)) {
     RegisterWebUIControllerInterfaceBinder<
         ntp::history_clusters::mojom::PageHandler, NewTabPageUI>(map);
   }
