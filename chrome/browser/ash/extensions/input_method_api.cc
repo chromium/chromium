@@ -135,9 +135,9 @@ InputMethodPrivateGetCurrentInputMethodFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetCurrentInputMethodFunction::Run() {
-  std::unique_ptr<SetCurrentInputMethod::Params> params(
-      SetCurrentInputMethod::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<SetCurrentInputMethod::Params> params =
+      SetCurrentInputMethod::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const std::vector<std::string>& input_methods =
@@ -208,9 +208,9 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateAddWordToDictionaryFunction::Run() {
-  std::unique_ptr<AddWordToDictionary::Params> params(
-      AddWordToDictionary::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<AddWordToDictionary::Params> params =
+      AddWordToDictionary::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   SpellcheckService* spellcheck =
       SpellcheckServiceFactory::GetForContext(browser_context());
   if (!spellcheck) {
@@ -239,9 +239,9 @@ InputMethodPrivateAddWordToDictionaryFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetXkbLayoutFunction::Run() {
-  std::unique_ptr<SetXkbLayout::Params> params(
-      SetXkbLayout::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<SetXkbLayout::Params> params =
+      SetXkbLayout::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   auto* manager = ash::input_method::InputMethodManager::Get();
   ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
   keyboard->SetCurrentKeyboardLayoutByName(params->xkb_name);
@@ -272,9 +272,9 @@ InputMethodPrivateHideInputViewFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateOpenOptionsPageFunction::Run() {
-  std::unique_ptr<OpenOptionsPage::Params> params(
-      OpenOptionsPage::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<OpenOptionsPage::Params> params =
+      OpenOptionsPage::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const ash::input_method::InputMethodDescriptor* ime =
@@ -322,8 +322,8 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
     return RespondNow(Error(InformativeError(
         kErrorInputContextHandlerNotAvailable, static_function_name())));
 
-  std::unique_ptr<GetSurroundingText::Params> params(
-      GetSurroundingText::Params::CreateDeprecated(args()));
+  absl::optional<GetSurroundingText::Params> params =
+      GetSurroundingText::Params::Create(args());
   if (params->before_length < 0 || params->after_length < 0)
     return RespondNow(Error(InformativeError(
         base::StringPrintf("%s before_length = %d, after_length = %d.",
@@ -367,8 +367,8 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
-  const auto params = GetSettings::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  const auto params = GetSettings::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   const base::Value::Dict& input_methods =
       Profile::FromBrowserContext(browser_context())
@@ -383,8 +383,8 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
-  const auto params = SetSettings::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  const auto params = SetSettings::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ScopedDictPrefUpdate update(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
@@ -414,8 +414,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params =
-      SetCompositionRange::Params::CreateDeprecated(args());
+  const auto parent_params = SetCompositionRange::Params::Create(args());
   const auto& params = parent_params->parameters;
   std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
@@ -458,8 +457,7 @@ InputMethodPrivateGetTextFieldBoundsFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  const auto parent_params =
-      GetTextFieldBounds::Params::CreateDeprecated(args());
+  const auto parent_params = GetTextFieldBounds::Params::Create(args());
   const auto& params = parent_params->parameters;
   const gfx::Rect rect =
       engine->InputMethodEngine::GetTextFieldBounds(params.context_id, &error);
@@ -487,8 +485,8 @@ ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateOnAutocorrectFunction::Run() {
-  std::unique_ptr<OnAutocorrect::Params> parent_params(
-      OnAutocorrect::Params::CreateDeprecated(args()));
+  absl::optional<OnAutocorrect::Params> parent_params =
+      OnAutocorrect::Params::Create(args());
   const OnAutocorrect::Params::Parameters& params = parent_params->parameters;
   std::string error;
   ash::input_method::NativeInputMethodEngine* engine =
