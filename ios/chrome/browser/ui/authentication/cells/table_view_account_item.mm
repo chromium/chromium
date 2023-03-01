@@ -77,9 +77,6 @@ constexpr CGFloat KErrorIconImageSize = 22.;
 @interface TableViewAccountCell () {
   // Constraint used to set padding between image and text when image exists.
   NSLayoutConstraint* _textLeadingAnchorConstraint;
-
-  // Constraint used to set the errorIcon width depending on it's existence.
-  NSLayoutConstraint* _errorIconWidthConstraint;
 }
 @end
 
@@ -116,6 +113,11 @@ constexpr CGFloat KErrorIconImageSize = 22.;
 
   _errorIcon = [[UIImageView alloc] init];
   _errorIcon.translatesAutoresizingMaskIntoConstraints = NO;
+  [_errorIcon setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisHorizontal];
+  [_errorIcon
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
   [contentView addSubview:_errorIcon];
 
   _textLabel = [[UILabel alloc] init];
@@ -145,8 +147,6 @@ constexpr CGFloat KErrorIconImageSize = 22.;
 
   _textLeadingAnchorConstraint = [_textLabel.leadingAnchor
       constraintEqualToAnchor:_imageView.trailingAnchor];
-  _errorIconWidthConstraint =
-      [_errorIcon.widthAnchor constraintEqualToConstant:KErrorIconImageSize];
   [NSLayoutConstraint activateConstraints:@[
     // Set leading anchors.
     [_imageView.leadingAnchor
@@ -159,8 +159,6 @@ constexpr CGFloat KErrorIconImageSize = 22.;
     // Update the resize if this changes.
     [_imageView.widthAnchor constraintEqualToConstant:kTableViewIconImageSize],
     [_imageView.heightAnchor constraintEqualToAnchor:_imageView.widthAnchor],
-    _errorIconWidthConstraint,
-    [_errorIcon.heightAnchor constraintEqualToAnchor:_errorIcon.widthAnchor],
 
     // Set vertical anchors.
     [_imageView.centerYAnchor
@@ -195,8 +193,9 @@ constexpr CGFloat KErrorIconImageSize = 22.;
         constraintEqualToAnchor:contentView.trailingAnchor
                        constant:-kTableViewHorizontalSpacing],
     [_detailTextLabel.trailingAnchor
-        constraintEqualToAnchor:_errorIcon.leadingAnchor
-                       constant:-kHorizontalPaddingBetweenTextAndError],
+        constraintLessThanOrEqualToAnchor:_errorIcon.leadingAnchor
+                                 constant:
+                                     -kHorizontalPaddingBetweenTextAndError],
     _textLeadingAnchorConstraint,
     [_textLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:_errorIcon.leadingAnchor
@@ -225,12 +224,6 @@ constexpr CGFloat KErrorIconImageSize = 22.;
         kTableViewOneLabelCellVerticalSpacing;
   } else {
     _textLeadingAnchorConstraint.constant = 0;
-  }
-
-  if (_errorIcon.image) {
-    _errorIconWidthConstraint.constant = KErrorIconImageSize;
-  } else {
-    _errorIconWidthConstraint.constant = 0;
   }
 }
 
