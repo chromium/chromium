@@ -145,7 +145,7 @@ struct OverflowMenuDestinationButton: ButtonStyle {
             .frame(width: Dimensions.newLabelBadgeWidth, height: Dimensions.newLabelBadgeWidth)
             .offset(x: newBadgeOffsetX, y: newBadgeOffsetY)
             .overlay {
-              if let newLabelString = L10NUtils.string(
+              if let newLabelString = L10NUtils.stringWithFixup(
                 forMessageId: IDS_IOS_NEW_LABEL_FEATURE_BADGE)
               {
                 Text(newLabelString)
