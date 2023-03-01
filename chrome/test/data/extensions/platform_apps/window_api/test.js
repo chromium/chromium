@@ -239,6 +239,10 @@ function testCreate() {
           var cw2 = win2.contentWindow.chrome.app.window.current();
           chrome.test.assertEq('testId1', cw1.id);
           chrome.test.assertEq('testId2', cw2.id);
+          // Note: We explicitly use assertTrue(x === y) and
+          // assertFalse(x === y) in these cases (rather than comparing a deep
+          // equals using assertEq() and assertNe()) because we just care about
+          // strict object equality.
           chrome.test.assertTrue(cw1 === win1);
           chrome.test.assertTrue(cw2 === win2);
           chrome.test.assertFalse(cw1 === cw2);

@@ -192,7 +192,7 @@ chrome.test.runTests([
       // API should have generated id and priority fields.
       chrome.test.assertTrue("id" in rules[0]);
       // The IDs should be distinct.
-      chrome.test.assertFalse(outputRule0["id"] === rules[0]["id"]);
+      chrome.test.assertNe(rules[0]["id"], outputRule0["id"]);
       chrome.test.succeed();
     };
     testEvent.addRules([inputRule2], callback);

@@ -151,7 +151,7 @@ chrome.test.getConfig(function(config) {
           chrome.tabs.get(tabId, chrome.test.callbackPass(function(tab) {
             // Test passes as long as the window was converted in some form and
             // is not null
-            chrome.test.assertFalse(null == scriptVal[0]);
+            chrome.test.assertNe(scriptVal[0], null);
           }));
         });
       },

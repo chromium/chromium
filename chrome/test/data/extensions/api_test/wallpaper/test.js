@@ -34,7 +34,7 @@ chrome.test.getConfig(function(config) {
       };
     } else if (wantThumbnail) {
       callback = function(thumbnail) {
-        chrome.test.assertFalse(thumbnail === undefined);
+        chrome.test.assertNe(undefined, thumbnail);
         var buffer = new Uint8Array(thumbnail);
         chrome.test.assertTrue(buffer.length > 0);
         chrome.test.succeed("setWallpaper replied successfully.");
