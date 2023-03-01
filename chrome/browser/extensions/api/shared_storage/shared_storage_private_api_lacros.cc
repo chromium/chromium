@@ -44,15 +44,15 @@ void SharedStoragePrivateGetFunction::OnGet(absl::optional<base::Value> items) {
     LOG(ERROR) << kErrorFetching;
     return Respond(Error(kErrorFetching));
   }
-  Respond(OneArgument(std::move(*items)));
+  Respond(WithArguments(std::move(*items)));
 }
 
 SharedStoragePrivateSetFunction::SharedStoragePrivateSetFunction() = default;
 SharedStoragePrivateSetFunction::~SharedStoragePrivateSetFunction() = default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
-  std::unique_ptr<shared_api::Set::Params> params =
-      shared_api::Set::Params::CreateDeprecated(args());
+  absl::optional<shared_api::Set::Params> params =
+      shared_api::Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||
@@ -95,8 +95,8 @@ SharedStoragePrivateRemoveFunction::~SharedStoragePrivateRemoveFunction() =
     default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
-  std::unique_ptr<shared_api::Remove::Params> params =
-      shared_api::Remove::Params::CreateDeprecated(args());
+  absl::optional<shared_api::Remove::Params> params =
+      shared_api::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||
