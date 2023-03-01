@@ -149,7 +149,6 @@ class ChromiumDepGraph {
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
             licenseName: 'BSD'),
-        com_squareup_wire_wire_runtime_jvm: new PropertyOverride(overrideLatest: true),
         javax_annotation_javax_annotation_api: new PropertyOverride(
             isShipped: false,  // Annotations are stripped by R8.
             licenseName: 'CDDLv1.1',

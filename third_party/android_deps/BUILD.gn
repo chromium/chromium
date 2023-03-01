@@ -1328,6 +1328,20 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
+    jar_path =
+        "libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-4.4.3.jar"
+    output_name = "com_squareup_wire_wire_runtime_jvm"
+    supports_android = true
+    testonly = true
+    deps = [
+      ":com_squareup_okio_okio_jvm_java",
+      ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("io_grpc_grpc_api_java") {
     jar_path = "libs/io_grpc_grpc_api/grpc-api-1.49.0.jar"
     output_name = "io_grpc_grpc_api"
@@ -2187,6 +2201,25 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_squareup_okio_okio_jvm_java") {
+    jar_path = "libs/com_squareup_okio_okio_jvm/okio-jvm-3.0.0.jar"
+    output_name = "com_squareup_okio_okio_jvm"
+    supports_android = true
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+    deps = [
+      ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/squareup/wire'
 _MODULE_NAME = 'wire-runtime-jvm'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '4.4.3'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 
