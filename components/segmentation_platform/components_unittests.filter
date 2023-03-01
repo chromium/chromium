@@ -19,6 +19,7 @@ FieldTrialRecorderTest.*
 FrequentFeatureUserModelTest.*
 HistogramSignalHandlerTest.*
 HistoryDelegateImplTest.*
+InputContextAndroidTest.*
 IntentionalUserModelTest.*
 LowUserEngagementModelTest.*
 MetadataUtilsTest.*

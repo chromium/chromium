@@ -1067,6 +1067,7 @@ if (current_toolchain == default_toolchain) {
       "//components/search_engines/android:java",
       "//components/security_state/content/android:java",
       "//components/security_state/core:security_state_enums_java",
+      "//components/segmentation_platform/public:junit",
       "//components/segmentation_platform/public:public_java",
       "//components/signin/core/browser:signin_enums_java",
       "//components/signin/public/android:java",
