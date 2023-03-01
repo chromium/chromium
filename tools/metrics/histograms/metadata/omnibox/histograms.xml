@@ -313,6 +313,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Omnibox.AutocompleteClassifierClassifyTime" units="ms"
+    expires_after="2023-12-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The time `AutocompleteClassifier::Classify()` took. This is invoked on
+    multiple user actions in the omnibox; e.g. typing, selecting, copying,
+    focusing, etc. `Classify()` runs the autocomplete sync pass, which is
+    non-trivial work, but much shorter than full autocompletion.
+
+    This is intended to measure some performance optimization features and be
+    removed after.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.AutocompletionTime.UpdateResult{Slice}" units="ms"
     expires_after="2023-12-01">
   <owner>manukh@chromium.org</owner>
@@ -1232,6 +1248,36 @@ chromium-metrics-reviews@google.com.
     windows open. In M-75 and later, it records all omnibox interactions
     regardless, in order to be consistent with how user actions and histograms
     are handled.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.OmniboxEditModelOpenMatchTime" units="ms"
+    expires_after="2023-12-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The time `OmniboxEditModel::OpenMatch()` took. This is invoked on selecting
+    an omnibox suggestion (including a 'switch to tab' chip) and paste and
+    go/search. Besides kicking off the navigation, it includes non-negligible
+    logging (including the omnibox event proto) and some miscellaneous steps.
+
+    This is intended to measure some performance optimization features and be
+    removed after.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.OmniboxViewRevertAll" units="ms"
+    expires_after="2023-12-01">
+  <owner>manukh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The time `OmniboxView::RevertAll()` took. This is invoked on multiple user
+    actions that affect the omnibox state; e.g. tab switch, omnibox navigation,
+    etc. It includes the time to a) revert the edit model, b) close the popup,
+    and c) refresh the model. This is intended to measure some performance
+    optimization features and be removed after.
   </summary>
 </histogram>
 

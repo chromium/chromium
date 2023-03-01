@@ -5206,6 +5206,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDiscardTemporaryInputOnTabSwitchDescription,
      kOsAll, FEATURE_VALUE_TYPE(omnibox::kDiscardTemporaryInputOnTabSwitch)},
 
+    {"omnibox-redo-current-match",
+     flag_descriptions::kOmniboxRedoCurrentMatchName,
+     flag_descriptions::kOmniboxRedoCurrentMatchDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kRedoCurrentMatch)},
+
+    {"omnibox-revert-model-before-closing-popup",
+     flag_descriptions::kOmniboxRevertModelBeforeClosingPopupName,
+     flag_descriptions::kOmniboxRevertModelBeforeClosingPopupDescription,
+     kOsAll, FEATURE_VALUE_TYPE(omnibox::kRevertModelBeforeClosingPopup)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
     {"omnibox-experimental-keyword-mode",

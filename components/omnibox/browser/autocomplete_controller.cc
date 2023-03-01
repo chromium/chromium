@@ -1318,8 +1318,8 @@ void AutocompleteController::StopHelper(bool clear_result,
   done_ = true;
   if (clear_result && !result_.empty()) {
     result_.Reset();
-    // NOTE: We pass in false since we're trying to only clear the popup, not
-    // touch the edit... this is all a mess and should be cleaned up :(
+    // Pass false to clear only the popup and not the edit. Passing true would,
+    // e.g., discard the selected suggestion when closing the omnibox.
     DelayedNotifyChanged(false);
   }
 }

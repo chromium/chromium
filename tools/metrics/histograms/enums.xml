@@ -58096,6 +58096,8 @@ from previous Chrome versions.
   <int value="-2067596114" label="WebAuthenticationCableDisco:enabled"/>
   <int value="-2067166422" label="enable-slimming-paint-v2"/>
   <int value="-2066541315" label="Mus:enabled"/>
+  <int value="-2064999807"
+      label="OmniboxRevertModelBeforeClosingPopup:disabled"/>
   <int value="-2064164557" label="DownloadsForeground:disabled"/>
   <int value="-2063352474" label="enable-new-task-manager"/>
   <int value="-2063014275" label="enable-web-bluetooth"/>
@@ -60503,6 +60505,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentShowSuggestionFavicons:enabled"/>
   <int value="-757379927" label="Canvas2DImageChromium:enabled"/>
   <int value="-757282194" label="EnableFilesystemInIncognito:enabled"/>
+  <int value="-755776824" label="OmniboxRedoCurrentMatch:disabled"/>
   <int value="-755068996" label="AutofillEnableCardArtImage:disabled"/>
   <int value="-754726495" label="WebUITabStripContextMenuAfterTap:enabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
@@ -61241,6 +61244,7 @@ from previous Chrome versions.
   <int value="-338606027" label="TrimOnMemoryPressure:disabled"/>
   <int value="-338277966" label="DecoupleSyncFromAndroidMasterSync:enabled"/>
   <int value="-337722581" label="AssistantConsentV2:enabled"/>
+  <int value="-337655793" label="OmniboxRedoCurrentMatch:enabled"/>
   <int value="-337308250" label="AutofillMoreProminentPopup:enabled"/>
   <int value="-336768659" label="NtpPhotosModule:enabled"/>
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
@@ -64623,6 +64627,7 @@ from previous Chrome versions.
   <int value="1596407332" label="EnableSavedDesks:enabled"/>
   <int value="1596615083"
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>
+  <int value="1596689942" label="OmniboxRevertModelBeforeClosingPopup:enabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
   <int value="1599431665" label="WebRtcApmDownmixCaptureAudioMethod:enabled"/>
   <int value="1600850069" label="MobileIdentityConsistency:disabled"/>

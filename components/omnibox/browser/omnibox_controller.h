@@ -79,6 +79,10 @@ class OmniboxController : public AutocompleteController::Observer {
   // know what it should display. Not every field is required for that purpose,
   // but the ones specifically needed are unclear. We should therefore spend
   // some time to extract these fields and use a tighter structure here.
+  // TODO(manukh): When `kRedoCurrentMatch` is enabled, this is unused and
+  //   replaced by `OmniboxEditModel::current_match_` which serves the same
+  //   purpose but is hopefully more often correctly set (`current_match_` here
+  //   is almost always invalid).
   AutocompleteMatch current_match_;
 
   base::WeakPtrFactory<OmniboxController> weak_ptr_factory_{this};

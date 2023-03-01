@@ -5307,6 +5307,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-redo-current-match",
+    "owners": [ "manukh", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-remove-excessive-recycled-view-clear-calls",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
@@ -5319,6 +5324,11 @@
   {
     "name": "omnibox-report-searchbox-stats",
     "owners": [ "mahmadi", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "omnibox-revert-model-before-closing-popup",
+    "owners": [ "manukh", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120
   },
   {

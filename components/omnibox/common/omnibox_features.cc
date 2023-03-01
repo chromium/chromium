@@ -476,6 +476,21 @@ BASE_FEATURE(kReportAssistedQueryStats,
              "OmniboxReportAssistedQueryStats",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, `OmniboxEditModel` uses a new version of `current_match_` that
+// should be valid, and therefore usable, more often. The previous
+// `current_match_` is almost always invalid and therefore the model often
+// resorts to recalculating it each time its needed.
+BASE_FEATURE(kRedoCurrentMatch,
+             "OmniboxRedoCurrentMatch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, when reverting `OmniboxView`, it will first revert the
+// `OmniboxEditModel` before closing the popup. This should be more performant;
+// see comments in `OmniboxView::RevertAll()`.
+BASE_FEATURE(kRevertModelBeforeClosingPopup,
+             "OmniboxRevertModelBeforeClosingPopup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Omnibox reports the Searchbox Stats in the gs_lcrp= param in the
 // Search Results Page URL.
 BASE_FEATURE(kReportSearchboxStats,

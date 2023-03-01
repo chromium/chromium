@@ -1207,8 +1207,14 @@ extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
 extern const char kOmniboxOnDeviceTailSuggestionsName[];
 extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 
+extern const char kOmniboxRedoCurrentMatchName[];
+extern const char kOmniboxRedoCurrentMatchDescription[];
+
 extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[];
 extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[];
+
+extern const char kOmniboxRevertModelBeforeClosingPopupName[];
+extern const char kOmniboxRevertModelBeforeClosingPopupDescription[];
 
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];

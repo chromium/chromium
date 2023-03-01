@@ -103,6 +103,8 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateHeight);
 BASE_DECLARE_FEATURE(kDiscardTemporaryInputOnTabSwitch);
+BASE_DECLARE_FEATURE(kRedoCurrentMatch);
+BASE_DECLARE_FEATURE(kRevertModelBeforeClosingPopup);
 
 // Omnibox & Suggestions UI - these affect both the omnibox and the suggestions
 // popup.

@@ -159,8 +159,7 @@ class OmniboxEditModel {
   // Calls SetInputInProgress, via SetInputInProgressNoNotify and
   // NotifyObserversInputInProgress, calling the latter after
   // StartAutocomplete, so that the result is only updated once.
-  void UpdateInput(bool has_selected_text,
-                   bool prevent_inline_autocomplete);
+  void UpdateInput(bool has_selected_text, bool prevent_inline_autocomplete);
 
   // Resets the permanent display texts (display_text_ and url_for_editing_)
   // to those provided by the controller. Returns true if the display texts
@@ -376,22 +375,25 @@ class OmniboxEditModel {
   // separate pieces of data into one call so we can update all the UI
   // efficiently. Specifically, it's invoked for temporary text, autocompletion,
   // and keyword changes.
-  //   |temporary_text| is the new temporary text from the user selecting a
+  //   `temporary_text` is the new temporary text from the user selecting a
   //     different match. This will be empty when selecting a suggestion
-  //     without a |fill_into_edit| (e.g. FOCUSED_BUTTON_HEADER) and when
-  //     |is_temporary_test| is false.
-  //   |is_temporary_text| is true if invoked because of a temporary text change
-  //     or false if |temporary_text| should be ignored.
-  //   |inline_autocompletion| and |prefix_autocompletion| are the
+  //     without a `fill_into_edit` (e.g. FOCUSED_BUTTON_HEADER) and when
+  //     `is_temporary_test` is false.
+  //   `is_temporary_text` is true if invoked because of a temporary text change
+  //     or false if `temporary_text` should be ignored.
+  //   `inline_autocompletion` and `prefix_autocompletion` are the
   //     autocompletions.
-  //   |destination_for_temporary_text_change| is NULL (if temporary text should
+  //   `destination_for_temporary_text_change` is NULL (if temporary text should
   //     not change) or the pre-change destination URL (if temporary text should
   //     change) so we can save it off to restore later.
-  //   |keyword| is the keyword to show a hint for if |is_keyword_hint| is true,
-  //     or the currently selected keyword if |is_keyword_hint| is false (see
+  //   `keyword` is the keyword to show a hint for if `is_keyword_hint` is true,
+  //     or the currently selected keyword if `is_keyword_hint` is false (see
   //     comments on keyword_ and is_keyword_hint_).
-  //   |additional_text| is additional omnibox text to be displayed adjacent to
+  //   `additional_text` is additional omnibox text to be displayed adjacent to
   //     the omnibox view.
+  //   `new_match` is the selected match when the user is changing selection,
+  //     the default match if the user is typing, or an empty match when
+  //     selecting a header.
   // Virtual to allow testing.
   virtual void OnPopupDataChanged(const std::u16string& temporary_text,
                                   bool is_temporary_text,
@@ -399,7 +401,8 @@ class OmniboxEditModel {
                                   const std::u16string& prefix_autocompletion,
                                   const std::u16string& keyword,
                                   bool is_keyword_hint,
-                                  const std::u16string& additional_text);
+                                  const std::u16string& additional_text,
+                                  const AutocompleteMatch& new_match);
 
   // Called by the OmniboxView after something changes, with details about what
   // state changes occurred.  Updates internal state, updates the popup if
@@ -521,14 +524,14 @@ class OmniboxEditModel {
   FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelTest, ConsumeCtrlKeyOnCtrlAction);
 
   enum PasteState {
-    NONE,           // Most recent edit was not a paste.
-    PASTING,        // In the middle of doing a paste. We need this intermediate
-                    // state because OnPaste() does the actual detection of
-                    // paste, but OnAfterPossibleChange() has to update the
-                    // paste state for every edit. If OnPaste() set the state
-                    // directly to PASTED, OnAfterPossibleChange() wouldn't know
-                    // whether that represented the current edit or a past one.
-    PASTED,         // Most recent edit was a paste.
+    NONE,     // Most recent edit was not a paste.
+    PASTING,  // In the middle of doing a paste. We need this intermediate state
+              // because `OnPaste()` does the actual detection of paste, but
+              // `OnAfterPossibleChange()` has to update the paste state for
+              // every edit. If `OnPaste()` set the state directly to PASTED,
+              // `OnAfterPossibleChange()` wouldn't know whether that
+              // represented the current edit or a past one.
+    PASTED,   // Most recent edit was a paste.
   };
 
   enum ControlKeyState {
@@ -665,6 +668,14 @@ class OmniboxEditModel {
   // For instance, this is the case when the user has unelided a URL without
   // modifying its contents.
   std::u16string user_text_;
+
+  // Used to know what should be displayed. Updated when e.g. the popup
+  // selection changes, the results change, on navigation, on tab switch etc; it
+  // should always be up-to-date.
+  // TODO(manukh): When `kRedoCurrentMatch` is disabled, this is unused and
+  //   replaced by `OmniboxController::current_match_` which serves the same
+  //   purpose but is less often correctly set to a valid match.
+  AutocompleteMatch current_match_;
 
   // We keep track of when the user last focused on the omnibox.
   base::TimeTicks last_omnibox_focus_;

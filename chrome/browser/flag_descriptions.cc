@@ -2106,6 +2106,11 @@ const char kOmniboxMostVisitedTilesAddRecycledViewPoolDescription[] =
     "Add a recycled view pool to omnibox most visited tiles carousel to "
     "increase tile view reuse and reduce jackiness.";
 
+const char kOmniboxRedoCurrentMatchName[] = "Omnibox redo current match";
+const char kOmniboxRedoCurrentMatchDescription[] =
+    "Use an alternative implementation of calculating the cached omnibox "
+    "current match that is valid more often.";
+
 const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[] =
     "Omnibox Remove Excessive Recycled View Clear Calls";
 const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[] =
@@ -2122,6 +2127,12 @@ const char kOmniboxReportSearchboxStatsName[] =
 const char kOmniboxReportSearchboxStatsDescription[] =
     "Enables reporting the serialized Searchbox Stats proto param in search "
     "destination URLs originated from the Omnibox.";
+
+const char kOmniboxRevertModelBeforeClosingPopupName[] =
+    "Omnibox revert model before closing popup";
+const char kOmniboxRevertModelBeforeClosingPopupDescription[] =
+    "When reverting the omnibox view, revert the model before closing the "
+    "popup to avoid some extra calculations.";
 
 const char kOmniboxZeroSuggestPrefetchingName[] =
     "Omnibox Zero Prefix Suggestion Prefetching on NTP";

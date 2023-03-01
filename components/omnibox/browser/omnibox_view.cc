@@ -12,6 +12,8 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -258,9 +260,28 @@ void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
 }
 
 void OmniboxView::RevertAll() {
-  CloseOmniboxPopup();
-  if (model_)
-    model_->Revert();
+  // TODO(manukh): Remove this histogram when `kRedoCurrentMatch` &
+  //   `kRevertModelBeforeClosingPopup` launch or are abandoned.
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Omnibox.OmniboxViewRevertAll");
+
+  if (base::FeatureList::IsEnabled(omnibox::kRevertModelBeforeClosingPopup)) {
+    // This will clear the model's `user_input_in_progress_`.
+    if (model_)
+      model_->Revert();
+
+    // This will stop the `AutocompleteController`. This should happen after
+    // `user_input_in_progress_` is cleared above; otherwise, closing the popup
+    // will trigger unnecessary `AutocompleteClassifier::Classify()` calls to
+    // try to update the views which are unnecessary since they'll be thrown
+    // away during the model revert anyways.
+    CloseOmniboxPopup();
+  } else {
+    // Same as above, but in reverse order.
+    CloseOmniboxPopup();
+    if (model_)
+      model_->Revert();
+  }
+
   TextChanged();
 }
 
