@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+
+import {FakeMethodResolver} from '../fake_method_resolver.js';
 
 import {CrosHotspotConfigInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotEnabledStateObserverRemote, HotspotInfo, HotspotState, SetHotspotConfigResult} from './cros_hotspot_config.mojom-webui.js';
 

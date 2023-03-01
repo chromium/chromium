@@ -420,6 +420,8 @@ build_webui("build") {
   if (!is_chromeos_ash) {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/customize_themes:build_ts" ]
+  } else {
+    ts_deps += [ "//ash/webui/common/resources:build_ts" ]
   }
 
   if (use_nss_certs) {

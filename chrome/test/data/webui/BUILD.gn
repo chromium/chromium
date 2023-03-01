@@ -237,7 +237,6 @@ if (include_js_tests) {
         "chromeos/firmware_update/firmware_update_browsertest.js",
         "chromeos/office_fallback/office_fallback_browsertest.js",
         "chromeos/os_feedback_ui/os_feedback_browsertest.js",
-        "chromeos/personalization_app/personalization_app_browsertest.js",
         "chromeos/scanning/scanning_app_browsertest.js",
         "chromeos/shimless_rma/shimless_rma_browsertest.js",
         "nearby_share/nearby_browsertest.js",
@@ -411,6 +410,9 @@ ts_library("build_ts") {
   }
 
   deps = [ "//ui/webui/resources/js:build_ts" ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/webui/common/resources:build_ts" ]
+  }
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
