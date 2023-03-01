@@ -21,17 +21,19 @@ namespace password_manager {
 
 namespace {
 
+// Returns signon_realm for regular forms and formatted url for federated forms.
 std::string GetSignonRealm(const PasswordForm& form) {
+  std::string result = form.signon_realm;
   if (form.IsFederatedCredential()) {
-    return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+    result = base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
         form.url, url_formatter::SchemeDisplay::SHOW));
   }
-  // Remove trailing '/' because facets don't have it.
-  if (base::EndsWith(form.signon_realm, "/")) {
-    return form.signon_realm.substr(0, form.signon_realm.size() - 1);
+  // Remove trailing '/' because FacetURIs don't have it.
+  if (base::EndsWith(result, "/")) {
+    return result.substr(0, result.size() - 1);
   }
 
-  return form.signon_realm;
+  return result;
 }
 
 // An implementation of the disjoint-set data structure
