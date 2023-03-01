@@ -19,9 +19,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #elif BUILDFLAG(IS_APPLE)
-#include <CoreFoundation/CoreFoundation.h>
 #include <CoreGraphics/CoreGraphics.h>
-#include "base/mac/scoped_cftyperef.h"
 #endif
 
 namespace base {
