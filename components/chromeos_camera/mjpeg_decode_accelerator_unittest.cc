@@ -780,10 +780,8 @@ void JpegClient::SaveToFile(int32_t task_id,
   const base::FilePath in_filename(task.image->filename());
   const base::FilePath out_filename =
       in_filename.ReplaceExtension(".png").InsertBeforeExtension(suffix);
-  const int size = base::checked_cast<int>(png_output.size());
-  const int file_written_bytes = base::WriteFile(
-      out_filename, reinterpret_cast<char*>(png_output.data()), size);
-  LOG_ASSERT(file_written_bytes == size);
+  const bool success = base::WriteFile(out_filename, png_output);
+  LOG_ASSERT(success);
 }
 
 double JpegClient::GetMeanAbsoluteDifference() {
