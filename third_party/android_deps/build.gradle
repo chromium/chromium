@@ -122,6 +122,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0"
 
+    // Needed by androidx.macrobenchmarks
+    androidTestCompile "com.squareup.wire:wire-runtime-jvm:4.4.3"
 
     // Upstream guava introduced versions with -android suffix starting with version
     // 22 to remove incompatible code with android. Thus we keep two jars, one for
