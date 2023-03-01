@@ -12,7 +12,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/common/pref_names.h"
@@ -84,7 +84,7 @@ class PlatformVerificationFlowTest : public ::testing::Test {
     settings_helper_.SetBoolean(kAttestationForContentProtectionEnabled, true);
 
     // Configure the fake user.
-    mock_user_manager_.SetActiveUser(AccountId::FromUserEmail(kTestEmail));
+    user_ = user_manager_.AddUser(AccountId::FromUserEmail(kTestEmail));
   }
 
   PlatformVerificationFlow::ChallengeCallback CreateChallengeCallback() {
@@ -139,7 +139,8 @@ class PlatformVerificationFlowTest : public ::testing::Test {
   ScopedCrosSettingsTestHelper settings_helper_;
 
   // Used to create a fake user.
-  MockUserManager mock_user_manager_;
+  FakeChromeUserManager user_manager_;
+  user_manager::User* user_;
 
   scoped_refptr<PlatformVerificationFlow> verifier_;
 
@@ -157,8 +158,8 @@ class PlatformVerificationFlowTest : public ::testing::Test {
 
 TEST_F(PlatformVerificationFlowTest, Success) {
   ExpectAttestationFlow();
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::SUCCESS, result_);
   EXPECT_EQ(kTestCertificate, certificate_);
@@ -173,8 +174,8 @@ TEST_F(PlatformVerificationFlowTest, Success) {
 
 TEST_F(PlatformVerificationFlowTest, FeatureDisabledByPolicy) {
   settings_helper_.SetBoolean(kAttestationForContentProtectionEnabled, false);
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::POLICY_REJECTED, result_);
 }
@@ -182,8 +183,8 @@ TEST_F(PlatformVerificationFlowTest, FeatureDisabledByPolicy) {
 TEST_F(PlatformVerificationFlowTest, NotVerifiedDueToUnspeciedFailure) {
   certificate_status_ = ATTESTATION_UNSPECIFIED_FAILURE;
   ExpectAttestationFlow();
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::PLATFORM_NOT_VERIFIED, result_);
 }
@@ -191,8 +192,8 @@ TEST_F(PlatformVerificationFlowTest, NotVerifiedDueToUnspeciedFailure) {
 TEST_F(PlatformVerificationFlowTest, NotVerifiedDueToBadRequestFailure) {
   certificate_status_ = ATTESTATION_SERVER_BAD_REQUEST_FAILURE;
   ExpectAttestationFlow();
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::PLATFORM_NOT_VERIFIED, result_);
 }
@@ -204,8 +205,8 @@ TEST_F(PlatformVerificationFlowTest, ChallengeSigningError) {
       ->set_sign_simple_challenge_status(
           ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
   ExpectAttestationFlow();
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::INTERNAL_ERROR, result_);
 }
@@ -214,8 +215,8 @@ TEST_F(PlatformVerificationFlowTest, DBusFailure) {
   AttestationClient::Get()
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::INTERNAL_ERROR, result_);
 }
@@ -225,8 +226,8 @@ TEST_F(PlatformVerificationFlowTest, AttestationServiceInternalError) {
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparationsStatus(
           ::attestation::STATUS_UNEXPECTED_DEVICE_ERROR);
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::INTERNAL_ERROR, result_);
 }
@@ -234,8 +235,8 @@ TEST_F(PlatformVerificationFlowTest, AttestationServiceInternalError) {
 TEST_F(PlatformVerificationFlowTest, Timeout) {
   verifier_->set_timeout_delay(base::Seconds(0));
   ExpectAttestationFlow();
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::TIMEOUT, result_);
 }
@@ -250,8 +251,8 @@ TEST_F(PlatformVerificationFlowTest, ExpiredCert) {
   // that it does not pass through the certificate expiry check again.
   ASSERT_TRUE(
       GetFakeCertificatePEM(base::Days(-1), &fake_certificate_list_[2]));
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::SUCCESS, result_);
   EXPECT_EQ(fake_certificate_list_[1], certificate_);
@@ -270,8 +271,8 @@ TEST_F(PlatformVerificationFlowTest, ExpiredIntermediateCert) {
   fake_certificate_list_[0] = leaf_cert + intermediate_cert;
   ASSERT_TRUE(
       GetFakeCertificatePEM(base::Days(90), &fake_certificate_list_[1]));
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::SUCCESS, result_);
   EXPECT_EQ(fake_certificate_list_[1], certificate_);
@@ -285,12 +286,12 @@ TEST_F(PlatformVerificationFlowTest, AsyncRenewalMultipleHits) {
   ASSERT_TRUE(GetFakeCertificatePEM(base::Days(1), &fake_certificate_list_[0]));
   std::fill(fake_certificate_list_.begin() + 1, fake_certificate_list_.end(),
             fake_certificate_list_[0]);
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::SUCCESS, result_);
   EXPECT_EQ(fake_certificate_list_[0], certificate_);
@@ -301,8 +302,8 @@ TEST_F(PlatformVerificationFlowTest, AsyncRenewalMultipleHits) {
 TEST_F(PlatformVerificationFlowTest, CertificateNotPEM) {
   ExpectAttestationFlow();
   fake_certificate_list_.push_back("invalid_pem");
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::SUCCESS, result_);
   EXPECT_EQ(fake_certificate_list_[0], certificate_);
@@ -326,8 +327,8 @@ TEST_F(PlatformVerificationFlowTest, CertificateNotX509) {
       "M1pXeFdXR1ZHWkZWaVJYQmFWa2QwCk5GSkdjRFlLVFVSc1JGcDZNRGxEWnowOUNnPT0K\n"
       "-----END CERTIFICATE-----\n";
   fake_certificate_list_.push_back(not_x509);
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::SUCCESS, result_);
   EXPECT_EQ(fake_certificate_list_[0], certificate_);
@@ -335,8 +336,8 @@ TEST_F(PlatformVerificationFlowTest, CertificateNotX509) {
 
 TEST_F(PlatformVerificationFlowTest, UnsupportedMode) {
   fake_delegate_.set_is_in_supported_mode(false);
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::PLATFORM_NOT_VERIFIED, result_);
 }
@@ -344,8 +345,8 @@ TEST_F(PlatformVerificationFlowTest, UnsupportedMode) {
 TEST_F(PlatformVerificationFlowTest, AttestationNotPrepared) {
   AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
       false);
-  verifier_->ChallengePlatformKey(mock_user_manager_.GetActiveUser(), kTestID,
-                                  kTestChallenge, CreateChallengeCallback());
+  verifier_->ChallengePlatformKey(user_, kTestID, kTestChallenge,
+                                  CreateChallengeCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(PlatformVerificationFlow::PLATFORM_NOT_VERIFIED, result_);
 }
