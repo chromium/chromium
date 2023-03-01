@@ -8,12 +8,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/timer/lap_timer.h"
 #include "build/build_config.h"
@@ -100,35 +102,42 @@ class PartitionAllocator : public Allocator {
   }};
 };
 
-// Only one partition with a thread cache.
-ThreadSafePartitionRoot* g_partition_root = nullptr;
 class PartitionAllocatorWithThreadCache : public Allocator {
  public:
-  explicit PartitionAllocatorWithThreadCache(bool use_alternate_bucket_dist) {
-    if (!g_partition_root) {
-      g_partition_root = new ThreadSafePartitionRoot({
-          PartitionOptions::AlignedAlloc::kDisallowed,
-          PartitionOptions::ThreadCache::kEnabled,
-          PartitionOptions::Quarantine::kDisallowed,
-          PartitionOptions::Cookie::kAllowed,
-          PartitionOptions::BackupRefPtr::kDisabled,
-          PartitionOptions::BackupRefPtrZapping::kDisabled,
-          PartitionOptions::UseConfigurablePool::kNo,
-      });
-    }
+  explicit PartitionAllocatorWithThreadCache(bool use_alternate_bucket_dist)
+      : scope_(allocator_.root()) {
     ThreadCacheRegistry::Instance().PurgeAll();
-    if (!use_alternate_bucket_dist)
-      g_partition_root->SwitchToDenserBucketDistribution();
-    else
-      g_partition_root->ResetBucketDistributionForTesting();
+    if (!use_alternate_bucket_dist) {
+      allocator_.root()->SwitchToDenserBucketDistribution();
+    } else {
+      allocator_.root()->ResetBucketDistributionForTesting();
+    }
   }
   ~PartitionAllocatorWithThreadCache() override = default;
 
   void* Alloc(size_t size) override {
-    return g_partition_root->AllocWithFlagsNoHooks(0, size,
-                                                   PartitionPageSize());
+    return allocator_.root()->AllocWithFlagsNoHooks(0, size,
+                                                    PartitionPageSize());
   }
-  void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
+  void Free(void* data) override { allocator_.root()->Free(data); }
+
+ private:
+  static constexpr partition_alloc::PartitionOptions kOpts = {
+    PartitionOptions::AlignedAlloc::kDisallowed,
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    PartitionOptions::ThreadCache::kEnabled,
+#else
+    PartitionOptions::ThreadCache::kDisabled,
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    PartitionOptions::Quarantine::kDisallowed,
+    PartitionOptions::Cookie::kAllowed,
+    PartitionOptions::BackupRefPtr::kDisabled,
+    PartitionOptions::BackupRefPtrZapping::kDisabled,
+    PartitionOptions::UseConfigurablePool::kNo,
+  };
+  PartitionAllocatorForTesting<internal::ThreadSafe, internal::DisallowLeaks>
+      allocator_{kOpts};
+  internal::ThreadCacheProcessScopeForTesting scope_;
 };
 
 class TestLoopThread : public base::PlatformThreadForTesting::Delegate {
