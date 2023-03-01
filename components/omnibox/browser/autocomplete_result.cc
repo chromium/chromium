@@ -1116,13 +1116,6 @@ bool AutocompleteResult::HasMatchByDestination(const AutocompleteMatch& match,
 void AutocompleteResult::MaybeCullTailSuggestions(
     ACMatches* matches,
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
-  // This function implements the following logic:
-  // ('E' == 'There exists', '!E' == 'There does not exist')
-  // 1) !E default non-tail and E tail default? remove non-tails
-  // 2) !E any tails at all? do nothing
-  // 3) E default non-tail and other non-tails? remove tails
-  // 4) E default non-tail and no other non-tails? mark tails as non-default
-  // 5) E non-default non-tails? remove non-tails
   std::function<bool(const AutocompleteMatch&)> is_tail =
       [](const AutocompleteMatch& match) {
         return match.type == ACMatchType::SEARCH_SUGGEST_TAIL;
@@ -1130,13 +1123,13 @@ void AutocompleteResult::MaybeCullTailSuggestions(
   bool default_non_tail = false;
   bool default_tail = false;
   bool other_non_tails = false;
+  bool any_non_tails = false;
   bool any_tails = false;
   for (const auto& match : *matches) {
     if (comparing_object.GetDemotedRelevance(match) == 0)
       continue;
     if (!is_tail(match)) {
-      // We allow one default non-tail match. For non-default matches,
-      // don't consider if we'd remove them later.
+      any_non_tails = true;
       if (!default_non_tail && match.allowed_to_be_default_match)
         default_non_tail = true;
       else
@@ -1147,54 +1140,31 @@ void AutocompleteResult::MaybeCullTailSuggestions(
         default_tail = true;
     }
   }
-  // If the only default matches are tail suggestions, let them remain and
-  // instead remove the non-tail suggestions.  This is necessary because we do
-  // not want to display tail suggestions mixed with other suggestions in the
-  // dropdown below the first item (the default match).  In this case, we
-  // cannot remove the tail suggestions because we'll be left without a legal
-  // default match--the non-tail ones much go.  This situation is unlikely
-  // though, as we normally would expect the search-what-you-typed suggestion
-  // as a default match (and that's a non-tail suggestion).
-  // 1) above.
-  if (default_tail && !default_non_tail) {
+
+  // If there are only non-tail or only tail suggestions, then cull none.
+  if (!any_non_tails || !any_tails)
+    return;
+
+  // Cull non-tail suggestions when the default is a tail suggestion.
+  if (!default_non_tail && default_tail) {
     base::EraseIf(*matches, std::not_fn(is_tail));
     return;
   }
-  // 2) above.
-  if (!any_tails)
-    return;
-  // If both tail and non-tail matches, remove tail. Note that this can
-  // remove the highest rated suggestions.
-  if (default_non_tail) {
-    // 3) above.
-    if (other_non_tails) {
-      base::EraseIf(*matches, is_tail);
-    } else if (default_tail) {
-      // 4) above.
-      // We want the non-tail default match to be placed first. Mark tail
-      // suggestions as not a legal default match, so that the default match
-      // will be moved up explicitly.
-      for (auto& match : *matches) {
-        if (is_tail(match))
-          match.allowed_to_be_default_match = false;
-      }
-    } else {
-      // If there had been `other_non_tails`, (3) above would hae triggered.
-      DCHECK(!other_non_tails);
-      // If there had not been `any_tails`, (2) above would have triggered.
-      DCHECK(any_tails);
-      // If there had been `default_tail`, either (3) or (4) would have
-      // triggered.
-      DCHECK(!default_tail);
-    }
-  } else if (other_non_tails) {
-    // If there had been a default non-tail, (1), (3), or (4) would have
-    // triggered.
-    DCHECK(!default_non_tail);
-    // 5) above.
-    // If there are no defaults at all, but non-tail suggestions exist, remove
-    // the tail suggestions.
+
+  // Cull tail suggestions when there is a non-tail, non-default suggestion.
+  if (other_non_tails) {
     base::EraseIf(*matches, is_tail);
+    return;
+  }
+
+  // If showing tail suggestions with a default non-tail, make sure the tail
+  // suggestions are not defaulted.
+  if (default_tail) {
+    DCHECK(default_non_tail);
+    for (auto& match : *matches) {
+      if (is_tail(match))
+        match.allowed_to_be_default_match = false;
+    }
   }
 }
 
