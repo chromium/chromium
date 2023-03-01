@@ -39,6 +39,7 @@ class DataCollectorDelegateImpl : public DataCollector::Delegate {
   std::string GetTouchpadLibraryName() override;
   bool IsPrivacyScreenSupported() override;
   bool IsPrivacyScreenManaged() override;
+  void SetPrivacyScreenState(bool state) override;
 };
 
 DataCollectorDelegateImpl::DataCollectorDelegateImpl() = default;
@@ -87,6 +88,12 @@ bool DataCollectorDelegateImpl::IsPrivacyScreenSupported() {
 
 bool DataCollectorDelegateImpl::IsPrivacyScreenManaged() {
   return Shell::Get()->privacy_screen_controller()->IsManaged();
+}
+
+void DataCollectorDelegateImpl::SetPrivacyScreenState(bool state) {
+  Shell::Get()->privacy_screen_controller()->SetEnabled(
+      state,
+      PrivacyScreenController::ToggleUISurface::kToggleUISurfaceToastButton);
 }
 
 DataCollectorDelegateImpl* GetDataCollectorDelegate() {
@@ -178,9 +185,7 @@ void DataCollector::SetPrivacyScreenState(
     return;
   }
 
-  Shell::Get()->privacy_screen_controller()->SetEnabled(
-      state,
-      PrivacyScreenController::ToggleUISurface::kToggleUISurfaceToastButton);
+  delegate_->SetPrivacyScreenState(state);
   std::move(callback).Run(true);
 }
 

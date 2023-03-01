@@ -32,6 +32,8 @@ class DataCollector
     virtual bool IsPrivacyScreenSupported() = 0;
     // Queries if privacy screen is in managed mode.
     virtual bool IsPrivacyScreenManaged() = 0;
+    // Sets privacy screen state.
+    virtual void SetPrivacyScreenState(bool state) = 0;
   };
 
   DataCollector();
