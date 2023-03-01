@@ -601,6 +601,9 @@ List of files params:
 files: Required parameter. List of all test related files.
 
 TypeScript (ts_library()) related params:
+ts_tsconfig_base: See |tsconfig_base| in ts_library(). Optional parameter. If
+                  not provided the default configuration at
+                  '//chrome/test/data/webui/tsconfig_base.json' is used.
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.

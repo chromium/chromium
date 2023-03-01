@@ -46,7 +46,11 @@ template("build_webui_tests") {
     visibility = [ ":build_grdp" ]
     root_dir = preprocess_dir
     out_dir = tsc_dir
-    tsconfig_base = "tsconfig_base.json"
+    tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
+
+    if (defined(invoker.ts_tsconfig_base)) {
+      tsconfig_base = invoker.ts_tsconfig_base
+    }
 
     path_mappings = []
 
