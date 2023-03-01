@@ -21,6 +21,10 @@ constexpr char kProductNameAndArtImageNotShownSuffix[] = ".MetadataNotShown";
 // Struct that groups some metadata related information together. Used for
 // metrics logging.
 struct CardMetadataLoggingContext {
+  bool IsCardMetadataShown() const {
+    return card_product_description_shown || card_art_image_shown;
+  }
+
   bool card_metadata_available = false;
   bool card_product_description_shown = false;
   bool card_art_image_shown = false;

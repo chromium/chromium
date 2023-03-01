@@ -5272,9 +5272,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool()));
 
-TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataFormEventsMetrics) {
-  constexpr char card1Id[] = "10000000-0000-0000-0000-000000000001";
-  constexpr char card2Id[] = "10000000-0000-0000-0000-000000000002";
+TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataShownMetrics) {
+  constexpr char cardWithoutMetadataId[] =
+      "10000000-0000-0000-0000-000000000001";
+  constexpr char cardWithMetadataId[] = "10000000-0000-0000-0000-000000000002";
 
   FormData form =
       CreateForm({CreateField("Month", "card_month", "", "text"),
@@ -5289,22 +5290,25 @@ TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataFormEventsMetrics) {
   autofill_manager().AddSeenForm(form, field_types);
 
   // Add 2 masked server cards.
-  CreditCard card1 = test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
-  card1.set_guid(card1Id);
-  CreditCard card2 = test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
-  card2.set_guid(card2Id);
-  // Set card2 as the virtual card.
+  CreditCard cardWithoutMetadata =
+      test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  cardWithoutMetadata.set_guid(cardWithoutMetadataId);
+  CreditCard cardWithMetadata =
+      test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  cardWithMetadata.set_guid(cardWithMetadataId);
+  // Set cardWithMetadata as the virtual card.
   if (card_has_linked_virtual_card()) {
-    card2.set_virtual_card_enrollment_state(
+    cardWithMetadata.set_virtual_card_enrollment_state(
         CreditCard::VirtualCardEnrollmentState::ENROLLED);
   }
-  // Set metadata to card2.
+  // Set metadata to cardWithMetadata.
   if (card_metadata_available()) {
-    card2.set_product_description(u"card_description");
-    card2.set_card_art_url(GURL("https://www.example.com/cardart.png"));
+    cardWithMetadata.set_product_description(u"card_description");
+    cardWithMetadata.set_card_art_url(
+        GURL("https://www.example.com/cardart.png"));
   }
-  personal_data().AddServerCreditCard(card1);
-  personal_data().AddServerCreditCard(card2);
+  personal_data().AddServerCreditCard(cardWithoutMetadata);
+  personal_data().AddServerCreditCard(cardWithMetadata);
   personal_data().Refresh();
 
   // Simulate activating the autofill popup for the credit card field.
@@ -5318,6 +5322,137 @@ TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataFormEventsMetrics) {
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
                      Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN,
+                            card_metadata_shown())));
+}
+
+TEST_P(AutofillMetricsTestForCardMetadata,
+       LogCardMetadataSelectedMetrics_cardWithoutMetadataSelected) {
+  constexpr char cardWithoutMetadataId[] =
+      "10000000-0000-0000-0000-000000000001";
+  constexpr char cardWithMetadataId[] = "10000000-0000-0000-0000-000000000002";
+
+  FormData form =
+      CreateForm({CreateField("Month", "card_month", "", "text"),
+                  CreateField("Year", "card_year", "", "text"),
+                  CreateField("CVC", "cvc", "", "text"),
+                  CreateField("Credit card", "cardnum", "", "text")});
+
+  std::vector<ServerFieldType> field_types = {
+      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_NUMBER};
+
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Add 2 masked server cards.
+  CreditCard cardWithoutMetadata =
+      test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  cardWithoutMetadata.set_guid(cardWithoutMetadataId);
+  CreditCard cardWithMetadata =
+      test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  cardWithMetadata.set_guid(cardWithMetadataId);
+  // Set cardWithMetadata as the virtual card.
+  if (card_has_linked_virtual_card()) {
+    cardWithMetadata.set_virtual_card_enrollment_state(
+        CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  }
+  // Set metadata to cardWithMetadata.
+  if (card_metadata_available()) {
+    cardWithMetadata.set_product_description(u"card_description");
+    cardWithMetadata.set_card_art_url(
+        GURL("https://www.example.com/cardart.png"));
+  }
+  personal_data().AddServerCreditCard(cardWithoutMetadata);
+  personal_data().AddServerCreditCard(cardWithMetadata);
+  personal_data().Refresh();
+
+  // Simulate selecting cardWithoutMetadata.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
+  autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true, form,
+                                        form.fields.back());
+  autofill_manager().FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+      MakeFrontendId({.credit_card_id = cardWithoutMetadataId}));
+
+  // Verify that if metadata is shown, metrics for 'card with metadata shown' is
+  // logged, but metrics for 'card with metadata selected' is not logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(
+          Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN,
+                 card_metadata_shown()),
+          Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 1),
+          Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED, 0)));
+}
+
+TEST_P(AutofillMetricsTestForCardMetadata,
+       LogCardMetadataSelectedMetrics_cardWithMetadataSelected) {
+  constexpr char cardWithoutMetadataId[] =
+      "10000000-0000-0000-0000-000000000001";
+  constexpr char cardWithMetadataId[] = "10000000-0000-0000-0000-000000000002";
+
+  FormData form =
+      CreateForm({CreateField("Month", "card_month", "", "text"),
+                  CreateField("Year", "card_year", "", "text"),
+                  CreateField("CVC", "cvc", "", "text"),
+                  CreateField("Credit card", "cardnum", "", "text")});
+
+  std::vector<ServerFieldType> field_types = {
+      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+      CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_NUMBER};
+
+  autofill_manager().AddSeenForm(form, field_types);
+
+  // Add 2 masked server cards.
+  CreditCard cardWithoutMetadata =
+      test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  cardWithoutMetadata.set_guid(cardWithoutMetadataId);
+  CreditCard cardWithMetadata =
+      test::GetRandomCreditCard(CreditCard::MASKED_SERVER_CARD);
+  cardWithMetadata.set_guid(cardWithMetadataId);
+  // Set cardWithMetadata as the virtual card.
+  if (card_has_linked_virtual_card()) {
+    cardWithMetadata.set_virtual_card_enrollment_state(
+        CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  }
+  // Set metadata to cardWithMetadata.
+  if (card_metadata_available()) {
+    cardWithMetadata.set_product_description(u"card_description");
+    cardWithMetadata.set_card_art_url(
+        GURL("https://www.example.com/cardart.png"));
+  }
+  personal_data().AddServerCreditCard(cardWithoutMetadata);
+  personal_data().AddServerCreditCard(cardWithMetadata);
+  personal_data().Refresh();
+
+  // Simulate selecting cardWithMetadata.
+  base::HistogramTester histogram_tester;
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields.back());
+  autofill_manager().DidShowSuggestions(/*has_autofill_suggestions=*/true, form,
+                                        form.fields.back());
+  if (card_has_linked_virtual_card()) {
+    autofill_manager().FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, cardWithMetadataId, form,
+        form.fields.back());
+  } else {
+    autofill_manager().FillOrPreviewForm(
+        mojom::RendererFormDataAction::kFill, form, form.fields.back(),
+        MakeFrontendId({.credit_card_id = cardWithMetadataId}));
+  }
+
+  // Verify that if metadata is shown, metrics for both 'card with metadata
+  // shown' and 'card with metadata selected' is logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
+                     Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN,
+                            card_metadata_shown()),
+                     Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED,
+                            !card_has_linked_virtual_card()),
+                     Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SELECTED,
+                            card_has_linked_virtual_card()),
+                     Bucket(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED,
                             card_metadata_shown())));
 }
 

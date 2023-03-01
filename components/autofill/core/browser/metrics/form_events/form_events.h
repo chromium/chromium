@@ -146,6 +146,8 @@ enum FormEvent {
   // Suggestions were shown, and they included a credit card that had metadata
   // shown.
   FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN = 58,
+  // The selected card suggestion had metadata shown.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED = 59,
 
   NUM_FORM_EVENTS,
 };

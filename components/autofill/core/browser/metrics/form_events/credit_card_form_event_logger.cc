@@ -68,8 +68,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   suggestion_shown_timestamp_ = AutofillTickClock::NowTicks();
 
   // Log if metadata is shown for any of the suggestions.
-  if (metadata_logging_context_.card_product_description_shown ||
-      metadata_logging_context_.card_art_image_shown) {
+  if (metadata_logging_context_.IsCardMetadataShown()) {
     Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN, form);
   }
 }
@@ -114,6 +113,14 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   autofill_metrics::LogAcceptanceLatency(
       AutofillTickClock::NowTicks() - suggestion_shown_timestamp_,
       metadata_logging_context_, credit_card);
+
+  // Log if the selected suggestion had metadata shown.
+  CreditCard duplicate = credit_card;
+  metadata_logging_context_ =
+      autofill_metrics::GetMetadataLoggingContext({&duplicate});
+  if (metadata_logging_context_.IsCardMetadataShown()) {
+    Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED, form);
+  }
 }
 
 void CreditCardFormEventLogger::OnDidFillSuggestion(

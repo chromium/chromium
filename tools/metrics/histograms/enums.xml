@@ -7199,6 +7199,7 @@ others/histograms.xml -->
              kLimitBeforeRefill (1s) after being filled (once)"/>
   <int value="58"
       label="Suggestions shown and included a card that had metadata shown"/>
+  <int value="59" label="Selected card suggestion had metadata shown"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
