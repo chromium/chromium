@@ -480,6 +480,8 @@ source_set("ash") {
     "arc/nearby_share/ui/nearby_share_overlay_view.h",
     "arc/nearby_share/ui/progress_bar_dialog_view.cc",
     "arc/nearby_share/ui/progress_bar_dialog_view.h",
+    "arc/net/browser_url_opener_impl.cc",
+    "arc/net/browser_url_opener_impl.h",
     "arc/net/cert_manager_impl.cc",
     "arc/net/cert_manager_impl.h",
     "arc/notification/arc_boot_error_notification.cc",

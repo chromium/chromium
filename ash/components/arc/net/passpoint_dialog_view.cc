@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/arc/compat_mode/overlay_dialog.h"
+#include "ash/components/arc/net/browser_url_opener.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
@@ -23,6 +24,15 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/layout_provider.h"
+#include "url/gurl.h"
+
+namespace {
+
+// TODO(b/266151265): Point to actual Passpoint help page, instead of WiFi page.
+constexpr char kPasspointHelpPage[] =
+    "https://support.google.com/chromebook?p=hidden_networks";
+
+}  // namespace
 
 namespace {
 
@@ -146,7 +156,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeButtonsView() {
 }
 
 void PasspointDialogView::OnLearnMoreClicked() {
-  // TODO(b/266151265): Open a Chrome window to Passpoint help page.
+  BrowserUrlOpener::Get()->OpenUrl(GURL(kPasspointHelpPage));
 }
 
 void PasspointDialogView::OnButtonClicked(bool allow) {
