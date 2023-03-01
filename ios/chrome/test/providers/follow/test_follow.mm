@@ -21,6 +21,7 @@ class TestFollowService final : public FollowService {
   bool IsWebSiteFollowed(WebPageURLs* web_page_urls) final;
   NSURL* GetRecommendedSiteURL(WebPageURLs* web_page_urls) final;
   NSArray<FollowedWebSite*>* GetFollowedWebSites() final;
+  void LoadFollowedWebSites() final;
   void FollowWebSite(WebPageURLs* web_page_urls,
                      FollowSource source,
                      ResultCallback callback) final;
@@ -41,6 +42,10 @@ NSURL* TestFollowService::GetRecommendedSiteURL(WebPageURLs* web_page_urls) {
 
 NSArray<FollowedWebSite*>* TestFollowService::GetFollowedWebSites() {
   return @[];
+}
+
+void TestFollowService::LoadFollowedWebSites() {
+  // Do nothing.
 }
 
 void TestFollowService::FollowWebSite(WebPageURLs* web_page_urls,

@@ -141,4 +141,10 @@ FollowedWebChannel* FollowedWebSiteToFollowedWebChannel(
   }
 }
 
+- (void)followedWebSitesLoaded {
+  for (id<FollowManagementUIUpdater> updater in _updaters) {
+    [updater updateFollowedWebSites];
+  }
+}
+
 @end

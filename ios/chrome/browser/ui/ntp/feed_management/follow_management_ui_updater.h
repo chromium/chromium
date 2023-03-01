@@ -18,6 +18,9 @@
 // `channel`.
 - (void)addFollowedWebChannel:(FollowedWebChannel*)channel;
 
+// Updates the followed websites.
+- (void)updateFollowedWebSites;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FOLLOW_MANAGEMENT_UI_UPDATER_H_

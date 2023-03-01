@@ -280,6 +280,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (void)updateFollowedWebSites {
+  // TODO(crbug.com/1417284): implementation.
+}
+
 #pragma mark - Helpers
 
 - (void)configureNavigationBar {

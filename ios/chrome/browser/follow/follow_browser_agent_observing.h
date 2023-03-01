@@ -18,6 +18,9 @@
 // Invoked when `webSite` is unfollowed.
 - (void)unfollowedWebSite:(FollowedWebSite*)webSite;
 
+// Invoked when followed websites are loaded.
+- (void)followedWebSitesLoaded;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_BROWSER_AGENT_OBSERVING_H_
