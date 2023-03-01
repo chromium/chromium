@@ -5276,6 +5276,9 @@
   <message name="IDS_OOBE_GESTURE_NAVIGATION_INTRO_GO_HOME" desc="The label for the home gesture item in the gesture list within the gesture navigation education intro OOBE screen shown on the first user login.">
     Go home
   </message>
+  <message name="IDS_OOBE_GESTURE_NAVIGATION_INTRO_SKIP" desc="A label on the button that skip the gesture navigation flow.">
+    Skip
+  </message>
   <message name="IDS_OOBE_GESTURE_NAVIGATION_INTRO_SWITCH_APP" desc="The label for the switch app gesture item in the gesture list within the gesture navigation education intro OOBE screen shown on the first user login.">
     Switch to another open app
   </message>
@@ -5300,7 +5303,7 @@
   <message name="IDS_OOBE_GESTURE_NAVIGATION_OVERVIEW_DESCRIPTION" desc="The description for the gesture navigation education overview OOBE screen shown on the first user login.">
     To see all open app windows, swipe up from the bottom and hold.
   </message>
-
+  
   <!-- Strings for ChromeVox hint -->
   <message name="IDS_OOBE_ACTIVATE_CHROMEVOX" desc="Label for the button in the ChromeVox hint dialog that will activate ChromeVox.">
     Yes, activate ChromeVox

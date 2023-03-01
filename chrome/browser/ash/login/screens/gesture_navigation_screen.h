@@ -20,7 +20,7 @@ class GestureNavigationScreenView;
 // The OOBE screen dedicated to gesture navigation education.
 class GestureNavigationScreen : public BaseScreen {
  public:
-  enum class Result { NEXT, NOT_APPLICABLE };
+  enum class Result { NEXT, SKIP, NOT_APPLICABLE };
 
   static std::string GetResultString(Result result);
 

@@ -21,6 +21,7 @@ namespace ash {
 namespace {
 
 constexpr const char kUserActionExitPressed[] = "exit";
+constexpr const char kUserActionSkip[] = "skip";
 constexpr const char kUserActionGesturePageChange[] = "gesture-page-change";
 
 // The name used for each page on the gesture navigation screen.
@@ -36,6 +37,8 @@ std::string GestureNavigationScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
+    case Result::SKIP:
+      return "Skip";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -106,6 +109,10 @@ void GestureNavigationScreen::OnUserAction(const base::Value::List& args) {
 
     RecordPageShownTimeMetrics();
     exit_callback_.Run(Result::NEXT);
+    return;
+  }
+  if (action_id == kUserActionSkip) {
+    exit_callback_.Run(Result::SKIP);
     return;
   }
   if (action_id == kUserActionGesturePageChange) {
