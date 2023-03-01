@@ -1022,8 +1022,9 @@
   },
   {
     "name": "chrome-wide-echo-cancellation",
-    "owners": [ "olka", "saza" ],
-    "expiry_milestone": 113
+    "owners": [ "olka", "saza", "fhernqvist" ],
+    // TODO(http://crubg.com/1372451): remove when we have a proper solution.
+    "expiry_milestone": 130
   },
   {
     "name": "chromeos-direct-video-decoder",
