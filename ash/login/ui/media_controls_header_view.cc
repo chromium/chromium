@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -72,8 +73,7 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   auto app_name_view = std::make_unique<views::Label>();
   app_name_view->SetFontList(font_list);
   app_name_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  app_name_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  app_name_view->SetEnabledColorId(kColorAshTextColorSecondary);
   app_name_view->SetAutoColorReadabilityEnabled(false);
   app_name_view->SetBorder(views::CreateEmptyBorder(kAppNamePadding));
   app_name_view->SetPreferredSize(kAppNamePreferredSize);
