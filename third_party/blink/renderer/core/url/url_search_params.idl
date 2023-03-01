@@ -8,6 +8,7 @@
     Exposed=(Window,Worker)
 ] interface URLSearchParams {
     [RaisesException] constructor(optional (sequence<sequence<USVString>> or record<USVString, USVString> or USVString) init = "");
+    readonly attribute unsigned long size;
     void append(USVString name, USVString value);
     [ImplementedAs=deleteAllWithName, CallWith=ExecutionContext] void delete(USVString name, optional any ignored);
     USVString? get(USVString name);

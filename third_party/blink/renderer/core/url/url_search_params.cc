@@ -176,6 +176,10 @@ String URLSearchParams::toString() const {
   return String(encoded_data.data(), encoded_data.size());
 }
 
+uint32_t URLSearchParams::size() const {
+  return params_.size();
+}
+
 void URLSearchParams::AppendWithoutUpdate(const String& name,
                                           const String& value) {
   params_.push_back(std::make_pair(name, value));
