@@ -217,8 +217,8 @@ QuickUnlockPrivateGetAuthTokenFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAuthTokenFunction::Run() {
-  std::unique_ptr<quick_unlock_private::GetAuthToken::Params> params =
-      quick_unlock_private::GetAuthToken::Params::CreateDeprecated(args());
+  absl::optional<quick_unlock_private::GetAuthToken::Params> params =
+      quick_unlock_private::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = GetActiveProfile(browser_context());
@@ -258,8 +258,7 @@ QuickUnlockPrivateSetLockScreenEnabledFunction::
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateSetLockScreenEnabledFunction::Run() {
   auto params =
-      quick_unlock_private::SetLockScreenEnabled::Params::CreateDeprecated(
-          args());
+      quick_unlock_private::SetLockScreenEnabled::Params::Create(args());
   AuthToken* auth_token = GetActiveProfileAuthToken(browser_context());
   if (!auth_token)
     return RespondNow(Error(kAuthTokenExpired));
@@ -286,8 +285,7 @@ QuickUnlockPrivateSetPinAutosubmitEnabledFunction::
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateSetPinAutosubmitEnabledFunction::Run() {
   auto params =
-      quick_unlock_private::SetPinAutosubmitEnabled::Params::CreateDeprecated(
-          args());
+      quick_unlock_private::SetPinAutosubmitEnabled::Params::Create(args());
 
   AuthToken* auth_token = GetActiveProfileAuthToken(browser_context());
   if (!auth_token)
@@ -401,8 +399,8 @@ QuickUnlockPrivateCheckCredentialFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateCheckCredentialFunction::Run() {
-  std::unique_ptr<CheckCredential::Params> params_ =
-      CheckCredential::Params::CreateDeprecated(args());
+  absl::optional<CheckCredential::Params> params_ =
+      CheckCredential::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   auto result = std::make_unique<CredentialCheck>();
@@ -448,8 +446,8 @@ QuickUnlockPrivateGetCredentialRequirementsFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {
-  std::unique_ptr<GetCredentialRequirements::Params> params_ =
-      GetCredentialRequirements::Params::CreateDeprecated(args());
+  absl::optional<GetCredentialRequirements::Params> params_ =
+      GetCredentialRequirements::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   auto result = std::make_unique<CredentialRequirements>();
@@ -475,7 +473,7 @@ void QuickUnlockPrivateSetModesFunction::SetModesChangedEventHandlerForTesting(
 }
 
 ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
-  params_ = SetModes::Params::CreateDeprecated(args());
+  params_ = SetModes::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (params_->modes.size() != params_->credentials.size())
