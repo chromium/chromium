@@ -112,8 +112,6 @@ struct BundleMetadata {
   BundleFormatVersion version;
   url.mojom.Url? primary_url;
   map<url.mojom.Url, BundleResponseLocation> requests;
-  array<AugmentedCertificate> authorities;
-  array<VouchedSubset> vouched_subsets;
 };
 
 // WebBundle format version. Corresponds to a specific draft of
@@ -127,48 +125,6 @@ enum BundleFormatVersion {
 struct BundleResponseLocation {
   uint64 offset;
   uint64 length;
-};
-
-// Corresponds to "augmented-certificate" in the spec CDDL.
-// https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#cert-chain-format
-struct AugmentedCertificate {
-  array<uint8> cert;
-  array<uint8>? ocsp;
-  array<uint8>? sct;
-};
-
-// Corresponds to the item type of "vouched-subsets" in the spec CDDL.
-// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
-struct VouchedSubset {
-  uint64 authority;  // An index in BundleMetadata::authorities.
-  array<uint8> sig;
-  array<uint8> raw_signed;
-
-  SignedSubset parsed_signed; // Clients must verify |sig| before using this.
-};
-
-// Corresponds to "signed-subset" in the spec CDDL.
-// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
-struct SignedSubset {
-  url.mojom.Url validity_url;
-  array<uint8> auth_sha256;
-  uint64 date;
-  uint64 expires;
-  map<url.mojom.Url, SubsetHashesValue> subset_hashes;
-};
-
-// Corresponds to the value type of "subset-hashes" in the spec CDDL.
-// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
-struct SubsetHashesValue {
-  string variants_value;
-  array<ResourceIntegrity> resource_integrities;
-};
-
-// Corresponds to "resource-integrity" in the spec CDDL.
-// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
-struct ResourceIntegrity {
-  array<uint8> header_sha256;
-  string payload_integrity_header;
 };
 
 // Contains response headers and payload location.

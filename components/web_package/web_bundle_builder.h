@@ -61,8 +61,6 @@ class WebBundleBuilder {
                      const ResponseLocation& response_location);
 
   void AddSection(base::StringPiece name, cbor::Value section);
-  void AddAuthority(cbor::Value::MapValue authority);
-  void AddVouchedSubset(cbor::Value::MapValue vouched_subset);
 
   // Adds a "primary" section to the Web Bundle containing a given `GURL`.
   void AddPrimaryURL(const GURL& url);
@@ -72,16 +70,6 @@ class WebBundleBuilder {
   void AddPrimaryURL(base::StringPiece url);
 
   std::vector<uint8_t> CreateBundle();
-
-  // Creates a signed-subset structure with single subset-hashes entry,
-  // and returns it as a CBOR bytestring.
-  cbor::Value CreateEncodedSigned(base::StringPiece validity_url,
-                                  base::StringPiece auth_sha256,
-                                  int64_t date,
-                                  int64_t expires,
-                                  base::StringPiece url,
-                                  base::StringPiece header_sha256,
-                                  base::StringPiece payload_integrity_header);
 
  private:
   std::vector<uint8_t> CreateTopLevel();
@@ -95,8 +83,6 @@ class WebBundleBuilder {
   cbor::Value::ArrayValue sections_;
   std::map<std::string, ResponseLocation> delayed_index_;
   cbor::Value::ArrayValue responses_;
-  cbor::Value::ArrayValue authorities_;
-  cbor::Value::ArrayValue vouched_subsets_;
   BundleVersion version_;
   int64_t current_responses_offset_ = 0;
 };

@@ -15,9 +15,6 @@ for cmd in gen-bundle sign-bundle; do
     fi
 done
 
-sxg_test_data_dir=../../../../content/test/data/sxg
-signature_date=2019-07-28T00:00:00Z
-
 gen-bundle \
   -version b2 \
   -baseURL https://test.example.org/ \
@@ -39,15 +36,6 @@ gen-bundle \
   -version b2 \
   -har 24_responses.har \
   -o 24_responses.wbn
-
-sign-bundle signatures-section \
-  -i hello_b2.wbn \
-  -certificate $sxg_test_data_dir/test.example.org.public.pem.cbor \
-  -privateKey $sxg_test_data_dir/prime256v1.key \
-  -date $signature_date \
-  -expire 168h \
-  -validityUrl https://test.example.org/resource.validity.msg \
-  -o hello_vouched_subsets.wbn
 
 sign-bundle integrity-block \
   -i simple_b2.wbn \
