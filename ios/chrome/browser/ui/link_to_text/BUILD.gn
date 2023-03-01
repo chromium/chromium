@@ -4,17 +4,20 @@
 
 source_set("link_to_text") {
   sources = [
-    "link_to_text_consumer.h",
     "link_to_text_delegate.h",
     "link_to_text_mediator.h",
     "link_to_text_mediator.mm",
   ]
   deps = [
     "//components/shared_highlighting/core/common",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/web_state_list",
     "//ios/web/public",
+    "//ui/strings",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -33,6 +36,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/link_to_text:internal",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/browser_container:edit_menu_alert_delegate",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/web_state_list",
     "//ios/web/public/test",
     "//testing/gtest",

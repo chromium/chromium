@@ -24,7 +24,9 @@
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
-#import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
+#import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
+#import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
@@ -94,7 +96,11 @@ class LinkToTextMediatorTest : public PlatformTest {
   LinkToTextMediatorTest()
       : web_state_list_delegate_(), web_state_list_(&web_state_list_delegate_) {
     feature_list_.InitAndEnableFeature(kSharedHighlightingIOS);
-    mocked_consumer_ = OCMStrictProtocolMock(@protocol(LinkToTextConsumer));
+
+    mocked_activity_service_commands_ =
+        OCMStrictProtocolMock(@protocol(ActivityServiceCommands));
+    mocked_alert_delegate_ =
+        OCMStrictProtocolMock(@protocol(EditMenuAlertDelegate));
 
     auto web_state = std::make_unique<FakeWebState>();
     web_state_ = web_state.get();
@@ -135,8 +141,9 @@ class LinkToTextMediatorTest : public PlatformTest {
         ->SetJSFeatureForTesting(&fake_js_feature_);
 
     mediator_ =
-        [[LinkToTextMediator alloc] initWithWebStateList:&web_state_list_
-                                                consumer:mocked_consumer_];
+        [[LinkToTextMediator alloc] initWithWebStateList:&web_state_list_];
+    mediator_.alertDelegate = mocked_alert_delegate_;
+    mediator_.activityServiceHandler = mocked_activity_service_commands_;
   }
 
   void SetLinkToTextResponse(base::Value* value, CGFloat zoom_scale) {
@@ -218,7 +225,8 @@ class LinkToTextMediatorTest : public PlatformTest {
   LinkToTextMediator* mediator_;
   UIScrollView* fake_scroll_view_;
   FakeJSFeature fake_js_feature_;
-  id mocked_consumer_;
+  id mocked_activity_service_commands_;
+  id mocked_alert_delegate_;
 };
 
 // Tests that the mediator should not offer link to text to pages that are not
@@ -251,14 +259,14 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
 
   __block BOOL callback_invoked = NO;
 
-  [[mocked_consumer_ expect]
-      generatedPayload:[OCMArg checkWithBlock:^BOOL(
-                                   LinkToTextPayload* payload) {
-        EXPECT_TRUE(kTestHighlightURL == payload.URL);
-        EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(payload.selectedText));
-        EXPECT_EQ(fake_view_, payload.sourceView);
+  [[mocked_activity_service_commands_ expect]
+      shareHighlight:[OCMArg checkWithBlock:^BOOL(
+                                 ShareHighlightCommand* command) {
+        EXPECT_TRUE(kTestHighlightURL == command.URL);
+        EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(command.selectedText));
+        EXPECT_EQ(fake_view_, command.sourceView);
         EXPECT_TRUE(
-            CGRectEqualToRect(expected_client_rect, payload.sourceRect));
+            CGRectEqualToRect(expected_client_rect, command.sourceRect));
         callback_invoked = YES;
         return YES;
       }]];
@@ -270,7 +278,8 @@ TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
@@ -296,14 +305,14 @@ TEST_F(LinkToTextMediatorTest,
 
   __block BOOL callback_invoked = NO;
 
-  [[mocked_consumer_ expect]
-      generatedPayload:[OCMArg checkWithBlock:^BOOL(
-                                   LinkToTextPayload* payload) {
-        EXPECT_TRUE(kTestHighlightURL == payload.URL);
-        EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(payload.selectedText));
-        EXPECT_EQ(fake_view_, payload.sourceView);
+  [[mocked_activity_service_commands_ expect]
+      shareHighlight:[OCMArg checkWithBlock:^BOOL(
+                                 ShareHighlightCommand* command) {
+        EXPECT_TRUE(kTestHighlightURL == command.URL);
+        EXPECT_EQ(kTestQuote, base::SysNSStringToUTF8(command.selectedText));
+        EXPECT_EQ(fake_view_, command.sourceView);
         EXPECT_TRUE(
-            CGRectEqualToRect(expected_client_rect, payload.sourceRect));
+            CGRectEqualToRect(expected_client_rect, command.sourceRect));
         callback_invoked = YES;
         return YES;
       }]];
@@ -315,7 +324,8 @@ TEST_F(LinkToTextMediatorTest,
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   histogram_tester.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
@@ -335,9 +345,9 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationError) {
   SetLinkToTextResponse(error_response.get(), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
-  [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
+  [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
     callback_invoked = YES;
-  }] linkGenerationFailed];
+  }] showAlertWithTitle:[OCMArg any] message:[OCMArg any] actions:[OCMArg any]];
 
   [mediator_ handleLinkToTextSelection];
 
@@ -346,7 +356,8 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationError) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   LinkGenerationError error = LinkGenerationError::kIncorrectSelector;
@@ -368,9 +379,9 @@ TEST_F(LinkToTextMediatorTest, EmptyResponseLinkGenerationError) {
   SetLinkToTextResponse(empty_response.get(), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
-  [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
+  [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
     callback_invoked = YES;
-  }] linkGenerationFailed];
+  }] showAlertWithTitle:[OCMArg any] message:[OCMArg any] actions:[OCMArg any]];
 
   [mediator_ handleLinkToTextSelection];
 
@@ -379,7 +390,8 @@ TEST_F(LinkToTextMediatorTest, EmptyResponseLinkGenerationError) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   LinkGenerationError error = LinkGenerationError::kUnknown;
@@ -403,9 +415,9 @@ TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
   SetLinkToTextResponse(malformed_response.get(), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
-  [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
+  [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
     callback_invoked = YES;
-  }] linkGenerationFailed];
+  }] showAlertWithTitle:[OCMArg any] message:[OCMArg any] actions:[OCMArg any]];
 
   [mediator_ handleLinkToTextSelection];
 
@@ -414,7 +426,8 @@ TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   LinkGenerationError error = LinkGenerationError::kUnknown;
@@ -437,9 +450,9 @@ TEST_F(LinkToTextMediatorTest, StringResponseLinkGenerationError) {
   SetLinkToTextResponse(string_response.get(), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
-  [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
+  [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
     callback_invoked = YES;
-  }] linkGenerationFailed];
+  }] showAlertWithTitle:[OCMArg any] message:[OCMArg any] actions:[OCMArg any]];
 
   [mediator_ handleLinkToTextSelection];
 
@@ -448,7 +461,8 @@ TEST_F(LinkToTextMediatorTest, StringResponseLinkGenerationError) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   LinkGenerationError error = LinkGenerationError::kUnknown;
@@ -471,9 +485,9 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
   SetLinkToTextResponse(success_response.get(), /*zoom=*/1.0);
 
   __block BOOL callback_invoked = NO;
-  [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
+  [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
     callback_invoked = YES;
-  }] linkGenerationFailed];
+  }] showAlertWithTitle:[OCMArg any] message:[OCMArg any] actions:[OCMArg any]];
 
   [mediator_ handleLinkToTextSelection];
 
@@ -482,7 +496,8 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   LinkGenerationError error = LinkGenerationError::kUnknown;
@@ -505,9 +520,9 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
                                base::Milliseconds(10));
 
   __block BOOL callback_invoked = NO;
-  [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
+  [[[mocked_alert_delegate_ expect] andDo:^(NSInvocation*) {
     callback_invoked = YES;
-  }] linkGenerationFailed];
+  }] showAlertWithTitle:[OCMArg any] message:[OCMArg any] actions:[OCMArg any]];
 
   [mediator_ handleLinkToTextSelection];
 
@@ -516,7 +531,8 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 
   // Make sure the correct metric were recorded.
   LinkGenerationError error = LinkGenerationError::kTimeout;
@@ -543,12 +559,11 @@ TEST_F(LinkToTextMediatorTest, WithHttpsAndCanonicalUrl) {
 
   __block BOOL callback_invoked = NO;
 
-  [[mocked_consumer_ expect]
-      generatedPayload:[OCMArg checkWithBlock:^BOOL(
-                                   LinkToTextPayload* payload) {
-        // Validate that the generated URL is based on the canonical URL.
-        EXPECT_TRUE(payload.URL.is_valid());
-        EXPECT_TRUE(GURL(canonical_url).EqualsIgnoringRef(payload.URL));
+  [[mocked_activity_service_commands_ expect]
+      shareHighlight:[OCMArg checkWithBlock:^BOOL(
+                                 ShareHighlightCommand* command) {
+        EXPECT_TRUE(command.URL.is_valid());
+        EXPECT_TRUE(GURL(canonical_url).EqualsIgnoringRef(command.URL));
         callback_invoked = YES;
         return YES;
       }]];
@@ -560,7 +575,8 @@ TEST_F(LinkToTextMediatorTest, WithHttpsAndCanonicalUrl) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 }
 
 // Tests that a canonical URL is not being used as base for the generated link
@@ -581,12 +597,11 @@ TEST_F(LinkToTextMediatorTest, NotHttpsAndCanonicalUrl) {
 
   __block BOOL callback_invoked = NO;
 
-  [[mocked_consumer_ expect]
-      generatedPayload:[OCMArg checkWithBlock:^BOOL(
-                                   LinkToTextPayload* payload) {
-        // Validate that the generated URL is not based on the canonical URL.
-        EXPECT_TRUE(payload.URL.is_valid());
-        EXPECT_TRUE(new_base_url.EqualsIgnoringRef(payload.URL));
+  [[mocked_activity_service_commands_ expect]
+      shareHighlight:[OCMArg checkWithBlock:^BOOL(
+                                 ShareHighlightCommand* command) {
+        EXPECT_TRUE(command.URL.is_valid());
+        EXPECT_TRUE(new_base_url.EqualsIgnoringRef(command.URL));
         callback_invoked = YES;
         return YES;
       }]];
@@ -598,5 +613,6 @@ TEST_F(LinkToTextMediatorTest, NotHttpsAndCanonicalUrl) {
     return callback_invoked;
   }));
 
-  [mocked_consumer_ verify];
+  [mocked_activity_service_commands_ verify];
+  [mocked_alert_delegate_ verify];
 }

@@ -92,6 +92,7 @@ source_set("unit_tests") {
 
   deps = [
     ":browser_container",
+    ":edit_menu_alert_delegate",
     ":ui",
     "//base/test:test_support",
     "//ios/chrome/app/strings",

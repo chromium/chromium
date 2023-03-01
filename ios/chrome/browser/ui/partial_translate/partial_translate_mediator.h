@@ -10,7 +10,6 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"
 
-@protocol ActivityServiceCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol EditMenuAlertDelegate;
 class PrefService;
