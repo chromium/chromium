@@ -35,6 +35,8 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
+static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
+
 // Avoid including this header file directly or referring directly to
 // AppServiceProxyLacros as a type. Instead:
 //  - for forward declarations, use app_service_proxy_forward.h
@@ -62,6 +64,8 @@ struct IntentLaunchInfo {
 };
 
 // Singleton (per Profile) proxy and cache of an App Service's apps.
+//
+// This connects to `SubscriberCrosapi` in the Ash process.
 //
 // Singleton-ness means that //chrome/browser code (e.g UI code) can find *the*
 // proxy for a given Profile, and therefore share its caches.

@@ -22,6 +22,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For Ash only");
+
 class Profile;
 
 namespace apps {
@@ -29,6 +31,8 @@ namespace apps {
 // App service subscriber to support App Service Proxy in Lacros.
 // This object is used as a proxy to communicate between the
 // crosapi and App Service.
+//
+// This connects to `AppServiceProxyLacros` in the Lacros process.
 //
 // See components/services/app_service/README.md.
 class SubscriberCrosapi : public KeyedService,
