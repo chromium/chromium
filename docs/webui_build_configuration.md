@@ -699,6 +699,10 @@ resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
 optimize: Optional parameter, defaults to false. If specified it is passed as
           the |minify| parameter to the underlying html_to_wrapper() and
           css_to_wrapper() targets.
+enable_source_maps: Defaults to "false". Incompatible with |optimize=true|.
+                    Setting it to "true" turns on source map generation for a
+                    few underlying targets. See ts_library()'s
+                    |enable_source_maps| for more details.
 ```
 
 #### **Example**
