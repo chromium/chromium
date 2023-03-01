@@ -5,6 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
+import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {MojoSearchResult} from 'chrome://shortcut-customization/js/shortcut_types.js';
 
@@ -21,23 +22,19 @@ suite('fakeShortcutSearchHandlerTest', function() {
     handler = null;
   });
 
-  // This test is based off of the stub search() function.
-  // TODO(longbowei): Add parameters to the search().
   test('getSearchResultEmpty', () => {
     assertTrue(!!handler);
     const expectedList: MojoSearchResult[] = [];
     handler.setFakeSearchResult(expectedList);
-    return handler.search().then((result) => {
+    return handler.search(stringToMojoString16('query1'), 5).then((result) => {
       assertDeepEquals(expectedList, result.results);
     });
   });
 
-  // This test is based off of the stub search() function.
-  // TODO(longbowei): Add parameters to the search().
   test('getSearchResultDefaultFake', () => {
     assertTrue(!!handler);
     handler.setFakeSearchResult(fakeSearchResults);
-    return handler.search().then((result) => {
+    return handler.search(stringToMojoString16('query2'), 5).then((result) => {
       assertDeepEquals(fakeSearchResults, result.results);
     });
   });

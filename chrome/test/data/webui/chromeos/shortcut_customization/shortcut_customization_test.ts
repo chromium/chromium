@@ -14,9 +14,11 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
-import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo, fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
+import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {AcceleratorCategory, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getCategoryNameStringId, getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
@@ -41,8 +43,12 @@ suite('shortcutCustomizationAppTest', function() {
 
   let provider: FakeShortcutProvider;
 
+  let handler: FakeShortcutSearchHandler;
+
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
+
+    // Set up provider.
     provider = new FakeShortcutProvider();
     provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
     provider.setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
@@ -54,6 +60,11 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeAcceleratorsUpdated([fakeAcceleratorConfig]);
 
     setShortcutProviderForTesting(provider);
+
+    // Set up SearchHandler.
+    handler = new FakeShortcutSearchHandler();
+    handler.setFakeSearchResult(fakeSearchResults);
+    setShortcutSearchHandlerForTesting(handler);
   });
 
   teardown(() => {

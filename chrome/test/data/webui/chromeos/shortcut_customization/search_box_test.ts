@@ -5,7 +5,10 @@ import 'chrome://shortcut-customization/js/search/search_box.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
+import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
+import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 function initSearchBoxElement(): SearchBoxElement {
@@ -17,6 +20,15 @@ function initSearchBoxElement(): SearchBoxElement {
 
 suite('searchBoxTest', function() {
   let searchBoxElement: SearchBoxElement|null = null;
+
+  let handler: FakeShortcutSearchHandler;
+
+  setup(() => {
+    // Set up SearchHandler.
+    handler = new FakeShortcutSearchHandler();
+    handler.setFakeSearchResult(fakeSearchResults);
+    setShortcutSearchHandlerForTesting(handler);
+  });
 
   teardown(() => {
     if (searchBoxElement) {
@@ -36,7 +48,7 @@ suite('searchBoxTest', function() {
     await flush();
 
     const searchFieldElement =
-        searchBoxElement!.shadowRoot!.querySelector('#searchBox');
+        searchBoxElement!.shadowRoot!.querySelector('#search');
     assertTrue(!!searchFieldElement);
 
     // Before: No search results shown.

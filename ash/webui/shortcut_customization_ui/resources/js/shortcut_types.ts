@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 
 import * as AcceleratorInfoTypes from '../mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js';
-import {SearchHandlerInterface, SearchResult} from '../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
+import {SearchHandler, SearchHandlerInterface, SearchResult} from '../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
 import {AcceleratorConfigurationProviderInterface, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 
@@ -144,6 +145,9 @@ export const AcceleratorCategory = AcceleratorInfoTypes.AcceleratorCategory;
 export type LayoutStyle = AcceleratorInfoTypes.AcceleratorLayoutStyle;
 export const LayoutStyle = AcceleratorInfoTypes.AcceleratorLayoutStyle;
 
+export type ShortcutSearchHandler = SearchHandler;
+export const ShortcutSearchHandler = SearchHandler;
+
 /**
  * Type alias for LayoutInfo. This describes one row (corresponding to an
  * AcceleratorRow) within the layout hierarchy. The `category`, `subCategory`,
@@ -180,10 +184,10 @@ export type MojoSearchResult = SearchResult;
 
 /**
  * Type alias for the ShortcutSearchHandlerInterface.
- * TODO(longbowei): Add parameters to search() function.
  */
 export interface ShortcutSearchHandlerInterface extends SearchHandlerInterface {
-  search(): Promise<{results: MojoSearchResult[]}>;
+  search(query: String16, maxNumResults: number):
+      Promise<{results: MojoSearchResult[]}>;
 }
 
 /**
