@@ -9,6 +9,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/debug/dump_without_crashing.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -141,6 +142,8 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshShieldAndBase80, kBubbleBorderRadius));
   SetVisible(false);
 }
 
@@ -286,14 +289,6 @@ void LoginBaseBubbleView::Layout() {
 
 void LoginBaseBubbleView::OnBlur() {
   Hide();
-}
-
-void LoginBaseBubbleView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-  SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                   kBubbleBorderRadius));
 }
 
 void LoginBaseBubbleView::SetPadding(int horizontal_padding,

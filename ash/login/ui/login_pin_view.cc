@@ -288,11 +288,6 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
     UpdateImage();
   }
 
-  void OnThemeChanged() override {
-    BasePinButton::OnThemeChanged();
-    UpdateImage();
-  }
-
   // BasePinButton:
   void OnEvent(ui::Event* event) override {
     BasePinButton::OnEvent(event);

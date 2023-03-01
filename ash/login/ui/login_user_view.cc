@@ -18,6 +18,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -273,6 +274,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
     user_name_ = new views::Label();
     user_name_->SetSubpixelRenderingEnabled(false);
     user_name_->SetAutoColorReadabilityEnabled(false);
+    user_name_->SetEnabledColorId(kColorAshTextColorPrimary);
 
     const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
     const gfx::FontList font_list(
@@ -313,13 +315,6 @@ class LoginUserView::UserLabel : public NonAccessibleView {
     user_name_->SetText(gfx::ElideText(base::UTF8ToUTF16(display_name),
                                        user_name_->font_list(), label_width_,
                                        gfx::ElideBehavior::ELIDE_TAIL));
-  }
-
-  // NonAccessibleView:
-  void OnThemeChanged() override {
-    NonAccessibleView::OnThemeChanged();
-    user_name_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
   const std::u16string& displayed_name() const { return user_name_->GetText(); }
@@ -449,6 +444,10 @@ LoginUserView::LoginUserView(
     dropdown_->SetPreferredSize(
         gfx::Size(kDropdownIconSizeDp, kDropdownIconSizeDp));
     dropdown_->SetFocusBehavior(FocusBehavior::ALWAYS);
+    dropdown_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kLockScreenDropdownIcon,
+                                       kColorAshIconColorPrimary));
   }
   tap_button_ = new TapButton(on_tap_, this);
   SetTapEnabled(true);
@@ -589,18 +588,6 @@ void LoginUserView::Layout() {
 
 void LoginUserView::RequestFocus() {
   tap_button_->RequestFocus();
-}
-
-void LoginUserView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (dropdown_) {
-    dropdown_->SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            kLockScreenDropdownIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  }
 }
 
 views::View::Views LoginUserView::GetChildrenInZOrder() {
