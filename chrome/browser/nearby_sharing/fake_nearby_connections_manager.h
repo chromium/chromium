@@ -57,11 +57,15 @@ class FakeNearbyConnectionsManager
   Payload* GetIncomingPayload(int64_t payload_id) override;
   void Cancel(int64_t payload_id) override;
   void ClearIncomingPayloads() override;
+  absl::optional<std::string> GetAuthenticationToken(
+      const std::string& endpoint_id) override;
   absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
   base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
 
+  void SetAuthenticationToken(const std::string& endpoint_id,
+                              const std::string& token);
   void SetRawAuthenticationToken(const std::string& endpoint_id,
                                  std::vector<uint8_t> token);
 
@@ -106,8 +110,9 @@ class FakeNearbyConnectionsManager
   absl::optional<std::vector<uint8_t>> connection_endpoint_info(
       const std::string& endpoint_id) {
     auto it = connection_endpoint_infos_.find(endpoint_id);
-    if (it == connection_endpoint_infos_.end())
+    if (it == connection_endpoint_infos_.end()) {
       return absl::nullopt;
+    }
 
     return it->second;
   }
@@ -124,7 +129,8 @@ class FakeNearbyConnectionsManager
   DataUsage advertising_data_usage_ = DataUsage::kUnknown;
   PowerLevel advertising_power_level_ = PowerLevel::kUnknown;
   std::set<std::string> upgrade_bandwidth_endpoint_ids_;
-  std::map<std::string, std::vector<uint8_t>> endpoint_auth_tokens_;
+  std::map<std::string, std::string> endpoint_auth_tokens_;
+  std::map<std::string, std::vector<uint8_t>> endpoint_raw_auth_tokens_;
   NearbyConnection* connection_ = nullptr;
   DataUsage connected_data_usage_ = DataUsage::kUnknown;
   base::RepeatingCallback<void(PayloadPtr,

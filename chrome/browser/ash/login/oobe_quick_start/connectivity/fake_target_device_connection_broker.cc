@@ -12,6 +12,13 @@
 
 namespace ash::quick_start {
 
+namespace {
+
+// Arbitrary string to use as the connection's authentication token.
+constexpr char kAuthenticationToken[] = "auth_token";
+
+}  // namespace
+
 FakeTargetDeviceConnectionBroker::Factory::Factory() = default;
 
 FakeTargetDeviceConnectionBroker::Factory::~Factory() = default;
@@ -55,7 +62,7 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
   fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
   auto fake_incomming_connection = std::make_unique<FakeIncommingConnection>(
-      nearby_connection, random_session_id);
+      nearby_connection, random_session_id, kAuthenticationToken);
   connection_lifecycle_listener_->OnIncomingConnectionInitiated(
       source_device_id, fake_incomming_connection->AsWeakPtr());
   fake_connection_ = std::move(fake_incomming_connection);

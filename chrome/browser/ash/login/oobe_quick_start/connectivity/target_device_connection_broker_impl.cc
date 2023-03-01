@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -357,8 +358,15 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnection(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info,
     NearbyConnection* connection) {
+  absl::optional<std::string> auth_token =
+      nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+  DCHECK(auth_token);
+  std::unique_ptr<IncomingConnection> incoming_connection =
+      std::make_unique<IncomingConnection>(connection, random_session_id_,
+                                           *auth_token);
   QS_LOG(INFO) << "Nearby Connections incoming connection, endpoint_id="
-               << endpoint_id;
+               << endpoint_id << " pin="
+               << incoming_connection->GetConnectionVerificationPin();
 
   // TODO(b/234655072): Notify ConnectionLifecycleListener about the incoming
   // connection so that the Quick Start flow can proceed.
