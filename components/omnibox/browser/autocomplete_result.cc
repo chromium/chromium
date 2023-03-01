@@ -1127,23 +1127,24 @@ void AutocompleteResult::MaybeCullTailSuggestions(
       [](const AutocompleteMatch& match) {
         return match.type == ACMatchType::SEARCH_SUGGEST_TAIL;
       };
-  auto default_non_tail = matches->end();
-  auto default_tail = matches->end();
-  bool other_non_tails = false, any_tails = false;
-  for (auto i = matches->begin(); i != matches->end(); ++i) {
-    if (comparing_object.GetDemotedRelevance(*i) == 0)
+  bool default_non_tail = false;
+  bool default_tail = false;
+  bool other_non_tails = false;
+  bool any_tails = false;
+  for (const auto& match : *matches) {
+    if (comparing_object.GetDemotedRelevance(match) == 0)
       continue;
-    if (!is_tail(*i)) {
+    if (!is_tail(match)) {
       // We allow one default non-tail match. For non-default matches,
       // don't consider if we'd remove them later.
-      if (default_non_tail == matches->end() && i->allowed_to_be_default_match)
-        default_non_tail = i;
+      if (!default_non_tail && match.allowed_to_be_default_match)
+        default_non_tail = true;
       else
         other_non_tails = true;
     } else {
       any_tails = true;
-      if (default_tail == matches->end() && i->allowed_to_be_default_match)
-        default_tail = i;
+      if (!default_tail && match.allowed_to_be_default_match)
+        default_tail = true;
     }
   }
   // If the only default matches are tail suggestions, let them remain and
@@ -1151,11 +1152,11 @@ void AutocompleteResult::MaybeCullTailSuggestions(
   // not want to display tail suggestions mixed with other suggestions in the
   // dropdown below the first item (the default match).  In this case, we
   // cannot remove the tail suggestions because we'll be left without a legal
-  // default match--the non-tail ones much go.  This situation though is
-  // unlikely, as we normally would expect the search-what-you-typed suggestion
+  // default match--the non-tail ones much go.  This situation is unlikely
+  // though, as we normally would expect the search-what-you-typed suggestion
   // as a default match (and that's a non-tail suggestion).
   // 1) above.
-  if (default_tail != matches->end() && default_non_tail == matches->end()) {
+  if (default_tail && !default_non_tail) {
     base::EraseIf(*matches, std::not_fn(is_tail));
     return;
   }
@@ -1164,11 +1165,11 @@ void AutocompleteResult::MaybeCullTailSuggestions(
     return;
   // If both tail and non-tail matches, remove tail. Note that this can
   // remove the highest rated suggestions.
-  if (default_non_tail != matches->end()) {
+  if (default_non_tail) {
     // 3) above.
     if (other_non_tails) {
       base::EraseIf(*matches, is_tail);
-    } else {
+    } else if (default_tail) {
       // 4) above.
       // We want the non-tail default match to be placed first. Mark tail
       // suggestions as not a legal default match, so that the default match
@@ -1177,8 +1178,19 @@ void AutocompleteResult::MaybeCullTailSuggestions(
         if (is_tail(match))
           match.allowed_to_be_default_match = false;
       }
+    } else {
+      // If there had been `other_non_tails`, (3) above would hae triggered.
+      DCHECK(!other_non_tails);
+      // If there had not been `any_tails`, (2) above would have triggered.
+      DCHECK(any_tails);
+      // If there had been `default_tail`, either (3) or (4) would have
+      // triggered.
+      DCHECK(!default_tail);
     }
-  } else if (other_non_tails && default_tail == matches->end()) {
+  } else if (other_non_tails) {
+    // If there had been a default non-tail, (1), (3), or (4) would have
+    // triggered.
+    DCHECK(!default_non_tail);
     // 5) above.
     // If there are no defaults at all, but non-tail suggestions exist, remove
     // the tail suggestions.

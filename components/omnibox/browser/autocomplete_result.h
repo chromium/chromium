@@ -281,12 +281,8 @@ class AutocompleteResult {
   static constexpr size_t kMaxAutocompletePositionValue = 30;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
-                           DemoteOnDeviceSearchSuggestions);
-  FRIEND_TEST_ALL_PREFIXES(
-      AutocompleteResultTest,
-      GroupSuggestionsBySearchVsURLHonorsProtectedSuggestions);
   friend class AutocompleteController;  // Friended to use `CopyFrom()`.
+  friend class AutocompleteResultForTesting;
   friend class AutocompleteProviderTest;
   friend class HistoryURLProviderTest;
 
