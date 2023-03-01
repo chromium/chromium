@@ -177,15 +177,6 @@ export class Background extends ChromeVoxState {
     return ChromeVoxRange.getCurrentRangeWithoutRecovery();
   }
 
-  /**
-   * @param {CursorRange} newRange The new range.
-   * @override
-   */
-  setCurrentRange(newRange) {
-    ChromeVoxRange.previous = ChromeVoxRange.getCurrentRangeWithoutRecovery();
-    ChromeVoxRange.instance.current_ = newRange;
-  }
-
   /** @override */
   set isReadingContinuously(newValue) {
     this.isReadingContinuously_ = newValue;

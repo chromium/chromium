@@ -61,11 +61,6 @@ export class ChromeVoxState {
   getCurrentRangeWithoutRecovery() {}
 
   /**
-   * @param {CursorRange} newRange The new range.
-   */
-  setCurrentRange(newRange) {}
-
-  /**
    * @param {boolean} newValue
    */
   set isReadingContinuously(newValue) {}

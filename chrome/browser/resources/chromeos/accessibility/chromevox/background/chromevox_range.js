@@ -43,8 +43,7 @@ export class ChromeVoxRangeObserver {
 export class ChromeVoxRange {
   /** @private */
   constructor() {
-    // Temporarily public, as part of the gradual migration.
-    /** @public {?CursorRange} */
+    /** @private {?CursorRange} */
     this.current_ = null;
     /** @private {?CursorRange} */
     this.previous_ = null;
@@ -120,7 +119,8 @@ export class ChromeVoxRange {
       return;
     }
 
-    ChromeVoxState.instance.setCurrentRange(newRange);
+    this.previous_ = this.current_;
+    this.current_ = newRange;
 
     ChromeVoxState.ready().then(
         ChromeVoxRange.onCurrentRangeChanged(newRange, opt_fromEditing));
