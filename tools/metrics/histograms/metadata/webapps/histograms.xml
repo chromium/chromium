@@ -792,7 +792,9 @@ chromium-metrics-reviews@google.com.
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
-    This is recorded when a web app installation is completed. This tracks all
+    This is recorded when a web app installation is completed. If the
+    installation occurred or the app was already installed, then this records
+    &quot;true&quot;. All other cases record &quot;false&quot;. This tracks all
     kinds of web app installations, e.g. user installs from install icon or
     admin installs from WebAppInstallForcelist.
   </summary>
