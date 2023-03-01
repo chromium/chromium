@@ -97,11 +97,10 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
     return;
   }
 
-  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.Candidate.Visits",
+  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumVisits",
                               clusters.front().visits.size());
-  base::UmaHistogramCounts100(
-      "NewTabPage.HistoryClusters.Candidate.RelatedSearches",
-      clusters.front().related_searches.size());
+  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumRelatedSearches",
+                              clusters.front().related_searches.size());
 
   auto cluster_mojom = history_clusters::ClusterToMojom(
       TemplateURLServiceFactory::GetForProfile(profile_), clusters.front());
