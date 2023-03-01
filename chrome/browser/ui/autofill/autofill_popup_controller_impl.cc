@@ -54,6 +54,12 @@ namespace autofill {
 
 namespace {
 
+// The duration for which clicks on the just-shown Autofill popup should be
+// ignored. This is to prevent users accidentally accepting suggestions
+// (crbug.com/1279268).
+static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
+    base::Milliseconds(500);
+
 // Returns true if the given id refers to an element that can be accepted.
 bool CanAccept(int id) {
   return id != POPUP_ITEM_ID_SEPARATOR &&
@@ -270,9 +276,20 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
   std::ignore = view_.Call(&AutofillPopupView::OnSuggestionsChanged);
 }
 
-void AutofillPopupControllerImpl::AcceptSuggestion(
-    int index,
-    base::TimeDelta show_threshold) {
+void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+  // Ignore clicks immediately after the popup was shown. This is to prevent
+  // users accidentally accepting suggestions (crbug.com/1279268).
+  DCHECK(!time_view_shown_.is_null());
+  if ((base::TimeTicks::Now() - time_view_shown_ <
+       kIgnoreEarlyClicksOnPopupDuration) &&
+      !disable_threshold_for_testing_) {
+    return;
+  }
+
+  AcceptSuggestionWithoutThreshold(index);
+}
+
+void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
   if (static_cast<size_t>(index) >= suggestions_.size()) {
     // Prevents crashes from crbug.com/521133. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.
@@ -283,13 +300,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
 
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
-    return;
-  }
-
-  // Ignore clicks immediately after the popup was shown. This is to prevent
-  // users accidentally accepting suggestions (crbug.com/1279268).
-  DCHECK(!time_view_shown_.is_null());
-  if ((base::TimeTicks::Now() - time_view_shown_ < show_threshold)) {
     return;
   }
 

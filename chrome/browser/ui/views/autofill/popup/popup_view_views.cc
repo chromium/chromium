@@ -288,11 +288,12 @@ bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
     }
   }
 
-  // TODO(crbug.com/1411172): Use different actions depending on which cell is
-  // selected.
-  // No show threshold is used for key pressed - they can be accepted
-  // immediately after the popup is shown.
-  controller_->AcceptSuggestion(index->first, base::TimeDelta());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept)) {
+    controller_->AcceptSuggestion(index->first);
+  } else {
+    controller_->AcceptSuggestionWithoutThreshold(index->first);
+  }
   return true;
 }
 

@@ -57,12 +57,6 @@ namespace autofill {
 
 namespace {
 
-// The duration for which clicks on the just-shown Autofill popup should be
-// ignored. This is to prevent users accidentally accepting suggestions
-// (crbug.com/1279268).
-static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
-    base::Milliseconds(500);
-
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
 constexpr int kAutofillPopupPasswordMaxWidth = 108;
@@ -450,8 +444,7 @@ void AddCallbacksToContentView(
   content_view.SetOnUnselectedCallback(base::BindRepeating(
       &AutofillPopupController::SelectSuggestion, controller, absl::nullopt));
   content_view.SetOnAcceptedCallback(base::BindRepeating(
-      &AutofillPopupController::AcceptSuggestion, controller, line_number,
-      /*show_threshold=*/kIgnoreEarlyClicksOnPopupDuration));
+      &AutofillPopupController::AcceptSuggestion, controller, line_number));
 }
 
 // ********************* AccessibilityDelegate implementations *****************
