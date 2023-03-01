@@ -1598,15 +1598,17 @@ bool SwapChainPresenter::VideoProcessorBlt(
 
     hr = video_context->VideoProcessorBlt(video_processor.Get(),
                                           output_view_.Get(), 0, 1, &stream);
-    if (gpu_vendor_id_ == 0x8086) {
-      base::UmaHistogramSparse(
-          (use_intel_vp_super_resolution
-               ? "GPU.IntelVpSuperResolution.On.VideoProcessorBlt"
-               : "GPU.IntelVpSuperResolution.Off.VideoProcessorBlt"),
-          hr);
-    }
+    base::UmaHistogramSparse(
+        (use_intel_vp_super_resolution
+             ? "GPU.IntelVpSuperResolution.On.VideoProcessorBlt"
+             : "GPU.IntelVpSuperResolution.Off.VideoProcessorBlt"),
+        hr);
+
     if (FAILED(hr)) {
       DLOG(ERROR) << "VideoProcessorBlt failed with error 0x" << std::hex << hr;
+      // TODO(crbug.com/1318380): Remove this crash dump once we have collected
+      // some valid dumps.
+      base::debug::DumpWithoutCrashing();
       return false;
     }
   }
