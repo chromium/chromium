@@ -1369,10 +1369,6 @@ void Textfield::ConvertPointFromScreen(gfx::Point* point) {
   View::ConvertPointFromScreen(this, point);
 }
 
-bool Textfield::DrawsHandles() {
-  return false;
-}
-
 void Textfield::OpenContextMenu(const gfx::Point& anchor) {
   DestroyTouchSelection();
   ShowContextMenu(anchor, ui::MENU_SOURCE_TOUCH_EDIT_MENU);

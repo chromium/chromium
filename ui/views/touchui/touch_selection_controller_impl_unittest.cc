@@ -739,7 +739,6 @@ class TestTouchEditable : public ui::TouchEditable {
     if (screen_position_client)
       screen_position_client->ConvertPointFromScreen(window_, point);
   }
-  bool DrawsHandles() override { return false; }
   void OpenContextMenu(const gfx::Point& anchor) override {
     NOTREACHED_NORETURN();
   }

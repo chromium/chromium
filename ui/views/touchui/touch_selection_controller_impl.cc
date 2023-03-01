@@ -445,11 +445,6 @@ void TouchSelectionControllerImpl::SelectionChanged() {
   selection_bound_1_clipped_ = screen_bound_anchor_clipped;
   selection_bound_2_clipped_ = screen_bound_focus_clipped;
 
-  if (client_view_->DrawsHandles()) {
-    UpdateQuickMenu();
-    return;
-  }
-
   if (dragging_handle_) {
     // We need to reposition only the selection handle that is being dragged.
     // The other handle stays the same. Also, the selection handle being dragged

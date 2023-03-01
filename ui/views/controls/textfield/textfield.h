@@ -397,7 +397,6 @@ class VIEWS_EXPORT Textfield : public View,
   gfx::NativeView GetNativeView() const override;
   void ConvertPointToScreen(gfx::Point* point) override;
   void ConvertPointFromScreen(gfx::Point* point) override;
-  bool DrawsHandles() override;
   void OpenContextMenu(const gfx::Point& anchor) override;
   void DestroyTouchSelection() override;
 
