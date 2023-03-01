@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -270,9 +269,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 
   // Apply a change to the profile.
-  autofill_helper::UpdateProfile(
-      0, profile.guid(), autofill::AutofillType(autofill::NAME_FULL),
-      u"New Name", autofill::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      autofill::NAME_FULL, u"New Name", autofill::VerificationStatus::kParsed);
+  GetPersonalDataManager()->UpdateProfile(profile);
 
   autofill::AutofillProfile profile2;
   profile2.SetRawInfoWithVerificationStatus(
@@ -282,21 +281,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 
   // Add an obsolete profile to make sure that the server has received the
   // update.
-  autofill_helper::AddProfile(0, profile2);
+  GetPersonalDataManager()->AddProfile(profile2);
 
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::CONTACT_INFO, 2).Wait());
-
-  const std::vector<sync_pb::SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::CONTACT_INFO);
-
-  ASSERT_EQ(entities.size(), 2u);
   // Verifies that the profile with `profile.guid()` has preserved
   // unknown_fields while they are completely stripped for `profile2`.
-  EXPECT_THAT(entities,
-              testing::Contains(HasContactInfoWithGuidAndUnknownFields(
-                  profile.guid(), kUnsupportedField)));
-  EXPECT_THAT(entities,
-              testing::Contains(
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::CONTACT_INFO),
+              UnorderedElementsAre(
+                  HasContactInfoWithGuidAndUnknownFields(profile.guid(),
+                                                         kUnsupportedField),
                   HasContactInfoWithGuidAndUnknownFields(profile2.guid(), "")));
 }
 #endif
