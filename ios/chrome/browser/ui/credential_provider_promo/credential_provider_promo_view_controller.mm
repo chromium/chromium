@@ -19,12 +19,16 @@ constexpr CGFloat kCustomSpacingBeforeImageIfNoNavigationBar = 2;
 constexpr CGFloat kCustomSpacingAfterImageWithAnimation = 24;
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
 constexpr CGFloat kPreferredCornerRadius = 20;
+NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 }  // namespace
 
 @interface CredentialProviderPromoViewController ()
 
 // Custom animation view used in the full-screen promo.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
+
+// Custom animation view used in the full-screen promo in dark mode.
+@property(nonatomic, strong) id<LottieAnimation> animationViewWrapperDarkMode;
 
 // Child view controller used to display the alert screen for the half-screen
 // and full-screen promos.
@@ -44,7 +48,7 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
   if (self.animationViewWrapper) {
     [self configureAndLayoutAnimationView];
   }
@@ -52,11 +56,19 @@ constexpr CGFloat kPreferredCornerRadius = 20;
   [self layoutAlertScreen];
 }
 
-// Called when the device is rotated. (Un)Hide the animation accordingly.
+// Called when the device is rotated or dark mode is enabled/disabled. (Un)Hide
+// the animations accordingly.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  self.animationViewWrapper.animationView.hidden = ![self shouldShowAnimation];
-  [self updateAlertScreenTopAnchorConstraint];
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  BOOL hidden = ![self shouldShowAnimation];
+
+  self.animationViewWrapper.animationView.hidden = hidden || darkModeEnabled;
+  self.animationViewWrapperDarkMode.animationView.hidden =
+      hidden || !darkModeEnabled;
+
+  [self updateAnimationsPlaying];
 }
 
 #pragma mark - CredentialProviderPromoConsumer
@@ -83,14 +95,22 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 - (void)setAnimation:(NSString*)animationAssetName {
   DCHECK(!self.isViewLoaded);
 
+  _animationViewWrapper = [self createAnimation:animationAssetName];
+  _animationViewWrapperDarkMode = [self
+      createAnimation:[animationAssetName
+                          stringByAppendingString:kDarkModeAnimationSuffix]];
+}
+
+#pragma mark - Private
+
+// Creates and returns the LottieAnimation view for the `animationAssetName`.
+- (id<LottieAnimation>)createAnimation:(NSString*)animationAssetName {
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
   config.loopAnimationCount = 1000;
-  _animationViewWrapper = ios::provider::GenerateLottieAnimation(config);
+  return ios::provider::GenerateLottieAnimation(config);
 }
-
-#pragma mark - Private
 
 // Configures the alertScreen view.
 - (void)configureAlertScreen {
@@ -169,34 +189,58 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 
 // Configures the animation view and its constraints.
 - (void)configureAndLayoutAnimationView {
-  [self.view addSubview:self.animationViewWrapper.animationView];
+  [self configureAndLayoutAnimationViewForWrapper:self.animationViewWrapper];
+  [self configureAndLayoutAnimationViewForWrapper:
+            self.animationViewWrapperDarkMode];
 
-  self.animationViewWrapper.animationView
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  self.animationViewWrapper.animationView.contentMode =
-      UIViewContentModeScaleAspectFit;
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+
+  self.animationViewWrapper.animationView.hidden = darkModeEnabled;
+  self.animationViewWrapperDarkMode.animationView.hidden = !darkModeEnabled;
+  [self updateAnimationsPlaying];
+}
+
+// Helper method to configure the animation view and its constraints for the
+// given LottieAnimation view.
+- (void)configureAndLayoutAnimationViewForWrapper:(id<LottieAnimation>)wrapper {
+  [self.view addSubview:wrapper.animationView];
+
+  wrapper.animationView.translatesAutoresizingMaskIntoConstraints = NO;
+  wrapper.animationView.contentMode = UIViewContentModeScaleAspectFit;
 
   [NSLayoutConstraint activateConstraints:@[
-    [self.animationViewWrapper.animationView.leftAnchor
+    [wrapper.animationView.leftAnchor
         constraintEqualToAnchor:self.view.leftAnchor],
-    [self.animationViewWrapper.animationView.rightAnchor
+    [wrapper.animationView.rightAnchor
         constraintEqualToAnchor:self.view.rightAnchor],
-    [self.animationViewWrapper.animationView.topAnchor
+    [wrapper.animationView.topAnchor
         constraintEqualToAnchor:self.view.topAnchor],
-    [self.animationViewWrapper.animationView.bottomAnchor
+    [wrapper.animationView.bottomAnchor
         constraintEqualToAnchor:self.view.centerYAnchor],
   ]];
 
-  [self.animationViewWrapper play];
+  [wrapper play];
 }
 
 // Returns YES if the view should display the animation view.
-// The animation view should be displayed if `animationView` is not null and the
-// device is in portrait orientation.
+// The animation view should be displayed if `animationViewWrapper` is not null
+// and the device is in portrait orientation.
 - (BOOL)shouldShowAnimation {
   return self.animationViewWrapper.animationView &&
          self.traitCollection.verticalSizeClass !=
              UIUserInterfaceSizeClassCompact;
+}
+
+// Checks if the animations are hidden or unhidden and plays (or stops) them
+// accordingly.
+- (void)updateAnimationsPlaying {
+  self.animationViewWrapper.animationView.hidden
+      ? [self.animationViewWrapper stop]
+      : [self.animationViewWrapper play];
+  self.animationViewWrapperDarkMode.animationView.hidden
+      ? [self.animationViewWrapperDarkMode stop]
+      : [self.animationViewWrapperDarkMode play];
 }
 
 @end
