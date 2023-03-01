@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"
 
 #include <cstddef>
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -46,8 +45,8 @@ DiagnosticsApiFunctionBase::GetRemoteService() {
 }
 
 template <class Params>
-std::unique_ptr<Params> DiagnosticsApiFunctionBase::GetParams() {
-  auto params = Params::CreateDeprecated(args());
+absl::optional<Params> DiagnosticsApiFunctionBase::GetParams() {
+  auto params = Params::Create(args());
   if (!params) {
     SetBadMessage();
     Respond(BadMessage());
@@ -318,7 +317,7 @@ void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunNvmeSelfTestRoutineFunction ---------------------------------
 
 void OsDiagnosticsRunNvmeSelfTestRoutineFunction::RunIfAllowed() {
-  const auto params = GetParams<diag::RunNvmeSelfTestRoutine::Params>();
+  auto params = GetParams<diag::RunNvmeSelfTestRoutine::Params>();
   if (!params) {
     return;
   }
@@ -355,9 +354,8 @@ void OsDiagnosticsRunSignalStrengthRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunSmartctlCheckRoutineFunction --------------------------------
 
 void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
-  std::unique_ptr<api::os_diagnostics::RunSmartctlCheckRoutine::Params> params(
-      api::os_diagnostics::RunSmartctlCheckRoutine::Params::CreateDeprecated(
-          args()));
+  absl::optional<api::os_diagnostics::RunSmartctlCheckRoutine::Params> params(
+      api::os_diagnostics::RunSmartctlCheckRoutine::Params::Create(args()));
 
   crosapi::mojom::UInt32ValuePtr percentage_used;
   if (params && params->request && params->request->percentage_used_threshold) {

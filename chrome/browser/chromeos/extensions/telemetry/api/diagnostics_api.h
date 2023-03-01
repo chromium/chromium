@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -31,7 +32,7 @@ class DiagnosticsApiFunctionBase
   // to the `Params` type. If the `Params` can't be created, this resolves the
   // corresponding JavaScript call with an error and returns `nullptr`.
   template <class Params>
-  std::unique_ptr<Params> GetParams();
+  absl::optional<Params> GetParams();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsCrosApiAvailable() override;
