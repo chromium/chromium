@@ -31,6 +31,10 @@ java_prebuilt("jacocoagent_java") {
   jar_path = "lib/jacocoagent.jar"
   proguard_configs = [ "jacoco_instrument.flags" ]
   deps = [ ":jacocoagent_properties_assets" ]
+
+  # Complains about java/util/jar/Pack200, and this isn't a library which gets
+  # used clientside anyways, so can just ignore this.
+  enable_bytecode_checks = false
 }
 
 java_prebuilt("jacocoant_java") {
