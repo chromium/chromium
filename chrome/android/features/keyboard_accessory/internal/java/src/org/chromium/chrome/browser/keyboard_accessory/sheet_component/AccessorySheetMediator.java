@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.PAGE_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
@@ -99,7 +100,8 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
             return;
         }
         if (propertyKey == ACTIVE_TAB_INDEX || propertyKey == AccessorySheetProperties.HEIGHT
-                || propertyKey == TOP_SHADOW_VISIBLE || propertyKey == PAGE_CHANGE_LISTENER) {
+                || propertyKey == TOP_SHADOW_VISIBLE || propertyKey == PAGE_CHANGE_LISTENER
+                || propertyKey == SHOW_KEYBOARD_CALLBACK) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";

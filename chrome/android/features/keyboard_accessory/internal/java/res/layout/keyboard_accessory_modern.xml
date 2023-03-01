@@ -37,27 +37,7 @@ found in the LICENSE file.
         android:orientation="horizontal"
         android:background="@macro/default_bg_color">
 
-        <ImageView
-            android:id="@+id/show_keyboard"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingStart="@dimen/keyboard_accessory_bar_item_padding"
-            android:paddingEnd="@dimen/keyboard_accessory_bar_item_padding"
-            android:paddingTop="@dimen/keyboard_accessory_image_top_padding"
-            android:paddingBottom="@dimen/keyboard_accessory_image_top_padding"
-            android:contentDescription="@string/keyboard_accessory_sheet_hide"
-            android:background="?attr/selectableItemBackground"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/sheet_title"
-            android:minHeight="48dp"
-            android:gravity="center_vertical|start"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:background="?android:attr/selectableItemBackground"
-            android:visibility="gone"/>
+        <include layout="@layout/accessory_sheet_header"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bar_items_view"
