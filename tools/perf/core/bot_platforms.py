@@ -794,7 +794,7 @@ LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
                                _LACROS_EVE_PERF_BENCHMARK_CONFIGS, 4,
                                'chromeos')
 LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
-                               10, 'chromeos')
+                               20, 'chromeos')
 # Fuchsia
 FUCHSIA_PERF_ASTRO = PerfPlatform('fuchsia-perf-ast',
                                   '',
