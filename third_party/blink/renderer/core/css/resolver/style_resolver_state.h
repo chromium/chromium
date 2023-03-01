@@ -94,7 +94,7 @@ class CORE_EXPORT StyleResolverState {
 
   void SetStyle(const ComputedStyle& style) {
     // FIXME: Improve RAII of StyleResolverState to remove this function.
-    style_builder_ = ComputedStyleBuilder(style);
+    style_builder_.emplace(style);
     UpdateLengthConversionData();
   }
   ComputedStyleBuilder& StyleBuilder() { return *style_builder_; }
