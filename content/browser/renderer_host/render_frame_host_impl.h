@@ -2671,7 +2671,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetOriginDependentStateOfNewFrame(RenderFrameHostImpl* creator_frame);
 
   // Returns the value of `this`'s main frame's
-  // RuntimeFeatureStateReadContext::IsThirdPartyStoragePartitioningEnabled()
+  // RuntimeFeatureStateReadContext::
+  // IsDisableThirdPartyStoragePartitioningEnabled()
   bool IsMainFrameThirdPartyStoragePartitioningEnabled();
 
   // Calculates the storage key for this RenderFrameHostImpl using the passed
