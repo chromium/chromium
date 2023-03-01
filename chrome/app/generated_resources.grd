@@ -7411,7 +7411,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Compact view
       </message>
       <message name="IDS_BOOKMARKS_SORT_MENU_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the button which opens the sort menu in the bookmarks side panel.">
-        View List Options
+        Sorting and list options
       </message>
       <message name="IDS_BOOKMARKS_CREATE_NEW_FOLDER_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the button which creates a new folder in the bookmarks side panel.">
         Create New Folder
@@ -7472,6 +7472,30 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_BOOKMARKS_DISABLED_FEATURE" desc="Body text for the dialog displayed when the user attempts to use a feature that is disabled by policy">
         Your administrator has disabled this feature.
+      </message>
+      <message name="IDS_BOOKMARKS_BACK_BUTTON_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the bookmarks side panel folder header back button">
+        Back to <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph>
+      </message>
+      <message name="IDS_BOOKMARKS_FORWARD_BUTTON_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the bookmarks side panel edit dialog button to view a folder's children">
+        <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph> folder
+      </message>
+      <message name="IDS_BOOKMARK_OPTIONS_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the bookmarks side panel context menu button">
+        Bookmark options
+      </message>
+      <message name="IDS_BOOKMARKS_OPEN_FOLDER_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for a bookmarks side panel folder list item">
+        Open folder <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph>
+      </message>
+      <message name="IDS_BOOKMARKS_OPEN_BOOKMARK_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for a bookmarks side panel folder list item">
+        Open <ph name="BOOKMARK_TITLE">$1<ex>New York Times</ex></ph>
+      </message>
+      <message name="IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_TRACKING" is_accessibility_with_no_ui="true" desc="Accessible description for price tracking data on a bookmarks side panel list item">
+        Price tracking is enabled. Price is <ph name="CURRENT_PRICE">$1<ex>400</ex></ph>.
+      </message>
+      <message name="IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_CHANGE" is_accessibility_with_no_ui="true" desc="Accessible description for price change data on a bookmarks side panel list item">
+        Price has changed from <ph name="PREVIOUS_PRICE">$1<ex>500</ex></ph> to <ph name="CURRENT_PRICE">$2<ex>400</ex></ph>.
+      </message>
+      <message name="IDS_BOOKMARKS_CHECKBOX_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the checkbox in the bookmarks side panel bulk edit mode">
+        Select
       </message>
 
       <!-- Reading mode strings -->

@@ -49,7 +49,7 @@
   <div slot="title">$i18n{editMoveFolderTo}</div>
   <div slot="body" class="body">
     <sp-heading hide-back-button="[[!activeFolderPath_.length]]"
-        back-button-label="TODO"
+        back-button-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBack_">
       <h2 slot="heading">[[getActiveFolderTitle_(activeFolderPath_.*)]]</h2>
     </sp-heading>
@@ -69,7 +69,7 @@
             <template is="dom-if"
                 if="[[hasChildFolders_(item, newFolders_.*)]]" restamp>
               <cr-icon-button class="subpage-arrow"
-                  aria-label="TODO"
+                  aria-label="[[getForwardButtonLabel_(item)]]"
                   on-click="onForward_">
               </cr-icon-button>
             </template>

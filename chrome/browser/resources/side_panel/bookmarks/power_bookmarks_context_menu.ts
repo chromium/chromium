@@ -39,7 +39,6 @@ export enum MenuItemId {
 export interface MenuItem {
   id: MenuItemId;
   label?: string;
-  trailingIcon?: string;
 }
 
 export class PowerBookmarksContextMenuElement extends PolymerElement {
@@ -138,8 +137,9 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
           {id: MenuItemId.DIVIDER},
           {
             id: MenuItemId.TRACK_PRICE,
-            label: loadTimeData.getString('menuTrackPrice'),
-            trailingIcon: this.priceTracked_ ? 'cr:check' : undefined,
+            label: this.priceTracked_ ?
+                loadTimeData.getString('menuUntrackPrice') :
+                loadTimeData.getString('menuTrackPrice'),
           },
       );
     }

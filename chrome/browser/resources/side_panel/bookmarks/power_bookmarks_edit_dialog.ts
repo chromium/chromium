@@ -86,12 +86,15 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     return undefined;
   }
 
-  private getActiveFolderTitle_() {
-    const activeFolder = this.getActiveFolder_();
-    if (activeFolder &&
-        activeFolder.id !== loadTimeData.getString('otherBookmarksId') &&
-        activeFolder.id !== loadTimeData.getString('mobileBookmarksId')) {
-      return activeFolder!.title;
+  private getActiveFolderTitle_(): string {
+    return this.getFolderTitle_(this.getActiveFolder_());
+  }
+
+  private getFolderTitle_(folder: chrome.bookmarks.BookmarkTreeNode|
+                          undefined): string {
+    if (folder && folder.id !== loadTimeData.getString('otherBookmarksId') &&
+        folder.id !== loadTimeData.getString('mobileBookmarksId')) {
+      return folder!.title;
     } else {
       return loadTimeData.getString('allBookmarks');
     }
@@ -105,6 +108,22 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
       return this.topLevelBookmarks_.filter(isFolder);
     }
     assertNotReached('No bookmarks to display in edit menu');
+  }
+
+  private getBackButtonLabel_(): string {
+    let activeFolderParent: chrome.bookmarks.BookmarkTreeNode|undefined;
+    if (this.activeFolderPath_.length > 1) {
+      activeFolderParent =
+          this.activeFolderPath_[this.activeFolderPath_.length - 2];
+    }
+    return loadTimeData.getStringF(
+        'backButtonLabel', this.getFolderTitle_(activeFolderParent));
+  }
+
+  private getForwardButtonLabel_(folder: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    return loadTimeData.getStringF(
+        'forwardButtonLabel', this.getFolderTitle_(folder));
   }
 
   private hasChildFolders_(folder: chrome.bookmarks.BookmarkTreeNode): boolean {

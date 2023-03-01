@@ -49,6 +49,14 @@ export class PowerBookmarkRowElement extends PolymerElement {
         reflectToAttribute: true,
         value: false,
       },
+      rowAriaDescription: {
+        type: String,
+        value: '',
+      },
+      rowAriaLabel: {
+        type: String,
+        value: '',
+      },
       trailingIcon: {
         type: String,
         value: '',
@@ -66,6 +74,8 @@ export class PowerBookmarkRowElement extends PolymerElement {
   description: string;
   hasCheckbox: boolean;
   hasInput: boolean;
+  rowAriaDescription: string;
+  rowAriaLabel: string;
   trailingIcon: string;
   trailingIconAriaLabel: string;
 

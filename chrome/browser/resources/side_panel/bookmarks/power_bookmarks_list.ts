@@ -336,13 +336,16 @@ export class PowerBookmarksListElement extends PolymerElement {
     return undefined;
   }
 
-  private getBookmarksListRole_(): string {
-    return this.editing_ ? 'listbox' : 'list';
+  private getBackButtonLabel_(): string {
+    const activeFolder = this.getActiveFolder_();
+    const parentFolder = this.bookmarksService_.findBookmarkWithId(
+        activeFolder ? activeFolder.parentId : undefined);
+    return loadTimeData.getStringF(
+        'backButtonLabel', this.getFolderLabel_(parentFolder));
   }
 
-  private getBookmarkName_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
-    return bookmark.title || bookmark.url || '';
+  private getBookmarksListRole_(): string {
+    return this.editing_ ? 'listbox' : 'list';
   }
 
   private getBookmarkDescription_(bookmark: chrome.bookmarks.BookmarkTreeNode):
@@ -361,6 +364,30 @@ export class PowerBookmarksListElement extends PolymerElement {
         return url;
       }
     }
+  }
+
+  private getBookmarkAllyLabel_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    if (bookmark.url) {
+      return loadTimeData.getStringF('openBookmarkLabel', bookmark.title);
+    } else {
+      return loadTimeData.getStringF('openFolderLabel', bookmark.title);
+    }
+  }
+
+  private getBookmarkA11yDescription_(
+      bookmark: chrome.bookmarks.BookmarkTreeNode): string {
+    let description = '';
+    if (this.isPriceTracked(bookmark)) {
+      description += loadTimeData.getStringF(
+          'a11yDescriptionPriceTracking', this.getCurrentPrice_(bookmark));
+      const previousPrice = this.getPreviousPrice_(bookmark);
+      if (previousPrice) {
+        description += loadTimeData.getStringF(
+            'a11yDescriptionPriceChange', previousPrice);
+      }
+    }
+    return description;
   }
 
   private getActiveFolderLabel_(): string {

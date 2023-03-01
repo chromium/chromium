@@ -93,7 +93,7 @@
 
 <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
     hidden$="[[hideBackButton]]" disabled$="[[disableBackButton]]"
-    on-click="onBackButtonClick_">
+    on-click="onBackButtonClick_" aria-label$="[[backButtonLabel]]">
 </cr-icon-button>
 
 <slot name="heading"></slot>

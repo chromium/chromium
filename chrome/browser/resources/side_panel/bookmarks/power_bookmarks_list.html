@@ -146,7 +146,7 @@
 
   <div class="sp-card">
     <sp-heading hidden$="[[guestMode_]]"
-        back-button-label="Test test test"
+        back-button-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
         hide-back-button="[[!activeFolderPath_.length]]"
         disable-back-button="[[disableBackButton_(
@@ -185,7 +185,7 @@
                               compactDescriptions_.*, expandedDescriptions_.*,
                               compact_)]]"
               compact="[[compact_]]" trailing-icon="cr:more-vert"
-              trailing-icon-aria-label="TODO"
+              trailing-icon-aria-label="$i18n{bookmarkOptionsA11yLabel}"
               has-checkbox="[[editing_]]"
               checkbox-disabled="[[!canEdit_(item)]]"
               has-input="[[renamingItem_(item.id, renamingId_)]]"
@@ -193,7 +193,10 @@
               on-context-menu="onShowContextMenuClicked_"
               on-trailing-icon-clicked="onShowContextMenuClicked_"
               on-checkbox-change="onRowSelectedChange_"
-              on-input-change="onRename_">
+              on-input-change="onRename_"
+              row-aria-label="[[getBookmarkAllyLabel_(item)]]"
+              row-aria-description="[[getBookmarkA11yDescription_(item)]]"
+              tabindex$="[[tabIndex]]">
             <div slot="badges">
               <template is="dom-if" restamp
                   if="[[isPriceTracked(item, trackedProductInfos_.*)]]">

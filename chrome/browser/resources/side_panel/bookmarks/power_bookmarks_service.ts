@@ -206,10 +206,13 @@ export class PowerBookmarksService {
    * Returns the BookmarkTreeNode with the given id, or undefined if one does
    * not exist.
    */
-  findBookmarkWithId(id: string): chrome.bookmarks.BookmarkTreeNode|undefined {
-    const path = this.findPathToId_(id);
-    if (path) {
-      return path[path.length - 1];
+  findBookmarkWithId(id: string|undefined): chrome.bookmarks.BookmarkTreeNode
+      |undefined {
+    if (id) {
+      const path = this.findPathToId_(id);
+      if (path) {
+        return path[path.length - 1];
+      }
     }
     return undefined;
   }

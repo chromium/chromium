@@ -54,7 +54,7 @@
     <cr-checkbox slot="prefix" hidden="[[!hasCheckbox]]"
         on-change="onCheckboxChange_"
         disabled="[[checkboxDisabled]]">
-      TODO: hidden label text
+      $i18n{checkboxA11yLabel}
     </cr-checkbox>
   </template>
 
@@ -62,14 +62,15 @@
     <cr-input slot="title" id="input" value="[[bookmark.title]]"
         on-change="onInputChange_" on-blur="onInputChange_"
         on-keypress="onInputKeyPress_"
-        aria-label="$i18n{bookmarkNameA11yLabel}">
+        aria-label="[[rowAriaLabel]]"
+        aria-description="[[rowAriaDescription]]">
     </cr-input>
   </template>
 
   <template is="dom-if" if="[[!hasInput]]"
       on-dom-change="onInputDisplayChange_">
     <button slot="title" id="title" role="button" tabindex="0"
-        aria-labelledby="title description badges">
+        aria-label="[[rowAriaLabel]]" aria-description="[[rowAriaDescription]]">
       [[bookmark.title]]
     </button>
 
@@ -80,6 +81,6 @@
 
     <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
         hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
-        disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel_]]">
+        disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel]]">
   </template>
 </cr-url-list-item>

@@ -80,6 +80,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       menuOpenIncognitoWithCount: 'Open all in Incognito window',
       menuMoveToBookmarksBar: 'Move to Bookmarks Bar folder',
       menuTrackPrice: 'Track price',
+      menuUntrackPrice: 'Untrack price',
       menuRename: 'Rename',
       tooltipDelete: 'Delete',
     });
@@ -180,7 +181,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         true);
     assertEquals(
         menuItems[4]!.textContent!.includes(
-            loadTimeData.getString('menuTrackPrice')),
+            loadTimeData.getString('menuUntrackPrice')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(

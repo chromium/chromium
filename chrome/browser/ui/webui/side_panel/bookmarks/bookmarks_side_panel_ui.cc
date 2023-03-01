@@ -101,6 +101,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"menuMoveToBookmarksBar", IDS_BOOKMARKS_MOVE_TO_BOOKMARKS_BAR},
       {"menuMoveToAllBookmarks", IDS_BOOKMARKS_MOVE_TO_ALL_BOOKMARKS},
       {"menuTrackPrice", IDS_SIDE_PANEL_TRACK_BUTTON},
+      {"menuUntrackPrice", IDS_SIDE_PANEL_UNTRACK_BUTTON},
       {"menuRename", IDS_BOOKMARKS_RENAME},
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
       {"undoBookmarkDeletion", IDS_UNDO_BOOKMARK_DELETION},
@@ -110,6 +111,16 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"editCancel", IDS_BOOKMARKS_EDIT_CANCEL},
       {"editSave", IDS_BOOKMARKS_EDIT_SAVE},
       {"disabledFeature", IDS_BOOKMARKS_DISABLED_FEATURE},
+      {"backButtonLabel", IDS_BOOKMARKS_BACK_BUTTON_LABEL},
+      {"forwardButtonLabel", IDS_BOOKMARKS_FORWARD_BUTTON_LABEL},
+      {"bookmarkOptionsA11yLabel", IDS_BOOKMARK_OPTIONS_LABEL},
+      {"openFolderLabel", IDS_BOOKMARKS_OPEN_FOLDER_LABEL},
+      {"openBookmarkLabel", IDS_BOOKMARKS_OPEN_BOOKMARK_LABEL},
+      {"a11yDescriptionPriceTracking",
+       IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_TRACKING},
+      {"a11yDescriptionPriceChange",
+       IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_CHANGE},
+      {"checkboxA11yLabel", IDS_BOOKMARKS_CHECKBOX_LABEL},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
