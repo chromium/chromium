@@ -116,7 +116,10 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
 
   // The last set of features passed to FrameOrWorkerScheduler::Delegate::
   // UpdateBackForwardCacheDisablingFeatures.
+  // TODO(yuzus): Remove the feature mask.
   uint64_t last_uploaded_bfcache_disabling_features_ = 0;
+  BFCacheBlockingFeatureAndLocations last_reported_non_sticky_;
+  BFCacheBlockingFeatureAndLocations last_reported_sticky_;
   bool feature_report_scheduled_ = false;
 
   BFCacheBlockingFeatureAndLocations non_sticky_features_and_js_locations_;
