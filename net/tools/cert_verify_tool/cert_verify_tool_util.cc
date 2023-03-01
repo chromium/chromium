@@ -144,7 +144,7 @@ bool ReadFromFile(const base::FilePath& file_path, std::string* file_data) {
 }
 
 bool WriteToFile(const base::FilePath& file_path, const std::string& data) {
-  if (base::WriteFile(file_path, data.data(), data.size()) < 0) {
+  if (!base::WriteFile(file_path, data)) {
     std::cerr << "ERROR: WriteFile " << file_path.value() << ": "
               << strerror(errno) << "\n";
     return false;

@@ -286,8 +286,7 @@ int main(int argc, char* argv[]) {
   base::FilePath output_path;
   output_path = base::FilePath(args[4]);
 
-  if (base::WriteFile(output_path, output.c_str(),
-                      static_cast<uint32_t>(output.size())) <= 0) {
+  if (!base::WriteFile(output_path, output)) {
     LOG(ERROR) << "Failed to write output.";
     return 1;
   }

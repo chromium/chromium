@@ -712,8 +712,8 @@ class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
         base::MakeAbsoluteFilePath(temp_dir_.GetPath());
 
     ASSERT_TRUE(base::CreateTemporaryFileInDir(absolute_temp_dir, test_file));
-    ASSERT_EQ(static_cast<int>(data_size),
-              base::WriteFile(*test_file, data, data_size));
+    ASSERT_TRUE(
+        base::WriteFile(*test_file, base::StringPiece(data, data_size)));
   }
 
   static std::unique_ptr<ConfiguredProxyResolutionService>

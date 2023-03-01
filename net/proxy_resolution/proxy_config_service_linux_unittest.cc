@@ -1725,8 +1725,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEConfigParser) {
             std::move(env), TRAFFIC_ANNOTATION_FOR_TESTS));
     ProxyConfigWithAnnotation config;
     // Overwrite the kioslaverc file.
-    base::WriteFile(kioslaverc_, tests[i].kioslaverc.c_str(),
-                    tests[i].kioslaverc.length());
+    base::WriteFile(kioslaverc_, tests[i].kioslaverc);
     sync_config_getter.SetupAndInitialFetch();
     ProxyConfigService::ConfigAvailability availability =
         sync_config_getter.SyncGetLatestProxyConfig(&config);
@@ -1758,7 +1757,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
                                        "");                  // bypass rules
 
   // Overwrite the .kde kioslaverc file.
-  base::WriteFile(kioslaverc_, slaverc3.c_str(), slaverc3.length());
+  base::WriteFile(kioslaverc_, slaverc3);
 
   // If .kde4 exists it will mess up the first test. It should not, as
   // we created the directory for $HOME in the test setup.
@@ -1783,7 +1782,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
   // Now create .kde4 and put a kioslaverc in the config directory.
   // Note that its timestamp will be at least as new as the .kde one.
   base::CreateDirectory(kde4_config_);
-  base::WriteFile(kioslaverc4_, slaverc4.c_str(), slaverc4.length());
+  base::WriteFile(kioslaverc4_, slaverc4);
   CHECK(base::PathExists(kioslaverc4_));
 
   {
@@ -1857,7 +1856,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEHomePicker) {
 
   // For KDE 5 create ${HOME}/.config and put a kioslaverc in the directory.
   base::CreateDirectory(config_home_);
-  base::WriteFile(kioslaverc5_, slaverc5.c_str(), slaverc5.length());
+  base::WriteFile(kioslaverc5_, slaverc5);
   CHECK(base::PathExists(kioslaverc5_));
 
   {
