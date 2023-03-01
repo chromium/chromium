@@ -3217,7 +3217,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" translateable="false" desc="Label for accelerator action - Previous pane.">
         Previous pane
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_SHELF" translateable="false" desc="Label for accelerator action - Highlight launcher button on shelf.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_SHELF" desc="Label for accelerator action - Highlight launcher button on shelf.">
         Highlight launcher button on shelf
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Toggle keyboard backlight.">
@@ -3244,10 +3244,10 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_SCREEN" translateable="false" desc="Label for accelerator action - Lock screen.">
         Lock screen
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MAGNIFIER_ZOOM_IN" translateable="false" desc="Label for accelerator action - Zoom in when magnifier is on.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MAGNIFIER_ZOOM_IN" desc="Label for accelerator action - Zoom in when magnifier is on.">
         Zoom in when magnifier is on
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MAGNIFIER_ZOOM_OUT" translateable="false" desc="Label for accelerator action - Zoom out when magnifier is on.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MAGNIFIER_ZOOM_OUT" desc="Label for accelerator action - Zoom out when magnifier is on.">
         Zoom out when magnifier is on
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_FAST_FORWARD" translateable="false" desc="Label for accelerator action - Fast forward the media.">
@@ -3400,7 +3400,7 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DICTATION" translateable="false" desc="Label for accelerator action - Open/close dictation.">
         Open/close dictation
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DOCKED_MAGNIFIER" translateable="false" desc="Label for accelerator action - Turn magnifier on or off.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DOCKED_MAGNIFIER" desc="Label for accelerator action - Turn magnifier on or off.">
         Turn magnifier on or off
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FLOATING" translateable="false" desc="Label for accelerator action - Toggle floating.">
@@ -3409,10 +3409,10 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FULLSCREEN" translateable="false" desc="Label for accelerator action - Enter or exit fullscreen.">
         Enter or exit fullscreen
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FULLSCREEN_MAGNIFIER" translateable="false" desc="Label for accelerator action - Turn fullscreen magnifer on or off.">
+       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_FULLSCREEN_MAGNIFIER" desc="Label for accelerator action - Turn fullscreen magnifer on or off.">
         Turn fullscreen magnifer on or off
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_HIGH_CONTRAST" translateable="false" desc="Label for accelerator action - Turn on high contrast mode.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_HIGH_CONTRAST" desc="Label for accelerator action - Turn on high contrast mode.">
         Turn on high contrast mode
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MAXIMIZED" translateable="false" desc="Label for accelerator action - Maximize window.">
@@ -3427,8 +3427,8 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_RESIZE_LOCK_MENU" translateable="false" desc="Label for accelerator action - Toggle menu to resize lock mode.">
         Toggle menu to resize lock mode
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK" translateable="false" desc="Label for accelerator action - Turn ChromeVox (spoken feedback) on or off.">
-        Turn ChromeVox (spoken feedback) on or off
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK" desc="Label for accelerator action - Turn on/off ChromeVox (spoken feedback).">
+        Turn on/off ChromeVox (spoken feedback)
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_WIFI" translateable="false" desc="Label for accelerator action - Turn wifi on or off.">
         Turn wifi on or off
@@ -3685,10 +3685,10 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_LOCATION" translateable="false" desc="Label for accelerator action - Focus address bar.">
         Focus address bar
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_TOOLBAR" translateable="false" desc="Label for accelerator action - Highlight the row with the address bar.">
-        Highlight the row with the address bar
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_TOOLBAR" desc="Label for accelerator action - Select first icon to the left of address bar.">
+        Select first icon to the left of address bar
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY" translateable="false" desc="Label for accelerator action - Move focus to popups and dialogs.">
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY" desc="Label for accelerator action - Move focus to popups and dialogs.">
         Move focus to popups and dialogs
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOTTOM_PAGE" translateable="false" desc="Label for accelerator action - Go to bottom of page.">
@@ -3760,22 +3760,22 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_FILE" translateable="false" desc="Label for accelerator description - Preview a file in the Files app.">
         Preview a file in the Files app
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_HIGHLIGHTED_ITEM_ON_SHELF" translateable="false" desc="Label for accelerator description - Open the highlighted item on your shelf.">
-        Open the highlighted item on your shelf
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_HIGHLIGHTED_ITEM_ON_SHELF" desc="Label for accelerator description - Open highlighted item from shelf.">
+        Open highlighted item from shelf
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_HIGHLIGHT_NEXT_ITEM_ON_SHELF" translateable="false" desc="Label for accelerator description - Highlight the next item on your shelf.">
-        Highlight the next item on your shelf
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_HIGHLIGHT_NEXT_ITEM_ON_SHELF" desc="Label for accelerator description - Highlight next item on shelf.">
+        Highlight next item on shelf
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_HIGHTLIGHT_PREVIOUS_ITEM_ON_SHELF" translateable="false" desc="Label for accelerator description - Highlight the previous item on your shelf.">
-        Highlight the previous item on your shelf
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_HIGHTLIGHT_PREVIOUS_ITEM_ON_SHELF" desc="Label for accelerator description - Highlight previous item on shelf.">
+        Highlight previous item on shelf
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_APPS_IN_GRID" translateable="false" desc="Label for accelerator description - Move an app icon around the app grid.">
-        Move an app icon around the app grid
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_APPS_IN_GRID" desc="Label for accelerator description - Move an app icon within app grid.">
+        Move an app icon within app grid
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_APPS_IN_OUT_FOLDER" translateable="false" desc="Label for accelerator description - Move an app icon in/out of a folder in the app grid.">
-        Move an app icon in/out of a folder in the app grid
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_APPS_IN_OUT_FOLDER" desc="Label for accelerator description - Move an app icon in/out of a folder in app grid.">
+        Move an app icon in/out of a folder in app grid
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_REMOVE_HIGHLIGHT_ON_SHELF" translateable="false" desc="Label for accelerator description - Remove the highlight from an item on your shelf.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_REMOVE_HIGHLIGHT_ON_SHELF" desc="Label for accelerator description - Remove the highlight from an item on your shelf.">
         Remove the highlight from an item on your shelf
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK" translateable="false" desc="Label for accelerator description - Go to desk 1 to 8.">
@@ -3784,14 +3784,14 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DISPLAY_HIDDEN_FILES" translateable="false" desc="Label for accelerator description - Display hidden files.">
         Display hidden files in the Files app
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_RIGHT_CLICK_MENU" translateable="false" desc="Label for accelerator description - Open right-click menu for highlighted item.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_OPEN_RIGHT_CLICK_MENU" desc="Label for accelerator description - Open right-click menu for highlighted item.">
         Open right-click menu for highlighted item
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CARET_BROWSING" translateable="false" desc="Label for accelerator description - Turn caret browsing on or off.">
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CARET_BROWSING" desc="Label for accelerator description - Turn caret browsing on or off.">
         Turn caret browsing on or off
       </message>
-      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS" translateable="false" desc="Label for accelerator description - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
-        Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS" desc="Label for accelerator description - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
+        Move between bottom right corner, Launcher, address bar, bookmarks bar, website that's open, and downloads
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_COPY" translateable="false" desc="Label for accelerator description - Copy selected content to clipboard.">
         Copy selected content to clipboard
