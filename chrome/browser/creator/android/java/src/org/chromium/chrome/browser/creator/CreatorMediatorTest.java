@@ -119,7 +119,7 @@ public class CreatorMediatorTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCreatorCoordinator = new CreatorCoordinator(mActivity, mWebFeedId, mSnackbarManager,
                 mWindowAndroid, mProfile, mUrl, mCreatorWebContents, mCreatorOpenTab,
-                mShareDelegateSupplier, SingleWebFeedEntryPoint.OTHER);
+                mShareDelegateSupplier, SingleWebFeedEntryPoint.OTHER, /* isFollowing= */ false);
         mCreatorModel = mCreatorCoordinator.getCreatorModel();
 
         mCreatorMediator =
