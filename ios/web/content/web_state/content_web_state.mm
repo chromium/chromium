@@ -6,7 +6,11 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
+#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/favicon/favicon_status.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/web_state_observer.h"
+#import "ios/web/text_fragments/text_fragments_manager_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,9 +30,25 @@ ContentWebState::ContentWebState(const CreateParams& params) {
   CRCWebViewProxyImpl* proxy = [[CRCWebViewProxyImpl alloc] init];
   proxy.contentView = web_view_;
   web_view_proxy_ = proxy;
+
+  // These should be moved when the are removed from CRWWebController.
+  web::JavaScriptFindInPageManagerImpl::CreateForWebState(this);
+  web::TextFragmentsManagerImpl::CreateForWebState(this);
+
+  UUID_ = [[NSUUID UUID] UUIDString];
 }
 
-ContentWebState::~ContentWebState() {}
+ContentWebState::~ContentWebState() {
+  for (auto& observer : observers_) {
+    observer.WebStateDestroyed(this);
+  }
+  for (auto& observer : policy_deciders_) {
+    observer.WebStateDestroyed();
+  }
+  for (auto& observer : policy_deciders_) {
+    observer.ResetWebState();
+  }
+}
 
 WebStateDelegate* ContentWebState::GetDelegate() {
   return nullptr;
@@ -128,7 +148,7 @@ void ContentWebState::LoadData(NSData* data,
 void ContentWebState::ExecuteUserJavaScript(NSString* javaScript) {}
 
 NSString* ContentWebState::GetStableIdentifier() const {
-  return @"content";
+  return UUID_;
 }
 
 const std::string& ContentWebState::GetContentsMimeType() const {
@@ -204,9 +224,13 @@ CRWWebViewProxyType ContentWebState::GetWebViewProxy() const {
   return web_view_proxy_;
 }
 
-void ContentWebState::AddObserver(WebStateObserver* observer) {}
+void ContentWebState::AddObserver(WebStateObserver* observer) {
+  observers_.AddObserver(observer);
+}
 
-void ContentWebState::RemoveObserver(WebStateObserver* observer) {}
+void ContentWebState::RemoveObserver(WebStateObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void ContentWebState::CloseWebState() {}
 
@@ -257,9 +281,13 @@ id ContentWebState::GetActivityItem() {
   return nil;
 }
 
-void ContentWebState::AddPolicyDecider(WebStatePolicyDecider* decider) {}
+void ContentWebState::AddPolicyDecider(WebStatePolicyDecider* decider) {
+  policy_deciders_.AddObserver(decider);
+}
 
-void ContentWebState::RemovePolicyDecider(WebStatePolicyDecider* decider) {}
+void ContentWebState::RemovePolicyDecider(WebStatePolicyDecider* decider) {
+  policy_deciders_.RemoveObserver(decider);
+}
 
 void ContentWebState::DidChangeVisibleSecurityState() {}
 

@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/observer_list.h"
 #import "build/blink_buildflags.h"
 #import "ios/web/content/js_messaging/content_web_frames_manager.h"
 #import "ios/web/content/navigation/content_navigation_manager.h"
@@ -119,6 +120,9 @@ class ContentWebState : public WebState {
  private:
   UIScrollView* web_view_;
   id<CRWWebViewProxy> web_view_proxy_;
+  NSString* UUID_;
+  base::ObserverList<WebStatePolicyDecider, true> policy_deciders_;
+  base::ObserverList<WebStateObserver, true> observers_;
   std::unique_ptr<ContentNavigationManager> navigation_manager_;
   std::unique_ptr<ContentWebFramesManager> web_frames_manager_;
 };

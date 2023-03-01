@@ -21,8 +21,10 @@ source_set("content") {
   deps = [
     "//base",
     "//build:blink_buildflags",
+    "//ios/web/find_in_page:find_in_page",
     "//ios/web/public",
     "//ios/web/public/favicon",
     "//ios/web/public/js_messaging",
+    "//ios/web/text_fragments:text_fragments",
   ]
 }
