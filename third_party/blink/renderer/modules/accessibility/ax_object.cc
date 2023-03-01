@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
@@ -691,7 +692,11 @@ void AXObject::Detach() {
 
 #if DCHECK_IS_ON()
   DCHECK(ax_object_cache_);
-  DCHECK(!ax_object_cache_->IsFrozen())
+  // AXInlineTextBox objects are the only objects that are safe to remove during
+  // serialization. This occurs when a the serializer reaches a static text
+  // object and its ignored state changes. Ignored static text boxes should not
+  // have any inline textbox children, and they are removed by ClearChildren().
+  DCHECK(!ax_object_cache_->IsFrozen() || IsAXInlineTextBox())
       << "Do not detach children while the tree is frozen, in order to avoid "
          "an object detaching itself in the middle of computing its own "
          "accessibility properties.";
@@ -743,6 +748,10 @@ void AXObject::SetParent(AXObject* new_parent) const {
         << "Cannot set parent to a detached object:"
         << "\n* Child: " << ToString(true, true)
         << "\n* New parent: " << new_parent->ToString(true, true);
+
+    DCHECK(!IsAXInlineTextBox() ||
+           ui::CanHaveInlineTextBoxChildren(new_parent->RoleValue()))
+        << "Unexpected parent of inline text box: " << new_parent->RoleValue();
   }
 
   // Check to ensure that if the parent is changing from a previous parent,
@@ -834,7 +843,15 @@ AXObject* AXObject::ComputeParentOrNull() const {
 #endif
 
   AXObject* ax_parent = nullptr;
-  if (AXObjectCache().IsAriaOwned(this)) {
+  if (IsAXInlineTextBox()) {
+    NOTREACHED()
+        << "AXInlineTextBox box tried to compute a new parent, but they are "
+           "not allowed to exist even temporarily without a parent, as their "
+           "existence depends on the parent text object. Parent text = "
+        << (AXObjectCache().SafeGet(GetNode())
+                ? AXObjectCache().SafeGet(GetNode())->ToString(true, true)
+                : "");
+  } else if (AXObjectCache().IsAriaOwned(this)) {
     ax_parent = AXObjectCache().ValidatedAriaOwner(this);
   } else if (IsVirtualObject()) {
     ax_parent =
@@ -961,16 +978,14 @@ bool AXObject::CanHaveChildren(Element& element) {
     return false;
   }
 
-  if (IsA<HTMLBRElement>(element) &&
-      (!element.GetLayoutObject() || !element.GetLayoutObject()->IsBR())) {
-    // A <br> element that is not treated as a line break could occur when the
-    // <br> element has DOM children. A <br> does not usually have DOM children,
-    // but there is nothing preventing a script from creating this situation.
-    // This anomalous child content is not rendered, and therefore AXObjects
-    // should not be created for the children. Enforcing that <br>s to only have
-    // children when they are line breaks also helps create consistency: any AX
-    // child of a <br> will always be an AXInlineTextBox.
-    return false;
+  if (IsA<HTMLBRElement>(element)) {
+    // Normally, a <br> is allowed to have a single inline text box child.
+    // However, a <br> element that has DOM children can occur only if a script
+    // adds the children, and Blink will not render those children. This is an
+    // obscure edge case that should only occur during fuzzing, but to maintain
+    // tree consistency and prevent DCHECKs, AXObjects for <br> elements are not
+    // allowed to have children if there are any DOM children at all.
+    return !element.hasChildren();
   }
 
   if (IsA<HTMLHRElement>(element)) {
@@ -3356,6 +3371,11 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled())
     return true;
 
+  // If an inline text box is ignored, it is never included in the tree.
+  if (IsAXInlineTextBox()) {
+    return false;
+  }
+
   if (AXObjectCache().IsAriaOwned(this) || HasARIAOwns(GetElement())) {
     // Always include an aria-owned object. It must be a child of the
     // element with aria-owns.
@@ -3377,8 +3397,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
           << GetLayoutObject();
     } else {
       // Include ignored mock objects, virtual objects and inline text boxes.
-      DCHECK(IsMockObject() || IsVirtualObject() ||
-             RoleValue() == ax::mojom::blink::Role::kInlineTextBox)
+      DCHECK(IsMockObject() || IsVirtualObject())
           << "Nodeless, layout-less object found with role " << RoleValue();
     }
     // By including all of these objects in the tree, it is ensured that
@@ -5365,6 +5384,18 @@ void AXObject::ClearChildren() const {
 #endif
 
   for (const auto& child : children_) {
+    // AXInlineTextBoxes depend on their parent's static text as well is the
+    // parent's ignored state. Therefore, if something changed in a parent
+    // static text causing its children to be cleared, remove any
+    // AXInlineTextBox children from the cache rather than just detaching from
+    // the parent, so they are not leaked. If the static text needs
+    // AXInlineTextBoxes again in the future, it will create them based on the
+    // AbstractInlineTextBoxes present at that time. Other types of objects do
+    // not need this treatment --they are removed based on signals from Blink.
+    if (child->IsAXInlineTextBox() && !AXObjectCache().HasBeenDisposed()) {
+      AXObjectCache().Remove(child->GetInlineTextBox(), false);
+      continue;
+    }
     // Check parent first, as the child might be several levels down if there
     // are unincluded nodes in between, in which case the cached parent will
     // also be a descendant (unlike children_, parent_ does not skip levels).
@@ -5477,6 +5508,17 @@ void AXObject::ChildrenChangedWithCleanLayout() {
                         << ToString(true, true);
 
   AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
+
+  // Special case: when the children of a layout inline are changed, it can
+  // cause whitespace redundancy in the parent object to change as well.
+  if (IsA<LayoutInline>(GetLayoutObject())) {
+    if (AXObject* ax_parent = CachedParentObject()) {
+      if (LayoutBlockFlow* layout_block_flow =
+              DynamicTo<LayoutBlockFlow>(ax_parent->GetLayoutObject())) {
+        ax_parent->ChildrenChangedWithCleanLayout();
+      }
+    }
+  }
 }
 
 Node* AXObject::GetNode() const {

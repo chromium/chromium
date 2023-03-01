@@ -160,6 +160,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(Node*) override;
   void Remove(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
+  void Remove(AbstractInlineTextBox*, bool notify_parent);
   void RemoveSubtree(AXObject* object);
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
@@ -565,7 +566,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // parent will recompute its children and be reserialized.
   void Remove(AXObject*);
   // These helpers not be called directly.
-  void Remove(AXID);
+  void Remove(AXID, bool notify_parent = true);
   void RemoveAXID(AXObject*);
 
   mojo::Remote<mojom::blink::RenderAccessibilityHost>&

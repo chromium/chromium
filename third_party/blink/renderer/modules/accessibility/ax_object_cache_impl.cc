@@ -1421,6 +1421,8 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     DCHECK(parent->RoleValue() == ax::mojom::blink::Role::kStaticText ||
            parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
     DCHECK(!obj->CachedParentObject() || obj->CachedParentObject() == parent);
+    DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
+        << "Unexpected parent of inline text box: " << parent->RoleValue();
 #endif
     obj->SetParent(parent);
     return obj;
@@ -1481,14 +1483,17 @@ void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(AXObject* subtree,
 
 void AXObjectCacheImpl::Remove(AXObject* object) {
   DCHECK(object);
-  if (object->GetNode())
+  if (object->GetNode()) {
     Remove(object->GetNode());
-  else if (object->GetLayoutObject())
+  } else if (object->GetLayoutObject()) {
     Remove(object->GetLayoutObject());
-  else if (object->GetAccessibleNode())
+  } else if (object->GetAccessibleNode()) {
     Remove(object->GetAccessibleNode());
-  else
+  } else if (object->IsAXInlineTextBox()) {
+    Remove(object->GetInlineTextBox());
+  } else {
     Remove(object->AXObjectID());
+  }
 }
 
 // This is safe to call even if there isn't a current mapping.
@@ -1498,7 +1503,7 @@ void AXObjectCacheImpl::Remove(AXObject* object) {
 //   then descending down into the subtree.
 // - When layout for a subtree is detached, it is called on layout objects,
 //   starting with leaves and moving upward, ending with the subtree root.
-void AXObjectCacheImpl::Remove(AXID ax_id) {
+void AXObjectCacheImpl::Remove(AXID ax_id, bool notify_parent) {
   if (!ax_id)
     return;
 
@@ -1508,7 +1513,9 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!obj)
     return;
 
-  ChildrenChangedOnAncestorOf(obj);
+  if (notify_parent) {
+    ChildrenChangedOnAncestorOf(obj);
+  }
   obj->Detach();
 
   RemoveAXID(obj);
@@ -1616,6 +1623,11 @@ void AXObjectCacheImpl::Remove(Document* document) {
 
 // This is safe to call even if there isn't a current mapping.
 void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
+  Remove(inline_text_box, /* notify_parent */ true);
+}
+
+void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box,
+                               bool notify_parent) {
   if (!inline_text_box)
     return;
 
@@ -1626,7 +1638,7 @@ void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
   AXID ax_id = iter->value;
   inline_text_box_object_mapping_.erase(iter);
 
-  Remove(ax_id);
+  Remove(ax_id, notify_parent);
 }
 
 void AXObjectCacheImpl::RemoveSubtree(AXObject* object) {

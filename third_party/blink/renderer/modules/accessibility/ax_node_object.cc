@@ -4050,13 +4050,9 @@ void AXNodeObject::ForceAddInlineTextBoxChildren() {
 }
 
 void AXNodeObject::AddInlineTextBoxChildren(bool force) {
-  Document* document = GetDocument();
-  if (!document) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK(GetDocument());
 
-  Settings* settings = document->GetSettings();
+  Settings* settings = GetDocument()->GetSettings();
   if (!force &&
       (!settings || !settings->GetInlineTextBoxAccessibilityEnabled())) {
     return;
@@ -4065,12 +4061,7 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
   if (!GetLayoutObject() || !GetLayoutObject()->IsText())
     return;
 
-  if (GetLayoutObject()->NeedsLayout()) {
-    // If a LayoutText or a LayoutBR needs layout, its inline text boxes are
-    // either nonexistent or invalid, so defer until the layout happens and the
-    // layoutObject calls AXObjectCacheImpl::inlineTextBoxesUpdated.
-    return;
-  }
+  DCHECK(!GetLayoutObject()->NeedsLayout());
 
   if (LastKnownIsIgnoredValue()) {
     // Inline textboxes are included if and only if the parent is unignored.

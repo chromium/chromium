@@ -69,6 +69,7 @@ struct AXRelativeBounds;
 namespace blink {
 
 class AccessibleNodeList;
+class AbstractInlineTextBox;
 class AXObject;
 class AXObjectCacheImpl;
 class LayoutObject;
@@ -327,6 +328,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
                                      AtomicString& result) const;
   virtual AccessibleNode* GetAccessibleNode() const;
+  virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   static void TokenVectorFromAttribute(Element* element,
                                        Vector<String>&,
