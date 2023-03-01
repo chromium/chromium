@@ -55,6 +55,12 @@ constexpr char kOutputVolumeChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.OutputVolumeSetTo";
 constexpr char kInputGainChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.InputGainSetTo";
+constexpr char kAudioDeviceChangeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.DeviceChange";
+constexpr char kOutputDeviceTypeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo";
+constexpr char kInputDeviceTypeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo";
 
 struct AudioNodeInfo {
   bool is_input;
@@ -776,6 +782,12 @@ TEST_F(CrosAudioConfigImplTest, SetActiveOutputDevice) {
   ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
                   ->output_devices[1]
                   ->is_active);
+  histogram_tester_.ExpectBucketCount(kAudioDeviceChangeHistogramName,
+                                      AudioDeviceChange::kOutputDevice, 1);
+  histogram_tester_.ExpectBucketCount(kAudioDeviceChangeHistogramName,
+                                      AudioDeviceChange::kInputDevice, 0);
+  histogram_tester_.ExpectBucketCount(kOutputDeviceTypeHistogramName,
+                                      AudioDeviceType::kHdmi, 1);
 }
 
 TEST_F(CrosAudioConfigImplTest, SetActiveInputDevice) {
@@ -800,6 +812,12 @@ TEST_F(CrosAudioConfigImplTest, SetActiveInputDevice) {
   ASSERT_TRUE(fake_observer->last_audio_system_properties_.value()
                   ->input_devices[1]
                   ->is_active);
+  histogram_tester_.ExpectBucketCount(kAudioDeviceChangeHistogramName,
+                                      AudioDeviceChange::kOutputDevice, 0);
+  histogram_tester_.ExpectBucketCount(kAudioDeviceChangeHistogramName,
+                                      AudioDeviceChange::kInputDevice, 1);
+  histogram_tester_.ExpectBucketCount(kInputDeviceTypeHistogramName,
+                                      AudioDeviceType::kUsb, 1);
 }
 
 TEST_F(CrosAudioConfigImplTest, HandleInputMuteState) {

@@ -21,6 +21,15 @@ enum class AudioMuteButtonAction {
   kMaxValue = kUnmuted,
 };
 
+// This enum is used in histograms, do not remove/renumber entries. If you're
+// adding to this enum, update the corresponding enum listing in
+// tools/metrics/histograms/enums.xml.
+enum class AudioDeviceChange {
+  kOutputDevice = 0,
+  kInputDevice = 1,
+  kMaxValue = kInputDevice,
+};
+
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
     : public CrosAudioConfig,
       public CrasAudioHandler::AudioObserver {

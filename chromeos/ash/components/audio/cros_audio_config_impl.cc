@@ -30,6 +30,12 @@ constexpr char kOutputVolumeChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.OutputVolumeSetTo";
 constexpr char kInputGainChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.InputGainSetTo";
+constexpr char kAudioDeviceChangeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.DeviceChange";
+constexpr char kOutputDeviceTypeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo";
+constexpr char kInputDeviceTypeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo";
 
 // Creates an inactive input device with default property configuration.
 AudioDevice CreateStubInternalMic() {
@@ -294,6 +300,17 @@ void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
         *next_active_device, /*notify=*/true,
         CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
   }
+
+  // Record if it was an output or input device that changed.
+  base::UmaHistogramEnumeration(kAudioDeviceChangeHistogramName,
+                                next_active_device->is_input
+                                    ? AudioDeviceChange::kInputDevice
+                                    : AudioDeviceChange::kOutputDevice);
+  // Record the type of audio device changed.
+  base::UmaHistogramEnumeration(next_active_device->is_input
+                                    ? kInputDeviceTypeHistogramName
+                                    : kOutputDeviceTypeHistogramName,
+                                next_active_device->type);
 }
 
 void CrosAudioConfigImpl::SetInputMuted(bool muted) {

@@ -22,6 +22,28 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="ChromeOS.CrosAudioConfig.DeviceChange"
+    enum="AudioDeviceChange" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when the user changes either the input or output audio device from
+    a WebUI, such as the OS Audio Settings page. Not recorded when the audio
+    device is programmatically changed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo"
+    enum="AudioDeviceType" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the type of device selected when the user changes the input audio
+    device from a WebUI, such as the OS Audio Settings page. Not recorded when
+    the audio device is programmatically changed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.CrosAudioConfig.InputGainSetTo" units="%"
     expires_after="2024-02-14">
   <owner>gavinwill@chromium.org</owner>
@@ -51,6 +73,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Recorded when the user enables/disables noise cancellation from a WebUI,
     such as the OS Audio Settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo"
+    enum="AudioDeviceType" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the type of device selected when the user changes the output audio
+    device from a WebUI, such as the OS Audio Settings page. Not recorded when
+    the audio device is programmatically changed.
   </summary>
 </histogram>
 

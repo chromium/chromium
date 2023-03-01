@@ -5570,6 +5570,11 @@ others/histograms.xml -->
   <int value="1" label="xHE-AAC"/>
 </enum>
 
+<enum name="AudioDeviceChange">
+  <int value="0" label="Output Device"/>
+  <int value="1" label="Input Device"/>
+</enum>
+
 <enum name="AudioDevicePropertyResult">
   <int value="0" label="Other"/>
   <int value="1" label="Device has changed"/>
@@ -5626,6 +5631,26 @@ others/histograms.xml -->
   <int value="52" label="Clock source"/>
   <int value="53" label="Clock sources"/>
   <int value="54" label="Sub mute"/>
+</enum>
+
+<enum name="AudioDeviceType">
+  <int value="0" label="Headphone"/>
+  <int value="1" label="Microphone"/>
+  <int value="2" label="USB"/>
+  <int value="3" label="Bluetooth"/>
+  <int value="4" label="Bluetooth microphone"/>
+  <int value="5" label="HDMI"/>
+  <int value="6" label="Internal speaker"/>
+  <int value="7" label="Internal microphone"/>
+  <int value="8" label="Front microphone"/>
+  <int value="9" label="Rear microphone"/>
+  <int value="10" label="Keyboard microphone"/>
+  <int value="11" label="Hotword"/>
+  <int value="12" label="Post DSP loopback"/>
+  <int value="13" label="Post mix loopback"/>
+  <int value="14" label="Lineout"/>
+  <int value="15" label="ALSA loopback"/>
+  <int value="16" label="Other"/>
 </enum>
 
 <enum name="AudioEffectType">

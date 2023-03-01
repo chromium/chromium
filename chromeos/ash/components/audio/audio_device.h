@@ -16,7 +16,11 @@
 
 namespace ash {
 
-// Ordered from the highest priority to the lowest.
+// This enum is used in histograms, do not remove/renumber entries. If you're
+// adding to this enum, update the corresponding enum listing in
+// tools/metrics/histograms/enums.xml.
+//
+// Originally ordered from the highest priority to the lowest.
 enum class AudioDeviceType {
   kHeadphone,
   kMic,
@@ -35,6 +39,7 @@ enum class AudioDeviceType {
   kPostDspLoopback,
   kAlsaLoopback,
   kOther,
+  kMaxValue = kOther,
 };
 
 // Default value of user priority preference.
