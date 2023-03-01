@@ -95,8 +95,10 @@ void RecordMetricsForNetOrHttpErrorState(int net_or_http_error,
 }  // namespace
 
 // These correspond to enum FamilyInfoFetcher::FamilyMemberRole, in order.
+// LINT.IfChange(family_member_roles)
 const char* const kFamilyMemberRoleStrings[] = {"headOfHousehold", "parent",
                                                 "member", "child"};
+// LINT.ThenChange(//chrome/browser/supervised_user/child_accounts/family_info_fetcher.h:family_member_roles)
 
 FamilyInfoFetcher::FamilyMember::FamilyMember() = default;
 

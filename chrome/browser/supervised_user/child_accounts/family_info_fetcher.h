@@ -37,9 +37,12 @@ class FamilyInfoFetcher {
     kNetworkError,  // Network failure.
     kServiceError   // Service returned an error or malformed reply.
   };
-  // Note: If you add or update an entry, also update |kFamilyMemberRoleStrings|
-  // in the .cc file.
+
+  // Must be reflected in kFamilyMemberRoleStrings.
+  // LINT.IfChange(family_member_roles)
   enum FamilyMemberRole { HEAD_OF_HOUSEHOLD = 0, PARENT, MEMBER, CHILD };
+  // LINT.ThenChange(//chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc:family_member_roles)
+
   struct FamilyMember {
     FamilyMember();
     FamilyMember(const std::string& obfuscated_gaia_id,
