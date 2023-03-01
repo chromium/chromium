@@ -16,7 +16,7 @@ module ash.cros_healthd.internal.mojom;
 // TODO(b/249182240): Rename interface name to another one. The
 // SetPrivacyScreenState method is conflicted with the interface name.
 //
-// NextMinVersion: 2, NextIndex: 3
+// NextMinVersion: 3, NextIndex: 4
 [Stable]
 interface ChromiumDataCollector {
   // Get touchscreen devices info.
@@ -26,6 +26,8 @@ interface ChromiumDataCollector {
   // Set privacy screen state. Return true if request is processed and the
   // privacy screen state is updated, or false if the request is rejected.
   [MinVersion=1] SetPrivacyScreenState@2(bool state) => (bool success);
+  // Mute control of audio output device.
+  [MinVersion=2] SetAudioOutputMute@3(bool mute_on) => (bool success);
 };
 
 // Data of a touch screen device in chromium.

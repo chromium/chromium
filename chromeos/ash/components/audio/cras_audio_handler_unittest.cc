@@ -4807,10 +4807,12 @@ TEST_P(CrasAudioHandlerTest, ShouldBeForcefullyMutedByAudioPolicy) {
 
     audio_pref_handler_->SetAudioOutputAllowedValue(false);
     EXPECT_TRUE(cras_audio_handler_->IsOutputMutedByPolicy());
+    EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
 
     audio_pref_handler_->SetAudioOutputAllowedValue(true);
     EXPECT_FALSE(cras_audio_handler_->IsOutputMutedByPolicy());
+    EXPECT_FALSE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_EQ(cras_audio_handler_->IsOutputMuted(), previous_value);
   }
 }
@@ -4824,10 +4826,12 @@ TEST_P(CrasAudioHandlerTest, ShouldBeForcefullyMutedBySecurityCurtainMode) {
 
     cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(true);
     EXPECT_TRUE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
+    EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
 
     cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(false);
     EXPECT_FALSE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
+    EXPECT_FALSE(cras_audio_handler_->IsOutputForceMuted());
     EXPECT_EQ(cras_audio_handler_->IsOutputMuted(), previous_value);
   }
 }
@@ -4848,6 +4852,7 @@ TEST_P(CrasAudioHandlerTest,
   // The force mute through the policy should still be in effect.
   EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
   EXPECT_TRUE(cras_audio_handler_->IsOutputMutedByPolicy());
+  EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
 }
 
 TEST_P(CrasAudioHandlerTest,
@@ -4866,6 +4871,7 @@ TEST_P(CrasAudioHandlerTest,
   // The force mute through the policy should still be in effect.
   EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
   EXPECT_TRUE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
+  EXPECT_TRUE(cras_audio_handler_->IsOutputForceMuted());
 }
 
 TEST_P(CrasAudioHandlerTest, MicrophoneMuteKeyboardSwitchTest) {

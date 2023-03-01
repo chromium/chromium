@@ -15,6 +15,7 @@ source_set("cpp") {
   deps = [
     "//ash:ash",
     "//base",
+    "//chromeos/ash/components/audio",
     "//chromeos/ash/components/mojo_service_manager",
     "//content/public/browser:browser",
     "//ui/events/devices",
