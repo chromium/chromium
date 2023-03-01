@@ -14,6 +14,9 @@ const questionGeneralTimestamp: string =
     '[General] When did this happen? Please mention the exact time ' +
     '(for example: 2:45pm). ';
 
+const questionGeneralCurrentProblem =
+    '[General] Are you experiencing this problem now? ';
+
 const questionGeneralRegression: string =
     '[General] Do you know if this issue is a regression? ' +
     'If so, in which Chrome OS version did this issue start appearing? ';
@@ -67,10 +70,35 @@ const questionCellularRoaming: string =
 const questionCellularAPN: string =
     '[Cellular] Did you manually configure the Access Point Name (APN)?';
 
+const questionDisplayConnectionConnected =
+    '[Display] How many external displays are connected to your device? ';
+
+const questionDisplayConnectionNumberConnected =
+    '[Display] What make/model are any connected external displays? ';
+
+const questionDisplayConnectionCableType =
+    '[Display] What cable (DisplayPort/HDMI) are connected displays using? ';
+
+const questionDisplayConnectionDock =
+    '[Display] Are your displays connected via dock? If so, what make/model? ';
+
+const questionDisplayProblemScope =
+    '[Display] If you have multiple displays connected, is the problem ' +
+    'affecting all displays? ';
+
+const questionDisplayProblem =
+    '[Display] What kind of issue is this? Please select one from below:\n' +
+    '   * Entire screen is consistently black/off \n' +
+    '   * Entire screen is intermittently black/off \n' +
+    '   * Part of screen is consistently black/off \n' +
+    '   * Part of screen is intermittently black/off \n' +
+    '   * Picture on screen is corrupted \n';
+
 export const domainQuestions: {
   bluetooth: string[],
   wifi: string[],
   cellular: string[],
+  display: string[],
 } = {
   'bluetooth': [
     questionGeneralTimestamp,
@@ -90,5 +118,17 @@ export const domainQuestions: {
     questionCellularLastSuccess,
     questionCellularRoaming,
     questionCellularAPN,
+  ],
+  'display': [
+    questionGeneralTimestamp,
+    questionGeneralCurrentProblem,
+    questionGeneralRegression,
+    questionGeneralReproducibility,
+    questionDisplayConnectionConnected,
+    questionDisplayConnectionNumberConnected,
+    questionDisplayConnectionCableType,
+    questionDisplayConnectionDock,
+    questionDisplayProblemScope,
+    questionDisplayProblem,
   ],
 };

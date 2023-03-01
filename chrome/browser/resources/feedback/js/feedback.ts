@@ -157,6 +157,19 @@ const cellularRegEx: RegExp = buildWordMatcher([
 ]);
 
 /**
+ * Regular expression to check for display-related keywords.
+ */
+const displayRegEx = buildWordMatcher([
+  'display',
+  'displayport',
+  'dock',
+  'hdmi',
+  'monitor',
+  'panel',
+  'screen',
+]);
+
+/**
  * Regular expression to check for all strings indicating that a user can't
  * connect to a HID or Audio device. This is also a likely indication of a
  * Bluetooth related issue.
@@ -324,6 +337,10 @@ function checkForShowQuestionnaire(inputEvent: Event) {
 
   if (cellularRegEx.test(matchedText)) {
     toAppend.push(...domainQuestions['cellular']);
+  }
+
+  if (displayRegEx.test(matchedText)) {
+    toAppend.push(...domainQuestions['display']);
   }
 
   if (toAppend.length === 0) {
