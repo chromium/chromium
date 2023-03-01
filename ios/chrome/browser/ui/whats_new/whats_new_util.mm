@@ -84,11 +84,10 @@ void SetWhatsNewUsed() {
   }
 
   // Deregister What's New promo.
-  if (IsFullscreenPromosManagerEnabled()) {
-    PromosManager* promosManager = GetApplicationContext()->GetPromosManager();
-    DCHECK(promosManager);
-    promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
-  }
+  PromosManager* promosManager = GetApplicationContext()->GetPromosManager();
+  DCHECK(promosManager);
+
+  promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
 
   [[NSUserDefaults standardUserDefaults] setBool:YES
                                           forKey:kWhatsNewUsageEntryKey];

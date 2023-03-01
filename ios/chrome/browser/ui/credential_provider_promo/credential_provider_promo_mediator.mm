@@ -115,9 +115,10 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 }
 
 - (void)registerPromoWithPromosManager {
-  if (!self.promosManager || !IsFullscreenPromosManagerEnabled()) {
+  if (!self.promosManager) {
     return;
   }
+
   // TODO(crbug.com/1392116): register the promo with a 24 hour delay.
   self.promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::CredentialProviderExtension);

@@ -77,9 +77,6 @@ PromosManagerImpl::~PromosManagerImpl() = default;
 #pragma mark - Public
 
 void PromosManagerImpl::Init() {
-  if (!IsFullscreenPromosManagerEnabled())
-    return;
-
   DCHECK(local_state_);
 
   active_promos_ =

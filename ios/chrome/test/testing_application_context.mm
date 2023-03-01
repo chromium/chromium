@@ -226,12 +226,9 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
 PromosManager* TestingApplicationContext::GetPromosManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (IsFullscreenPromosManagerEnabled()) {
-    promos_manager_ = std::make_unique<MockPromosManager>();
-    return promos_manager_.get();
-  }
+  promos_manager_ = std::make_unique<MockPromosManager>();
 
-  return nullptr;
+  return promos_manager_.get();
 }
 
 breadcrumbs::BreadcrumbPersistentStorageManager*

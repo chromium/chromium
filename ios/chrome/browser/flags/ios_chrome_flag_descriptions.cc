@@ -428,11 +428,6 @@ const char kIdentityStatusConsistencyName[] = "Identity Status Consistency";
 const char kIdentityStatusConsistencyDescription[] =
     "If enabled, always show identity status - even for signed-out users";
 
-const char kFullscreenPromosManagerName[] = "Fullscreen Promos Manager";
-const char kFullscreenPromosManagerDescription[] =
-    "When enabled, the display of fullscreen promos will be coordinated by a "
-    "central manager living at the application level.";
-
 const char kFullscreenPromosManagerSkipInternalLimitsName[] =
     "Fullscreen Promos Manager (Skip internal Impression Limits)";
 const char kFullscreenPromosManagerSkipInternalLimitsDescription[] =

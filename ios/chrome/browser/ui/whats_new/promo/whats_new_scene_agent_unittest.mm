@@ -81,8 +81,6 @@ class WhatsNewSceneAgentTest : public PlatformTest {
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     agent_.sceneState = scene_state_;
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
-
-    scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
   }
 
  protected:

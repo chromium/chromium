@@ -1137,10 +1137,8 @@ enum class ToolbarKind {
   [self.priceNotificationsViewCoordiantor stop];
   self.priceNotificationsViewCoordiantor = nil;
 
-  if (IsFullscreenPromosManagerEnabled()) {
-    [self.promosManagerCoordinator stop];
-    self.promosManagerCoordinator = nil;
-  }
+  [self.promosManagerCoordinator stop];
+  self.promosManagerCoordinator = nil;
 
   [self.readingListCoordinator stop];
   self.readingListCoordinator = nil;
@@ -1749,15 +1747,13 @@ enum class ToolbarKind {
 #pragma mark - PromosManagerCommands
 
 - (void)maybeDisplayPromo {
-  if (IsFullscreenPromosManagerEnabled()) {
-    if (!self.promosManagerCoordinator) {
-      self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-    }
-
-    [self.promosManagerCoordinator start];
+  if (!self.promosManagerCoordinator) {
+    self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
   }
+
+  [self.promosManagerCoordinator start];
 }
 
 - (void)requestAppStoreReview {

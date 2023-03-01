@@ -112,7 +112,6 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
 
   // Promos Manager which coordinates the display of app-wide promos.
-  // Will be null if feature, kFullscreenPromosManager, is not enabled.
   std::unique_ptr<PromosManager> promos_manager_;
 
   std::unique_ptr<PrefService> local_state_;

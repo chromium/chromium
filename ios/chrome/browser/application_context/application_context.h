@@ -168,8 +168,7 @@ class ApplicationContext {
   // system. May be null if policy is not enabled.
   virtual BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() = 0;
 
-  // Gets the Promos Manager. For v1, this will be a Fullscreen Promos Manager.
-  // May be null if feature kFullscreenPromosManager is not enabled.
+  // Gets the Fullscreen Promos Manager.
   virtual PromosManager* GetPromosManager() = 0;
 
   // Returns the BreadcrumbPersistentStorageManager writing breadcrumbs to disk.

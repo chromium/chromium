@@ -10,10 +10,6 @@
 #error "This file requires ARC support."
 #endif
 
-BASE_FEATURE(kFullscreenPromosManager,
-             "FullscreenPromosManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFullscreenPromosManagerSkipInternalLimits,
              "FullscreenPromosManagerSkipInternalLimits",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -21,10 +17,6 @@ BASE_FEATURE(kFullscreenPromosManagerSkipInternalLimits,
 BASE_FEATURE(kPromosManagerUsesFET,
              "PromosManagerUsesFET",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsFullscreenPromosManagerEnabled() {
-  return base::FeatureList::IsEnabled(kFullscreenPromosManager);
-}
 
 bool IsSkippingInternalImpressionLimitsEnabled() {
   return base::FeatureList::IsEnabled(

@@ -954,10 +954,10 @@ void InjectNTP(Browser* browser) {
   // events.
   [GeolocationLogger sharedInstance];
 
-  if (IsFullscreenPromosManagerEnabled())
     [self.sceneState
         addAgent:[[PromosManagerSceneAgent alloc]
                      initWithCommandDispatcher:mainCommandDispatcher]];
+
   if (IsAppStoreRatingEnabled()) {
     [self.sceneState
         addAgent:[[AppStoreRatingSceneAgent alloc]

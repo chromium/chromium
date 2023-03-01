@@ -48,8 +48,6 @@ void PromosManagerCoordinatorTest::CreatePromosManagerCoordinator() {
 // viewController's dismiss button is pressed.
 TEST_F(PromosManagerCoordinatorTest,
        ViewControllerDismissesUsingDismissButton) {
-  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
-
   CreatePromosManagerCoordinator();
 
   id provider = OCMProtocolMock(@protocol(StandardPromoViewProvider));
@@ -66,8 +64,6 @@ TEST_F(PromosManagerCoordinatorTest,
 // banneredViewController's dismiss button is pressed.
 TEST_F(PromosManagerCoordinatorTest,
        BanneredViewControllerDismissesUsingSecondaryButton) {
-  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
-
   CreatePromosManagerCoordinator();
 
   id banneredProvider = OCMProtocolMock(@protocol(BanneredPromoViewProvider));
@@ -83,8 +79,6 @@ TEST_F(PromosManagerCoordinatorTest,
 // Tests standardPromoDismissSwipe is called when a viewController is
 // dismissed via swipe.
 TEST_F(PromosManagerCoordinatorTest, ViewControllerDismissesViaSwipe) {
-  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
-
   CreatePromosManagerCoordinator();
 
   id provider = OCMProtocolMock(@protocol(StandardPromoViewProvider));
@@ -100,8 +94,6 @@ TEST_F(PromosManagerCoordinatorTest, ViewControllerDismissesViaSwipe) {
 // Tests standardPromoDismissSwipe is called when a banneredViewController is
 // dismissed via swipe.
 TEST_F(PromosManagerCoordinatorTest, BanneredViewControllerDismissesViaSwipe) {
-  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
-
   CreatePromosManagerCoordinator();
 
   id banneredProvider = OCMProtocolMock(@protocol(BanneredPromoViewProvider));
