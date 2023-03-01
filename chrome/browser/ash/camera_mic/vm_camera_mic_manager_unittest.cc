@@ -22,7 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,7 +30,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 
@@ -145,12 +144,11 @@ class VmCameraMicManagerTest : public testing::Test {
 
   VmCameraMicManagerTest() {
     // Make the profile the primary one.
-    auto mock_user_manager =
-        std::make_unique<testing::NiceMock<MockUserManager>>();
-    mock_user_manager->AddUser(AccountId::FromUserEmailGaiaId(
+    auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
+    fake_user_manager->AddUser(AccountId::FromUserEmailGaiaId(
         testing_profile_.GetProfileUserName(), "id"));
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(mock_user_manager));
+        std::move(fake_user_manager));
 
     // Inject a fake notification display service.
     fake_display_service_ = static_cast<FakeNotificationDisplayService*>(
