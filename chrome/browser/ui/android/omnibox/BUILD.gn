@@ -130,9 +130,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionView.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewProperties.java",
-    "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentBottomSheet.java",
-    "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentController.java",
-    "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentUi.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchService.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java",
   ]
@@ -323,8 +320,6 @@ android_resources("java_resources") {
     "java/res/drawable/switch_to_tab.xml",
     "java/res/drawable/trending_up_black_24dp.xml",
     "java/res/layout-sw600dp/location_bar.xml",
-    "java/res/layout/assistant_voice_search_consent_ui.xml",
-    "java/res/layout/assistant_voice_search_simplified_consent_ui.xml",
     "java/res/layout/location_bar.xml",
     "java/res/layout/location_bar_base.xml",
     "java/res/layout/location_status.xml",

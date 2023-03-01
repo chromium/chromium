@@ -34,12 +34,10 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateBridge;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -122,13 +120,10 @@ public class VoiceRecognitionHandler {
     @VisibleForTesting
     static final String EXTRA_INTENT_SENT_TIMESTAMP =
             "com.android.chrome.voice.INTENT_SENT_TIMESTAMP";
+
     /**
-     * Extra containing the email for the signed-in/syncing account on the device.
-     */
-    @VisibleForTesting
-    static final String EXTRA_INTENT_USER_EMAIL = "com.android.chrome.voice.INTENT_USER_EMAIL";
-    /**
-     * Extra containing an integer that indicates which voice entrypoint the intent was initiated
+     * Extra containing an integer that indicates which voice entrypoint the intent
+     * was initiated
      * from.
      *
      * See VoiceInteractionEventSource for possible values.
@@ -154,7 +149,6 @@ public class VoiceRecognitionHandler {
     private Supplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
     private TranslateBridgeWrapper mTranslateBridgeWrapper;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final Runnable mLaunchAssistanceSettingsAction;
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<Profile> mProfileSupplier;
     private Boolean mIsVoiceSearchEnabledCached;
@@ -370,10 +364,9 @@ public class VoiceRecognitionHandler {
 
     public VoiceRecognitionHandler(Delegate delegate,
             Supplier<AssistantVoiceSearchService> assistantVoiceSearchServiceSupplier,
-            Runnable launchAssistanceSettingsAction, ObservableSupplier<Profile> profileSupplier) {
+            ObservableSupplier<Profile> profileSupplier) {
         mDelegate = delegate;
         mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchServiceSupplier;
-        mLaunchAssistanceSettingsAction = launchAssistanceSettingsAction;
         mTranslateBridgeWrapper = new TranslateBridgeWrapper();
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(
@@ -755,32 +748,6 @@ public class VoiceRecognitionHandler {
         // Check if the device meets the requirements to use Assistant voice search.
         if (!assistantVoiceSearchService.canRequestAssistantVoiceSearch()) return false;
 
-        // Check if the consent prompt needs to be shown.
-        if (assistantVoiceSearchService.needsEnabledCheck()) {
-            mDelegate.clearOmniboxFocus();
-            AssistantVoiceSearchConsentController.show(windowAndroid,
-                    SharedPreferencesManager.getInstance(), mLaunchAssistanceSettingsAction,
-                    BottomSheetControllerProvider.from(windowAndroid), (useAssistant) -> {
-                        // Notify the service about the consent completion.
-                        assistantVoiceSearchService.onAssistantConsentDialogComplete(useAssistant);
-
-                        if (useAssistant) {
-                            if (!startAGSAForAssistantVoiceSearch(
-                                        activity, windowAndroid, source)) {
-                                // Fallback to system voice search.
-                                startSystemForVoiceSearch(activity, windowAndroid, source);
-                            }
-                        } else {
-                            startSystemForVoiceSearch(activity, windowAndroid, source);
-                        }
-                    });
-
-            return true;
-        }
-
-        // Final check to see if Assistant voice search should be used.
-        if (!assistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) return false;
-
         Intent intent = assistantVoiceSearchService.getAssistantVoiceSearchIntent();
         intent.putExtra(EXTRA_VOICE_ENTRYPOINT, source);
         // Allows Assistant to track intent latency.
@@ -791,9 +758,6 @@ public class VoiceRecognitionHandler {
         }
 
         if (!sAssistantNonPersonalizedVoiceSearchFlag.isEnabled()) {
-            // TODO(crbug.com/1344574): This is currently still needed by AGSA.
-            intent.putExtra(EXTRA_INTENT_USER_EMAIL, assistantVoiceSearchService.getUserEmail());
-
             if (source == VoiceInteractionSource.TOOLBAR
                     && sAssistantIntentTranslateInfoFlag.isEnabled()) {
                 boolean attached = attachTranslateExtras(intent);

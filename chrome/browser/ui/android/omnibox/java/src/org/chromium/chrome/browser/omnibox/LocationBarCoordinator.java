@@ -131,7 +131,6 @@ public class LocationBarCoordinator
      * @param overrideUrlLoadingDelegate Delegate that allows customization of url loading behavior.
      * @param backKeyBehavior Delegate that allows customization of back key behavior.
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
-     * @param launchAssistanceSettingsAction Runnable launching settings for voice assistance.
      * @param pageInfoAction Displays page info popup.
      * @param bringTabToFrontCallback Callback to bring the browser foreground and switch to a tab.
      * @param saveOfflineButtonState Whether the 'save offline' button should be enabled.
@@ -158,7 +157,6 @@ public class LocationBarCoordinator
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             BackKeyBehaviorDelegate backKeyBehavior, SearchEngineLogoUtils searchEngineLogoUtils,
-            @NonNull Runnable launchAssistanceSettingsAction,
             @NonNull PageInfoAction pageInfoAction, @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
@@ -191,9 +189,8 @@ public class LocationBarCoordinator
                 locationBarDataProvider, profileObservableSupplier, privacyPreferencesManager,
                 overrideUrlLoadingDelegate, LocaleManager.getInstance(), templateUrlServiceSupplier,
                 backKeyBehavior, windowAndroid, isTabletWindow() && isTabletLayout(),
-                searchEngineLogoUtils, LensController.getInstance(), launchAssistanceSettingsAction,
-                saveOfflineButtonState, omniboxUma, isToolbarMicEnabledSupplier,
-                mOmniboxDropdownEmbedderImpl);
+                searchEngineLogoUtils, LensController.getInstance(), saveOfflineButtonState,
+                omniboxUma, isToolbarMicEnabledSupplier, mOmniboxDropdownEmbedderImpl);
         if (backPressManager != null && BackPressManager.isEnabled()) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }

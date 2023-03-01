@@ -334,23 +334,11 @@ extern const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-const char kAssistantConsentSimplifiedTextName[] =
-    "AssistantConsentSimplifiedText";
-const char kAssistantConsentSimplifiedTextDescription[] =
-    "Enables simplified consent copy in the Assistant voice search consent "
-    "dialog.";
-
 const char kAssistantNonPersonalizedVoiceSearchName[] =
     "AssistantNonPersonalizedVoiceSearch";
 const char kAssistantNonPersonalizedVoiceSearchDescription[] =
     "Enables the Assistant voice recognition and search without any "
     "personalization.";
-
-const char kAssistantConsentV2Name[] = "AssistanConsentV2";
-const char kAssistantConsentV2Description[] =
-    "Enables different strategies for handling backing off from the consent "
-    "screen without explicitly clicking yes/no buttons, i.e. when a user taps "
-    "outside of the sheet.";
 
 const char kAutofillAlwaysReturnCloudTokenizedCardName[] =
     "Return cloud token details for server credit cards when possible";

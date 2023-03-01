@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
-
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +35,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
@@ -182,28 +179,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         mShouldShowColorfulButtons = isColorfulMicEnabled();
     }
 
-    /** @return Whether the user has had a chance to enable the feature. */
-    public boolean needsEnabledCheck() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
-            return false;
-        }
-        return !mSharedPrefsManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED);
-    }
-
-    /**
-     * Checks if the client is eligible Assistant for voice search. It's
-     * {@link canRequestAssistantVoiceSearch} with additional conditions:
-     * - The feature must be enabled.
-     * - The consent flow must be accepted for personalized queries.
-     */
-    public boolean shouldRequestAssistantVoiceSearch() {
-        if (sAlwaysUseAssistantVoiceSearchForTesting != null) {
-            return sAlwaysUseAssistantVoiceSearchForTesting;
-        }
-        return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch() && isEnabled();
-    }
-
     /**
      * Checks if the client meets the device requirements to use Assistant for voice search. This
      * doesn't check if the client should use Assistant voice search, which accounts for additional
@@ -234,33 +209,10 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         return ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
     }
 
-    /** Called from {@link VoiceRecognitionHandler} after the consent flow has completed. */
-    public void onAssistantConsentDialogComplete(boolean useAssistant) {
-        if (useAssistant) updateColorfulMicState();
-    }
-
-    /** For requests that require it - checks if the user enabled the feature. */
-    private boolean isEnabled() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)) {
-            return true;
-        }
-        return isEnabledByPreference();
-    }
-
-    /**
-     * @return Whether the user has enabled the feature, ensure {@link needsEnabledCheck} is
-     *         called first.
-     */
-    private boolean isEnabledByPreference() {
-        return mSharedPrefsManager.readBoolean(
-                ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false);
-    }
-
     /** @return Whether the colorful mic is enabled. */
     private boolean isColorfulMicEnabled() {
         return mContext.getPackageManager() != null && mIsColorfulMicEnabled
-                && shouldRequestAssistantVoiceSearch();
+                && canRequestAssistantVoiceSearch();
     }
 
     /**
@@ -344,12 +296,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         Intent intent = new Intent(Intent.ACTION_SEARCH);
         intent.setPackage(GSAState.PACKAGE_NAME);
         return intent;
-    }
-
-    /** Return the current user email or null if no account is present. */
-    public @Nullable String getUserEmail() {
-        CoreAccountInfo info = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-        return info == null ? null : info.getEmail();
     }
 
     /**

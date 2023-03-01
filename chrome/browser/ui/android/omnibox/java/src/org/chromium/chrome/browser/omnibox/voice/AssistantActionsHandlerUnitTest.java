@@ -81,7 +81,6 @@ public class AssistantActionsHandlerUnitTest {
     private static final GURL DEFAULT_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL DEFAULT_SEARCH_URL =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
-    private static final String DEFAULT_USER_EMAIL = "test@test.com";
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -116,7 +115,7 @@ public class AssistantActionsHandlerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mWindowAndroid = spy(new WindowAndroid(activity));
         mHandler = spy(new VoiceRecognitionHandler(
-                mDelegate, () -> mAssistantVoiceSearchService, () -> {}, mProfileSupplier));
+                mDelegate, () -> mAssistantVoiceSearchService, mProfileSupplier));
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
         doReturn(new WeakReference(activity)).when(mWindowAndroid).getActivity();
@@ -126,10 +125,7 @@ public class AssistantActionsHandlerUnitTest {
         doReturn(mAutocompleteCoordinator).when(mDelegate).getAutocompleteCoordinator();
         doReturn(mWindowAndroid).when(mDelegate).getWindowAndroid();
 
-        doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        doReturn(false).when(mAssistantVoiceSearchService).needsEnabledCheck();
         doReturn(mIntent).when(mAssistantVoiceSearchService).getAssistantVoiceSearchIntent();
-        doReturn(DEFAULT_USER_EMAIL).when(mAssistantVoiceSearchService).getUserEmail();
 
         doReturn(true).when(mTranslateBridgeWrapper).canManuallyTranslate(notNull());
         doReturn("fr").when(mTranslateBridgeWrapper).getSourceLanguage(notNull());
@@ -161,7 +157,6 @@ public class AssistantActionsHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
 
         verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
@@ -178,7 +173,6 @@ public class AssistantActionsHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(OMNIBOX_ASSISTANT_VOICE_SEARCH, true);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
 
         verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
@@ -195,7 +189,6 @@ public class AssistantActionsHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
 
         verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
@@ -213,7 +206,6 @@ public class AssistantActionsHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
 
         verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
@@ -231,7 +223,6 @@ public class AssistantActionsHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(false).when(mTranslateBridgeWrapper).canManuallyTranslate(notNull());
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
 
@@ -249,7 +240,6 @@ public class AssistantActionsHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ASSISTANT_INTENT_TRANSLATE_INFO, true);
         mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(null).when(mTranslateBridgeWrapper).getSourceLanguage(notNull());
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
 
@@ -268,7 +258,6 @@ public class AssistantActionsHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         doReturn(null).when(mTranslateBridgeWrapper).getTargetLanguage();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
 

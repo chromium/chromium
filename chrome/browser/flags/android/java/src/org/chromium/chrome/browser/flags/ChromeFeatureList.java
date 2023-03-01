@@ -177,8 +177,6 @@ public abstract class ChromeFeatureList {
     public static final String APP_LANGUAGE_PROMPT = "AppLanguagePrompt";
     public static final String APP_LANGUAGE_PROMPT_ULP = "AppLanguagePromptULP";
     public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
-    public static final String ASSISTANT_CONSENT_SIMPLIFIED_TEXT = "AssistantConsentSimplifiedText";
-    public static final String ASSISTANT_CONSENT_V2 = "AssistantConsentV2";
     public static final String ASSISTANT_INTENT_EXPERIMENT_ID = "AssistantIntentExperimentId";
     public static final String ASSISTANT_INTENT_TRANSLATE_INFO = "AssistantIntentTranslateInfo";
     public static final String ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH =

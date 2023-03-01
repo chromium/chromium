@@ -132,7 +132,7 @@ public class VoiceRecognitionHandlerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mWindowAndroid = spy(new WindowAndroid(activity));
         mHandler = spy(new VoiceRecognitionHandler(
-                mDelegate, () -> mAssistantVoiceSearchService, () -> {}, mProfileSupplier));
+                mDelegate, () -> mAssistantVoiceSearchService, mProfileSupplier));
         mHandler.addObserver(mObserver);
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
@@ -142,9 +142,6 @@ public class VoiceRecognitionHandlerUnitTest {
         doReturn(mDataProvider).when(mDelegate).getLocationBarDataProvider();
         doReturn(mAutocompleteCoordinator).when(mDelegate).getAutocompleteCoordinator();
         doReturn(mWindowAndroid).when(mDelegate).getWindowAndroid();
-
-        doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        doReturn(false).when(mAssistantVoiceSearchService).needsEnabledCheck();
 
         mFeatures = new FeatureList.TestValues();
         FeatureList.setTestValues(mFeatures);

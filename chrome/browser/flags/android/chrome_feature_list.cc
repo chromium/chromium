@@ -164,8 +164,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidSearchEngineChoiceNotification,
     &kAndroidImprovedBookmarks,
     &kAnimatedImageDragShadow,
-    &kAssistantConsentSimplifiedText,
-    &kAssistantConsentV2,
     &kAssistantIntentExperimentId,
     &kAssistantIntentTranslateInfo,
     &kAssistantNonPersonalizedVoiceSearch,
@@ -459,14 +457,6 @@ BASE_FEATURE(kAndroidImprovedBookmarks,
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantConsentSimplifiedText,
-             "AssistantConsentSimplifiedText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantConsentV2,
-             "AssistantConsentV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAssistantIntentExperimentId,

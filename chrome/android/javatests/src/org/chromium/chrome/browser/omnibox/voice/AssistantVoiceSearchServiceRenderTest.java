@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
 import androidx.test.filters.MediumTest;
 
@@ -35,7 +34,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -72,8 +70,6 @@ public class AssistantVoiceSearchServiceRenderTest {
 
     @Before
     public void setUp() throws Exception {
-        SharedPreferencesManager.getInstance().writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
-
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(anyString(), anyString());
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mGsaState).isGsaInstalled();
@@ -83,12 +79,6 @@ public class AssistantVoiceSearchServiceRenderTest {
         doReturn(true).when(mExternalAuthUtils).isChromeGoogleSigned();
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         AssistantVoiceSearchService.setAlwaysUseAssistantVoiceSearchForTestingEnabled(true);
-    }
-
-    private void setAssistantVoiceSearchEnabled(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH, enabled);
-        FeatureList.setTestValues(mTestValues);
     }
 
     private void setColorfulMicEnabled(boolean enabled) {
@@ -102,7 +92,6 @@ public class AssistantVoiceSearchServiceRenderTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/1300480")
     public void testAssistantColorfulMic() throws IOException {
-        setAssistantVoiceSearchEnabled(true);
         setColorfulMicEnabled(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
@@ -121,7 +110,6 @@ public class AssistantVoiceSearchServiceRenderTest {
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/1221496")
     public void testAssistantMic() throws IOException {
-        setAssistantVoiceSearchEnabled(true);
         setColorfulMicEnabled(false);
         mActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();

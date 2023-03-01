@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
 import androidx.test.filters.MediumTest;
 
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService.EligibilityFailureReason;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -60,8 +58,6 @@ public class AssistantVoiceSearchServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        SharedPreferencesManager.getInstance().writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
-
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(anyString(), anyString());
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mGsaState).isGsaInstalled();

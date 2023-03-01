@@ -192,12 +192,6 @@ extern const char kUseCustomMessagesDomainDescription[];
 extern const char kUseMojoVideoDecoderForPepperName[];
 extern const char kUseMojoVideoDecoderForPepperDescription[];
 
-extern const char kAssistantConsentSimplifiedTextName[];
-extern const char kAssistantConsentSimplifiedTextDescription[];
-
-extern const char kAssistantConsentV2Name[];
-extern const char kAssistantConsentV2Description[];
-
 extern const char kAssistantNonPersonalizedVoiceSearchName[];
 extern const char kAssistantNonPersonalizedVoiceSearchDescription[];
 

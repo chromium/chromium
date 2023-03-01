@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.EXTRA_EXPERIMENT_ID;
 import static org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.EXTRA_INTENT_SENT_TIMESTAMP;
-import static org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.EXTRA_INTENT_USER_EMAIL;
 import static org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.EXTRA_VOICE_ENTRYPOINT;
 
 import android.app.Activity;
@@ -76,7 +75,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
     private static final GURL DEFAULT_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL DEFAULT_SEARCH_URL =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
-    private static final String DEFAULT_USER_EMAIL = "test@test.com";
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -116,7 +114,7 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mWindowAndroid = spy(new WindowAndroid(activity));
         mHandler = spy(new VoiceRecognitionHandler(
-                mDelegate, () -> mAssistantVoiceSearchService, () -> {}, mProfileSupplier));
+                mDelegate, () -> mAssistantVoiceSearchService, mProfileSupplier));
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
         doReturn(new WeakReference(activity)).when(mWindowAndroid).getActivity();
@@ -125,10 +123,7 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         doReturn(mAutocompleteCoordinator).when(mDelegate).getAutocompleteCoordinator();
         doReturn(mWindowAndroid).when(mDelegate).getWindowAndroid();
 
-        doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        doReturn(false).when(mAssistantVoiceSearchService).needsEnabledCheck();
         doReturn(mIntent).when(mAssistantVoiceSearchService).getAssistantVoiceSearchIntent();
-        doReturn(DEFAULT_USER_EMAIL).when(mAssistantVoiceSearchService).getUserEmail();
 
         mFeatures = new FeatureList.TestValues();
         FeatureList.setTestValues(mFeatures);
@@ -153,7 +148,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
                 ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, false);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
 
@@ -164,7 +158,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
         verify(mIntent).putExtra(eq(EXTRA_INTENT_SENT_TIMESTAMP), anyLong());
         verify(mIntent).putExtra(EXTRA_VOICE_ENTRYPOINT, VoiceInteractionSource.OMNIBOX);
-        verify(mIntent).putExtra(EXTRA_INTENT_USER_EMAIL, DEFAULT_USER_EMAIL);
     }
 
     @Test
@@ -175,7 +168,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
                 ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH, true);
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
 
@@ -186,21 +178,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
         verify(mIntent).putExtra(eq(EXTRA_INTENT_SENT_TIMESTAMP), anyLong());
         verify(mIntent).putExtra(EXTRA_VOICE_ENTRYPOINT, VoiceInteractionSource.OMNIBOX);
-        verify(mIntent, never()).putExtra(EXTRA_INTENT_USER_EMAIL, DEFAULT_USER_EMAIL);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"OmniboxAssistantVoiceSearch"})
-    public void testStartVoiceRecognition_ShouldRequestConditionsFail() {
-        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
-        verify(mAssistantVoiceSearchService).reportMicPressUserEligibility();
-        // We check for the consent dialog when canRequestAssistantVoiceSearch() is
-        // true.
-        verify(mAssistantVoiceSearchService).needsEnabledCheck();
-        verify(mAssistantVoiceSearchService, times(0)).getAssistantVoiceSearchIntent();
     }
 
     @Test
@@ -212,7 +189,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
                 VoiceRecognitionHandler.ASSISTANT_EXPERIMENT_ID_PARAM_NAME, "test");
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
         verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
         verify(mIntent, never()).putExtra(eq(EXTRA_EXPERIMENT_ID), anyString());
@@ -227,7 +203,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
                 VoiceRecognitionHandler.ASSISTANT_EXPERIMENT_ID_PARAM_NAME, "test");
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
         verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
         verify(mIntent).putExtra(EXTRA_EXPERIMENT_ID, "test");
@@ -242,7 +217,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
                 VoiceRecognitionHandler.ASSISTANT_EXPERIMENT_ID_PARAM_NAME, "test");
 
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         verify(mWindowAndroid, times(1)).showCancelableIntent(eq(mIntent), any(), any());
         verify(mIntent).putExtra(EXTRA_EXPERIMENT_ID, "test");
@@ -255,7 +229,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, true);
 
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
         verify(mWindowAndroid, times(1)).showCancelableIntent(any(Intent.class), any(), any());
     }
@@ -267,7 +240,6 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         mFeatures.addFeatureFlagOverride(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, true);
 
         doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
         verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
     }
@@ -283,7 +255,7 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
 
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
         verify(mWindowAndroid, times(1)).showCancelableIntent(any(Intent.class), any(), any());
     }
@@ -300,7 +272,7 @@ public class AssistantVoiceRecognitionHandlerUnitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
 
         doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
-        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+
         mHandler.startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
         verify(mWindowAndroid, times(1)).showCancelableIntent(any(Intent.class), any(), any());
     }

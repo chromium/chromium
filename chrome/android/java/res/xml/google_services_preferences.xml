@@ -48,12 +48,6 @@ found in the LICENSE file.
         android:fragment="org.chromium.chrome.browser.commerce.PriceNotificationPreferenceFragment"
         app:isPreferenceVisible="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="autofill_assistant_subsection"
-        android:title="@string/prefs_autofill_assistant_title"
-        android:summary="@string/prefs_autofill_assistant_summary"
-        android:fragment="org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment"
-        app:isPreferenceVisible="false"/>
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="usage_stats_reporting"
         android:title="@string/usage_stats_setting_title"
         app:isPreferenceVisible="false" />

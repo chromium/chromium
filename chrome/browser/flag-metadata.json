@@ -372,22 +372,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "assistant-consent-simplified-text",
-    "owners": [
-      "jds@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "assistant-consent-v2",
-    "owners": [
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "assistant-intent-page-url",
     "owners": [
       "jds@google.com",

@@ -222,7 +222,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*activityTabSupplier=*/() -> null, getModalDialogManagerSupplier(),
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
                 getLifecycleDispatcher(), overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
-                SearchEngineLogoUtils.getInstance(), /*launchAssistanceSettingsAction=*/() -> {},
+                SearchEngineLogoUtils.getInstance(),
                 /*pageInfoAction=*/(tab, pageInfoHighlight) -> {},
                 IntentHandler::bringTabToFront,
                 /*saveOfflineButtonState=*/(tab) -> false,

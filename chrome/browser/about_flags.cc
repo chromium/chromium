@@ -2374,14 +2374,6 @@ const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kAssistantConsentV2_reprompts_counter[] = {
-    {"count", "3"}};
-
-const FeatureEntry::FeatureVariation kAssistantConsentV2_Variations[] = {
-    {"Limited Re-prompts", kAssistantConsentV2_reprompts_counter,
-     std::size(kAssistantConsentV2_reprompts_counter), nullptr},
-};
-
 const FeatureEntry::FeatureParam kOmniboxAssistantVoiceSearchGreyMic[] = {
     {"min_agsa_version", "10.95"},
     {"colorful_mic", "false"}};
@@ -4025,15 +4017,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScreenshotsForAndroidV2Name,
      flag_descriptions::kScreenshotsForAndroidV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(share::kScreenshotsForAndroidV2)},
-    {"assistant-consent-simplified-text",
-     flag_descriptions::kAssistantConsentSimplifiedTextName,
-     flag_descriptions::kAssistantConsentSimplifiedTextDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAssistantConsentSimplifiedText)},
-    {"assistant-consent-v2", flag_descriptions::kAssistantConsentV2Name,
-     flag_descriptions::kAssistantConsentV2Description, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAssistantConsentV2,
-                                    kAssistantConsentV2_Variations,
-                                    "AssistantConsentV2")},
     {"assistant-intent-translate-info",
      flag_descriptions::kAssistantIntentTranslateInfoName,
      flag_descriptions::kAssistantIntentTranslateInfoDescription, kOsAndroid,

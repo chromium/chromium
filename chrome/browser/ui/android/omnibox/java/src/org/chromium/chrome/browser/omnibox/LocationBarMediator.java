@@ -211,7 +211,6 @@ class LocationBarMediator
             @NonNull BackKeyBehaviorDelegate backKeyBehavior, @NonNull WindowAndroid windowAndroid,
             boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull LensController lensController,
-            @NonNull Runnable launchAssistanceSettingsAction,
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
             @NonNull OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder) {
@@ -221,9 +220,8 @@ class LocationBarMediator
         mLocationBarDataProvider.addObserver(this);
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
         mLocaleManager = localeManager;
-        mVoiceRecognitionHandler =
-                new VoiceRecognitionHandler(this, mAssistantVoiceSearchServiceSupplier,
-                        launchAssistanceSettingsAction, profileSupplier);
+        mVoiceRecognitionHandler = new VoiceRecognitionHandler(
+                this, mAssistantVoiceSearchServiceSupplier, profileSupplier);
         mVoiceRecognitionHandler.addObserver(this);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));

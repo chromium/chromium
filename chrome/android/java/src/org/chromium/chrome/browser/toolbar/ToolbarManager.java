@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
@@ -656,7 +655,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
                     activityLifecycleDispatcher, overrideUrlLoadingDelegate,
                     new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
-                    () -> AutofillAssistantPreferenceFragment.launchSettings(mActivity),
                     toolbarPageInfo::show, IntentHandler::bringTabToFront,
                     DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
                     TabWindowManagerSingleton::getInstance,
