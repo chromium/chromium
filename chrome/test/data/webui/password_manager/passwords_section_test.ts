@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {AddPasswordDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {AddPasswordDialogElement, AuthTimedOutDialogElement, Page, PasswordListItemElement, PasswordManagerImpl, PasswordsSectionElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -306,5 +306,24 @@ suite('PasswordsSectionTest', function() {
 
     assertEquals('searchResults', params.messageName);
     assertEquals(1, params.itemCount);
+  });
+
+  test('auth timed out dialog is shown', async function() {
+    const section: PasswordsSectionElement =
+        document.createElement('passwords-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    window.dispatchEvent(new CustomEvent('auth-timed-out', {
+      bubbles: true,
+      composed: true,
+    }));
+    await eventToPromise('cr-dialog-open', section);
+
+    const addDialog =
+        section.shadowRoot!.querySelector<AuthTimedOutDialogElement>(
+            'auth-timed-out-dialog');
+    assertTrue(!!addDialog);
+    assertTrue(addDialog.$.dialog.open);
   });
 });

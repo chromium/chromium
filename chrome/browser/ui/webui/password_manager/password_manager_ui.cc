@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 
+#include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
@@ -26,6 +27,7 @@
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -66,6 +68,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION},
     {"alreadyChangedPasswordLink",
      IDS_PASSWORD_MANAGER_UI_ALREADY_CHANGED_PASSWORD},
+    {"authTimedOut", IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT},
     {"autosigninDescription", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC},
     {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
     {"blockedSitesDescription",
@@ -124,6 +127,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"exportPasswordsTryAgain", IDS_PASSWORD_MANAGER_UI_EXPORT_TRY_AGAIN},
     {"exportSuccessful", IDS_PASSWORD_MANAGER_UI_EXPORT_SUCCESSFUL},
     {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
+    {"gotIt", IDS_SETTINGS_GOT_IT},
     {"help", IDS_PASSWORD_MANAGER_UI_HELP},
     {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
     {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
@@ -226,6 +230,16 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString("undoDescription", l10n_util::GetStringFUTF16(
                                            IDS_UNDO_DESCRIPTION,
                                            undo_accelerator.GetShortcutText()));
+
+  // Password details page timeouts in 5 minutes:
+  source->AddString(
+      "authTimedOutDescription",
+      base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT_DESCRIPTION),
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE),
+          syncer::kPasswordNotesAuthValidity.Get().InMinutes()));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.

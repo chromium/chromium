@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
+import './dialogs/auth_timed_out_dialog.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -63,6 +64,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       },
 
       showAddPasswordDialog_: Boolean,
+      showAuthTimedOutDialog_: Boolean,
     };
   }
 
@@ -70,9 +72,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private searchTerm_: string;
   private shownGroupsCount_: number;
   private showAddPasswordDialog_: boolean;
+  private showAuthTimedOutDialog_: boolean;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
+  private authTimedOutListener_: (() => void)|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -88,6 +92,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     updateGroups();
     PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
+
+    this.authTimedOutListener_ = this.onAuthTimedOut_.bind(this);
+    window.addEventListener('auth-timed-out', this.authTimedOutListener_);
   }
 
   override disconnectedCallback() {
@@ -96,6 +103,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
     this.setSavedPasswordsListener_ = null;
+    assert(this.authTimedOutListener_);
+    window.removeEventListener('hashchange', this.authTimedOutListener_);
+    this.authTimedOutListener_ = null;
   }
 
   override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
@@ -139,6 +149,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onAddPasswordDialogClosed_() {
     this.showAddPasswordDialog_ = false;
+  }
+
+  private onAuthTimedOut_() {
+    this.showAuthTimedOutDialog_ = true;
+  }
+
+  private onAuthTimedOutDialogClosed_() {
+    this.showAuthTimedOutDialog_ = false;
   }
 }
 

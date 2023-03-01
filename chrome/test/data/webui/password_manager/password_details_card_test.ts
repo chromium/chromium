@@ -80,6 +80,7 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(card.$.toast.open);
 
     card.$.copyUsernameButton.click();
+    await passwordManager.whenCalled('extendAuthValidity');
 
     assertTrue(card.$.toast.open);
     assertEquals(
@@ -100,6 +101,7 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(card.$.toast.open);
 
     card.$.copyPasswordButton.click();
+    await passwordManager.whenCalled('extendAuthValidity');
     const {id, reason} =
         await passwordManager.whenCalled('requestPlaintextPassword');
     assertEquals(password.id, id);
@@ -178,6 +180,7 @@ suite('PasswordDetailsCardTest', function() {
 
     card.$.editButton.click();
     await eventToPromise('cr-dialog-open', card);
+    await passwordManager.whenCalled('extendAuthValidity');
     await flushTasks();
 
     const editDialog =
@@ -250,5 +253,6 @@ suite('PasswordDetailsCardTest', function() {
     // Open note fully
     card.$.showMore.click();
     assertFalse(card.$.noteValue.hasAttribute('limit-note'));
+    await passwordManager.whenCalled('extendAuthValidity');
   });
 });

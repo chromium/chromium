@@ -4,7 +4,7 @@
 
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
-import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerProxy, PasswordsFileExportProgressListener} from 'chrome://password-manager/password_manager.js';
+import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerAuthTimeoutListener, PasswordManagerProxy, PasswordsFileExportProgressListener} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {makePasswordCheckStatus} from './test_util.js';
@@ -30,6 +30,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     insecureCredentialsListener: CredentialsChangedListener|null,
     passwordsFileExportProgressListener: PasswordsFileExportProgressListener|
     null,
+    passwordManagerAuthTimeoutListener: PasswordManagerAuthTimeoutListener|null,
   };
 
   private requestCredentialsDetailsResponse_:
@@ -40,6 +41,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'addPassword',
       'cancelExportPasswords',
       'exportPasswords',
+      'extendAuthValidity',
       'getBlockedSitesList',
       'getCredentialGroups',
       'getCredentialsWithReusedPassword',
@@ -79,6 +81,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       savedPasswordListChangedListener: null,
       insecureCredentialsListener: null,
       passwordsFileExportProgressListener: null,
+      passwordManagerAuthTimeoutListener: null,
     };
   }
 
@@ -256,5 +259,19 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     } else {
       return Promise.reject();
     }
+  }
+
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    this.listeners.passwordManagerAuthTimeoutListener = listener;
+  }
+
+  removePasswordManagerAuthTimeoutListener(
+      _listener: PasswordManagerAuthTimeoutListener) {
+    this.listeners.passwordManagerAuthTimeoutListener = null;
+  }
+
+  extendAuthValidity() {
+    this.methodCalled('extendAuthValidity');
   }
 }

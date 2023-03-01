@@ -16,6 +16,7 @@ export type PasswordCheckStatusChangedListener =
 export type BlockedSitesListChangedListener = (entries: BlockedSite[]) => void;
 export type PasswordsFileExportProgressListener =
     (progress: chrome.passwordsPrivate.PasswordExportProgress) => void;
+export type PasswordManagerAuthTimeoutListener = () => void;
 
 /**
  * Represents different interactions the user can perform on the Password Check
@@ -246,6 +247,23 @@ export interface PasswordManagerProxy {
    */
   getUrlCollection(url: string):
       Promise<chrome.passwordsPrivate.UrlCollection|null>;
+
+  /**
+   * Add an observer for authentication timeout.
+   */
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener): void;
+
+  /**
+   * Remove the specified observer for authentication timeout.
+   */
+  removePasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener): void;
+
+  /**
+   * Requests extension of authentication validity.
+   */
+  extendAuthValidity(): void;
 }
 
 /**
@@ -399,6 +417,21 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   getUrlCollection(url: string) {
     return chrome.passwordsPrivate.getUrlCollection(url);
+  }
+
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    chrome.passwordsPrivate.onPasswordManagerAuthTimeout.addListener(listener);
+  }
+
+  removePasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    chrome.passwordsPrivate.onPasswordManagerAuthTimeout.removeListener(
+        listener);
+  }
+
+  extendAuthValidity() {
+    chrome.passwordsPrivate.extendAuthValidity();
   }
 
   static getInstance(): PasswordManagerProxy {

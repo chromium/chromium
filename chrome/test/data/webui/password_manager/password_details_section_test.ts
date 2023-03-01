@@ -299,4 +299,28 @@ suite('PasswordDetailsSectionTest', function() {
         1,
         section.shadowRoot!.querySelectorAll('password-details-card').length);
   });
+
+  test('Page closes when auth times out', async function() {
+    const group = createCredentialGroup({
+      name: 'test.com',
+      credentials: [
+        createPasswordEntry({id: 0, username: 'test1'}),
+      ],
+    });
+    passwordManager.data.groups = [group];
+    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+
+    const section = document.createElement('password-details-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    // Assert that details section subscribed as a listener.
+    assertTrue(!!passwordManager.listeners.passwordManagerAuthTimeoutListener);
+
+    passwordManager.listeners.passwordManagerAuthTimeoutListener();
+    await flushTasks();
+
+    // Assert that now Passwords page is shown.
+    assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+  });
 });
