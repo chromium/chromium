@@ -92,7 +92,7 @@ const CGFloat kSymbolSize = 18;
                       image:image
              imageTintColor:UIColor.blackColor
             backgroundColor:UIColor.whiteColor
-           imageBorderColor:[UIColor colorNamed:kGrey200Color]
+           imageBorderColor:[UIColor colorNamed:kLightOnlyGrey200Color]
                        type:pedalType
                      action:^{
                        OpenNewTabCommand* command =
@@ -156,7 +156,7 @@ const CGFloat kSymbolSize = 18;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
              imageTintColor:nil
             backgroundColor:UIColor.whiteColor
-           imageBorderColor:[UIColor colorNamed:kGrey200Color]
+           imageBorderColor:[UIColor colorNamed:kLightOnlyGrey200Color]
 #else
              imageTintColor:nil
             backgroundColor:[UIColor colorNamed:kPurple500Color]

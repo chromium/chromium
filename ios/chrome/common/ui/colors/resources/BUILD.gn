@@ -35,6 +35,7 @@ group("resources") {
     ":grey_900_color",
     ":grouped_primary_background_color",
     ":grouped_secondary_background_color",
+    ":light_only_grey_200_color",
     ":mdc_ink_color",
     ":mdc_secondary_ink_color",
     ":orange_500_color",
@@ -205,6 +206,10 @@ colorset("yellow_500_color") {
 
 colorset("orange_500_color") {
   sources = [ "orange_500_color.colorset/Contents.json" ]
+}
+
+colorset("light_only_grey_200_color") {
+  sources = [ "light_only_grey_200_color.colorset/Contents.json" ]
 }
 
 colorset("mdc_ink_color") {

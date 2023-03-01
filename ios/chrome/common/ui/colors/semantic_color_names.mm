@@ -87,3 +87,7 @@ NSString* const kGrey700Color = @"grey_700_color";
 NSString* const kGrey800Color = @"grey_800_color";
 NSString* const kGrey900Color = @"grey_900_color";
 NSString* const kStaticGrey300Color = @"static_grey_300_color";
+
+#pragma mark - Light only colors
+
+NSString* const kLightOnlyGrey200Color = @"light_only_grey_200_color";
