@@ -1322,8 +1322,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                             /*log_manager=*/nullptr));
 
   html_source->AddBoolean("showIbansSettings",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillFillIbanFields));
+                          autofill::ShouldShowIbanOnSettingsPage(
+                              personal_data->GetCountryCodeForExperimentGroup(),
+                              profile->GetPrefs()));
 
   html_source->AddBoolean(
       "fidoAuthenticationAvailableForAutofill",

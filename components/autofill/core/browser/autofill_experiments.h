@@ -49,6 +49,14 @@ bool IsInAutofillSuggestionsDisabledExperiment();
 // Android, and Mac OS X >= 10.13.
 bool IsCreditCardFidoAuthenticationEnabled();
 
+// Returns true if IBAN is enabled and at least one of the two conditions below
+// is meet:
+// 1. the user's country is relevant to IBAN.
+// 2. the user has submitted an IBAN form or added an IBAN via Chrome payment
+//    settings page in the past.
+bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
+                                  PrefService* pref_service);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXPERIMENTS_H_
