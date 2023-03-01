@@ -55,16 +55,6 @@ class FieldTrialParamsTest : public ::testing::Test {
   test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Expects a DCHECK if enabled, otherwise compares parameters with EXPECT_EQ.
-// std::make_pair is used to evaluate both expressions, so it doesn't matter
-// which side causes a DCHECK.
-#if DCHECK_IS_ON()
-#define EXPECT_DCHECK_OR_EQ(val1, val2) \
-  EXPECT_DEATH_IF_SUPPORTED(std::make_pair(val1, val2), ".*")
-#else
-#define EXPECT_DCHECK_OR_EQ(val1, val2) EXPECT_EQ(val1, val2)
-#endif
-
 TEST_F(FieldTrialParamsTest, AssociateFieldTrialParams) {
   const std::string kTrialName = "AssociateFieldTrialParams";
 
@@ -296,14 +286,14 @@ TEST_F(FieldTrialParamsTest, FeatureParamInt) {
                          trial.get());
 
   EXPECT_EQ(1, GetFieldTrialParamByFeatureAsInt(kFeature, "a", 0));
-  EXPECT_DCHECK_OR_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "b", 0));
-  EXPECT_DCHECK_OR_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "c", 0));
+  EXPECT_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "b", 0));  // invalid
+  EXPECT_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "c", 0));  // invalid
   EXPECT_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "d", 0));  // empty
   EXPECT_EQ(0, GetFieldTrialParamByFeatureAsInt(kFeature, "e", 0));  // empty
 
   EXPECT_EQ(1, a.Get());
-  EXPECT_DCHECK_OR_EQ(0, b.Get());  // invalid
-  EXPECT_DCHECK_OR_EQ(0, c.Get());  // invalid
+  EXPECT_EQ(0, b.Get());  // invalid
+  EXPECT_EQ(0, c.Get());  // invalid
   EXPECT_EQ(0, d.Get());  // empty
   EXPECT_EQ(0, e.Get());  // empty
 }
@@ -335,14 +325,15 @@ TEST_F(FieldTrialParamsTest, FeatureParamDouble) {
   EXPECT_EQ(1, GetFieldTrialParamByFeatureAsDouble(kFeature, "a", 0));
   EXPECT_EQ(1.5, GetFieldTrialParamByFeatureAsDouble(kFeature, "b", 0));
   EXPECT_EQ(1.0e-10, GetFieldTrialParamByFeatureAsDouble(kFeature, "c", 0));
-  EXPECT_DCHECK_OR_EQ(0, GetFieldTrialParamByFeatureAsDouble(kFeature, "d", 0));
+  EXPECT_EQ(0,
+            GetFieldTrialParamByFeatureAsDouble(kFeature, "d", 0));  // invalid
   EXPECT_EQ(0, GetFieldTrialParamByFeatureAsDouble(kFeature, "e", 0));  // empty
   EXPECT_EQ(0, GetFieldTrialParamByFeatureAsDouble(kFeature, "f", 0));  // empty
 
   EXPECT_EQ(1, a.Get());
   EXPECT_EQ(1.5, b.Get());
   EXPECT_EQ(1.0e-10, c.Get());
-  EXPECT_DCHECK_OR_EQ(0, d.Get());  // invalid
+  EXPECT_EQ(0, d.Get());  // invalid
   EXPECT_EQ(0, e.Get());  // empty
   EXPECT_EQ(0, f.Get());  // empty
 }
@@ -373,10 +364,10 @@ TEST_F(FieldTrialParamsTest, FeatureParamBool) {
 
   EXPECT_TRUE(a.Get());
   EXPECT_FALSE(b.Get());
-  EXPECT_DCHECK_OR_EQ(false, c.Get());  // invalid
-  EXPECT_DCHECK_OR_EQ(true, d.Get());   // invalid
-  EXPECT_TRUE(e.Get());   // empty
-  EXPECT_TRUE(f.Get());   // empty
+  EXPECT_EQ(false, c.Get());  // invalid
+  EXPECT_EQ(true, d.Get());   // invalid
+  EXPECT_TRUE(e.Get());       // empty
+  EXPECT_TRUE(f.Get());       // empty
 }
 
 TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
@@ -411,8 +402,8 @@ TEST_F(FieldTrialParamsTest, FeatureParamTimeDelta) {
 
   EXPECT_EQ(a.Get(), base::Seconds(1.5));
   EXPECT_EQ(b.Get(), base::Minutes(62));
-  EXPECT_DCHECK_OR_EQ(c.Get(), base::TimeDelta());  // invalid
-  EXPECT_DCHECK_OR_EQ(d.Get(), base::TimeDelta());  // invalid
+  EXPECT_EQ(c.Get(), base::TimeDelta());  // invalid
+  EXPECT_EQ(d.Get(), base::TimeDelta());  // invalid
   EXPECT_EQ(e.Get(), base::TimeDelta());  // empty
   EXPECT_EQ(f.Get(), base::TimeDelta());  // empty
 }
@@ -448,8 +439,8 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnum) {
   EXPECT_EQ(ROCK, a.Get());
   EXPECT_EQ(PAPER, b.Get());
   EXPECT_EQ(SCISSORS, c.Get());
-  EXPECT_DCHECK_OR_EQ(ROCK, d.Get());  // invalid
-  EXPECT_EQ(PAPER, e.Get());           // empty
+  EXPECT_EQ(ROCK, d.Get());      // invalid
+  EXPECT_EQ(PAPER, e.Get());     // empty
   EXPECT_EQ(SCISSORS, f.Get());  // not registered
 }
 
@@ -484,8 +475,8 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
   EXPECT_EQ(UI::ONE_D, a.Get());
   EXPECT_EQ(UI::TWO_D, b.Get());
   EXPECT_EQ(UI::THREE_D, c.Get());
-  EXPECT_DCHECK_OR_EQ(UI::ONE_D, d.Get());  // invalid
-  EXPECT_EQ(UI::TWO_D, e.Get());            // empty
+  EXPECT_EQ(UI::ONE_D, d.Get());    // invalid
+  EXPECT_EQ(UI::TWO_D, e.Get());    // empty
   EXPECT_EQ(UI::THREE_D, f.Get());  // not registered
 }
 

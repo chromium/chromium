@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
@@ -20,6 +22,28 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+
+void LogInvalidValue(const Feature& feature,
+                     const char* type,
+                     const std::string& param_name,
+                     const std::string& value_as_string,
+                     const std::string& default_value_as_string) {
+  // To anyone noticing these crash dumps in the wild, these parameters come
+  // from server-side experiment confiuration. If you're seeing an increase it
+  // is likely due to a bad experiment rollout rather than changes in the client
+  // code.
+  SCOPED_CRASH_KEY_STRING32("FieldTrialParams", "feature_name", feature.name);
+  SCOPED_CRASH_KEY_STRING32("FieldTrialParams", "param_name", param_name);
+  SCOPED_CRASH_KEY_STRING32("FieldTrialParams", "value", value_as_string);
+  SCOPED_CRASH_KEY_STRING32("FieldTrialParams", "default",
+                            default_value_as_string);
+  LOG(ERROR) << "Failed to parse field trial param " << param_name
+             << " with string value " << value_as_string << " under feature "
+             << feature.name << " into " << type
+             << ". Falling back to default value of "
+             << default_value_as_string;
+  base::debug::DumpWithoutCrashing();
+}
 
 std::string UnescapeValue(const std::string& value) {
   return UnescapeURLComponent(
@@ -134,11 +158,8 @@ int GetFieldTrialParamByFeatureAsInt(const Feature& feature,
   int value_as_int = 0;
   if (!StringToInt(value_as_string, &value_as_int)) {
     if (!value_as_string.empty()) {
-      NOTREACHED() << "Failed to parse field trial param " << param_name
-                   << " with string value " << value_as_string
-                   << " under feature " << feature.name
-                   << " into an int. Falling back to default value of "
-                   << default_value;
+      LogInvalidValue(feature, "an int", param_name, value_as_string,
+                      base::NumberToString(default_value));
     }
     value_as_int = default_value;
   }
@@ -153,11 +174,8 @@ double GetFieldTrialParamByFeatureAsDouble(const Feature& feature,
   double value_as_double = 0;
   if (!StringToDouble(value_as_string, &value_as_double)) {
     if (!value_as_string.empty()) {
-      NOTREACHED() << "Failed to parse field trial param " << param_name
-                   << " with string value " << value_as_string
-                   << " under feature " << feature.name
-                   << " into a double. Falling back to default value of "
-                   << default_value;
+      LogInvalidValue(feature, "a double", param_name, value_as_string,
+                      base::NumberToString(default_value));
     }
     value_as_double = default_value;
   }
@@ -175,11 +193,8 @@ bool GetFieldTrialParamByFeatureAsBool(const Feature& feature,
     return false;
 
   if (!value_as_string.empty()) {
-    NOTREACHED() << "Failed to parse field trial param " << param_name
-                 << " with string value " << value_as_string
-                 << " under feature " << feature.name
-                 << " into a bool. Falling back to default value of "
-                 << default_value;
+    LogInvalidValue(feature, "a bool", param_name, value_as_string,
+                    default_value ? "true" : "false");
   }
   return default_value;
 }
@@ -196,11 +211,8 @@ base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
 
   absl::optional<base::TimeDelta> ret = TimeDeltaFromString(value_as_string);
   if (!ret.has_value()) {
-    NOTREACHED() << "Failed to parse field trial param " << param_name
-                 << " with string value " << value_as_string
-                 << " under feature " << feature.name
-                 << " into a base::TimeDelta. Falling back to default value of "
-                 << default_value;
+    LogInvalidValue(feature, "a base::TimeDelta", param_name, value_as_string,
+                    base::NumberToString(default_value.InSecondsF()) + " s");
     return default_value;
   }
 
@@ -232,11 +244,8 @@ void LogInvalidEnumValue(const Feature& feature,
                          const std::string& param_name,
                          const std::string& value_as_string,
                          int default_value_as_int) {
-  NOTREACHED() << "Failed to parse field trial param " << param_name
-               << " with string value " << value_as_string << " under feature "
-               << feature.name
-               << " into an enum. Falling back to default value of "
-               << default_value_as_int;
+  LogInvalidValue(feature, "an enum", param_name, value_as_string,
+                  base::NumberToString(default_value_as_int));
 }
 
 }  // namespace base
