@@ -66,6 +66,8 @@
   _bookmarkModel = nullptr;
   _bookmark = nullptr;
   _folder = nullptr;
+  _bookmarkModelBridgeObserver = nil;
+  _syncObserverModelBridge = nil;
 }
 
 #pragma mark - BookmarksEditorMutator
