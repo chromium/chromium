@@ -36,7 +36,13 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 
 }  // namespace
 
-TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
+// TODO(crbug.com/1420468): Failing on an ASAN + LSAN builder.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_DelayedSelfDestruct DISABLED_DelayedSelfDestruct
+#else
+#define MAYBE_DelayedSelfDestruct DelayedSelfDestruct
+#endif
+TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
     uint32_t output_name = 0;
@@ -84,7 +90,15 @@ TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
 // Verify that in the case where an output is added and removed quickly before
 // the client's initial bind, the server still waits for the full amount of
 // delete delays before deleting the global resource.
-TEST_F(WaylandDisplayOutputTest, DelayedSelfDestructBeforeFirstBind) {
+// TODO(crbug.com/1420468): Flaky on an ASAN + LSAN builder.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_DelayedSelfDestructBeforeFirstBind \
+  DISABLED_DelayedSelfDestructBeforeFirstBind
+#else
+#define MAYBE_DelayedSelfDestructBeforeFirstBind \
+  DelayedSelfDestructBeforeFirstBind
+#endif
+TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestructBeforeFirstBind) {
   UpdateDisplay("800x600");
 
   // Block client thread so the initial bind request doesn't happen yet.
