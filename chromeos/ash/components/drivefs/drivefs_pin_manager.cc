@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
@@ -40,13 +41,18 @@ mojom::QueryParametersPtr CreateMyDriveQuery() {
   return query;
 }
 
-// Calls `base::SysInfo::AmountOfFreeDiskSpace` on a blocking thread.
+// Calls the spaced daemon.
 void GetFreeSpace(const base::FilePath& path,
                   PinManager::SpaceResult callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
-      std::move(callback));
+  ash::SpacedClient* const spaced = ash::SpacedClient::Get();
+  DCHECK(spaced);
+  spaced->GetFreeDiskSpace(path.value(),
+                           base::BindOnce(
+                               [](PinManager::SpaceResult callback,
+                                  const absl::optional<int64_t> space) {
+                                 std::move(callback).Run(space.value_or(-1));
+                               },
+                               std::move(callback)));
 }
 
 class NumPunct : public std::numpunct<char> {
