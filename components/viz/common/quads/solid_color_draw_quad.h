@@ -13,6 +13,8 @@ namespace viz {
 
 class VIZ_COMMON_EXPORT SolidColorDrawQuad : public DrawQuad {
  public:
+  static constexpr Material kMaterial = Material::kSolidColor;
+
   SolidColorDrawQuad();
 
   void SetNew(const SharedQuadState* shared_quad_state,

@@ -13,6 +13,8 @@ namespace viz {
 
 class VIZ_COMMON_EXPORT DebugBorderDrawQuad : public DrawQuad {
  public:
+  static constexpr Material kMaterial = Material::kDebugBorder;
+
   DebugBorderDrawQuad();
 
   void SetNew(const SharedQuadState* shared_quad_state,

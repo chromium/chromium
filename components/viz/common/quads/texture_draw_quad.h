@@ -22,6 +22,7 @@ enum class OverlayPriority { kLow, kRegular, kRequired };
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:
   static const size_t kResourceIdIndex = 0;
+  static constexpr Material kMaterial = Material::kTextureContent;
 
   TextureDrawQuad();
   TextureDrawQuad(const TextureDrawQuad& other);

@@ -28,6 +28,8 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
 
   enum : uint32_t { kMinBitsPerChannel = 8, kMaxBitsPerChannel = 24 };
 
+  static constexpr Material kMaterial = Material::kYuvVideoContent;
+
   ~YUVVideoDrawQuad() override;
 
   YUVVideoDrawQuad();

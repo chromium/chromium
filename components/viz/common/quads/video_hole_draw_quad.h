@@ -22,6 +22,8 @@ namespace viz {
 // to find the right VideoDecoder to apply SetGeometry() on.
 class VIZ_COMMON_EXPORT VideoHoleDrawQuad : public DrawQuad {
  public:
+  static constexpr Material kMaterial = Material::kVideoHole;
+
   VideoHoleDrawQuad();
   VideoHoleDrawQuad(const VideoHoleDrawQuad& other);
   ~VideoHoleDrawQuad() override;
@@ -38,6 +40,7 @@ class VIZ_COMMON_EXPORT VideoHoleDrawQuad : public DrawQuad {
               const base::UnguessableToken& plane_id);
 
   static const VideoHoleDrawQuad* MaterialCast(const DrawQuad*);
+
   base::UnguessableToken overlay_plane_id;
 
  private:

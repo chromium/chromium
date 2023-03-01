@@ -1673,11 +1673,11 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
 
   // State check: should not have a CompositorRenderPassDrawQuad if we got here.
   DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
-  if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
+  if (const auto* quad_pass =
+          quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
     // If the renderpass has filters, the filters may modify the effective
     // geometry beyond the quad's visible_rect, so it's not safe to pre-clip.
-    auto pass_id =
-        AggregatedRenderPassDrawQuad::MaterialCast(quad)->render_pass_id;
+    auto pass_id = quad_pass->render_pass_id;
     if (renderer->FiltersForPass(pass_id) ||
         renderer->BackdropFiltersForPass(pass_id))
       return;
@@ -1781,10 +1781,9 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectlyInternal(
   if (UseNearestNeighborSampling(quad))
     return nullptr;
 
-  if (quad->material == DrawQuad::Material::kTextureContent) {
+  if (const auto* tex = quad->DynamicCast<TextureDrawQuad>()) {
     // Per-vertex opacities complicate bypassing the RP and alpha blending the
     // texture with image filters, so punt under that rare circumstance.
-    const TextureDrawQuad* tex = TextureDrawQuad::MaterialCast(quad);
     if (tex->vertex_opacity[0] < 1.f || tex->vertex_opacity[1] < 1.f ||
         tex->vertex_opacity[2] < 1.f || tex->vertex_opacity[3] < 1.f) {
       return nullptr;
@@ -1826,9 +1825,8 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectlyInternal(
   if (ShouldApplyGradientMask(quad))
     return nullptr;
 
-  if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
-    const auto* render_pass_quad =
-        AggregatedRenderPassDrawQuad::MaterialCast(quad);
+  if (const auto* render_pass_quad =
+          quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
     if (render_pass_quad->mask_resource_id())
       return nullptr;
 

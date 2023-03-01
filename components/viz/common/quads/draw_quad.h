@@ -143,6 +143,12 @@ class VIZ_COMMON_EXPORT DrawQuad {
 
   Resources resources;
 
+  template <typename T>
+  const T* DynamicCast() const {
+    return this->material == T::kMaterial ? static_cast<const T*>(this)
+                                          : nullptr;
+  }
+
  protected:
   DrawQuad();
 
