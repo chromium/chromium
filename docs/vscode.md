@@ -430,7 +430,7 @@ should work remotely if you followed the setup instructions at
 problems, please refer to
 [go/vscode-remote#windows](http://go/vscode-remote#windows).
 
-Non-Googlers may follow may follow Microsoft's instructions for
+Non-Googlers may follow Microsoft's instructions for
 [installing the OpenSSH server](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse).
 VS Code should work remotely after following this step.
 
