@@ -630,6 +630,11 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
 
   if (enabled) {
     PopulateInitialDevices();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // No need to do this in Lacros because Ash would be around, and would have
+    // done this already.
+    SetStandardChromeOSAdapterName();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     ClearAllDevices();
   }
@@ -1179,7 +1184,12 @@ BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothAdapterFloss::SetStandardChromeOSAdapterName() {
-  DCHECK(IsPresent());
+  if (!IsPresent()) {
+    BLUETOOTH_LOG(ERROR)
+        << "SetStandardChromeOSAdapterName called when adapter is not present.";
+    return;
+  }
+
   std::string alias = ash::GetDeviceBluetoothName(GetAddress());
   FlossDBusManager::Get()->GetAdapterClient()->SetName(base::DoNothing(),
                                                        alias);
