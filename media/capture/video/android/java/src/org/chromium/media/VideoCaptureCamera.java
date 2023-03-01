@@ -916,7 +916,7 @@ public class VideoCaptureCamera
             if (!mIsRunning) {
                 return;
             }
-            if (data.length == mExpectedFrameSize) {
+            if (data != null && data.length == mExpectedFrameSize) {
                 VideoCaptureJni.get().onFrameAvailable(mNativeVideoCaptureDeviceAndroid,
                         VideoCaptureCamera.this, data, mExpectedFrameSize, getCameraRotation());
             } else {
@@ -926,7 +926,7 @@ public class VideoCaptureCamera
             }
         } finally {
             mPreviewBufferLock.unlock();
-            if (camera != null) {
+            if (camera != null && data != null) {
                 camera.addCallbackBuffer(data);
             }
         }
