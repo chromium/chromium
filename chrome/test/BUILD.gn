@@ -5781,6 +5781,12 @@ test("unit_tests") {
         [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "../browser/crash_upload_list/crash_upload_list_chromeos_unittest.cc",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources +=
         [ "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc" ]
