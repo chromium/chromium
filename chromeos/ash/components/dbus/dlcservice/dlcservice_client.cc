@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/bus.h"
@@ -37,6 +38,8 @@ namespace ash {
 namespace {
 
 DlcserviceClient* g_instance = nullptr;
+
+constexpr auto kGetExistingDlcsTimeout = base::Minutes(3);
 
 class DlcserviceErrorResponseHandler {
  public:
@@ -203,7 +206,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
 
     VLOG(1) << "Requesting to get existing DLC(s).";
     dlcservice_proxy_->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, kGetExistingDlcsTimeout.InMilliseconds(),
         base::BindOnce(&DlcserviceClientImpl::OnGetExistingDlcs,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
