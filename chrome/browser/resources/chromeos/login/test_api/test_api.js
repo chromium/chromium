@@ -850,6 +850,13 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
   getPrivacyPolicyLinkName() {
     return this.privacyPolicyLink.element().text.trim();
   }
+
+  /**
+   * Click `accept` button to go to the next screen.
+   */
+  clickAcceptButton() {
+    this.nextButton.element().click();
+  }
 }
 
 class SmartPrivacyProtectionScreenTester extends ScreenElementApi {
