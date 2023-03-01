@@ -4,10 +4,11 @@
 
 'use strict';
 
-import {AppManagementStore, FakePageHandler, PermissionType, updateSelectedAppId, getPermissionValueBool} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore, FakePageHandler, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden, getPermissionItemByType, getPermissionCrToggleByType} from './test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-arc-detail-view>', () => {
   let arcPermissionView;

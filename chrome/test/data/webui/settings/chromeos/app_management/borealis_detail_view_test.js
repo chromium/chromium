@@ -4,10 +4,12 @@
 
 'use strict';
 
-import {PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore, updateSelectedAppId, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
+import {convertOptionalBoolToBool, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('<app-management-borealis-detail-view>', function() {

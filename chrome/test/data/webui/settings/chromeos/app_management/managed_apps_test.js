@@ -4,10 +4,11 @@
 
 'use strict';
 
-import {PermissionType, TriState, FakePageHandler, AppManagementStore, updateSelectedAppId, createTriStatePermission} from 'chrome://os-settings/chromeos/os_settings.js';
+import {FakePageHandler, AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionToggleByType} from './test_util.js';
-import {AppType, InstallReason, OptionalBool} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, InstallReason, OptionalBool, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-managed-apps>', () => {
   let appDetailView;

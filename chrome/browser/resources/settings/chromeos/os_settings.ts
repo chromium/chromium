@@ -7,7 +7,10 @@
  * imports all of the necessary modules and custom elements to load the page.
  */
 
+/** Necessary imports to load the app */
 import '../strings.m.js';
+import './os_settings_ui/os_settings_ui.js';
+/** Other imports */
 import '../prefs/prefs.js';
 import './device_page/audio.js';
 import './device_page/cros_audio_config.js';
@@ -76,7 +79,6 @@ import './os_apps_page/app_management_page/arc_detail_view.js';
 import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 import './os_apps_page/app_management_page/chrome_app_detail_view.js';
 import './os_apps_page/app_management_page/dom_switch.js';
-import 'chrome://resources/cr_components/app_management/icons.html.js';
 import './os_apps_page/app_management_page/main_view.js';
 import './os_apps_page/app_management_page/pin_to_shelf_item.js';
 import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
@@ -86,8 +88,6 @@ import './os_apps_page/app_management_page/app_management_cros_shared_vars.css.j
 import './os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js';
 import './os_apps_page/app_management_page/supported_links_dialog.js';
 import './os_apps_page/app_management_page/supported_links_item.js';
-import 'chrome://resources/cr_components/app_management/toggle_row.js';
-import 'chrome://resources/cr_components/app_management/uninstall_button.js';
 import './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 import './os_apps_page/os_apps_page.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';
@@ -114,7 +114,6 @@ import './os_settings_main/os_settings_main.js';
 import './os_settings_page/os_settings_page.js';
 import './os_settings_page/settings_idle_load.js';
 import './os_settings_menu/os_settings_menu.js';
-import './os_settings_ui/os_settings_ui.js';
 import './os_settings_icons.css.js';
 import './os_settings_search_box/os_search_result_row.js';
 import './os_settings_search_box/os_settings_search_box.js';
@@ -145,11 +144,6 @@ import * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '/shared/nearby_contact_manager.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
 export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
-export {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-export {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-export {PageType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
-export {createBoolPermission, createTriStatePermission, getBoolPermissionValue, isBoolValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
-export {convertOptionalBoolToBool, createEmptyState, createInitialState, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
@@ -192,7 +186,7 @@ export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_pr
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {addApp, changeApp, removeApp, updateSelectedAppId} from './os_apps_page/app_management_page/actions.js';
-export {AppManagementBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
+export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
 export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_handler.js';
 export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
 export {reduceAction, updateApps} from './os_apps_page/app_management_page/reducers.js';
