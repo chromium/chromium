@@ -2442,6 +2442,28 @@ void GLES2TraceImplementation::CopySharedImageINTERNAL(
                                unpack_flip_y, mailboxes);
 }
 
+void GLES2TraceImplementation::ReadbackARGBImagePixelsINTERNAL(
+    const GLbyte* mailbox,
+    const void* dst_color_space,
+    GLuint dst_color_space_size,
+    GLuint dst_size,
+    GLuint dst_width,
+    GLuint dst_height,
+    GLuint dst_color_type,
+    GLuint dst_alpha_type,
+    GLuint dst_row_bytes,
+    GLint src_x,
+    GLint src_y,
+    GLint plane_index,
+    void* pixels) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
+                                "GLES2Trace::ReadbackARGBImagePixelsINTERNAL");
+  gl_->ReadbackARGBImagePixelsINTERNAL(
+      mailbox, dst_color_space, dst_color_space_size, dst_size, dst_width,
+      dst_height, dst_color_type, dst_alpha_type, dst_row_bytes, src_x, src_y,
+      plane_index, pixels);
+}
+
 void GLES2TraceImplementation::EnableiOES(GLenum target, GLuint index) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "GLES2Trace::EnableiOES");
   gl_->EnableiOES(target, index);

@@ -2492,6 +2492,24 @@ error::Error GLES2DecoderPassthroughImpl::DoReadBuffer(GLenum src) {
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
+    GLint src_x,
+    GLint src_y,
+    GLint plane_index,
+    GLuint dst_width,
+    GLuint dst_height,
+    GLuint row_bytes,
+    GLuint dst_sk_color_type,
+    GLuint dst_sk_alpha_type,
+    GLint shm_id,
+    GLuint shm_offset,
+    GLuint color_space_offset,
+    GLuint pixels_offset,
+    GLuint mailbox_offset) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::DoReadPixels(GLint x,
                                                        GLint y,
                                                        GLsizei width,

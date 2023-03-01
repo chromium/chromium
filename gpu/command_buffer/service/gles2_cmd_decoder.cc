@@ -13117,6 +13117,13 @@ void GLES2DecoderImpl::FinishReadPixels(GLsizei width,
   }
 }
 
+error::Error GLES2DecoderImpl::HandleReadbackARGBImagePixelsINTERNAL(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleReadPixels(uint32_t immediate_data_size,
                                                 const volatile void* cmd_data) {
   const char* func_name = "glReadPixels";

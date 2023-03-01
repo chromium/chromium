@@ -1149,6 +1149,20 @@ void GLES2InterfaceStub::CopySharedImageINTERNAL(
     GLsizei /* height */,
     GLboolean /* unpack_flip_y */,
     const GLbyte* /* mailboxes */) {}
+void GLES2InterfaceStub::ReadbackARGBImagePixelsINTERNAL(
+    const GLbyte* /* mailbox */,
+    const void* /* dst_color_space */,
+    GLuint /* dst_color_space_size */,
+    GLuint /* dst_size */,
+    GLuint /* dst_width */,
+    GLuint /* dst_height */,
+    GLuint /* dst_color_type */,
+    GLuint /* dst_alpha_type */,
+    GLuint /* dst_row_bytes */,
+    GLint /* src_x */,
+    GLint /* src_y */,
+    GLint /* plane_index */,
+    void* /* pixels */) {}
 void GLES2InterfaceStub::EnableiOES(GLenum /* target */, GLuint /* index */) {}
 void GLES2InterfaceStub::DisableiOES(GLenum /* target */, GLuint /* index */) {}
 void GLES2InterfaceStub::BlendEquationiOES(GLuint /* buf */,

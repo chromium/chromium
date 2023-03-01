@@ -876,6 +876,19 @@ virtual void CopySharedImageINTERNAL(GLint xoffset,
                                      GLsizei height,
                                      GLboolean unpack_flip_y,
                                      const GLbyte* mailboxes) = 0;
+virtual void ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
+                                             const void* dst_color_space,
+                                             GLuint dst_color_space_size,
+                                             GLuint dst_size,
+                                             GLuint dst_width,
+                                             GLuint dst_height,
+                                             GLuint dst_color_type,
+                                             GLuint dst_alpha_type,
+                                             GLuint dst_row_bytes,
+                                             GLint src_x,
+                                             GLint src_y,
+                                             GLint plane_index,
+                                             void* pixels) = 0;
 virtual void EnableiOES(GLenum target, GLuint index) = 0;
 virtual void DisableiOES(GLenum target, GLuint index) = 0;
 virtual void BlendEquationiOES(GLuint buf, GLenum mode) = 0;

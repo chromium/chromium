@@ -4618,6 +4618,23 @@ void GLES2Implementation::GetUniformuiv(GLuint program,
   CheckGLError();
 }
 
+void GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
+    const GLbyte* mailbox,
+    const void* dst_color_space,
+    GLuint dst_color_space_offset,
+    GLuint dst_size,
+    GLuint dst_width,
+    GLuint dst_height,
+    GLuint dst_color_type,
+    GLuint dst_alpha_type,
+    GLuint dst_row_bytes,
+    GLint src_x,
+    GLint src_y,
+    GLint plane_index,
+    void* pixels) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void GLES2Implementation::ReadPixels(GLint xoffset,
                                      GLint yoffset,
                                      GLsizei width,

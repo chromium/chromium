@@ -3210,6 +3210,28 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
   }
 }
 
+void ReadbackARGBImagePixelsINTERNAL(GLint src_x,
+                                     GLint src_y,
+                                     GLint plane_index,
+                                     GLuint dst_width,
+                                     GLuint dst_height,
+                                     GLuint row_bytes,
+                                     GLuint dst_sk_color_type,
+                                     GLuint dst_sk_alpha_type,
+                                     GLint shm_id,
+                                     GLuint shm_offset,
+                                     GLuint color_space_offset,
+                                     GLuint pixels_offset,
+                                     GLuint mailbox_offset) {
+  gles2::cmds::ReadbackARGBImagePixelsINTERNAL* c =
+      GetCmdSpace<gles2::cmds::ReadbackARGBImagePixelsINTERNAL>();
+  if (c) {
+    c->Init(src_x, src_y, plane_index, dst_width, dst_height, row_bytes,
+            dst_sk_color_type, dst_sk_alpha_type, shm_id, shm_offset,
+            color_space_offset, pixels_offset, mailbox_offset);
+  }
+}
+
 void EnableiOES(GLenum target, GLuint index) {
   gles2::cmds::EnableiOES* c = GetCmdSpace<gles2::cmds::EnableiOES>();
   if (c) {
