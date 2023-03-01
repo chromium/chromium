@@ -934,7 +934,10 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
                                                                 destination);
 }
 
-size_t FrameTreeNode::GetFencedFrameDepth() {
+size_t FrameTreeNode::GetFencedFrameDepth(
+    size_t& shared_storage_fenced_frame_root_count) {
+  DCHECK_EQ(shared_storage_fenced_frame_root_count, 0u);
+
   size_t depth = 0;
   FrameTreeNode* node = this;
 
@@ -942,6 +945,12 @@ size_t FrameTreeNode::GetFencedFrameDepth() {
          FencedFrameStatus::kNotNestedInFencedFrame) {
     if (node->fenced_frame_status() == FencedFrameStatus::kFencedFrameRoot) {
       depth += 1;
+
+      // This implies the fenced frame is from shared storage.
+      if (node->fenced_frame_properties_ &&
+          node->fenced_frame_properties_->shared_storage_budget_metadata_) {
+        shared_storage_fenced_frame_root_count += 1;
+      }
     } else {
       DCHECK_EQ(node->fenced_frame_status(),
                 FencedFrameStatus::kIframeNestedWithinFencedFrame);

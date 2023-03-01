@@ -40,6 +40,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
@@ -2979,6 +2980,9 @@ class SharedStorageFencedFrameInteractionBrowserTest
             blink::features::kFencedFramesAPIChanges) {}
 
   bool ResolveSelectURLToConfig() override { return IsParamFeatureEnabled(); }
+
+ protected:
+  test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -3939,6 +3943,48 @@ IN_PROC_BROWSER_TEST_P(
                    kBudgetAllowed - 3);
   EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin_2),
                    kBudgetAllowed - 3);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageFencedFrameInteractionBrowserTest,
+    SelectURLNotAllowedInFencedFrameNotOriginatedFromSharedStorage) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  FrameTreeNode* fenced_frame_root_node_1 =
+      static_cast<RenderFrameHostImpl*>(
+          fenced_frame_test_helper_.CreateFencedFrame(
+              shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
+              net::OK, blink::mojom::FencedFrameMode::kOpaqueAds))
+          ->frame_tree_node();
+
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node_1,
+                     JsReplace("window.resolveSelectURLToConfig = $1;",
+                               ResolveSelectURLToConfig())));
+
+  EvalJsResult result = EvalJs(fenced_frame_root_node_1, R"(
+      sharedStorage.selectURL(
+        'test-url-selection-operation',
+        [
+          {
+            url: "fenced_frames/title0.html"
+          }
+        ],
+        {
+          data: {'mockResult': 0},
+          resolveToConfig: resolveSelectURLToConfig
+        }
+      );
+    )");
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "selectURL() is not allowed in a fenced frame that did not originate "
+          "from shared storage."));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,

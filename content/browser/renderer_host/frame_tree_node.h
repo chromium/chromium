@@ -554,11 +554,18 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const std::vector<blink::FencedFrame::ReportingDestination>& destination)
       override;
 
-  // Return the number of fenced frame boundaries above this frame. The
+  // Returns the number of fenced frame boundaries above this frame. The
   // outermost main frame's frame tree has fenced frame depth 0, a topmost
   // fenced frame tree embedded in the outermost main frame has fenced frame
   // depth 1, etc.
-  size_t GetFencedFrameDepth();
+  //
+  // Also, sets `shared_storage_fenced_frame_root_count` to the
+  // number of fenced frame boundaries (roots) above this frame that originate
+  // from shared storage. This is used to check whether a fenced frame
+  // originates from shared storage only (i.e. not from FLEDGE).
+  // TODO(crbug.com/1347953): Remove this check once we put permissions inside
+  // FencedFrameConfig.
+  size_t GetFencedFrameDepth(size_t& shared_storage_fenced_frame_root_count);
 
   // Traverse up from this node. Return all valid
   // `node->fenced_frame_properties_->shared_storage_budget_metadata` (i.e. this
