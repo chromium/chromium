@@ -286,18 +286,15 @@ static std::string GetBackgroundColorFromElementInfo(Element* element) {
   auto status_to_json = crdtp::json::ConvertCBORToJSON(
       crdtp::SpanFrom(actual_value->Serialize()), &json_actual);
   EXPECT_TRUE(status_to_json.ok());
-  base::Value parsed_json_actual = ParseJson(json_actual);
-  auto* style =
-      parsed_json_actual.FindKeyOfType("style", base::Value::Type::DICT);
+  base::Value::Dict parsed_json_actual = ParseJson(json_actual).TakeDict();
+  auto* style = parsed_json_actual.FindDict("style");
   EXPECT_TRUE(style);
-  auto* backgroundColor = style->FindKeyOfType("background-color-css-text",
-                                               base::Value::Type::STRING);
-  if (!backgroundColor) {
-    backgroundColor =
-        style->FindKeyOfType("background-color", base::Value::Type::STRING);
+  auto* background_color = style->FindString("background-color-css-text");
+  if (!background_color) {
+    background_color = style->FindString("background-color");
   }
-  EXPECT_TRUE(backgroundColor);
-  return backgroundColor->GetString();
+  EXPECT_TRUE(background_color);
+  return std::move(*background_color);
 }
 
 TEST_F(InspectorHighlightTest, BuildElementInfo_Colors) {
