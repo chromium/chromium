@@ -108,12 +108,6 @@ class BubbleViewTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
 
-    // Here we have to create the global instance of `CrasAudioHandler` before
-    // `FakeVideoConferenceTrayController`, so we do it here and not do it in
-    // `AshTestBase`.
-    CrasAudioClient::InitializeFake();
-    CrasAudioHandler::InitializeForTesting();
-
     // Instantiates a fake controller (the real one is created in
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
     // ash unit tests).
@@ -126,7 +120,6 @@ class BubbleViewTest : public AshTestBase {
     super_cuteness_ =
         std::make_unique<fake_video_conference::SuperCutnessEffect>();
 
-    set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
 
     // Make the video conference tray visible for testing.
@@ -147,8 +140,6 @@ class BubbleViewTest : public AshTestBase {
     shaggy_fur_.reset();
     super_cuteness_.reset();
     controller_.reset();
-    CrasAudioHandler::Shutdown();
-    CrasAudioClient::Shutdown();
   }
 
   views::View* GetSetValueEffectButton(int index) {

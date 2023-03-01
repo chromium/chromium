@@ -40,18 +40,10 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kVideoConference, features::kVcBackgroundReplace}, {});
 
-    // Here we have to create the global instance of `CrasAudioHandler` before
-    // `FakeVideoConferenceTrayController`, so we do it here and not in
-    // `AshTestBase`.
-    CrasAudioClient::InitializeFake();
-    CrasAudioHandler::InitializeForTesting();
-
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-
-    set_create_global_cras_audio_handler(false);
 
     AshTestBase::SetUp();
 
@@ -65,8 +57,6 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   void TearDown() override {
     NoSessionAshTestBase::TearDown();
     controller_.reset();
-    CrasAudioHandler::Shutdown();
-    CrasAudioClient::Shutdown();
   }
 
   // Sets background blur state.

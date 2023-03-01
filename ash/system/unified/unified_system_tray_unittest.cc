@@ -68,14 +68,8 @@ class UnifiedSystemTrayTest
       enabled_features.push_back(features::kQsRevamp);
     }
     if (IsVcControlsUiEnabled()) {
-      // Here we have to create the global instance of `CrasAudioHandler`
-      // before `FakeVideoConferenceTrayController`, so we do it here and not
-      // in `AshTestBase`.
-      CrasAudioClient::InitializeFake();
-      CrasAudioHandler::InitializeForTesting();
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
-      set_create_global_cras_audio_handler(false);
       enabled_features.push_back(features::kVideoConference);
     }
     feature_list_.InitWithFeatures(enabled_features, {});
@@ -87,8 +81,6 @@ class UnifiedSystemTrayTest
 
     if (IsVcControlsUiEnabled()) {
       fake_video_conference_tray_controller_.reset();
-      CrasAudioHandler::Shutdown();
-      CrasAudioClient::Shutdown();
     }
   }
 

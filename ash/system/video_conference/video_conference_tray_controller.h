@@ -68,6 +68,16 @@ class ASH_EXPORT VideoConferenceTrayController
   // Returns the singleton instance.
   static VideoConferenceTrayController* Get();
 
+  // Adds this class as an observer for CrasAudioHandler and
+  // CameraHalDispatcherImpl.
+  // (1) We should not call this in /ash/system/* tests, because we are not
+  // using FakeCrasAudioClient or MockCameraHalServer. Currently, we directly
+  // mock the VideoConferenceTrayButtons inside
+  // FakeVideoConferenceTrayController; which is a simpler approach.
+  // (2) We need this initialization in
+  // ChromeBrowserMainExtraPartsAsh::PreProfileInit for production code.
+  void Initialize();
+
   // Observer functions.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -165,6 +175,8 @@ class ASH_EXPORT VideoConferenceTrayController
   // icons accordingly.
   bool camera_permission_during_timer_ = false;
   bool microphone_permission_during_timer_ = false;
+
+  bool initialized_ = false;
 
   base::WeakPtrFactory<VideoConferenceTrayController> weak_ptr_factory_{this};
 };

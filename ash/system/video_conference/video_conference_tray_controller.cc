@@ -39,24 +39,29 @@ VideoConferenceTrayController* g_controller_instance = nullptr;
 VideoConferenceTrayController::VideoConferenceTrayController() {
   DCHECK(!g_controller_instance);
   g_controller_instance = this;
-
-  media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
-      this);
-  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 VideoConferenceTrayController::~VideoConferenceTrayController() {
   DCHECK_EQ(this, g_controller_instance);
   g_controller_instance = nullptr;
 
-  media::CameraHalDispatcherImpl::GetInstance()
-      ->RemoveCameraPrivacySwitchObserver(this);
-  CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  if (initialized_) {
+    media::CameraHalDispatcherImpl::GetInstance()
+        ->RemoveCameraPrivacySwitchObserver(this);
+    CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  }
 }
 
 // static
 VideoConferenceTrayController* VideoConferenceTrayController::Get() {
   return g_controller_instance;
+}
+
+void VideoConferenceTrayController::Initialize() {
+  media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
+      this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
+  initialized_ = true;
 }
 
 void VideoConferenceTrayController::AddObserver(Observer* observer) {

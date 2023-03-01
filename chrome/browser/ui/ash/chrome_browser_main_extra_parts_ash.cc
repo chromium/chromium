@@ -170,6 +170,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       video_conference_tray_controller_ =
           std::make_unique<ash::FakeVideoConferenceTrayController>();
     }
+    video_conference_tray_controller_->Initialize();
   }
 
   ash_shell_init_ = std::make_unique<AshShellInit>();
