@@ -6090,49 +6090,13 @@ void Document::PermissionServiceConnectionError() {
   data_->permission_service_.reset();
 }
 
-// TODO(crbug.com/1401089): The caller of this method is not tied
-// to an end point yet thus not affecting current behavior.
-bool Document::HasStorageAccess() const {
-  DCHECK(GetExecutionContext());
-  DCHECK(dom_window_);
-  DCHECK(TopFrameOrigin());  // #2
-
-  // This method is a helper that implements most of the steps of
-  // https://privacycg.github.io/storage-access/#dom-document-hasstorageaccess.
-
-  // #3: if doc's origin is opaque, return false.
-  if (GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
-    return false;
-  }
-
-  // #5: if global is not a secure context, return false.
-  if (!dom_window_->isSecureContext()) {
-    return false;
-  }
-
-  // #6: if doc's browsing context is a top-level browsing context, return true.
-  if (IsInOutermostMainFrame()) {
-    return true;
-  }
-
-  // #7: if the top-level origin of doc's relevant settings object is an opaque
-  // origin, return false.
-  if (TopFrameOrigin()->IsOpaque()) {
-    return false;
-  }
-
-  // #8: if doc's origin is same-origin with the top-level origin of doc's
-  // relevant settings object, return true.
-  if (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
-          &*TopFrameOrigin())) {
-    return true;
-  }
-
-  // #9: return global's `has storage access`.
-  return dom_window_->HasStorageAccess();
-}
-
 ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
+  // See
+  // https://privacycg.github.io/storage-access/#dom-document-hasstorageaccess
+  // for the steps implemented here.
+
+  // Step #2: if doc is not fully active, reject p with an InvalidStateError and
+  // return p.
   if (!GetFrame()) {
     // Note that in detached frames, resolvers are not able to return a promise.
     return ScriptPromise::RejectWithDOMException(
@@ -6146,7 +6110,39 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   ScriptPromise promise = resolver->Promise();
-  resolver->Resolve(HasStorageAccess());
+  resolver->Resolve([&]() -> bool {
+    // #3: if doc's origin is opaque, return false.
+    if (GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
+      return false;
+    }
+
+    // #5: if global is not a secure context, return false.
+    if (!dom_window_->isSecureContext()) {
+      return false;
+    }
+
+    // #6: if doc's browsing context is a top-level browsing context, return
+    // true.
+    if (IsInOutermostMainFrame()) {
+      return true;
+    }
+
+    // #7: if the top-level origin of doc's relevant settings object is an
+    // opaque origin, return false.
+    if (TopFrameOrigin()->IsOpaque()) {
+      return false;
+    }
+
+    // #8: if doc's origin is same-origin with the top-level origin of doc's
+    // relevant settings object, return true.
+    if (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+            &*TopFrameOrigin())) {
+      return true;
+    }
+
+    // #9: return global's `has storage access`.
+    return dom_window_->HasStorageAccess();
+  }());
   return promise;
 }
 
@@ -6391,7 +6387,7 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return promise;
   }
 
-  if (HasStorageAccess()) {
+  if (dom_window_->HasStorageAccess()) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::APPROVED_EXISTING_ACCESS);
 
