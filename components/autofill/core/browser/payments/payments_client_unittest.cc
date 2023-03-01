@@ -126,6 +126,44 @@ struct CardUnmaskOptions {
   bool use_only_legacy_id = false;
 };
 
+struct GetUploadDetailsOptions {
+  GetUploadDetailsOptions& with_upload_card_source(
+      PaymentsClient::UploadCardSource u) {
+    upload_card_source = u;
+    return *this;
+  }
+
+  GetUploadDetailsOptions& with_billing_customer_number(int64_t i) {
+    billing_customer_number = i;
+    return *this;
+  }
+
+  PaymentsClient::UploadCardSource upload_card_source =
+      PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE;
+  int64_t billing_customer_number = 111222333444L;
+};
+
+struct UploadCardOptions {
+  UploadCardOptions& with_cvc_in_request(bool b) {
+    include_cvc = b;
+    return *this;
+  }
+
+  UploadCardOptions& with_nickname_in_request(bool b) {
+    include_nickname = b;
+    return *this;
+  }
+
+  UploadCardOptions& with_billing_customer_number(int64_t i) {
+    billing_customer_number = i;
+    return *this;
+  }
+
+  bool include_cvc = false;
+  bool include_nickname = false;
+  int64_t billing_customer_number = 111222333444L;
+};
+
 }  // namespace
 
 class PaymentsClientTest : public testing::Test {
@@ -311,27 +349,28 @@ class PaymentsClientTest : public testing::Test {
 
   // Issue a GetUploadDetails request.
   void StartGettingUploadDetails(
-      PaymentsClient::UploadCardSource upload_card_source =
-          PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE,
-      long long billing_customer_number = 111222333444L) {
+      GetUploadDetailsOptions get_upload_details_options) {
     client_->GetUploadDetails(
         BuildTestProfiles(), kAllDetectableValues, std::vector<const char*>(),
         "language-LOCALE",
         base::BindOnce(&PaymentsClientTest::OnDidGetUploadDetails,
                        weak_ptr_factory_.GetWeakPtr()),
-        /*billable_service_number=*/12345, billing_customer_number,
-        upload_card_source);
+        /*billable_service_number=*/12345,
+        get_upload_details_options.billing_customer_number,
+        get_upload_details_options.upload_card_source);
   }
 
   // Issue an UploadCard request. This requires an OAuth token before starting
   // the request.
-  void StartUploading(bool include_cvc, bool include_nickname = false) {
+  void StartUploading(UploadCardOptions upload_card_options) {
     PaymentsClient::UploadRequestDetails request_details;
-    request_details.billing_customer_number = 111222333444;
+    request_details.billing_customer_number =
+        upload_card_options.billing_customer_number;
     request_details.card = test::GetCreditCard();
-    if (include_cvc)
+    if (upload_card_options.include_cvc) {
       request_details.cvc = u"123";
-    if (include_nickname) {
+    }
+    if (upload_card_options.include_nickname) {
       upstream_nickname_ = u"grocery";
       request_details.card.SetNickname(upstream_nickname_);
     }
@@ -1083,7 +1122,7 @@ TEST_F(PaymentsClientTest, EnrollAttemptReturnsCreationOptions) {
 }
 
 TEST_F(PaymentsClientTest, GetDetailsSuccess) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
   ReturnResponse(
       net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
@@ -1092,7 +1131,7 @@ TEST_F(PaymentsClientTest, GetDetailsSuccess) {
 }
 
 TEST_F(PaymentsClientTest, GetDetailsRemovesNonLocationData) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // Verify that the recipient name field and test names appear nowhere in the
   // upload data.
@@ -1115,7 +1154,7 @@ TEST_F(PaymentsClientTest, GetDetailsRemovesNonLocationData) {
 }
 
 TEST_F(PaymentsClientTest, GetDetailsIncludesDetectedValuesInRequest) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // Verify that the detected values were included in the request.
   std::string detected_values_string =
@@ -1129,7 +1168,7 @@ TEST_F(PaymentsClientTest, GetDetailsIncludesChromeUserContext) {
   feature_list.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // ChromeUserContext was set.
   EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
@@ -1142,7 +1181,7 @@ TEST_F(PaymentsClientTest,
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // ChromeUserContext was set.
   EXPECT_TRUE(GetUploadData().find("chrome_user_context") != std::string::npos);
@@ -1151,8 +1190,8 @@ TEST_F(PaymentsClientTest,
 
 TEST_F(PaymentsClientTest,
        GetDetailsIncludesUpstreamCheckoutFlowUploadCardSourceInRequest) {
-  StartGettingUploadDetails(
-      PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
+  StartGettingUploadDetails(GetUploadDetailsOptions().with_upload_card_source(
+      PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(GetUploadData().find("UPSTREAM_CHECKOUT_FLOW") !=
@@ -1161,8 +1200,8 @@ TEST_F(PaymentsClientTest,
 
 TEST_F(PaymentsClientTest,
        GetDetailsIncludesUpstreamSettingsPageUploadCardSourceInRequest) {
-  StartGettingUploadDetails(
-      PaymentsClient::UploadCardSource::UPSTREAM_SETTINGS_PAGE);
+  StartGettingUploadDetails(GetUploadDetailsOptions().with_upload_card_source(
+      PaymentsClient::UploadCardSource::UPSTREAM_SETTINGS_PAGE));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(GetUploadData().find("UPSTREAM_SETTINGS_PAGE") !=
@@ -1171,8 +1210,8 @@ TEST_F(PaymentsClientTest,
 
 TEST_F(PaymentsClientTest,
        GetDetailsIncludesUpstreamCardOcrUploadCardSourceInRequest) {
-  StartGettingUploadDetails(
-      PaymentsClient::UploadCardSource::UPSTREAM_CARD_OCR);
+  StartGettingUploadDetails(GetUploadDetailsOptions().with_upload_card_source(
+      PaymentsClient::UploadCardSource::UPSTREAM_CARD_OCR));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(GetUploadData().find("UPSTREAM_CARD_OCR") != std::string::npos);
@@ -1181,8 +1220,8 @@ TEST_F(PaymentsClientTest,
 TEST_F(
     PaymentsClientTest,
     GetDetailsIncludesLocalCardMigrationCheckoutFlowUploadCardSourceInRequest) {
-  StartGettingUploadDetails(
-      PaymentsClient::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW);
+  StartGettingUploadDetails(GetUploadDetailsOptions().with_upload_card_source(
+      PaymentsClient::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(GetUploadData().find("LOCAL_CARD_MIGRATION_CHECKOUT_FLOW") !=
@@ -1192,8 +1231,8 @@ TEST_F(
 TEST_F(
     PaymentsClientTest,
     GetDetailsIncludesLocalCardMigrationSettingsPageUploadCardSourceInRequest) {
-  StartGettingUploadDetails(
-      PaymentsClient::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE);
+  StartGettingUploadDetails(GetUploadDetailsOptions().with_upload_card_source(
+      PaymentsClient::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE));
 
   // Verify that the correct upload card source was included in the request.
   EXPECT_TRUE(GetUploadData().find("LOCAL_CARD_MIGRATION_SETTINGS_PAGE") !=
@@ -1201,7 +1240,7 @@ TEST_F(
 }
 
 TEST_F(PaymentsClientTest, GetDetailsIncludesUnknownUploadCardSourceInRequest) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // Verify that the absence of an upload card source results in UNKNOWN.
   EXPECT_TRUE(GetUploadData().find("UNKNOWN_UPLOAD_CARD_SOURCE") !=
@@ -1212,14 +1251,14 @@ TEST_F(PaymentsClientTest, GetUploadDetailsVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
   // headers.
   CreateFieldTrialWithId("AutofillTest", "Group", 369);
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // Note that experiment information is stored in X-Client-Data.
   EXPECT_TRUE(HasVariationsHeader());
 }
 
 TEST_F(PaymentsClientTest, GetDetailsIncludeBillableServiceNumber) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // Verify that billable service number was included in the request.
   EXPECT_TRUE(GetUploadData().find("\"billable_service\":12345") !=
@@ -1227,7 +1266,7 @@ TEST_F(PaymentsClientTest, GetDetailsIncludeBillableServiceNumber) {
 }
 
 TEST_F(PaymentsClientTest, GetDetailsIncludeBillingCustomerNumber) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
 
   // Verify that the billing customer number is included in the request if flag
   // is enabled.
@@ -1238,8 +1277,9 @@ TEST_F(PaymentsClientTest, GetDetailsIncludeBillingCustomerNumber) {
 
 TEST_F(PaymentsClientTest,
        GetDetailsExcludesBillingCustomerNumberIfNoBcnExists) {
+  // A value of zero is treated as a non-existent BCN.
   StartGettingUploadDetails(
-      PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE, 0L);
+      GetUploadDetailsOptions().with_billing_customer_number(0L));
 
   // Verify that the billing customer number is not included in the request if
   // billing customer number is 0.
@@ -1250,7 +1290,7 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, GetDetailsFollowedByUploadSuccess) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
   ReturnResponse(
       net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
@@ -1258,27 +1298,27 @@ TEST_F(PaymentsClientTest, GetDetailsFollowedByUploadSuccess) {
 
   result_ = AutofillClient::PaymentsRpcResult::kNone;
 
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
 }
 
 TEST_F(PaymentsClientTest, GetDetailsMissingContextToken) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
   ReturnResponse(net::HTTP_OK, "{ \"legal_message\": {} }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsClientTest, GetDetailsMissingLegalMessage) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
   ReturnResponse(net::HTTP_OK, "{ \"context_token\": \"some_token\" }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ(nullptr, legal_message_.get());
 }
 
 TEST_F(PaymentsClientTest, SupportedCardBinRangesParsesCorrectly) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
   ReturnResponse(
       net::HTTP_OK,
       "{"
@@ -1304,7 +1344,7 @@ TEST_F(PaymentsClientTest, GetUploadAccountFromSyncTest) {
       identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
   test_personal_data_.SetAccountInfoForPayments(secondary_account_info);
 
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   ReturnResponse(net::HTTP_OK, "{}");
 
   // Issue a token for the secondary account.
@@ -1324,7 +1364,7 @@ TEST_F(PaymentsClientTest, UploadCardVariationsTest) {
   // Register a trial and variation id, so that there is data in variations
   // headers.
   CreateFieldTrialWithId("AutofillTest", "Group", 369);
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
   // Note that experiment information is stored in X-Client-Data.
@@ -1343,7 +1383,7 @@ TEST_F(PaymentsClientTest, UnmaskCardVariationsTest) {
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessEmptyResponse) {
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
@@ -1354,7 +1394,7 @@ TEST_F(PaymentsClientTest, UploadSuccessEmptyResponse) {
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessInstrumentIdPresent) {
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
   upload_card_response_details_.instrument_id = absl::nullopt;
 
@@ -1371,7 +1411,7 @@ TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
        {CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_NOT_ELIGIBLE,
         CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE,
         CreditCard::VirtualCardEnrollmentState::ENROLLED}) {
-    StartUploading(/*include_cvc=*/true);
+    StartUploading(UploadCardOptions());
     // An OAuthToken needs to be issued to initiate the first UploadCard call
     // from PaymentsClientTest::StartUploading(), but only for the first call.
     // All future calls will use the first OAuthToken. If multiple OAuthTokens
@@ -1408,7 +1448,7 @@ TEST_F(PaymentsClientTest, UploadSuccessVirtualCardEnrollmentStatePresent) {
 
 TEST_F(PaymentsClientTest,
        UploadSuccessGetDetailsForEnrollmentResponseDetailsPresent) {
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
                  "{ \"virtual_card_metadata\": "
@@ -1439,7 +1479,7 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessCardArtUrlPresent) {
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
                  "{ \"card_art_url\": \"https://www.example.com/\" }");
@@ -1449,7 +1489,7 @@ TEST_F(PaymentsClientTest, UploadSuccessCardArtUrlPresent) {
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesNonLocationData) {
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
   // Verify that the recipient name field and test names do appear in the upload
@@ -1474,13 +1514,24 @@ TEST_F(PaymentsClientTest, UploadIncludesNonLocationData) {
 
 TEST_F(PaymentsClientTest,
        UploadRequestIncludesBillingCustomerNumberInRequest) {
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions().with_billing_customer_number(1234L));
   IssueOAuthToken();
 
   // Verify that the billing customer number is included in the request.
-  EXPECT_TRUE(
-      GetUploadData().find("%22external_customer_id%22:%22111222333444%22") !=
-      std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("%22external_customer_id%22:%221234%22") !=
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest,
+       UploadRequestExcludesBillingCustomerNumberIfNoBcnExists) {
+  // A value of zero is treated as a non-existent BCN.
+  StartUploading(UploadCardOptions().with_billing_customer_number(0L));
+  IssueOAuthToken();
+
+  // Verify that the billing customer number is not included in the request if
+  // billing customer number is 0.
+  EXPECT_TRUE(GetUploadData().find("\"external_customer_id\"") ==
+              std::string::npos);
 }
 
 TEST_F(PaymentsClientTest, UploadRequestIncludesEncryptedPan) {
@@ -1488,7 +1539,7 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesEncryptedPan) {
   feature_list.InitAndDisableFeature(
       features::kAutofillUpstreamUseAlternateSecureDataType);
 
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
   // Verify that the encrypted_pan and s7e_1_pan parameters were included
@@ -1505,7 +1556,7 @@ TEST_F(PaymentsClientTest,
   feature_list.InitAndEnableFeature(
       features::kAutofillUpstreamUseAlternateSecureDataType);
 
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
   // Verify that the encrypted_pan and s7e_38_pan parameters were included
@@ -1517,7 +1568,7 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesCvcInRequestIfProvided) {
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions().with_cvc_in_request(true));
   IssueOAuthToken();
 
   // Verify that the encrypted_cvc and s7e_13_cvc parameters were included in
@@ -1527,12 +1578,24 @@ TEST_F(PaymentsClientTest, UploadIncludesCvcInRequestIfProvided) {
   EXPECT_TRUE(GetUploadData().find("&s7e_13_cvc=") != std::string::npos);
 }
 
+TEST_F(PaymentsClientTest, UploadDoesNotIncludeCvcInRequestIfNotProvided) {
+  StartUploading(UploadCardOptions().with_cvc_in_request(false));
+  IssueOAuthToken();
+
+  EXPECT_TRUE(!GetUploadData().empty());
+  // Verify that the encrypted_cvc and s7e_13_cvc parameters were not included
+  // in the request.
+  EXPECT_TRUE(GetUploadData().find("encrypted_cvc") == std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("__param:s7e_13_cvc") == std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("&s7e_13_cvc=") == std::string::npos);
+}
+
 TEST_F(PaymentsClientTest, UploadIncludesChromeUserContext) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
   // ChromeUserContext was set.
@@ -1546,7 +1609,7 @@ TEST_F(PaymentsClientTest,
   feature_list.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
-  StartUploading(/*include_cvc=*/true);
+  StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
   // ChromeUserContext was set.
@@ -1554,20 +1617,8 @@ TEST_F(PaymentsClientTest,
   EXPECT_TRUE(GetUploadData().find("full_sync_enabled") != std::string::npos);
 }
 
-TEST_F(PaymentsClientTest, UploadDoesNotIncludeCvcInRequestIfNotProvided) {
-  StartUploading(/*include_cvc=*/false);
-  IssueOAuthToken();
-
-  EXPECT_TRUE(!GetUploadData().empty());
-  // Verify that the encrypted_cvc and s7e_13_cvc parameters were not included
-  // in the request.
-  EXPECT_TRUE(GetUploadData().find("encrypted_cvc") == std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("__param:s7e_13_cvc") == std::string::npos);
-  EXPECT_TRUE(GetUploadData().find("&s7e_13_cvc=") == std::string::npos);
-}
-
 TEST_F(PaymentsClientTest, UploadIncludesCardNickname) {
-  StartUploading(/*include_cvc=*/true, /*include_nickname=*/true);
+  StartUploading(UploadCardOptions().with_nickname_in_request(true));
   IssueOAuthToken();
 
   // Card nickname was set.
@@ -1577,7 +1628,7 @@ TEST_F(PaymentsClientTest, UploadIncludesCardNickname) {
 }
 
 TEST_F(PaymentsClientTest, UploadDoesNotIncludeCardNicknameEmptyNickname) {
-  StartUploading(/*include_cvc=*/true, /*include_nickname=*/false);
+  StartUploading(UploadCardOptions().with_nickname_in_request(false));
   IssueOAuthToken();
 
   // Card nickname was not set.
@@ -1713,7 +1764,7 @@ TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
 // Tests for the local card migration flow. Desktop only.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PaymentsClientTest, GetDetailsFollowedByMigrationSuccess) {
-  StartGettingUploadDetails();
+  StartGettingUploadDetails(GetUploadDetailsOptions());
   ReturnResponse(
       net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
