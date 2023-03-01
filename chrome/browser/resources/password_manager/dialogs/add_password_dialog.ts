@@ -20,6 +20,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
+import {Page, Router} from '../router.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 
 import {getTemplate} from './add_password_dialog.html.js';
@@ -32,6 +33,7 @@ export interface AddPasswordDialogElement {
     passwordInput: CrInputElement,
     showPasswordButton: CrIconButtonElement,
     usernameInput: CrInputElement,
+    viewExistingPasswordLink: HTMLAnchorElement,
     websiteInput: CrInputElement,
   };
 }
@@ -187,7 +189,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return null;
   }
 
-  private isUsernameInputInvalid_(): boolean {
+  private doesUsernameExistAlready_(): boolean {
     return !!this.usernameErrorMessage_;
   }
 
@@ -215,7 +217,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     if (this.isWebsiteInputInvalid_()) {
       return false;
     }
-    if (this.isUsernameInputInvalid_()) {
+    if (this.doesUsernameExistAlready_()) {
       return false;
     }
     if (this.password_.length === 0) {
@@ -242,6 +244,21 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
           this.$.dialog.close();
         })
         .catch(() => {});
+  }
+
+  private getViewExistingPasswordAriaDescription_(): string {
+    return this.urlCollection_ ?
+        this.i18n(
+            'viewExistingPasswordAriaDescription', this.username_,
+            this.urlCollection_.shown) :
+        '';
+  }
+
+  private onViewExistingPasswordClick_(e: Event) {
+    e.preventDefault();
+    Router.getInstance().navigateTo(
+        Page.PASSWORD_DETAILS, this.urlCollection_?.shown);
+    this.$.dialog.close();
   }
 }
 

@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -76,6 +76,7 @@ suite('AddPasswordDialogTest', function() {
         'www.example.com',
         await passwordManager.whenCalled('getUrlCollection'));
     assertFalse(dialog.$.usernameInput.invalid);
+    assertTrue(dialog.$.viewExistingPasswordLink.hidden);
 
     // Update username to the same value and observe error.
     dialog.$.usernameInput.value = 'test';
@@ -83,10 +84,12 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
         dialog.$.usernameInput.errorMessage);
+    assertFalse(dialog.$.viewExistingPasswordLink.hidden);
 
     // Update username and observe no error.
     dialog.$.usernameInput.value = 'test2';
     assertFalse(dialog.$.usernameInput.invalid);
+    assertTrue(dialog.$.viewExistingPasswordLink.hidden);
 
     // Update website input to match a second existing password and observe
     // error again.
@@ -100,6 +103,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example2.com'),
         dialog.$.usernameInput.errorMessage);
+    assertFalse(dialog.$.viewExistingPasswordLink.hidden);
     assertTrue(dialog.$.addButton.disabled);
   });
 
@@ -187,5 +191,32 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(dialog.$.passwordInput.value, params.password);
     assertEquals(dialog.$.noteInput.value, params.note);
     assertEquals(false, params.useAccountStore);
+  });
+
+  test('view saved password', async function() {
+    Router.getInstance().navigateTo(Page.PASSWORDS);
+    passwordManager.data.passwords = [
+      createPasswordEntry({url: 'www.example.com', username: 'test'}),
+    ];
+    passwordManager.data.passwords[0]!.affiliatedDomains =
+        [createAffiliatedDomain('www.example.com')];
+
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    // Enter website
+    dialog.$.websiteInput.value = 'www.example.com';
+    dialog.$.usernameInput.value = 'test';
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+    await passwordManager.whenCalled('getUrlCollection');
+
+    assertTrue(dialog.$.usernameInput.invalid);
+    assertFalse(dialog.$.viewExistingPasswordLink.hidden);
+
+    dialog.$.viewExistingPasswordLink.click();
+    assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+    assertEquals(
+        dialog.$.websiteInput.value, Router.getInstance().currentRoute.details);
   });
 });
