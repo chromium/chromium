@@ -119,6 +119,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeContentsView() {
                             kDialogBodyMargin[2], kDialogBodyMargin[3]))
       .AddChildren(
           views::Builder<views::StyledLabel>()
+              .CopyAddressTo(&body_text_)
               .SetText(label)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
               .AddStyleRange(
@@ -137,6 +138,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeButtonsView() {
           views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
       .AddChildren(
           views::Builder<views::MdTextButton>()  // Don't allow button.
+              .CopyAddressTo(&dont_allow_button_)
               .SetCallback(base::BindRepeating(
                   &PasspointDialogView::OnButtonClicked,
                   weak_factory_.GetWeakPtr(), /*allow=*/false))
@@ -145,6 +147,7 @@ std::unique_ptr<views::View> PasspointDialogView::MakeButtonsView() {
               .SetProminent(false)
               .SetIsDefault(false),
           views::Builder<views::MdTextButton>()  // Allow button.
+              .CopyAddressTo(&allow_button_)
               .SetCallback(base::BindRepeating(
                   &PasspointDialogView::OnButtonClicked,
                   weak_factory_.GetWeakPtr(), /*allow=*/true))

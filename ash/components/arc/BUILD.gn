@@ -432,6 +432,7 @@ source_set("unit_tests") {
     "midis/arc_midis_bridge_unittest.cc",
     "net/always_on_vpn_manager_unittest.cc",
     "net/arc_net_host_impl_unittest.cc",
+    "net/passpoint_dialog_view_unittest.cc",
     "pay/arc_payment_app_bridge_unittest.cc",
     "power/arc_power_bridge_unittest.cc",
     "property/arc_property_bridge_unittest.cc",
