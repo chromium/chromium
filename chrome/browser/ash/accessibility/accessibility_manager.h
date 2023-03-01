@@ -94,7 +94,7 @@ using GetDlcContentsCallback =
     base::OnceCallback<void(const std::vector<uint8_t>&,
                             absl::optional<std::string>)>;
 using InstallPumpkinCallback = base::OnceCallback<void(
-    std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>)>;
+    absl::optional<::extensions::api::accessibility_private::PumpkinData>)>;
 
 class AccessibilityPanelWidgetObserver;
 
@@ -536,7 +536,7 @@ class AccessibilityManager
   void OnPumpkinInstalled(bool success);
   void OnPumpkinError(const std::string& error);
   void OnPumpkinDataCreated(
-      std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
+      absl::optional<::extensions::api::accessibility_private::PumpkinData>
           data);
 
   void OnAppTerminating();

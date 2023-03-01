@@ -1006,7 +1006,7 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
   }
 
   void OnPumpkinDataCreated(
-      std::unique_ptr<extensions::api::accessibility_private::PumpkinData>
+      absl::optional<extensions::api::accessibility_private::PumpkinData>
           data) {
     AccessibilityManager::Get()->OnPumpkinDataCreated(std::move(data));
   }
@@ -1507,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   SetDictationLocale("en-US");
   SetDictationEnabled(true);
   InstallPumpkinAndWait();
-  OnPumpkinDataCreated(nullptr);
+  OnPumpkinDataCreated(absl::nullopt);
 }
 
 enum DictationDialogTestVariant {

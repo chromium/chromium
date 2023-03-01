@@ -277,7 +277,7 @@ void OnReadDlcFile(GetDlcContentsCallback callback,
   std::move(callback).Run(response.contents, response.error);
 }
 
-std::unique_ptr<PumpkinData> CreatePumpkinData(
+absl::optional<PumpkinData> CreatePumpkinData(
     base::FilePath base_pumpkin_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -307,12 +307,12 @@ std::unique_ptr<PumpkinData> CreatePumpkinData(
     ReadDlcFileResponse response =
         ReadDlcFile(base_pumpkin_path.Append(file_name));
     if (response.error.has_value())
-      return nullptr;
+      return absl::nullopt;
 
     *file_data = response.contents;
   }
 
-  return std::make_unique<PumpkinData>(std::move(data));
+  return data;
 }
 
 }  // namespace
@@ -2463,7 +2463,7 @@ void AccessibilityManager::InstallPumpkinForDictation(
   DCHECK(!callback.is_null());
   if (!::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled() ||
       !IsDictationEnabled()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -2484,7 +2484,7 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
 
   if (!::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled() ||
       !success) {
-    std::move(install_pumpkin_callback_).Run(nullptr);
+    std::move(install_pumpkin_callback_).Run(absl::nullopt);
     return;
   }
 
@@ -2502,7 +2502,7 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
 }
 
 void AccessibilityManager::OnPumpkinDataCreated(
-    std::unique_ptr<PumpkinData> data) {
+    absl::optional<PumpkinData> data) {
   if (install_pumpkin_callback_.is_null()) {
     return;
   }
@@ -2515,7 +2515,7 @@ void AccessibilityManager::OnPumpkinError(const std::string& error) {
     return;
   }
 
-  std::move(install_pumpkin_callback_).Run(nullptr);
+  std::move(install_pumpkin_callback_).Run(absl::nullopt);
   is_pumpkin_installed_for_testing_ = false;
 
   UpdateDictationNotification();
