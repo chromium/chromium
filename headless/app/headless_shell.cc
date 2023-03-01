@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
@@ -102,10 +101,6 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
 
   HeadlessBrowserContext::Builder context_builder =
       browser_->CreateBrowserContextBuilder();
-
-  // Retrieve the locale set by InitApplicationLocale() in
-  // headless_content_main_delegate.cc in a way that is free of side-effects.
-  context_builder.SetAcceptLanguage(base::i18n::GetConfiguredLocale());
 
   // Create browser  context and set it as the default. The default browser
   // context is used by the Target.createTarget() DevTools command when no other
