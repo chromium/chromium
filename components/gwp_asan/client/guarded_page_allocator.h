@@ -16,8 +16,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "components/gwp_asan/client/export.h"
 #include "components/gwp_asan/common/allocator_state.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 
 namespace gwp_asan {
 namespace internal {
@@ -104,6 +106,10 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   inline bool PointerIsMine(const void* ptr) const {
     return state_.PointerIsMine(reinterpret_cast<uintptr_t>(ptr));
   }
+
+  // Records the deallocation stack trace and overwrites the allocation with a
+  // pattern that allows the crash handler to recover the trace ID.
+  void RecordLightweightDeallocation(void* ptr, size_t size);
 
  private:
   // Virtual base class representing a free list of entries T.
@@ -235,6 +241,7 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   std::unique_ptr<AllocatorState::SlotMetadata[]> metadata_;
 
   // Same as the above, but used exclusively by the lightweight UAF detector.
+  // Empty if the feature is disabled.
   std::unique_ptr<AllocatorState::SlotMetadata[]>
       lightweight_detector_metadata_;
 
@@ -251,10 +258,14 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
 
   bool is_partition_alloc_ = false;
 
+  std::atomic<LightweightDetector::MetadataId> next_lightweight_metadata_id_{0};
+
   friend class BaseGpaTest;
   friend class CrashAnalyzerTest;
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, InternalError);
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, StackTraceCollection);
+  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAllocatorTest, PoisonAlloc);
+  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAllocatorTest, SlotReuse);
 };
 
 }  // namespace internal

@@ -9,6 +9,7 @@ static_library("common") {
     "allocator_state.cc",
     "allocator_state.h",
     "crash_key_name.h",
+    "lightweight_detector.h",
     "pack_stack_trace.cc",
     "pack_stack_trace.h",
   ]

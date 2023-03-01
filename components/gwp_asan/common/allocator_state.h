@@ -31,6 +31,7 @@
 #include <type_traits>
 
 #include "base/threading/platform_thread.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 
 namespace gwp_asan {
 namespace internal {
@@ -120,6 +121,11 @@ class AllocatorState {
 
     AllocationInfo alloc;
     AllocationInfo dealloc;
+
+    // Used by the lightweight UAF detector to make sure the metadata entry
+    // isn't stale.
+    LightweightDetector::MetadataId lightweight_id =
+        std::numeric_limits<LightweightDetector::MetadataId>::max();
   };
 
   AllocatorState();
@@ -172,6 +178,12 @@ class AllocatorState {
 
   uintptr_t SlotToAddr(SlotIdx slot) const;
   SlotIdx AddrToSlot(uintptr_t addr) const;
+
+  // Returns a reference to the metadata entry in the lightweight detector's
+  // ring buffer. Different IDs may point to the same slot.
+  AllocatorState::SlotMetadata& GetLightweightSlotMetadataById(
+      LightweightDetector::MetadataId,
+      SlotMetadata* metadata_arr);
 
   uintptr_t pages_base_addr = 0;     // Points to start of mapped region.
   uintptr_t pages_end_addr = 0;      // Points to the end of mapped region.
