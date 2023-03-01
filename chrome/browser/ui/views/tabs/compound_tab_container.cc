@@ -667,12 +667,9 @@ views::SizeBounds CompoundTabContainer::GetAvailableSize(
                              views::SizeBound());
   }
 
-  if (child == base::to_address(unpinned_tab_container_)) {
-    return views::SizeBounds(GetAvailableWidthForUnpinnedTabContainer(),
-                             views::SizeBound());
-  }
-
-  NOTREACHED_NORETURN();
+  CHECK_EQ(child, base::to_address(unpinned_tab_container_));
+  return views::SizeBounds(GetAvailableWidthForUnpinnedTabContainer(),
+                           views::SizeBound());
 }
 
 gfx::Size CompoundTabContainer::CalculatePreferredSize() const {

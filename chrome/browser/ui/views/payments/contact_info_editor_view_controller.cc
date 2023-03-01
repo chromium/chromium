@@ -244,7 +244,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
         break;
       }
 
-      case autofill::EMAIL_ADDRESS: {
+      case autofill::EMAIL_ADDRESS:
         if (!autofill::IsValidEmailAddress(textfield->GetText())) {
           is_valid = false;
           if (error_message) {
@@ -253,17 +253,14 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
           }
         }
         break;
-      }
 
-      case autofill::NAME_FULL: {
+      case autofill::NAME_FULL:
         // We have already determined that name is nonempty, which is the only
         // requirement.
         break;
-      }
 
-      default: {
+      default:
         NOTREACHED_NORETURN();
-      }
     }
   }
 

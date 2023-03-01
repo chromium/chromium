@@ -175,11 +175,10 @@ const blink::MediaStreamDevices& MediaComboboxModel::GetDevices() const {
 int MediaComboboxModel::GetDeviceIndex(
     const blink::MediaStreamDevice& device) const {
   const auto& devices = GetDevices();
-  for (size_t i = 0; i < devices.size(); ++i) {
-    if (device.id == devices[i].id)
-      return i;
-  }
-  NOTREACHED_NORETURN();
+  const auto it =
+      base::ranges::find(devices, device.id, &blink::MediaStreamDevice::id);
+  CHECK(it != devices.end());
+  return it - devices.begin();
 }
 
 size_t MediaComboboxModel::GetItemCount() const {

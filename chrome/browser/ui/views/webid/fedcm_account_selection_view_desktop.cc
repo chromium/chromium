@@ -339,22 +339,21 @@ void FedCmAccountSelectionView::ShowVerifyingSheet(
 
 FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
   switch (state_) {
-    case State::IDP_SIGNIN_STATUS_MISMATCH: {
+    case State::IDP_SIGNIN_STATUS_MISMATCH:
       return SheetType::SIGN_IN_TO_IDP_STATIC;
-    }
+
     case State::ACCOUNT_PICKER:
-    case State::PERMISSION: {
+    case State::PERMISSION:
       return SheetType::ACCOUNT_SELECTION;
-    }
-    case State::VERIFYING: {
+
+    case State::VERIFYING:
       return SheetType::VERIFYING;
-    }
-    case State::AUTO_REAUTHN: {
+
+    case State::AUTO_REAUTHN:
       return SheetType::AUTO_REAUTHN;
-    }
-    default: {
+
+    default:
       NOTREACHED_NORETURN();
-    }
   }
 }
 

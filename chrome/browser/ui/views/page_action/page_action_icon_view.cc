@@ -158,10 +158,9 @@ void PageActionIconView::NotifyClick(const ui::Event& event) {
     source = EXECUTE_SOURCE_MOUSE;
   } else if (event.IsKeyEvent()) {
     source = EXECUTE_SOURCE_KEYBOARD;
-  } else if (event.IsGestureEvent()) {
-    source = EXECUTE_SOURCE_GESTURE;
   } else {
-    NOTREACHED_NORETURN();
+    CHECK(event.IsGestureEvent());
+    source = EXECUTE_SOURCE_GESTURE;
   }
 
   // Set ink drop state to ACTIVATED.

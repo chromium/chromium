@@ -2969,13 +2969,14 @@ bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
 namespace {
 remote_cocoa::mojom::CutCopyPasteCommand CommandFromBrowserCommand(
     int command_id) {
-  if (command_id == IDC_CUT)
+  if (command_id == IDC_CUT) {
     return remote_cocoa::mojom::CutCopyPasteCommand::kCut;
-  else if (command_id == IDC_COPY)
+  }
+  if (command_id == IDC_COPY) {
     return remote_cocoa::mojom::CutCopyPasteCommand::kCopy;
-  else if (command_id == IDC_PASTE)
-    return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
-  NOTREACHED_NORETURN();
+  }
+  CHECK_EQ(command_id, IDC_PASTE);
+  return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
 }
 }  // namespace
 #endif

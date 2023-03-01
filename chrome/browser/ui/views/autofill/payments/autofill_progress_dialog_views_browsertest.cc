@@ -44,7 +44,7 @@ class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     AutofillProgressDialogType autofill_progress_dialog_type_;
-    CHECK(name == "VirtualCardUnmask");
+    CHECK_EQ(name, "VirtualCardUnmask");
     autofill_progress_dialog_type_ =
         AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog;
     controller()->ShowDialog(autofill_progress_dialog_type_, base::DoNothing());

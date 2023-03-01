@@ -521,7 +521,8 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
 
     if (name == "AboutThisSite") {
       // No further action needed, default case.
-    } else if (name == "AboutThisSiteSubpage") {
+    } else {
+      CHECK_EQ(name, "AboutThisSiteSubpage");
       auto* service =
           AboutThisSiteServiceFactory::GetForProfile(browser()->profile());
       auto source_id = browser()
@@ -532,8 +533,6 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
       bubble_view->OpenAboutThisSitePage(
           service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl), source_id)
               .value());
-    } else {
-      NOTREACHED_NORETURN();
     }
   }
 
@@ -618,10 +617,9 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
 
     if (name == "PrivacySandboxMain") {
       // No further action needed, default case.
-    } else if (name == "PrivacySandboxSubpage") {
-      bubble_view->OpenAdPersonalizationPage();
     } else {
-      NOTREACHED_NORETURN();
+      CHECK_EQ(name, "PrivacySandboxSubpage");
+      bubble_view->OpenAdPersonalizationPage();
     }
   }
 

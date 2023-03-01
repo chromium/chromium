@@ -677,13 +677,10 @@ std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
   if (service->GetCustodianEmailAddress() == base::UTF16ToUTF8(parent_email))
     return service->GetCustodianObfuscatedGaiaId();
 
-  if (service->GetSecondCustodianEmailAddress() ==
-      base::UTF16ToUTF8(parent_email)) {
-    return service->GetSecondCustodianObfuscatedGaiaId();
-  }
-
-  NOTREACHED_NORETURN()
+  CHECK_EQ(service->GetSecondCustodianEmailAddress(),
+           base::UTF16ToUTF8(parent_email))
       << "Tried to get obfuscated gaia id for a non-custodian email address";
+  return service->GetSecondCustodianObfuscatedGaiaId();
 }
 
 void ParentPermissionDialogView::StartReauthAccessTokenFetch(

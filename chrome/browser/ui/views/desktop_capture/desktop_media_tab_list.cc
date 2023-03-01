@@ -141,7 +141,6 @@ void TabListModel::OnSourcePreviewChanged(size_t index) {
 }
 
 void TabListModel::OnDelegatedSourceListSelection() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   NOTREACHED_NORETURN()
       << "Tab Lists are not delegated, so should not get a selection event.";
 }

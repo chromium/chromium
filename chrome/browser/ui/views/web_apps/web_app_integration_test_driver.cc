@@ -1514,7 +1514,9 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
 }
 
 void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1557,8 +1559,6 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
   }
 #endif
   AfterStateChangeAction();
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -1605,7 +1605,9 @@ void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
 #endif
 
 void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1633,13 +1635,13 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(Site site) {
   nav_observer.GetWebContents();
 
   AfterStateChangeAction();
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
 void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1662,13 +1664,13 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
   // Wait for new web content to be created.
   nav_observer.GetWebContents();
   AfterStateChangeAction();
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
 void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1698,8 +1700,6 @@ void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
   views::test::AcceptDialog(widget);
 #endif
   AfterStateChangeAction();
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -1729,7 +1729,9 @@ void WebAppIntegrationTestDriver::DeletePlatformShortcut(Site site) {
 void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
     Profile* profile,
     const AppState& app_state) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile);
 
   app_management::mojom::AppPtr app;
@@ -1744,8 +1746,6 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
   ASSERT_TRUE(app->run_on_os_login.has_value());
   EXPECT_EQ(app->run_on_os_login.value()->login_mode,
             app_state.run_on_os_login_mode);
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -2093,7 +2093,9 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
 }
 
 void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -2126,8 +2128,6 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
   site_remember_deny_open_file_.erase(site);
 
   AfterStateChangeAction();
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -2376,7 +2376,9 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigation(Site site) {
 
 void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
     Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
@@ -2389,8 +2391,6 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
   GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + app_id));
   AfterStateCheckAction();
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -2797,7 +2797,9 @@ void WebAppIntegrationTestDriver::CheckSiteNotHandlesFile(
 }
 
 void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(Site site) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
+#else
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
@@ -2823,8 +2825,6 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(Site site) {
     CheckRunOnOsLoginDisabled(site);
   }
   AfterStateCheckAction();
-#else
-  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 

@@ -989,18 +989,15 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateCloseButton() {
 }
 
 views::Checkbox* TranslateBubbleView::GetAlwaysTranslateCheckbox() {
-  if (GetViewState() == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-      GetViewState() == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE) {
+  const TranslateBubbleModel::ViewState state = GetViewState();
+  if (state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
+      state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE) {
     return advanced_always_translate_checkbox_;
-  } else if (GetViewState() ==
-                 TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE ||
-             GetViewState() == TranslateBubbleModel::VIEW_STATE_TRANSLATING ||
-             GetViewState() ==
-                 TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE) {
-    return always_translate_checkbox_;
-  } else {
-    NOTREACHED_NORETURN();
   }
+  CHECK(state == TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE ||
+        state == TranslateBubbleModel::VIEW_STATE_TRANSLATING ||
+        state == TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
+  return always_translate_checkbox_;
 }
 
 void TranslateBubbleView::SetWindowTitle(
