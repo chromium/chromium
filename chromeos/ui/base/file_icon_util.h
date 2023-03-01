@@ -12,6 +12,10 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace chromeos {
 
 enum class IconType {
@@ -52,8 +56,13 @@ IconType GetIconTypeForPath(const base::FilePath& filepath);
 
 }  // namespace internal
 
-// Returns the file type icon for the specified `filepath`. If `dark_background`
-// is `true`, lighter foreground colors are used to ensure sufficient contrast.
+// Returns the file type vector icon for the specified `file_path`.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+const gfx::VectorIcon& GetIconForPath(const base::FilePath& file_path);
+
+// Returns the file type icon for the specified `file_path`. If
+// `dark_background` is `true`, lighter foreground colors are used to ensure
+// sufficient contrast.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 gfx::ImageSkia GetIconForPath(const base::FilePath& file_path,
                               bool dark_background,

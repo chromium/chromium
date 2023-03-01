@@ -11,7 +11,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -21,7 +20,6 @@
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/models/image_model.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -218,18 +216,17 @@ ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem* item,
   if (copied_files_count == 0)
     return ui::ImageModel();
 
-  if (copied_files_count == 1) {
-    return ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(
-        base::FilePath(file_name),
-        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
-  }
   constexpr std::array<const gfx::VectorIcon*, 9> icons = {
       &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,
       &kFiveFilesIcon,  &kSixFilesIcon,   &kSevenFilesIcon,
       &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
   int icon_index = std::min(copied_files_count - 2, (int)icons.size() - 1);
-  return ui::ImageModel::FromVectorIcon(*icons[icon_index],
-                                        cros_tokens::kColorPrimary);
+
+  const auto* vector_icon =
+      copied_files_count == 1
+          ? &chromeos::GetIconForPath(base::FilePath(file_name))
+          : icons[icon_index];
+  return ui::ImageModel::FromVectorIcon(*vector_icon, ui::kColorSysSecondary);
 }
 
 ui::ImageModel GetHtmlPreviewPlaceholder() {

@@ -21,6 +21,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace chromeos {
 namespace {
@@ -119,14 +120,18 @@ const std::map<IconType, IconParams>& GetIconTypeToIconParamsMap() {
   return *icon_type_to_icon_params;
 }
 
-gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
-                                         bool dark_background,
-                                         absl::optional<int> dip_size) {
+const IconParams& GetIconParamsFromIconType(IconType icon) {
   const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
   const auto& it = icon_type_to_icon_params.find(icon);
   DCHECK(it != icon_type_to_icon_params.end());
 
-  const IconParams& params = it->second;
+  return it->second;
+}
+
+gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
+                                         bool dark_background,
+                                         absl::optional<int> dip_size) {
+  const IconParams& params = GetIconParamsFromIconType(icon);
   const gfx::IconDescription description(
       params.icon, dip_size.value_or(kIconDefaultDipSize),
       ResolveColor(params.color_id, dark_background));
@@ -296,6 +301,10 @@ IconType GetIconTypeFromString(const std::string& icon_type_string) {
 }
 
 }  // namespace internal
+
+const gfx::VectorIcon& GetIconForPath(const base::FilePath& filepath) {
+  return GetIconParamsFromIconType(internal::GetIconTypeForPath(filepath)).icon;
+}
 
 gfx::ImageSkia GetIconForPath(const base::FilePath& filepath,
                               bool dark_background,
