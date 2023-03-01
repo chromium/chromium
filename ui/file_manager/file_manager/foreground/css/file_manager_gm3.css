@@ -2094,6 +2094,16 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
   display: flex;
 }
 
+.table-row-cell > .dateholder > .date {
+  flex: 1 1;
+  overflow: hidden;
+}
+
+.table-row-cell > .dateholder > .dlp-managed-icon {
+  flex: 0 0 24px;
+  margin-inline-start: 8px;
+}
+
 .table-header-splitter  {
   background: none;
   height: 32px;

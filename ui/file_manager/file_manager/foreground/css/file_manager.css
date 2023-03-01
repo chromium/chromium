@@ -2522,3 +2522,18 @@ files-tooltip:not(:defined) {
   padding-top: 12px;
   visibility: visible;
 }
+
+.table-row-cell > .dateholder {
+  display: flex;
+}
+
+
+.table-row-cell > .dateholder > .date {
+  flex: 1 1;
+  overflow: hidden;
+}
+
+.table-row-cell > .dateholder > .dlp-managed-icon {
+  flex: 0 0 24px;
+  margin-inline-start: 8px;
+}
