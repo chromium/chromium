@@ -450,9 +450,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       continue;
     }
 
-    // TODO(yzshen): Consider moving CanCheckRequestDestination() to the
-    // renderer side. That would save some IPCs. It requires a method on the
-    // SafeBrowsing mojo interface to query all supported request destinations.
+    // TODO(crbug.com/1420085): Remove this check when
+    // kSafeBrowsingSkipImageCssFont is launched.
     if (!database_manager_->CanCheckRequestDestination(request_destination_)) {
       UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
                                 request_destination_);

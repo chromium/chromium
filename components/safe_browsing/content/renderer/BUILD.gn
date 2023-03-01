@@ -64,6 +64,7 @@ source_set("throttles_unittest") {
     "//base:base",
     "//base/test:test_support",
     "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
     "//content/public/common",
     "//ipc",

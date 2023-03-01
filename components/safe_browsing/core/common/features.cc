@@ -207,6 +207,10 @@ BASE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests,
              "SafeBrowsingRemoveCookiesInAuthRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingSkipImageCssFont,
+             "SafeBrowsingSkipImageCssFont",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSevenZipEvaluationEnabled,
              "SafeBrowsingSevenZipEvaluationEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -5,14 +5,17 @@
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,6 +81,7 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
 class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
  protected:
   SBRendererUrlLoaderThrottleTest() : mojo_receiver_(&safe_browsing_) {
+    feature_list_.InitAndEnableFeature(kSafeBrowsingSkipImageCssFont);
     mojo_receiver_.Bind(safe_browsing_remote_.BindNewPipeAndPassReceiver());
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
     throttle_ = std::make_unique<RendererURLLoaderThrottle>(
@@ -85,8 +89,18 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
     throttle_->set_delegate(throttle_delegate_.get());
   }
 
+  network::ResourceRequest GetResourceRequest(
+      const GURL& url,
+      network::mojom::RequestDestination destination) {
+    network::ResourceRequest request;
+    request.url = url;
+    request.destination = destination;
+    return request;
+  }
+
   base::test::TaskEnvironment message_loop_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
   FakeSafeBrowsing safe_browsing_;
   mojo::Receiver<mojom::SafeBrowsing> mojo_receiver_;
   mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
@@ -98,8 +112,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DefersHttpsUrl) {
   safe_browsing_.EnableDelayCallback();
   GURL url("https://example.com/");
   bool defer = false;
-  network::ResourceRequest request;
-  request.url = url;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
   message_loop_.RunUntilIdle();
 
@@ -108,11 +122,25 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DefersHttpsUrl) {
   EXPECT_TRUE(defer);
 }
 
+TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
+  safe_browsing_.EnableDelayCallback();
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kImage);
+  throttle_->WillStartRequest(&request, &defer);
+  message_loop_.RunUntilIdle();
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
+  EXPECT_FALSE(defer);
+}
+
 TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferChromeUrl) {
   GURL url("chrome://settings/");
   bool defer = false;
-  network::ResourceRequest request;
-  request.url = url;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
 
   auto response_head = network::mojom::URLResponseHead::New();
@@ -125,8 +153,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   base::HistogramTester histograms;
   GURL url("https://example.com/");
   bool defer = false;
-  network::ResourceRequest request;
-  request.url = url;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
   message_loop_.RunUntilIdle();
 
@@ -148,8 +176,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   base::HistogramTester histograms;
   GURL url("https://example.com/");
   bool defer = false;
-  network::ResourceRequest request;
-  request.url = url;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
   message_loop_.RunUntilIdle();
 
@@ -174,8 +202,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest, VerifyTotalDelayHistograms_Defer) {
   safe_browsing_.EnableDelayCallback();
   GURL url("https://example.com/");
   bool defer = false;
-  network::ResourceRequest request;
-  request.url = url;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
   message_loop_.RunUntilIdle();
 
@@ -201,8 +229,8 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   safe_browsing_.EnableDelayCallback();
   GURL url("https://example.com/");
   bool defer = false;
-  network::ResourceRequest request;
-  request.url = url;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
   throttle_->WillStartRequest(&request, &defer);
   message_loop_.RunUntilIdle();
 
@@ -223,6 +251,32 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
       base::Milliseconds(200), 1);
   histograms.ExpectTotalCount(
       "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
+}
+
+class SBRendererUrlLoaderThrottleDisableSkipImageCssFontTest
+    : public SBRendererUrlLoaderThrottleTest {
+ public:
+  SBRendererUrlLoaderThrottleDisableSkipImageCssFontTest() {
+    feature_list_.InitAndDisableFeature(kSafeBrowsingSkipImageCssFont);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SBRendererUrlLoaderThrottleDisableSkipImageCssFontTest,
+       DefersHttpsImageUrl) {
+  safe_browsing_.EnableDelayCallback();
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request =
+      GetResourceRequest(url, network::mojom::RequestDestination::kImage);
+  throttle_->WillStartRequest(&request, &defer);
+  message_loop_.RunUntilIdle();
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
+  EXPECT_TRUE(defer);
 }
 
 }  // namespace safe_browsing
