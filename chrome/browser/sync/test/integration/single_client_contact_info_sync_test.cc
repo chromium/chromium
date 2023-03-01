@@ -150,6 +150,43 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, UploadProfile) {
                   .Wait());
 }
 
+// Tests that profile changes due to `AutofillProfile::FinalizeAfterImport()`
+// don't cause a reupload and hence can't cause ping-pong loops.
+// This is not expected to happen because only the PersonalDataManager can
+// trigger reuploads - and it only operates on finalized profiles.
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
+  AutofillProfile unfinalized_profile(AutofillProfile::Source::kAccount);
+  unfinalized_profile.SetRawInfo(autofill::NAME_FULL, u"Full Name");
+  AutofillProfile finalized_profile = unfinalized_profile;
+  finalized_profile.FinalizeAfterImport();
+  ASSERT_NE(unfinalized_profile, finalized_profile);
+
+  // Add the `unfinalized_profile` to the server. An unfinalized profile is
+  // never uploaded through Autofill, but non-Autofill clients might do so.
+  AddSpecificsToServer(AsContactInfoSpecifics(unfinalized_profile),
+                       GetFakeServer());
+  ASSERT_TRUE(SetupSync());
+  // Expect that the PersonalDataManager receives the `finalized_profile`. The
+  // finalization step happen when reading the profile from AutofillTable.
+  EXPECT_TRUE(
+      PersonalDataManagerProfileChecker(GetPersonalDataManager(),
+                                        UnorderedElementsAre(finalized_profile))
+          .Wait());
+
+  // Expect that the finalized profile is not propagated back to the server.
+  // Since the PersonalDatamanager is operating on a single thread, this is
+  // verified by adding a dummy profile. It will only reach the server after any
+  // already pending changes.
+  const AutofillProfile kDummyProfile = BuildTestAccountProfile();
+  GetPersonalDataManager()->AddProfile(kDummyProfile);
+  EXPECT_TRUE(
+      FakeServerSpecificsChecker(
+          UnorderedElementsAre(
+              AsContactInfoSpecifics(unfinalized_profile).SerializeAsString(),
+              AsContactInfoSpecifics(kDummyProfile).SerializeAsString()))
+          .Wait());
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnDisableSync) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
