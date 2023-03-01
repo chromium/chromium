@@ -50,10 +50,9 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
 
   mutable_args().erase(args().begin());
 
-  std::unique_ptr<api::desktop_capture::ChooseDesktopMedia::Params> params =
-      api::desktop_capture::ChooseDesktopMedia::Params::CreateDeprecated(
-          args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::desktop_capture::ChooseDesktopMedia::Params> params =
+      api::desktop_capture::ChooseDesktopMedia::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // |target_render_frame_host| is the RenderFrameHost for which the stream is
   // created, and will also be used to determine where to show the picker's UI.
