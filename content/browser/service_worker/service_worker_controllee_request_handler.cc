@@ -559,10 +559,13 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
             FROM_HERE,
             base::BindOnce(
                 &ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker,
-                weak_factory_.GetWeakPtr(), std::move(active_version)));
+                weak_factory_.GetWeakPtr(), std::move(active_version),
+                ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER));
         return;
       }
-      MaybeStartServiceWorker(std::move(active_version));
+      MaybeStartServiceWorker(
+          std::move(active_version),
+          ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER);
       return;
     }
     case ServiceWorkerVersion::FetchHandlerType::kNotSkippable: {
@@ -577,17 +580,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
         // If true, the main resource request bypasses ServiceWorker and starts
         // the worker in parallel for subsequent subresources.
         CompleteWithoutLoader();
-        if (registration->active_version()->running_status() ==
-                EmbeddedWorkerStatus::STARTING ||
-            registration->active_version()->running_status() ==
-                EmbeddedWorkerStatus::RUNNING) {
-          return;
-        }
-        registration->active_version()->StartWorker(
-            ServiceWorkerMetrics::EventType::BYPASS_MAIN_RESOURCE,
-            base::BindOnce(
-                &ServiceWorkerControlleeRequestHandler::DidStartWorker,
-                weak_factory_.GetWeakPtr()));
+        MaybeStartServiceWorker(
+            std::move(active_version),
+            ServiceWorkerMetrics::EventType::BYPASS_MAIN_RESOURCE);
         return;
       }
       // Otherwise, record the skip reason as kNotSkipped.
@@ -721,7 +716,8 @@ void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {
 }
 
 void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
-    scoped_refptr<ServiceWorkerVersion> active_version) {
+    scoped_refptr<ServiceWorkerVersion> active_version,
+    ServiceWorkerMetrics::EventType event_type) {
   // Start service worker if it is not running so that we run the code
   // written in the top level.
   if (active_version->running_status() == EmbeddedWorkerStatus::STARTING ||
@@ -729,7 +725,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(
     return;
   }
   active_version->StartWorker(
-      ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER,
+      event_type,
       base::BindOnce(&ServiceWorkerControlleeRequestHandler::DidStartWorker,
                      weak_factory_.GetWeakPtr()));
 }

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
@@ -132,7 +133,8 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   // Runs service worker if not running.
   void MaybeStartServiceWorker(
-      scoped_refptr<ServiceWorkerVersion> active_version);
+      scoped_refptr<ServiceWorkerVersion> active_version,
+      ServiceWorkerMetrics::EventType event_type);
 
   // Runs after ServiceWorker has started.
   // Normally ServiceWorker starts before dispatching the main resource request,
