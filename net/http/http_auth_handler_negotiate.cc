@@ -187,12 +187,14 @@ bool HttpAuthHandlerNegotiate::Init(
     VLOG(1) << "can't initialize GSSAPI library";
     return false;
   }
-  // GSSAPI does not provide a way to enter username/password to
-  // obtain a TGT. If the default credentials are not allowed for
-  // a particular site (based on allowlist), fall back to a
-  // different scheme.
-  if (!AllowsDefaultCredentials())
+  // GSSAPI does not provide a way to enter username/password to obtain a TGT,
+  // however ChromesOS provides the user an opportunity to enter their
+  // credentials and generate a new TGT on OS level (see b/265922026). If the
+  // default credentials are not allowed for a particular site
+  // (based on allowlist), fall back to a different scheme.
+  if (!AllowsExplicitCredentials() && !AllowsDefaultCredentials()) {
     return false;
+  }
 #endif
   auth_system_->SetDelegation(GetDelegationType());
   auth_scheme_ = HttpAuth::AUTH_SCHEME_NEGOTIATE;

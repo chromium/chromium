@@ -351,6 +351,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPriorityIncremental);
 // https://crbug.com/1345207
 NET_EXPORT BASE_DECLARE_FEATURE(kPrefetchFollowsNormalCacheSemantics);
 
+// A flag for new Kerberos feature, that suggests new UI
+// when Kerberos authentication in browser fails on ChromeOS.
+// b/260522530
+#if BUILDFLAG(IS_CHROMEOS)
+NET_EXPORT BASE_DECLARE_FEATURE(kKerberosInBrowserRedirect);
+#endif
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

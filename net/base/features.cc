@@ -326,4 +326,13 @@ BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
              "PrefetchFollowsNormalCacheSemantics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A flag for new Kerberos feature, that suggests new UI
+// when Kerberos authentication in browser fails on ChromeOS.
+// b/260522530
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kKerberosInBrowserRedirect,
+             "KerberosInBrowserRedirect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace net::features
