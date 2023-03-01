@@ -20,22 +20,46 @@ struct NGGridSizingData {
   wtf_size_t subtree_size{1};
 };
 
-class NGGridItemSizingData {
+// In subgrid, we allow "subgridded items" to be considered by the sizing
+// algorithm of an ancestor grid that may not be its parent grid.
+//
+// For a given subgridded item, this class encapsulates a pointer to its
+// |GridItemData| in the context of its parent grid (i.e., its properties are
+// relative to its parent's area and writing mode) and a pointer to the actual
+// |NGGridLayoutData| of the grid that directly contains the subgridded item.
+class NGSubgriddedItemData {
   STACK_ALLOCATED();
 
  public:
-  NGGridItemSizingData(const GridItemData& item_data_in_parent,
-                       const NGGridLayoutData& parent_layout_data);
+  NGSubgriddedItemData() = default;
+
+  NGSubgriddedItemData(const GridItemData& item_data_in_parent,
+                       const NGGridLayoutData& parent_layout_data)
+      : item_data_in_parent_(&item_data_in_parent),
+        parent_layout_data_(&parent_layout_data) {}
+
+  explicit operator bool() const { return item_data_in_parent_ != nullptr; }
+  const GridItemData* operator->() const { return item_data_in_parent_; }
+
+  const GridItemData& operator*() const {
+    DCHECK(item_data_in_parent_);
+    return *item_data_in_parent_;
+  }
 
   std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridCollection(
       GridTrackSizingDirection track_direction) const;
 
+  const NGGridLayoutData& ParentLayoutData() const {
+    DCHECK(parent_layout_data_);
+    return *parent_layout_data_;
+  }
+
  private:
-  const GridItemData* item_data_in_parent;
-  const NGGridLayoutData* parent_layout_data;
+  const GridItemData* item_data_in_parent_{nullptr};
+  const NGGridLayoutData* parent_layout_data_{nullptr};
 };
 
-using NGSubgridSizingData = absl::optional<NGGridItemSizingData>;
+constexpr NGSubgriddedItemData kNoSubgriddedItemData;
 
 class CORE_EXPORT NGGridSizingTree {
   DISALLOW_NEW();
@@ -56,9 +80,16 @@ class CORE_EXPORT NGGridSizingTree {
     return *sizing_data_.emplace_back(std::make_unique<NGGridSizingData>());
   }
 
-  NGGridSizingData& operator[](wtf_size_t index) {
+  NGGridSizingData& At(wtf_size_t index) {
     DCHECK_LT(index, sizing_data_.size());
     return *sizing_data_[index];
+  }
+
+  NGGridSizingData& operator[](wtf_size_t index) { return At(index); }
+
+  wtf_size_t SubtreeSize(wtf_size_t index) const {
+    DCHECK_LT(index, sizing_data_.size());
+    return sizing_data_[index]->subtree_size;
   }
 
   NGGridSizingTree CopySubtree(wtf_size_t subtree_root) const;

@@ -402,7 +402,8 @@ class CORE_EXPORT NGGridSizingTrackCollection final
 
   void BuildSets(const ComputedStyle& grid_style,
                  LayoutUnit grid_available_size);
-  void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize);
+  void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize,
+                      LayoutUnit gutter_size = LayoutUnit());
   void SetIndefiniteGrowthLimitsToBaseSize();
 
   // Caches the geometry of definite sets; this is useful when building the sets
@@ -419,8 +420,6 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   void ResetBaselines();
   void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
   void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
-
-  void SetGutterSize(LayoutUnit gutter_size) { gutter_size_ = gutter_size; }
 
  private:
   friend class NGGridLayoutAlgorithmTest;

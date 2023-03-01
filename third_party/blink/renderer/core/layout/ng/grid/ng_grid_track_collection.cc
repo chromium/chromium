@@ -977,8 +977,9 @@ void NGGridSizingTrackCollection::BuildSets(
 }
 
 // https://drafts.csswg.org/css-grid-2/#algo-init
-void NGGridSizingTrackCollection::InitializeSets(
-    LayoutUnit grid_available_size) {
+void NGGridSizingTrackCollection::InitializeSets(LayoutUnit grid_available_size,
+                                                 LayoutUnit gutter_size) {
+  gutter_size_ = gutter_size;
   for (auto& set : sets_) {
     const auto& track_size = set.track_size;
 
