@@ -25,29 +25,14 @@ WebLayerAppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
 }
 
 void WebLayerAppBannerManagerAndroid::ShowAmbientBadge() {
-  webapps::WebappInstallSource install_source =
-      webapps::InstallableMetrics::GetInstallSource(
-          web_contents(), webapps::InstallTrigger::AMBIENT_BADGE);
-  if (!MaybeShowPwaBottomSheetController(/* expand_sheet= */ false,
-                                         install_source)) {
-    AppBannerManagerAndroid::ShowAmbientBadge();
-  }
+  // TODO(crbug/1420605): Enable WebApk install BottomSheet/Banner for WebEngine
+  // sandbox mode.
 }
 
 void WebLayerAppBannerManagerAndroid::ShowBannerUi(
     webapps::WebappInstallSource install_source) {
-  if (!native_app_data_.is_null()) {
-    AppBannerManagerAndroid::ShowBannerUi(install_source);
-    return;
-  }
-
-  if (!MaybeShowPwaBottomSheetController(/* expand_sheet= */ true,
-                                         install_source)) {
-    AppBannerManagerAndroid::ShowBannerUi(install_source);
-    return;
-  }
-
-  ReportStatus(webapps::SHOWING_WEB_APP_BANNER);
+  // TODO(crbug/1420605): Enable WebApk install BottomSheet/Banner for WebEngine
+  // sandbox mode.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebLayerAppBannerManagerAndroid);

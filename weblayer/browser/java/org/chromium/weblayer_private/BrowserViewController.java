@@ -117,7 +117,7 @@ public final class BrowserViewController
         mScrim = new ScrimCoordinator(embedderContext, systemUiDelegate, mContentViewRenderView,
                 mWindowAndroid.getContext().get().getResources().getColor(
                         R.color.default_scrim_color));
-        mBottomSheetContainer = new FrameLayout(embedderContext);
+        mBottomSheetContainer = new FrameLayout(mWindowAndroid.getContext().get());
         mBottomSheetContainer.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mBottomSheetContainer.setClipChildren(false);
