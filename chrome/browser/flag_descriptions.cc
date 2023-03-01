@@ -547,6 +547,12 @@ const char kAutofillSaveAndFillVPADescription[] =
     "it will offer to save it. If saved, it will be offered for filling in "
     "fields which expect a VPA.";
 
+const char kAutofillShowAutocompleteDeleteButtonName[] =
+    "Show a delete button for Autocomplete entries";
+const char kAutofillShowAutocompleteDeleteButtonDescription[] =
+    "When enabled, Autocomplete entries in filling popups will contain a "
+    "delete button";
+
 const char kAutofillShowManualFallbackInContextMenuName[] =
     "Show Autofill options in Context Menu";
 const char kAutofillShowManualFallbackInContextMenuDescription[] =

@@ -632,6 +632,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-show-autocomplete-delete-button",
+    "owners": [ "jkeitel@google.com", "autofill-squad-muc@google.com"],
+    "expiry_milestone": 124
+  },
+  {
     "name": "autofill-show-manual-fallbacks-in-context-menu",
     "owners": [ "vidhanj", "koerber"],
     "expiry_milestone": 112

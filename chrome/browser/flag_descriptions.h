@@ -299,6 +299,9 @@ extern const char kAutofillRemoveCardExpirationAndTypeTitlesDescription[];
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];
 
+extern const char kAutofillShowAutocompleteDeleteButtonName[];
+extern const char kAutofillShowAutocompleteDeleteButtonDescription[];
+
 extern const char kAutofillShowManualFallbackInContextMenuName[];
 extern const char kAutofillShowManualFallbackInContextMenuDescription[];
 

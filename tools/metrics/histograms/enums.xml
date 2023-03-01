@@ -64751,6 +64751,8 @@ from previous Chrome versions.
   <int value="1667584730" label="WebXR:disabled"/>
   <int value="1667886516"
       label="PageInfoAboutThisSiteImprovedBottomSheet:enabled"/>
+  <int value="1668006393"
+      label="AutofillShowAutocompleteDeleteButton:disabled"/>
   <int value="1668611601" label="enable-encrypted-media"/>
   <int value="1669522336"
       label="ExperimentalAccessibilityDictationContextChecking:disabled"/>
@@ -65428,6 +65430,7 @@ from previous Chrome versions.
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
   <int value="2025344937" label="SyncAndroidPromosWithIllustration:disabled"/>
+  <int value="2025618564" label="AutofillShowAutocompleteDeleteButton:enabled"/>
   <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2030086360"
