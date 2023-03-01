@@ -246,8 +246,6 @@ static_library("extensions") {
     "api/messaging/native_message_port.h",
     "api/messaging/native_messaging_host_manifest.cc",
     "api/messaging/native_messaging_host_manifest.h",
-    "api/messaging/native_messaging_policy_handler.cc",
-    "api/messaging/native_messaging_policy_handler.h",
     "api/metrics_private/chrome_metrics_private_delegate.cc",
     "api/metrics_private/chrome_metrics_private_delegate.h",
     "api/networking_private/networking_private_ui_delegate_factory_impl.cc",
@@ -726,6 +724,14 @@ static_library("extensions") {
     "window_controller_list.h",
     "window_controller_list_observer.h",
   ]
+
+  # Chrome OS does not support Native Messaging policies.
+  if (!is_chromeos) {
+    sources += [
+      "api/messaging/native_messaging_policy_handler.cc",
+      "api/messaging/native_messaging_policy_handler.h",
+    ]
+  }
 
   configs += [
     "//build/config:precompiled_headers",
@@ -1237,7 +1243,6 @@ static_library("extensions") {
       "api/image_writer_private/image_writer_controller_lacros.cc",
       "api/image_writer_private/image_writer_controller_lacros.h",
       "api/image_writer_private/operation_nonchromeos.cc",
-      "api/image_writer_private/removable_storage_provider_linux.cc",
       "api/messaging/native_message_host_lacros.cc",
       "api/quick_unlock_private/quick_unlock_private_api_lacros.cc",
       "api/quick_unlock_private/quick_unlock_private_api_lacros.h",
@@ -1278,7 +1283,7 @@ static_library("extensions") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources +=
         [ "api/image_writer_private/removable_storage_provider_linux.cc" ]
   }
