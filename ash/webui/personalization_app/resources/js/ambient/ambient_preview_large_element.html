@@ -255,6 +255,12 @@
     width: 100%;
   }
 
+  :host-context(body.jelly-enabled) #thumbnailContainer,
+  :host-context(body.jelly-enabled) #thumbnailPlaceholder {
+    max-width: 460px;
+    min-width: 278px;
+  }
+
   .thumbnail-item {
     height: 100%;
     overflow: hidden;

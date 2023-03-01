@@ -46,13 +46,13 @@ namespace ash::personalization_app {
 
 namespace {
 
-// Width and height of the preview images.
-// When Jelly is enabled, the max possible preview image container is 360x130.
+// Width and height of the preview images without Jelly.
+constexpr int kBannerWidthPx = 160;
+constexpr int kBannerHeightPx = 160;
+// When Jelly is enabled, the max possible preview image container is 460x290.
 // Double the fetched image W/H to stay sharp when scaled down.
-const int kBannerWidthPx =
-    (features::IsPersonalizationJellyEnabled() ? 720 : 160);
-const int kBannerHeightPx =
-    (features::IsPersonalizationJellyEnabled() ? 260 : 160);
+constexpr int kJellyBannerWidthPx = 920;
+constexpr int kJellyBannerHeightPx = 580;
 
 constexpr int kMaxRetries = 3;
 
@@ -538,7 +538,7 @@ void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
   needs_update_previews_ = false;
   previews_weak_factory_.InvalidateWeakPtrs();
   ash::AmbientBackendController::Get()->FetchPreviewImages(
-      gfx::Size(kBannerWidthPx, kBannerHeightPx),
+      gfx::Size(kJellyBannerWidthPx, kJellyBannerHeightPx),
       base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
                      previews_weak_factory_.GetWeakPtr()));
 }
