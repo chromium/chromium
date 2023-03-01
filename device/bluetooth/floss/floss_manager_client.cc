@@ -176,8 +176,8 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
 
   DVLOG(1) << __func__;
 
-  powered_callback_ =
-      PoweredCallback::CreateWithTimeout(std::move(callback), kDBusTimeoutMs);
+  powered_callback_ = PoweredCallback::CreateWithTimeout(
+      std::move(callback), kAdapterPowerTimeoutMs);
 
   const char* command = enabled ? manager::kStart : manager::kStop;
   CallManagerMethod<Void>(
