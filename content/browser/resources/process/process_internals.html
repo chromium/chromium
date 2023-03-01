@@ -76,10 +76,40 @@ found in the LICENSE file.
       <div id="wc-list" class="list pages"></div>
       <div id="tree-view-container">
         <button id="refresh-frame-trees">Refresh</button>
-        <div>Legend:</div>
-        <div>Frame[<i>process_id</i>:<i>routing_id</i>:<i>agent_scheduling_group_id</i>]:
-          SI:<i>site_instance_id</i>, <i>whether process is locked to a
-            site</i>, site: <i>site_url</i> | url:
+        <div class="description">This page only contains information about the
+          current profile.</div>
+        <table>
+          <tbody>
+            <tr>
+              <td>Tab Count:</td>
+              <td id="tab-count"></td>
+              <td class="description">The number of WebContents objects in this
+                profile.</td>
+            </tr>
+            <tr>
+              <td>Frame Count:</td>
+              <td id="frame-count"></td>
+              <td class="description">The number of RenderFrameHosts in this
+                profile. Note that this does not include RenderFrameHosts that
+                are speculative or pending deletion.</td>
+            </tr>
+            <tr>
+              <td>OOPIF Count:</td>
+              <td id="oopif-count"></td>
+              <td class="description">The number of out-of-process iframes in
+                this profile (as a subset of the Frame Count).</td>
+            </tr>
+            <tr>
+              <td>Process Count:</td>
+              <td id="profile-process-count"></td>
+              <td class="description">The number of renderer processes in this
+                profile.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div>Legend: Frame[<i>process_id</i>:<i>routing_id</i>]:
+          SI:<i>site_instance_id</i>, <i>is process locked to a
+            site?</i>, site: <i>site_url</i> | url:
           <i>last_committed_url</i>
         </div>
         <cr-tree id="tree-view"></cr-tree>
