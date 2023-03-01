@@ -91,26 +91,18 @@ bool AllowUnpromptedNameUpdate(const AppId& app_id,
 }
 
 bool NeedsAppIdentityUpdateDialog(bool title_changing,
-                                  bool icons_changing,
+                                  bool important_icons_changing,
                                   const AppId& app_id,
                                   const WebAppRegistrar& registrar) {
-  // Shortcut apps can trigger the update check (https://crbug.com/1366600)
-  // on subsequent runs of the app, if the user changed the title of the app
-  // when creating the shortcut. But we should never run the App Identity dialog
-  // for shortcut apps. Also, ideally we should just use IsShortcutApp here
-  // instead of checking the install source, but as per
-  // https://crbug.com/1368592 there is a bug with that where it returns the
-  // wrong thing for Shortcut apps that specify `scope`.
-  if (registrar.IsShortcutApp(app_id) ||
-      registrar.GetLatestAppInstallSource(app_id) ==
-          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
-    return false;
+  if (title_changing && !AllowUnpromptedNameUpdate(app_id, registrar)) {
+    return true;
   }
 
-  if (title_changing && !AllowUnpromptedNameUpdate(app_id, registrar))
+  if (important_icons_changing &&
+      !AllowUnpromptedIconUpdate(app_id, registrar)) {
     return true;
-  if (icons_changing && !AllowUnpromptedIconUpdate(app_id, registrar))
-    return true;
+  }
+
   return false;
 }
 
@@ -121,15 +113,28 @@ bool IsUpdateNeededForManifest(const AppId& app_id,
   DCHECK(app);
 
   // TODO(crbug.com/1259777): Check whether translations have been updated.
+
+  // Icon identity changes are reverted in
+  // ManifestUpdateDataFetchCommand::OnAllIconsRead() if they're not allowed
+  // prior to this code path executing. Non identity changes are permitted and
+  // need to be detected here to be applied.
+  // TODO(https://crbug.com/1409710): Simplify this dependency on
+  // OnAllIconsRead()'s behaviour.
+  if (install_info.manifest_icons != app->manifest_icons()) {
+    return true;
+  }
+
+  // App name changes do not get reverted by
+  // ManifestUpdateDataFetchCommand::OnAllIconsRead() and the ability for them
+  // to change needs to be rechecked here.
+  // TODO(https://crbug.com/1409710): Merge these two identity change checks
+  // into one.
   bool title_changing =
       install_info.title != base::UTF8ToUTF16(app->untranslated_name());
-  bool icons_changing = install_info.manifest_icons != app->manifest_icons();
-  if (!NeedsAppIdentityUpdateDialog(title_changing, icons_changing, app_id,
+  if (!NeedsAppIdentityUpdateDialog(title_changing,
+                                    /*important_icons_changing=*/false, app_id,
                                     registrar)) {
     if (title_changing && AllowUnpromptedNameUpdate(app_id, registrar)) {
-      return true;
-    }
-    if (icons_changing && AllowUnpromptedIconUpdate(app_id, registrar)) {
       return true;
     }
   }

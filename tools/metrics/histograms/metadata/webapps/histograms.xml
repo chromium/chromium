@@ -283,9 +283,11 @@ chromium-metrics-reviews@google.com.
     an update, but ONLY if the change should be auto-approved. On Android that
     happens when the user has approved the App Identity dialog with identical
     data before (and another update request comes in), and on Desktop platforms
-    that happens when Default apps/Policy apps are pre-approved for updating --
-    or when changes happening to icons are for sizes not deemed important to
-    monitor. See also complementary metric Webapp.AppIdentityDialog.NotShowing.
+    that happens when Default apps/Policy apps are pre-approved for updating.
+    See also complementary metric Webapp.AppIdentityDialog.NotShowing. Milestone
+    112 update: This used to record when there were no app identity changes
+    required or for shortcut apps, this is now recorded as
+    Webapp.AppIdentityDialog.NotShowing instead.
   </summary>
 </histogram>
 
@@ -301,7 +303,10 @@ chromium-metrics-reviews@google.com.
     metric is logged once each time Chrome determines that a PWA is in need of
     an update, but ONLY if there is no App Identity change involved (or the App
     Identity dialog is disabled by a feature switch). See also complementary
-    metric Webapp.AppIdentityDialog.Showing.
+    metric Webapp.AppIdentityDialog.Showing. Milestone 112 update:
+    Webapp.AppIdentityDialog.AlreadyApproved used to record when there were no
+    app identity changes required or for shortcut apps, this is now recorded as
+    Webapp.AppIdentityDialog.NotShowing instead.
   </summary>
 </histogram>
 

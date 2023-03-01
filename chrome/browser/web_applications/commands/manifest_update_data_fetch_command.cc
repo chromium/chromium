@@ -353,34 +353,65 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
   std::u16string new_title = install_info_->title;
 
   bool title_change = old_title != new_title;
-  bool icon_change = icon_diff.mismatch();
+  bool important_icon_change = icon_diff.requires_app_identity_check();
 
   AppIdentityDisplayMetric app_id_changes =
       AppIdentityDisplayMetric::kNoAppIdentityChange;
-  if (title_change && icon_change) {
+  if (title_change && important_icon_change) {
     app_id_changes = AppIdentityDisplayMetric::kAppNameAndIconChanging;
-  } else if (title_change || icon_change) {
+  } else if (title_change || important_icon_change) {
     app_id_changes = title_change ? AppIdentityDisplayMetric::kAppNameChanging
                                   : AppIdentityDisplayMetric::kIconChanging;
   }
 
-  // This catches the cases where the App Identity Dialog is not needed. That
-  // includes:
-  // - All Default-installed apps (since they are pre-approved for all updates).
-  // - Policy-installed apps w/kWebAppManifestPolicyAppIdentityUpdate exemption.
-  // - All icon changes when the kWebAppManifestIconUpdating override is set.
-  // - ... and apps that simply aren't requesting any app identity changes.
-  if (!NeedsAppIdentityUpdateDialog(title_change, icon_change, app_id_,
-                                    lock_->registrar())) {
-    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
+  // Shortcut apps may immediately trigger the identity updating if the user
+  // has overridden the title of the app, see: https://crbug.com/1366600
+  // Don't show the update prompt for shortcut apps and always revert the app
+  // identity changes.
+  // Also, ideally we should just use IsShortcutApp here instead of checking the
+  // install source, but as per https://crbug.com/1368592 there is a bug with
+  // that where it returns the wrong thing for Shortcut apps that specify
+  // `scope`.
+  const WebAppRegistrar& registrar = lock_->registrar();
+  bool is_shortcut_app = registrar.IsShortcutApp(app_id_) ||
+                         registrar.GetLatestAppInstallSource(app_id_) ==
+                             webapps::WebappInstallSource::MENU_CREATE_SHORTCUT;
+  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
+  if (is_shortcut_app && (title_change || important_icon_change)) {
+    install_info_->title = old_title;
+    new_title = old_title;
+    title_change = false;
+    install_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
+    install_info_->manifest_icons = web_app->manifest_icons();
+    install_info_->is_generated_icon = web_app->is_generated_icon();
+    important_icon_change = false;
+  }
+
+  // If there are no identity changes then the App Identity Dialog is not
+  // needed.
+  if (!title_change && !important_icon_change) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
                               app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
 
+  // This catches the cases where silent updates to app identity are allowed.
+  // That includes:
+  // - All Default-installed apps (since they are pre-approved for all updates).
+  // - Policy-installed apps w/kWebAppManifestPolicyAppIdentityUpdate exemption.
+  // - All icon changes when the kWebAppManifestIconUpdating override is set.
+  if (!NeedsAppIdentityUpdateDialog(title_change, important_icon_change,
+                                    app_id_, registrar)) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
+                              app_id_changes);
+    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kAllowed);
+    return;
+  }
+
   SkBitmap* before_icon = nullptr;
   SkBitmap* after_icon = nullptr;
-  if (icon_change &&
+  if (important_icon_change &&
       base::FeatureList::IsEnabled(features::kPwaUpdateDialogForIcon)) {
     before_icon = &icon_diff.before;
     after_icon = &icon_diff.after;
@@ -401,7 +432,6 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
   // special exemption), they should bail out now (with the icon set reset) so
   // as to avoid showing the app identity dialog and allow other non-app
   // identity changes to occur.
-  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
   if (web_app->IsPreinstalledApp() || web_app->IsPolicyInstalledApp()) {
     UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
                               app_id_changes);
@@ -415,13 +445,13 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
   // At this point we are only dealing with user-installed apps. Apps that don't
   // ask for any identity updates are dealt with above, so this needs to handle
   // updates to either the app title or icons.
-  if (icon_change &&
+  if (important_icon_change &&
       !base::FeatureList::IsEnabled(features::kPwaUpdateDialogForIcon)) {
     // Icon changes are not supported, revert them and continue.
     install_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
     install_info_->manifest_icons = web_app->manifest_icons();
     install_info_->is_generated_icon = web_app->is_generated_icon();
-    icon_change = false;
+    important_icon_change = false;
   }
 
   if (title_change &&
@@ -432,17 +462,7 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
     title_change = false;
   }
 
-  // A title change requires showing the dialog, but unimportant icon changes
-  // are allowed to proceed.
-  if (!title_change && icon_change &&
-      !icon_diff.requires_app_identity_check()) {
-    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
-                              app_id_changes);
-    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kAllowed);
-    return;
-  }
-
-  if (!title_change && !icon_change) {
+  if (!title_change && !important_icon_change) {
     UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
                               app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
@@ -459,8 +479,8 @@ void ManifestUpdateDataFetchCommand::OnAllIconsRead(
 
   UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.Showing", app_id_changes);
   lock_->ui_manager().ShowWebAppIdentityUpdateDialog(
-      app_id_, title_change, icon_change, old_title, new_title, *before_icon,
-      *after_icon, web_contents_.get(),
+      app_id_, title_change, important_icon_change, old_title, new_title,
+      *before_icon, *after_icon, web_contents_.get(),
       base::BindOnce(
           &ManifestUpdateDataFetchCommand::OnPostAppIdentityUpdateCheck,
           AsWeakPtr()));

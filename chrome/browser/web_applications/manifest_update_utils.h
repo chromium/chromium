@@ -54,7 +54,7 @@ bool AllowUnpromptedNameUpdate(const AppId& app_id,
                                const WebAppRegistrar& registrar);
 
 bool NeedsAppIdentityUpdateDialog(bool title_changing,
-                                  bool icons_changing,
+                                  bool important_icons_changing,
                                   const AppId& app_id,
                                   const WebAppRegistrar& registrar);
 
