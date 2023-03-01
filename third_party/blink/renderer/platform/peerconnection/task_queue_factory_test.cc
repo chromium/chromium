@@ -41,7 +41,7 @@ class TestTaskQueueFactory final : public webrtc::TaskQueueFactory {
 
 std::unique_ptr<webrtc::TaskQueueFactory> CreateTaskQueueFactory(
     const webrtc::FieldTrialsView*) {
-  return absl::make_unique<TestTaskQueueFactory>();
+  return std::make_unique<TestTaskQueueFactory>();
 }
 
 // Instantiate suite to run all tests defined in

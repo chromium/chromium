@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -57,9 +58,9 @@ class CrosHotspotConfigTest : public testing::Test {
     network_handler_test_helper_->AddDefaultProfiles();
     network_handler_test_helper_->ResetDevicesAndServices();
     NetworkHandler* network_handler = NetworkHandler::Get();
-    // Use absl::WrapUnique(new CrosHotspotConfig(...)) instead of
+    // Use base::WrapUnique(new CrosHotspotConfig(...)) instead of
     // std::make_unique<CrosHotspotConfig> to access a private constructor.
-    cros_hotspot_config_ = absl::WrapUnique(
+    cros_hotspot_config_ = base::WrapUnique(
         new CrosHotspotConfig(network_handler->hotspot_capabilities_provider(),
                               network_handler->hotspot_state_handler(),
                               network_handler->hotspot_controller()));

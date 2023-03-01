@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,7 +50,7 @@ class AppsAccessSetupOperationTest : public testing::Test {
 
   void SetUp() override {
     apps_access_setup_operation_ =
-        absl::WrapUnique(new AppsAccessSetupOperation(
+        base::WrapUnique(new AppsAccessSetupOperation(
             fake_delegate_.get(),
             base::BindOnce(&AppsAccessSetupOperationTest::OnSetupOperationDone,
                            weak_ptr_factory_.GetWeakPtr())));

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -152,12 +153,12 @@ class MockResultQueue {
 class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
  public:
   static std::unique_ptr<AsyncSharedStorageDatabase> Create() {
-    return absl::WrapUnique(new MockAsyncSharedStorageDatabase());
+    return base::WrapUnique(new MockAsyncSharedStorageDatabase());
   }
 
   static std::unique_ptr<AsyncSharedStorageDatabase> Create(
       std::queue<OperationResult> result_queue) {
-    return absl::WrapUnique(
+    return base::WrapUnique(
         new MockAsyncSharedStorageDatabase(std::move(result_queue)));
   }
 

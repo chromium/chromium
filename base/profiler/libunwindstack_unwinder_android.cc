@@ -16,6 +16,7 @@
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Unwinder.h"
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/native_unwinder_android.h"
@@ -71,10 +72,10 @@ class NonElfModule : public ModuleCache::Module {
 std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
     RegisterContext* thread_context) {
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
-  return absl::WrapUnique<unwindstack::Regs>(unwindstack::RegsArm::Read(
+  return base::WrapUnique<unwindstack::Regs>(unwindstack::RegsArm::Read(
       reinterpret_cast<void*>(&thread_context->arm_r0)));
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_64_BITS)
-  return absl::WrapUnique<unwindstack::Regs>(unwindstack::RegsArm64::Read(
+  return base::WrapUnique<unwindstack::Regs>(unwindstack::RegsArm64::Read(
       reinterpret_cast<void*>(&thread_context->regs[0])));
 #else   // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
   NOTREACHED();

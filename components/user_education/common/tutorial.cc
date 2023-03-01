@@ -5,6 +5,7 @@
 #include "components/user_education/common/tutorial.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -340,7 +341,7 @@ Tutorial::Builder& Tutorial::Builder::SetContext(
 }
 
 std::unique_ptr<Tutorial> Tutorial::Builder::Build() {
-  return absl::WrapUnique(new Tutorial(builder_->Build()));
+  return base::WrapUnique(new Tutorial(builder_->Build()));
 }
 
 Tutorial::Tutorial(
