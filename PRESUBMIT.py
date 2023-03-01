@@ -3205,8 +3205,8 @@ def CheckUserActionUpdate(input_api, output_api):
                 # Loads contents in tools/metrics/actions/actions.xml to memory. It's
                 # loaded only once.
                 if not current_actions:
-                    with open(
-                            'tools/metrics/actions/actions.xml') as actions_f:
+                    with open('tools/metrics/actions/actions.xml',
+                              encoding='utf-8') as actions_f:
                         current_actions = actions_f.read()
                 # Search for the matched user action name in |current_actions|.
                 for action_name in match.groups():
