@@ -129,6 +129,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
       base::OnceCallback<void(const RefreshTokenResponse&)>;
 
   // Constructs an instance of `SecondDeviceAuthBroker`.
+  // `device_id` must be between 0 (exclusive) and 64 (inclusive) characters.
   SecondDeviceAuthBroker(
       const std::string& device_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -186,8 +187,7 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
 
-  RefreshTokenOrErrorCallback refresh_token_internal_callback_;
-
+  // Must be between 0 (exclusive) and 64 (inclusive) characters.
   const std::string device_id_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -201,6 +201,9 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
 
   // Used for fetching OAuth refresh tokens.
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
+
+  // Pending callback for `FetchRefreshTokenFromAuthorizationCode()`.
+  RefreshTokenOrErrorCallback refresh_token_internal_callback_;
 
   base::WeakPtrFactory<SecondDeviceAuthBroker> weak_ptr_factory_;
 };

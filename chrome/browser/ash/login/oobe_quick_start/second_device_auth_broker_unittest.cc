@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -234,6 +235,10 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
     return mock_attestation_flow_;
   }
 
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {
+    return test_factory_.GetSafeWeakWrapper();
+  }
+
  private:
   // `task_environment_` must be the first member.
   base::test::TaskEnvironment task_environment_;
@@ -243,6 +248,25 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
   StrictMock<attestation::MockAttestationFlow> mock_attestation_flow_;
   SecondDeviceAuthBroker second_device_auth_broker_;
 };
+
+// Test fixture used to run death tests. A separate test fixture is used to
+// improve performance so that expected-death-crashes do not use the same
+// threading context as other tests. See
+// https://github.com/google/googletest/blob/main/docs/advanced.md#death-test-naming
+using SecondDeviceAuthBrokerDeathTest = SecondDeviceAuthBrokerTest;
+
+TEST_F(SecondDeviceAuthBrokerDeathTest,
+       SecondDeviceAuthBrokerValidatesDeviceId) {
+  EXPECT_DCHECK_DEATH(SecondDeviceAuthBroker(
+      /*device_id=*/std::string(), GetSharedURLLoaderFactory(),
+      std::make_unique<attestation::MockAttestationFlow>()))
+      << "Using an empty device_id should DCHECK";
+
+  EXPECT_DCHECK_DEATH(SecondDeviceAuthBroker(
+      /*device_id=*/std::string(65, '0'), GetSharedURLLoaderFactory(),
+      std::make_unique<attestation::MockAttestationFlow>()))
+      << "Using a device_id of length greater than 64 should DCHECK";
+}
 
 TEST_F(SecondDeviceAuthBrokerTest,
        GetChallengeBytesReturnsAnErrorForAuthErrors) {
