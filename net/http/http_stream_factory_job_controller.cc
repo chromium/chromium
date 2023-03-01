@@ -517,19 +517,19 @@ void HttpStreamFactory::JobController::OnNeedsProxyAuth(
 
 void HttpStreamFactory::JobController::OnPreconnectsComplete(Job* job,
                                                              int result) {
+  // Preconnects only run as `main_job_`, never `alternative_job_` or
+  // `dns_alpn_h3_job_`.
   DCHECK_EQ(main_job_.get(), job);
-  if (result == ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
+
+  // If the job failed because there were no matching HTTPS records in DNS, run
+  // the backup job. A TCP-based protocol may work instead.
+  if (result == ERR_DNS_NO_MATCHING_SUPPORTED_ALPN && preconnect_backup_job_) {
     DCHECK_EQ(job->job_type(), PRECONNECT_DNS_ALPN_H3);
-    DCHECK(preconnect_backup_job_);
-    GURL origin_url = request_info_.url;
-    RewriteUrlWithHostMappingRules(origin_url);
-    url::SchemeHostPort destination(origin_url);
-    DCHECK(destination.IsValid());
-    ConvertWsToHttp(destination);
     main_job_ = std::move(preconnect_backup_job_);
     main_job_->Preconnect(num_streams_);
     return;
   }
+
   main_job_.reset();
   preconnect_backup_job_.reset();
   ResetErrorStatusForJobs();
