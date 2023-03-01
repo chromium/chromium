@@ -143,8 +143,7 @@ class TestWindowNativeWidgetMac : public NativeWidgetMac {
       remote_cocoa::mojom::CreateWindowParams* params) override {
     params->style_mask = NSWindowStyleMaskBorderless;
     if (widget_params.type == Widget::InitParams::TYPE_WINDOW) {
-      params->style_mask = NSWindowStyleMaskTexturedBackground |
-                           NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+      params->style_mask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
                            NSWindowStyleMaskMiniaturizable |
                            NSWindowStyleMaskResizable;
     }
