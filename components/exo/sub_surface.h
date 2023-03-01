@@ -42,6 +42,8 @@ class SubSurface : public SurfaceDelegate,
 
   ~SubSurface() override;
 
+  Surface* surface() { return surface_; }
+
   // This schedules a sub-surface position change. The sub-surface will be
   // moved so, that its origin (top-left corner pixel) will be at the |position|
   // of the parent surface coordinate system.

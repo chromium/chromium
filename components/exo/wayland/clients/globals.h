@@ -67,6 +67,7 @@ struct Globals {
   Object<zcr_stylus_v2> stylus;
   Object<zcr_remote_shell_v1> cr_remote_shell_v1;
   Object<zcr_remote_shell_v2> cr_remote_shell_v2;
+  Object<surface_augmenter> surface_augmenter;
 
   base::flat_map<std::string, uint32_t> requested_versions;
 };

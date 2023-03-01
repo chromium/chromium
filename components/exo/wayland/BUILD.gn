@@ -266,6 +266,7 @@ source_set("unit_tests") {
     "clients/security_delegate_binding_test.cc",
     "output_metrics_unittest.cc",
     "server_unittest.cc",
+    "surface_augmenter_unittest.cc",
     "surface_unittest.cc",
     "test/client_util.cc",
     "test/client_util.h",
