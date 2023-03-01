@@ -14,7 +14,7 @@ invocations: [
       number_of_channels: 2,
       bitrate: 96000,
       aac {
-        format: 'aac'
+        format: AAC
       }
     }
   },
@@ -53,7 +53,7 @@ invocations: [
       number_of_channels: 1,
       bitrate: 128000,
       aac {
-        format: 'adts'
+        format: ADTS
       }
     }
   },

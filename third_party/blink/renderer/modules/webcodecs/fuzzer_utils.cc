@@ -129,7 +129,7 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
     auto* aac = AacEncoderConfig::Create();
     config->setAac(aac);
     if (proto.aac().has_format()) {
-      aac->setFormat(proto.aac().format().c_str());
+      aac->setFormat(ToAacFormat(proto.aac().format()));
     }
   }
 
@@ -145,6 +145,15 @@ String ToAccelerationType(
       return "prefer-software";
     case wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference_REQUIRE:
       return "prefer-hardware";
+  }
+}
+
+String ToAacFormat(wc_fuzzer::AacFormat format) {
+  switch (format) {
+    case wc_fuzzer::AAC:
+      return "aac";
+    case wc_fuzzer::ADTS:
+      return "adts";
   }
 }
 

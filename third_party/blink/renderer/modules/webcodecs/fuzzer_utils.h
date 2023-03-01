@@ -85,6 +85,8 @@ AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);
 
+String ToAacFormat(wc_fuzzer::AacFormat format);
+
 String ToAccelerationType(
     wc_fuzzer::ConfigureVideoEncoder_EncoderAccelerationPreference type);
 
