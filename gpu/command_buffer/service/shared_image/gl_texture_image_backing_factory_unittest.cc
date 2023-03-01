@@ -373,6 +373,14 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
     GTEST_SKIP();
   }
 
+#if BUILDFLAG(IS_IOS)
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    // Just like Mac, producing SkSurface for BGRA_1010102 fails on iOS
+    // (crbug.com/1100975)
+    GTEST_SKIP();
+  }
+#endif  // BUILDFLAG(IS_IOS)
+
   EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
