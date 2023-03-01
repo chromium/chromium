@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -144,13 +145,12 @@ class AttributionStorageTest : public testing::Test {
     // TOO(apaseltiner): Replace this logic with explicit setting of expected
     // values.
     auto event_trigger = base::ranges::find_if(
-        conversion.registration().event_triggers.vec(),
+        conversion.registration().event_triggers,
         [&](const attribution_reporting::EventTriggerData& event_trigger) {
           return source.common_info().filter_data().Matches(
               source.common_info().source_type(), event_trigger.filters);
         });
-    CHECK(event_trigger !=
-          conversion.registration().event_triggers.vec().end());
+    CHECK(event_trigger != conversion.registration().event_triggers.end());
 
     return ReportBuilder(AttributionInfoBuilder(
                              source,
@@ -2180,13 +2180,9 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
       attribution_reporting::TriggerRegistration(
           FilterPair(),
           /*debug_key=*/absl::nullopt,
-          *attribution_reporting::AggregatableDedupKeyList::Create(
-              {attribution_reporting::AggregatableDedupKey(
-                  /*dedup_key=*/123, FilterPair())}),
-          attribution_reporting::EventTriggerDataList(),
-          *attribution_reporting::AggregatableTriggerDataList::Create(
-              aggregatable_trigger_data),
-          aggregatable_values,
+          {attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123, FilterPair())},
+          /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
@@ -2254,12 +2250,8 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
         /*reporting_origin=*/origin,
         attribution_reporting::TriggerRegistration(
             FilterPair(),
-            /*debug_key=*/absl::nullopt,
-            *attribution_reporting::AggregatableDedupKeyList::Create(
-                {test_case.aggregatable_dedup_key}),
-            attribution_reporting::EventTriggerDataList(),
-            *attribution_reporting::AggregatableTriggerDataList::Create(
-                aggregatable_trigger_data),
+            /*debug_key=*/absl::nullopt, {test_case.aggregatable_dedup_key},
+            /*event_triggers=*/{}, aggregatable_trigger_data,
             aggregatable_values,
             /*debug_reporting=*/false,
             ::aggregation_service::mojom::AggregationCoordinator::kDefault),
@@ -2998,17 +2990,14 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
           attribution_reporting::TriggerRegistration(
               FilterPair(),
               /*debug_key=*/absl::nullopt,
-              attribution_reporting::AggregatableDedupKeyList(),
-              *attribution_reporting::EventTriggerDataList::Create(
-                  {attribution_reporting::EventTriggerData(
-                      /*data=*/11,
-                      /*priority=*/12,
-                      /*dedup_key=*/13,
-                      FilterPair{
-                          .positive = attribution_reporting::Filters::
-                              ForSourceTypeForTesting(SourceType::kEvent)})}),
-              /*aggregatable_trigger_data=*/
-              attribution_reporting::AggregatableTriggerDataList(),
+              /*aggregatable_dedup_keys=*/{},
+              {attribution_reporting::EventTriggerData(
+                  /*data=*/11,
+                  /*priority=*/12,
+                  /*dedup_key=*/13,
+                  FilterPair{.positive = attribution_reporting::Filters::
+                                 ForSourceTypeForTesting(SourceType::kEvent)})},
+              /*aggregatable_trigger_data=*/{},
               /*aggregatable_values=*/
               attribution_reporting::AggregatableValues(),
               /*debug_reporting=*/false,
@@ -3089,11 +3078,8 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
           attribution_reporting::TriggerRegistration(
               FilterPair(),
               /*debug_key=*/absl::nullopt,
-              attribution_reporting::AggregatableDedupKeyList(),
-              *attribution_reporting::EventTriggerDataList::Create(
-                  event_triggers),
-              /*aggregatable_trigger_data=*/
-              attribution_reporting::AggregatableTriggerDataList(),
+              /*aggregatable_dedup_keys=*/{}, event_triggers,
+              /*aggregatable_trigger_data=*/{},
               /*aggregatable_values=*/
               attribution_reporting::AggregatableValues(),
               /*debug_reporting=*/false,
@@ -3113,14 +3099,14 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   const auto origin = *SuitableOrigin::Deserialize("https://r.test");
 
-  auto event_triggers = *attribution_reporting::EventTriggerDataList::Create(
-      {attribution_reporting::EventTriggerData(
+  std::vector<attribution_reporting::EventTriggerData> event_triggers = {
+      attribution_reporting::EventTriggerData(
           /*data=*/11,
           /*priority=*/12,
-          /*dedup_key=*/13, FilterPair())});
+          /*dedup_key=*/13, FilterPair())};
 
   std::vector<attribution_reporting::AggregatableTriggerData>
-      aggregatable_trigger_data{
+      aggregatable_trigger_data = {
           *attribution_reporting::AggregatableTriggerData::Create(
               absl::MakeUint128(/*high=*/1, /*low=*/0),
               /*source_keys=*/{"0"}, FilterPair())};
@@ -3144,10 +3130,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                          {"abc", {"456"}},
                      }})},
           /*debug_key=*/absl::nullopt,
-          attribution_reporting::AggregatableDedupKeyList(), event_triggers,
-          *attribution_reporting::AggregatableTriggerDataList::Create(
-              aggregatable_trigger_data),
-          aggregatable_values,
+          /*aggregatable_dedup_keys=*/{}, event_triggers,
+          aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
@@ -3160,10 +3144,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                          {"abc", {"123"}},
                      }})},
           /*debug_key=*/absl::nullopt,
-          attribution_reporting::AggregatableDedupKeyList(), event_triggers,
-          *attribution_reporting::AggregatableTriggerDataList::Create(
-              aggregatable_trigger_data),
-          aggregatable_values,
+          /*aggregatable_dedup_keys=*/{}, event_triggers,
+          aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
@@ -3177,10 +3159,8 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
                   attribution_reporting::Filters::ForSourceTypeForTesting(
                       SourceType::kNavigation)},
           /*debug_key=*/absl::nullopt,
-          attribution_reporting::AggregatableDedupKeyList(), event_triggers,
-          *attribution_reporting::AggregatableTriggerDataList::Create(
-              aggregatable_trigger_data),
-          aggregatable_values,
+          /*aggregatable_dedup_keys=*/{}, event_triggers,
+          aggregatable_trigger_data, aggregatable_values,
           /*debug_reporting=*/false,
           ::aggregation_service::mojom::AggregationCoordinator::kDefault),
       /*destination_origin=*/origin,

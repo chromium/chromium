@@ -19639,7 +19639,6 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="aggregatable_values value has wrong type"/>
   <int value="13" label="aggregatable_values value out of range"/>
   <int value="14" label="aggregatable_trigger_data has wrong type"/>
-  <int value="15" label="aggregatable_trigger_data too long"/>
   <int value="16" label="aggregatable_trigger_data value has wrong type"/>
   <int value="17" label="aggregatable_trigger_data value key_piece missing"/>
   <int value="18"
@@ -19655,12 +19654,10 @@ Called by update_net_error_codes.py.-->
   <int value="23"
       label="aggregatable_trigger_data value source_keys key too long"/>
   <int value="24" label="event_trigger_data has wrong type"/>
-  <int value="25" label="event_trigger_data too long"/>
   <int value="26" label="event_trigger_data value has wrong type"/>
   <int value="27" label="aggregation_coordinator_identifier has wrong type"/>
   <int value="28" label="aggregation_coordinator_identifier has unknown value"/>
   <int value="29" label="aggregatable_deduplication_keys has wrong type"/>
-  <int value="30" label="aggregatable_deduplication_keys too long"/>
   <int value="31" label="aggregatable_deduplication_keys value has wrong type"/>
 </enum>
 

@@ -1010,10 +1010,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                     .positive = *AttributionFilters::Create({{{"a", {"b"}}}}),
                     .negative = *AttributionFilters::Create({{{"g", {"h"}}}})},
                 /*debug_key=*/1,
-                *attribution_reporting::AggregatableDedupKeyList::Create(
-                    {attribution_reporting::AggregatableDedupKey(
-                        /*dedup_key=*/18, FilterPair())}),
-                *attribution_reporting::EventTriggerDataList::Create({
+                {attribution_reporting::AggregatableDedupKey(
+                    /*dedup_key=*/18, FilterPair())},
+                {
                     attribution_reporting::EventTriggerData(
                         /*data=*/2,
                         /*priority=*/3,
@@ -1026,18 +1025,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                         /*dedup_key=*/6,
                         FilterPair{.negative = *AttributionFilters::Create(
                                        {{{"e", {"f"}}}})}),
-                }),
-                *attribution_reporting::AggregatableTriggerDataList::Create(
-                    {*attribution_reporting::AggregatableTriggerData::Create(
-                         /*key_piece=*/345,
-                         /*source_keys=*/{"a"},
-                         FilterPair{.positive = *AttributionFilters::Create(
-                                        {{{"c", {"d"}}}})}),
-                     *attribution_reporting::AggregatableTriggerData::Create(
-                         /*key_piece=*/678,
-                         /*source_keys=*/{"b"},
-                         FilterPair{.negative = *AttributionFilters::Create(
-                                        {{{"e", {"f"}}}})})}),
+                },
+                {*attribution_reporting::AggregatableTriggerData::Create(
+                     /*key_piece=*/345,
+                     /*source_keys=*/{"a"},
+                     FilterPair{.positive = *AttributionFilters::Create(
+                                    {{{"c", {"d"}}}})}),
+                 *attribution_reporting::AggregatableTriggerData::Create(
+                     /*key_piece=*/678,
+                     /*source_keys=*/{"b"},
+                     FilterPair{.negative = *AttributionFilters::Create(
+                                    {{{"e", {"f"}}}})})},
                 /*aggregatable_values=*/
                 *attribution_reporting::AggregatableValues::Create(
                     {{"a", 123}, {"b", 456}}),

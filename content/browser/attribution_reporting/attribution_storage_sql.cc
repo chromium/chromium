@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -849,11 +850,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
 
-  if (trigger_registration.event_triggers.vec().empty()) {
+  if (trigger_registration.event_triggers.empty()) {
     event_level_status = EventLevelResult::kNotRegistered;
   }
 
-  if (trigger_registration.aggregatable_trigger_data.vec().empty() &&
+  if (trigger_registration.aggregatable_trigger_data.empty() &&
       trigger_registration.aggregatable_values.values().empty()) {
     aggregatable_status = AggregatableResult::kNotRegistered;
   }
@@ -1120,13 +1121,13 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   const SourceType source_type = common_info.source_type();
 
   auto event_trigger = base::ranges::find_if(
-      trigger.registration().event_triggers.vec(),
+      trigger.registration().event_triggers,
       [&](const attribution_reporting::EventTriggerData& event_trigger) {
         return common_info.filter_data().Matches(source_type,
                                                  event_trigger.filters);
       });
 
-  if (event_trigger == trigger.registration().event_triggers.vec().end()) {
+  if (event_trigger == trigger.registration().event_triggers.end()) {
     return EventLevelResult::kNoMatchingConfigurations;
   }
 
@@ -2735,7 +2736,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   const SourceType source_type = common_info.source_type();
 
   auto matched_dedup_key = base::ranges::find_if(
-      trigger.registration().aggregatable_dedup_keys.vec(),
+      trigger.registration().aggregatable_dedup_keys,
       [&](const attribution_reporting::AggregatableDedupKey&
               aggregatable_dedup_key) {
         return common_info.filter_data().Matches(
@@ -2743,7 +2744,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       });
 
   if (matched_dedup_key !=
-      trigger.registration().aggregatable_dedup_keys.vec().end()) {
+      trigger.registration().aggregatable_dedup_keys.end()) {
     dedup_key = matched_dedup_key->dedup_key;
   }
 

@@ -246,7 +246,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
                  attribution_reporting::TriggerRegistration> {
   static const std::vector<attribution_reporting::EventTriggerData>&
   event_triggers(const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.event_triggers.vec();
+    return trigger.event_triggers;
   }
 
   static const attribution_reporting::FilterPair& filters(
@@ -257,7 +257,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static const std::vector<attribution_reporting::AggregatableTriggerData>&
   aggregatable_trigger_data(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.aggregatable_trigger_data.vec();
+    return trigger.aggregatable_trigger_data;
   }
 
   static const attribution_reporting::AggregatableValues::Values&
@@ -274,7 +274,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static const std::vector<attribution_reporting::AggregatableDedupKey>&
   aggregatable_dedup_keys(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.aggregatable_dedup_keys.vec();
+    return trigger.aggregatable_dedup_keys;
   }
 
   static bool debug_reporting(

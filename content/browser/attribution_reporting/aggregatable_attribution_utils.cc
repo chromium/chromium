@@ -52,7 +52,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
     attribution_reporting::mojom::SourceType source_type,
     const attribution_reporting::AggregationKeys& keys,
-    const attribution_reporting::AggregatableTriggerDataList&
+    const std::vector<attribution_reporting::AggregatableTriggerData>&
         aggregatable_trigger_data,
     const attribution_reporting::AggregatableValues& aggregatable_values) {
   int num_trigger_data_filtered = 0;
@@ -62,7 +62,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   // For each piece of trigger data specified, check if its filters/not_filters
   // match for the given source, and if applicable modify the bucket based on
   // the given key piece.
-  for (const auto& data : aggregatable_trigger_data.vec()) {
+  for (const auto& data : aggregatable_trigger_data) {
     if (!source_filter_data.Matches(source_type, data.filters())) {
       ++num_trigger_data_filtered;
       continue;
@@ -91,11 +91,10 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     contributions.emplace_back(key, value->second);
   }
 
-  if (!aggregatable_trigger_data.vec().empty()) {
+  if (!aggregatable_trigger_data.empty()) {
     base::UmaHistogramPercentage(
         "Conversions.AggregatableReport.FilteredTriggerDataPercentage",
-        100 * num_trigger_data_filtered /
-            aggregatable_trigger_data.vec().size());
+        100 * num_trigger_data_filtered / aggregatable_trigger_data.size());
   }
 
   if (!buckets.empty()) {

@@ -3516,19 +3516,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AggregatableTriggerDataLength"
-    units="trigger_data" expires_after="M117">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures the length of the list contained in the
-    Attribution-Reporting-Register-Aggregatable-Trigger-Data header when
-    present. Recorded once for each aggregatable trigger when parsed from the
-    attributionsrc response.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AttributionSrcRequestStatus"
     enum="ConversionAttributionSrcRequestStatus" expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -4119,7 +4106,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerRegistrationError2"
+<histogram name="Conversions.TriggerRegistrationError3"
     enum="ConversionTriggerRegistrationError" expires_after="M117">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

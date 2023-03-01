@@ -25,7 +25,6 @@ enum TriggerRegistrationError {
   kAggregatableValuesValueOutOfRange = 13,
 
   kAggregatableTriggerDataListWrongType = 14,
-  kAggregatableTriggerDataListTooLong = 15,
   kAggregatableTriggerDataWrongType = 16,
   kAggregatableTriggerDataKeyPieceMissing = 17,
   kAggregatableTriggerDataKeyPieceWrongType = 18,
@@ -36,13 +35,11 @@ enum TriggerRegistrationError {
   kAggregatableTriggerDataSourceKeysKeyTooLong = 23,
 
   kEventTriggerDataListWrongType = 24,
-  kEventTriggerDataListTooLong = 25,
   kEventTriggerDataWrongType = 26,
 
   kAggregationCoordinatorWrongType = 27,
   kAggregationCoordinatorUnknownValue = 28,
 
   kAggregatableDedupKeyListWrongType = 29,
-  kAggregatableDedupKeyListTooLong = 30,
   kAggregatableDedupKeyWrongType = 31,
 };

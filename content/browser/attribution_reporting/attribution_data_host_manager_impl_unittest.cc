@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
@@ -23,6 +24,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -281,10 +283,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       .positive = *AttributionFilters::Create({{{"c", {"d"}}}}),
       .negative = *AttributionFilters::Create({{{"e", {"f"}}}})};
 
-  auto aggregatable_dedup_keys =
-      *attribution_reporting::AggregatableDedupKeyList::Create(
-          {attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/123, FilterPair())});
+  std::vector<attribution_reporting::AggregatableDedupKey>
+      aggregatable_dedup_keys = {attribution_reporting::AggregatableDedupKey(
+          /*dedup_key=*/123, FilterPair())};
 
   EXPECT_CALL(
       mock_manager_,
@@ -293,15 +294,14 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
               reporting_origin,
               TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
                   FilterPair{.positive = filters}, Optional(789),
-                  EventTriggerDataListMatches(
-                      EventTriggerDataListMatcherConfig(ElementsAre(
-                          EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                              1, 2, Optional(3), event_trigger_data_filters)),
-                          EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                              4, 5, Eq(absl::nullopt), FilterPair()))))),
+                  ElementsAre(
+                      EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                          1, 2, Optional(3), event_trigger_data_filters)),
+                      EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+                          4, 5, Eq(absl::nullopt), FilterPair()))),
                   aggregatable_dedup_keys,
                   /*debug_reporting=*/true,
-                  attribution_reporting::AggregatableTriggerDataList(),
+                  std::vector<attribution_reporting::AggregatableTriggerData>(),
                   attribution_reporting::AggregatableValues(),
                   ::aggregation_service::mojom::AggregationCoordinator::
                       kDefault)),
@@ -319,14 +319,13 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
     TriggerRegistration trigger_data;
     trigger_data.debug_key = 789;
     trigger_data.filters.positive = filters;
-    trigger_data.event_triggers =
-        *attribution_reporting::EventTriggerDataList::Create(
-            {attribution_reporting::EventTriggerData(
-                 /*data=*/1, /*priority=*/2,
-                 /*dedup_key=*/3, event_trigger_data_filters),
-             attribution_reporting::EventTriggerData(
-                 /*data=*/4, /*priority=*/5,
-                 /*dedup_key=*/absl::nullopt, FilterPair())});
+    trigger_data.event_triggers = {
+        attribution_reporting::EventTriggerData(
+            /*data=*/1, /*priority=*/2,
+            /*dedup_key=*/3, event_trigger_data_filters),
+        attribution_reporting::EventTriggerData(
+            /*data=*/4, /*priority=*/5,
+            /*dedup_key=*/absl::nullopt, FilterPair())};
 
     trigger_data.aggregatable_dedup_keys = aggregatable_dedup_keys;
     trigger_data.debug_reporting = true;

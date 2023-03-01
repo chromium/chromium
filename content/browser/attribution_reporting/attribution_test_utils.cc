@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -749,13 +750,9 @@ AttributionTrigger TriggerBuilder::Build(
       reporting_origin_,
       attribution_reporting::TriggerRegistration(
           FilterPair(), debug_key_,
-          *attribution_reporting::AggregatableDedupKeyList::Create(
-              {attribution_reporting::AggregatableDedupKey(
-                  /*dedup_key=*/aggregatable_dedup_key_, FilterPair())}),
-          *attribution_reporting::EventTriggerDataList::Create(
-              std::move(event_triggers)),
-          *attribution_reporting::AggregatableTriggerDataList::Create(
-              aggregatable_trigger_data_),
+          {attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/aggregatable_dedup_key_, FilterPair())},
+          std::move(event_triggers), aggregatable_trigger_data_,
           aggregatable_values_, debug_reporting_, aggregation_coordinator_),
       destination_origin_, attestation_, is_within_fenced_frame_);
 }
@@ -1291,13 +1288,15 @@ EventTriggerDataMatches(const EventTriggerDataMatcherConfig& cfg) {
 TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
     ::testing::Matcher<const FilterPair&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
-    ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
+    ::testing::Matcher<
+        const std::vector<attribution_reporting::EventTriggerData>&>
         event_triggers,
-    ::testing::Matcher<const attribution_reporting::AggregatableDedupKeyList&>
+    ::testing::Matcher<
+        const std::vector<attribution_reporting::AggregatableDedupKey>&>
         aggregatable_dedup_keys,
     ::testing::Matcher<bool> debug_reporting,
     ::testing::Matcher<
-        const attribution_reporting::AggregatableTriggerDataList&>
+        const std::vector<attribution_reporting::AggregatableTriggerData>&>
         aggregatable_trigger_data,
     ::testing::Matcher<const attribution_reporting::AggregatableValues&>
         aggregatable_values,

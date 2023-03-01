@@ -20,14 +20,9 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
-#include "components/attribution_reporting/aggregatable_dedup_key.h"
-#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/bounded_list.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
-#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -962,42 +957,19 @@ struct EventTriggerDataMatcherConfig {
 ::testing::Matcher<const attribution_reporting::EventTriggerData&>
 EventTriggerDataMatches(const EventTriggerDataMatcherConfig&);
 
-template <typename T>
-struct BoundedListMatcherConfig {
-  ::testing::Matcher<const std::vector<T>&> vec = ::testing::_;
-
-  BoundedListMatcherConfig() = delete;
-  explicit BoundedListMatcherConfig(
-      ::testing::Matcher<const std::vector<T>&> vec = ::testing::_)
-      : vec(std::move(vec)) {}
-
-  ~BoundedListMatcherConfig() = default;
-};
-
-template <typename T, size_t kMaxSize>
-::testing::Matcher<const attribution_reporting::BoundedList<T, kMaxSize>&>
-BoundedListMatches(const BoundedListMatcherConfig<T>& cfg) {
-  return Property("vec", &attribution_reporting::BoundedList<T, kMaxSize>::vec,
-                  cfg.vec);
-}
-
-using EventTriggerDataListMatcherConfig =
-    BoundedListMatcherConfig<attribution_reporting::EventTriggerData>;
-
-constexpr auto EventTriggerDataListMatches =
-    BoundedListMatches<attribution_reporting::EventTriggerData,
-                       attribution_reporting::kMaxEventTriggerData>;
-
 struct TriggerRegistrationMatcherConfig {
   ::testing::Matcher<const attribution_reporting::FilterPair&> filters =
       ::testing::_;
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
-  ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
+  ::testing::Matcher<
+      const std::vector<attribution_reporting::EventTriggerData>&>
       event_triggers = ::testing::_;
-  ::testing::Matcher<const attribution_reporting::AggregatableDedupKeyList&>
+  ::testing::Matcher<
+      const std::vector<attribution_reporting::AggregatableDedupKey>&>
       aggregatable_dedup_keys = ::testing::_;
   ::testing::Matcher<bool> debug_reporting = ::testing::_;
-  ::testing::Matcher<const attribution_reporting::AggregatableTriggerDataList&>
+  ::testing::Matcher<
+      const std::vector<attribution_reporting::AggregatableTriggerData>&>
       aggregatable_trigger_data = ::testing::_;
   ::testing::Matcher<const attribution_reporting::AggregatableValues&>
       aggregatable_values = ::testing::_;
@@ -1009,13 +981,15 @@ struct TriggerRegistrationMatcherConfig {
       ::testing::Matcher<const attribution_reporting::FilterPair&> filters =
           ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
-      ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
+      ::testing::Matcher<
+          const std::vector<attribution_reporting::EventTriggerData>&>
           event_triggers = ::testing::_,
-      ::testing::Matcher<const attribution_reporting::AggregatableDedupKeyList&>
+      ::testing::Matcher<
+          const std::vector<attribution_reporting::AggregatableDedupKey>&>
           aggregatable_dedup_keys = ::testing::_,
       ::testing::Matcher<bool> debug_reporting = ::testing::_,
       ::testing::Matcher<
-          const attribution_reporting::AggregatableTriggerDataList&>
+          const std::vector<attribution_reporting::AggregatableTriggerData>&>
           aggregatable_trigger_data = ::testing::_,
       ::testing::Matcher<const attribution_reporting::AggregatableValues&>
           aggregatable_values = ::testing::_,

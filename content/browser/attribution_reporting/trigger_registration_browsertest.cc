@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -111,10 +112,9 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_EQ(trigger_data.size(), 1u);
   EXPECT_THAT(
       trigger_data.front().event_triggers,
-      EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(ElementsAre(
+      ElementsAre(
           EventTriggerDataMatches(EventTriggerDataMatcherConfig(/*data=*/1)),
-          EventTriggerDataMatches(
-              EventTriggerDataMatcherConfig(/*data=*/2))))));
+          EventTriggerDataMatches(EventTriggerDataMatcherConfig(/*data=*/2))));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -151,18 +151,16 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(trigger_data1.size(), 1u);
   EXPECT_THAT(trigger_data1.front().event_triggers,
-              EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
-                  ElementsAre(EventTriggerDataMatches(
-                      EventTriggerDataMatcherConfig(/*data=*/5))))));
+              ElementsAre(EventTriggerDataMatches(
+                  EventTriggerDataMatcherConfig(/*data=*/5))));
 
   data_hosts.back()->WaitForTriggerData(/*num_trigger_data=*/1);
   const auto& trigger_data2 = data_hosts.back()->trigger_data();
 
   EXPECT_EQ(trigger_data2.size(), 1u);
   EXPECT_THAT(trigger_data2.front().event_triggers,
-              EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
-                  ElementsAre(EventTriggerDataMatches(
-                      EventTriggerDataMatcherConfig(/*data=*/7))))));
+              ElementsAre(EventTriggerDataMatches(
+                  EventTriggerDataMatcherConfig(/*data=*/7))));
 }
 
 }  // namespace content
