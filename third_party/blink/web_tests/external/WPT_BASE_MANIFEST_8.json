@@ -382097,16 +382097,8 @@
      "2e788491cee9e3a84ec463ae936a0bb874558c00",
      []
     ],
-    "urlsearchparams-size.any-expected.txt": [
-     "20eed52b49de29185020406dd625b6236dd42aa0",
-     []
-    ],
     "urlsearchparams-size.any.js.ini": [
      "418623023b17fa6a63bfe443afa28bd6478c63ae",
-     []
-    ],
-    "urlsearchparams-size.any.worker-expected.txt": [
-     "20eed52b49de29185020406dd625b6236dd42aa0",
      []
     ]
    },
@@ -498114,6 +498106,15 @@
      ]
     ],
     "model": {
+     "move-fullscreen-element.html": [
+      "27f4c5dd82e3913cc8506cd744e8855ce4bbf135",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "move-to-fullscreen-iframe.html": [
       "0103b2979ffe8401be84a1cc32445cf4a5128434",
       [
