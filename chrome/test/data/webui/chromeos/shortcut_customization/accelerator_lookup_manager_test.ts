@@ -91,12 +91,6 @@ suite('acceleratorLookupManagerTest', function() {
       // We expect 1 subcategory for kBrowser: kTabs.
       assertEquals(
           1, getManager().getSubcategories(AcceleratorCategory.kBrowser)!.size);
-
-      // We expect 1 subcategory for kEventRewriter: kSixPackKeys.
-      assertEquals(
-          1,
-          getManager().getSubcategories(
-                          AcceleratorCategory.kEventRewriter)!.size);
     });
   });
 

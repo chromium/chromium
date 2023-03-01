@@ -74,7 +74,6 @@ enum AcceleratorCategory {
   kAccessibility,
   kDebug,
   kDeveloper,
-  kEventRewriter,
 };
 
 // Enum of secondary-level accelerator categories. Used in the UI for
@@ -98,7 +97,6 @@ enum AcceleratorSubcategory {
   kChromeVox,
   kVisibility,
   kAccessibilityNavigation,
-  kSixPackKeys,
 };
 
 // Enum of possible options for text accelerators.

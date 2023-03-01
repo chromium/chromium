@@ -363,27 +363,27 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kBrowserFocusInactivePopupForAccessibility,
            NonConfigurableAcceleratorDetails({ui::Accelerator(
                ui::VKEY_A, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN)})},
-          // TODO(jimmyxgong): Re-enable these shortcuts. These conflict with
-          // the 6-pack keys Home and End.
-          //   {NonConfigurableActions::kBrowserBottomPage,
-          //    NonConfigurableAcceleratorDetails(
-          //        {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
-          //   {NonConfigurableActions::kBrowserTopPage,
+          {NonConfigurableActions::kBrowserBottomPage,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kBrowserTopPage,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kBrowserPageUp,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_UP, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kBrowserPageDown,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_DOWN, ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kAmbientDeleteNextWord,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_BACK, ui::EF_COMMAND_DOWN)})},
+          // TODO(longbowei): Re-enable these shortcuts. these conflict with
+          // kBrowserTopPage(Search + <) and kBrowserBottomPage(Search + >);
+          //    {NonConfigurableActions::kAmbientGoToBeginningOfLine,
           //    NonConfigurableAcceleratorDetails(
           //        {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
-          //   {NonConfigurableActions::kAmbientDeleteNextWord,
-          //    NonConfigurableAcceleratorDetails(
-          //        {ui::Accelerator(ui::VKEY_BACK, ui::EF_COMMAND_DOWN)})},
-          //   {NonConfigurableActions::kBrowserPageUp,
-          //    NonConfigurableAcceleratorDetails(
-          //        {ui::Accelerator(ui::VKEY_UP, ui::EF_COMMAND_DOWN)})},
-          //   {NonConfigurableActions::kBrowserPageDown,
-          //    NonConfigurableAcceleratorDetails(
-          //        {ui::Accelerator(ui::VKEY_DOWN, ui::EF_COMMAND_DOWN)})},
-          //   {NonConfigurableActions::kAmbientGoToBeginningOfLine,
-          //    NonConfigurableAcceleratorDetails(
-          //        {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
-          //   {NonConfigurableActions::kAmbientGoToBeginningOfLine,
+          //    {NonConfigurableActions::kAmbientGoToEndOfLine,
           //    NonConfigurableAcceleratorDetails(
           //        {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
           {NonConfigurableActions::kBrowserNextPane,
@@ -459,24 +459,6 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kAmbientMoveToEndOfWord,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN)})},
-          {NonConfigurableActions::kSixPackDelete,
-           NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_BACK, ui::EF_COMMAND_DOWN)})},
-          {NonConfigurableActions::kSixPackHome,
-           NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
-          {NonConfigurableActions::kSixPackPageUp,
-           NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_UP, ui::EF_COMMAND_DOWN)})},
-          {NonConfigurableActions::kSixPackEnd,
-           NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
-          {NonConfigurableActions::kSixPackPageDown,
-           NonConfigurableAcceleratorDetails(
-               {ui::Accelerator(ui::VKEY_DOWN, ui::EF_COMMAND_DOWN)})},
-          {NonConfigurableActions::kSixPackInsert,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_BACK, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN)})},
       });
   return *nonConfigurableActionsMap;
 }
