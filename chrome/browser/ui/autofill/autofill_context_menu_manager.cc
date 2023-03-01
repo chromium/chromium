@@ -12,10 +12,10 @@
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -158,7 +158,7 @@ void AutofillContextMenuManager::AppendItems() {
 
     content::WebContents* web_contents = delegate_->GetWebContents();
     AutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+        autofill::ContentAutofillClient::FromWebContents(web_contents);
     // If the autofill popup is shown and the user double clicks from within the
     // bounds of the initiating field, it is assumed that the context menu would
     // overlap with the autofill popup. In that case, hide the autofill popup.

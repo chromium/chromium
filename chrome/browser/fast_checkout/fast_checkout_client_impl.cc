@@ -14,8 +14,8 @@
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -108,7 +108,7 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
     content::WebContents* web_contents)
     : content::WebContentsUserData<FastCheckoutClientImpl>(*web_contents),
       autofill_client_(
-          autofill::ChromeAutofillClient::FromWebContents(web_contents)),
+          autofill::ContentAutofillClient::FromWebContents(web_contents)),
       fetcher_(FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())),
       personal_data_helper_(

@@ -2934,11 +2934,7 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   ~AutofillInteractiveIsolationTest() override = default;
 
   bool IsPopupShown() {
-    return !!static_cast<ChromeAutofillClient*>(
-                 ContentAutofillDriverFactory::FromWebContents(GetWebContents())
-                     ->DriverForFrame(GetWebContents()->GetPrimaryMainFrame())
-                     ->autofill_manager()
-                     ->client())
+    return !!ChromeAutofillClient::FromWebContentsForTesting(GetWebContents())
                  ->popup_controller_for_testing();
   }
 

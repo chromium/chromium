@@ -46,6 +46,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_tracker.h"
@@ -158,7 +159,7 @@ void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
   autofill::ChromeAutofillClient::CreateForWebContents(portal_contents);
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       portal_contents,
-      autofill::ChromeAutofillClient::FromWebContents(portal_contents));
+      autofill::ContentAutofillClient::FromWebContents(portal_contents));
   HistoryTabHelper::CreateForWebContents(portal_contents);
   infobars::ContentInfoBarManager::CreateForWebContents(portal_contents);
   PrefsTabHelper::CreateForWebContents(portal_contents);

@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
   GenerateTestAutofillPopup(autofill_external_delegate_);
 
   auto* client =
-      autofill::ChromeAutofillClient::FromWebContents(web_contents());
+      autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents());
   AutofillPopupController* controller =
       client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);

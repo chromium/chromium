@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -582,7 +583,7 @@ TEST_F(FastCheckoutClientImplTest,
   auto browser_autofill_manager =
       std::make_unique<autofill::BrowserAutofillManager>(
           autofill_driver.get(),
-          autofill::ChromeAutofillClient::FromWebContents(web_contents()),
+          autofill::ContentAutofillClient::FromWebContents(web_contents()),
           "en-US");
   autofill::BrowserAutofillManager* autofill_manager =
       browser_autofill_manager.get();

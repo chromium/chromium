@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, std::u16string(),
                                   0, element_bounds);
   autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContents(WebContents());
+      autofill::ChromeAutofillClient::FromWebContentsForTesting(WebContents());
   autofill::AutofillPopupController* controller =
       autofill_client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);

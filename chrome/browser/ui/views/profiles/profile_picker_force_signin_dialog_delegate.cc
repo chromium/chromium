@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_delegate.h"
 
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -41,7 +41,7 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
 
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_view_->GetWebContents(),
-      autofill::ChromeAutofillClient::FromWebContents(
+      autofill::ContentAutofillClient::FromWebContents(
           web_view_->GetWebContents()));
 
   web_modal::WebContentsModalDialogManager::CreateForWebContents(

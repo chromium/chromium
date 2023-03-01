@@ -53,7 +53,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     PreparePersonalDataManager();
     ChromeAutofillClient::CreateForWebContents(web_contents());
     chrome_autofill_client_ =
-        ChromeAutofillClient::FromWebContents(web_contents());
+        ChromeAutofillClient::FromWebContentsForTesting(web_contents());
 
 #if BUILDFLAG(IS_ANDROID)
     auto fast_checkout_client =

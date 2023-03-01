@@ -137,7 +137,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+        autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
     autofill_client->KeepPopupOpenForTesting();
 
     // Execute the Conditional UI request.
@@ -188,7 +188,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+        autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
     autofill_client->KeepPopupOpenForTesting();
 
     // Execute the Conditional UI request.

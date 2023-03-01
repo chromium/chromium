@@ -50,11 +50,15 @@ class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
 
 // Chrome implementation of AutofillClient.
+//
 // ChromeAutofillClient is instantiated once per WebContents, and usages of
 // main frame refer to the primary main frame because WebContents only has a
 // primary main frame.
-// TODO(crbug.com/1351388): During prerendering in MPArch, the autofill client
-// should be attached not to the web contents but the outer-most main frame.
+//
+// Production code should not depend on ChromeAutofillClient but only on
+// ContentAutofillClient. This ensures that tests can inject different
+// implementations of ContentAutofillClient without causing invalid casts to
+// ChromeAutofillClient.
 class ChromeAutofillClient : public ContentAutofillClient,
                              public content::WebContentsObserver
 #if !BUILDFLAG(IS_ANDROID)
@@ -63,18 +67,20 @@ class ChromeAutofillClient : public ContentAutofillClient,
 #endif  // !BUILDFLAG(IS_ANDROID)
 {
  public:
-  static ChromeAutofillClient* FromWebContents(
-      content::WebContents* web_contents) {
-    return static_cast<ChromeAutofillClient*>(
-        ContentAutofillClient::FromWebContents(web_contents));
-  }
+  // Creates a new ChromeAutofillClient for the given `web_contents` if no
+  // ContentAutofillClient is associated with the `web_contents` yet. Otherwise,
+  // it's a no-op.
+  static void CreateForWebContents(content::WebContents* web_contents);
 
-  static void CreateForWebContents(content::WebContents* contents) {
-    DCHECK(contents);
-    if (!ContentAutofillClient::FromWebContents(contents)) {
-      contents->SetUserData(
-          UserDataKey(), base::WrapUnique(new ChromeAutofillClient(contents)));
-    }
+  // Only tests that require ChromeAutofillClient's `*ForTesting()` functions
+  // may use this function.
+  //
+  // Generally, code should use ContentAutofillClient::FromWebContents() if
+  // possible. This is because many tests inject clients that do not inherit
+  // from ChromeAutofillClient.
+  static ChromeAutofillClient* FromWebContentsForTesting(
+      content::WebContents* web_contents) {
+    return static_cast<ChromeAutofillClient*>(FromWebContents(web_contents));
   }
 
   ChromeAutofillClient(const ChromeAutofillClient&) = delete;

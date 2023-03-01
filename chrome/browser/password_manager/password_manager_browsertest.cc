@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-test-utils.h"
@@ -1228,8 +1229,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/nonplaceholder_username.html");
 
   // Use autofill predictions
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContents(WebContents());
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(WebContents());
   autofill_client->PropagateAutofillPredictions(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           WebContents()->GetPrimaryMainFrame()),
@@ -1292,8 +1293,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/nonplaceholder_username.html");
 
   // Use autofill predictions
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContents(WebContents());
+  autofill::AutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(WebContents());
   autofill_client->PropagateAutofillPredictions(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           WebContents()->GetPrimaryMainFrame()),
@@ -4484,7 +4485,7 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
         owned_web_contents.get());
     TestPasswordManagerClient::CreateForWebContentsWithAutofillClient(
         owned_web_contents.get(),
-        autofill::ChromeAutofillClient::FromWebContents(
+        autofill::ContentAutofillClient::FromWebContents(
             owned_web_contents.get()));
     ASSERT_TRUE(
         ChromePasswordManagerClient::FromWebContents(owned_web_contents.get()));
