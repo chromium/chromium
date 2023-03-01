@@ -27,6 +27,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_observer.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"

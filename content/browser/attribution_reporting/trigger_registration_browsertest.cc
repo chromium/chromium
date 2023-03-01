@@ -10,6 +10,8 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_host.h"
+#include "content/browser/attribution_reporting/test/mock_data_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"

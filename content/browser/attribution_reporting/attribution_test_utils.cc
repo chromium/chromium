@@ -21,36 +21,27 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/navigation_handle.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/cpp/trigger_attestation_test_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_input_event_tracker_android.h"
-#endif
 
 namespace content {
 
@@ -72,73 +63,6 @@ const char kDefaultReportOrigin[] = "https://report.test/";
 const int64_t kExpiryTime = 30;
 
 }  // namespace
-
-// static
-MockAttributionHost* MockAttributionHost::Override(WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
-  auto* old_host = AttributionHost::FromWebContents(web_contents);
-  if (auto* input_event_tracker = old_host->input_event_tracker()) {
-    input_event_tracker->RemoveObserverForTesting(web_contents);
-  }
-#endif
-  auto host = base::WrapUnique(new MockAttributionHost(web_contents));
-  auto* raw = host.get();
-  web_contents->SetUserData(AttributionHost::UserDataKey(), std::move(host));
-  return raw;
-}
-
-MockAttributionHost::MockAttributionHost(WebContents* web_contents)
-    : AttributionHost(web_contents) {}
-
-MockAttributionHost::~MockAttributionHost() = default;
-
-MockDataHost::MockDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
-  receiver_.Bind(std::move(data_host));
-}
-
-MockDataHost::~MockDataHost() = default;
-
-void MockDataHost::WaitForSourceData(size_t num_source_data) {
-  min_source_data_count_ = num_source_data;
-  if (source_data_.size() >= min_source_data_count_) {
-    return;
-  }
-  wait_loop_.Run();
-}
-
-void MockDataHost::WaitForTriggerData(size_t num_trigger_data) {
-  min_trigger_data_count_ = num_trigger_data;
-  if (trigger_data_.size() >= min_trigger_data_count_) {
-    return;
-  }
-  wait_loop_.Run();
-}
-
-void MockDataHost::SourceDataAvailable(
-    attribution_reporting::SuitableOrigin reporting_origin,
-    attribution_reporting::SourceRegistration data) {
-  source_data_.push_back(std::move(data));
-  if (source_data_.size() < min_source_data_count_) {
-    return;
-  }
-  wait_loop_.Quit();
-}
-
-void MockDataHost::TriggerDataAvailable(
-    attribution_reporting::SuitableOrigin reporting_origin,
-    attribution_reporting::TriggerRegistration data,
-    absl::optional<network::TriggerAttestation> attestation) {
-  trigger_data_.push_back(std::move(data));
-  if (trigger_data_.size() < min_trigger_data_count_) {
-    return;
-  }
-  wait_loop_.Quit();
-}
-
-MockAttributionObserver::MockAttributionObserver() = default;
-
-MockAttributionObserver::~MockAttributionObserver() = default;
 
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
@@ -339,88 +263,6 @@ void ConfigurableStorageDelegate::set_trigger_data_cardinality(
   config_.event_level_limit.navigation_source_trigger_data_cardinality =
       navigation;
   config_.event_level_limit.event_source_trigger_data_cardinality = event;
-}
-
-MockAttributionManager::MockAttributionManager() = default;
-
-MockAttributionManager::~MockAttributionManager() = default;
-
-void MockAttributionManager::AddObserver(AttributionObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void MockAttributionManager::RemoveObserver(AttributionObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-AttributionDataHostManager* MockAttributionManager::GetDataHostManager() {
-  return data_host_manager_.get();
-}
-
-void MockAttributionManager::NotifySourcesChanged() {
-  for (auto& observer : observers_) {
-    observer.OnSourcesChanged();
-  }
-}
-
-void MockAttributionManager::NotifyReportsChanged() {
-  for (auto& observer : observers_) {
-    observer.OnReportsChanged();
-  }
-}
-
-void MockAttributionManager::NotifySourceHandled(
-    const StorableSource& source,
-    StorableSource::Result result,
-    absl::optional<uint64_t> cleared_debug_key) {
-  for (auto& observer : observers_) {
-    observer.OnSourceHandled(source, cleared_debug_key, result);
-  }
-}
-
-void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
-                                              bool is_debug_report,
-                                              const SendResult& info) {
-  for (auto& observer : observers_) {
-    observer.OnReportSent(report, is_debug_report, info);
-  }
-}
-
-void MockAttributionManager::NotifySourceRegistrationFailure(
-    const std::string& header_value,
-    const SuitableOrigin& source_origin,
-    const SuitableOrigin& reporting_origin,
-    SourceType source_type,
-    attribution_reporting::mojom::SourceRegistrationError error) {
-  base::Time source_time = base::Time::Now();
-  for (auto& observer : observers_) {
-    observer.OnFailedSourceRegistration(header_value, source_time,
-                                        source_origin, reporting_origin,
-                                        source_type, error);
-  }
-}
-
-void MockAttributionManager::NotifyTriggerHandled(
-    const AttributionTrigger& trigger,
-    const CreateReportResult& result,
-    absl::optional<uint64_t> cleared_debug_key) {
-  for (auto& observer : observers_) {
-    observer.OnTriggerHandled(trigger, cleared_debug_key, result);
-  }
-}
-
-void MockAttributionManager::NotifyDebugReportSent(
-    const AttributionDebugReport& report,
-    const int status,
-    const base::Time time) {
-  for (auto& observer : observers_) {
-    observer.OnDebugReportSent(report, status, time);
-  }
-}
-
-void MockAttributionManager::SetDataHostManager(
-    std::unique_ptr<AttributionDataHostManager> manager) {
-  data_host_manager_ = std::move(manager);
 }
 
 SourceObserver::SourceObserver(WebContents* contents, size_t num_impressions)
@@ -1384,11 +1226,6 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
       }));
   run_loop.Run();
   return attribution_reports;
-}
-
-std::unique_ptr<MockDataHost> GetRegisteredDataHost(
-    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
-  return std::make_unique<MockDataHost>(std::move(data_host));
 }
 
 TestAggregatableSourceProvider::TestAggregatableSourceProvider(size_t size) {

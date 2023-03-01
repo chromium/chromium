@@ -40,6 +40,7 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
