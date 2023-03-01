@@ -654,24 +654,6 @@ class GpuIntegrationTest(
 
     unsymbolized_minidumps = self.browser.GetAllUnsymbolizedMinidumpPaths()
 
-    # Windows does not currently have a way of extracting process type from a
-    # minidump, so all we can do is assert that the number of crashes matches.
-    # TODO(crbug.com/1006331): Remove this if/when minidump_dump or an
-    # equivalent is available on Windows.
-    if self.browser.platform.GetOSName() == 'win':
-      total_unsymbolized_minidumps = len(unsymbolized_minidumps)
-      if total_expected_crashes == total_unsymbolized_minidumps:
-        for path in unsymbolized_minidumps:
-          self.browser.IgnoreMinidump(path)
-        return True
-      logging.error(
-          'Found %d unsymbolized minidumps when we expected %d. Expected '
-          'crash breakdown: %s', total_unsymbolized_minidumps,
-          total_expected_crashes, expected_crashes)
-      return False
-
-    # On other platforms, we can extract the process type from a minidump and
-    # ensure that we only got the expected kind of crashes.
     crash_counts = collections.defaultdict(int)
     for path in unsymbolized_minidumps:
       crash_type = minidump_utils.GetProcessTypeFromMinidump(path)
