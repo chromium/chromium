@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
@@ -32,6 +33,19 @@ void ArcVmDataMigrationScreenHandler::DeclareLocalizedValues(
   builder->Add("connectToChargerMessage", u"Connect your device to a charger");
   builder->Add("skipButtonLabel", u"Remind me later");
   builder->Add("updateButtonLabel", u"Next");
+  builder->Add("progressScreenTitle", u"Installing updates");
+  builder->Add("progressScreenSubtitle", u"$1\% completed | $2");
+  builder->Add("successScreenTitle", u"Finished updating!");
+  builder->Add("finishButtonLabel", u"Finish");
+  builder->Add("failureScreenTitle", u"Update finished with errors");
+  builder->Add("failureScreenDescription",
+               u"Your system was updated but some of your apps and files could "
+               u"not be recovered. Your apps will be downloaded again "
+               u"automatically.");
+  builder->Add("failureScreenAskFeedbackReport",
+               u"Please send a report so we can improve further ChromeOS "
+               u"updates.");
+  builder->Add("reportButtonLabel", u"Send a report");
 }
 
 void ArcVmDataMigrationScreenHandler::Show() {
@@ -55,6 +69,17 @@ void ArcVmDataMigrationScreenHandler::SetMinimumBatteryPercent(double percent) {
 void ArcVmDataMigrationScreenHandler::SetBatteryState(bool enough,
                                                       bool connected) {
   CallExternalAPI("setBatteryState", enough, connected);
+}
+
+void ArcVmDataMigrationScreenHandler::SetMigrationProgress(double progress) {
+  CallExternalAPI("setMigrationProgress", progress);
+}
+
+void ArcVmDataMigrationScreenHandler::SetEstimatedRemainingTime(
+    const base::TimeDelta& delta) {
+  CallExternalAPI("setEstimatedRemainingTime",
+                  ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
+                                         ui::TimeFormat::LENGTH_SHORT, delta));
 }
 
 }  // namespace ash

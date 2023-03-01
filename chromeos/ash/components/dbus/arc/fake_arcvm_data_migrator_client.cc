@@ -46,7 +46,19 @@ void FakeArcVmDataMigratorClient::StartMigration(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeArcVmDataMigratorClient::AddObserver(Observer* observer) {}
-void FakeArcVmDataMigratorClient::RemoveObserver(Observer* observer) {}
+void FakeArcVmDataMigratorClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeArcVmDataMigratorClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void FakeArcVmDataMigratorClient::SendDataMigrationProgress(
+    const arc::data_migrator::DataMigrationProgress& progress) {
+  for (auto& observer : observers_) {
+    observer.OnDataMigrationProgress(progress);
+  }
+}
 
 }  // namespace ash

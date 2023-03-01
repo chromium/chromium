@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_vm_client_adapter.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -19,6 +22,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
+#include "chromeos/ash/components/dbus/arc/fake_arcvm_data_migrator_client.h"
+#include "chromeos/ash/components/dbus/arcvm_data_migrator/arcvm_data_migrator.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
@@ -32,6 +38,8 @@
 
 namespace ash {
 namespace {
+
+constexpr char kArcRemoveDataJobName[] = "arc_2dremove_2ddata";
 
 constexpr char kProfileName[] = "user@gmail.com";
 constexpr char kGaiaId[] = "1234567890";
@@ -84,6 +92,10 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
   bool has_enough_free_disk_space() { return has_enough_free_disk_space_; }
   bool has_enough_battery() { return has_enough_battery_; }
   bool is_connected_to_charger() { return is_connected_to_charger_; }
+  double migration_progress() { return migration_progress_; }
+  base::TimeDelta estimated_remaining_time() {
+    return estimated_remaining_time_;
+  }
 
  private:
   void Show() override { shown_ = true; }
@@ -101,6 +113,14 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
     is_connected_to_charger_ = connected;
   }
 
+  void SetMigrationProgress(double progress) override {
+    migration_progress_ = progress;
+  }
+
+  void SetEstimatedRemainingTime(const base::TimeDelta& delta) override {
+    estimated_remaining_time_ = delta;
+  }
+
   bool shown_ = false;
   UIState state_ = UIState::kLoading;
   bool minimum_free_disk_space_set_ = false;
@@ -108,6 +128,8 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
   bool has_enough_free_disk_space_ = true;
   bool has_enough_battery_ = false;
   bool is_connected_to_charger_ = false;
+  double migration_progress_ = 0.0;
+  base::TimeDelta estimated_remaining_time_ = base::TimeDelta();
 };
 
 // Fake ArcVmDataMigrationScreen that exposes whether it has encountered a fatal
@@ -141,6 +163,7 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     ConciergeClient::InitializeFake();
     UpstartClient::InitializeFake();
     SpacedClient::InitializeFake();
+    ArcVmDataMigratorClient::InitializeFake();
 
     wizard_context_ = std::make_unique<WizardContext>();
 
@@ -167,6 +190,7 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     view_ = std::make_unique<FakeArcVmDataMigrationScreenView>();
     screen_ = std::make_unique<TestArcVmDataMigrationScreen>(
         view_.get()->AsWeakPtr());
+    screen_->SetTickClockForTesting(&tick_clock_);
 
     vm_observation_.Observe(FakeConciergeClient::Get());
   }
@@ -184,6 +208,7 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
 
     wizard_context_.reset();
 
+    ArcVmDataMigratorClient::Shutdown();
     SpacedClient::Shutdown();
     UpstartClient::Shutdown();
     ConciergeClient::Shutdown();
@@ -219,6 +244,15 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     screen_->HandleUserAction(args);
   }
 
+  void SendDataMigrationProgress(uint64_t current_bytes, uint64_t total_bytes) {
+    arc::data_migrator::DataMigrationProgress progress;
+    progress.set_status(
+        arc::data_migrator::DataMigrationStatus::DATA_MIGRATION_IN_PROGRESS);
+    progress.set_current_bytes(current_bytes);
+    progress.set_total_bytes(total_bytes);
+    FakeArcVmDataMigratorClient::Get()->SendDataMigrationProgress(progress);
+  }
+
   // FakeConciergeClient::VmObserver overrides:
   void OnVmStarted(
       const vm_tools::concierge::VmStartedSignal& signal) override {}
@@ -230,6 +264,8 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
   }
 
   bool arc_vm_stopped_ = false;
+
+  base::SimpleTestTickClock tick_clock_;
 
   std::unique_ptr<WizardContext> wizard_context_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -407,7 +443,9 @@ TEST_F(ArcVmDataMigrationScreenTest, CreateDiskImageSuccess) {
 
   PressUpdateButton();
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kWelcome);
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kProgress);
+  EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
+            arc::ArcVmDataMigrationStatus::kStarted);
   EXPECT_EQ(FakeConciergeClient::Get()->create_disk_image_call_count(), 1);
   EXPECT_FALSE(screen_->encountered_fatal_error());
 }
@@ -423,6 +461,89 @@ TEST_F(ArcVmDataMigrationScreenTest, CreateDiskImageFailureIsFatal) {
   PressUpdateButton();
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(screen_->encountered_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, MigrationInProgress) {
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+
+  PressUpdateButton();
+  task_environment()->RunUntilIdle();
+
+  SendDataMigrationProgress(0, 400);
+  tick_clock_.Advance(base::Seconds(1));
+  SendDataMigrationProgress(20, 400);
+  // Note that here we rely on the precision of floating point calculation.
+  EXPECT_EQ(static_cast<int>(std::round(view_->migration_progress())), 5);
+  EXPECT_EQ(view_->estimated_remaining_time().InMilliseconds(), 19000);
+  tick_clock_.Advance(base::Seconds(2));
+  SendDataMigrationProgress(40, 400);
+  EXPECT_EQ(static_cast<int>(std::round(view_->migration_progress())), 10);
+  EXPECT_EQ(view_->estimated_remaining_time().InMilliseconds(), 18947);
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kProgress);
+  EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
+            arc::ArcVmDataMigrationStatus::kStarted);
+  EXPECT_FALSE(screen_->encountered_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, MigrationSuccess) {
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+
+  PressUpdateButton();
+  task_environment()->RunUntilIdle();
+
+  arc::data_migrator::DataMigrationProgress progress;
+  progress.set_status(
+      arc::data_migrator::DataMigrationStatus::DATA_MIGRATION_SUCCESS);
+  FakeArcVmDataMigratorClient::Get()->SendDataMigrationProgress(progress);
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kSuccess);
+  EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
+            arc::ArcVmDataMigrationStatus::kFinished);
+  EXPECT_FALSE(screen_->encountered_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, MigrationFailure) {
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+
+  PressUpdateButton();
+  task_environment()->RunUntilIdle();
+
+  arc::data_migrator::DataMigrationProgress progress;
+  progress.set_status(
+      arc::data_migrator::DataMigrationStatus::DATA_MIGRATION_FAILED);
+  FakeArcVmDataMigratorClient::Get()->SendDataMigrationProgress(progress);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kFailure);
+  EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
+            arc::ArcVmDataMigrationStatus::kFinished);
+  EXPECT_FALSE(screen_->encountered_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, MigrationFailure_ArcDataRemovalFailed) {
+  FakeUpstartClient::Get()->set_start_job_cb(base::BindLambdaForTesting(
+      [](const std::string& job_name, const std::vector<std::string>& env) {
+        return job_name != kArcRemoveDataJobName;
+      }));
+
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+
+  PressUpdateButton();
+  task_environment()->RunUntilIdle();
+
+  arc::data_migrator::DataMigrationProgress progress;
+  progress.set_status(
+      arc::data_migrator::DataMigrationStatus::DATA_MIGRATION_FAILED);
+  FakeArcVmDataMigratorClient::Get()->SendDataMigrationProgress(progress);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kFailure);
+  EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
+            arc::ArcVmDataMigrationStatus::kFinished);
+  EXPECT_TRUE(
+      profile_->GetPrefs()->GetBoolean(arc::prefs::kArcDataRemoveRequested));
+  EXPECT_FALSE(screen_->encountered_fatal_error());
 }
 
 }  // namespace

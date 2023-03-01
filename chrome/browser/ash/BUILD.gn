@@ -5783,6 +5783,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/dbus/anomaly_detector",
     "//chromeos/ash/components/dbus/arc",
+    "//chromeos/ash/components/dbus/arc:arcvm_data_migrator_proto_lib",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/dbus/audio",

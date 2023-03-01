@@ -11,17 +11,24 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
+#include "chromeos/ash/components/dbus/arc/arcvm_data_migrator_client.h"
+#include "chromeos/ash/components/dbus/arcvm_data_migrator/arcvm_data_migrator.pb.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TickClock;
+}  // namespace base
+
 namespace ash {
 
 class ScopedScreenLockBlocker;
 
 class ArcVmDataMigrationScreen : public BaseScreen,
+                                 public ArcVmDataMigratorClient::Observer,
                                  public ConciergeClient::VmObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
@@ -30,6 +37,8 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   ~ArcVmDataMigrationScreen() override;
   ArcVmDataMigrationScreen(const ArcVmDataMigrationScreen&) = delete;
   ArcVmDataMigrationScreen& operator=(const ArcVmDataMigrationScreen&) = delete;
+
+  void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   // chromeos::PowerManagerClient::Observer override:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
@@ -61,8 +70,20 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   void OnCreateDiskImageResponse(
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> res);
 
-  // Triggers the actual data migration.
+  // Triggers the migration by calling ArcVmDataMigrator's StartMigration().
   void TriggerMigration();
+
+  void OnArcVmDataMigratorStarted(bool result);
+  void OnStartMigrationResponse(bool result);
+
+  // ArcVmDataMigratorClient::Observer override:
+  void OnDataMigrationProgress(
+      const arc::data_migrator::DataMigrationProgress& progress) override;
+
+  void UpdateProgressBar(uint64_t current_bytes, uint64_t total_bytes);
+
+  void RemoveArcDataAndShowFailureScreen();
+  void OnArcDataRemoved(bool success);
 
   // ConciergeClient::VmObserver overrides:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
@@ -72,6 +93,8 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void HandleSkip();
   void HandleUpdate();
+  void HandleFinish();
+  void HandleReport();
 
   virtual void HandleFatalError();
 
@@ -85,6 +108,20 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   double battery_percent_ = 100.0;
   bool is_connected_to_charger_ = true;
+
+  const base::TickClock* tick_clock_ = nullptr;
+  base::TimeTicks previous_ticks_ = {};
+  uint64_t previous_bytes_ = 0;
+
+  // Average speed of migration (bytes per millisecond) adjusted with a smooth
+  // factor.
+  double average_speed_ = 0.0;
+
+  bool update_button_pressed_ = false;
+
+  base::ScopedObservation<ArcVmDataMigratorClient,
+                          ArcVmDataMigratorClient::Observer>
+      migration_progress_observation_{this};
 
   base::ScopedObservation<ConciergeClient, ConciergeClient::VmObserver>
       concierge_observation_{this};
