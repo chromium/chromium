@@ -17,11 +17,11 @@ namespace operations {
 namespace {
 
 // Convert the request |value| into a list of actions.
-Actions ConvertRequestValueToActions(std::unique_ptr<RequestValue> value) {
+Actions ConvertRequestValueToActions(const RequestValue& value) {
   using extensions::api::file_system_provider_internal::
       GetActionsRequestedSuccess::Params;
 
-  const Params* params = value->get_actions_success_params();
+  const Params* params = value.get_actions_success_params();
   DCHECK(params);
 
   Actions result;
@@ -66,15 +66,15 @@ bool GetActions::Execute(int request_id) {
 }
 
 void GetActions::OnSuccess(int /* request_id */,
-                           std::unique_ptr<RequestValue> result,
+                           const RequestValue& result,
                            bool has_more) {
   DCHECK(callback_);
-  std::move(callback_).Run(ConvertRequestValueToActions(std::move(result)),
+  std::move(callback_).Run(ConvertRequestValueToActions(result),
                            base::File::FILE_OK);
 }
 
 void GetActions::OnError(int /* request_id */,
-                         std::unique_ptr<RequestValue> /* result */,
+                         const RequestValue& /* result */,
                          base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(Actions(), error);

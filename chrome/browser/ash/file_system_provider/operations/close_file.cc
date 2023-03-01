@@ -41,13 +41,13 @@ bool CloseFile::Execute(int request_id) {
 }
 
 void CloseFile::OnSuccess(int /* request_id */,
-                          std::unique_ptr<RequestValue> result,
+                          const RequestValue& result,
                           bool has_more) {
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
 void CloseFile::OnError(int /* request_id */,
-                        std::unique_ptr<RequestValue> /* result */,
+                        const RequestValue& /* result */,
                         base::File::Error error) {
   std::move(callback_).Run(error);
 }

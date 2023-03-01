@@ -26,10 +26,10 @@ class MountRequestHandler : public RequestManager::HandlerInterface {
   // RequestManager::HandlerInterface overrides.
   bool Execute(int request_id) override;
   void OnSuccess(int request_id,
-                 std::unique_ptr<RequestValue> result,
+                 const RequestValue& result,
                  bool has_more) override;
   void OnError(int request_id,
-               std::unique_ptr<RequestValue> result,
+               const RequestValue& result,
                base::File::Error error) override;
   void OnAbort(int request_id) override;
 

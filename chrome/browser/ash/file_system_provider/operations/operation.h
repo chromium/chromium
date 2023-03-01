@@ -38,10 +38,10 @@ class Operation : public RequestManager::HandlerInterface {
   // RequestManager::HandlerInterface overrides.
   bool Execute(int request_id) override = 0;
   void OnSuccess(int request_id,
-                 std::unique_ptr<RequestValue> result,
+                 const RequestValue& result,
                  bool has_more) override = 0;
   void OnError(int request_id,
-               std::unique_ptr<RequestValue> result,
+               const RequestValue& result,
                base::File::Error error) override = 0;
   void OnAbort(int request_id) override;
 

@@ -39,7 +39,7 @@ bool MountRequestHandler::Execute(int request_id) {
 }
 
 void MountRequestHandler::OnSuccess(int /* request_id */,
-                                    std::unique_ptr<RequestValue> /* result */,
+                                    const RequestValue& /* result */,
                                     bool has_more) {
   // File handle is the same as request id of the OpenFile operation.
   DCHECK(callback_);
@@ -47,7 +47,7 @@ void MountRequestHandler::OnSuccess(int /* request_id */,
 }
 
 void MountRequestHandler::OnError(int /* request_id */,
-                                  std::unique_ptr<RequestValue> /* result */,
+                                  const RequestValue& /* result */,
                                   base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

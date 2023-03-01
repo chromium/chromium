@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_system_provider/operations/delete_entry.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -123,8 +122,7 @@ TEST_F(FileSystemProviderOperationsDeleteEntryTest, OnSuccess) {
 
   EXPECT_TRUE(delete_entry.Execute(kRequestId));
 
-  delete_entry.OnSuccess(kRequestId, std::make_unique<RequestValue>(),
-                         false /* has_more */);
+  delete_entry.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
@@ -140,7 +138,7 @@ TEST_F(FileSystemProviderOperationsDeleteEntryTest, OnError) {
 
   EXPECT_TRUE(delete_entry.Execute(kRequestId));
 
-  delete_entry.OnError(kRequestId, std::make_unique<RequestValue>(),
+  delete_entry.OnError(kRequestId, RequestValue(),
                        base::File::FILE_ERROR_TOO_MANY_OPENED);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, callback_log[0]);

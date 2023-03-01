@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
@@ -42,10 +40,10 @@ class ReadFile : public Operation {
   // Operation overrides.
   bool Execute(int request_id) override;
   void OnSuccess(int request_id,
-                 std::unique_ptr<RequestValue> result,
+                 const RequestValue& result,
                  bool has_more) override;
   void OnError(int request_id,
-               std::unique_ptr<RequestValue> result,
+               const RequestValue& result,
                base::File::Error error) override;
 
  private:

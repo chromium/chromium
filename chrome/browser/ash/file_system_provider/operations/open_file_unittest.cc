@@ -173,8 +173,7 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, OnSuccess) {
 
   EXPECT_TRUE(open_file.Execute(kRequestId));
 
-  open_file.OnSuccess(kRequestId, std::make_unique<RequestValue>(),
-                      false /* has_more */);
+  open_file.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
   ASSERT_EQ(1u, callback_logger.events().size());
   CallbackLogger::Event* event = callback_logger.events()[0].get();
   EXPECT_EQ(base::File::FILE_OK, event->result());
@@ -192,7 +191,7 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, OnError) {
 
   EXPECT_TRUE(open_file.Execute(kRequestId));
 
-  open_file.OnError(kRequestId, std::make_unique<RequestValue>(),
+  open_file.OnError(kRequestId, RequestValue(),
                     base::File::FILE_ERROR_TOO_MANY_OPENED);
   ASSERT_EQ(1u, callback_logger.events().size());
   CallbackLogger::Event* event = callback_logger.events()[0].get();

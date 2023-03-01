@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_system_provider/operations/abort.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -95,8 +94,7 @@ TEST_F(FileSystemProviderOperationsAbortTest, OnSuccess) {
 
   EXPECT_TRUE(abort.Execute(kRequestId));
 
-  abort.OnSuccess(kRequestId, std::make_unique<RequestValue>(),
-                  false /* has_more */);
+  abort.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
@@ -110,7 +108,7 @@ TEST_F(FileSystemProviderOperationsAbortTest, OnError) {
 
   EXPECT_TRUE(abort.Execute(kRequestId));
 
-  abort.OnError(kRequestId, std::make_unique<RequestValue>(),
+  abort.OnError(kRequestId, RequestValue(),
                 base::File::FILE_ERROR_TOO_MANY_OPENED);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, callback_log[0]);

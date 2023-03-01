@@ -29,6 +29,14 @@ namespace ash {
 namespace file_system_provider {
 namespace {
 
+absl::optional<std::string> GetTestingParamFromResult(
+    const RequestValue& result) {
+  if (const std::string* testing_param = result.testing_params()) {
+    return *testing_param;
+  }
+  return absl::nullopt;
+}
+
 // Fake implementation for the notification manager. Simulates user action on
 // a notification.
 class FakeNotificationManager : public NotificationManagerInterface {
@@ -91,39 +99,38 @@ class EventLogger {
 
   class SuccessEvent {
    public:
-    SuccessEvent(int request_id,
-                 std::unique_ptr<RequestValue> result,
-                 bool has_more)
+    SuccessEvent(int request_id, const RequestValue& result, bool has_more)
         : request_id_(request_id),
-          result_(std::move(result)),
+          testing_param_(GetTestingParamFromResult(result)),
+          result_is_valid_(result.is_valid()),
           has_more_(has_more) {}
     virtual ~SuccessEvent() {}
 
-    int request_id() { return request_id_; }
-    RequestValue* result() { return result_.get(); }
-    bool has_more() { return has_more_; }
+    int request_id() const { return request_id_; }
+    const absl::optional<std::string>& testing_param() const {
+      return testing_param_;
+    }
+    bool has_more() const { return has_more_; }
+    bool result_is_valid() const { return result_is_valid_; }
 
    private:
     int request_id_;
-    std::unique_ptr<RequestValue> result_;
+    absl::optional<std::string> testing_param_;
+    bool result_is_valid_;
     bool has_more_;
   };
 
   class ErrorEvent {
    public:
-    ErrorEvent(int request_id,
-               std::unique_ptr<RequestValue> result,
-               base::File::Error error)
-        : request_id_(request_id), result_(std::move(result)), error_(error) {}
+    ErrorEvent(int request_id, base::File::Error error)
+        : request_id_(request_id), error_(error) {}
     virtual ~ErrorEvent() {}
 
     int request_id() { return request_id_; }
-    RequestValue* result() { return result_.get(); }
     base::File::Error error() { return error_; }
 
    private:
     int request_id_;
-    std::unique_ptr<RequestValue> result_;
     base::File::Error error_;
   };
 
@@ -149,18 +156,13 @@ class EventLogger {
     execute_events_.push_back(std::make_unique<ExecuteEvent>(request_id));
   }
 
-  void OnSuccess(int request_id,
-                 std::unique_ptr<RequestValue> result,
-                 bool has_more) {
-    success_events_.push_back(std::make_unique<SuccessEvent>(
-        request_id, std::move(result), has_more));
+  void OnSuccess(int request_id, const RequestValue& result, bool has_more) {
+    success_events_.push_back(
+        std::make_unique<SuccessEvent>(request_id, result, has_more));
   }
 
-  void OnError(int request_id,
-               std::unique_ptr<RequestValue> result,
-               base::File::Error error) {
-    error_events_.push_back(
-        std::make_unique<ErrorEvent>(request_id, std::move(result), error));
+  void OnError(int request_id, base::File::Error error) {
+    error_events_.push_back(std::make_unique<ErrorEvent>(request_id, error));
   }
 
   void OnAbort(int request_id) {
@@ -211,7 +213,7 @@ class FakeHandler : public RequestManager::HandlerInterface {
 
   // RequestManager::Handler overrides.
   void OnSuccess(int request_id,
-                 std::unique_ptr<RequestValue> result,
+                 const RequestValue& result,
                  bool has_more) override {
     if (logger_.get())
       logger_->OnSuccess(request_id, std::move(result), has_more);
@@ -219,10 +221,10 @@ class FakeHandler : public RequestManager::HandlerInterface {
 
   // RequestManager::Handler overrides.
   void OnError(int request_id,
-               std::unique_ptr<RequestValue> result,
+               const RequestValue& result,
                base::File::Error error) override {
     if (logger_.get())
-      logger_->OnError(request_id, std::move(result), error);
+      logger_->OnError(request_id, error);
   }
 
   void OnAbort(int request_id) override {
@@ -420,8 +422,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill) {
   ASSERT_EQ(1u, active_request_ids.size());
   EXPECT_EQ(request_id, active_request_ids[0]);
 
-  std::unique_ptr<RequestValue> response(
-      RequestValue::CreateForTesting("i-like-vanilla"));
+  RequestValue response(RequestValue::CreateForTesting("i-like-vanilla"));
   const bool has_more = false;
 
   const base::File::Error result = request_manager_->FulfillRequest(
@@ -436,10 +437,8 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill) {
   ASSERT_EQ(1u, logger.success_events().size());
   EXPECT_EQ(0u, logger.error_events().size());
   EventLogger::SuccessEvent* event = logger.success_events()[0].get();
-  ASSERT_TRUE(event->result());
-  const std::string* response_test_string = event->result()->testing_params();
-  ASSERT_TRUE(response_test_string);
-  EXPECT_EQ("i-like-vanilla", *response_test_string);
+  ASSERT_TRUE(event->testing_param());
+  EXPECT_EQ("i-like-vanilla", *event->testing_param());
   EXPECT_FALSE(event->has_more());
 
   // Confirm, that the request is removed. Basically, fulfilling again for the
@@ -447,8 +446,8 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill) {
   {
     EXPECT_EQ(0u, request_manager_->GetActiveRequestIds().size());
 
-    const base::File::Error retry = request_manager_->FulfillRequest(
-        request_id, std::make_unique<RequestValue>(), has_more);
+    const base::File::Error retry =
+        request_manager_->FulfillRequest(request_id, RequestValue(), has_more);
     EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, retry);
     EXPECT_EQ(1u, observer.fulfilled().size());
   }
@@ -456,8 +455,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill) {
   // Rejecting should also fail.
   {
     const base::File::Error retry = request_manager_->RejectRequest(
-        request_id, std::make_unique<RequestValue>(),
-        base::File::FILE_ERROR_FAILED);
+        request_id, RequestValue(), base::File::FILE_ERROR_FAILED);
     EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, retry);
     EXPECT_EQ(0u, observer.rejected().size());
   }
@@ -492,15 +490,15 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill_WithHasNext) {
 
   const bool has_more = true;
 
-  const base::File::Error result = request_manager_->FulfillRequest(
-      request_id, std::make_unique<RequestValue>(), has_more);
+  const base::File::Error result =
+      request_manager_->FulfillRequest(request_id, RequestValue(), has_more);
   EXPECT_EQ(base::File::FILE_OK, result);
 
   // Validate if the callback has correct arguments.
   ASSERT_EQ(1u, logger.success_events().size());
   EXPECT_EQ(0u, logger.error_events().size());
   EventLogger::SuccessEvent* event = logger.success_events()[0].get();
-  EXPECT_TRUE(event->result());
+  EXPECT_FALSE(event->result_is_valid());
   EXPECT_TRUE(event->has_more());
 
   ASSERT_EQ(1u, observer.fulfilled().size());
@@ -517,7 +515,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill_WithHasNext) {
 
     const bool new_has_more = false;
     const base::File::Error retry = request_manager_->FulfillRequest(
-        request_id, std::make_unique<RequestValue>(), new_has_more);
+        request_id, RequestValue(), new_has_more);
     EXPECT_EQ(base::File::FILE_OK, retry);
 
     ASSERT_EQ(2u, observer.fulfilled().size());
@@ -534,7 +532,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill_WithHasNext) {
 
     const bool new_has_more = false;
     const base::File::Error retry = request_manager_->FulfillRequest(
-        request_id, std::make_unique<RequestValue>(), new_has_more);
+        request_id, RequestValue(), new_has_more);
     EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, retry);
     EXPECT_EQ(0u, observer.rejected().size());
   }
@@ -568,8 +566,8 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndReject) {
   EXPECT_EQ(request_id, observer.executed()[0].request_id());
 
   const base::File::Error error = base::File::FILE_ERROR_NO_MEMORY;
-  const base::File::Error result = request_manager_->RejectRequest(
-      request_id, std::make_unique<RequestValue>(), error);
+  const base::File::Error result =
+      request_manager_->RejectRequest(request_id, RequestValue(), error);
   EXPECT_EQ(base::File::FILE_OK, result);
 
   // Validate if the callback has correct arguments.
@@ -586,16 +584,16 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndReject) {
   // same request, should fail.
   {
     const bool has_more = false;
-    const base::File::Error retry = request_manager_->FulfillRequest(
-        request_id, std::make_unique<RequestValue>(), has_more);
+    const base::File::Error retry =
+        request_manager_->FulfillRequest(request_id, RequestValue(), has_more);
     EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, retry);
     EXPECT_EQ(0u, observer.fulfilled().size());
   }
 
   // Rejecting should also fail.
   {
-    const base::File::Error retry = request_manager_->RejectRequest(
-        request_id, std::make_unique<RequestValue>(), error);
+    const base::File::Error retry =
+        request_manager_->RejectRequest(request_id, RequestValue(), error);
     EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, retry);
     EXPECT_EQ(1u, observer.rejected().size());
   }
@@ -632,7 +630,7 @@ TEST_F(FileSystemProviderRequestManagerTest,
   const bool has_more = true;
 
   const base::File::Error result = request_manager_->FulfillRequest(
-      request_id + 1, std::make_unique<RequestValue>(), has_more);
+      request_id + 1, RequestValue(), has_more);
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, result);
 
   // Callbacks should not be called.
@@ -644,8 +642,8 @@ TEST_F(FileSystemProviderRequestManagerTest,
 
   // Confirm, that the request hasn't been removed, by fulfilling it correctly.
   {
-    const base::File::Error retry = request_manager_->FulfillRequest(
-        request_id, std::make_unique<RequestValue>(), has_more);
+    const base::File::Error retry =
+        request_manager_->FulfillRequest(request_id, RequestValue(), has_more);
     EXPECT_EQ(base::File::FILE_OK, retry);
     EXPECT_EQ(1u, observer.fulfilled().size());
   }
@@ -676,8 +674,8 @@ TEST_F(FileSystemProviderRequestManagerTest,
   EXPECT_EQ(request_id, observer.executed()[0].request_id());
 
   const base::File::Error error = base::File::FILE_ERROR_NO_MEMORY;
-  const base::File::Error result = request_manager_->RejectRequest(
-      request_id + 1, std::make_unique<RequestValue>(), error);
+  const base::File::Error result =
+      request_manager_->RejectRequest(request_id + 1, RequestValue(), error);
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, result);
 
   // Callbacks should not be called.
@@ -688,8 +686,8 @@ TEST_F(FileSystemProviderRequestManagerTest,
 
   // Confirm, that the request hasn't been removed, by rejecting it correctly.
   {
-    const base::File::Error retry = request_manager_->RejectRequest(
-        request_id, std::make_unique<RequestValue>(), error);
+    const base::File::Error retry =
+        request_manager_->RejectRequest(request_id, RequestValue(), error);
     EXPECT_EQ(base::File::FILE_OK, retry);
     EXPECT_EQ(1u, observer.rejected().size());
   }

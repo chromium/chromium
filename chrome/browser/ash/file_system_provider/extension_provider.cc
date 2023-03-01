@@ -220,8 +220,7 @@ void ExtensionProvider::OnAppRegistryCacheWillBeDestroyed(
 
 void ExtensionProvider::OnLacrosOperationForwarded(int request_id,
                                                    base::File::Error error) {
-  request_manager_->RejectRequest(request_id, std::make_unique<RequestValue>(),
-                                  error);
+  request_manager_->RejectRequest(request_id, RequestValue(), error);
 }
 
 }  // namespace file_system_provider

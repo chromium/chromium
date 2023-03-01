@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_CREATE_FILE_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_OPERATIONS_CREATE_FILE_H_
 
-#include <memory>
-
 #include "base/files/file.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -39,10 +37,10 @@ class CreateFile : public Operation {
   // Operation overrides.
   bool Execute(int request_id) override;
   void OnSuccess(int request_id,
-                 std::unique_ptr<RequestValue> result,
+                 const RequestValue& result,
                  bool has_more) override;
   void OnError(int request_id,
-               std::unique_ptr<RequestValue> result,
+               const RequestValue& result,
                base::File::Error error) override;
 
  private:

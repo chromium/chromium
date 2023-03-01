@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/file_system_provider/operations/open_file.h"
 
-#include <string>
-
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
@@ -57,7 +55,7 @@ bool OpenFile::Execute(int request_id) {
 }
 
 void OpenFile::OnSuccess(int request_id,
-                         std::unique_ptr<RequestValue> result,
+                         const RequestValue& result,
                          bool has_more) {
   // File handle is the same as request id of the OpenFile operation.
   DCHECK(callback_);
@@ -65,7 +63,7 @@ void OpenFile::OnSuccess(int request_id,
 }
 
 void OpenFile::OnError(int /* request_id */,
-                       std::unique_ptr<RequestValue> /* result */,
+                       const RequestValue& /* result */,
                        base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(0 /* file_handle */, error);

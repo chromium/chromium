@@ -66,7 +66,7 @@ bool WriteFile::Execute(int request_id) {
 }
 
 void WriteFile::OnSuccess(int /* request_id */,
-                          std::unique_ptr<RequestValue> /* result */,
+                          const RequestValue& /* result */,
                           bool /* has_more */) {
   TRACE_EVENT0("file_system_provider", "WriteFile::OnSuccess");
   DCHECK(callback_);
@@ -74,7 +74,7 @@ void WriteFile::OnSuccess(int /* request_id */,
 }
 
 void WriteFile::OnError(int /* request_id */,
-                        std::unique_ptr<RequestValue> /* result */,
+                        const RequestValue& /* result */,
                         base::File::Error error) {
   TRACE_EVENT0("file_system_provider", "WriteFile::OnError");
   DCHECK(callback_);

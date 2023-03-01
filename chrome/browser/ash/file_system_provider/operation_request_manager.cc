@@ -37,8 +37,7 @@ void OperationRequestManager::OnRequestTimeout(int request_id) {
     observer.OnRequestTimeouted(request_id);
 
   if (!notification_manager_) {
-    RejectRequest(request_id, std::make_unique<RequestValue>(),
-                  base::File::FILE_ERROR_ABORT);
+    RejectRequest(request_id, RequestValue(), base::File::FILE_ERROR_ABORT);
     return;
   }
 

@@ -22,7 +22,7 @@ namespace operations {
 namespace {
 
 // Convert |value| into |output|. If parsing fails, then returns false.
-bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
+bool ConvertRequestValueToFileInfo(const RequestValue& value,
                                    int fields,
                                    bool root_entry,
                                    EntryMetadata* output) {
@@ -30,7 +30,7 @@ bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
   using extensions::api::file_system_provider_internal::
       GetMetadataRequestedSuccess::Params;
 
-  const Params* params = value->get_metadata_success_params();
+  const Params* params = value.get_metadata_success_params();
   if (!params)
     return false;
 
@@ -184,13 +184,13 @@ bool GetMetadata::Execute(int request_id) {
 }
 
 void GetMetadata::OnSuccess(int /* request_id */,
-                            std::unique_ptr<RequestValue> result,
+                            const RequestValue& result,
                             bool has_more) {
   DCHECK(callback_);
   std::unique_ptr<EntryMetadata> metadata(new EntryMetadata);
   const bool convert_result = ConvertRequestValueToFileInfo(
-      std::move(result), fields_,
-      entry_path_.AsUTF8Unsafe() == FILE_PATH_LITERAL("/"), metadata.get());
+      result, fields_, entry_path_.AsUTF8Unsafe() == FILE_PATH_LITERAL("/"),
+      metadata.get());
 
   if (!convert_result) {
     LOG(ERROR) << "Failed to parse a response for the get metadata operation.";
@@ -202,7 +202,7 @@ void GetMetadata::OnSuccess(int /* request_id */,
 }
 
 void GetMetadata::OnError(int /* request_id */,
-                          std::unique_ptr<RequestValue> /* result */,
+                          const RequestValue& /* result */,
                           base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(nullptr, error);
