@@ -152,8 +152,8 @@ class LocalFrameMojoHandler
       JavaScriptExecuteRequestCallback callback) final;
   void JavaScriptExecuteRequestForTests(
       const String& javascript,
-      bool wants_result,
       bool has_user_gesture,
+      bool resolve_promises,
       int32_t world_id,
       JavaScriptExecuteRequestForTestsCallback callback) final;
   void JavaScriptExecuteRequestInIsolatedWorld(
