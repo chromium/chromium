@@ -29,6 +29,11 @@ BASE_FEATURE(kWebViewCheckReturnResources,
              "WebViewCheckReturnResources",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Client side sampling switch.
+BASE_FEATURE(kWebViewClientSideSampling,
+             "WebViewClientSideSampling",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use the SafeBrowsingApiHandlerBridge which uses the connectionless GMS APIs.
 // This Feature is checked and used in downstream internal code.
 BASE_FEATURE(kWebViewConnectionlessSafeBrowsing,
