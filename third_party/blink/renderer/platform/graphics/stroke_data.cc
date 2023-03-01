@@ -68,7 +68,7 @@ void StrokeData::SetupPaintDashPathEffect(cc::PaintFlags* flags,
                                           const int length,
                                           const int dash_thickness,
                                           const bool closed_path) const {
-  int dash_width = dash_thickness ? dash_thickness : thickness_;
+  const float dash_width = dash_thickness ? dash_thickness : thickness_;
   if (dash_) {
     flags->setPathEffect(dash_);
   } else if (StrokeIsDashed(dash_width, style_)) {
