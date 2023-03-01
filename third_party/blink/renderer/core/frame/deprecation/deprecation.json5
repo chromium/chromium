@@ -384,14 +384,6 @@
       ],
     },
     {
-      name: "PrefixedStorageInfo",
-      message: "`window.webkitStorageInfo` is deprecated. Please use standardized `navigator.storage` instead.",
-      translation_note: "Warning displayed to developers when `window.webkitStorageInfo` is used to notify that the API is deprecated.",
-      web_features: [
-        "kPrefixedStorageInfo",
-      ],
-    },
-    {
       name: "PrefixedVideoDisplayingFullscreen",
       message: "HTMLVideoElement.webkitDisplayingFullscreen is deprecated. Please use Document.fullscreenElement instead.",
       translation_note: "Standard message when one web API is deprecated in favor of another.",

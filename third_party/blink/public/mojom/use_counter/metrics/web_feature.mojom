@@ -56,7 +56,7 @@ enum WebFeature {
   kPageVisits = 52,
   kHTMLMarqueeElement = 53,
   kReflection = 55,
-  kPrefixedStorageInfo = 57,
+  kOBSOLETE_PrefixedStorageInfo = 57,
   kDeprecatedFlexboxWebContent = 61,
   kDeprecatedFlexboxChrome = 62,
   kDeprecatedFlexboxChromeExtension = 63,

@@ -37744,7 +37744,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="54" label="Unused: CSSOverflowMarquee"/>
   <int value="55" label="Reflection"/>
   <int value="56" label="CursorVisibility"/>
-  <int value="57" label="PrefixedStorageInfo"/>
+  <int value="57" label="OBSOLETE_PrefixedStorageInfo"/>
   <int value="58" label="XFrameOptions"/>
   <int value="59" label="XFrameOptionsSameOrigin"/>
   <int value="60" label="XFrameOptionsSameOriginWithBadAncestorChain"/>
