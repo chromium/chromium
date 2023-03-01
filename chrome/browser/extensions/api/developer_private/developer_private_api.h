@@ -39,6 +39,7 @@
 #include "extensions/common/extension_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 class Profile;
@@ -742,7 +743,7 @@ class DeveloperPrivateRequestFileSourceFunction
  private:
   void Finish(const std::string& file_contents);
 
-  std::unique_ptr<api::developer_private::RequestFileSource::Params> params_;
+  absl::optional<api::developer_private::RequestFileSource::Params> params_;
 };
 
 class DeveloperPrivateOpenDevToolsFunction
