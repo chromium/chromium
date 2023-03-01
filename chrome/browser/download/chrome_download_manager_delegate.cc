@@ -1594,7 +1594,7 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
     download::DownloadItem* item,
     download::DownloadDangerType danger_type) const {
   // Chrome-initiated background downloads should not be blocked.
-  if (!item->RequireSafetyChecks()) {
+  if (item && !item->RequireSafetyChecks()) {
     return false;
   }
 
