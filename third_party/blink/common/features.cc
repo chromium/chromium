@@ -180,11 +180,6 @@ BASE_FEATURE(kUserLevelMemoryPressureSignal,
              "UserLevelMemoryPressureSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Perform memory purges after freezing only if all pages are frozen.
-BASE_FEATURE(kFreezePurgeMemoryAllPagesFrozen,
-             "FreezePurgeMemoryAllPagesFrozen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the `sec-ch-ua-full` client hint to be sent along with the full user
 // agent string in the HTTP request headers, as well as surfacing the full user
 // agent string in the JS APIs (navigator.userAgent, etc).
@@ -354,20 +349,6 @@ bool IsFencedFramesEnabled() {
 BASE_FEATURE(kPreviewsResourceLoadingHintsSpecificResourceTypes,
              "PreviewsResourceLoadingHintsSpecificResourceTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Perform a memory purge after a renderer is backgrounded. Formerly labelled as
-// the "PurgeAndSuspend" experiment.
-//
-// TODO(https://crbug.com/926186): Disabled by default on Android for historical
-// reasons. Consider enabling by default if experiment results are positive.
-BASE_FEATURE(kPurgeRendererMemoryWhenBackgrounded,
-             "PurgeRendererMemoryWhenBackgrounded",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
 
 // Determines if the SDP attrbute extmap-allow-mixed should be offered by
 // default or not. The default value can be overridden by passing
