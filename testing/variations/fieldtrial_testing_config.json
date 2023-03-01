@@ -5542,6 +5542,35 @@
             ]
         }
     ],
+    "GridTabSwitcherTablet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "TabStripRedesign.Detached.Enabled_20230220",
+                    "params": {
+                        "enable_detached": "true"
+                    },
+                    "enable_features": [
+                        "BaselineGM3SurfaceColors",
+                        "TabStripRedesign"
+                    ]
+                },
+                {
+                    "name": "TabStripRedesign.Folio.Enabled_20230220",
+                    "params": {
+                        "enable_folio": "true"
+                    },
+                    "enable_features": [
+                        "BaselineGM3SurfaceColors",
+                        "TabStripRedesign"
+                    ]
+                }
+            ]
+        }
+    ],
     "GroupAutoCreationAndroid": [
         {
             "platforms": [
