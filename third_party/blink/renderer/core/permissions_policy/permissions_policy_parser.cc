@@ -138,13 +138,6 @@ class ParsingContext {
   // This function should be called after Allowlist Histograms related flags
   // have been captured.
   void RecordAllowlistTypeUsage(size_t origin_count);
-  // The use of various allowlist types should only be recorded once per page.
-  // For simplicity, this recording assumes that the ParseHeader method is
-  // called once when creating a new document, and similarly the ParseAttribute
-  // method is called once for a frame. It is possible for multiple calls, but
-  // the additional complexity to guarantee only one record isn't warranted as
-  // yet.
-  void ReportAllowlistTypeUsage();
 
   PolicyParserMessageBuffer& logger_;
   scoped_refptr<const SecurityOrigin> self_origin_;
@@ -181,13 +174,7 @@ bool FeatureObserver::FeatureObserved(
 // are consistent with old ones.
 void ParsingContext::ReportFeatureUsageLegacy(
     mojom::blink::PermissionsPolicyFeature feature) {
-  if (src_origin_) {
-    if (!execution_context_ ||
-        !ParsedFeaturePolicies::From(*execution_context_).Observed(feature)) {
-      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.FeaturePolicy.Allow",
-                                feature);
-    }
-  } else {
+  if (!src_origin_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.FeaturePolicy.Header", feature);
   }
 }
@@ -238,20 +225,6 @@ void ParsingContext::RecordAllowlistTypeUsage(size_t origin_count) {
   allowlist_includes_src_ = false;
   allowlist_includes_none_ = false;
   allowlist_includes_origin_ = false;
-}
-
-void ParsingContext::ReportAllowlistTypeUsage() {
-  for (const FeaturePolicyAllowlistType allowlist_type :
-       allowlist_types_used_) {
-    if (src_origin_) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Blink.UseCounter.FeaturePolicy.AttributeAllowlistType",
-          allowlist_type);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Blink.UseCounter.FeaturePolicy.HeaderAllowlistType", allowlist_type);
-    }
-  }
 }
 
 absl::optional<mojom::blink::PermissionsPolicyFeature>
@@ -456,7 +429,6 @@ ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
       parsed_policy.push_back(*parsed_feature);
     }
   }
-  ReportAllowlistTypeUsage();
   return parsed_policy;
 }
 
