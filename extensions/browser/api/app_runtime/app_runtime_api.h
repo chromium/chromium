@@ -20,12 +20,10 @@ class BrowserContext;
 
 namespace extensions {
 
-namespace api {
-namespace app_runtime {
+namespace api::app_runtime {
 struct ActionData;
 struct LaunchData;
-}
-}
+}  // namespace api::app_runtime
 
 class Extension;
 struct EntryInfo;
