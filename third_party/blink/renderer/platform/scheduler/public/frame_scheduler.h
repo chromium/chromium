@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

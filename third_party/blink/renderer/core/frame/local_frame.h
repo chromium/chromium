@@ -906,7 +906,6 @@ class CORE_EXPORT LocalFrame final
   void UpdateBackForwardCacheDisablingFeatures(
       BlockingDetails details) override;
   const base::UnguessableToken& GetAgentClusterId() const override;
-
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time) override;
 
