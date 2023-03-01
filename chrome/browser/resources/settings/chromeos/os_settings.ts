@@ -128,12 +128,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import * as appNotificationHandlerMojom from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import * as crosAudioConfigMojom from '../mojom-webui/cros_audio_config.mojom-webui.js';
-import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
+import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
 import * as personalizationSearchMojom from '../mojom-webui/search/personalization_search.mojom-webui.js';
 import * as searchMojomWebui from '../mojom-webui/search/search.mojom-webui.js';
 import * as searchResultIconMojomWebui from '../mojom-webui/search/search_result_icon.mojom-webui.js';
 import * as userActionRecorderMojomWebui from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
-import * as settingMojomWebui from '../mojom-webui/setting.mojom-webui.js';
+import * as settingMojom from '../mojom-webui/setting.mojom-webui.js';
 
 import * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 
@@ -224,10 +224,10 @@ export {
   fakeCrosAudioConfig,
   nearbyShareMojom,
   personalizationSearchMojom,
-  routesMojomWebui,
+  routesMojom,
   searchMojomWebui,
   searchResultIconMojomWebui,
-  settingMojomWebui,
+  settingMojom,
   userActionRecorderMojomWebui,
 };
 
