@@ -9,10 +9,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -141,15 +138,22 @@
   }
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  DCHECK(webState) << "It is impossible to open password details UI when all "
+                      "tabs are closed.";
+  // It's safe to inject PasswordManagerClient, because `webState` (current tab)
+  // can't be closed while this UI is open.
   self.mediator = [[PasswordDetailsMediator alloc]
-         initWithPasswords:credentials
-               displayName:displayName
-      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                               GetForBrowserState(browserState)
-                                   .get()
-               prefService:browserState->GetPrefs()
-               syncService:SyncServiceFactory::GetForBrowserState(
-                               browserState)];
+          initWithPasswords:credentials
+                displayName:displayName
+       passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                GetForBrowserState(browserState)
+                                    .get()
+                prefService:browserState->GetPrefs()
+                syncService:SyncServiceFactory::GetForBrowserState(browserState)
+      passwordManagerClient:PasswordTabHelper::FromWebState(webState)
+                                ->GetPasswordManagerClient()];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
@@ -280,14 +284,11 @@
                                      title:title
                                    message:message
                              barButtonItem:self.viewController.deleteButton];
-  __weak __typeof(self) weakSelf = self;
+  __weak __typeof(self.mediator) weakMediator = self.mediator;
   [self.actionSheetCoordinator
       addItemWithTitle:buttonText
                 action:^{
-                  [weakSelf
-                      passwordDeletionConfirmedForCompromised:password
-                                                                  .isCompromised
-                                                     password:password];
+                  [weakMediator removeCredential:password];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
@@ -300,28 +301,7 @@
 - (void)moveCredentialToAccountStore:(PasswordDetails*)password {
   // TODO(crbug.com/1400217): Instantiate the coordinator for the confirmation
   // dialog in case there are conflicting passwords.
-  const std::vector<password_manager::CredentialUIEntry>& credentials =
-      self.mediator.credentials;
-  auto it = base::ranges::find_if(
-      credentials,
-      [password](const password_manager::CredentialUIEntry& credential) {
-        return base::SysNSStringToUTF8(password.signonRealm) ==
-                   credential.GetFirstSignonRealm() &&
-               base::SysNSStringToUTF16(password.username) ==
-                   credential.username &&
-               base::SysNSStringToUTF16(password.password) ==
-                   credential.password;
-      });
-  if (it != credentials.end()) {
-    web::WebState* webState =
-        self.browser->GetWebStateList()->GetActiveWebState();
-    DCHECK(webState) << "It is impossible to open password details UI when all "
-                        "tabs are closed.";
-    [self.mediator
-        moveCredentialToAccountStore:*it
-                              client:PasswordTabHelper::FromWebState(webState)
-                                         ->GetPasswordManagerClient()];
-  }
+  [self.mediator moveCredentialToAccountStore:password];
 }
 
 - (void)showPasswordDetailsInEditModeWithoutAuthentication {
@@ -341,40 +321,6 @@
   DCHECK_EQ(self.baseNavigationController.topViewController,
             self.viewController);
   [self.baseNavigationController popViewControllerAnimated:YES];
-}
-
-#pragma mark - Private
-
-// Notifies delegate about password deletion and records metric if needed.
-- (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised
-                                       password:(PasswordDetails*)password {
-  // Map from PasswordDetails to CredentialUIEntry. Should support blocklists.
-  // `self.mediator.credentials` returns a different copy on each call, so cache
-  // in a single local variable for use below.
-  std::vector<password_manager::CredentialUIEntry> credentials =
-      self.mediator.credentials;
-  auto it = base::ranges::find_if(
-      credentials,
-      [password](const password_manager::CredentialUIEntry& credential) {
-        return credential.GetFirstSignonRealm() ==
-                   base::SysNSStringToUTF8(password.signonRealm) &&
-               credential.username ==
-                   base::SysNSStringToUTF16(password.username) &&
-               credential.password ==
-                   base::SysNSStringToUTF16(password.password);
-      });
-  if (it == credentials.end()) {
-    // TODO(crbug.com/1359392): Convert into DCHECK.
-    return;
-  }
-
-  [self.mediator removeCredential:*it];
-  if (compromised) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.BulkCheck.UserAction",
-        password_manager::metrics_util::PasswordCheckInteraction::
-            kRemovePassword);
-  }
 }
 
 @end
