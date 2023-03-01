@@ -16,81 +16,10 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash::language_packs {
 namespace {
-
-// This function returns the enum value of a feature ID that matches the
-// corresponding value in the UMA Histogram enum.
-FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
-  if (feature_id == kHandwritingFeatureId) {
-    return FeatureIdsEnum::kHandwriting;
-  }
-  if (feature_id == kTtsFeatureId) {
-    return FeatureIdsEnum::kTts;
-  }
-
-  // Default value of unknown.
-  return FeatureIdsEnum::kUnknown;
-}
-
-// This function returns the enum value of a success or failure for a given
-// Feature ID. These valus match the corresponding UMA histogram enum
-// "LanguagePackFeatureSuccess".
-FeatureSuccessEnum GetSuccessValueForUma(const std::string& feature_id,
-                                         const bool success) {
-  if (feature_id == kHandwritingFeatureId) {
-    if (success) {
-      return FeatureSuccessEnum::kHandwritingSuccess;
-    } else {
-      return FeatureSuccessEnum::kHandwritingFailure;
-    }
-  }
-  if (feature_id == kTtsFeatureId) {
-    if (success) {
-      return FeatureSuccessEnum::kTtsSuccess;
-    } else {
-      return FeatureSuccessEnum::kTtsFailure;
-    }
-  }
-
-  // Default value of unknown.
-  if (success) {
-    return FeatureSuccessEnum::kUnknownSuccess;
-  } else {
-    return FeatureSuccessEnum::kUnknownFailure;
-  }
-}
-
-// PackResult that is returned by an invalid feature ID is specified.
-PackResult CreateInvalidDlcPackResult() {
-  return {
-      .operation_error = dlcservice::kErrorInvalidDlc,
-      .pack_state = PackResult::WRONG_ID,
-  };
-}
-
-PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
-  PackResult result;
-
-  switch (dlc_state.state()) {
-    case dlcservice::DlcState_State_INSTALLED:
-      result.pack_state = PackResult::INSTALLED;
-      result.path = dlc_state.root_path();
-      break;
-    case dlcservice::DlcState_State_INSTALLING:
-      result.pack_state = PackResult::IN_PROGRESS;
-      break;
-    case dlcservice::DlcState_State_NOT_INSTALLED:
-      result.pack_state = PackResult::NOT_INSTALLED;
-      break;
-    default:
-      result.pack_state = PackResult::UNKNOWN;
-      break;
-  }
-
-  return result;
-}
 
 const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
   // Map of all DLCs and corresponding IDs.
@@ -217,6 +146,100 @@ const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
   return *all_dlc_ids;
 }
 
+// This function returns the enum value of a feature ID that matches the
+// corresponding value in the UMA Histogram enum.
+FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
+  if (feature_id == kHandwritingFeatureId) {
+    return FeatureIdsEnum::kHandwriting;
+  }
+  if (feature_id == kTtsFeatureId) {
+    return FeatureIdsEnum::kTts;
+  }
+
+  // Default value of unknown.
+  return FeatureIdsEnum::kUnknown;
+}
+
+// This function returns the enum value of a success or failure for a given
+// Feature ID. These values match the corresponding UMA histogram enum
+// "LanguagePackFeatureSuccess".
+FeatureSuccessEnum GetSuccessValueForUma(const std::string& feature_id,
+                                         const bool success) {
+  if (feature_id == kHandwritingFeatureId) {
+    if (success) {
+      return FeatureSuccessEnum::kHandwritingSuccess;
+    } else {
+      return FeatureSuccessEnum::kHandwritingFailure;
+    }
+  }
+  if (feature_id == kTtsFeatureId) {
+    if (success) {
+      return FeatureSuccessEnum::kTtsSuccess;
+    } else {
+      return FeatureSuccessEnum::kTtsFailure;
+    }
+  }
+
+  // Default value of unknown.
+  if (success) {
+    return FeatureSuccessEnum::kUnknownSuccess;
+  } else {
+    return FeatureSuccessEnum::kUnknownFailure;
+  }
+}
+
+DlcErrorTypeEnum GetDlcErrorTypeForUma(const std::string& error_str) {
+  if (error_str == dlcservice::kErrorNone) {
+    return DlcErrorTypeEnum::kErrorNone;
+  } else if (error_str == dlcservice::kErrorInternal) {
+    return DlcErrorTypeEnum::kErrorInternal;
+  } else if (error_str == dlcservice::kErrorBusy) {
+    return DlcErrorTypeEnum::kErrorBusy;
+  } else if (error_str == dlcservice::kErrorNeedReboot) {
+    return DlcErrorTypeEnum::kErrorNeedReboot;
+  } else if (error_str == dlcservice::kErrorInvalidDlc) {
+    return DlcErrorTypeEnum::kErrorInvalidDlc;
+  } else if (error_str == dlcservice::kErrorAllocation) {
+    return DlcErrorTypeEnum::kErrorAllocation;
+  } else if (error_str == dlcservice::kErrorNoImageFound) {
+    return DlcErrorTypeEnum::kErrorNoImageFound;
+  }
+
+  // Return unknown if we can't recognize the error.
+  LOG(ERROR) << "Wrong error message received from DLC Service";
+  return DlcErrorTypeEnum::kErrorUnknown;
+}
+
+// PackResult that is returned by an invalid feature ID is specified.
+PackResult CreateInvalidDlcPackResult() {
+  return {
+      .operation_error = dlcservice::kErrorInvalidDlc,
+      .pack_state = PackResult::WRONG_ID,
+  };
+}
+
+PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
+  PackResult result;
+
+  switch (dlc_state.state()) {
+    case dlcservice::DlcState_State_INSTALLED:
+      result.pack_state = PackResult::INSTALLED;
+      result.path = dlc_state.root_path();
+      break;
+    case dlcservice::DlcState_State_INSTALLING:
+      result.pack_state = PackResult::IN_PROGRESS;
+      break;
+    case dlcservice::DlcState_State_NOT_INSTALLED:
+      result.pack_state = PackResult::NOT_INSTALLED;
+      break;
+    default:
+      result.pack_state = PackResult::UNKNOWN;
+      break;
+  }
+
+  return result;
+}
+
 // Finds the ID of the DLC corresponding to the given spec.
 // Returns the DLC ID if the DLC exists or absl::nullopt otherwise.
 absl::optional<std::string> GetDlcIdForLanguagePack(
@@ -267,6 +290,14 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
     result.path = dlc_result.root_path;
   } else {
     result.pack_state = PackResult::UNKNOWN;
+    if (feature_id == kHandwritingFeatureId) {
+      base::UmaHistogramEnumeration(
+          "ChromeOS.LanguagePacks.InstallError.Handwriting",
+          GetDlcErrorTypeForUma(dlc_result.error));
+    } else if (feature_id == kTtsFeatureId) {
+      base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallError.Tts",
+                                    GetDlcErrorTypeForUma(dlc_result.error));
+    }
   }
 
   base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallPack.Success",

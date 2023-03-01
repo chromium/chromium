@@ -55959,9 +55959,24 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="8026721" label="Zaza"/>
 </enum>
 
+<enum name="LanguagePackDlcErrorType">
+<!-- This enum needs to match DlcErrorTypeEnum in
+chromeos/ash/components/language/language_packs/language_pack_manager.h -->
+
+  <summary>List of all the error types that DLC Service returns.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="Internal"/>
+  <int value="3" label="Busy"/>
+  <int value="4" label="Need reboot"/>
+  <int value="5" label="Invalid DLC"/>
+  <int value="6" label="Allocation"/>
+  <int value="7" label="No image found"/>
+</enum>
+
 <enum name="LanguagePackFeatureIds">
 <!-- This must be kept current with FeatureIdsEnum in
-chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
+chromeos/ash/components/language/language_packs/language_pack_manager.h -->
 
   <summary>
     List of all the Features that are supported by Language Packs. A Feature is
@@ -55974,7 +55989,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
 
 <enum name="LanguagePackFeatureSuccess">
 <!-- This enum needs to match FeatureSuccessEnum in
-chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
+chromeos/ash/components/language/language_packs/language_pack_manager.h -->
 
   <summary>
     Multidimension Enum that captures success and failures broken down by

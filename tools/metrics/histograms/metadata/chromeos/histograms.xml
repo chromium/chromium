@@ -1699,6 +1699,30 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.LanguagePacks.InstallError.Handwriting"
+    enum="LanguagePackDlcErrorType" expires_after="2023-07-01">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records the type of error that is received from DLC Service when an
+    installation is requested for Handwriting. No metric is emitted on success,
+    we only record an entry in case of error.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.InstallError.Tts"
+    enum="LanguagePackDlcErrorType" expires_after="2023-07-01">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records the type of error that is received from DLC Service when an
+    installation is requested for TTS. No metric is emitted on success, we only
+    record an entry in case of error.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.LanguagePacks.InstallPack.Success"
     enum="LanguagePackFeatureSuccess" expires_after="2023-07-01">
   <owner>claudiomagni@chromium.org</owner>
