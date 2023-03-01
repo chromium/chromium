@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_CONTROLLER_H_
 
+#include <set>
+
 #include "base/scoped_observation.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/offline_item_model.h"
@@ -146,6 +148,16 @@ class DownloadBubbleUIController
   // Kick off retrying an eligible interrupted download.
   void RetryDownload(DownloadUIModel* model, DownloadCommands::Command command);
 
+  // Implements OnNewItem().
+  void DoOnNewItem(download::DownloadItem* item, bool may_show_animation);
+
+  // Called by OnNewItem() if the new download UI notification should be
+  // delayed. If the guid no longer corresponds to a live DownloadItem, this
+  // does not notify the UI. This also removes the guid from the set of delayed
+  // guids.
+  void OnDelayedNewItemByGuid(const std::string& guid,
+                              bool will_show_animation);
+
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<content::DownloadManager, DanglingUntriaged> download_manager_;
@@ -166,6 +178,11 @@ class DownloadBubbleUIController
   OfflineItemList offline_items_;
 
   absl::optional<base::Time> last_partial_view_shown_time_ = absl::nullopt;
+
+  // Set of GUIDs for extension/theme (crx) downloads that are pending notifying
+  // the UI. GUIDs are added here when the download begins, and are removed
+  // when the 2 second delay is up.
+  std::set<std::string> delayed_crx_guids_;
 
   base::WeakPtrFactory<DownloadBubbleUIController> weak_factory_{this};
 };
