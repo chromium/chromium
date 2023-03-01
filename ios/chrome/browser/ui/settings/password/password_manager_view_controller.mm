@@ -1117,9 +1117,6 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   passwordItem.title =
       base::SysUTF8ToNSString(affiliatedGroup.GetDisplayName());
   passwordItem.affiliatedGroup = affiliatedGroup;
-  // TODO(crbug.com/1358978): Temporary credential object so Password Details
-  // works.
-  passwordItem.credential = *affiliatedGroup.GetCredentials().begin();
   const int nbAccounts = affiliatedGroup.GetCredentials().size();
   passwordItem.detailText =
       nbAccounts > 1
@@ -1127,8 +1124,8 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
                                     base::NumberToString16(nbAccounts))
           : @"";
   // TODO(crbug.com/1355956): Fix favicon logic.
-  passwordItem.URL =
-      [[CrURL alloc] initWithGURL:GURL(passwordItem.credential.GetURL())];
+  passwordItem.URL = [[CrURL alloc]
+      initWithGURL:affiliatedGroup.GetCredentials().begin()->GetURL()];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
