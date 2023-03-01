@@ -17,10 +17,6 @@
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class TimeTicks;
-}
-
 namespace component_updater {
 
 // A command-line switch that can also be set from chrome://flags for opting in
@@ -259,7 +255,6 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   // Calls load_callback and pass in the parameter |result| (component mount
   // point).
   void FinishLoad(LoadCallback load_callback,
-                  const base::TimeTicks start_time,
                   const std::string& name,
                   absl::optional<base::FilePath> result);
 
