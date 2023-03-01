@@ -297,11 +297,16 @@
       [alertProvider promoWasDisplayed];
     }
   } else {
-    // Deregister the promo in edge cases :
-    // 1. when promos are forced for display (via Experimental Settings toggle)
+    // Deregister the promo in edge cases:
+    //
+    // 1. When promos are forced for display (via Experimental Settings toggle)
     // but not properly enabled (via chrome://flags).
-    // 2. when the promo's flag is disabled but was registered before and hasn't
+    //
+    // 2. When the promo's flag is disabled but was registered before and hasn't
     // been displayed yet.
+    //
+    // These are niche edge cases that almost exclusively occur during local,
+    // manual testing.
     absl::optional<promos_manager::Promo> maybeForcedPromo =
         promos_manager::PromoForName(base::SysNSStringToUTF8(
             experimental_flags::GetForcedPromoToDisplay()));
@@ -310,11 +315,15 @@
       promos_manager::Promo forcedPromo = maybeForcedPromo.value();
 
       if ([self isPromoUnregistered:forcedPromo]) {
-        return;
+        base::UmaHistogramEnumeration(
+            "IOS.PromosManager.Promo.ForcedDisplayFailure", forcedPromo);
       }
-    }
+    } else {
+      base::UmaHistogramEnumeration("IOS.PromosManager.Promo.DisplayFailure",
+                                    promo);
 
-    NOTREACHED();
+      [self.mediator deregisterPromo:promo];
+    }
   }
 }
 
