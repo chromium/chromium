@@ -798,6 +798,7 @@ const char kWebAppsUrlHandlerInfo[] = "web_apps.url_handler_info";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kHasSeenSmartLockSignInRemovedNotification[] =
     "easy_unlock.has_seen_smart_lock_sign_in_removed_notification";
+const char kEasyUnlockLocalStateTpmKeys[] = "easy_unlock.public_tpm_keys";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -881,6 +882,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry->RegisterDictionaryPref(kWebAppsUrlHandlerInfo);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// Deprecated 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterDictionaryPref(kEasyUnlockLocalStateTpmKeys);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1839,6 +1845,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   local_state->ClearPref(kWebAppsUrlHandlerInfo);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// Added 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kEasyUnlockLocalStateTpmKeys);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

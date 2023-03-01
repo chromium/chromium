@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_regular.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
@@ -59,7 +58,6 @@ EasyUnlockServiceFactory::EasyUnlockServiceFactory()
               .Build()) {
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-  DependsOn(EasyUnlockTpmKeyManagerFactory::GetInstance());
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 }

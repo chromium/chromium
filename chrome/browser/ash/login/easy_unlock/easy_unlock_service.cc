@@ -23,8 +23,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager_factory.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -134,8 +132,7 @@ EasyUnlockService::EasyUnlockService(
     : profile_(profile),
       secure_channel_client_(secure_channel_client),
       proximity_auth_client_(profile),
-      shut_down_(false),
-      tpm_key_checked_(false) {}
+      shut_down_(false) {}
 
 EasyUnlockService::~EasyUnlockService() = default;
 
@@ -149,7 +146,6 @@ void EasyUnlockService::RegisterProfilePrefs(
 // static
 void EasyUnlockService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kEasyUnlockHardlockState);
-  EasyUnlockTpmKeyManager::RegisterLocalStatePrefs(registry);
   proximity_auth::ProximityAuthLocalStatePrefManager::RegisterPrefs(registry);
 }
 
@@ -167,8 +163,6 @@ void EasyUnlockService::ResetLocalStateForUser(const AccountId& account_id) {
     ScopedDictPrefUpdate update(local_state, pref);
     update->Remove(account_id.GetUserEmail());
   }
-
-  EasyUnlockTpmKeyManager::ResetLocalStateForUser(account_id);
 }
 
 void EasyUnlockService::Initialize() {
@@ -452,8 +446,6 @@ void EasyUnlockService::OnScreenDidLock(
 
 void EasyUnlockService::UpdateAppState() {
   if (IsAllowed()) {
-    EnsureTpmKeyPresentIfNeeded();
-
     if (proximity_auth_system_)
       proximity_auth_system_->Start();
 
@@ -729,27 +721,6 @@ void EasyUnlockService::PrepareForSuspend() {
 void EasyUnlockService::OnSuspendDone() {
   if (proximity_auth_system_)
     proximity_auth_system_->OnSuspendDone();
-}
-
-void EasyUnlockService::EnsureTpmKeyPresentIfNeeded() {
-  if (tpm_key_checked_ || GetAccountId().empty() ||
-      GetHardlockState() == SmartLockStateHandler::NO_PAIRING) {
-    return;
-  }
-
-  // If this is called before the session is started, the chances are Chrome
-  // is restarting in order to apply user flags. Don't check TPM keys in this
-  // case.
-  if (!session_manager::SessionManager::Get() ||
-      !session_manager::SessionManager::Get()->IsSessionStarted())
-    return;
-
-  // TODO(tbarzic): Set check_private_key only if previous sign-in attempt
-  // failed.
-  EasyUnlockTpmKeyManagerFactory::GetInstance()->Get(profile_)->PrepareTpmKey(
-      /*check_private_key=*/true, base::OnceClosure());
-
-  tpm_key_checked_ = true;
 }
 
 bool EasyUnlockService::IsSmartLockStateValidOnRemoteAuthFailure() const {

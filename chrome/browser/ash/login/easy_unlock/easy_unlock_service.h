@@ -109,6 +109,9 @@ class EasyUnlockService : public KeyedService,
   virtual SmartLockState GetInitialSmartLockState() const;
 
   // Sets the hardlock state for the associated user.
+  // TODO(b/227674947): Delete any hardlock logic and deprecate its
+  // corresponding pref. Now that Sign in with Smart Lock is deprecated and the
+  // UI revamp is launched, we can remove it.
   void SetHardlockState(SmartLockStateHandler::HardlockState state);
 
   // Returns the hardlock state for the associated user.
@@ -249,8 +252,6 @@ class EasyUnlockService : public KeyedService,
   // Called when the system resumes from a suspended state.
   void OnSuspendDone();
 
-  void EnsureTpmKeyPresentIfNeeded();
-
   // Determines whether failure to unlock with phone should be handled as an
   // authentication failure.
   bool IsSmartLockStateValidOnRemoteAuthFailure() const;
@@ -282,8 +283,6 @@ class EasyUnlockService : public KeyedService,
 
   // Whether the service has been shut down.
   bool shut_down_;
-
-  bool tpm_key_checked_;
 
   base::WeakPtrFactory<EasyUnlockService> weak_ptr_factory_{this};
 };

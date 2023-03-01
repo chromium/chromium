@@ -2919,10 +2919,6 @@ const char kCryptAuthInstanceIdToken[] = "cryptauth.instance_id_token";
 // A dictionary that maps user id to hardlock state.
 const char kEasyUnlockHardlockState[] = "easy_unlock.hardlock_state";
 
-// A dictionary that maps user id to public part of RSA key pair used by
-// Easy Sign-in for the user.
-const char kEasyUnlockLocalStateTpmKeys[] = "easy_unlock.public_tpm_keys";
-
 // A dictionary in local state containing each user's Easy Unlock profile
 // preferences, so they can be accessed outside of the user's profile. The value
 // is a dictionary containing an entry for each user. Each user's entry mirrors
