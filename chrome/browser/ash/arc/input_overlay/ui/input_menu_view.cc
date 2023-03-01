@@ -81,13 +81,9 @@ constexpr int kAlphaSidePadding = 4;
 constexpr int kAlphaLeftMargin = 8;
 constexpr int kAlphaLeftMarginSmall = 4;
 
-constexpr char kFeedbackUrlAlpha[] =
-    "https://docs.google.com/forms/d/e/"
-    "1FAIpQLSfL3ttPmopJj65P4EKr--SA18Sc9bbQVMnd0oueMhJu_42TbA/"
-    "viewform?usp=pp_url";
 constexpr char kFeedbackUrl[] =
     "https://docs.google.com/forms/d/e/"
-    "1FAIpQLScj0zFT7e5c0k_-ZaoFvZeRuCQF4KdgaentLW1IH8sBSlH6Mg/"
+    "1FAIpQLSfL3ttPmopJj65P4EKr--SA18Sc9bbQVMnd0oueMhJu_42TbA/"
     "viewform?usp=pp_url";
 // Entry for the survey form from above link.
 constexpr char kGamePackageName[] = "entry.435412983";
@@ -97,7 +93,7 @@ constexpr char kOsVersion[] = "entry.1961594320";
 // Pass |package_name| by value because the focus will be changed to the
 // browser.
 GURL GetAssembleUrl(std::string package_name) {
-  GURL url(AllowReposition() ? kFeedbackUrl : kFeedbackUrlAlpha);
+  GURL url(kFeedbackUrl);
   url = net::AppendQueryParameter(url, kGamePackageName, package_name);
   url = net::AppendQueryParameter(url, kBoardName,
                                   base::SysInfo::HardwareModelName());
