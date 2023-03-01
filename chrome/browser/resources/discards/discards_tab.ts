@@ -374,10 +374,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
     this.discardImpl_();
   }
 
-  private toggleHighEfficiencyMode_(_e: Event) {
-    this.discardsDetailsProvider_!.toggleHighEfficiencyMode();
-  }
-
   private toggleBatterySaverMode_(_e: Event) {
     this.discardsDetailsProvider_!.toggleBatterySaverMode();
   }

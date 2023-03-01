@@ -87,10 +87,9 @@ interface DetailsProvider {
   // if the decision was made not to discard.
   Discard() => ();
 
-  // Toggle high efficiency or battery saver modes for manual testing.
+  // Toggle battery saver modes for manual testing.
   // If the mode is enabled, this will disable it. Conversely, if it is disabled
   // this will enable it.
-  ToggleHighEfficiencyMode();
   ToggleBatterySaverMode();
 };
 

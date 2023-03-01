@@ -202,17 +202,6 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
     std::move(callback).Run();
   }
 
-  void ToggleHighEfficiencyMode() override {
-    if (base::FeatureList::IsEnabled(
-            performance_manager::features::kHighEfficiencyModeAvailable)) {
-      bool enabled = g_browser_process->local_state()->GetBoolean(
-          performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
-      g_browser_process->local_state()->SetBoolean(
-          performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-          !enabled);
-    }
-  }
-
   void ToggleBatterySaverMode() override {
     if (base::FeatureList::IsEnabled(
             performance_manager::features::kBatterySaverModeAvailable)) {
