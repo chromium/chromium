@@ -612,20 +612,6 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
-<histogram name="Arc.Auth.AndroidIdSource{ArcUserTypes}"
-    enum="ArcAuthAndroidIdSource" expires_after="2022-08-09">
-  <obsolete>
-    Removed in M105.
-  </obsolete>
-  <owner>mhasank@google.com</owner>
-  <owner>arc-core@google.com</owner>
-  <summary>
-    The source of AndroidId during ARC provisioning. Recorded when trying to
-    determine if the device is checked in. {ArcUserTypes}
-  </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes"/>
-</histogram>
-
 <histogram name="Arc.Auth.Checkin.Attempts{ArcUserTypes}" units="attempts"
     expires_after="never">
 <!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
@@ -1683,7 +1669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInCancel" enum="ArcOptInCancel"
-    expires_after="2023-04-16">
+    expires_after="2023-09-16">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>Arc OptIn cancelation reason.</summary>
@@ -1730,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInSilentAuthCode.SecondaryAccount"
-    enum="ArcOptInSilentAuthCode" expires_after="2023-03-12">
+    enum="ArcOptInSilentAuthCode" expires_after="2023-09-12">
   <owner>mhasank@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
