@@ -53,8 +53,7 @@ bool ShouldAllowRetry(InstallResult result) {
       return false;
     case InstallResult::kSuccess:
     case InstallResult::kCancelled:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -85,10 +84,7 @@ std::u16string GetErrorMessage(InstallResult result) {
       return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_STARTUP);
     case InstallResult::kSuccess:
     case InstallResult::kCancelled:
-      NOTREACHED();
-      // Treat these unreachable cases as though boreais is disallowed just in
-      // case.
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_DISALLOWED);
+      NOTREACHED_NORETURN();
   }
 }
 

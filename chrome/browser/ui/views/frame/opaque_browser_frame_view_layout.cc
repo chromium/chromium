@@ -774,8 +774,7 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetPreferredSize(
     const views::View* host) const {
   // This is never used; NonClientView::CalculatePreferredSize() will be called
   // instead.
-  NOTREACHED();
-  return gfx::Size();
+  NOTREACHED_NORETURN();
 }
 
 void OpaqueBrowserFrameViewLayout::ViewAdded(views::View* host,

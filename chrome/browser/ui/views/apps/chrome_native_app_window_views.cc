@@ -318,9 +318,8 @@ bool ChromeNativeAppWindowViews::AcceleratorPressed(
                                          DevToolsToggleAction::Show());
       return true;
     default:
-      NOTREACHED() << "Unknown accelerator sent to app window.";
+      NOTREACHED_NORETURN() << "Unknown accelerator sent to app window.";
   }
-  return NativeAppWindowViews::AcceleratorPressed(accelerator);
 }
 
 // NativeAppWindow implementation.

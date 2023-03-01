@@ -51,8 +51,7 @@ PageSpecificSiteDataDialogAction GetDialogActionForContentSetting(
     case ContentSetting::CONTENT_SETTING_ASK:
     case ContentSetting::CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
     case ContentSetting::CONTENT_SETTING_NUM_SETTINGS:
-      NOTREACHED() << "Unknown ContentSetting value: " << setting;
-      return PageSpecificSiteDataDialogAction::kMaxValue;
+      NOTREACHED_NORETURN() << "Unknown ContentSetting value: " << setting;
   }
 }
 

@@ -374,7 +374,7 @@ class IbanBubbleViewFullFormBrowserTest
         break;
       }
       case IbanBubbleType::kInactive:
-        NOTREACHED();
+        NOTREACHED_NORETURN();
     }
     return iban_bubble_view;
   }

@@ -341,8 +341,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
       // not shown in the Page Info bubble.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
@@ -382,8 +381,7 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
     default:
       // All other content settings types do not represent chosen object
       // permissions.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   return ui::ImageModel::FromVectorIcon(
@@ -502,8 +500,7 @@ const ui::ImageModel PageInfoViewFactory::GetEnforcedCookieControlsIcon(
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
       return GetEnforcedBySettingsIcon();
     case CookieControlsEnforcement::kNoEnforcement:
-      NOTREACHED();
-      return ui::ImageModel();
+      NOTREACHED_NORETURN();
   }
 }
 

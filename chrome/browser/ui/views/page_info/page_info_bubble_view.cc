@@ -85,8 +85,8 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
     } else {
       text = IDS_PAGE_INFO_READER_MODE_PAGE;
     }
-  } else if (!url.SchemeIs(content::kChromeUIScheme)) {
-    NOTREACHED();
+  } else {
+    CHECK(url.SchemeIs(content::kChromeUIScheme));
   }
 
   // Title insets assume there is content (and thus have no bottom padding). Use

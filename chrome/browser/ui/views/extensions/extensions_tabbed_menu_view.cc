@@ -150,14 +150,12 @@ SiteAccessMenuItemView* GetSiteAccessMenuItem(
 
 // Returns the view controller of `view`. The view must be
 // InstalledExtensionMenuItemView or SiteAccessMenuItemView, since both have the
-// same controller, otherwise it will return a nullptr.
+// same controller.
 ToolbarActionViewController* GetMenuItemViewController(views::View* view) {
   if (views::IsViewClass<InstalledExtensionMenuItemView>(view))
     return GetAsInstalledExtensionMenuItem(view)->view_controller();
-  else if (views::IsViewClass<SiteAccessMenuItemView>(view))
-    return GetAsSiteAccessMenuItem(view)->view_controller();
-  NOTREACHED();
-  return nullptr;
+  CHECK(views::IsViewClass<SiteAccessMenuItemView>(view));
+  return GetAsSiteAccessMenuItem(view)->view_controller();
 }
 
 // Returns the current index or insert position of `extension_name` in

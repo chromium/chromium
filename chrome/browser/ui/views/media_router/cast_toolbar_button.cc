@@ -235,7 +235,7 @@ void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
                      "Cast toolbar icon is blue, indicating an active session.",
                      "", "", "");
   } else {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
 }
 

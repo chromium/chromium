@@ -79,7 +79,7 @@ void WebauthnDialogView::OnDialogStateChanged() {
       break;
     case WebauthnDialogState::kUnknown:
     case WebauthnDialogState::kOffer:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 

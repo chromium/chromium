@@ -39,7 +39,7 @@ class PriceTrackingIconViewBrowserTest : public UiBrowserTest {
       SimulateServerPriceTrackState(false);
       icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
     } else {
-      NOTREACHED();
+      NOTREACHED_NORETURN();
     }
   }
 

@@ -79,7 +79,7 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
           ->ShowSendTabToSelfPromoBubble(web_contents,
                                          /*show_signin_button=*/false);
     } else {
-      NOTREACHED();
+      NOTREACHED_NORETURN();
     }
   }
 };

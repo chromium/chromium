@@ -108,8 +108,7 @@ class TestNavButtonProvider : public ui::NavButtonProvider {
       case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return GetTestImageForSize(kMinimizeButtonSize);
       default:
-        NOTREACHED();
-        return gfx::ImageSkia();
+        NOTREACHED_NORETURN();
     }
   }
 
@@ -123,8 +122,7 @@ class TestNavButtonProvider : public ui::NavButtonProvider {
       case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return kMinimizeButtonMargin;
       default:
-        NOTREACHED();
-        return gfx::Insets();
+        NOTREACHED_NORETURN();
     }
   }
 

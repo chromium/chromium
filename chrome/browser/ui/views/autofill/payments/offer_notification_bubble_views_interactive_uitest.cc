@@ -66,8 +66,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         ShowBubbleForGPayPromoCodeOfferAndVerify();
         break;
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
     }
   }
 
@@ -139,8 +138,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
         return "FreeListingCouponOffer";
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED();
-        return std::string();
+        NOTREACHED_NORETURN();
     }
   }
 

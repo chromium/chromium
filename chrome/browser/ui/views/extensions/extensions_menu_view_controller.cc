@@ -204,10 +204,7 @@ void ExtensionsMenuViewController::OnToolbarModelInitialized() {
   // Toolbar model should have been initialized if site permissions page is
   // open, since this page can only be reached after main page was populated
   // after toolbar model was initialized.
-  if (GetSitePermissionsPage(current_page_)) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!GetSitePermissionsPage(current_page_));
 
   auto* main_page = GetMainPage(current_page_);
   DCHECK(main_page);

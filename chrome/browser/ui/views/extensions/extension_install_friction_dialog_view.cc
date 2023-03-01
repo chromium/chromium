@@ -47,7 +47,7 @@ void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
           FROM_HERE, base::BindOnce(std::move(callback), false));
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 

@@ -2975,8 +2975,7 @@ remote_cocoa::mojom::CutCopyPasteCommand CommandFromBrowserCommand(
     return remote_cocoa::mojom::CutCopyPasteCommand::kCopy;
   else if (command_id == IDC_PASTE)
     return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
-  NOTREACHED();
-  return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
+  NOTREACHED_NORETURN();
 }
 }  // namespace
 #endif
@@ -3315,8 +3314,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
       return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_VR_PRESENTING, title);
   }
 
-  NOTREACHED();
-  return std::u16string();
+  NOTREACHED_NORETURN();
 }
 
 std::vector<views::NativeViewHost*>

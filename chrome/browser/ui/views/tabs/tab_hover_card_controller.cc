@@ -63,8 +63,9 @@ GetMemoryPressureOverride() {
     } else if (arg == "critical") {
       value = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
     } else {
-      NOTREACHED() << "Usage: --hover-card-memory-pressure=<value>"
-                      " where <value> is one of [ none | moderate | critical ]";
+      NOTREACHED_NORETURN()
+          << "Usage: --hover-card-memory-pressure=<value> where <value> is one "
+             "of [ none | moderate | critical ]";
     }
   }
   return value;

@@ -156,12 +156,11 @@ void ProfileMenuView::BuildMenu() {
   Profile* profile = browser()->profile();
   if (profile->IsGuestSession()) {
     BuildGuestIdentity();
-  } else if (!profile->IsOffTheRecord()) {
+  } else {
+    CHECK(!profile->IsOffTheRecord());
     BuildIdentity();
     BuildSyncInfo();
     BuildAutofillButtons();
-  } else {
-    NOTREACHED();
   }
 
   BuildFeatureButtons();
@@ -575,7 +574,7 @@ void ProfileMenuView::BuildSyncInfo() {
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // There is always an account on ChromeOS.
-    NOTREACHED();
+    NOTREACHED_NORETURN();
 #else
     BuildSyncInfoWithCallToAction(
         l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO),

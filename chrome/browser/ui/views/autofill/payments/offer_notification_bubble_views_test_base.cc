@@ -165,8 +165,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
       SetUpGPayPromoCodeOfferDataWithDomains(domains);
       break;
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 }
 

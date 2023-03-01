@@ -56,8 +56,7 @@ class AutofillErrorDialogViewNativeViewsBrowserTest
       autofill_error_dialog_context.type =
           AutofillErrorDialogType::kVirtualCardNotEligibleError;
     } else {
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
     }
 
     controller()->Show(autofill_error_dialog_context);

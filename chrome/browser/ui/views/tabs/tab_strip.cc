@@ -776,10 +776,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       }
     }
 
-    if (min_distance_index == -1) {
-      NOTREACHED();
-      return 0;
-    }
+    CHECK_NE(min_distance_index, -1);
 
     // When moving a tab within a tabstrip, the target index is expressed as if
     // the tabs are not in the tabstrip, i.e. it acts like the tabs are first
@@ -1852,8 +1849,7 @@ void TabStrip::ChildPreferredSizeChanged(views::View* child) {
 BrowserRootView::DropIndex TabStrip::GetDropIndex(
     const ui::DropTargetEvent& event) {
   // BrowserView should talk directly to |tab_container_| instead of asking us.
-  NOTREACHED();
-  return tab_container_->GetDropIndex(event);
+  NOTREACHED_NORETURN();
 }
 
 BrowserRootView::DropTarget* TabStrip::GetDropTarget(
@@ -1863,8 +1859,7 @@ BrowserRootView::DropTarget* TabStrip::GetDropTarget(
 
 views::View* TabStrip::GetViewForDrop() {
   // BrowserView should talk directly to |tab_container_| instead of asking us.
-  NOTREACHED();
-  return tab_container_->GetViewForDrop();
+  NOTREACHED_NORETURN();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

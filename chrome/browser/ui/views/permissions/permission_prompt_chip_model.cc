@@ -177,7 +177,6 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
       chip_theme_ = OmniboxChipTheme::kLowVisibility;
       break;
     case permissions::PermissionAction::NUM:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 }

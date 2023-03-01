@@ -174,8 +174,7 @@ bool AuthenticatorRequestDialogView::IsDialogButtonEnabled(
     case ui::DIALOG_BUTTON_CANCEL:
       return true;  // Cancel is always enabled if visible.
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {

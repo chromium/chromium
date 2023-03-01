@@ -622,8 +622,7 @@ void SelectFileDialogExtension::NotifyListener(
       listener_->MultiFilesSelectedWithExtraInfo(selection_files, params_);
       break;
     default:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 }
 

@@ -522,7 +522,7 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
       presenter_->OpenCookiesDialog();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 

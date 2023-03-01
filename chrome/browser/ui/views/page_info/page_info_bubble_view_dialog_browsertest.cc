@@ -533,7 +533,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
           service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl), source_id)
               .value());
     } else {
-      NOTREACHED();
+      NOTREACHED_NORETURN();
     }
   }
 
@@ -621,7 +621,7 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
     } else if (name == "PrivacySandboxSubpage") {
       bubble_view->OpenAdPersonalizationPage();
     } else {
-      NOTREACHED();
+      NOTREACHED_NORETURN();
     }
   }
 

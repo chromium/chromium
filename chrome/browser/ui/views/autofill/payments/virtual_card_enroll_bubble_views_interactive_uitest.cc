@@ -203,8 +203,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
         break;
       case VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN:
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
     }
 
     views::test::WidgetDestroyedWaiter destroyed_waiter(

@@ -61,7 +61,7 @@ class FileSystemAccessPermissionDialogTest : public DialogBrowserTest {
     } else if (name == "default") {
       request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
     } else {
-      NOTREACHED() << "Unimplemented test: " << name;
+      NOTREACHED_NORETURN() << "Unimplemented test: " << name;
     }
     ShowFileSystemAccessPermissionDialog(
         request,

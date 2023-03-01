@@ -108,7 +108,7 @@ class CastDialogViewBrowserTest : public DialogBrowserTest {
     } else if (name == "NoSinks") {
       model = CreateModelWithSinks({});
     } else {
-      NOTREACHED() << "Unexpected test name " << name;
+      NOTREACHED_NORETURN() << "Unexpected test name " << name;
     }
     media_router::CastDialogView* dialog =
         cast_dialog_coordinator_.GetCastDialogView();

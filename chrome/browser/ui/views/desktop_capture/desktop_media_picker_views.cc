@@ -143,8 +143,7 @@ void RecordUmaSelection(DialogType dialog_type,
 
   switch (source_type) {
     case DesktopMediaList::Type::kNone: {
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
     }
 
     case DesktopMediaList::Type::kScreen: {
@@ -223,8 +222,7 @@ std::u16string GetLabelForAudioCheckbox(DesktopMediaList::Type type,
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED();
-  return u"";
+  NOTREACHED_NORETURN();
 }
 
 std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
@@ -241,8 +239,7 @@ std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
       break;
   }
 
-  NOTREACHED();
-  return u"";
+  NOTREACHED_NORETURN();
 }
 
 bool AreEquivalentTypesForAudioCheckbox(DesktopMediaList::Type lhs,
@@ -296,8 +293,7 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
     case DesktopMediaList::Type::kCurrentTab:
       return display_surface == blink::mojom::PreferredDisplaySurface::BROWSER;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -317,8 +313,7 @@ bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 DesktopMediaPickerDialogView::DisplaySurfaceCategory::DisplaySurfaceCategory(
@@ -403,8 +398,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
       case DesktopMediaList::Type::kNone: {
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
       }
       case DesktopMediaList::Type::kScreen: {
         const DesktopMediaSourceViewStyle kSingleScreenStyle(

@@ -91,7 +91,7 @@ class FileSystemAccessUsageBubbleViewTest : public DialogBrowserTest {
       usage.writable_directories.emplace_back(
           FILE_PATH_LITERAL("/foo/bar/Code"));
     } else {
-      NOTREACHED() << "Unimplemented test: " << name;
+      NOTREACHED_NORETURN() << "Unimplemented test: " << name;
     }
 
     FileSystemAccessUsageBubbleView::ShowBubble(

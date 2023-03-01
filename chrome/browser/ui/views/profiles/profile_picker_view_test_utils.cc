@@ -93,7 +93,7 @@ class TestProfileManagementFlowController
     std::move(initial_step_load_finished_closure_).Run();
   }
 
-  void CancelPostSignInFlow() override { NOTREACHED(); }
+  void CancelPostSignInFlow() override { NOTREACHED_NORETURN(); }
 
   Step step_;
   ProfileManagementStepTestView::StepControllerFactory step_controller_factory_;

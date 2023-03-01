@@ -285,7 +285,7 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
     else if (observed_view == top_container_)
       top_container_ = nullptr;
     else
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 
   void OnViewAddedToWidget(views::View* observed_view) override {

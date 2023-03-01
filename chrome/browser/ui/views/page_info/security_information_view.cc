@@ -197,8 +197,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
       change_password_template = IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON;
       break;
     default:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   std::unique_ptr<views::MdTextButton> change_password_button;

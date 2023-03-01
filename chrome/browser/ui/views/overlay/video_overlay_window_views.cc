@@ -1128,7 +1128,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 
   // This will actually update the visibility of a control that was just added

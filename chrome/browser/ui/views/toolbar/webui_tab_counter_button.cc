@@ -353,7 +353,7 @@ void TabCounterAnimator::LayoutIfAnimating() {
           border_animation_.GetCurrentValue(), GetBorderOvershootYDelta(), 0);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
   border_view_->SetY(GetBorderStartingY() + border_y_delta);
 
@@ -387,8 +387,7 @@ int TabCounterAnimator::GetBorderTargetYDelta() const {
     case TabCounterAnimationType::kDecreasing:
       return -kBorderBounceDistance;
     default:
-      NOTREACHED();
-      return 0;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -400,8 +399,7 @@ int TabCounterAnimator::GetBorderOvershootYDelta() const {
     case TabCounterAnimationType::kDecreasing:
       return kBorderBounceOvershoot;
     default:
-      NOTREACHED();
-      return 0;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -412,8 +410,7 @@ int TabCounterAnimator::GetAppearingLabelStartPosition() const {
     case TabCounterAnimationType::kDecreasing:
       return kOffscreenLabelDistance;
     default:
-      NOTREACHED();
-      return 0;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -691,7 +688,7 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
       tab_strip_model_->delegate()->AddTabAt(GURL(), -1, true);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 

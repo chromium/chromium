@@ -422,7 +422,7 @@ class ConfirmationChipEnabledInteractiveTest
             disabled_features);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_NORETURN();
     }
   }
 

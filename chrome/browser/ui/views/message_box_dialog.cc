@@ -52,8 +52,7 @@ UINT GetMessageBoxFlagsFromType(chrome::MessageBoxType type) {
     case chrome::MESSAGE_BOX_TYPE_QUESTION:
       return flags | MB_YESNO | MB_ICONQUESTION;
   }
-  NOTREACHED();
-  return flags | MB_OK | MB_ICONWARNING;
+  NOTREACHED_NORETURN();
 }
 #endif
 

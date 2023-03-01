@@ -109,8 +109,7 @@ std::u16string GetAnnotationTextForSetting(ContentSetting setting) {
       return l10n_util::GetStringUTF16(
           IDS_COLLECTED_COOKIES_CLEAR_ON_EXIT_AUX_TEXT);
     default:
-      NOTREACHED() << "Unknown ContentSetting value: " << setting;
-      return std::u16string();
+      NOTREACHED_NORETURN() << "Unknown ContentSetting value: " << setting;
   }
 }
 
@@ -156,10 +155,9 @@ PageSpecificSiteDataDialogAction GetDeleteActionForNodeType(
       return PageSpecificSiteDataDialogAction::kFolderDeleted;
     case CookieTreeNode::DetailedInfo::TYPE_NONE:
     case CookieTreeNode::DetailedInfo::TYPE_ROOT:
-      NOTREACHED()
+      NOTREACHED_NORETURN()
           << "This node type is not visible to the user in UI. Node Type: "
           << node_type;
-      return PageSpecificSiteDataDialogAction::kMaxValue;
   }
 }
 
@@ -288,7 +286,7 @@ class InfobarView : public views::View {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_NORETURN();
     }
     label_->SetText(label);
     SetVisible(true);

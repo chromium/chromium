@@ -233,18 +233,15 @@ TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
 }
 
 gfx::Insets BrowserNonClientFrameView::MirroredFrameBorderInsets() const {
-  NOTREACHED();
-  return gfx::Insets();
+  NOTREACHED_NORETURN();
 }
 
 gfx::Insets BrowserNonClientFrameView::GetInputInsets() const {
-  NOTREACHED();
-  return gfx::Insets();
+  NOTREACHED_NORETURN();
 }
 
 SkRRect BrowserNonClientFrameView::GetRestoredClipRegion() const {
-  NOTREACHED();
-  return SkRRect();
+  NOTREACHED_NORETURN();
 }
 
 int BrowserNonClientFrameView::GetTranslucentTopAreaHeight() const {

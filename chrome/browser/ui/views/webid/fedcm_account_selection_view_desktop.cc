@@ -351,8 +351,7 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
       return SheetType::AUTO_REAUTHN;
     }
     default: {
-      NOTREACHED();
-      return SheetType::ACCOUNT_SELECTION;
+      NOTREACHED_NORETURN();
     }
   }
 }

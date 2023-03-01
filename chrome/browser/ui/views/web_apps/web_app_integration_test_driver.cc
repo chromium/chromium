@@ -963,8 +963,8 @@ void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
       break;
     // The app identity update dialog cannot be used to skip an update.
     case UpdateDialogResponse::kSkipUpdate:
-      NOTREACHED() << "Cannot skip an update from the app identity dialog";
-      break;
+      NOTREACHED_NORETURN()
+          << "Cannot skip an update from the app identity dialog";
   }
 }
 
@@ -1558,7 +1558,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
 #endif
   AfterStateChangeAction();
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -1634,7 +1634,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(Site site) {
 
   AfterStateChangeAction();
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -1663,7 +1663,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
   nav_observer.GetWebContents();
   AfterStateChangeAction();
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -1699,7 +1699,7 @@ void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
 #endif
   AfterStateChangeAction();
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -1745,7 +1745,7 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
   EXPECT_EQ(app->run_on_os_login.value()->login_mode,
             app_state.run_on_os_login_mode);
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -2127,7 +2127,7 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
 
   AfterStateChangeAction();
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -2236,7 +2236,7 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
   site_remember_deny_open_file_.erase(site);
   AfterStateChangeAction();
 #else
-  NOTREACHED() << "Not supported on non-Windows platforms";
+  NOTREACHED_NORETURN() << "Not supported on non-Windows platforms";
 #endif
 }
 
@@ -2390,7 +2390,7 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
   EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + app_id));
   AfterStateCheckAction();
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -2824,7 +2824,7 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(Site site) {
   }
   AfterStateCheckAction();
 #else
-  NOTREACHED() << "Not implemented on Chrome OS.";
+  NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
 #endif
 }
 
@@ -3850,17 +3850,16 @@ bool WebAppIntegrationTest::IsSyncTest() {
 }
 
 void WebAppIntegrationTest::SyncTurnOff() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 void WebAppIntegrationTest::SyncTurnOn() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 void WebAppIntegrationTest::AwaitWebAppQuiescence() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 Profile* WebAppIntegrationTest::GetProfileClient(ProfileClient client) {
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace web_app::integration_tests

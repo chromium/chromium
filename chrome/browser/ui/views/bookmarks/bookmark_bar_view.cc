@@ -1109,12 +1109,7 @@ void BookmarkBarView::BookmarkModelLoaded(BookmarkModel* model,
 }
 
 void BookmarkBarView::BookmarkModelBeingDeleted(BookmarkModel* model) {
-  NOTREACHED();
-  // Do minimal cleanup, presumably we'll be deleted shortly.
-  bookmark_model_->RemoveObserver(this);
-  bookmark_model_ = nullptr;
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+  NOTREACHED_NORETURN();
 }
 
 void BookmarkBarView::BookmarkNodeMoved(BookmarkModel* model,

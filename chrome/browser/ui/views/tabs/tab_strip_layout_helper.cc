@@ -374,8 +374,7 @@ int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
       return i;
     }
   }
-  NOTREACHED();
-  return 0;
+  NOTREACHED_NORETURN();
 }
 
 void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,

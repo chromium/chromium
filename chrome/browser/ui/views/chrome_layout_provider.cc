@@ -153,8 +153,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL:
       return 8;
   }
-  NOTREACHED();
-  return 0;
+  NOTREACHED_NORETURN();
 }
 
 int ChromeLayoutProvider::GetSnappedDialogWidth(int min_width) const {

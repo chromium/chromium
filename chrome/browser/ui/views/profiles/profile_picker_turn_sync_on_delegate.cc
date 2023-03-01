@@ -106,7 +106,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
   // A brand new profile cannot have a conflict in sync accounts.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
@@ -194,7 +194,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
 void ProfilePickerTurnSyncOnDelegate::SwitchToProfile(Profile* new_profile) {
   // A brand new profile cannot have preexisting syncable data and thus
   // switching to another profile does never get offered.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
@@ -287,8 +287,9 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
       FinishSyncConfirmation(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
-      NOTREACHED() << "The profile picker should not show an enterprise "
-                      "welcome that prompts for profile creation";
+      NOTREACHED_NORETURN()
+          << "The profile picker should not show an enterprise "
+             "welcome that prompts for profile creation";
   }
 }
 

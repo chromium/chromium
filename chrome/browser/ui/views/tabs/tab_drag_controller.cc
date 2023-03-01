@@ -452,8 +452,7 @@ void TabDragController::Init(TabDragContext* source_context,
                            kVariableTimer);
         break;
       default:
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
     }
   }
 }
@@ -1482,11 +1481,8 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
     // the drag, destroying `this`. This shouldn't ever happen (preventing this
     // scenario is why we pass kDontCancel above), but on Lacros it apparently
     // sometimes can. See https://crbug.com/1350564.
-    if (!ref) {
-      NOTREACHED() << "Drag session was ended as part of transferring events "
-                      "to the new browser. This should not happen.";
-      return;
-    }
+    CHECK(ref) << "Drag session was ended as part of transferring events to "
+                  "the new browser. This should not happen.";
   }
 #endif
 

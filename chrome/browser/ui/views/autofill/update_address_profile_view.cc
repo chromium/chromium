@@ -44,8 +44,7 @@ const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
     case PHONE_HOME_WHOLE_NUMBER:
       return vector_icons::kCallIcon;
     default:
-      NOTREACHED();
-      return vector_icons::kLocationOnIcon;
+      NOTREACHED_NORETURN();
   }
 }
 

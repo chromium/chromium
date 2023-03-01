@@ -712,7 +712,7 @@ void PictureInPictureBrowserFrameView::AnimationProgressed(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

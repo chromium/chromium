@@ -176,7 +176,7 @@ void PartialTranslateBubbleView::TabSelectedAt(int index) {
       ShowTranslated();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -336,7 +336,7 @@ void PartialTranslateBubbleView::ExecuteCommand(int command_id,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -400,8 +400,7 @@ views::View* PartialTranslateBubbleView::GetCurrentView() const {
     case PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE:
       return advanced_view_target_;
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void PartialTranslateBubbleView::ShowTranslated() {

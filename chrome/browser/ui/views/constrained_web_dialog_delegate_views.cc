@@ -324,26 +324,23 @@ WebContents* ConstrainedWebDialogDelegateViews::GetWebContents() {
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogMinimumSize() const {
-  NOTREACHED();
-  return gfx::Size();
+  NOTREACHED_NORETURN();
 }
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogMaximumSize() const {
-  NOTREACHED();
-  return gfx::Size();
+  NOTREACHED_NORETURN();
 }
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogPreferredSize()
     const {
-  NOTREACHED();
-  return gfx::Size();
+  NOTREACHED_NORETURN();
 }
 
 void ConstrainedWebDialogDelegateViews::ResizeToGivenSize(
     const gfx::Size size) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 ConstrainedDialogWebView::ConstrainedDialogWebView(

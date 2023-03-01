@@ -67,8 +67,7 @@ absl::optional<ViewID> GetViewID(
     case ImageType::NUM_IMAGE_TYPES:
       break;
   }
-  NOTREACHED();
-  return absl::nullopt;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace

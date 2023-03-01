@@ -168,8 +168,7 @@ int WindowsCaptionButton::GetButtonDisplayOrderIndex() const {
       button_display_order = 2 + (tab_search_enabled ? 1 : 0);
       break;
     default:
-      NOTREACHED();
-      return 0;
+      NOTREACHED_NORETURN();
   }
 
   // Reverse the ordering if we're in RTL mode
@@ -248,8 +247,7 @@ void WindowsCaptionButton::PaintSymbol(gfx::Canvas* canvas) {
       return;
 
     default:
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
   }
 }
 

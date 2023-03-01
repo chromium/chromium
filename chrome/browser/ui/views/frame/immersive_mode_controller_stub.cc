@@ -10,7 +10,7 @@ void ImmersiveModeControllerStub::Init(BrowserView* browser_view) {
 }
 
 void ImmersiveModeControllerStub::SetEnabled(bool enabled) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 bool ImmersiveModeControllerStub::IsEnabled() const {

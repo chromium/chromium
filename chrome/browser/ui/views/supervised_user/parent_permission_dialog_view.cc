@@ -682,9 +682,8 @@ std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
     return service->GetSecondCustodianObfuscatedGaiaId();
   }
 
-  NOTREACHED()
+  NOTREACHED_NORETURN()
       << "Tried to get obfuscated gaia id for a non-custodian email address";
-  return std::string();
 }
 
 void ParentPermissionDialogView::StartReauthAccessTokenFetch(

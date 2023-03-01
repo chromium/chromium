@@ -163,8 +163,7 @@ bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {
     case kContextMenuItemNewFolder:
       return true;
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 

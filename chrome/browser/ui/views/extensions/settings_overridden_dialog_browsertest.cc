@@ -99,7 +99,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
     } else if (name == "SearchOverriddenDialog_Generic") {
       ShowSearchOverriddenDialog(DefaultSearch::kUseNewSearch);
     } else {
-      NOTREACHED() << name;
+      NOTREACHED_NORETURN() << name;
     }
   }
 

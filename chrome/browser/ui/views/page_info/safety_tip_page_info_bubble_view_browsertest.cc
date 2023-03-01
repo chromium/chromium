@@ -338,8 +338,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
       case security_state::SafetyTipStatus::kUnknown:
       case security_state::SafetyTipStatus::kNone:
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
     }
     content::WebContentsAddedObserver new_tab_observer;
     static_cast<views::StyledLabel*>(

@@ -259,8 +259,7 @@ std::u16string CookieControlsBubbleView::GetWindowTitle() const {
     case CookieControlsStatus::kUninitialized:
       return std::u16string();
     case CookieControlsStatus::kDisabled:
-      NOTREACHED();
-      return std::u16string();
+      NOTREACHED_NORETURN();
   }
 }
 

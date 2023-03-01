@@ -872,8 +872,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForQuickAction(
           IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY,
           model_->GetFileNameToReportUser().LossyDisplayName());
     default:
-      NOTREACHED();
-      return u"";
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -937,8 +936,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
           IDS_DOWNLOAD_BUBBLE_RETRY_MAIN_BUTTON_ACCESSIBILITY,
           model_->GetFileNameToReportUser().LossyDisplayName());
     default:
-      NOTREACHED();
-      return u"";
+      NOTREACHED_NORETURN();
   }
 }
 

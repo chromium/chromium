@@ -146,8 +146,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
       return bubble;
     }
     case IbanBubbleType::kInactive:
-      NOTREACHED();
-      return nullptr;
+      NOTREACHED_NORETURN();
   }
 }
 

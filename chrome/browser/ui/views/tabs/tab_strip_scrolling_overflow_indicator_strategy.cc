@@ -60,8 +60,7 @@ TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
       return std::make_unique<ShadowOverflowIndicatorStrategy>(
           scroll_view, get_frame_color, get_shadow_color);
     default:
-      NOTREACHED();
-      return nullptr;
+      NOTREACHED_NORETURN();
   }
 }
 

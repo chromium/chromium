@@ -123,7 +123,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
                                                              anchor_view);
 #endif
   } else {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
 
   g_manage_passwords_bubble_ = view;

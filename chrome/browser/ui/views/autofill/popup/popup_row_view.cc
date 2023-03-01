@@ -39,8 +39,7 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
     case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
     case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
     case PopupItemId::POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
     case PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
     case PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
     case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
