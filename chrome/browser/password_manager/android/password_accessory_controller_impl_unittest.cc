@@ -933,7 +933,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
       /*selectable=*/true);
   EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
       .WillOnce(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
@@ -965,7 +965,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
       /*selectable=*/true);
   ON_CALL(*password_client(), GetDeviceAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_authenticator_.get(),
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
@@ -1001,7 +1001,7 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
       /*selectable=*/true);
   ON_CALL(*password_client(), GetDeviceAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_authenticator_.get(),
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,
@@ -1038,7 +1038,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       /*selectable=*/true);
   ON_CALL(*password_client(), GetDeviceAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_authenticator_.get(),
               Authenticate(DeviceAuthRequester::kFallbackSheet, _,

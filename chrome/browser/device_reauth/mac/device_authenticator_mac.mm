@@ -17,8 +17,7 @@ DeviceAuthenticatorMac::DeviceAuthenticatorMac() = default;
 
 DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;
 
-bool DeviceAuthenticatorMac::CanAuthenticate(
-    device_reauth::DeviceAuthRequester requester) {
+bool DeviceAuthenticatorMac::CanAuthenticateWithBiometrics() {
   base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
   bool is_available =
       [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics

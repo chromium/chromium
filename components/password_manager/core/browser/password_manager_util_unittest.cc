@@ -371,7 +371,8 @@ class PasswordManagerUtilTest : public testing::Test {
     ON_CALL(mock_client_, GetPrefs()).WillByDefault(Return(&pref_service_));
     ON_CALL(mock_client_, GetDeviceAuthenticator())
         .WillByDefault(Return(authenticator_));
-    ON_CALL(*authenticator_, CanAuthenticate).WillByDefault(Return(true));
+    ON_CALL(*authenticator_, CanAuthenticateWithBiometrics)
+        .WillByDefault(Return(true));
 #endif
   }
 
@@ -912,7 +913,8 @@ TEST_F(PasswordManagerUtilTest, BiometricsUnavailable) {
       password_manager::features::kBiometricAuthenticationForFilling);
 
   SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(false));
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(false));
   EXPECT_FALSE(
       ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
 }
@@ -922,7 +924,8 @@ TEST_F(PasswordManagerUtilTest, BiometricForFillingFlagDisabled) {
   scoped_feature_list.InitAndDisableFeature(
       password_manager::features::kBiometricAuthenticationForFilling);
   SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(true));
   EXPECT_FALSE(
       ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
 }
@@ -932,7 +935,8 @@ TEST_F(PasswordManagerUtilTest, BiometricForFillingEnabed) {
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kBiometricAuthenticationForFilling);
   SetBiometricAuthenticationBeforeFilling(/*available=*/true);
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(true));
   EXPECT_FALSE(
       ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
 }
@@ -942,7 +946,8 @@ TEST_F(PasswordManagerUtilTest, ShouldShowBiometricAuthPromo) {
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kBiometricAuthenticationForFilling);
   SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(true));
   EXPECT_TRUE(
       ShouldShowBiometricAuthenticationBeforeFillingPromo(&mock_client_));
 }

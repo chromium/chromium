@@ -245,7 +245,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticate).WillOnce(Return(false));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(false));
   EXPECT_CALL(driver(), FillIntoFocusedField(true, std::u16string(kPassword)));
   EXPECT_CALL(dismissal_callback(), Run());
 
@@ -258,7 +259,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthSuccessful) {
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator().get(),
               Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
                            /*use_last_valid_auth=*/true))
@@ -276,7 +278,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, DoesntFillPasswordIfAuthFailed) {
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator().get(),
               Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
                            /*use_last_valid_auth=*/true))
@@ -295,7 +298,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest, CancelsAuthIfDestroyed) {
 
   EXPECT_CALL(client(), GetDeviceAuthenticator)
       .WillOnce(Return(authenticator()));
-  EXPECT_CALL(*authenticator().get(), CanAuthenticate).WillOnce(Return(true));
+  EXPECT_CALL(*authenticator().get(), CanAuthenticateWithBiometrics)
+      .WillOnce(Return(true));
   EXPECT_CALL(*authenticator().get(),
               Authenticate(DeviceAuthRequester::kAllPasswordsList, _,
                            /*use_last_valid_auth=*/true));

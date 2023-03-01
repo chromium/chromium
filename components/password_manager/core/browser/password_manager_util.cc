@@ -418,8 +418,7 @@ bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
 bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
     password_manager::PasswordManagerClient* client) {
   return client && client->GetDeviceAuthenticator() &&
-         client->GetDeviceAuthenticator()->CanAuthenticate(
-             device_reauth::DeviceAuthRequester::kAutofillSuggestion) &&
+         client->GetDeviceAuthenticator()->CanAuthenticateWithBiometrics() &&
          base::FeatureList::IsEnabled(
              password_manager::features::kBiometricAuthenticationForFilling) &&
          !client->GetPrefs()->GetBoolean(
@@ -438,7 +437,7 @@ bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
   return client->GetPasswordFeatureManager()
       ->IsBiometricAuthenticationBeforeFillingEnabled();
 #else
-  return authenticator && authenticator->CanAuthenticate(requester) &&
+  return authenticator && authenticator->CanAuthenticateWithBiometrics() &&
          base::FeatureList::IsEnabled(
              password_manager::features::kBiometricTouchToFill);
 #endif

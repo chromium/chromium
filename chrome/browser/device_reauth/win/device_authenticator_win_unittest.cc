@@ -152,17 +152,15 @@ TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfPreviousFailed) {
   task_environment().RunUntilIdle();
 }
 
-// Checks if CanAuthenticate returns a valid pref value.
-TEST_F(DeviceAuthenticatorWinTest, CanAuthenticate) {
+// Checks if CanAuthenticateWithBiometrics returns a valid pref value.
+TEST_F(DeviceAuthenticatorWinTest, CanAuthenticateWithBiometrics) {
   local_state().Get()->SetBoolean(
       password_manager::prefs::kIsBiometricAvailable, true);
-  EXPECT_TRUE(authenticator()->CanAuthenticate(
-      DeviceAuthRequester::kPasswordsInSettings));
+  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometrics());
 
   local_state().Get()->SetBoolean(
       password_manager::prefs::kIsBiometricAvailable, false);
-  EXPECT_FALSE(authenticator()->CanAuthenticate(
-      DeviceAuthRequester::kPasswordsInSettings));
+  EXPECT_FALSE(authenticator()->CanAuthenticateWithBiometrics());
 }
 
 // Verifies that the caching mechanism for BiometricsAvailable works.
@@ -188,8 +186,7 @@ TEST_P(DeviceAuthenticatorWinTestAvailability, AvailabilityCheck) {
   authenticator()->CacheIfBiometricsAvailable();
 
   EXPECT_EQ(test_case.expected_result,
-            authenticator()->CanAuthenticate(
-                DeviceAuthRequester::kPasswordsInSettings));
+            authenticator()->CanAuthenticateWithBiometrics());
   EXPECT_EQ(test_case.expected_result,
             local_state().Get()->GetBoolean(
                 password_manager::prefs::kHadBiometricsAvailable));

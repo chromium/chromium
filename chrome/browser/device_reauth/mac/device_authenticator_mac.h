@@ -21,9 +21,7 @@ class TouchIdContext;
 
 class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
  public:
-  // Returns true, when biometrics are available and also the device screen lock
-  // is setup, false otherwise.
-  bool CanAuthenticate(device_reauth::DeviceAuthRequester requester) override;
+  bool CanAuthenticateWithBiometrics() override;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication

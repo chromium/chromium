@@ -90,12 +90,9 @@ void LogAuthRequester(const device_reauth::DeviceAuthRequester& requester) {
                                 requester);
 }
 
-void LogCanAuthenticate(const device_reauth::DeviceAuthRequester& requester,
-                        const BiometricsAvailability& availability) {
-  if (isAndroidPasswordManagerRequester(requester)) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", availability);
-  }
+void LogCanAuthenticate(const BiometricsAvailability& availability) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", availability);
 }
 
 }  // namespace
@@ -106,15 +103,14 @@ DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
 
 DeviceAuthenticatorAndroid::~DeviceAuthenticatorAndroid() = default;
 
-bool DeviceAuthenticatorAndroid::CanAuthenticate(
-    device_reauth::DeviceAuthRequester requester) {
-  if (requester == device_reauth::DeviceAuthRequester::kIncognitoReauthPage) {
-    return bridge_->CanAuthenticateWithBiometricOrScreenLock();
-  }
-
+bool DeviceAuthenticatorAndroid::CanAuthenticateWithBiometrics() {
   BiometricsAvailability availability = bridge_->CanAuthenticateWithBiometric();
-  LogCanAuthenticate(requester, availability);
+  LogCanAuthenticate(availability);
   return availability == BiometricsAvailability::kAvailable;
+}
+
+bool DeviceAuthenticatorAndroid::CanAuthenticateWithBiometricOrScreenLock() {
+  return bridge_->CanAuthenticateWithBiometricOrScreenLock();
 }
 
 void DeviceAuthenticatorAndroid::Authenticate(

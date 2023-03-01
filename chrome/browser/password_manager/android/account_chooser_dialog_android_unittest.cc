@@ -186,8 +186,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
   AccountChooserDialogAndroid* dialog = CreateDialogManyAccounts();
 
   EXPECT_CALL(client_, GetDeviceAuthenticator).WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(),
-              CanAuthenticate(DeviceAuthRequester::kAccountChooserDialog))
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics())
       .WillOnce(Return(false));
   std::unique_ptr<password_manager::PasswordForm> form =
       FillPasswordFormWithData(kFormData2);
@@ -203,8 +202,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
   AccountChooserDialogAndroid* dialog = CreateDialogManyAccounts();
 
   EXPECT_CALL(client_, GetDeviceAuthenticator).WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(),
-              CanAuthenticate(DeviceAuthRequester::kAccountChooserDialog))
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics())
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
@@ -224,8 +222,7 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
   AccountChooserDialogAndroid* dialog = CreateDialogManyAccounts();
 
   EXPECT_CALL(client_, GetDeviceAuthenticator).WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(),
-              CanAuthenticate(DeviceAuthRequester::kAccountChooserDialog))
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics())
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,
@@ -245,8 +242,7 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
   AccountChooserDialogAndroid* dialog = CreateDialogManyAccounts();
 
   EXPECT_CALL(client_, GetDeviceAuthenticator).WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(),
-              CanAuthenticate(DeviceAuthRequester::kAccountChooserDialog))
+  EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics())
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(DeviceAuthRequester::kAccountChooserDialog, _,

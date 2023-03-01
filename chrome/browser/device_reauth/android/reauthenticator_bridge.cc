@@ -35,7 +35,12 @@ ReauthenticatorBridge::~ReauthenticatorBridge() {
 }
 
 bool ReauthenticatorBridge::CanUseAuthentication(JNIEnv* env) {
-  return authenticator_ && authenticator_->CanAuthenticate(requester_);
+  if (!authenticator_) {
+    return false;
+  }
+  return requester_ == device_reauth::DeviceAuthRequester::kIncognitoReauthPage
+             ? authenticator_->CanAuthenticateWithBiometricOrScreenLock()
+             : authenticator_->CanAuthenticateWithBiometrics();
 }
 
 void ReauthenticatorBridge::Reauthenticate(JNIEnv* env,

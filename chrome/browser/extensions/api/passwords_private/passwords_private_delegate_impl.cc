@@ -489,9 +489,7 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
       std::move(callback));
 #elif BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1358442): Remove this check.
-  if (GetDeviceAuthenticator(web_contents_)
-          ->CanAuthenticate(
-              device_reauth::DeviceAuthRequester::kPasswordsInSettings) &&
+  if (GetDeviceAuthenticator(web_contents_)->CanAuthenticateWithBiometrics() &&
       base::FeatureList::IsEnabled(
           password_manager::features::kBiometricAuthenticationInSettings)) {
     AuthenticateWithBiometrics(

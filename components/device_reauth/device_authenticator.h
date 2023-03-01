@@ -61,7 +61,12 @@ class DeviceAuthenticator : public base::RefCounted<DeviceAuthenticator> {
   DeviceAuthenticator& operator=(const DeviceAuthenticator&) = delete;
 
   // Returns whether biometrics are available for a given device.
-  virtual bool CanAuthenticate(DeviceAuthRequester requester) = 0;
+  virtual bool CanAuthenticateWithBiometrics() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns whether biometrics or screenlock are available for a given device.
+  virtual bool CanAuthenticateWithBiometricOrScreenLock() = 0;
+#endif
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.

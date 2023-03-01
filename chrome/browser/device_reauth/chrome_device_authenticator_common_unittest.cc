@@ -27,7 +27,11 @@ class FakeChromeDeviceAuthenticatorCommon
 
   FakeChromeDeviceAuthenticatorCommon();
 
-  bool CanAuthenticate(DeviceAuthRequester requester) override;
+  bool CanAuthenticateWithBiometrics() override;
+
+#if BUILDFLAG(IS_ANDROID)
+  bool CanAuthenticateWithBiometricOrScreenLock() override;
+#endif
 
   void Authenticate(DeviceAuthRequester requester,
                     AuthenticateCallback callback,
@@ -47,11 +51,18 @@ FakeChromeDeviceAuthenticatorCommon::FakeChromeDeviceAuthenticatorCommon() =
 FakeChromeDeviceAuthenticatorCommon::~FakeChromeDeviceAuthenticatorCommon() =
     default;
 
-bool FakeChromeDeviceAuthenticatorCommon::CanAuthenticate(
-    DeviceAuthRequester requester) {
+bool FakeChromeDeviceAuthenticatorCommon::CanAuthenticateWithBiometrics() {
   NOTIMPLEMENTED();
   return false;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool FakeChromeDeviceAuthenticatorCommon::
+    CanAuthenticateWithBiometricOrScreenLock() {
+  NOTIMPLEMENTED();
+  return false;
+}
+#endif
 
 void FakeChromeDeviceAuthenticatorCommon::Authenticate(
     DeviceAuthRequester requester,

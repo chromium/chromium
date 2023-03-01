@@ -79,8 +79,7 @@ TEST_F(DeviceAuthenticatorAndroidTest, CanAuthenticateCallsBridge) {
 
   EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
       .WillOnce(Return(BiometricsAvailability::kAvailable));
-  EXPECT_TRUE(authenticator()->CanAuthenticate(
-      device_reauth::DeviceAuthRequester::kAllPasswordsList));
+  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometrics());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BiometricAuthPwdFill.CanAuthenticate",
@@ -94,8 +93,7 @@ TEST_F(
 
   EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
       .WillOnce(Return(true));
-  EXPECT_TRUE(authenticator()->CanAuthenticate(
-      device_reauth::DeviceAuthRequester::kIncognitoReauthPage));
+  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
 
   histogram_tester.ExpectTotalCount(
       "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", 0);

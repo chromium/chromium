@@ -361,8 +361,7 @@ class PasswordAutofillManagerTest : public testing::Test {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage);
 #else
-    EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
+    EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
                 Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
@@ -1683,8 +1682,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
 
 #if BUILDFLAG(IS_ANDROID)
     // The authenticator exists, but cannot be used for authentication.
-    EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
+    EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
         .WillOnce(Return(false));
 #endif
 
@@ -1752,8 +1750,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
     // The authenticator exists and is available.
 #else
-    EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
+    EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
                 Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
@@ -1824,8 +1821,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     EXPECT_CALL(*authenticator_.get(), AuthenticateWithMessage)
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 #else
-    EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
+    EXPECT_CALL(*authenticator_.get(), CanAuthenticateWithBiometrics)
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
                 Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,

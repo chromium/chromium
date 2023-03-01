@@ -20,7 +20,7 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
       std::unique_ptr<AuthenticatorWinInterface> authenticator);
 
   // Returns true, when biometrics are available.
-  bool CanAuthenticate(device_reauth::DeviceAuthRequester requester) override;
+  bool CanAuthenticateWithBiometrics() override;
 
   // Trigges an authentication flow based on biometrics.
   // Note: this only supports one authentication request at a time.

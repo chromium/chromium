@@ -44,8 +44,7 @@ scoped_refptr<DeviceAuthenticatorWin> DeviceAuthenticatorWin::CreateForTesting(
       new DeviceAuthenticatorWin(std::move(authenticator)));
 }
 
-bool DeviceAuthenticatorWin::CanAuthenticate(
-    device_reauth::DeviceAuthRequester requester) {
+bool DeviceAuthenticatorWin::CanAuthenticateWithBiometrics() {
   // Setting that pref happens once when the ChromeDeviceAuthenticatorFactory
   // is created and it is async so it can technically happen that this pref
   // doesn't have the latest value when you check it.

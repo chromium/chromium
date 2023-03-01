@@ -48,10 +48,9 @@ enum class DeviceAuthFinalResult {
 // Android implementation of the DeviceAuthenticator interface.
 class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
  public:
-  // Returns true, when biometrics are available and also the device screen lock
-  // is set up, false otherwise. When the |requester| is kIncognitoReauthPage,
-  // it also returns true if just a screen lock is set up.
-  bool CanAuthenticate(device_reauth::DeviceAuthRequester requester) override;
+  bool CanAuthenticateWithBiometrics() override;
+
+  bool CanAuthenticateWithBiometricOrScreenLock() override;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication

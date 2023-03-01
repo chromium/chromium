@@ -129,8 +129,7 @@ class TouchToFillControllerAutofillTest : public testing::Test {
     ON_CALL(driver_, GetLastCommittedURL())
         .WillByDefault(ReturnRefOfCopy(GURL(kExampleCom)));
     // By default, disable biometric authentication.
-    ON_CALL(*authenticator(),
-            CanAuthenticate(DeviceAuthRequester::kTouchToFill))
+    ON_CALL(*authenticator(), CanAuthenticateWithBiometrics)
         .WillByDefault(Return(false));
 
     // By default, don't trigger a form submission.
@@ -373,8 +372,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
                                        std::u16string(u"p4ssw0rd")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
 
-  EXPECT_CALL(*authenticator(),
-              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
+  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
@@ -409,8 +407,7 @@ TEST_F(TouchToFillControllerAutofillTest,
                                        std::u16string(u"p4ssw0rd")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
 
-  EXPECT_CALL(*authenticator(),
-              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
+  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
               Authenticate(DeviceAuthRequester::kTouchToFill, _,
@@ -439,8 +436,7 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(driver(), FillSuggestion(_, _)).Times(0);
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
 
-  EXPECT_CALL(*authenticator(),
-              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
+  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
               Authenticate(DeviceAuthRequester::kTouchToFill, _,
@@ -512,8 +508,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"bob"),
                                        std::u16string(u"s3cr3t")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
-  EXPECT_CALL(*authenticator(),
-              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
+  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
   histogram_tester().ExpectUniqueSample(
@@ -647,8 +642,7 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
       MakeTouchToFillControllerDelegate(
           autofill::mojom::SubmissionReadinessState::kNoInformation));
 
-  EXPECT_CALL(*authenticator(),
-              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
+  EXPECT_CALL(*authenticator(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
               Authenticate(DeviceAuthRequester::kTouchToFill, _,
