@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,8 +25,7 @@
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"
@@ -54,7 +54,7 @@ class RenderProcessHost;
 // necessary information (most visited tiles and theme info) updated in those
 // renderer processes.
 class InstantService : public KeyedService,
-                       public content::NotificationObserver,
+                       public content::RenderProcessHostObserver,
                        public ntp_tiles::MostVisitedSites::Observer,
                        public ui::NativeThemeObserver,
                        public ThemeServiceObserver {
@@ -66,9 +66,9 @@ class InstantService : public KeyedService,
 
   ~InstantService() override;
 
-  // Add, remove, and query RenderProcessHost IDs that are associated with
-  // Instant processes.
-  void AddInstantProcess(int process_id);
+  // Add RenderProcessHosts that are associated with Instant processes and query
+  // based on PID.
+  void AddInstantProcess(content::RenderProcessHost* host);
   bool IsInstantProcess(int process_id) const;
 
   // Adds/Removes InstantService observers.
@@ -127,13 +127,8 @@ class InstantService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // Called when a renderer process is terminated.
-  void OnRendererProcessTerminated(int process_id);
+  // content::RenderProcessHostObserver:
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -171,14 +166,16 @@ class InstantService : public KeyedService,
 
   base::ObserverList<InstantServiceObserver>::Unchecked observers_;
 
-  content::NotificationRegistrar registrar_;
-
   // Data source for NTP tiles (aka Most Visited tiles). May be null.
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
   raw_ptr<PrefService> pref_service_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
