@@ -45,6 +45,10 @@ namespace win {
 class ScopedCOMInitializer;
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class Process;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace base
 
 #if defined(TOOLKIT_VIEWS)
@@ -186,6 +190,45 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // https://crbug.com/1365899
   // The final value of the result is the format of key1=value1;key2=value2.
   void RecordPropertyFromMap(const std::map<std::string, std::string>& tags);
+
+  // Start ash-chrome with specific flags.
+  // In general, there is a shared ash chrome started and a lacros chrome
+  // started before a test case. But for some tests, you may need a special
+  // ash chrome. 2 common use cases:
+  //   1. you need to enable a feature in ash chrome then your test can verify
+  //      some behavior. In this case you need to call this function to start
+  //      a unique ash chrome with the feature enabled.
+  //   2. your test case will pollute ash and cause following test cases fail or
+  //      flaky. Instead of implementing cleanup in TearDown(), using a
+  //      unique ash just for the test is better.
+  // Call this function in the test SetUp() function before invoking
+  // InProcessBrowserTest::SetUp().
+  // This function has negative performance impact:
+  //   1. Start additional ash chrome uses more time.
+  //   2. Additional ash chrome uses more resources.
+  //      The shared ash chrome is still running. By calling this function,
+  //      you start another ash chrome.
+  // Args:
+  //   enabled_features: Additional features to be enabled in ash chrome.
+  //   disabled_features: Additional features to be disabled in ash chrome.
+  //   additional_cmdline_switches: Additional cmdline switches.
+  //       e.g. {"enable-pixel-outputs-in-tests"}
+  //   bug_number_and_reason: Not used in code. But please provide information
+  //       about why you need unique ash chrome. Hopefully this can help reduce
+  //       the usage of unique ash.
+  //       e.g. "crbug.com/11. Switch to shared ash when feature XX is default."
+  //
+  // After you call this function in SetUp(), before the test case test body,
+  // a unique ash chrome will be started and a lacros chrome will be connected
+  // to it. After the test case finishes, the unique ash chrome will be
+  // terminated and the next test case will use the default shared ash chrome.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void StartUniqueAshChrome(
+      const std::vector<std::string>& enabled_features,
+      const std::vector<std::string>& disabled_features,
+      const std::vector<std::string>& additional_cmdline_switches,
+      const std::string& bug_number_and_reason);
+#endif
 
  protected:
   // Closes the given browser and waits for it to release all its resources.
@@ -331,6 +374,8 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #endif
 
  private:
+  friend class StartUniqueAshBrowserTest;
+
   void Initialize();
 
   // Quits all open browsers and waits until there are no more browsers.
@@ -402,6 +447,11 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // testing, when the full restore feature is enabled.
   std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
       launch_browser_for_testing_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::ScopedTempDir unique_ash_user_data_dir_;
+  base::Process ash_process_;
 #endif
 };
 

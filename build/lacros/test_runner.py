@@ -608,6 +608,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     if enable_mojo_crosapi:
       forward_args.append(lacros_mojo_socket_arg)
 
+    forward_args.append('--ash-chrome-path=' + ash_chrome_file)
     test_env = os.environ.copy()
     test_env['WAYLAND_DISPLAY'] = ash_wayland_socket_name
     test_env['EGL_PLATFORM'] = 'surfaceless'

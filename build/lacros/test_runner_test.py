@@ -125,6 +125,7 @@ class TestRunnerTest(unittest.TestCase):
             command,
             '--test-launcher-filter-file=/a/b/filter',
             '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock',
+            '--ash-chrome-path=' + ash_chrome_args[0],
         ], test_args)
       else:
         self.assertListEqual(test_args[:len(command_parts)], command_parts)
