@@ -14,7 +14,12 @@ PRESUBMIT_VERSION = '2.0.0'
 def CheckRunTypescriptTests(input_api, output_api):
   affected = input_api.AffectedFiles()
 
-  sources = set(['ts_library.py', 'ts_library.gni', 'tsconfig_base.json'])
+  sources = set([
+      'path_mappings.py',
+      'tsconfig_base.json',
+      'ts_library.py',
+      'validate_tsconfig.py',
+  ])
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
   if not sources.intersection(set(affected_files)):
     return []

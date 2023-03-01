@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 
-def GetDepToPathMappings(root_gen_dir):
+def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
   # Calculate mappings for ui/webui/resources/ sub-folders that have a dedicated
   # ts_library() target. The naming and output folder of the ts_library target
   # is assumed to follow the defaults in the build_cr_component() rule.
@@ -25,11 +25,27 @@ def GetDepToPathMappings(root_gen_dir):
       "cr_components/omnibox",
   ]
 
-  path_mappings = {}
   for c in shared_ts_folders:
     path_mappings[f'//ui/webui/resources/{c}:build_ts'] = [(
         f'//resources/{c}/*',
         f'{root_gen_dir}/ui/webui/resources/tsc/{c}/*',
     )]
+
+
+# Ash-only
+def _add_ash_webui_resources_mappings(path_mappings, root_gen_dir):
+  path_mappings['//ash/webui/common/resources:build_ts'] = [(
+      '//resources/ash/common/*',
+      f'{root_gen_dir}/ash/webui/common/resources/preprocessed/*',
+  )]
+
+
+def GetDepToPathMappings(root_gen_dir, platform):
+  path_mappings = {}
+
+  _add_ui_webui_resources_mappings(path_mappings, root_gen_dir)
+
+  if platform == 'chromeos_ash':
+    _add_ash_webui_resources_mappings(path_mappings, root_gen_dir)
 
   return path_mappings

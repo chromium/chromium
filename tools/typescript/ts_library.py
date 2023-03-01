@@ -47,7 +47,9 @@ def main(argv):
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
   parser.add_argument('--allow_js', action='store_true')
-  parser.add_argument('--is_ios', action='store_true')
+  parser.add_argument('--platform',
+                      choices=['other', 'ios', 'chromeos_ash'],
+                      default='other')
   parser.add_argument('--enable_source_maps', action='store_true')
   parser.add_argument('--output_suffix', required=True)
   args = parser.parse_args(argv)
@@ -56,7 +58,8 @@ def main(argv):
   out_dir = os.path.relpath(args.out_dir, args.gen_dir)
 
   is_root_dir_valid, error = validateRootDir(args.root_dir, args.gen_dir,
-                                             args.root_gen_dir, args.is_ios)
+                                             args.root_gen_dir,
+                                             args.platform == 'ios')
   if not is_root_dir_valid:
     raise AssertionError(error)
 
@@ -114,7 +117,7 @@ def main(argv):
     out_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
                                             out_dir)).replace('\\', '/')
     is_js_allowed, error = validateJavaScriptAllowed(source_dir, out_dir,
-                                                     args.is_ios)
+                                                     args.platform == 'ios')
     if not is_js_allowed:
       raise AssertionError(error)
     tsconfig['compilerOptions']['allowJs'] = True
@@ -149,7 +152,8 @@ def main(argv):
     tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
     assert args.raw_deps is not None
-    dep_to_path_mappings = GetDepToPathMappings(args.root_gen_dir)
+    dep_to_path_mappings = GetDepToPathMappings(args.root_gen_dir,
+                                                args.platform)
 
     for dep in args.raw_deps:
       if dep not in dep_to_path_mappings:
