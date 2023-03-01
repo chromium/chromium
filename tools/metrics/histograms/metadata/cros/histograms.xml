@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.ArchiveType" enum="CrosDisksArchiveType"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.DeviceMediaType" enum="CrosDisksDeviceMediaType"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.FilesystemType" enum="CrosDisksFilesystemType"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.Fuse.FuseArchive" enum="FuseArchiveError"
-    expires_after="2023-04-01">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.Fuse.FuseZip" enum="FuseZipError"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.Fuse.Rar2fs" enum="Rar2fsError"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.MountError.{FileSystem}" enum="PopularOSErrno"
-    expires_after="2023-12-01">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.PrematureTermination.{Daemon}" enum="DaemonError"
-    expires_after="2023-12-01">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.ReadOnlyFileSystemAfterError"
-    enum="CrosDisksFilesystemType" expires_after="2023-08-08">
+    enum="CrosDisksFilesystemType" expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.UnmountError.{FileSystem}" enum="PopularOSErrno"
-    expires_after="2023-12-01">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2023-08-13">
+    enum="CrosDisksClientFormatError" expires_after="2024-04-01">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatTime" units="ms"
-    expires_after="2023-07-30">
+    expires_after="2024-04-01">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.MountCompletedError"
-    enum="CrosDisksClientMountError" expires_after="2023-08-08">
+    enum="CrosDisksClientMountError" expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.MountErrorMountType"
-    enum="CrosDisksMountTypeError" expires_after="2023-08-08">
+    enum="CrosDisksMountTypeError" expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.MountTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.UnmountError" enum="CrosDisksClientMountError"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.UnmountTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2024-04-01">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
