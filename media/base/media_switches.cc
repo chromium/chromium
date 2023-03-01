@@ -1098,7 +1098,7 @@ BASE_FEATURE(kMediaFoundationVideoCapture,
 // please use IsMediaFoundationD3D11VideoCaptureEnabled() instead.
 BASE_FEATURE(kMediaFoundationD3D11VideoCapture,
              "MediaFoundationD3D11VideoCapture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables VP8 decode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
