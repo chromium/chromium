@@ -77,7 +77,9 @@ void CrosHotspotConfig::EnableHotspot(EnableHotspotCallback callback) {
 }
 
 void CrosHotspotConfig::DisableHotspot(DisableHotspotCallback callback) {
-  hotspot_controller_->DisableHotspot(std::move(callback));
+  hotspot_controller_->DisableHotspot(
+      std::move(callback),
+      hotspot_config::mojom::DisableReason::kUserInitiated);
 }
 
 // HotspotStateHandler::Observer:

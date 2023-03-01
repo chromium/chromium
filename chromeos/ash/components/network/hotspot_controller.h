@@ -48,7 +48,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   // execute. If another request is already being processed, the current request
   // will wait until the previous one is completed.
   void EnableHotspot(HotspotControlCallback callback);
-  void DisableHotspot(HotspotControlCallback callback);
+  void DisableHotspot(HotspotControlCallback callback,
+                      hotspot_config::mojom::DisableReason disable_reason);
 
   // Set whether Hotspot should be allowed/disallowed by policy.
   void SetPolicyAllowHotspot(bool allow_hotspot);
@@ -59,13 +60,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   // Represents hotspot enable or disable control request parameters. Requests
   // are queued and processed one at a time.
   struct HotspotControlRequest {
-    HotspotControlRequest(bool enabled, HotspotControlCallback callback);
+    HotspotControlRequest(
+        bool enabled,
+        absl::optional<hotspot_config::mojom::DisableReason> disable_reason,
+        HotspotControlCallback callback);
     HotspotControlRequest(const HotspotControlRequest&) = delete;
     HotspotControlRequest& operator=(const HotspotControlRequest&) = delete;
     ~HotspotControlRequest();
 
     bool enabled;
     bool wifi_turned_off = false;
+    // Set for disable requests and will be null for enable requests.
+    absl::optional<hotspot_config::mojom::DisableReason> disable_reason;
     HotspotControlCallback callback;
   };
 

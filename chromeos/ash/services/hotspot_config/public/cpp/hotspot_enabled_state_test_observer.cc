@@ -18,4 +18,10 @@ void HotspotEnabledStateTestObserver::OnHotspotTurnedOn(bool wifi_turned_off) {
   hotspot_turned_on_count_++;
 }
 
+void HotspotEnabledStateTestObserver::OnHotspotTurnedOff(
+    mojom::DisableReason reason) {
+  hotspot_turned_off_count_++;
+  last_disable_reason_ = reason;
+}
+
 }  // namespace ash::hotspot_config

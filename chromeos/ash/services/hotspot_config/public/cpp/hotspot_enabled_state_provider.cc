@@ -21,4 +21,11 @@ void HotspotEnabledStateProvider::NotifyHotspotTurnedOn(bool wifi_turned_off) {
   }
 }
 
+void HotspotEnabledStateProvider::NotifyHotspotTurnedOff(
+    mojom::DisableReason reason) {
+  for (auto& observer : observers_) {
+    observer->OnHotspotTurnedOff(reason);
+  }
+}
+
 }  // namespace ash::hotspot_config

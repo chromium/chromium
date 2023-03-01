@@ -15,8 +15,11 @@ namespace ash {
 
 HotspotController::HotspotControlRequest::HotspotControlRequest(
     bool enabled,
+    absl::optional<hotspot_config::mojom::DisableReason> disable_reason,
     HotspotControlCallback callback)
-    : enabled(enabled), callback(std::move(callback)) {}
+    : enabled(enabled),
+      disable_reason(disable_reason),
+      callback(std::move(callback)) {}
 
 HotspotController::HotspotControlRequest::~HotspotControlRequest() = default;
 
@@ -40,13 +43,15 @@ void HotspotController::Init(
 
 void HotspotController::EnableHotspot(HotspotControlCallback callback) {
   queued_requests_.push(std::make_unique<HotspotControlRequest>(
-      /*enabled=*/true, std::move(callback)));
+      /*enabled=*/true, /*disable_reason=*/absl::nullopt, std::move(callback)));
   ProcessRequestQueue();
 }
 
-void HotspotController::DisableHotspot(HotspotControlCallback callback) {
+void HotspotController::DisableHotspot(
+    HotspotControlCallback callback,
+    hotspot_config::mojom::DisableReason disable_reason) {
   queued_requests_.push(std::make_unique<HotspotControlRequest>(
-      /*enabled=*/false, std::move(callback)));
+      /*enabled=*/false, disable_reason, std::move(callback)));
   ProcessRequestQueue();
 }
 
@@ -149,9 +154,12 @@ void HotspotController::CompleteCurrentRequest(
         NetworkTypePattern::WiFi(), /*enabled=*/true,
         network_handler::ErrorCallback());
   }
-  if (result == hotspot_config::mojom::HotspotControlResult::kSuccess &&
-      current_request_->enabled) {
-    NotifyHotspotTurnedOn(current_request_->wifi_turned_off);
+  if (result == hotspot_config::mojom::HotspotControlResult::kSuccess) {
+    if (current_request_->enabled) {
+      NotifyHotspotTurnedOn(current_request_->wifi_turned_off);
+    } else {
+      NotifyHotspotTurnedOff(current_request_->disable_reason.value());
+    }
   }
   std::move(current_request_->callback).Run(result);
   current_request_.reset();
@@ -167,7 +175,8 @@ void HotspotController::SetPolicyAllowHotspot(bool allow_hotspot) {
   hotspot_capabilities_provider_->SetPolicyAllowed(allow_hotspot);
   if (!allow_hotspot && hotspot_state_handler_->GetHotspotState() !=
                             hotspot_config::mojom::HotspotState::kDisabled) {
-    DisableHotspot(base::DoNothing());
+    DisableHotspot(base::DoNothing(),
+                   hotspot_config::mojom::DisableReason::kProhibitedByPolicy);
   }
 }
 
@@ -179,7 +188,8 @@ void HotspotController::PrepareEnableWifi(
           hotspot_config::mojom::HotspotState::kEnabling) {
     DisableHotspot(
         base::BindOnce(&HotspotController::OnPrepareEnableWifiCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        hotspot_config::mojom::DisableReason::kWifiEnabled);
     return;
   }
   std::move(callback).Run(/*prepare_success=*/true);

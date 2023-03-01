@@ -293,11 +293,15 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
 }
 
 TEST_F(CrosHotspotConfigTest, DisableHotspot) {
+  SetupObserver();
   helper()->manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(mojom::HotspotControlResult::kSuccess, DisableHotspot());
+  EXPECT_EQ(hotspotStateObserver()->hotspot_turned_off_count(), 1u);
+  EXPECT_EQ(hotspotStateObserver()->last_disable_reason(),
+            hotspot_config::mojom::DisableReason::kUserInitiated);
 }
 
 }  // namespace ash::hotspot_config

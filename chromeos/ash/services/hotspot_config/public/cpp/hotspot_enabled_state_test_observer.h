@@ -29,7 +29,15 @@ class HotspotEnabledStateTestObserver
   // mojom::HotspotEnabledStateObserver:
   void OnHotspotTurnedOn(bool wifi_turned_off) override;
 
+  void OnHotspotTurnedOff(mojom::DisableReason disable_reason) override;
+
   size_t hotspot_turned_on_count() const { return hotspot_turned_on_count_; }
+
+  size_t hotspot_turned_off_count() const { return hotspot_turned_off_count_; }
+
+  mojom::DisableReason last_disable_reason() const {
+    return last_disable_reason_;
+  }
 
   mojo::Receiver<mojom::HotspotEnabledStateObserver>& receiver() {
     return receiver_;
@@ -38,6 +46,8 @@ class HotspotEnabledStateTestObserver
  private:
   mojo::Receiver<mojom::HotspotEnabledStateObserver> receiver_{this};
   size_t hotspot_turned_on_count_ = 0;
+  size_t hotspot_turned_off_count_ = 0;
+  mojom::DisableReason last_disable_reason_;
 };
 
 }  // namespace ash::hotspot_config

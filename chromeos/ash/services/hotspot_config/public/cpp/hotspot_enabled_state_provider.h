@@ -29,6 +29,8 @@ class HotspotEnabledStateProvider {
 
   void NotifyHotspotTurnedOn(bool wifi_turned_off);
 
+  void NotifyHotspotTurnedOff(mojom::DisableReason reason);
+
  private:
   mojo::RemoteSet<mojom::HotspotEnabledStateObserver> observers_;
 };
