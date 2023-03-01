@@ -28,15 +28,9 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
         std::move(stack_trace));
   }
 
-  unsigned line_number = 0;
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     Document* document = window->document();
-    // window->document() may be null in rare cases (e.g. during header
-    // parsing).
-    if (!document) {
-      return std::make_unique<SourceLocation>(String(), String(), 0, 0,
-                                              std::move(stack_trace));
-    }
+    unsigned line_number = 0;
     if (document->GetScriptableDocumentParser() &&
         !document->IsInDocumentWrite()) {
       if (document->GetScriptableDocumentParser()->IsParsingAtLineNumber()) {
@@ -44,11 +38,14 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
             document->GetScriptableDocumentParser()->LineNumber().OneBasedInt();
       }
     }
+    return std::make_unique<SourceLocation>(document->Url().GetString(),
+                                            String(), line_number, 0,
+                                            std::move(stack_trace));
   }
 
   return std::make_unique<SourceLocation>(
       execution_context ? execution_context->Url().GetString() : String(),
-      String(), line_number, 0, std::move(stack_trace));
+      String(), 0, 0, std::move(stack_trace));
 }
 
 std::unique_ptr<SourceLocation> CaptureSourceLocation(
