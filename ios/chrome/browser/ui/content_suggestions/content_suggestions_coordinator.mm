@@ -204,7 +204,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 #pragma mark - ContentSuggestionsViewControllerAudience
 
-- (void)viewDidDisappear {
+- (void)viewWillDisappear {
   // Start no longer showing
   self.contentSuggestionsMediator.showingStartSurface = NO;
   DiscoverFeedServiceFactory::GetForBrowserState(

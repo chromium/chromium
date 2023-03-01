@@ -351,10 +351,10 @@ CGFloat ModuleVerticalSpacing() {
   }
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [super viewDidDisappear:animated];
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
-    [self.audience viewDidDisappear];
+    [self.audience viewWillDisappear];
   }
 }
 

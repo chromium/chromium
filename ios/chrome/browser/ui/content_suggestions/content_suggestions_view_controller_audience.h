@@ -8,8 +8,8 @@
 // Audience for the ContentSuggestions, getting informations from it.
 @protocol ContentSuggestionsViewControllerAudience
 
-// Notifies the audience of the UIKit viewDidDisappear: callback.
-- (void)viewDidDisappear;
+// Notifies the audience of the UIKit viewWillDisappear: callback.
+- (void)viewWillDisappear;
 
 // Notifies the audience that the Return to Recent Tab tile has been added.
 - (void)returnToRecentTabWasAdded;
