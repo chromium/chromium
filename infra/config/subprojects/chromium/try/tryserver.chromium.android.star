@@ -285,16 +285,12 @@ try_.builder(
     name = "android-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 try_.builder(
     name = "android-deterministic-rel",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 try_.builder(
