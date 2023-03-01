@@ -53,6 +53,7 @@ per-file sync_ui_strings.grdp=file://components/sync/OWNERS
 per-file tab_groups_strings.grdp=file://components/tab_groups/OWNERS
 per-file translate_strings.grdp=file://components/translate/OWNERS
 per-file undo_strings.grdp=file://components/undo/OWNERS
+per-file user_education_strings.grdp=file://components/user_education/OWNERS
 per-file version_ui_strings.grdp=file://components/version_ui/OWNERS
 per-file web_contents_delegate_android_strings.grdp=file://components/embedder_support/android/delegate/OWNERS
 per-file webxr_strings.grdp=file://components/webxr/OWNERS
