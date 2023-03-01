@@ -1070,7 +1070,9 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
         // TODO(crbug/1101689): Add subpath for emoji suggestions settings.
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),
-            chromeos::settings::mojom::kSmartInputsSubpagePath);
+            SettingToQueryString(
+                chromeos::settings::mojom::kSmartInputsSubpagePath,
+                chromeos::settings::mojom::Setting::kShowEmojiSuggestions));
       }
       if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {
         autocorrect_manager_->HideUndoWindow();
