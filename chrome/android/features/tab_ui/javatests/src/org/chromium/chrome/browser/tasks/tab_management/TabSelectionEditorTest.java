@@ -627,6 +627,13 @@ public class TabSelectionEditorTest {
 
         View group = mTabSelectionEditorLayout.getToolbar().findViewById(groupId);
         assertEquals("Group 8 selected tabs", group.getContentDescription());
+
+        // Force the position to something fixed to 100% avoid flakes here.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ((TabListRecyclerView) mTabSelectionEditorLayout.findViewById(R.id.tab_list_view))
+                    .scrollToPosition(4);
+        });
+        ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
         mRenderTestRule.render(mTabSelectionEditorLayout, "groups_before_undo");
 
         mRobot.actionRobot.clickToolbarActionView(groupId);
