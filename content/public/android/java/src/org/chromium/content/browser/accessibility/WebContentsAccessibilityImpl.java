@@ -430,9 +430,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return mNativeObj != 0;
     }
 
-    private boolean isEnabled() {
-        return isNativeInitialized() ? WebContentsAccessibilityImplJni.get().isEnabled(mNativeObj)
-                                     : false;
+    private boolean isRootManagerConnected() {
+        return isNativeInitialized()
+                && WebContentsAccessibilityImplJni.get().isRootManagerConnected(mNativeObj);
     }
 
     public boolean isAccessibilityEnabled() {
@@ -589,9 +589,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         try (TraceEvent te = TraceEvent.scoped("WebContentsAccessibilityImpl.refreshNativeState")) {
             if (!isNativeInitialized()) return;
 
-            // Update the AXMode based on screen reader status.
-            WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj,
-                    AccessibilityState.isScreenReaderEnabled(),
+            // Update the browser-level AXMode based on screen reader status.
+            WebContentsAccessibilityImplJni.get().setBrowserAXMode(
+                    WebContentsAccessibilityImpl.this, AccessibilityState.isScreenReaderEnabled(),
                     /* isAccessibilityEnabled= */ true);
 
             // Update the state of how passwords are exposed based on user settings.
@@ -636,18 +636,20 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (shouldPreventNativeEngineUse()) return null;
 
         if (!isNativeInitialized()) {
-            if (mDelegate.getWebContents() != null) {
-                mNativeObj = WebContentsAccessibilityImplJni.get().init(
-                        WebContentsAccessibilityImpl.this, mDelegate.getWebContents(),
-                        mAccessibilityNodeInfoBuilder);
-            } else {
-                return null;
-            }
+            assert mDelegate.getWebContents()
+                    != null
+                : "WebContentsAccessibility with no "
+                  + "webContents should not be initialized, or it should be initialized during "
+                  + "constructor with an AXTreeUpdate.";
+
+            mNativeObj =
+                    WebContentsAccessibilityImplJni.get().init(WebContentsAccessibilityImpl.this,
+                            mDelegate.getWebContents(), mAccessibilityNodeInfoBuilder);
             onNativeInit();
         }
-        if (!isEnabled()) {
-            boolean screenReaderMode = AccessibilityState.isScreenReaderEnabled();
-            WebContentsAccessibilityImplJni.get().enable(mNativeObj, screenReaderMode);
+
+        if (!isRootManagerConnected()) {
+            WebContentsAccessibilityImplJni.get().connectInstanceToRootManager(mNativeObj);
             return null;
         }
 
@@ -1794,6 +1796,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 AccessibilityNodeInfoBuilder builder);
         long initWithAXTree(WebContentsAccessibilityImpl caller, long axTreePtr,
                 AccessibilityNodeInfoBuilder builder);
+        void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
+        void setBrowserAXMode(WebContentsAccessibilityImpl caller, boolean screenReaderMode,
+                boolean isAccessibilityEnabled);
+
         void deleteEarly(long nativeWebContentsAccessibilityAndroid);
         void onAutofillPopupDisplayed(long nativeWebContentsAccessibilityAndroid);
         void onAutofillPopupDismissed(long nativeWebContentsAccessibilityAndroid);
@@ -1835,10 +1841,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         boolean setRangeValue(long nativeWebContentsAccessibilityAndroid, int id, float value);
         String getSupportedHtmlElementTypes(long nativeWebContentsAccessibilityAndroid);
         void showContextMenu(long nativeWebContentsAccessibilityAndroid, int id);
-        boolean isEnabled(long nativeWebContentsAccessibilityAndroid);
-        void enable(long nativeWebContentsAccessibilityAndroid, boolean screenReaderMode);
-        void setAXMode(long nativeWebContentsAccessibilityAndroid, boolean screenReaderMode,
-                boolean isAccessibilityEnabled);
+        boolean isRootManagerConnected(long nativeWebContentsAccessibilityAndroid);
         void setPasswordRules(long nativeWebContentsAccessibilityAndroid,
                 boolean shouldRespectDisplayedPasswordText, boolean shouldExposePasswordText);
         boolean areInlineTextBoxesLoaded(long nativeWebContentsAccessibilityAndroid, int id);

@@ -224,6 +224,7 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
       *ax_tree_snapshot, GetWeakPtr(), nullptr);
   manager_->BuildAXTreeHitTestCache();
   connector_ = nullptr;
+
   BrowserAccessibilityStateImplAndroid* accessibility_state =
       static_cast<BrowserAccessibilityStateImplAndroid*>(
           BrowserAccessibilityStateImpl::GetInstance());
@@ -240,6 +241,16 @@ WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
   DeleteAutofillPopupProxy();
 
   Java_WebContentsAccessibilityImpl_onNativeObjectDestroyed(env, obj);
+}
+
+void WebContentsAccessibilityAndroid::ConnectInstanceToRootManager(
+    JNIEnv* env) {
+  BrowserAccessibilityManagerAndroid* manager =
+      GetRootBrowserAccessibilityManager();
+
+  if (manager) {
+    manager->set_web_contents_accessibility(GetWeakPtr());
+  }
 }
 
 void WebContentsAccessibilityAndroid::UpdateBrowserAccessibilityManager() {
@@ -261,67 +272,14 @@ void WebContentsAccessibilityAndroid::UnInitialize(JNIEnv* env) {
   // TODO(jacklynch): Implement teardown of native accessibility
 }
 
-jboolean WebContentsAccessibilityAndroid::IsEnabled(JNIEnv* env) {
+jboolean WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {
   return !!GetRootBrowserAccessibilityManager();
-}
-
-void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
-                                             jboolean screen_reader_mode) {
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-  BrowserAccessibilityManagerAndroid* manager =
-      GetRootBrowserAccessibilityManager();
-  // First check if we already have a BrowserAccessibilityManager that
-  // that needs to be connected to this instance. This can happen if
-  // BAM creation precedes render view updates for the associated
-  // web contents.
-  if (manager) {
-    manager->set_web_contents_accessibility(GetWeakPtr());
-    return;
-  }
-
-  if (features::IsComputeAXModeEnabled()) {
-    ui::AXMode mode =
-        screen_reader_mode ? ui::kAXModeComplete : ui::kAXModeBasic;
-    accessibility_state->AddAccessibilityModeFlags(mode);
-    return;
-  }
-
-  // Otherwise, enable accessibility globally unless it was
-  // explicitly disallowed by a command-line flag, then enable it for
-  // this WebContents if that succeeded.
-  accessibility_state->OnScreenReaderDetected();
-  if (accessibility_state->IsAccessibleBrowser() && web_contents_)
-    web_contents_->AddAccessibilityMode(ui::kAXModeComplete);
 }
 
 void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
     JNIEnv* env,
     jboolean allow_image_descriptions) {
   allow_image_descriptions_ = allow_image_descriptions;
-}
-
-void WebContentsAccessibilityAndroid::SetAXMode(
-    JNIEnv* env,
-    jboolean screen_reader_mode,
-    jboolean is_accessibility_enabled) {
-  BrowserAccessibilityStateImpl* accessibility_state =
-      BrowserAccessibilityStateImpl::GetInstance();
-
-  if (!features::IsComputeAXModeEnabled()) {
-    return;
-  }
-
-  if (screen_reader_mode) {
-    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-  } else {
-    // Remove the mode flags present in kAXModeComplete but not in
-    // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
-    // not touching any other flags.
-    ui::AXMode remove_mode_flags(ui::kAXModeComplete.flags() &
-                                 ~ui::kAXModeBasic.flags());
-    accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
-  }
 }
 
 void WebContentsAccessibilityAndroid::SetPasswordRules(
@@ -1533,6 +1491,40 @@ jlong JNI_WebContentsAccessibilityImpl_Init(
 
   return reinterpret_cast<intptr_t>(new WebContentsAccessibilityAndroid(
       env, obj, web_contents, jaccessibility_node_info_builder));
+}
+
+void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jboolean is_screen_reader_enabled,
+    jboolean is_any_accessibility_tool_present) {
+  BrowserAccessibilityStateImpl* accessibility_state =
+      BrowserAccessibilityStateImpl::GetInstance();
+
+  if (!features::IsComputeAXModeEnabled()) {
+    // When the browser is not yet accessible, then set the AXMode to
+    // |ui::kAXModeComplete| for all web contents.
+    if (!accessibility_state->IsAccessibleBrowser()) {
+      accessibility_state->OnScreenReaderDetected();
+    }
+    return;
+  }
+
+  // If the ComputeAXMode flag has been enabled, the AXMode flags will be set
+  // according to what is needed by the current system as indicated by the
+  // parameters. |ui::kAXModeComplete| if a screen reader is present, and
+  // |ui::kAXModeBasic| otherwise.
+  if (is_screen_reader_enabled) {
+    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
+    return;
+  }
+
+  // Remove the mode flags present in kAXModeComplete but not in
+  // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
+  // not touching any other flags.
+  ui::AXMode remove_mode_flags(ui::kAXModeComplete.flags() &
+                               ~ui::kAXModeBasic.flags());
+  accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
 }
 
 }  // namespace content

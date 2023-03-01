@@ -85,12 +85,22 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void DeleteEarly(JNIEnv* env);
   void UnInitialize(JNIEnv* env);
 
-  // Global methods.
-  jboolean IsEnabled(JNIEnv* env);
-  void Enable(JNIEnv* env, jboolean screen_reader_mode);
-  void SetAXMode(JNIEnv* env,
-                 jboolean screen_reader_mode,
-                 jboolean is_accessibility_enabled);
+  // To communicate over the JNI bridge, a BrowserAccessibilityManager needs to
+  // have a reference to |this| object. There may be multiple BAMs for a given
+  // frame, but on the Java-side there will be one WebContentsAccessibilityImpl.
+  // We connect only the root BAM to WCAI through a WeakPtr to |this| instance.
+  // We get the root BAM from the primary frame of the RenderFrameHostImpl for
+  // the webContents that is associated with this instance.
+  //
+  // Note: The root BAM may be null during construction, unless the BAM creation
+  // precedes render view updates for the associated web contents. If the root
+  // BAM is still null, this method does not connect the instances. The
+  // Java-side code will make a connection request on every attempt the Android
+  // Framework makes to get an AccessibilityNodeProvider, until the root manager
+  // is connected to |this| (See #IsRootManagerConnected, below). This may
+  // happen multiple times. See WebContentsAccessibilityImpl.java for more info.
+  void ConnectInstanceToRootManager(JNIEnv* env);
+  jboolean IsRootManagerConnected(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);

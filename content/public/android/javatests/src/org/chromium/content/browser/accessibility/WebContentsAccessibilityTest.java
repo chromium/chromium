@@ -390,7 +390,8 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        AccessibilityState.setScreenReaderModeForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AccessibilityState.setScreenReaderModeForTesting(true));
 
         performHistogramActions();
 
@@ -428,7 +429,8 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        AccessibilityState.setScreenReaderModeForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AccessibilityState.setScreenReaderModeForTesting(false));
 
         performHistogramActions();
 
@@ -468,8 +470,10 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state, set event type masks to empty.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-        AccessibilityState.setScreenReaderModeForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
+            AccessibilityState.setScreenReaderModeForTesting(true);
+        });
 
         performHistogramActions();
 
@@ -508,8 +512,10 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state, set event type masks to empty.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
-        AccessibilityState.setScreenReaderModeForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
+            AccessibilityState.setScreenReaderModeForTesting(false);
+        });
 
         performHistogramActions();
 
