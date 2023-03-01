@@ -48,35 +48,6 @@ const DBusTypeInfo& GetDBusTypeInfo<AdapterWithEnabled>(
   return info;
 }
 
-FlossManagerClient::PoweredCallback::PoweredCallback(ResponseCallback<Void> cb,
-                                                     int timeout_ms) {
-  cb_ = std::move(cb);
-  timeout_ms_ = timeout_ms;
-}
-
-FlossManagerClient::PoweredCallback::~PoweredCallback() = default;
-
-// static
-std::unique_ptr<FlossManagerClient::PoweredCallback>
-FlossManagerClient::PoweredCallback::CreateWithTimeout(
-    ResponseCallback<Void> cb,
-    int timeout_ms) {
-  std::unique_ptr<FlossManagerClient::PoweredCallback> self =
-      std::make_unique<FlossManagerClient::PoweredCallback>(std::move(cb),
-                                                            timeout_ms);
-  self->PostDelayedError();
-
-  return self;
-}
-
-void FlossManagerClient::PoweredCallback::PostDelayedError() {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PoweredCallback::RunError,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Milliseconds(timeout_ms_));
-}
-
 // static
 const char FlossManagerClient::kExportedCallbacksPath[] =
     "/org/chromium/bluetooth/managerclient";
@@ -157,7 +128,7 @@ void FlossManagerClient::SetFlossEnabled(
     absl::optional<ResponseCallback<bool>> cb) {
   if (cb) {
     set_floss_enabled_callback_ =
-        WeaklyOwnedCallback<bool>::Create(std::move(*cb));
+        WeaklyOwnedResponseCallback<bool>::Create(std::move(*cb));
   }
 
   CallManagerMethod<Void>(
@@ -176,8 +147,9 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
 
   DVLOG(1) << __func__;
 
-  powered_callback_ = PoweredCallback::CreateWithTimeout(
-      std::move(callback), kAdapterPowerTimeoutMs);
+  powered_callback_ = WeaklyOwnedResponseCallback<Void>::CreateWithTimeout(
+      std::move(callback), kAdapterPowerTimeoutMs,
+      base::unexpected(Error(kErrorNoResponse, "")));
 
   const char* command = enabled ? manager::kStart : manager::kStop;
   CallManagerMethod<Void>(
@@ -189,7 +161,7 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
 void FlossManagerClient::OnSetAdapterEnabled(DBusResult<Void> response) {
   // Only handle error cases since non-error called in OnHciEnabledChange
   if (powered_callback_ && !response.has_value()) {
-    powered_callback_->RunError();
+    powered_callback_->Run(base::unexpected(Error(kErrorNoResponse, "")));
     powered_callback_.reset();
   }
 }
@@ -373,7 +345,7 @@ void FlossManagerClient::OnHciDeviceChanged(int32_t adapter, bool present) {
 
 void FlossManagerClient::OnHciEnabledChanged(int32_t adapter, bool enabled) {
   if (adapter == GetDefaultAdapter() && powered_callback_) {
-    powered_callback_->RunNoError();
+    powered_callback_->Run(Void{});
     powered_callback_.reset();
   }
 
