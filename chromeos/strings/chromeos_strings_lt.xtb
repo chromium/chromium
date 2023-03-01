@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
+<translation id="3275506277319227640">Įstatyti <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Pseudoportreto vaizdas</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redaguoti failą}one{Redaguoti failus}few{Redaguoti failus}many{Redaguoti failus}other{Redaguoti failus}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3435738964857648380">Sauga</translation>
 <translation id="3435896845095436175">Įgalinti</translation>
+<translation id="345256797477978759">Įstatyti langą <ph name="DIRECTION" /> didesnėje ekrano dalyje</translation>
 <translation id="3456078764689556234">Atspausdinta <ph name="PRINTED_PAGES" /> iš <ph name="TOTAL_PAGES" /> psl.</translation>
 <translation id="345898999683440380">Nuskaitomas <ph name="PAGE_NUM" /> psl. Atlikta: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
 <translation id="3600339377155080675">Ekrano vaizdo bendrinimas</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
+<translation id="360282891121575443">Bendrinamuose albumuose esančias nuotraukas gali atnaujinti kiti naudotojai. Kasdien keičiant gali būti rodomi ekrano fonai, kurių šiuo metu nėra albume.</translation>
 <translation id="3603829704940252505">Pseudoportretas</translation>
 <translation id="3604713164406837697">Pakeisti ekrano foną</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
 <translation id="361575905210396100">Dėkojame už atsiliepimą</translation>
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
+<translation id="3639846061339007994">viršuje</translation>
 <translation id="3651050199673793219">Pasirinkti temperatūros matavimo vienetą</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Visas</translation>
 <translation id="4333390807948134856">Paspaustas klavišas <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Tvarkyti tinklo APN nustatymus. APN užmezga ryšį tarp mobiliojo ryšio tinklo ir interneto. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Įstatyti mažesnėje pusėje</translation>
 <translation id="4378373042927530923">Nevykdyti</translation>
 <translation id="4378551569595875038">Jungiamasi...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="6659594942844771486">Skirtukas</translation>
 <translation id="6692996468359469499">Su pasirinkimu susijusios informacijos gavimas</translation>
+<translation id="6698459586333070823">Bendrinamus albumus gali atnaujinti kiti naudotojai</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
 <translation id="6723847290197874913">Klaviatūros foninis apšvietimas</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Esama nuotrauka iš fotoaparato arba failo</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7170236477717446850">Profilio nuotrauka</translation>
+<translation id="7171919371520438592">Įstatyti langą <ph name="DIRECTION" /> mažesnėje ekrano dalyje</translation>
 <translation id="7172721935181587524">Vienas vaizdas</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Pridėti</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
+<translation id="8210733748736414123">apačioje</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>
 <translation id="8227119283605456246">Pridėtas failas</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Pridėkite paskyrą prie kelių paskyrų. Visos paskyros, prie kurių prisijungta, gali būti pasiekiamos be slaptažodžio, todėl ši funkcija turėtų būti naudojama tik su patikimomis paskyromis.</translation>
 <translation id="8364946094152050673">Domenų pavadinimų serveriai tušti</translation>
 <translation id="8372477600026034341">Papildomos prieglobos</translation>
+<translation id="8380114448424469341">Įstatyti langą <ph name="DIRECTION" /> ekrano pusėje</translation>
 <translation id="8395584934117017006">Šį „<ph name="DEVICE_TYPE" />“ įrenginį valdo įmonė</translation>
 <translation id="8398927464629426868">Rodiklis, nurodantis, per kiek laiko įrenginys šiuo metu įkraunamas arba išsikrauna</translation>
 <translation id="8410244574650205435">Automatiškai aptikta</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">„Google“ paslaugos</translation>
 <translation id="9138630967333032450">Kairysis antrojo lygio klavišas</translation>
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
+<translation id="9157515863513902090">Įstatyti didesnėje pusėje</translation>
 <translation id="9173638680043580060">Liko mažiau nei minutė</translation>
 <translation id="917720651393141712">Bandyti</translation>
 <translation id="9188992814426075118">Klaviatūra gali automatiškai atitikti ekrano foną</translation>

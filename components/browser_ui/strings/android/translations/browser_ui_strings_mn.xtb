@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Сайтууд таны төхөөрөмж дээр өгөгдөл хадгалах боломжтой</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />-г блоклосон</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
+<translation id="5810805850857689118">Энэ үйлдэл <ph name="ORIGIN" />-н бүх өгөгдөл, күүки болон үүний доорх бүх сайтыг арилгана</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5876056640971328065">Видеог түр зогсоох</translation>
 <translation id="5884085660368669834">Сайтын сонголт</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Сайтуудад таны төхөөрөмж дээр өгөгдөл хадгалахыг бүү зөвшөөр (санал болгодоггүй)</translation>
 <translation id="851751545965956758">Сайтуудыг төхөөрөмжүүдэд холбогдохыг нь блоклох</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
+<translation id="8528440122773422556">Энэ үйлдэл <ph name="ORIGIN" />-н доорх бүх сайтын эсвэл таны Үндсэн нүүрэн дээрх аппынх нь хадгалсан бүх өгөгдөл, күүкиг арилгана</translation>
 <translation id="8541410041357371550">Энэ сайт танд илүү хамааралтай зар харуулахын тулд таны зарын сэдвүүдийг Chrome-с авдаг</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}other{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}}</translation>
 <translation id="857943718398505171">Зөвшөөрөгдсөн (санал болгосон)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8990043154272859344">Таныг бүх сайтаас гаргана</translation>
 <translation id="9019902583201351841">Эцэг, эх нь хариуцан удирдаж байна</translation>
+<translation id="9039697262778250930">Таныг эдгээр сайтаас гаргаж магадгүй</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Энэ сайт таны үйл ажиллагааг харах боломжтой бүлэгт байна. Бүлгийг <ph name="FPS_OWNER" />-с тодорхойлсон</translation>
 <translation id="9106233582039520022">Күүкиг устгах уу?</translation>

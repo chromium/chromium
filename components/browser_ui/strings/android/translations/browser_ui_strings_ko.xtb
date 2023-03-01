@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">사이트에서 기기에 데이터를 저장할 수 있습니다.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> 차단됨</translation>
 <translation id="5804241973901381774">권한</translation>
+<translation id="5810805850857689118">이 작업을 실행하면 <ph name="ORIGIN" /> 및 모든 하위 사이트의 데이터와 쿠키가 전부 삭제됩니다.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5876056640971328065">동영상 일시중지</translation>
 <translation id="5884085660368669834">사이트 환경설정</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">사이트에서 기기에 데이터를 저장하도록 허용하지 않음(권장하지 않음)</translation>
 <translation id="851751545965956758">사이트에서 기기에 연결하지 못하도록 차단</translation>
 <translation id="8525306231823319788">전체화면</translation>
+<translation id="8528440122773422556">이 작업을 실행하면 <ph name="ORIGIN" />의 모든 하위 사이트 또는 홈 화면에 있는 앱에서 저장한 데이터와 쿠키가 전부 삭제됩니다.</translation>
 <translation id="8541410041357371550">이 사이트는 Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> 사이트 <ph name="FPS_MEMBERS_COUNT" />개에 쿠키가 허용됨}other{<ph name="FPS_OWNER" /> 사이트 <ph name="FPS_MEMBERS_COUNT" />개에 쿠키가 허용됨}}</translation>
 <translation id="857943718398505171">허용(권장)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8990043154272859344">모든 사이트에서 로그아웃됩니다.</translation>
 <translation id="9019902583201351841">부모님이 관리합니다.</translation>
+<translation id="9039697262778250930">다음 사이트에서 로그아웃될 수 있습니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9090268041676521955">이 사이트는 내 활동을 볼 수 있는 그룹에 있습니다. 그룹 정의 기준: <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">쿠키를 삭제하시겠습니까?</translation>

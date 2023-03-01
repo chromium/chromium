@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="3268178239013324452">Alınmadı - Qapı açıqdır</translation>
+<translation id="3275506277319227640">Əlavə edin: <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Avatar şəkli</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylı redaktə edin}other{Faylları redaktə edin}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHs</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
 <translation id="3435896845095436175">Aktivləşdirin</translation>
+<translation id="345256797477978759">Pəncərəni ekranın daha böyük <ph name="DIRECTION" /> hissəsinə əlavə edin</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> səhifə çap edilib.</translation>
 <translation id="345898999683440380">Səhifə <ph name="PAGE_NUM" /> skanlanır. <ph name="PERCENTAGE_VALUE" />% tamamlanıb.</translation>
 <translation id="3459509316159669723">Çap edilir</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="3600339377155080675">Ekran əks olunması</translation>
 <translation id="3602290021589620013">Önizləmə</translation>
+<translation id="360282891121575443">Digər istifadəçilər paylaşılan albomlardakı fotoları yeniləyə bilər. Gündəlik dəyişiklik hazırda albomda olmayan divar kağızlarını göstərə bilər.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Divar kağızını dəyişin</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3606583719724308068">HTTPS veb saytlarında yüksək gecikmə</translation>
 <translation id="361575905210396100">Rəyinizə görə çox sağolun</translation>
 <translation id="3632579075709132555">Məxfilik ekranı keçiricisi</translation>
+<translation id="3639846061339007994">üst</translation>
 <translation id="3651050199673793219">Temperatur vahidi seçin</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Tam</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> düyməsi basılıb</translation>
 <translation id="435692326371619097">Şəbəkə APN ayarlarını idarə edin. APN-lər mobil şəbəkə ilə internet arasında əlaqə yaradır. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Daha kiçik tərəfə əlavə edin</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
 <translation id="4378551569595875038">Qoşulur...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659594942844771486">Səkmə</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
+<translation id="6698459586333070823">Digər istifadəçilər paylaşılan albomları yeniləyə bilər</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
 <translation id="6723839937902243910">Enerji</translation>
 <translation id="6723847290197874913">Klaviaturanın arxa işığı</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Kamera və ya fayldan mövcud foto</translation>
 <translation id="7162487448488904999">Qalereya</translation>
 <translation id="7170236477717446850">Profil şəkli</translation>
+<translation id="7171919371520438592">Pəncərəni ekranın daha kiçik <ph name="DIRECTION" /> hissəsinə əlavə edin</translation>
 <translation id="7172721935181587524">1 şəkil</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Əlavə edin</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
+<translation id="8210733748736414123">alt</translation>
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>
 <translation id="8227119283605456246">Fayl qoşun</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Çoxsaylı giriş üçün hesab əlavə edin. Bu hesablara parolsuz daxil olmaq olar, ona görə də bu funksiya yalnız güvənilən hesablar ilə işlədilməlidir.</translation>
 <translation id="8364946094152050673">Boş ad serverləri</translation>
 <translation id="8372477600026034341">Əlavə hostlar</translation>
+<translation id="8380114448424469341">Pəncərəni ekranın <ph name="DIRECTION" /> yarısına əlavə edin</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> müəssisə tərəfindən idarə edilir</translation>
 <translation id="8398927464629426868">Cihazın hazırda şarj və ya deşarj olma sürəti</translation>
 <translation id="8410244574650205435">Avtomatik aşkar edildi</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9138630967333032450">Sol shift</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
+<translation id="9157515863513902090">Daha böyük tərəfə əlavə edin</translation>
 <translation id="9173638680043580060">Bir dəqiqədən az qalıb</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klaviaturanız avtomatik olaraq divar kağızı ilə uyğunlaşa bilər</translation>

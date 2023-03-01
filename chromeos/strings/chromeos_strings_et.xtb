@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
+<translation id="3275506277319227640">Doki <ph name="DIRECTION" /> poolele</translation>
 <translation id="3275729367986477355">Avatari pilt</translation>
 <translation id="3283504360622356314">{0,plural, =1{Muuda faili}other{Muuda faile}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="3435896845095436175">Luba</translation>
+<translation id="345256797477978759">Doki aken ekraani <ph name="DIRECTION" /> suuremale osale</translation>
 <translation id="3456078764689556234">Prinditi <ph name="PRINTED_PAGES" />. leht <ph name="TOTAL_PAGES" />-st.</translation>
 <translation id="345898999683440380">Lehe <ph name="PAGE_NUM" /> skannimine. <ph name="PERCENTAGE_VALUE" />% on lõpetatud.</translation>
 <translation id="3459509316159669723">Printimine</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Aku on täis</translation>
 <translation id="3600339377155080675">Ekraanikuva peegeldamine</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
+<translation id="360282891121575443">Jagatud albumites olevaid fotosid saavad uuendada ka teised kasutajad. Igapäevase muutmise korral võidakse kuvada taustapildid, mida albumis praegu pole.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Taustapildi muutmine</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
 <translation id="361575905210396100">Suur tänu tagasiside eest</translation>
 <translation id="3632579075709132555">Privaatsuskuva lüliti</translation>
+<translation id="3639846061339007994">ülemisele</translation>
 <translation id="3651050199673793219">Valige temperatuuriühik</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Laadimine...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Täielik</translation>
 <translation id="4333390807948134856">Klahv <ph name="KEY_NAME" /> on alla vajutatud</translation>
 <translation id="435692326371619097">Hallake võrgu APN-ide seadeid. APN-id loovad ühenduse mobiilsidevõrgu ja interneti vahel. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Doki väiksemale poolele</translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6659594942844771486">Vaheleht</translation>
 <translation id="6692996468359469499">Hankige oma valiku kohta teavet</translation>
+<translation id="6698459586333070823">Teised kasutajad võivad jagatud albumeid värskendada</translation>
 <translation id="6704062477274546131">DNS-lahendus</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="6723847290197874913">Klaviatuuri taustavalgus</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Olemasolev foto kaamerast või failist</translation>
 <translation id="7162487448488904999">Galerii</translation>
 <translation id="7170236477717446850">Profiilipilt</translation>
+<translation id="7171919371520438592">Doki aken ekraani <ph name="DIRECTION" /> väiksemale poolele</translation>
 <translation id="7172721935181587524">1 pilt</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Manusta</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
+<translation id="8210733748736414123">alumisele</translation>
 <translation id="8226628635270268143">Valige oma lemmikfotod ja -albumid</translation>
 <translation id="8227119283605456246">Manusta fail</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
 <translation id="8364946094152050673">Tühjad nimeserverid</translation>
 <translation id="8372477600026034341">Lisahostid</translation>
+<translation id="8380114448424469341">Doki aken ekraani <ph name="DIRECTION" /> poolele</translation>
 <translation id="8395584934117017006">Seda seadet <ph name="DEVICE_TYPE" /> haldab ettevõte</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
 <translation id="8410244574650205435">Automaatselt tuvastatud</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Vasakpoolne tõstuklahv</translation>
 <translation id="9149391708638971077">Käita mälutest</translation>
+<translation id="9157515863513902090">Doki suuremale poolele</translation>
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>
 <translation id="917720651393141712">Testi</translation>
 <translation id="9188992814426075118">Teie klaviatuuri saab automaatselt sobitada teie taustapildiga</translation>

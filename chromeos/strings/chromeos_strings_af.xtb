@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Soek skandeerders</translation>
 <translation id="3246869037381808805">Druktake ouer as 1 dag sal verwyder word</translation>
 <translation id="3268178239013324452">Misluk – Deur is oop</translation>
+<translation id="3275506277319227640">Dok op <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Avatar-prent</translation>
 <translation id="3283504360622356314">{0,plural, =1{Wysig lêer}other{Wysig lêers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3435896845095436175">Aktiveer</translation>
+<translation id="345256797477978759">Dok venster <ph name="DIRECTION" /> op die groot deel van die skerm</translation>
 <translation id="3456078764689556234">Het bladsy <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> gedruk.</translation>
 <translation id="345898999683440380">Skandeer tans bladsy <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% voltooi.</translation>
 <translation id="3459509316159669723">Druk tans</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Battery is vol</translation>
 <translation id="3600339377155080675">Skermweerspieëling</translation>
 <translation id="3602290021589620013">Voorskou</translation>
+<translation id="360282891121575443">Ander gebruikers kan foto’s in gedeelde albums oplaai. Verander daagliks sal dalk muurpapiere wys wat nie tans in die album is nie.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Verander muurpapier</translation>
 <translation id="360565022852130722">Wi-Fi-netwerk is met swak protokol WEP 802.1x beveilig</translation>
 <translation id="3606583719724308068">Hoë traagheid na HTTPS-webwerwe</translation>
 <translation id="361575905210396100">Dankie vir jou terugvoer</translation>
 <translation id="3632579075709132555">Privaatheidskermwisselaar</translation>
+<translation id="3639846061339007994">bo</translation>
 <translation id="3651050199673793219">Kies ’n temperatuureenheid</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />-toets</translation>
 <translation id="370665806235115550">Laai tans …</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Vol</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-sleutel is gedruk</translation>
 <translation id="435692326371619097">Bestuur netwerk-APN-instellings. APN'e vestig ’n verbinding tussen ’n selnetwerk en die internet. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Dok op klein kant</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6659594942844771486">Oortjie</translation>
 <translation id="6692996468359469499">Kry inligting wat met jou keuse verband hou</translation>
+<translation id="6698459586333070823">Ander gebruikers kan gedeelde albums opdateer</translation>
 <translation id="6704062477274546131">DNS-ontbinding</translation>
 <translation id="6723839937902243910">Intensiteit</translation>
 <translation id="6723847290197874913">Sleutelbordagterlig</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Bestaande foto in kamera of lêer</translation>
 <translation id="7162487448488904999">Galery</translation>
 <translation id="7170236477717446850">Profielprent</translation>
+<translation id="7171919371520438592">Dok venster <ph name="DIRECTION" /> op die klein deel van die skerm</translation>
 <translation id="7172721935181587524">1 prent</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Heg aan</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
+<translation id="8210733748736414123">onder</translation>
 <translation id="8226628635270268143">Kies jou gunstelingfoto's en -albums</translation>
 <translation id="8227119283605456246">Heg lêer aan</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>
 <translation id="8372477600026034341">Ekstra gashere</translation>
+<translation id="8380114448424469341">Dok venster op die <ph name="DIRECTION" />-helfte van die skerm</translation>
 <translation id="8395584934117017006">Hierdie <ph name="DEVICE_TYPE" /> word deur 'n onderneming bestuur</translation>
 <translation id="8398927464629426868">Die koers waarteen die toestel tans laai of ontlaai</translation>
 <translation id="8410244574650205435">Outomaties bespeur</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google-dienste</translation>
 <translation id="9138630967333032450">Linker-shift-sleutel</translation>
 <translation id="9149391708638971077">Laat loop geheuetoets</translation>
+<translation id="9157515863513902090">Dok op groot kant</translation>
 <translation id="9173638680043580060">Minder as 'n minuut oor</translation>
 <translation id="917720651393141712">Toets</translation>
 <translation id="9188992814426075118">Jou sleutelbord kan outomaties by jou muurpapier pas</translation>

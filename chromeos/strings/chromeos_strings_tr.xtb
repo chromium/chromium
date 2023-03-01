@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" /> tarafa sabitleyin</translation>
 <translation id="3275729367986477355">Avatar resmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Dosyayı düzenle}other{Dosyaları düzenle}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3435896845095436175">Etkinleştir</translation>
+<translation id="345256797477978759">Pencereyi, ekranın daha büyük olan <ph name="DIRECTION" /> tarafına sabitleyin</translation>
 <translation id="3456078764689556234">Yazdırılan sayfa: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. sayfa taranıyor %<ph name="PERCENTAGE_VALUE" /> tamamlandı</translation>
 <translation id="3459509316159669723">Yazdırma</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Pil tam dolu</translation>
 <translation id="3600339377155080675">Ekranı yansıt</translation>
 <translation id="3602290021589620013">Önizleme</translation>
+<translation id="360282891121575443">Paylaşılan albümlerdeki fotoğraflar diğer kullanıcılar tarafından güncellenebilir. Günlük olarak değiştirildiğinde şu anda albümde olmayan duvar kağıtları gösterilebilir.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Duvar kağıdını değiştir</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
 <translation id="3606583719724308068">HTTPS web sitelerinde yüksek gecikme süresi</translation>
 <translation id="361575905210396100">Geri bildiriminiz için teşekkürler</translation>
 <translation id="3632579075709132555">Gizlilik ekranını aç/kapat</translation>
+<translation id="3639846061339007994">üst</translation>
 <translation id="3651050199673793219">Bir sıcaklık birimi seçin</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Tam</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tuşuna basıldı</translation>
 <translation id="435692326371619097">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Küçük olan tarafa sabitleyin</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
 <translation id="4378551569595875038">Bağlanıyor...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6659594942844771486">Sekme</translation>
 <translation id="6692996468359469499">Seçiminizle alakalı bilgi edinin</translation>
+<translation id="6698459586333070823">Paylaşılan albümler diğer kullanıcılar tarafından güncellenebilir</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="6723847290197874913">Klavye arka ışığı</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Kameradan veya dosyadan mevcut fotoğraf</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Profil resmi</translation>
+<translation id="7171919371520438592">Pencereyi, ekranın daha küçük olan <ph name="DIRECTION" /> tarafına sabitleyin</translation>
 <translation id="7172721935181587524">1 Resim</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7180611975245234373">Yenile</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Ekle</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
+<translation id="8210733748736414123">alt</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>
 <translation id="8227119283605456246">Dosya ekle</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Çoklu oturum açmaya bir hesap ekleyin. Oturum açılmış tüm hesaplara şifresiz erişilebileceği için bu özellik sadece güvenilir hesaplarla kullanılmalıdır.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>
 <translation id="8372477600026034341">Ekstra ana makineler</translation>
+<translation id="8380114448424469341">Pencereyi, ekranın <ph name="DIRECTION" /> yarısına sabitleyin</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8410244574650205435">Otomatik olarak algılandı</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google Hizmetleri</translation>
 <translation id="9138630967333032450">Sol üst karakter</translation>
 <translation id="9149391708638971077">Bellek testini çalıştır</translation>
+<translation id="9157515863513902090">Büyük olan tarafa sabitleyin</translation>
 <translation id="9173638680043580060">Bir dakikadan az kaldı</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klavyeniz duvar kağıdınızla otomatik olarak eşleşebilir</translation>

@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
 <translation id="3246869037381808805">Bydd tasgau argraffu sy'n hŷn nag 1 diwrnod yn cael eu dileu</translation>
 <translation id="3268178239013324452">Wedi methu - Drws ar agor</translation>
+<translation id="3275506277319227640">Docio ar y <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Llun rhithffurf</translation>
 <translation id="3283504360622356314">{0,plural, =1{Golygu'r ffeil}zero{Golygu ffeiliau}two{Golygu ffeiliau}few{Golygu ffeiliau}many{Golygu ffeiliau}other{Golygu ffeiliau}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3435896845095436175">Galluogi</translation>
+<translation id="345256797477978759">Docio ffenestr ar rhan <ph name="DIRECTION" /> mwyaf o'r sgrîn</translation>
 <translation id="3456078764689556234">Argraffwyd tudalen <ph name="PRINTED_PAGES" /> allan o <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Wrthi'n sganio tudalen <ph name="PAGE_NUM" />. Wedi cwblhau <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Wrthi'n argraffu</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Mae'r batri yn llawn</translation>
 <translation id="3600339377155080675">Adlewyrchu sgrîn</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
+<translation id="360282891121575443">Gall defnyddwyr eraill ddiweddaru lluniau mewn albymau a rennir. Mae'n bosib y bydd Newid yn Ddyddiol yn dangos papurau wal nad ydynt yn yr albwm ar hyn o bryd.</translation>
 <translation id="3603829704940252505">Rhithffurf</translation>
 <translation id="3604713164406837697">Newid y papur wal</translation>
 <translation id="360565022852130722">Diogelir y rhwydwaith Wi-Fi gyda'r protocol gwan WEP 802.1x</translation>
 <translation id="3606583719724308068">Cuddni uchel i wefannau HTTPS</translation>
 <translation id="361575905210396100">Diolch am eich adborth</translation>
 <translation id="3632579075709132555">Togl sgrîn preifatrwydd</translation>
+<translation id="3639846061339007994">brig</translation>
 <translation id="3651050199673793219">Dewiswch uned tymheredd</translation>
 <translation id="3689839747745352263">Prawf <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Wrthi'n llwytho...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Llawn</translation>
 <translation id="4333390807948134856">Mae'r fysell <ph name="KEY_NAME" /> wedi'i phwyso</translation>
 <translation id="435692326371619097">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Docio ar yr ochr lai</translation>
 <translation id="4378373042927530923">Ni Redwyd</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Cyfrinair</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Cael gwybodaeth sy'n gysylltiedig â'ch dewis</translation>
+<translation id="6698459586333070823">Gall defnyddwyr eraill ddiweddaru albwm a rennir</translation>
 <translation id="6704062477274546131">Cydraniad DNS</translation>
 <translation id="6723839937902243910">Pŵer</translation>
 <translation id="6723847290197874913">Ôl-olau bysellfwrdd</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Llun presennol o'r camera neu ffeil</translation>
 <translation id="7162487448488904999">Oriel</translation>
 <translation id="7170236477717446850">Llun proffil</translation>
+<translation id="7171919371520438592">Docio ffenestr ar y rhan <ph name="DIRECTION" /> lleiaf o'r sgrîn</translation>
 <translation id="7172721935181587524">1 Llun</translation>
 <translation id="7177485034254901881">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />. Gall gweinyddwyr ffurfweddu'r ddyfais o bell.</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
@@ -749,6 +756,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Math o ddarparwr</translation>
 <translation id="7882501334836096755">Allwedd gyhoeddus</translation>
+<translation id="78957024357676568">chwith</translation>
 <translation id="7915220255123750251">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd.</translation>
 <translation id="7936303884198020182">Ni chanfuwyd gweinyddion enwau</translation>
 <translation id="7942349550061667556">Coch</translation>
@@ -777,6 +785,7 @@
 <translation id="8183974620058026102">Atodi</translation>
 <translation id="8206859287963243715">Symudol</translation>
 <translation id="8208861521865154048">Manteision</translation>
+<translation id="8210733748736414123">gwaelod</translation>
 <translation id="8226628635270268143">Dewiswch eich hoff luniau ac albymau</translation>
 <translation id="8227119283605456246">Atodi ffeil</translation>
 <translation id="8230672074305416752">Wedi methu â phingio porth y rhwydwaith diofyn</translation>
@@ -794,6 +803,7 @@
 <translation id="8352772353338965963">Ychwanegu cyfrif at fewngofnodi o sawl cyfrif. Gellir cael mynediad at bob cyfrif sydd wedi'i fewngofnodi heb gyfrinair, felly dim ond gyda chyfrifon dibynadwy y dylid defnyddio'r nodwedd hon.</translation>
 <translation id="8364946094152050673">Gweinyddion enw gwag</translation>
 <translation id="8372477600026034341">Gwesteiwyr ychwanegol</translation>
+<translation id="8380114448424469341">Docio ffenestr ar hanner <ph name="DIRECTION" /> y sgrîn</translation>
 <translation id="8395584934117017006">Mae'r <ph name="DEVICE_TYPE" /> wedi'i reoli gan y sefydliad</translation>
 <translation id="8398927464629426868">Y gyfradd y mae'r ddyfais yn gwefru neu'n dadwefru</translation>
 <translation id="8410244574650205435">Canfuwyd yn awtomatig</translation>
@@ -858,6 +868,7 @@
 <translation id="8930622219860340959">Diwifr</translation>
 <translation id="8936793075252196307">Cyfeiriad IP cleient</translation>
 <translation id="894617464444543719">Mae'r ddyfais yn ffôn.</translation>
+<translation id="8957423540740801332">dde</translation>
 <translation id="8968751544471797276">Cyfradd gwefru</translation>
 <translation id="8970109610781093811">Rhedeg eto</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -885,6 +896,7 @@
 <translation id="9137526406337347448">Gwasanaethau Google</translation>
 <translation id="9138630967333032450">Shift chwith</translation>
 <translation id="9149391708638971077">Rhedeg prawf Cof</translation>
+<translation id="9157515863513902090">Docio ar yr ochr fwy</translation>
 <translation id="9173638680043580060">Llai na munud ar ôl</translation>
 <translation id="917720651393141712">Prawf</translation>
 <translation id="9188992814426075118">Gall eich bysellfwrdd cyfateb â'ch papur wal</translation>

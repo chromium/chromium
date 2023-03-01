@@ -3536,6 +3536,7 @@
 <translation id="4102469565336584882">చెల్లని కోడ్. మీరు ఎంటర్ చేసేది LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; ఫార్మాట్‌లో ఉండాలి</translation>
 <translation id="4102906002417106771">పవర్‌వాష్ చేయడానికి రీస్టార్ట్ చేయి</translation>
 <translation id="4104163789986725820">ఎ&amp;గుమతి...</translation>
+<translation id="4104944259562794668">మీరు దానిని తర్వాత సెట్టింగ్‌లు &gt; సెక్యూరిటీ, గోప్యత &gt; లాక్ స్క్రీన్, సైన్ ఇన్ అనే ఆప్షన్‌లో ఎనేబుల్ చేయవచ్చు</translation>
 <translation id="4107048419833779140">నిల్వ డివైజ్‌లను గుర్తించి, తొలగించండి</translation>
 <translation id="4108314971463891922">ఫాలో అవ్వండి</translation>
 <translation id="4109135793348361820">విండోను <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)కు తరలించు</translation>
@@ -5564,6 +5565,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{వెబ్‌ను బ్రౌజ్ చేస్తూనే ఉండడాన్ని నిర్ధారించడానికి, మీ నిర్వాహకుడిని ఈ అప్లికేషన్‌ను తీసివేయమని కోరండి.}other{వెబ్‌ను బ్రౌజ్ చేస్తూనే ఉండడాన్ని నిర్ధారించడానికి, మీ నిర్వాహకుడిని ఈ అప్లికేషన్‌లను తీసివేయమని కోరండి.}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 సైట్‌కు రివ్యూ పూర్తయింది}other{{NUM_SITES} సైట్‌లకు రివ్యూ పూర్తయింది}}</translation>
 <translation id="5997337190805127100">సైట్ యాక్సెస్ గురించి మరింత తెలుసుకోండి</translation>
+<translation id="5998458948782718639">ఆటోఫిల్‌ను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' అనే దానికి <ph name="RESULT_COUNT" /> ఫలితాలు లభించాయి</translation>
 <translation id="6001839398155993679">ప్రారంభిద్దాం</translation>
 <translation id="6002122790816966947">మీ పరికరాలు</translation>
@@ -5651,6 +5653,7 @@
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> పేరు గల పరికరంతో డేటాను ఇచ్చిపుచ్చుకోవడానికి అనుమతి</translation>
 <translation id="6076175485108489240">స్థానాన్ని ఉపయోగించండి. స్థాన అనుమతిని కలిగిన యాప్‌లు మరియు సేవలు మీ పరికర స్థానాన్ని ఉపయోగించడానికి అనుమతించండి. Google కాలానుగుణంగా లొకేషన్ డేటాను సేకరించవచ్చు మరియు స్థాన ఖచ్చితత్వం మరియు స్థానం-ఆధారిత సేవలను మెరుగుపరచడం కోసం ఈ డేటాను అనామకంగా ఉపయోగించవచ్చు. <ph name="BEGIN_LINK1" />మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">లేత బూడిద రంగు</translation>
+<translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ మీ ఖాతాను యాక్సెస్ చేయాలనుకుంటోంది</translation>
 <translation id="6077131872140550515">ప్రాధాన్య నెట్‌వర్క్‌ల నుండి తీసివేయండి</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" />కు సంబంధించిన చిట్కాలు మరియు అప్‌డేట్‌లు</translation>
 <translation id="6077476112742402730">స్పీక్-టు-టైప్</translation>
@@ -7805,6 +7808,7 @@
 <translation id="8033827949643255796">ఎంచుకోబడ్డాయి</translation>
 <translation id="8033958968890501070">సమయం ముగిసింది</translation>
 <translation id="8035059678007243127">అజ్ఞాత వెనుకకు-ముందుకు కాష్ పేజీ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">ఆటోఫిల్‌ను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="8037117027592400564">సంశ్లేషణ ప్రసంగాన్ని ఉపయోగించి మాట్లాడిన మొత్తం వచనాన్ని చదవడం</translation>
 <translation id="8037357227543935929">అడగాలి (డిఫాల్ట్)</translation>
 <translation id="803771048473350947">ఫైల్</translation>
@@ -8001,6 +8005,7 @@
 <translation id="8206745257863499010">బ్లూసై</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8207404892907560325">పాస్-కీని ఎంచుకోండి</translation>
+<translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" ఉంది, కానీ చెల్లుబాటయ్యే <ph name="VM_TYPE" /> VMగా కనిపించడం లేదు. దయచేసి మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="8208188204689616705">ఈ సైట్ <ph name="FPS_OWNER" /> ద్వారా నిర్వచించబడిన గ్రూప్‌లో ఉంది. గ్రూప్‌లోని సైట్‌లు గ్రూప్‌లో మీ యాక్టివిటీని చూడగలవు.</translation>
 <translation id="8208216423136871611">సేవ్ చేయవద్దు</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{కొత్త నోటిఫికేషన్}other{# కొత్త నోటిఫికేషన్‌లు}}</translation>

@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Οι ιστότοποι μπορούν να αποθηκεύουν δεδομένα στη συσκευή σας</translation>
 <translation id="5771720122942595109">Η άδεια <ph name="PERMISSION_1" /> αποκλείστηκε.</translation>
 <translation id="5804241973901381774">Άδειες</translation>
+<translation id="5810805850857689118">Με αυτήν την ενέργεια, θα διαγραφούν όλα τα δεδομένα και τα cookie για το <ph name="ORIGIN" /> και όλους τους ιστοτόπους που περιλαμβάνονται σε αυτό.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5876056640971328065">Παύση βίντεο</translation>
 <translation id="5884085660368669834">Προτίμηση ιστοτόπου</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Να μην επιτρέπεται στους ιστοτόπους να αποθηκεύουν δεδομένα στη συσκευή σας (δεν συνιστάται)</translation>
 <translation id="851751545965956758">Αποκλεισμός ιστοτόπων από τη σύνδεση σε συσκευές</translation>
 <translation id="8525306231823319788">Πλήρης οθόνη</translation>
+<translation id="8528440122773422556">Με αυτήν την ενέργεια, θα διαγραφούν όλα τα δεδομένα και τα cookie που έχουν αποθηκευτεί από όλους τους ιστοτόπους στο <ph name="ORIGIN" /> ή από την εφαρμογή του στην αρχική οθόνη σας.</translation>
 <translation id="8541410041357371550">Αυτός ο ιστότοπος λαμβάνει τα θέματα διαφημίσεών σας από το Chrome, για να σας εμφανίζει πιο συναφείς διαφημίσεις.</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Επιτρέπονται τα cookie για <ph name="FPS_MEMBERS_COUNT" /> ιστότοπο <ph name="FPS_OWNER" />}other{Επιτρέπονται τα cookie για <ph name="FPS_MEMBERS_COUNT" /> ιστοτόπους <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Επιτρέπεται (συνιστάται)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
 <translation id="8990043154272859344">Θα αποσυνδεθείτε από όλους τους ιστοτόπους</translation>
 <translation id="9019902583201351841">Διαχειρίζεται από τους γονείς σου</translation>
+<translation id="9039697262778250930">Ενδέχεται να αποσυνδεθείτε από αυτούς τους ιστοτόπους</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Αυτός ο ιστότοπος ανήκει σε μια ομάδα που μπορεί να δει τη δραστηριότητά σας. Η ομάδα ορίζεται από το <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Διαγραφή cookie;</translation>

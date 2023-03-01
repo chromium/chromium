@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">አይርላንድኛ</translation>
 <translation id="4124935795427217608">ዩኒኮርን</translation>
 <translation id="4131235941541910880">የማያስፈልጉዎትን ንጥሎች ወደ መጣያ ይውሰዷቸው</translation>
+<translation id="4134804435730168042">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ ከመሣሪያ ውቅረት በኋላ ያግብሩ</translation>
 <translation id="4153015322587141338">በመደርደሪያ ውስጥ ያሉትን ፋይሎችዎን በፍጥነት ለመድረስ አንድ ፋይል ላይ የቀኝ ጠቅታ ያድርጉ እና «<ph name="PIN_COMMAND" />»ን ይምረጡ።</translation>
 <translation id="4157569377477607576">የአስተዳዳሪ መመሪያ የሚከተሉትን አይመክርም፦</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ተወስደዋል።</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">«<ph name="FILE_NAME" />» ይሰረዛል እና ወደነበረት ሊመልሱት አይችሉም።</translation>
 <translation id="4418686080762064601">ለፋይሎችዎ አቋራጭ ይፍጠሩ</translation>
 <translation id="4425149324548788773">የእኔ Drive</translation>
+<translation id="4432921877815220091">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ ከመሣሪያ ውቅረት በኋላ ያግብሩ፣ በአስተዳዳሪዎ የሚተዳደር</translation>
 <translation id="4439427728133035643">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%, አገናኝ</translation>
 <translation id="4442424173763614572">የዲ ኤን ኤስ ፍለጋ አልተሳካም</translation>
 <translation id="4462159676511157176">የብጁ ስም አገልጋዮች</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">የመቅዳት ክወና አልተሳካም፣ ያልተጠበቀ ስህተት፦ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">ደች (ኔዘርላንድስ) በአሜሪካ ዓለም አቀፍ ፒሲ ቁልፍ ሰሌዳ</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ ከመሣሪያ ውቅረት በኋላ ያግብሩ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">የድርደራ አማራጮች</translation>
@@ -937,6 +940,7 @@
 <translation id="8487700953926739672">ከመስመር ውጭ ይገኛል</translation>
 <translation id="8492972329130824181">የቤት አውታረ መረብ አይገኝም። ለማገናኘት የተንቀሳቃሽ ስልክ የውሂብ ዝውውር መንቃት አለበት።</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ሰርስሮ በማውጣት ላይ...</translation>
+<translation id="8502913769543567768">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ ከመሣሪያ ውቅረት በኋላ ያግብሩ፣ በአስተዳዳሪዎ የሚተዳደር</translation>
 <translation id="8521441079177373948">ዩኬ</translation>
 <translation id="853494022971700746">ፈረንሳይኛ (ፈረንሳይ)</translation>
 <translation id="8540608333167683902">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>

@@ -1274,6 +1274,15 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="2168397434410358693">Ritardo inattività in caso di utilizzo di CA</translation>
 <translation id="217013996107840632">Parametri della riga di comando per cambiare il browser alternativo.</translation>
 <translation id="2170233653554726857">Attiva ottimizzazione WPAD</translation>
+<translation id="2172528612637587749">Consente di configurare l'elenco di immagini da visualizzare nel salvaschermo per la schermata di blocco.
+
+Ogni voce deve essere un URL che fa riferimento a un file immagine. Il formato dell'immagine deve essere JPEG e le dimensioni del file non devono essere superiori a 8 MB. Gli URL non validi e le immagini non supportate verranno ignorati. Il dispositivo <ph name="PRODUCT_OS_NAME" /> scaricherà queste immagini e le conserverà in una cache locale.
+
+È possibile visualizzare massimo 25 immagini nel salvaschermo. Verranno utilizzate soltanto le prime 25 voci di URL dell'elenco.
+
+Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> viene impostato su false.
+
+Se questo criterio non viene configurato o se l'elenco non contiene riferimenti a immagini validi, il salvaschermo per la schermata di blocco non verrà visualizzato, a prescindere dal valore impostato nel criterio <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2175353308236295184">Oggetto di configurazione JSON specifico dell'app con una serie di coppie chiave-valore, ad esempio '"managedConfiguration": { "key1": value1, "key2": value2 }'. Le chiavi sono definite nel file manifest dell'app.</translation>
 <translation id="2176115444876446233">Gli utenti non possono raccogliere dati di rilevamento del rendimento a livello di sistema.</translation>
 <translation id="2177696016354404697">Disattiva sempre la Schermata privata</translation>
@@ -3472,6 +3481,15 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4212181786686887763">L'URL da cui è possibile scaricare l'immagine di sfondo.</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
+<translation id="4225083820650584375">Consente di configurare l'elenco di immagini da visualizzare nel salvaschermo per la schermata di accesso.
+
+Ogni voce deve essere un URL che fa riferimento a un file immagine. Il formato dell'immagine deve essere JPEG e le dimensioni del file non devono essere superiori a 8 MB. Gli URL non validi e le immagini non supportate verranno ignorati. Il dispositivo <ph name="PRODUCT_OS_NAME" /> scaricherà queste immagini e le conserverà in una cache locale.
+
+È possibile visualizzare massimo 25 immagini nel salvaschermo. Verranno utilizzate soltanto le prime 25 voci di URL dell'elenco.
+
+Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> viene impostato su false.
+
+Se questo criterio non viene configurato o se l'elenco non contiene riferimenti a immagini validi, il salvaschermo per la schermata di accesso non verrà visualizzato, a prescindere dal valore impostato nel criterio <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="42267415200641481">Se questo criterio viene impostato su true, la risoluzione DNS di sistema (getaddrinfo()) potrebbe essere eseguita al di fuori del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.
 
       Se questo criterio viene impostato su false, la risoluzione DNS di sistema (getaddrinfo()) viene eseguita nel processo di rete anziché nel browser. Questa operazione potrebbe forzare la disattivazione della sandbox del servizio di rete, riducendo la sicurezza di <ph name="PRODUCT_NAME" />.

@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
+<translation id="3275506277319227640">Kaitkan ke <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Gambar avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3435896845095436175">Aktifkan</translation>
+<translation id="345256797477978759">Kaitkan jendela di bagian <ph name="DIRECTION" /> layar yang lebih besar</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> dari <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Memindai halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Pencetakan</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="3600339377155080675">Pencerminan layar</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
+<translation id="360282891121575443">Foto dalam album bersama dapat diperbarui oleh pengguna lain. Dengan mengubahnya setiap hari, wallpaper yang saat ini tidak ada di album mungkin akan ditampilkan.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
+<translation id="3639846061339007994">atas</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Kaitkan ke sisi yang lebih kecil</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
+<translation id="6698459586333070823">Album bersama dapat diperbarui oleh pengguna lain</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6723847290197874913">Lampu latar keyboard</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Foto yang sudah ada dari kamera atau file</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Gambar profil</translation>
+<translation id="7171919371520438592">Kaitkan jendela di bagian <ph name="DIRECTION" /> layar yang lebih kecil</translation>
 <translation id="7172721935181587524">1 Gambar</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Lampirkan</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8208861521865154048">Keuntungan</translation>
+<translation id="8210733748736414123">bawah</translation>
 <translation id="8226628635270268143">Pilih foto dan album favorit</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>
 <translation id="8372477600026034341">Host tambahan</translation>
+<translation id="8380114448424469341">Kaitkan jendela di paruh <ph name="DIRECTION" /> layar</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
 <translation id="8410244574650205435">Terdeteksi secara otomatis</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
+<translation id="9157515863513902090">Kaitkan ke sisi yang lebih besar</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="917720651393141712">Uji</translation>
 <translation id="9188992814426075118">Keyboard dapat otomatis menyesuaikan dengan wallpaper Anda</translation>

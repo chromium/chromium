@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Saytlar cihazınızda data saxlaya bilər</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloklanıb</translation>
 <translation id="5804241973901381774">İcazələr</translation>
+<translation id="5810805850857689118">Bu əməliyyat ilə <ph name="ORIGIN" /> və ona aid saytların data və kukiləri silinəcək</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5876056640971328065">Videoya pauza verin</translation>
 <translation id="5884085660368669834">Sayt tərcihi</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
+<translation id="8528440122773422556">Bu əməliyyat ilə <ph name="ORIGIN" /> üzrə saytlar və ya onun tətbiqi vasitəsilə Ana ekranda saxlanan data və kukilər silinəcək</translation>
 <translation id="8541410041357371550">Bu sayt həmçinin sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}}</translation>
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Unudun</translation>
 <translation id="8990043154272859344">Bütün saytlardan çıxacaqsınız</translation>
 <translation id="9019902583201351841">Valideynləriniz tərəfindən idarə olunur</translation>
+<translation id="9039697262778250930">Bu saytlardan çıxarıla bilərsiniz</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Bu sayt fəaliyyətinizi görə bilən qrupdadır. Qrup <ph name="FPS_OWNER" /> tərəfindən təyin edilib.</translation>
 <translation id="9106233582039520022">Kukilər silinsin?</translation>
