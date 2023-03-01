@@ -1,7 +1,7 @@
 caption: Default sensors setting
 default: null
 desc: |-
-  Setting the policy to 1 lets websites access and use sensors such as motion and light. Setting the policy to 2 denies acess to sensors.
+  Setting the policy to 1 lets websites access and use sensors such as motion and light. Setting the policy to 2 denies access to sensors.
 
         Leaving it unset means <ph name="ALLOW_SENSORS_POLICY_NAME">AllowSensors</ph> applies, but users can change this setting.
 example_value: 2

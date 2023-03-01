@@ -9,7 +9,7 @@ desc: |2-
 
         Currently this policy disables SitePerProcess and IsolateOrigins policies.
 
-        If the policy is enabled, WebDriver will be able to override incomaptible policies.
+        If the policy is enabled, WebDriver will be able to override incompatible policies.
 
         If the policy is disabled or not configured, WebDriver will not be allowed to override incompatible policies.
 device_only: false

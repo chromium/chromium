@@ -3,7 +3,7 @@ deprecated: true
 desc: |-
   This feature has been removed in Chrome 100.
 
-        Setting this policy to Enabled will cause recommendations for apps previously installed by the user on other devices. These recommendations will appear in the launcher after the local app recomendations, if no search text has been entered.
+        Setting this policy to Enabled will cause recommendations for apps previously installed by the user on other devices. These recommendations will appear in the launcher after the local app recommendations, if no search text has been entered.
 
         Setting this policy as Disabled or leaving it unset means these recommendations do not appear.
 

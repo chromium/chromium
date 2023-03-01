@@ -5,7 +5,7 @@ desc: "Allows you to specify configs for authentication urls in <ph name=\"WEBVI
   \ when webpage in <ph name=\"WEBVIEW_PRODUCT_NAME\">Android WebView</ph>\n     \
   \ is navigated to authentication urls, corresponding Identity providers authenticator\
   \ app that can handle this authentication URL would be launched.\n\n      This flow\
-  \ of launching the Idenity providers authenticator app would be used by the Identity\
+  \ of launching the Identity providers authenticator app would be used by the Identity\
   \ providers to enable\n      use cases like providing SSO across apps or provide\
   \ better security by collecting zero trust device signals to understand device posture\
   \ during authentication.\n\n      If there is no valid app installed to handle authentication\

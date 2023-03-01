@@ -8,7 +8,7 @@ desc: |-
 
         When this policy is disabled, the <ph name="WEBXR_API_NAME">WebXR Device API</ph> will reject requests to create sessions with mode set to <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph>. The existing <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions (if any) will not be terminated.
 
-        For more details about <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions, please see <ph name="WEBXR_AR_MODULE_API_NAME">WebXR Augmented Reality Module</ph> specfication.
+        For more details about <ph name="WEBXR_AR_SESSION_ENUM_VALUE">"immersive-ar"</ph> sessions, please see <ph name="WEBXR_AR_MODULE_API_NAME">WebXR Augmented Reality Module</ph> specification.
 example_value: true
 features:
   dynamic_refresh: true

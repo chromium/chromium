@@ -7,7 +7,7 @@ desc: |-
 
         This policy is disabled by default, and if enabled, leaves users open to the security issue https://crbug.com/600352.
 
-        This policy is intended to give enterprises a chance to migrate exising servers off of HTTP/0.9, and will be removed in the future.
+        This policy is intended to give enterprises a chance to migrate existing servers off of HTTP/0.9, and will be removed in the future.
 
         If this policy is not set, HTTP/0.9 will be disabled on non-default ports.
 example_value: false
