@@ -290,7 +290,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabEngagementReportingAndroid,
     &kTabGroupsAndroid,
     &kTabGroupsContinuationAndroid,
-    &kTabGroupsUiImprovementsAndroid,
     &kTabGroupsForTablets,
     &kDiscoverFeedMultiColumn,
     &kTabStripRedesign,
@@ -945,6 +944,9 @@ BASE_FEATURE(kTabEngagementReportingAndroid,
              "TabEngagementReportingAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled, but used in tests to simulate behaviors for configurations where tab
+// groups are currently unsupported (low-end devices and users of the
+// accessibility tab switcher).
 BASE_FEATURE(kTabGroupsAndroid,
              "TabGroupsAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -952,10 +954,6 @@ BASE_FEATURE(kTabGroupsAndroid,
 BASE_FEATURE(kTabGroupsContinuationAndroid,
              "TabGroupsContinuationAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabGroupsUiImprovementsAndroid,
-             "TabGroupsUiImprovementsAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupsForTablets,
              "TabGroupsForTablets",
@@ -985,6 +983,8 @@ BASE_FEATURE(kTabStripRedesign,
              "TabStripRedesign",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled, but often disabled in tests to reduce animation flakes and test
+// low-end device behavior where this animation is disabled.
 BASE_FEATURE(kTabToGTSAnimation,
              "TabToGTSAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);

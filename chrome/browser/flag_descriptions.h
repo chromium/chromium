@@ -1675,17 +1675,8 @@ extern const char kCommerceDeveloperDescription[];
 extern const char kCommerceMerchantViewerAndroidName[];
 extern const char kCommerceMerchantViewerAndroidDescription[];
 
-extern const char kTabGroupsAndroidName[];
-extern const char kTabGroupsAndroidDescription[];
-
 extern const char kTabGroupsContinuationAndroidName[];
 extern const char kTabGroupsContinuationAndroidDescription[];
-
-extern const char kTabGroupsUiImprovementsAndroidName[];
-extern const char kTabGroupsUiImprovementsAndroidDescription[];
-
-extern const char kTabToGTSAnimationAndroidName[];
-extern const char kTabToGTSAnimationAndroidDescription[];
 
 extern const char kTabGroupsNewBadgePromoName[];
 extern const char kTabGroupsNewBadgePromoDescription[];

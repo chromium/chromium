@@ -501,8 +501,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUPS_ANDROID = "TabGroupsAndroid";
     public static final String TAB_GROUPS_CONTINUATION_ANDROID = "TabGroupsContinuationAndroid";
     public static final String TAB_GROUPS_FOR_TABLETS = "TabGroupsForTablets";
-    public static final String TAB_GROUPS_UI_IMPROVEMENTS_ANDROID =
-            "TabGroupsUiImprovementsAndroid";
     public static final String TAB_SELECTION_EDITOR_V2 = "TabSelectionEditorV2";
     public static final String TAB_STATE_V1_OPTIMIZATIONS = "TabStateV1Optimizations";
     public static final String TAB_STRIP_IMPROVEMENTS = "TabStripImprovements";

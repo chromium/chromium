@@ -2963,22 +2963,9 @@ const char kCommerceMerchantViewerAndroidName[] = "Merchant Viewer";
 const char kCommerceMerchantViewerAndroidDescription[] =
     "Allows users to view merchant trust signals on eligible pages.";
 
-const char kTabGroupsAndroidName[] = "Tab Groups";
-const char kTabGroupsAndroidDescription[] =
-    "Allows users to create groups to better organize their tabs on phones.";
-
 const char kTabGroupsContinuationAndroidName[] = "Tab Groups Continuation";
 const char kTabGroupsContinuationAndroidDescription[] =
     "Allows users to access continuation features in Tab Group on phones.";
-
-const char kTabGroupsUiImprovementsAndroidName[] = "Tab Groups UI Improvements";
-const char kTabGroupsUiImprovementsAndroidDescription[] =
-    "Allows users to access new features in Tab Group UI on phones.";
-
-const char kTabToGTSAnimationAndroidName[] = "Enable Tab-to-GTS Animation";
-const char kTabToGTSAnimationAndroidDescription[] =
-    "Allows users to see an animation when entering or leaving the "
-    "Grid Tab Switcher on phones.";
 
 const char kTabGroupsNewBadgePromoName[] = "Tab Groups 'New' Badge Promo";
 const char kTabGroupsNewBadgePromoDescription[] =

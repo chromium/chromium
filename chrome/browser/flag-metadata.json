@@ -3164,11 +3164,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-tab-groups",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-tab-groups-continuation",
     "owners": [ "ckitagawa", "fredmello", "memex-team@google.com" ],
     "expiry_milestone": 114
@@ -3177,11 +3172,6 @@
     "name": "enable-tab-groups-for-tablets",
     "owners": [ "skavuluru", "clank-app-team@google.com" ],
     "expiry_milestone": 114
-  },
-  {
-    "name": "enable-tab-groups-ui-improvements",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 90
   },
   {
     "name": "enable-tab-search",
@@ -3202,11 +3192,6 @@
     "name": "enable-tab-switcher-on-return",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 108
-  },
-  {
-    "name": "enable-tab-to-gts-animation",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 90
   },
   {
     "name": "enable-tailored-security-integration",

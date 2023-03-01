@@ -6100,10 +6100,6 @@ const FeatureEntry kFeatureEntries[] = {
          commerce::kCommercePriceTrackingAndroidVariations,
          "CommercePriceTracking")},
 
-    {"enable-tab-groups", flag_descriptions::kTabGroupsAndroidName,
-     flag_descriptions::kTabGroupsAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabGroupsAndroid)},
-
     {"enable-tab-groups-continuation",
      flag_descriptions::kTabGroupsContinuationAndroidName,
      flag_descriptions::kTabGroupsContinuationAndroidDescription, kOsAndroid,
@@ -6112,21 +6108,12 @@ const FeatureEntry kFeatureEntries[] = {
          kTabGroupsContinuationAndroidVariations,
          "TabGroupsContinuation")},
 
-    {"enable-tab-groups-ui-improvements",
-     flag_descriptions::kTabGroupsUiImprovementsAndroidName,
-     flag_descriptions::kTabGroupsUiImprovementsAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabGroupsUiImprovementsAndroid)},
-
     {"enable-start-surface-return-time",
      flag_descriptions::kStartSurfaceReturnTimeName,
      flag_descriptions::kStartSurfaceReturnTimeDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kStartSurfaceReturnTime,
                                     kStartSurfaceReturnTimeVariations,
                                     "StartSurfaceReturnTime")},
-    {"enable-tab-to-gts-animation",
-     flag_descriptions::kTabToGTSAnimationAndroidName,
-     flag_descriptions::kTabToGTSAnimationAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabToGTSAnimation)},
 
     {"enable-tab-engagement-reporting",
      flag_descriptions::kTabEngagementReportingName,
