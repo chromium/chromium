@@ -1742,7 +1742,7 @@ void RunOfflineInstall(UpdaterScope scope,
   EXPECT_EQ(
       key.Open(root, app_client_state_key.c_str(), Wow6432(KEY_QUERY_VALUE)),
       ERROR_SUCCESS);
-  EXPECT_EQ(key.ReadValue(kRegValueInstallerResultUIString, &value),
+  EXPECT_EQ(key.ReadValue(kRegValueLastInstallerResultUIString, &value),
             ERROR_SUCCESS);
   EXPECT_EQ(value, L"CoolApp");
 

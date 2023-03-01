@@ -383,7 +383,38 @@ Application installers are run with a 15-minute timeout. If the installer runs
 for longer than this, the updater assumes failure and continues operation.
 However, the updater does not kill the installer process.
 
-The application installer API varies by platform. [macOS](installer_api_mac.md), [Windows](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/win/installer_api.h).
+The application installer API varies by platform.
+[macOS](installer_api_mac.md),
+[Windows](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/win/installer_api.h).
+
+For Windows, for backward compatibility, the following installer results are
+read and written from the registry:
+
+* `InstallerProgress` : The installer writes a percentage value (0-100) while
+installing so that the updater can provide feedback to the user on the progress.
+* `InstallerError` : Installer error, or 0 for success.
+* `InstallerExtraCode1` : Optional extra code.
+* `InstallerResult` : Specifies the result type and how to determine success or
+failure:
+  *   0 - SUCCESS
+  *   1 - FAILED\_CUSTOM\_ERROR
+  *   2 - FAILED\_MSI\_ERROR
+  *   3 - FAILED\_SYSTEM\_ERROR
+  *   4 - FAILED\_EXIT\_CODE (default)
+* `InstallerResultUIString` : A string to be displayed to the user, if
+`InstallerResult` is FAILED*.
+* `InstallerSuccessLaunchCmdLine` : On success, the installer writes a command
+line to be launched by the updater. The command line will be launched at medium
+integrity on Vista with UAC on, even if the application being installed is a
+machine application. Since this is a command line, the application path should
+be properly enclosed. For example:
+`"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" /foo`
+
+On an update or install, the InstallerXXX values are renamed to LastInstallerXXX
+values. The LastInstallerXXX values remain around until the next update or
+install. Legacy MSI installers read values such as the
+`LastInstallerResultUIString` from the `ClientState` key in the registry and
+display the string.
 
 TODO(crbug.com/1339454): Implement running installers at
 BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.

@@ -54,12 +54,24 @@ extern const wchar_t kRegValueName[];
 extern const wchar_t kRegValueUninstallCmdLine[];
 
 // Installer API registry names.
+// Registry values read from the Clients key for transmitting custom install
+// errors, messages, etc. On an update or install, the InstallerXXX values are
+// renamed to LastInstallerXXX values. The LastInstallerXXX values remain around
+// until the next update or install. Legacy MSI installers read values such as
+// the `LastInstallerResultUIString` from the `ClientState` key in the registry
+// and display the string.
 extern const wchar_t kRegValueInstallerError[];
 extern const wchar_t kRegValueInstallerExtraCode1[];
 extern const wchar_t kRegValueInstallerProgress[];
 extern const wchar_t kRegValueInstallerResult[];
 extern const wchar_t kRegValueInstallerResultUIString[];
 extern const wchar_t kRegValueInstallerSuccessLaunchCmdLine[];
+
+extern const wchar_t kRegValueLastInstallerResult[];
+extern const wchar_t kRegValueLastInstallerError[];
+extern const wchar_t kRegValueLastInstallerExtraCode1[];
+extern const wchar_t kRegValueLastInstallerResultUIString[];
+extern const wchar_t kRegValueLastInstallerSuccessLaunchCmdLine[];
 
 // AppCommand registry constants.
 extern const wchar_t kRegKeyCommands[];

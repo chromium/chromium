@@ -35,6 +35,14 @@ const wchar_t kRegValueInstallerResultUIString[] = L"InstallerResultUIString";
 const wchar_t kRegValueInstallerSuccessLaunchCmdLine[] =
     L"InstallerSuccessLaunchCmdLine";
 
+const wchar_t kRegValueLastInstallerResult[] = L"LastInstallerResult";
+const wchar_t kRegValueLastInstallerError[] = L"LastInstallerError";
+const wchar_t kRegValueLastInstallerExtraCode1[] = L"LastInstallerExtraCode1";
+const wchar_t kRegValueLastInstallerResultUIString[] =
+    L"LastInstallerResultUIString";
+const wchar_t kRegValueLastInstallerSuccessLaunchCmdLine[] =
+    L"LastInstallerSuccessLaunchCmdLine";
+
 const wchar_t kRegKeyCompanyCloudManagement[] =
     COMPANY_POLICIES_KEY L"CloudManagement\\";
 const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";

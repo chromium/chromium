@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/win/registry.h"
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/installer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -108,6 +109,12 @@ struct InstallerOutcome {
   absl::optional<std::string> installer_cmd_line;
 };
 
+// Opens the registry ClientState subkey for the `app_id`.
+absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
+    UpdaterScope updater_scope,
+    const std::string& app_id,
+    REGSAM regsam);
+
 // Deletes the `app_id` registry sub key under the `ClientState`.
 bool ClientStateAppKeyDelete(UpdaterScope updater_scope,
                              const std::string& app_id);
@@ -124,7 +131,9 @@ bool SetInstallerProgressForTesting(UpdaterScope updater_scope,
 bool DeleteInstallerOutput(UpdaterScope updater_scope,
                            const std::string& app_id);
 
-// Returns the Instaler API outcome, best-effort.
+// Returns the Installer API outcome, best-effort, and renames the InstallerXXX
+// values to LastInstallerXXX values. The LastInstallerXXX values remain around
+// until the next update or install.
 absl::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
                                                      const std::string& app_id);
 bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
