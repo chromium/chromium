@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
@@ -56,6 +57,7 @@ class PrerenderService;
 @protocol ToolbarCommands;
 @protocol IncognitoReauthCommands;
 @protocol LoadQueryCommands;
+class UrlLoadingBrowserAgent;
 
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 typedef struct {
@@ -83,6 +85,7 @@ typedef struct {
   id<LoadQueryCommands> loadQueryCommandsHandler;
   id<OmniboxCommands> omniboxCommandsHandler;
   BOOL isOffTheRecord;
+  UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

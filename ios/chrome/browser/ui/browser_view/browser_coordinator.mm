@@ -637,6 +637,7 @@ enum class ToolbarKind {
 - (void)destroyViewController {
   // TODO(crbug.com/1272516): Set the WebUsageEnablerBrowserAgent to disabled.
   self.viewController.active = NO;
+
   // TODO(crbug.com/1415244): Remove when BVC will no longer handle commands.
   [self.dispatcher stopDispatchingToTarget:self.viewController];
   [self.viewController shutdown];
@@ -848,6 +849,8 @@ enum class ToolbarKind {
       static_cast<id<OmniboxCommands>>(_dispatcher);
   _viewControllerDependencies.isOffTheRecord =
       self.browser->GetBrowserState()->IsOffTheRecord();
+  _viewControllerDependencies.urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {

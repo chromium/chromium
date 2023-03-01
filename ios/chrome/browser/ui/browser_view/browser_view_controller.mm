@@ -92,7 +92,6 @@
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -293,6 +292,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // the thumb strip is visible.
   std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
 
+  // The service used to load url parameters in current or new tab.
+  UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
+
   // For thumb strip, when YES, fullscreen disabler is reset only when web view
   // dragging stops, to avoid closing thumb strip and going fullscreen in
   // one single drag gesture.  When NO, full screen disabler is reset when
@@ -489,6 +491,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.loadQueryCommandsHandler = dependencies.loadQueryCommandsHandler;
     self.omniboxCommandsHandler = dependencies.omniboxCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
+    _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -796,7 +799,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
   params.in_incognito = offTheRecord;
   params.inherit_opener = inheritOpener;
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  _urlLoadingBrowserAgent->Load(params);
 }
 
 - (void)appendTabAddedCompletion:(ProceduralBlock)tabAddedCompletion {
