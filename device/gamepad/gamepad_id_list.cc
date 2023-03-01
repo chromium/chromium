@@ -133,6 +133,11 @@ constexpr struct GamepadInfo {
     {0x04e8, 0xa000, kXInputTypeNone},
     // Siam United Hi-Tech
     {0x0500, 0x9b28, kXInputTypeNone},
+    // Acer, Inc.
+    {0x0502, 0x1304, kXInputTypeXbox360},
+    {0x0502, 0x1305, kXInputTypeXbox360},
+    {0x0502, 0x1316, kXInputTypeNone},
+    {0x0502, 0x1317, kXInputTypeNone},
     // Belkin Components
     {0x050d, 0x0802, kXInputTypeNone},
     {0x050d, 0x0803, kXInputTypeNone},

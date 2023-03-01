@@ -936,6 +936,35 @@ void MapperDjiFpv(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = kDjiFpvAxisCount;
 }
 
+void MapperAcer(const Gamepad& input, Gamepad* mapped) {
+  *mapped = input;
+  mapped->buttons_length = BUTTON_INDEX_COUNT - 1;  // no meta
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
+void MapperAcerAppMode(const Gamepad& input, Gamepad* mapped) {
+  *mapped = input;
+  mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[0];
+  mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[1];
+  mapped->buttons[BUTTON_INDEX_TERTIARY] = input.buttons[3];
+  mapped->buttons[BUTTON_INDEX_QUATERNARY] = input.buttons[4];
+  mapped->buttons[BUTTON_INDEX_LEFT_SHOULDER] = input.buttons[6];
+  mapped->buttons[BUTTON_INDEX_RIGHT_SHOULDER] = input.buttons[7];
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = input.buttons[8];
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = input.buttons[9];
+  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = input.buttons[10];
+  mapped->buttons[BUTTON_INDEX_START] = input.buttons[11];
+  mapped->buttons[BUTTON_INDEX_LEFT_THUMBSTICK] = input.buttons[13];
+  mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[14];
+  mapped->buttons[BUTTON_INDEX_DPAD_UP] = AxisNegativeAsButton(input.axes[7]);
+  mapped->buttons[BUTTON_INDEX_DPAD_DOWN] = AxisPositiveAsButton(input.axes[7]);
+  mapped->buttons[BUTTON_INDEX_DPAD_LEFT] = AxisNegativeAsButton(input.axes[6]);
+  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] =
+      AxisPositiveAsButton(input.axes[6]);
+  mapped->buttons_length = BUTTON_INDEX_COUNT - 1;  // no meta
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
 constexpr struct MappingData {
   GamepadId gamepad_id;
   GamepadStandardMappingFunction function;
@@ -968,6 +997,14 @@ constexpr struct MappingData {
     {GamepadId::kLogitechProductc219, MapperLogitechDInput},
     // Samsung Gamepad EI-GP20
     {GamepadId::kSamsungElectronicsProducta000, MapperSamsung_EI_GP20},
+    // Acer GC501 X-INPUT mode
+    {GamepadId::kAcerProduct1304, MapperAcer},
+    // Acer Gaming Controller Nitro X-INPUT mode
+    {GamepadId::kAcerProduct1305, MapperAcer},
+    // Acer GC501 APP mode
+    {GamepadId::kAcerProduct1316, MapperAcerAppMode},
+    // Acer Gaming Controller Nitro APP mode
+    {GamepadId::kAcerProduct1317, MapperAcerAppMode},
     // Dualshock 3 / SIXAXIS
     {GamepadId::kSonyProduct0268, MapperDualshock3SixAxis},
     // Playstation Dualshock 4
