@@ -279,6 +279,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2429753432712299108">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Înainte de a continua, verificați dacă această parolă apare pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="243878895369688216">Deschis ieri</translation>
+<translation id="2440978926514840421">S-a înregistrat GIF-ul</translation>
 <translation id="2441427462554639370">Înregistrarea s-a oprit din cauza epuizării spațiului de stocare</translation>
 <translation id="24452542372838207">Extinde notificarea</translation>
 <translation id="2449089818483227734">Nivel scăzut al bateriei</translation>
@@ -502,6 +503,11 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3633097874324966332">Deschide setările Bluetooth pentru a asocia dispozitivul</translation>
 <translation id="3638400994746983214">Activează/dezactivează ecranul de confidențialitate. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualizare întârziată</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        de la <ph name="START_TIME" /> la
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Selectează pentru mai multe detalii în Google Calendar.</translation>
 <translation id="3659444876902283058">(Ziua <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Timp aproximativ rămas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Conectează dispozitivul la o sursă de alimentare.</translation>
@@ -638,7 +644,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4405151984121254935">Tipul de dispozitiv periferic conectat nu este acceptat</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
-<translation id="4421231901400348175">În prezent, <ph name="HELPER_NAME" /> îți poate controla ecranul prin Asistență la distanță.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4430019312045809116">Volum</translation>
 <translation id="4435022394553622295">Afișează notificările și aplicațiile telefonului pe <ph name="DEVICE_TYPE" /></translation>
@@ -1469,6 +1474,7 @@ Instalare nouă</translation>
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
 <translation id="8874184842967597500">Neconectat</translation>
+<translation id="8876148469852588625">Evenimentul <ph name="EVENT_POSITION" /> din <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Verifică-ți conexiunea</translation>
 <translation id="8877788021141246043">Setează un memento</translation>
 <translation id="8878886163241303700">Ecran extins</translation>

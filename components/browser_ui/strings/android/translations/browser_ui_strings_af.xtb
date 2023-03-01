@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Werwe kan data op jou toestel stoor</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> word geblokkeer</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
+<translation id="5810805850857689118">Hierdie handeling sal alle data en webkoekies vir <ph name="ORIGIN" /> en alle werwe onder dit uitvee</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5876056640971328065">Onderbreek video</translation>
 <translation id="5884085660368669834">Werfvoorkeur</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Moenie werwe toelaat om data op jou toestel te stoor nie (nie aanbeveel nie)</translation>
 <translation id="851751545965956758">Keer dat werwe aan toestelle koppel</translation>
 <translation id="8525306231823319788">Volskerm</translation>
+<translation id="8528440122773422556">Hierdie handeling sal alle data en webkoekies uitvee wat deur alle werwe onder <ph name="ORIGIN" /> of deur sy app op jou Tuisskerm geberg is</translation>
 <translation id="8541410041357371550">Hierdie werf kry jou advertensie-onderwerpe van Chrome af om vir jou relevanter advertensies te wys</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werf}other{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werwe}}</translation>
 <translation id="857943718398505171">Toegelaat (aanbeveel)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Vergeet</translation>
 <translation id="8990043154272859344">Jy sal op alle werwe afgemeld word</translation>
 <translation id="9019902583201351841">Deur jou ouers bestuur</translation>
+<translation id="9039697262778250930">Jy sal dalk by hierdie werwe afgemeld word</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Hierdie werf is in ’n groep wat jou aktiwiteit kan sien. Die groep word gedefinieer deur <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vee webkoekies uit?</translation>

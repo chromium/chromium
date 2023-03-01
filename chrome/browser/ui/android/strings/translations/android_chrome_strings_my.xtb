@@ -112,7 +112,6 @@
 <translation id="1513858653616922153">စကားဝှက်ကို ဖျက်ရန်</translation>
 <translation id="1514552811327923157">Privacy Sandbox အတည်ပြုစနစ်ကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="1521774566618522728">ယနေ့ အသုံးပြုထားသည်</translation>
-<translation id="1538801903729528855">ဝဘ်တွင် ပိုမိုကောင်းမွန်သော အသံအသုံးပြုမှုဖြင့် ဆောင်ရွက်လိုက်ပါ</translation>
 <translation id="1544826120773021464">သင့် Google အကောင့်ကို စီမံခန့်ခွဲရန် "အကောင့် စီမံခန့်ခွဲရန်" ခလုတ်ကို တို့ပါ</translation>
 <translation id="1549000191223877751">အခြားဝင်းဒိုးသို့ ရွှေ့ပါ</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
@@ -160,7 +159,6 @@
 <translation id="1900260903084164610">ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_TOS_LINK" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="1904580727789512086">သင်ဝင်ကြည့်သည့် URL များကို သင့် Google Account တွင်သိမ်းထားသည်</translation>
 <translation id="1910950723001426294">မျှဝေရန် ရွေးချယ်စရာစာရင်းကို ပိတ်ထားသည်။</translation>
-<translation id="1918175104945982129">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui ကို မြင်ကွင်းတစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
 <translation id="1922362554271624559">အကြံပြုထားသည့် ဘာသာစကားများ</translation>
 <translation id="1925021887439448749">စိတ်ကြိုက်ဝဘ်လိပ်စာကို ထည့်ရန်</translation>
@@ -194,7 +192,6 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ}}</translation>
 <translation id="2067805253194386918">စာသား</translation>
 <translation id="2068748236079642969">နောက်ဗီဒီယို ကြည့်ရန်</translation>
-<translation id="2074143993849053708">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui ကို ပိတ်ထားသည်</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">စက်ပစ္စည်းများအားလုံးတွင် စင့်ခ်လုပ်ပြီး ပုဂ္ဂိုလ်ရေးသီးသန့် ပြင်ဆင်ပါ</translation>
@@ -253,12 +250,10 @@
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> အစမ်းကြည့်ခြင်း</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> ကို ထပ်မံ ဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
 <translation id="2453860139492968684">ပြီးပြီ</translation>
-<translation id="2459390580524506445">အဆင့်မြင့် အသံဖြင့်ရှာဖွေခြင်း</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
 <translation id="2472163211318554013">Chrome ကို အကောင်းဆုံးသုံးနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="247737702124049222">ပုံအကြောင်းအရာများကို ဖွင့်ထားသည်</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
-<translation id="2494974097748878569">Chrome အတွင်းရှိ Google Assistant</translation>
 <translation id="2496180316473517155">အသုံးပြုခြင်း မှတ်တမ်း</translation>
 <translation id="2497852260688568942">စင့်ခ်ပြုလုပ်ခြင်းကို သင့်စီမံခန့်ခွဲသူက ပိတ်ဆို့ထားပါသည်</translation>
 <translation id="250020030759455918">သင်၏ <ph name="SITE_NAME" /> လက်မှတ်ထိုးဝင်မှု အခြေအနေ၊ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာနှင့် ဝဘ်ဆိုက်ဒေတာများကို Chrome တွင် မြင်ရပါမည်</translation>
@@ -310,7 +305,6 @@
 <translation id="2718846868787000099">အကြောင်းအရာများကို သင်၏ဦးစားပေး ဘာသာစကားများဖြင့် ပြရန်အတွက် သင်ဝင်ကြည့်သော ဝဘ်ဆိုက်များက သင်၏ဦးစားပေးချက်များကို ကြည့်နိုင်သည်</translation>
 <translation id="2722945394406572875">Privacy Sandbox အတည်ပြုစနစ် ပိတ်ထားသည်</translation>
 <translation id="2723001399770238859">အသံ</translation>
-<translation id="2732063072010454421">ပိုမိုကောင်းမွန်သော အသံစမ်းသပ်မှုကို ရယူပါ</translation>
 <translation id="2760989362628427051">သင့်စက်၏ အမှောင်နောက်ခံ သို့မဟုတ် ဘက်ထရီအားထိန်းကို ဖွင့်ထားသည့်အခါ အမှောင်နောက်ခံကို ဖွင့်ပါ</translation>
 <translation id="2762000892062317888">ယခုလေးတင်</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> သုံး၍ ၐင်ပါ။</translation>
@@ -375,7 +369,6 @@
 <translation id="3027644380269727216">ဝဘ်ဆိုက်ရှိ သင့်လုပ်ဆောင်ချက်ပေါ် အခြေခံထားသည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
 <translation id="3029276696788198026">ကြိုဖွင့်မှု မရှိပါ</translation>
 <translation id="3029704984691124060">စကားစုဝှက်များ မတိုက်ဆိုင်ပါ</translation>
-<translation id="3031225630520268969">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />အကူအညီရယူရန်<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">ဈေးနှုန်း စောင့်ကြည့်နေသည်</translation>
 <translation id="3037517125981011456">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်</translation>
@@ -432,7 +425,6 @@
 <translation id="3285080554353377245">Chrome အသုံးပြုနည်းအကြောင်း ဗီဒီယိုများ</translation>
 <translation id="3290249595466894471">အန္တရာယ်အသစ်များကို ရှာဖွေရာ၌ အထောက်အကူဖြစ်စေရန် စာမျက်နှာ၊ ဒေါင်းလုဒ်၊ နောက်ဆက်တွဲလုပ်ဆောင်ချက်နှင့် စနစ်အချက်အလက်များ၏ နမူနာအချို့ကိုလည်း ပို့သည်</translation>
 <translation id="3293181007446299124">ကြည့်ရှုမှုမှတ်တမ်းကို သင့်စက်တွင် သီးသန့်ထားရှိပြီး သင့်အထောက်အထားကို ကာကွယ်ရန် အစီရင်ခံစာများအား စောင့်ဆိုင်း၍ ပို့သည်</translation>
-<translation id="3297344142967351106">အသံ အကူအညီ</translation>
 <translation id="3303414029551471755">အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် ရှေ့ဆက်မလား?</translation>
 <translation id="3305795716056605962">‘နောက်ထပ်ရွေးစရာများ’ ခလုတ်မှတစ်ဆင့် စာမျက်နှာများ ဘာသာပြန်နိုင်သည်</translation>
 <translation id="3319664549618064419">ဤဝဘ်ဆိုက်ကို ပိုမိုကောင်းစွာကြည့်နိုင်ရန် ဒက်စ်တော့ဝဘ်ဆိုက်သို့ ပြောင်းနိုင်သည်</translation>
@@ -597,7 +589,6 @@
 <translation id="4250229828105606438">မျက်နှာပြင် လျှပ်တပြက်ပုံ</translation>
 <translation id="4256782883801055595">လွပ်လွပ်လပ်လပ်ဖွင့်ပေးထားသော ရင်းမြစ် လိုင်စင်များ</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />အသုံးပြုသည့် ဒေတာ-<ph name="END_BOLD" /> ဤစက်တွင် Chrome အသုံးပြု၍ သင်ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်မှတ်တမ်းတစ်ခုဖြစ်သည့် သင်၏ ကြည့်ရှုခြင်းမှတ်တမ်း။</translation>
-<translation id="4263656433980196874">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui ကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
 <translation id="4283102315569707115">ဒက်စ်တော့ဝဘ်ဆိုက်များကို မူရင်းသတ်မှတ်ချက်အနေဖြင့် တောင်းဆိုမလား။</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ဆက်တင်များတွင် ဖန်သားပြင်လော့ခ်ဖွင့်ရန်<ph name="END_LINK" /></translation>
@@ -691,7 +682,6 @@
 <translation id="4769095993849849966">ဖိုင်အမည်အသစ်</translation>
 <translation id="4778653490315793244">ပြစရာ မရှိသေးပါ</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" /> ကို ဖျက်လိုပါသလား။</translation>
-<translation id="4791358705705538979">ဝဘ်တွင် ငွေရှင်းခြင်းကဲ့သို့ အလုပ်များအပြီးသတ်ရန် ကူညီသည်</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">စကားဝှက်စာ အသွင်ဝှက်ခြင်းတွင် ငွေပေးချေနည်းလမ်းများနှင့် Google Pay မှ လိပ်စာများ မပါဝင်ပါ။
 
@@ -845,7 +835,6 @@
 <translation id="5581519193887989363">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK1" />ဆက်တင်များ<ph name="END_LINK1" />တွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
 <translation id="5590372121997663538">ဤကွန်ပျူတာကို မှတ်ထားရန်</translation>
 <translation id="5599455543593328020">ရုပ်ဖျက် မုဒ်</translation>
-<translation id="5599941490345670218">Google Assistant က ဝဘ်ဆိုက်များတွင် သင့်အတွက် လုပ်ဆောင်ချက်များကို အပြီးသတ်နိုင်သည်</translation>
 <translation id="5620163320393916465">သိမ်းထားသော စကားဝှက် မရှိပါ</translation>
 <translation id="5620928963363755975">သင့်ဖိုင်များနှင့် စာမျက်နှာများကို 'နောက်ထပ်ရွေးချယ်စရာများ' ခလုတ်မှ ဒေါင်းလုဒ်များထဲတွင် ရှာဖွေပါ</translation>
 <translation id="562289928968387744">တုံ့ပြန်မှုများကို စီမံရန်</translation>
@@ -904,7 +893,6 @@
 <translation id="5876496397064130037">လုပ်ဆောင်စရာ ဆက်လုပ်သည်</translation>
 <translation id="587735546353481577">ဝဘ်ဆိုက်တစ်ခုကို လိုက်ကြည့်ရန် ၎င်းသို့သွားပြီး Chrome မီနူးဖွင့်ကာ ‘လိုက်ကြည့်ရန်’ ကို တို့ပါ။</translation>
 <translation id="5879072387416556377">ပိုကောင်းသည့်အကြံပြုချက်များ ရယူခြင်း</translation>
-<translation id="5906513782029855931">ဝဘ်ဆိုက်များ၏ URL များသိရှိခြင်းသည် Google Assistant ကို သင့်လုပ်ဆောင်စရာများ အထမြောက်စေရန် ကူညီခွင့်ပေးသည်။ Assistant ကို Chrome ဆက်တင်များတွင် ပိတ်နိုင်သည်။</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5919204609460789179">စင့်ခ်လုပ်ရန် <ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ထည့်ရန်</translation>
@@ -1266,7 +1254,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="7778840695157240389">သတင်းဆောင်းပါးသစ်များအတွက် နောက်မှ ပြန်လာကြည့်ပါ</translation>
 <translation id="7780645209293383778">သင်လက်မှတ်ထိုးဝင်ထားသည့်အခါ Google အက်ပ်များတွင် သင့်အားကာကွယ်ရန် ဤဒေတာကို သင်၏ Google Account နှင့် ယာယီ လင့်ခ်ချိတ်ပေးသည်</translation>
-<translation id="7786595606756654269">ဝဘ်တွင်ရှာဖွေခြင်းနှင့် သင်ဖွင့်ထားသော ဝဘ်ဆိုက်များအသုံးပြုခြင်းတို့အတွက် ပိုကောင်းမွန်သော အသံအသုံးပြုမှုကို Google Assistant က ပေးပါသည်။ Google Assistant သည် ၎င်းနှင့် အသုံးပြုသောဝဘ်ဆိုက်၏ အကြောင်းအရာများနှင့် URL တို့ကို ရရှိပါမည်။</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
 <translation id="7798392620021911922">တဘ် <ph name="TAB_COUNT" /> ခု ပြန်ယူထားသည်</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
@@ -1493,7 +1480,6 @@
 <translation id="8922289737868596582">စာမျက်နှာများကို အော့ဖ်လိုင်းသုံးရန် 'နောက်ထပ်ရွေးချယ်စရာများ' ခလုတ်မှ ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> အသင့်ဖြစ်ပါပြီ</translation>
-<translation id="8937267401510745927">သင်၏လုပ်ဆောင်စရာများ ပြီးမြောက်အောင် ကူညီရန် Assistant ကို အသုံးပြုထားသည့် ဝဘ်ဆိုက်များ၏ URL နှင့် အကြောင်းအရာများအပြင် Assistant ဖြင့် ပေးပို့ထားသည့် အချက်အလက်များကို Google က ရရှိပါမည်။ ဤအချက်အလက်များကို သင်၏ Google အကောင့်တွင် သိမ်းနိုင်သည်။ Assistant ကို Chrome ဆက်တင်များတွင် ပိတ်နိုင်သည်။</translation>
 <translation id="8937772741022875483">'ဒစ်ဂျစ်တယ် အာရောဂျံ' မှနေ၍ သင်၏ Chrome လုပ်ဆောင်ချက်ကို ‌ဖယ်ရှားလိုပါသလား။</translation>
 <translation id="8942627711005830162">အခြားဝင်းဒိုးတွင် ဖွင့်ရန်</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ဤဘာသာစကားကို ဒေါင်းလုဒ်လုပ်၍ မရပါ။ နောက်မှ ထပ်စမ်းပါ။</translation>

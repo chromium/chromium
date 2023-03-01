@@ -279,6 +279,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2429753432712299108">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje. Prije nego što prihvatite potvrdite da se ovaj pristupni ključ prikazuje na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="243878895369688216">Otvoreno jučer</translation>
+<translation id="2440978926514840421">GIF snimak je snimljen</translation>
 <translation id="2441427462554639370">Snimanje je prekinuto zbog jako malo slobodnog prostora za pohranu</translation>
 <translation id="24452542372838207">Proširi obavještenje</translation>
 <translation id="2449089818483227734">Baterija je slaba</translation>
@@ -504,9 +505,9 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3649505501900178324">Rok za ažuriranje je prekoračen</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
-        od <ph name="START_TIME" /> do
+        <ph name="START_TIME" /> do
         <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />. Odaberite za više pojedinosti u Google kalendaru.</translation>
+        <ph name="TIME_ZONE" />. Odaberite za više detalja u Google Kalendaru.</translation>
 <translation id="3659444876902283058">(Dan <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Povežite uređaj na napajanje.</translation>
@@ -643,7 +644,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4405151984121254935">Vrsta povezanog perifernog uređaja nije podržana</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
-<translation id="4421231901400348175">Dijeljenje kontrole nad vašim ekranom s pomoćnikom <ph name="HELPER_NAME" /> putem pomoći na daljinu.</translation>
 <translation id="4424159417645388645">Radna površina 5</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
 <translation id="4435022394553622295">Pregledajte obavještenja i aplikacije telefona na uređaju <ph name="DEVICE_TYPE" /></translation>

@@ -390,6 +390,7 @@
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
 <translation id="380329542618494757">పేరు</translation>
 <translation id="3803696231112616155">ఈ సైట్‌కు అనువాదం అందించే సూచన</translation>
+<translation id="3803967590068704619">ఈ అడ్రస్ మీ Google ఖాతా (<ph name="USER_EMAIL" />)‌లో సేవ్ చేయబడింది. మీరు ఈ అడ్రస్‌ను ఏ పరికరంలోని Google ప్రోడక్ట్‌లలో అయినా ఉపయోగించవచ్చు.</translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
 <translation id="3818293389945649617">తరువాతది కనుగొనండి</translation>
 <translation id="3819183753496523827">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -745,6 +746,7 @@
 <translation id="6342069812937806050">ఇప్పుడే</translation>
 <translation id="6344783595350022745">వచనాన్ని క్లియర్ చేయండి</translation>
 <translation id="6346549652287021269">కొత్త డౌన్‌లోడ్‌ ఆరంభించాలా?</translation>
+<translation id="6347953390226388422">{count,plural, =1{ఈ అడ్రస్ మీ Google ఖాతా (<ph name="USER_EMAIL" />) నుండి, అలాగే ఈ పరికరం నుండి తొలగించబడుతుంది.}other{ఈ అడ్రస్‌లు మీ Google ఖాతా (<ph name="USER_EMAIL" />) నుండి, అలాగే ఈ పరికరం నుండి తొలగించబడతాయి.}}</translation>
 <translation id="634878792104344809">మీ పాస్‌వర్డ్‌లను, హిస్టరీని, అలాగే మరిన్నింటిని మీ అన్ని పరికరాలలోనూ సింక్ చేయండి</translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" />ను ఫాలో అవ్వండి</translation>
 <translation id="6362362396625799311">అజ్ఞాత ట్యాబ్‌లు ఏవీ తెరిచి లేవు</translation>
@@ -1160,7 +1162,6 @@
 <translation id="953008885340860025">Chrome సైన్ అవుట్ చేయబడింది</translation>
 <translation id="959066944189734975">మీరు <ph name="CHANNEL_NAME" />ను ఫాలో అవుతున్నారు</translation>
 <translation id="973493300226275298">ఆన్‌లైన్ స్టోర్‌లలో ప్రోడక్ట్ ధరను ట్రాక్ చేయండి. ధర తగ్గినప్పుడు మీరు అలర్ట్‌లను పొందుతారు.</translation>
-<translation id="980712131080209571">కొత్త</translation>
 <translation id="981498610235328462">మీ సంస్థ మిమ్మల్ని కొన్ని ఖాతాలతో మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిస్తుంది. అనుమతించబడని ఖాతాలు దాచబడతాయి.</translation>
 <translation id="984509647832111802">సింక్ పని చేయడం లేదు.</translation>
 <translation id="988141524645182168">ఇతర పరికరాలు</translation>

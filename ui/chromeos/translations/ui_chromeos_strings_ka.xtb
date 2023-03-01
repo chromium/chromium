@@ -614,6 +614,7 @@
 <translation id="5911887972742538906">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
 <translation id="5912396950572065471">ფორმატი</translation>
 <translation id="5913638992615760742">კოპირების ოპერაცია ვერ შესრულდა, მოულოდნელი შეცდომა: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">ხელმისაწვდომია ახალი საძიებო ფუნქციები</translation>
 <translation id="5926082595146149752">ნიდერლანდური (ნიდერლანდები) აშშ-ის საერთაშორისო (PC) კლავიატურით</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, გაააქტიურეთ მოწყობილობის დაყენების შემდეგ</translation>
@@ -763,6 +764,7 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ - &lt;em&gt;ძიება Drive-ზე&lt;/em&gt;</translation>
 <translation id="7135561821015524160">კანადა ფონეტიკური</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ავტორიზაციის სერვერის დადასტურებისთვის აკლია „სუბიექტის ალტერნატიული სახელის დამთხვევა“ ან „დომენის სუფიქსის დამთხვევა“</translation>
 <translation id="7165320105431587207">ქსელის კონფიგურაცია ვერ მოხერხდა</translation>
 <translation id="7170041865419449892">დიაპაზონს მიღმა</translation>
 <translation id="7180611975245234373">განახლება</translation>

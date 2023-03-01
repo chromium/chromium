@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Сайттар деректерді құрылғыңызда сақтай алады.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
+<translation id="5810805850857689118">Бұл әрекет <ph name="ORIGIN" /> барлық деректері мен cookie файлын және оның астындағы барлық сайтты өшіреді</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5876056640971328065">Бейнені кідірту</translation>
 <translation id="5884085660368669834">Сайт параметрі</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Сайттардың құрылғыңызда деректерді сақтауына рұқсат етпеу (ұсынылмайды)</translation>
 <translation id="851751545965956758">Сайттардың құрылғыға жалғануына тыйым салу</translation>
 <translation id="8525306231823319788">Толық экран</translation>
+<translation id="8528440122773422556">Бұл әрекет <ph name="ORIGIN" /> астындағы барлық сайт немесе негізгі экраныңыздағы қолданбасы сақтаған барлық деректер мен cookie файлын өшіреді</translation>
 <translation id="8541410041357371550">Бұл сайт сәйкес жарнамаларды көбірек көрсету үшін Chrome браузерінен сізге қажетті жарнама тақырыптарын алады.</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookie файлдары мына сайтта рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}other{Cookie файлдары мына сайттарда рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}}</translation>
 <translation id="857943718398505171">Рұқсат етілген (ең дұрысы)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Ұмыту</translation>
 <translation id="8990043154272859344">Сіз барлық сайттағы аккаунттан шығарыласыз</translation>
 <translation id="9019902583201351841">Ата-аналар басқарады</translation>
+<translation id="9039697262778250930">Сіз осы сайттардан шығып кетуіңіз мүмкін</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Бұл сайт әрекетіңізді көре алатын топқа кіреді. Топты <ph name="FPS_OWNER" /> белгілеген.</translation>
 <translation id="9106233582039520022">Cookie файлдарын жою керек пе?</translation>

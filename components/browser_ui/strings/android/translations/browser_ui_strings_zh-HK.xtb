@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">網站可在裝置上儲存資料</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
+<translation id="5810805850857689118">此操作將清除 <ph name="ORIGIN" /> 及其所有子網站的各項資料和 Cookie</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5876056640971328065">暫停影片</translation>
 <translation id="5884085660368669834">網站偏好設定</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
 <translation id="851751545965956758">禁止網站連接裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
+<translation id="8528440122773422556">此操作將清除由 <ph name="ORIGIN" /> 底下所有網站或其應用程式在主畫面儲存的所有資料和 Cookie</translation>
 <translation id="8541410041357371550">此網站會從 Chrome 中取得您的廣告主題，向您顯示更相關的廣告</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="857943718398505171">允許 (建議)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">您將會從所有網站登出</translation>
 <translation id="9019902583201351841">由您的家長管理</translation>
+<translation id="9039697262778250930">您可能會登出這些網站</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9090268041676521955">此網站所屬的群組可查看您的活動。這是 <ph name="FPS_OWNER" /> 定義的群組</translation>
 <translation id="9106233582039520022">要刪除 Cookie 嗎？</translation>

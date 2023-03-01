@@ -322,6 +322,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിക്കാനായില്ല.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="3268451620468152448">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="3272527697863656322">റദ്ദാക്കുക</translation>
 <translation id="3277021493514034324">സൈറ്റ് വിലാസം പകർത്തി</translation>
@@ -427,6 +428,7 @@
 <translation id="408404951701638773">തിരയൽ ബാറിൽ എത്താൻ ഇപ്പോൾ എളുപ്പമാണ്</translation>
 <translation id="4092655288299341041">സഹായം കാണിക്കുക</translation>
 <translation id="4101942614374785540">പാസ്‌വേഡുകൾ ഇപ്പോൾ നിങ്ങളുടെ Google അക്കൗണ്ടിൽ (<ph name="ACCOUNT" />) സംരക്ഷിക്കുന്നു. എവിടെ സൈൻ ഇൻ ചെയ്യുകയാണെങ്കിലും നിങ്ങൾക്കവ ഉപയോഗിക്കാനാകും. ഇത് ഓഫാക്കാൻ, <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
+<translation id="4105841739161771091">{count,plural, =1{വിലാസം ഇല്ലാതാക്കുക}other{വിലാസങ്ങൾ ഇല്ലാതാക്കുക}}</translation>
 <translation id="4108998448622696017">അപകടകരമായ ഇവന്റുകൾ നടക്കുമ്പോൾ അവ കണ്ടെത്തുകയും നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുകയും ചെയ്യുന്നു.</translation>
 <translation id="411254640334432676">ഡൗൺലോഡ് പരാജയപ്പെട്ടു.</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -739,6 +741,7 @@
 <translation id="6324669097367352121">സൈൻ ഇൻ ക്രമീകരണങ്ങൾ</translation>
 <translation id="6337234675334993532">എന്‍ക്രിപ്ഷന്‍</translation>
 <translation id="633809752005859102">ശരിക്കും എന്തോ കുഴപ്പം സംഭവിച്ചു. ഞങ്ങൾ അത് പരിഹരിക്കും.</translation>
+<translation id="6340285871011301182">ഭാഗിക വിവർത്തനം ലഭ്യമല്ല.</translation>
 <translation id="6342069812937806050">ഇപ്പോള്‍‌</translation>
 <translation id="6344783595350022745">വാചകം മായ്‌ക്കുക</translation>
 <translation id="6346549652287021269">പുതിയ ഡൗൺലോഡ് ആരംഭിക്കണോ?</translation>
@@ -849,6 +852,7 @@
 <translation id="6914583639806229067">നിങ്ങൾ പകർത്തിയ ചിത്രം തിരയുക</translation>
 <translation id="6914783257214138813">എക്‌സ്പോർട്ട് ചെയ്ത ഫയൽ കാണാനാകുന്ന ഏതൊരാൾക്കും നിങ്ങളുടെ പാസ്‌വേഡും കാണാനാകും.</translation>
 <translation id="6930799952781667037">ഈ ഭാഷയിലേക്ക് മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="6939941780796374211">പാസ്‌വേഡ് ഓപ്‌ഷനുകൾ</translation>
 <translation id="6944369514868857500">മറ്റൊരു അക്കൗണ്ട് തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
@@ -944,6 +948,7 @@
 <translation id="7738120385185846461">പ്രശ്നം റിപ്പോർട്ട് ചെയ്യുക…</translation>
 <translation id="7741325291586284254">പുതിയ അദൃശ്യ ടാബ് പേജ്</translation>
 <translation id="7744394900930577716">മറ്റ് ആപ്പുകളിലെ പാസ്‌വേഡുകൾ</translation>
+<translation id="7749790401023484470">നിങ്ങൾ ടെക്സ്റ്റൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല.</translation>
 <translation id="7756478488453921771">മെനു → ക്രമീകരണം → പേയ്മെന്റ് രീതികൾ</translation>
 <translation id="7765158879357617694">നീക്കുക</translation>
 <translation id="7772032839648071052">പാസ്ഫ്രേസ് സ്ഥിരീകരിക്കുക</translation>
@@ -1058,6 +1063,7 @@
 <translation id="8534481786647257214">Google+ പങ്കിടൽ പൂർത്തിയായി.</translation>
 <translation id="8548878600947630424">പേജിൽ കണ്ടെത്തുക...</translation>
 <translation id="8558480467877843976">നിങ്ങൾ ബ്രൗസ് ചെയ്യുമ്പോഴോ സന്ദേശങ്ങളിലോ ഡോക്യുമെന്റുകളിലോ മറ്റ് ആപ്പുകളിലോ ലിങ്കുകളിൽ ടാപ്പ് ചെയ്യുമ്പോഴോ എപ്പോൾ വേണമെങ്കിലും നിങ്ങൾക്ക് ഇപ്പോൾ Chrome ഉപയോഗിക്കാം.</translation>
+<translation id="8585679456315406468">കുറിപ്പുകളിൽ 1000 പ്രതീകങ്ങൾ വരെ ഉണ്ടാകാം.</translation>
 <translation id="8588404856427128947">ഓഫാണ്</translation>
 <translation id="8591976964826315682">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="8605219856220328675">ടാബ് അടയ്‌ക്കുക.</translation>
@@ -1154,7 +1160,6 @@
 <translation id="953008885340860025">Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> എന്നത് നിങ്ങൾ പിന്തുടരുന്നു</translation>
 <translation id="973493300226275298">ഓൺലൈൻ സ്റ്റോറുകളിലുടനീളം ഒരു ഉൽപ്പന്നത്തിന്റെ നിരക്ക് ട്രാക്ക് ചെയ്യുക. നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് അലേർട്ടുകൾ ലഭിക്കും.</translation>
-<translation id="980712131080209571">പുതിയത്</translation>
 <translation id="981498610235328462">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യാൻ മാത്രമേ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ. അനുവദനീയമല്ലാത്ത അക്കൗണ്ടുകൾ മറച്ചിരിക്കുന്നു.</translation>
 <translation id="984509647832111802">സമന്വയം പ്രവർത്തിക്കുന്നില്ല.</translation>
 <translation id="988141524645182168">മറ്റ് ഉപകരണങ്ങൾ</translation>

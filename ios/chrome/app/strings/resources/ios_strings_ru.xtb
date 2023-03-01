@@ -322,6 +322,7 @@
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245744387817103524">Не удалось сохранить изменения.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> из <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Автозаполнение паролей</translation>
 <translation id="3268451620468152448">Вкладки</translation>
 <translation id="3272527697863656322">Отмена</translation>
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
@@ -389,6 +390,7 @@
 <translation id="3789841737615482174">Установить</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803696231112616155">Предлагать переводить этот сайт</translation>
+<translation id="3803967590068704619">Адрес сохранен в вашем аккаунте Google (<ph name="USER_EMAIL" />) и может быть использован в продуктах Google на других устройствах.</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3818293389945649617">Найти следующую</translation>
 <translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
@@ -427,6 +429,7 @@
 <translation id="408404951701638773">Пользоваться строкой поиска стало ещё удобнее</translation>
 <translation id="4092655288299341041">Справочная информация</translation>
 <translation id="4101942614374785540">Теперь пароли сохраняются в вашем аккаунте Google (<ph name="ACCOUNT" />). Они доступны на любом устройстве, где выполнен вход. Чтобы отключить эту функцию, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Удалить адрес}one{Удалить адреса}few{Удалить адреса}many{Удалить адреса}other{Удалить адреса}}</translation>
 <translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
 <translation id="411254640334432676">Ошибка при скачивании</translation>
 <translation id="4112644173421521737">Поиск</translation>
@@ -739,9 +742,11 @@
 <translation id="6324669097367352121">Настройки входа</translation>
 <translation id="6337234675334993532">Шифрование</translation>
 <translation id="633809752005859102">Произошла ошибка. Мы постараемся ее устранить.</translation>
+<translation id="6340285871011301182">Перевод фрагмента недоступен.</translation>
 <translation id="6342069812937806050">только что</translation>
 <translation id="6344783595350022745">Очистить</translation>
 <translation id="6346549652287021269">Скачать новый файл?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Адрес будет удален с этого устройства и из вашего аккаунта Google (<ph name="USER_EMAIL" />)}one{Адреса будут удалены с этого устройства и из вашего аккаунта Google (<ph name="USER_EMAIL" />)}few{Адреса будут удалены с этого устройства и из вашего аккаунта Google (<ph name="USER_EMAIL" />)}many{Адреса будут удалены с этого устройства и из вашего аккаунта Google (<ph name="USER_EMAIL" />)}other{Адреса будут удалены с этого устройства и из вашего аккаунта Google (<ph name="USER_EMAIL" />)}}</translation>
 <translation id="634878792104344809">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах.</translation>
 <translation id="6361848730467328243">Подписаться на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Нет открытых вкладок инкогнито</translation>
@@ -849,6 +854,7 @@
 <translation id="6914583639806229067">Поиск по скопированному изображению</translation>
 <translation id="6914783257214138813">Ваши пароли будут видны всем, у кого есть доступ к файлу экспорта.</translation>
 <translation id="6930799952781667037">Нажмите, чтобы выбрать этот язык.</translation>
+<translation id="6939941780796374211">Настройки паролей</translation>
 <translation id="6944369514868857500">Сменить аккаунт</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6965382102122355670">ОК</translation>
@@ -944,6 +950,7 @@
 <translation id="7738120385185846461">Сообщить о проблеме</translation>
 <translation id="7741325291586284254">Страница "Новая вкладка инкогнито"</translation>
 <translation id="7744394900930577716">Пароли в других приложениях</translation>
+<translation id="7749790401023484470">Выберите текст.</translation>
 <translation id="7756478488453921771">Меню → Настройки → Способы оплаты</translation>
 <translation id="7765158879357617694">Переместить</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
@@ -1058,6 +1065,7 @@
 <translation id="8534481786647257214">Опубликовано в Google+.</translation>
 <translation id="8548878600947630424">Найти на странице…</translation>
 <translation id="8558480467877843976">Теперь можно сделать так, что при переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chrome.</translation>
+<translation id="8585679456315406468">Не более 1000 символов.</translation>
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="8605219856220328675">Закрыть вкладку.</translation>
@@ -1154,7 +1162,6 @@
 <translation id="953008885340860025">Вход в Chrome не выполнен</translation>
 <translation id="959066944189734975">Вы подписались на сайт "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="973493300226275298">Отслеживайте цены на товар в разных интернет-магазинах. Если появится скидка, вы получите оповещение.</translation>
-<translation id="980712131080209571">Нов.</translation>
 <translation id="981498610235328462">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом. Запрещенные аккаунты скрываются.</translation>
 <translation id="984509647832111802">Ошибка синхронизации.</translation>
 <translation id="988141524645182168">Другие устройства</translation>

@@ -212,6 +212,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2500374554657206846">Options to save password</translation>
 <translation id="2523363575747517183">This website is repeatedly trying to open another application.</translation>
 <translation id="2529021024822217800">Open All</translation>
+<translation id="2547458583188611426">Sync is not working. To start sync, enter your passphrase.</translation>
 <translation id="2556092377360758201">No protection (not recommended)</translation>
 <translation id="2562041823070056534">Sending to <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Use and save passwords in Your Google Account</translation>
@@ -486,6 +487,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4540780316273593836">Something went wrong</translation>
 <translation id="457386861538956877">More...</translation>
+<translation id="4587235830039045480">Save password in your Google Account</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">Your sync settings will be restored based on your last backup. <ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Keyboard</translation>
@@ -653,6 +655,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5755162682436943950">Signed out. Opens dialogue to sign in and turn on sync.</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
 <translation id="5765456154762864099">Menu → Settings → Default browser</translation>
+<translation id="5777888488419460501">Save in account</translation>
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5791632441210678828">Sort button for Following feed.</translation>
 <translation id="5802829331520313983">Set up…</translation>
@@ -1035,6 +1038,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8386068868580335421">Reset</translation>
+<translation id="838867811594159347">Enter passphrase…</translation>
 <translation id="8393889347136007944">Tabs not used for <ph name="THRESHOLD" /> days</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>
 <translation id="842017693807136194">Signed in with</translation>
@@ -1106,6 +1110,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="890565330728586731">Back</translation>
 <translation id="8909135823018751308">Share…</translation>
 <translation id="8911759861431145525">Tap Add then enter your info</translation>
+<translation id="891282356902782456">This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Highlight text on a site</translation>
 <translation id="8917490105272468696">Yes, I'm in</translation>
 <translation id="8928133177108699615">Desktop</translation>
@@ -1156,7 +1161,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="953008885340860025">Chrome is signed out</translation>
 <translation id="959066944189734975">You're following <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Track the price of a product across online shops. You’ll get alerts when the price drops.</translation>
-<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.</translation>
 <translation id="984509647832111802">Sync isn't working.</translation>
 <translation id="988141524645182168">Other devices</translation>

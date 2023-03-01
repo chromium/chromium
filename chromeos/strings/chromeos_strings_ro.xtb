@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Se caută scanere</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
+<translation id="3275506277319227640">Andochează pe <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imagine avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editează fișierul}few{Editează fișierele}other{Editează fișierele}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3435896845095436175">Activează</translation>
+<translation id="345256797477978759">Andochează fereastra în partea <ph name="DIRECTION" /> mai mare a ecranului</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Baterie încărcată</translation>
 <translation id="3600339377155080675">Oglindirea ecranului</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
+<translation id="360282891121575443">Fotografiile din albumele comune pot fi actualizate de alți utilizatori. Schimbarea zilnică poate afișa imagini de fundal care nu se află în album.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Schimbă imaginea de fundal</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3606583719724308068">Latență mare pe site-urile HTTPS</translation>
 <translation id="361575905210396100">Îți mulțumim pentru feedback</translation>
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
+<translation id="3639846061339007994">sus</translation>
 <translation id="3651050199673793219">Selectează o unitate de temperatură</translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Maxim</translation>
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Andochează pe partea mai mică</translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
 <translation id="4378551569595875038">Se conectează</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6659594942844771486">Filă</translation>
 <translation id="6692996468359469499">Obține informații despre selecție</translation>
+<translation id="6698459586333070823">Albumele comune pot fi actualizate de alți utilizatori</translation>
 <translation id="6704062477274546131">Rezolvare DNS</translation>
 <translation id="6723839937902243910">Alimentare</translation>
 <translation id="6723847290197874913">Retroiluminarea tastaturii</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Fotografie de profil</translation>
+<translation id="7171919371520438592">Andochează fereastra pe porțiunea <ph name="DIRECTION" /> mai mică a ecranului</translation>
 <translation id="7172721935181587524">O imagine</translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Atașează</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
+<translation id="8210733748736414123">jos</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>
 <translation id="8364946094152050673">Serverele de nume sunt goale</translation>
 <translation id="8372477600026034341">Gazde suplimentare</translation>
+<translation id="8380114448424469341">Andochează fereastra pe jumătatea <ph name="DIRECTION" /> din ecran</translation>
 <translation id="8395584934117017006">Acest <ph name="DEVICE_TYPE" /> este gestionat de companie</translation>
 <translation id="8398927464629426868">Rata de încărcare sau de descărcare a dispozitivului</translation>
 <translation id="8410244574650205435">Detectat automat</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Shift din stânga</translation>
 <translation id="9149391708638971077">Rulează testul Memorie</translation>
+<translation id="9157515863513902090">Andochează pe latura mai mare</translation>
 <translation id="9173638680043580060">A rămas mai puțin de un minut</translation>
 <translation id="917720651393141712">Testează</translation>
 <translation id="9188992814426075118">Tastatura se poate potrivi automat cu imaginea de fundal</translation>

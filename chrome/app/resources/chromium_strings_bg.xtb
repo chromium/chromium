@@ -342,6 +342,7 @@
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Повторно стартиране на Chromium до 1 ден}other{Повторно стартиране на Chromium до # дни}}</translation>
 <translation id="8453117565092476964">Архивът на инсталационната програма е повреден или невалиден. Моля, изтеглете отново Chromium.</translation>
+<translation id="8458614432758743027">За Chromium се изисква Windows 10 или по-нова версия.</translation>
 <translation id="8463672209299734063">По избор: Помогнете за подобряването на функциите и ефективността на Chromium OS, като автоматично изпращате до Google данни за диагностиката и употребата.</translation>
 <translation id="8493179195440786826">Chromium не е актуален</translation>
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>

@@ -279,6 +279,7 @@
 <translation id="2429753432712299108">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Пре него што му је дате, уверите се да је ова шифра приказана на том уређају: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="243878895369688216">Отварано јуче</translation>
+<translation id="2440978926514840421">GIF је снимљен</translation>
 <translation id="2441427462554639370">Снимање је прекинуто због изузетно мало простора</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
 <translation id="2449089818483227734">Низак ниво батерије</translation>
@@ -644,7 +645,6 @@
 <translation id="4405151984121254935">Тип повезаног периферног уређаја није подржан</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
-<translation id="4421231901400348175">Делите контролу над екраном са особом <ph name="HELPER_NAME" /> преко Даљинске помоћи.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
 <translation id="4435022394553622295">Прегледајте обавештења и апликације на уређају <ph name="DEVICE_TYPE" /></translation>

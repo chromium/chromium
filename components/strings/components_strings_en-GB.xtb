@@ -2167,6 +2167,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Checking the proxy, firewall and secure DNS configuration<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dual staple left</translation>
+<translation id="6367196786591004737">Delete entry</translation>
 <translation id="6370022303958842211">Device access actions such as logins (including failed login reasons), logouts, locks and unlocks</translation>
 <translation id="6374865374745447009">window management</translation>
 <translation id="6377268785556383139">1 result for '<ph name="SEARCH_TEXT" />'</translation>
@@ -2311,6 +2312,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencing</translation>
 <translation id="6753269504797312559">Policy Value</translation>
+<translation id="6753434778807740853">Delete entry <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Your device went to sleep.</translation>
 <translation id="6767985426384634228">Update Address?</translation>
@@ -2323,6 +2325,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="678982761784843853">Protected content IDs</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="679355240208270552">Ignored because default search is not enabled by policy.</translation>
+<translation id="6794049111359324414">Allow the <ph name="APP_NAME" /> app to set up Wi-Fi networks?</translation>
 <translation id="6794951432696553238">Confirm your cards faster by using Windows Hello from now on</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
@@ -3362,6 +3365,7 @@ Additional details:
     &lt;li&gt;Try uninstalling or disabling '<ph name="SOFTWARE_NAME" />'&lt;/li&gt;
     &lt;li&gt;Try connecting to another network&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">This app is requesting permission to set up new Wi-Fi networks. After setup, your <ph name="DEVICE_TYPE" /> will automatically connect to participating Wi-Fi networks. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">From Google Pay</translation>
 </translationbundle>

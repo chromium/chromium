@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Траже се скенери</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="3268178239013324452">Није успело – врата су отворена</translation>
+<translation id="3275506277319227640">Фиксирај у смеру <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Слика аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени фајл}one{Измени фајлове}few{Измени фајлове}other{Измени фајлове}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="3435896845095436175">Омогући</translation>
+<translation id="345256797477978759">Фиксирајте прозор на већем делу екрана (<ph name="DIRECTION" />)</translation>
 <translation id="3456078764689556234">Одштампаних страница: <ph name="PRINTED_PAGES" /> од <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Скенира се <ph name="PAGE_NUM" />. страница. Довршено је <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Штампање</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Батерија је пуна</translation>
 <translation id="3600339377155080675">Пресликајте екран</translation>
 <translation id="3602290021589620013">Преглед</translation>
+<translation id="360282891121575443">Други корисници могу да ажурирају слике у дељеним албумима. Ако дође до промене на дневном нивоу, можда ће се приказати позадине које тренутно нису у албуму.</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Промените позадину</translation>
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велико кашњење до HTTPS веб-сајтова</translation>
 <translation id="361575905210396100">Хвала вам на повратним информацијама</translation>
 <translation id="3632579075709132555">Укључите/искључите екран за приватност</translation>
+<translation id="3639846061339007994">горња</translation>
 <translation id="3651050199673793219">Изаберите јединицу температуре</translation>
 <translation id="3689839747745352263">Тест <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Учитава се...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Потпуно</translation>
 <translation id="4333390807948134856">Тастер <ph name="KEY_NAME" /> је притиснут</translation>
 <translation id="435692326371619097">Управљајте подешавањима назива приступне тачке мреже. Називи приступних тачака успостављају везу између мобилне мреже и интернета. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Фиксирај на мањој страни</translation>
 <translation id="4378373042927530923">Није покренуто</translation>
 <translation id="4378551569595875038">Повезује се...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659594942844771486">Картица</translation>
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
+<translation id="6698459586333070823">Други корисници могу да ажурирају дељене албуме</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6723847290197874913">Позадинско осветљење тастатуре</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Постојећа фотографија из камере или датотеке</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7170236477717446850">Слика профила</translation>
+<translation id="7171919371520438592">Фиксирајте прозор на мањем делу екрана (<ph name="DIRECTION" />)</translation>
 <translation id="7172721935181587524">1 слика</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7180611975245234373">Освежи</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Прилог</translation>
 <translation id="8206859287963243715">Мобилни уређај</translation>
 <translation id="8208861521865154048">Погодности</translation>
+<translation id="8210733748736414123">доња</translation>
 <translation id="8226628635270268143">Одаберите омиљене слике и албуме</translation>
 <translation id="8227119283605456246">Приложи датотеку</translation>
 <translation id="8230672074305416752">Пинговање подразумеваног мрежног пролаза није успело</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Додајте налог за вишеструко пријављивање. Свим пријављеним налозима се може приступити без лозинке, па ову функцију треба користити само са поузданим налозима.</translation>
 <translation id="8364946094152050673">Празни сервери за имена</translation>
 <translation id="8372477600026034341">Додатни хостови</translation>
+<translation id="8380114448424469341">Фиксирајте прозор на половини екрана (<ph name="DIRECTION" />)</translation>
 <translation id="8395584934117017006">Предузеће управља овим <ph name="DEVICE_TYPE" /> уређајем</translation>
 <translation id="8398927464629426868">Стопа по којој се уређај тренутно пуни или празни</translation>
 <translation id="8410244574650205435">Аутоматски изабрано</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9138630967333032450">Леви тастер shift</translation>
 <translation id="9149391708638971077">Покрени тест меморије</translation>
+<translation id="9157515863513902090">Фиксирај на већој страни</translation>
 <translation id="9173638680043580060">Преостало је мање од минута</translation>
 <translation id="917720651393141712">Тестирај</translation>
 <translation id="9188992814426075118">Тастатура може аутоматски да се подудара са позадином</translation>

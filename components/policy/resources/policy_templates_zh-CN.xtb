@@ -3983,21 +3983,6 @@
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，用户可以决定是否让工具栏自动隐藏。</translation>
 <translation id="4812309945046430049">键盘背光颜色：红色</translation>
-<translation id="4812410063101047442">此设置用于配置要使用哪个 <ph name="LACROS_NAME" /> 浏览器。
-
-如果此政策设为 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />，用户可以决定加载哪个 <ph name="LACROS_NAME" /> 浏览器：来自 <ph name="LACROS_ROOTFS_NAME" /> 或 <ph name="LACROS_STATEFUL_NAME" /> 分区的二进制文件。
-如果用户未设置任何偏好设置，系统会选择具有最新版本的二进制文件。
-
-如果此政策设为 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，请始终加载 <ph name="LACROS_NAME" /> 浏览器的 <ph name="LACROS_ROOTFS_NAME" /> 二进制文件。
-
-如果此政策设为 <ph name="LACROS_SELECTION_STATEFUL_VALUE" />，请始终加载 <ph name="LACROS_NAME" /> 浏览器的 <ph name="LACROS_STATEFUL_NAME" /> 二进制文件。
-如果 <ph name="LACROS_STATEFUL_NAME" /> 浏览器版本低于 <ph name="PRODUCT_OS_NAME" /> 版本，使用此值可能会导致意外行为。这种情况不受支持，也无法保证能够正常运作。
-
-如果您未设置此政策，受企业管理的用户将使用默认值“<ph name="LACROS_SELECTION_ROOTFS_VALUE" />”，不受企业管理的用户将使用默认值“<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />”。
-
-请注意，如果在更改此政策的值后，<ph name="LACROS_NAME" /> 浏览器的版本低于当前版本，则可能会导致该浏览器的数据丢失。例如，如果此政策从 <ph name="LACROS_SELECTION_STATEFUL_VALUE" /> 更改为 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，并且前者已更新。或者，如果 <ph name="PRODUCT_OS_NAME" /> 是与 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 浏览器一起更新的，且 <ph name="LACROS_STATEFUL_NAME" /> 尚未更新。在此类情况下，无法保证正确迁移数据。
-
-为了安全起见，可以使用 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 或 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，也可以从 <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> 切换到 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />。</translation>
 <translation id="4812714598405913256">为 DeviceMinimumVersion 政策配置自动更新期限已过消息</translation>
 <translation id="4815581264328351694">在系统任务栏菜单中显示无障碍选项</translation>
 <translation id="4816674326202173458">允许企业用户以主用户或次要用户的身份登录多个人资料会话（非受管理用户的默认行为）</translation>
@@ -5366,13 +5351,6 @@
       如果此政策设为一种有效的十六进制颜色，系统便会根据该颜色自动生成主题并将其应用于浏览器。用户将无法更改此政策中设定的主题。
 
       如果此政策未设置，用户可根据自己的偏好更改所用浏览器的主题。</translation>
-<translation id="619376519309703699">此政策提供了一种停用 First-Party Set 功能的方法。
-
-                  如果此政策未设置或设为 Enabled，系统会启用 First-Party Set 功能。
-
-                  如果此政策设为 Disabled，系统会停用 First-Party Set 功能。
-
-                  此政策用于控制 Chrome 是否支持 First-Party Set 相关功能（例如 SameParty Cookie 属性）。</translation>
 <translation id="6195802366906945965">确定是否会使用内置的证书验证程序来验证服务器证书</translation>
 <translation id="6198947200418556248">此政策已被弃用；如果您仍需设置旧版 Cookie 行为，请改用 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />。此政策让您能够将所有 Cookie 都恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为。恢复为旧版行为会导致未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 属性的 Cookie 被当作“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 来处理，会撤消“<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />”Cookie 必须附带“<ph name="ATTRIBUTE_SECURE_NAME" />”属性的要求，并会在评估两个网站是否为同一个网站时跳过架构对比。如需查看完整说明，请参阅 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
 
@@ -8123,7 +8101,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8707790573162457301">在登录期间运行“自动清理磁盘”功能</translation>
 <translation id="8713535263782304771">停用安全浏览功能</translation>
 <translation id="8715885991031124968">允许显示从其他来源的子框架触发的 JavaScript 对话框。</translation>
-<translation id="8719374569086645837">始终加载 <ph name="LACROS_STATEFUL_NAME" /> <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="8720547069538712402">允许用户启用或停用拼写检查</translation>
 <translation id="8726080977639508431">此政策用于控制 <ph name="PRODUCT_NAME" /> 如何解析“旧版浏览器支持”功能的 sitelist/greylist 政策。它会影响以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
 
@@ -8557,6 +8534,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       实际的回滚可能性或许还取决于设备型号和关键的漏洞补丁程序。</translation>
 <translation id="9123464369663964441">让用户能够添加例外情况以允许显示混合内容</translation>
 <translation id="9124770007620653639">一律不将网域可靠性数据发送给 Google</translation>
+<translation id="9125694642546254164">禁止在由企业政策安装的应用和扩展程序中使用开发者工具，允许在其他情境中使用开发者工具</translation>
 <translation id="9126491667911789829">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
 
       此政策的每个列表项都是一个对象，其中会包含 1 个必要成员：

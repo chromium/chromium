@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">ເວັບໄຊສາມາດບັນທຶກຂໍ້ມູນຢູ່ໃນອຸປະກອນຂອງທ່ານໄດ້</translation>
 <translation id="5771720122942595109">ບລັອກ <ph name="PERMISSION_1" /> ໄວ້ແລ້ວ</translation>
 <translation id="5804241973901381774">ການ​ອະ​ນຸ​ຍາດ</translation>
+<translation id="5810805850857689118">ຄຳສັ່ງນີ້ຈະລຶບລ້າງຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດສຳລັບ <ph name="ORIGIN" /> ແລະ ເວັບໄຊທັງໝົດພາຍໃຕ້ມັນ</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5876056640971328065">ຢຸດວິດີໂອໄວ້ຊົ່ວຄາວ</translation>
 <translation id="5884085660368669834">ການຕັ້ງຄ່າເວັບໄຊ</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">ຢ່າອະນຸຍາດໃຫ້ເວັບໄຊບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານ (ບໍ່ແນະນຳ)</translation>
 <translation id="851751545965956758">ບລັອກບໍ່ໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ກັບອຸປະກອນ</translation>
 <translation id="8525306231823319788">ເຕັມຫນ້າ​ຈໍ​</translation>
+<translation id="8528440122773422556">ຄຳສັ່ງນີ້ຈະລຶບລ້າງຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ຈັດເກັບໄວ້ໂດຍເວັບໄຊທັງໝົດພາຍໃຕ້ <ph name="ORIGIN" /> ຫຼື ໂດຍແອັບຂອງມັນຢູ່ໂຮມສະກຣີນຂອງທ່ານ</translation>
 <translation id="8541410041357371550">ເວັບໄຊນີ້ຮັບຫົວຂໍ້ໂຄສະນາຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນ</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ເວັບໄຊແລ້ວ}other{ອະນຸຍາດຄຸກກີ້ສຳລັບ <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ເວັບໄຊແລ້ວ}}</translation>
 <translation id="857943718398505171">ອະ​ນຸ​ຍາດ​ແລ້ວ (ແນະ​ນຳ​ໃຫ້)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">ລືມ</translation>
 <translation id="8990043154272859344">ທ່ານຈະຖືກອອກຈາກລະບົບເວັບໄຊທັງໝົດ</translation>
 <translation id="9019902583201351841">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
+<translation id="9039697262778250930">ທ່ານອາດຖືກພາອອກຈາກລະບົບຈາກເວັບໄຊເຫຼົ່ານີ້</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">ເວັບໄຊນີ້ແມ່ນຢູ່ໃນກຸ່ມທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໄດ້. ກຸ່ມນີ້ແມ່ນກຳນົດໂດຍ <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">ລຶບຄຸກກີ້ອອກບໍ?</translation>

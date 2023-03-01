@@ -1956,6 +1956,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2690024944919328218">Show language options</translation>
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Change input settings</translation>
+<translation id="2692503699962701720">Change pitch when speaking element types and formatted text</translation>
 <translation id="2693176596243495071">Oops!  An unknown error occurred. Please try again later or contact your administrator if the issue persists.</translation>
 <translation id="2698147581454716013">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>
 <translation id="2699911226086014512">PIN operation failed with code <ph name="RETRIES" />.</translation>
@@ -3177,7 +3178,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3798632811625902122">Bluetooth device <ph name="DEVICE" /> would like permission to pair.</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799128412641261490">Switch Access settings</translation>
-<translation id="3800030395703848668">View list options</translation>
 <translation id="3800806661949714323">Show all (recommended)</translation>
 <translation id="3800828618615365228">Google Chrome and Chrome OS additional terms</translation>
 <translation id="3802486193901166966">This extension requires no special permissions and has no additional site access</translation>
@@ -3800,6 +3800,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4376226992615520204">Location turned off</translation>
 <translation id="4377058670119819762">Enables tab strip to scroll left and right when full.</translation>
 <translation id="4377363674125277448">There was a problem with server's certificate.</translation>
+<translation id="437809255587011096">Announce text styling</translation>
 <translation id="4378154925671717803">Phone</translation>
 <translation id="4378308539633073595">Scroll forwards</translation>
 <translation id="4378551569595875038">Connecting...</translation>
@@ -5356,6 +5357,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5817069030404929329">Move passwords from this device to your Google Account?</translation>
 <translation id="5817918615728894473">Pair</translation>
 <translation id="5821565227679781414">Create Shortcut</translation>
+<translation id="5824976764713185207">Automatically read page after it finishes loading</translation>
 <translation id="5825412242012995131">On (recommended)</translation>
 <translation id="5826395379250998812">Connect your <ph name="DEVICE_TYPE" /> with your phone. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semi-transparent</translation>
@@ -6946,6 +6948,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7268127947535186412">This setting is managed by the device owner.</translation>
 <translation id="7269229526547981029">This profile is managed by <ph name="PROFILE_MANAGER" />. A new profile is required for account <ph name="USER_EMAIL_ADDRESS" /> by <ph name="ACCOUNT_MANAGER" /></translation>
 <translation id="7269736181983384521">Nearby Share data usage</translation>
+<translation id="7271278495464744706">Enable verbose descriptions</translation>
 <translation id="7272674038937250585">No description provided</translation>
 <translation id="7273110280511444812">last attached on <ph name="DATE" /></translation>
 <translation id="7273921429569738933">Spam and fraud reduction is on</translation>
@@ -8284,6 +8287,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8471959340398751476">Discounts are off. You can turn them on in the customise menu</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Your passwords are unique}=1{{COUNT} reused password}other{{COUNT} reused passwords}}</translation>
 <translation id="8472623782143987204">hardware-backed</translation>
+<translation id="8473540203671727883">Speak text under the mouse</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8475313423285172237">Another programme on your computer added an extension that may change the way Chrome works.</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things, like when ChromeOS crashes, which features were enabled, how much memory was typically used and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1" />

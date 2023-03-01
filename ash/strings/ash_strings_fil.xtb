@@ -502,6 +502,11 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3633097874324966332">Buksan ang mga setting ng Bluetooth para ipares ang iyong device</translation>
 <translation id="3638400994746983214">I-toggle ang privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Overdue na ang update</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> hanggang
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Piliin para sa higit pang detalye sa Google Calendar.</translation>
 <translation id="3659444876902283058">(Araw <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Mga <ph name="TIME_LEFT" /> ang natitira (<ph name="PERCENTAGE" />%).
 Isaksak ang iyong device.</translation>
@@ -638,7 +643,6 @@ Isaksak ang iyong device.</translation>
 <translation id="4405151984121254935">Hindi sinusuportahan ang nakakonektang uri ng peripheral</translation>
 <translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
-<translation id="4421231901400348175">Pagbabahagi ng kontrol sa iyong screen gamit ang <ph name="HELPER_NAME" /> sa pamamagitan ng Remote Assistance.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4435022394553622295">Tingnan ang mga notification at app ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
@@ -1468,6 +1472,7 @@ Kaka-install lang</translation>
 <translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
+<translation id="8876148469852588625">Event <ph name="EVENT_POSITION" /> sa <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Suriin ang iyong koneksyon</translation>
 <translation id="8877788021141246043">Magtakda ng paalala</translation>
 <translation id="8878886163241303700">Pinapalawak ang screen</translation>

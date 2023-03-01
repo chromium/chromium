@@ -4013,24 +4013,6 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, les utilisateurs choisissent si l'étagère doit être masquée automatiquement ou non.</translation>
 <translation id="4812309945046430049">Rétroéclairage du clavier rouge</translation>
-<translation id="4812410063101047442">Ce paramètre indique le navigateur <ph name="LACROS_NAME" /> à utiliser.
-
-Si la règle est définie sur "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />", l'utilisateur peut choisir le navigateur <ph name="LACROS_NAME" /> à charger : binaire à partir de la partition <ph name="LACROS_ROOTFS_NAME" /> ou <ph name="LACROS_STATEFUL_NAME" />.
-Si l'utilisateur n'a défini aucune préférence, le binaire avec la version la plus récente sera sélectionné.
-
-Si la règle est définie sur "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />", le binaire <ph name="LACROS_ROOTFS_NAME" /> du navigateur <ph name="LACROS_NAME" /> est toujours chargé.
-
-Si elle est définie sur "<ph name="LACROS_SELECTION_STATEFUL_VALUE" />", le binaire <ph name="LACROS_STATEFUL_NAME" /> du navigateur <ph name="LACROS_NAME" /> est toujours chargé.
-Utiliser cette valeur peut entraîner un comportement inattendu si la version du navigateur <ph name="LACROS_STATEFUL_NAME" /> devient antérieure à la version de <ph name="PRODUCT_OS_NAME" />.
-Ce cas n'est pas pris en charge et son fonctionnement n'est pas garanti.
-
-Si la règle n'est pas configurée, "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />" est défini par défaut pour les utilisateurs gérés par l'entreprise et "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />" pour les utilisateurs non gérés.
-
-Notez que modifier la valeur de la règle peut entraîner une perte de données du navigateur <ph name="LACROS_NAME" /> si, après modification, la version du navigateur est antérieure à la version actuelle. C'est le cas, par exemple, si la règle passe de "<ph name="LACROS_SELECTION_STATEFUL_VALUE" />" à "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />" et que la première a été mise à jour. Ou bien si <ph name="PRODUCT_OS_NAME" /> a été mis à jour avec <ph name="LACROS_ROOTFS_NAME" />
-<ph name="LACROS_NAME" /> et que <ph name="LACROS_STATEFUL_NAME" /> n'a pas encore été mis à jour.
-Dans ces scénarios, la migration correcte des données n'est pas garantie.
-
-Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />" ou "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />". Vous pouvez également passer de "<ph name="LACROS_SELECTION_ROOTFS_VALUE" />" à "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />".</translation>
 <translation id="4812714598405913256">Configurer le message concernant l'expiration de la mise à jour automatique pour la règle DeviceMinimumVersion</translation>
 <translation id="4815581264328351694">Afficher les options d'accessibilité dans le menu de la barre d'état système</translation>
 <translation id="4816674326202173458">Autoriser l'utilisateur d'entreprise à être à la fois un utilisateur principal et un utilisateur secondaire (comportement par défaut pour les utilisateurs non gérés)</translation>
@@ -5411,13 +5393,6 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
       Si tel est le cas, un thème basé sur cette couleur est automatiquement généré et appliqué au navigateur. Les utilisateurs ne peuvent pas modifier le thème défini dans cette règle.
 
       En revanche, ils peuvent appliquer le thème de leur choix au navigateur si la règle n'est pas configurée.</translation>
-<translation id="619376519309703699">Permet de désactiver ou non la fonctionnalité d'ensembles internes.
-
-                  Si cette règle n'est pas configurée ou qu'elle est activée, la fonctionnalité d'ensembles internes est activée.
-
-                  Si elle est désactivée, la fonctionnalité l'est également.
-
-                  Cela détermine si Chrome accepte ou non les fonctionnalités liées aux ensembles internes (par exemple, l'attribut de cookie SameParty).</translation>
 <translation id="6195802366906945965">Déterminer si l'outil de vérification des certificats intégré sera utilisé pour vérifier les certificats des serveurs</translation>
 <translation id="6198947200418556248">Cette règle est obsolète. Si vous nécessitez toujours l'ancien comportement des cookies, veuillez utiliser <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. Ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour obtenir une description complète, consultez https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -8183,7 +8158,6 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
 <translation id="8707790573162457301">Lancer le nettoyage de disque automatique lors de la connexion</translation>
 <translation id="8713535263782304771">Désactiver la navigation sécurisée</translation>
 <translation id="8715885991031124968">Autoriser les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
-<translation id="8719374569086645837">Toujours charger le navigateur <ph name="LACROS_NAME" /> <ph name="LACROS_STATEFUL_NAME" /></translation>
 <translation id="8720547069538712402">Autoriser l'utilisateur à activer ou désactiver le correcteur orthographique</translation>
 <translation id="8726080977639508431">Cette règle contrôle la façon dont <ph name="PRODUCT_NAME" /> interprète les règles des listes grises/de sites pour la fonctionnalité Legacy Browser Support. Cela concerne ces règles : <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 

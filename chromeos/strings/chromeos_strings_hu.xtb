@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
+<translation id="3275506277319227640">Dokkolás itt: <ph name="DIRECTION" /> oldal</translation>
 <translation id="3275729367986477355">Avatarkép</translation>
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="3435896845095436175">Engedélyezés</translation>
+<translation id="345256797477978759">Ablak dokkolása a képernyő <ph name="DIRECTION" /> oldali nagyobbik részén</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> oldal kinyomtatva (összesen ennyiből: <ph name="TOTAL_PAGES" />).</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />. oldal beolvasása… <ph name="PERCENTAGE_VALUE" />% kész.</translation>
 <translation id="3459509316159669723">Nyomtatás</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
 <translation id="3600339377155080675">Képernyőtükrözés</translation>
 <translation id="3602290021589620013">Előnézet</translation>
+<translation id="360282891121575443">A megosztott albumokban lévő fotókat más felhasználók is módosíthatják. A naponta változó beállítással olyan háttérképeket is megjeleníthet, amelyek jelenleg nem szerepelnek az albumban.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Háttérkép megváltoztatása</translation>
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
 <translation id="3606583719724308068">Hosszú a várakozási idő a HTTPS-protokollt használó webhelyekhez való csatlakozáskor</translation>
 <translation id="361575905210396100">Köszönjük visszajelzését!</translation>
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
+<translation id="3639846061339007994">felső</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Betöltés...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Teljes</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="4370033095251616914">Dokkolás a kisebb részen</translation>
 <translation id="4378373042927530923">Nem fut</translation>
 <translation id="4378551569595875038">Kapcsolódás…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6659594942844771486">Lap</translation>
 <translation id="6692996468359469499">Információk kérése a kiválasztott elemmel kapcsolatban</translation>
+<translation id="6698459586333070823">A megosztott albumokat más felhasználók is módosíthatják</translation>
 <translation id="6704062477274546131">DNS-feloldás</translation>
 <translation id="6723839937902243910">Energiaellátás</translation>
 <translation id="6723847290197874913">Billentyűzet háttérvilágítása</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Meglévő fénykép a fényképezőgépről vagy fájlból</translation>
 <translation id="7162487448488904999">Galéria</translation>
 <translation id="7170236477717446850">Profilkép</translation>
+<translation id="7171919371520438592">Ablak dokkolása a képernyő <ph name="DIRECTION" /> oldali kisebbik részén</translation>
 <translation id="7172721935181587524">1 kép</translation>
 <translation id="7177485034254901881">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli. A rendszergazdák távolról konfigurálhatják az eszközt.</translation>
 <translation id="7180611975245234373">Frissítés</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Csatolás</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
+<translation id="8210733748736414123">alsó</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>
 <translation id="8227119283605456246">Fájl csatolása</translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Adjon hozzá egy fiókot a többfiókos bejelentkezéshez. Az összes bejelentkezett fiók elérhető a jelszó megadása nélkül, ezért ezt a funkciót csak megbízható fiókokkal használja.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>
 <translation id="8372477600026034341">További gazdagépek</translation>
+<translation id="8380114448424469341">Ablak dokkolása a képernyő <ph name="DIRECTION" /> oldali felén</translation>
 <translation id="8395584934117017006">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a vállalat felügyeli</translation>
 <translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének sebessége</translation>
 <translation id="8410244574650205435">Automatikusan észlelve</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Bal oldali Shift</translation>
 <translation id="9149391708638971077">Memóriateszt futtatása</translation>
+<translation id="9157515863513902090">Dokkolás a nagyobb részen</translation>
 <translation id="9173638680043580060">Kevesebb mint 1 perc van hátra</translation>
 <translation id="917720651393141712">Tesztmérkőzés</translation>
 <translation id="9188992814426075118">A billentyűzet képes automatikusan a háttérképhez igazodni</translation>

@@ -1274,6 +1274,15 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="2168397434410358693">Ritardo inattività in caso di utilizzo di CA</translation>
 <translation id="217013996107840632">Parametri della riga di comando per cambiare il browser alternativo.</translation>
 <translation id="2170233653554726857">Attiva ottimizzazione WPAD</translation>
+<translation id="2172528612637587749">Consente di configurare l'elenco di immagini da visualizzare nel salvaschermo per la schermata di blocco.
+
+Ogni voce deve essere un URL che fa riferimento a un file immagine. Il formato dell'immagine deve essere JPEG e le dimensioni del file non devono essere superiori a 8 MB. Gli URL non validi e le immagini non supportate verranno ignorati. Il dispositivo <ph name="PRODUCT_OS_NAME" /> scaricherà queste immagini e le conserverà in una cache locale.
+
+È possibile visualizzare massimo 25 immagini nel salvaschermo. Verranno utilizzate soltanto le prime 25 voci di URL dell'elenco.
+
+Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> viene impostato su false.
+
+Se questo criterio non viene configurato o se l'elenco non contiene riferimenti a immagini validi, il salvaschermo per la schermata di blocco non verrà visualizzato, a prescindere dal valore impostato nel criterio <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2175353308236295184">Oggetto di configurazione JSON specifico dell'app con una serie di coppie chiave-valore, ad esempio '"managedConfiguration": { "key1": value1, "key2": value2 }'. Le chiavi sono definite nel file manifest dell'app.</translation>
 <translation id="2176115444876446233">Gli utenti non possono raccogliere dati di rilevamento del rendimento a livello di sistema.</translation>
 <translation id="2177696016354404697">Disattiva sempre la Schermata privata</translation>
@@ -3472,6 +3481,15 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4212181786686887763">L'URL da cui è possibile scaricare l'immagine di sfondo.</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
+<translation id="4225083820650584375">Consente di configurare l'elenco di immagini da visualizzare nel salvaschermo per la schermata di accesso.
+
+Ogni voce deve essere un URL che fa riferimento a un file immagine. Il formato dell'immagine deve essere JPEG e le dimensioni del file non devono essere superiori a 8 MB. Gli URL non validi e le immagini non supportate verranno ignorati. Il dispositivo <ph name="PRODUCT_OS_NAME" /> scaricherà queste immagini e le conserverà in una cache locale.
+
+È possibile visualizzare massimo 25 immagini nel salvaschermo. Verranno utilizzate soltanto le prime 25 voci di URL dell'elenco.
+
+Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> viene impostato su false.
+
+Se questo criterio non viene configurato o se l'elenco non contiene riferimenti a immagini validi, il salvaschermo per la schermata di accesso non verrà visualizzato, a prescindere dal valore impostato nel criterio <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="42267415200641481">Se questo criterio viene impostato su true, la risoluzione DNS di sistema (getaddrinfo()) potrebbe essere eseguita al di fuori del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.
 
       Se questo criterio viene impostato su false, la risoluzione DNS di sistema (getaddrinfo()) viene eseguita nel processo di rete anziché nel browser. Questa operazione potrebbe forzare la disattivazione della sandbox del servizio di rete, riducendo la sicurezza di <ph name="PRODUCT_NAME" />.
@@ -4010,23 +4028,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se la barra delle app viene nascosta automaticamente.</translation>
 <translation id="4812309945046430049">Colore della retroilluminazione della tastiera rosso</translation>
-<translation id="4812410063101047442">Questa impostazione consente di configurare il browser <ph name="LACROS_NAME" /> da utilizzare.
-
-Se il criterio viene impostato su <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />, l'utente può decidere quale browser <ph name="LACROS_NAME" /> caricare: il programma binario della partizione <ph name="LACROS_ROOTFS_NAME" /> o <ph name="LACROS_STATEFUL_NAME" />.
-Se l'utente non ha impostato alcuna preferenza, verrà scelto il programma binario con la versione più recente.
-
-Se il criterio viene impostato su <ph name="LACROS_SELECTION_ROOTFS_VALUE" />, verrà caricato sempre il programma binario <ph name="LACROS_ROOTFS_NAME" /> del browser <ph name="LACROS_NAME" />.
-
-Se il criterio viene impostato su <ph name="LACROS_SELECTION_STATEFUL_VALUE" />, verrà caricato sempre il programma binario <ph name="LACROS_STATEFUL_NAME" /> del browser <ph name="LACROS_NAME" />.
-L'utilizzo di questo valore può causare comportamenti imprevisti se la versione del browser <ph name="LACROS_STATEFUL_NAME" /> è precedente alla versione di <ph name="PRODUCT_OS_NAME" />.
-Questo caso non è supportato e non è garantito il corretto funzionamento.
-
-Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> per gli utenti gestiti a livello aziendale e <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
-
-Tieni presente che la modifica del valore del criterio può causare la perdita di dati del browser <ph name="LACROS_NAME" /> se la versione del browser impostata è precedente alla versione attuale. Ad esempio, se il criterio cambia da <ph name="LACROS_SELECTION_STATEFUL_VALUE" /> a <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> e la prima versione è stata aggiornata oppure se <ph name="PRODUCT_OS_NAME" /> è stato aggiornato insieme al browser <ph name="LACROS_NAME" /> <ph name="LACROS_ROOTFS_NAME" /> e la versione <ph name="LACROS_STATEFUL_NAME" /> non è stata ancora aggiornata.
-In questo tipo di scenari non è garantita la corretta migrazione dei dati.
-
-È sicuro usare l'opzione <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTION_ROOTFS_VALUE" />. Va bene anche passare da <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> a <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />.</translation>
 <translation id="4812714598405913256">Configura il messaggio della scadenza dell'aggiornamento automatico per il criterio DeviceMinimumVersion</translation>
 <translation id="4815581264328351694">Mostra opzioni di accessibilità nel menu della barra delle applicazioni</translation>
 <translation id="4816674326202173458">Consenti all'utente aziendale di essere l'utente principale e secondario (comportamento predefinito per gli utenti non gestiti)</translation>
@@ -5411,13 +5412,6 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
       L'impostazione del criterio su un colore esadecimale valido fa sì che venga automaticamente generato e applicato al browser un tema basato su quel colore. Gli utenti non potranno modificare il tema impostato dal criterio.
 
       Lasciare il criterio non impostato consente agli utenti di modificare il tema del browser come preferiscono.</translation>
-<translation id="619376519309703699">Questo criterio consente di disattivare la funzionalità degli insiemi proprietari.
-
-                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità degli insiemi proprietari viene attivata.
-
-                  Se questo criterio viene impostato su Disattivato, la funzionalità degli insiemi proprietari viene disattivata.
-
-                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate agli insiemi proprietari (ad esempio l'attributo per i cookie SameParty).</translation>
 <translation id="6195802366906945965">Consente di stabilire se verrà utilizzato lo strumento di verifica dei certificati integrato per verificare i certificati dei server</translation>
 <translation id="6198947200418556248">Questo criterio è deprecato. Se hai ancora bisogno del comportamento dei cookie precedente, usa il criterio <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Ti consente di ripristinare il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per tutti i cookie. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono uno stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -8180,7 +8174,6 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
 <translation id="8707790573162457301">Esegui la pulizia automatica del disco durante l'accesso</translation>
 <translation id="8713535263782304771">Disattiva Navigazione sicura</translation>
 <translation id="8715885991031124968">Consenti le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
-<translation id="8719374569086645837">Carica sempre il browser <ph name="LACROS_NAME" /> <ph name="LACROS_STATEFUL_NAME" /></translation>
 <translation id="8720547069538712402">Consenti all'utente di attivare o disattivare il controllo ortografico</translation>
 <translation id="8726080977639508431">Questo criterio consente di stabilire in che modo <ph name="PRODUCT_NAME" /> deve interpretare i criteri relativi a elenchi dei siti/greylist della funzionalità Supporto dei browser precedenti. Incide sui seguenti criteri: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> e <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
 

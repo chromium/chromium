@@ -503,6 +503,11 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3633097874324966332">Open de bluetooth-instellingen om je apparaat te koppelen</translation>
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update vereist</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+<ph name="EVENT_SUMMARY" />,
+<ph name="START_TIME" /> tot
+<ph name="END_TIME" />,
+<ph name="TIME_ZONE" />. Selecteer de afspraak voor meer informatie in Google Agenda.</translation>
 <translation id="3659444876902283058">(Dag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Ongeveer <ph name="TIME_LEFT" /> resterend (<ph name="PERCENTAGE" />%).
 Sluit je apparaat aan op een stopcontact.</translation>
@@ -639,7 +644,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
-<translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe support.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4435022394553622295">Meldingen en apps van je telefoon bekijken op je <ph name="DEVICE_TYPE" /></translation>
@@ -1467,6 +1471,7 @@ Nieuwe installatie</translation>
 <translation id="8855885154700222542">Toets voor volledig scherm</translation>
 <translation id="8870509716567206129">App biedt geen ondersteuning voor gesplitst scherm.</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
+<translation id="8876148469852588625">Afspraak <ph name="EVENT_POSITION" /> van <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Je verbinding checken</translation>
 <translation id="8877788021141246043">Stel een herinnering in</translation>
 <translation id="8878886163241303700">Uitgebreid scherm</translation>

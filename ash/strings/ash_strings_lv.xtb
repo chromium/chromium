@@ -549,6 +549,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />: notiek pasākumu ielāde.</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3934456833412894880">Adaptīvā uzlāde ir ieslēgta. Akumulators tiks uzlādēts līdz 80%, lai paildzinātu tā darbību, taču varat to pilnībā uzlādēt, kad tas ir nepieciešams.</translation>
+<translation id="3936620957945677513">Lai pievienotos pasākumam <ph name="EVENT_SUMMARY" />, nospiediet taustiņu Enter</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="394485226368336402">Audio iestatījumi</translation>
 <translation id="3945319193631853098">Pieskarieties, lai pabeigtu iestatīšanu.</translation>
@@ -637,7 +638,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4405151984121254935">Pievienotās perifērās ierīces veids netiek atbalstīts.</translation>
 <translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
-<translation id="4421231901400348175">Ekrāna pārvaldības koplietošana ar <ph name="HELPER_NAME" />, izmantojot attālo palīdzību.</translation>
 <translation id="4424159417645388645">5. darbvieta</translation>
 <translation id="4430019312045809116">Skaļums</translation>
 <translation id="4435022394553622295">Skatiet tālruņa paziņojumus un lietotnes savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>

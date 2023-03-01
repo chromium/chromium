@@ -501,6 +501,9 @@
 <translation id="3633097874324966332">請開啟藍牙設定以配對裝置</translation>
 <translation id="3638400994746983214">切換隱私保護畫面。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新已逾期</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />：
+        <ph name="START_TIME" /> 至 <ph name="END_TIME" /> (<ph name="TIME_ZONE" />)。選取活動即可在 Google 日曆中查看詳情。</translation>
 <translation id="3659444876902283058">(第 <ph name="CURRENT_DAY" /> 天，共 <ph name="TOTAL_DAYS" /> 天)</translation>
 <translation id="3659814201068740063">大約還可使用 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
 請將裝置接上電源。</translation>
@@ -637,7 +640,6 @@
 <translation id="4405151984121254935">系統不支援連接的周邊裝置類型</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
-<translation id="4421231901400348175">透過遠端協助與<ph name="HELPER_NAME" />分享螢幕控制功能。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4435022394553622295">透過 <ph name="DEVICE_TYPE" /> 查看手機的通知和應用程式</translation>
@@ -1466,6 +1468,7 @@
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8870509716567206129">這個應用程式不支援分割畫面。</translation>
 <translation id="8874184842967597500">未連線</translation>
+<translation id="8876148469852588625">第 <ph name="EVENT_POSITION" /> 項活動，共 <ph name="EVENT_TOTAL_COUNT" /> 項</translation>
 <translation id="8876661425082386199">請檢查連線狀態</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>

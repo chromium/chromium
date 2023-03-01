@@ -502,6 +502,11 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3633097874324966332">Hap cilësimet e Bluetooth-it për të çiftuar pajisjen</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> deri në
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Zgjidh për më shumë detaje në "Kalendarin e Google".</translation>
 <translation id="3659444876902283058">(Dita <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Të mbetura: rreth <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Lidhe pajisjen me një burim të energjisë elektrike.</translation>
@@ -638,7 +643,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4405151984121254935">Lloji i pajisjes së lidhur periferike nuk mbështetet</translation>
 <translation id="4406883609789734330">Titra në çast</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
-<translation id="4421231901400348175">Po ndan kontrollin e ekranit me <ph name="HELPER_NAME" /> përmes "Ndihmës në distancë".</translation>
 <translation id="4424159417645388645">Tavolina e punës 5</translation>
 <translation id="4430019312045809116">Volumi</translation>
 <translation id="4435022394553622295">Shiko njoftimet dhe aplikacionet e telefonit në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
@@ -1469,6 +1473,7 @@ Instalim i ri</translation>
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
+<translation id="8876148469852588625">Ngjarja <ph name="EVENT_POSITION" /> nga <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Kontrollo lidhjen tënde</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
 <translation id="8878886163241303700">Ekran i zgjeruar</translation>
