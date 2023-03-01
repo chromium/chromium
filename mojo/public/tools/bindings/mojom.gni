@@ -262,12 +262,16 @@ if (enable_scrambled_message_ids) {
 #       |cpp_only| is set to true, it overrides this to prevent generation of
 #       Java bindings.
 #
-#   enable_fuzzing (optional)
+#   enable_js_fuzzing (optional)
+#       Enables generation of javascript fuzzing sources for the target if the
+#       global build arg |enable_mojom_fuzzer| is also set to |true|.
+#       Defaults to |true|. If JS fuzzing generation is enabled for a target,
+#       the target will always generate JS bindings even if |cpp_only| is set to
+#       |true|. See note above.
+#
+#   enable_mojolpm_fuzzing (optional)
 #       Enables generation of fuzzing sources for the target if the global build
-#       arg |enable_mojom_fuzzer| is also set to |true|. Defaults to |true|. If
-#       fuzzing generation is enabled for a target, the target will always
-#       generate JS bindings even if |cpp_only| is set to |true|. See note
-#       above.
+#       arg |enable_mojom_fuzzer| is also set to |true|. Defaults to |true|.
 #
 #   support_lazy_serialization (optional)
 #       If set to |true|, generated C++ bindings will effectively prefer to
@@ -667,9 +671,14 @@ template("mojom") {
   }
   write_file(build_metadata_filename, build_metadata, "json")
 
-  generate_fuzzing =
-      (!defined(invoker.enable_fuzzing) || invoker.enable_fuzzing) &&
+  generate_js_fuzzing =
+      (!defined(invoker.enable_js_fuzzing) || invoker.enable_js_fuzzing) &&
       enable_mojom_fuzzer && (!defined(invoker.testonly) || !invoker.testonly)
+
+  generate_mojolpm_fuzzing =
+      (!defined(invoker.enable_mojolpm_fuzzing) ||
+       invoker.enable_mojolpm_fuzzing) && enable_mojom_fuzzer &&
+      (!defined(invoker.testonly) || !invoker.testonly)
 
   parser_target_name = "${target_name}__parser"
   parser_deps = []
@@ -1036,7 +1045,7 @@ template("mojom") {
     }
   }
 
-  if (generate_fuzzing) {
+  if (generate_mojolpm_fuzzing) {
     # This block generates the proto files used for the MojoLPM fuzzer,
     # and the corresponding proto targets that will be linked in the fuzzer
     # targets. These are independent of the typemappings, and can be done
@@ -1317,7 +1326,8 @@ template("mojom") {
               "$root_gen_dir/mojo/public/tools/bindings/cpp_templates.zip",
               type_mappings_path,
             ]
-        if (generate_fuzzing && !defined(bindings_configuration.variant)) {
+        if (generate_mojolpm_fuzzing &&
+            !defined(bindings_configuration.variant)) {
           sources += [
             "$root_gen_dir/mojo/public/tools/bindings/mojolpm_templates.zip",
           ]
@@ -1349,7 +1359,8 @@ template("mojom") {
             "$root_gen_dir/${base_path}${variant_dash_suffix}.cc",
             "$root_gen_dir/${base_path}${variant_dash_suffix}.h",
           ]
-          if (generate_fuzzing && !defined(bindings_configuration.variant)) {
+          if (generate_mojolpm_fuzzing &&
+              !defined(bindings_configuration.variant)) {
             outputs += [
               "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.cc",
               "$root_gen_dir/${base_path}${variant_dash_suffix}-mojolpm.h",
@@ -1366,7 +1377,8 @@ template("mojom") {
           "-g",
         ]
 
-        if (generate_fuzzing && !defined(bindings_configuration.variant)) {
+        if (generate_mojolpm_fuzzing &&
+            !defined(bindings_configuration.variant)) {
           args += [ "c++,mojolpm" ]
         } else {
           args += [ "c++" ]
@@ -1644,7 +1656,7 @@ template("mojom") {
       }
     }
 
-    if (generate_fuzzing && !defined(variant)) {
+    if (generate_mojolpm_fuzzing && !defined(variant)) {
       # This block contains the C++ targets for the MojoLPM fuzzer, we need to
       # do this here so that we can use the typemap configuration for the
       # empty-variant Mojo target.
@@ -1896,8 +1908,8 @@ template("mojom") {
   # targets when generate_legacy_js_bindings is true. This option is provided
   # since the legacy bindings are needed by Blink tests and non-Chromium users,
   # which are not expected to migrate to modules or TypeScript.
-  if (generate_legacy_js &&
-      (generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only)) {
+  if (generate_legacy_js && (generate_js_fuzzing ||
+                             !defined(invoker.cpp_only) || !invoker.cpp_only)) {
     if (sources_list != []) {
       generator_js_target_name = "${target_name}_js__generator"
 
@@ -1951,7 +1963,7 @@ template("mojom") {
           args += message_scrambling_args
         }
 
-        if (generate_fuzzing) {
+        if (generate_js_fuzzing) {
           args += [ "--generate_fuzzing" ]
         }
       }
@@ -2078,8 +2090,8 @@ template("mojom") {
       }
     }
   }
-  if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
-      use_typescript_for_target) {
+  if ((generate_js_fuzzing || !defined(invoker.cpp_only) ||
+       !invoker.cpp_only) && use_typescript_for_target) {
     if (sources_list != []) {
       source_filelist = []
       foreach(source, sources_list) {

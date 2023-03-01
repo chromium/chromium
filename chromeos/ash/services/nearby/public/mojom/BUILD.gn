@@ -48,6 +48,8 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
+  enable_js_fuzzing = false
+
   cpp_only = true
 
   cpp_typemaps = [

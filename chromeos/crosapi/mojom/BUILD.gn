@@ -109,6 +109,7 @@ mojom("mojom") {
     "web_page_info.mojom",
   ]
   disable_variants = true
+  enable_js_fuzzing = false
   cpp_only = true
 
   public_deps = [
