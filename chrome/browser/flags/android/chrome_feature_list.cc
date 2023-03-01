@@ -202,7 +202,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeNewDownloadTab,
-    &kChromeShareLongScreenshot,
     &kChromeSharingHub,
     &kChromeSharingHubLaunchAdjacent,
     &kChromeSurveyNextAndroid,
@@ -609,10 +608,6 @@ BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
 BASE_FEATURE(kChromeNewDownloadTab,
              "ChromeNewDownloadTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeShareLongScreenshot,
-             "ChromeShareLongScreenshot",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeSharingHub,
              "ChromeSharingHub",

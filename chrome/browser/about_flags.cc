@@ -846,16 +846,6 @@ const FeatureEntry::FeatureVariation kCriticalPersistedTabDataVariations[] = {
     {"Delay saves until DeferredStartup", kDelaySavesUntilDeferredStartup,
      std::size(kDelaySavesUntilDeferredStartup), nullptr}};
 
-const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragSlow[] = {
-    {"autoscroll", "1"}};
-const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragQuick[] = {
-    {"autoscroll", "2"}};
-const FeatureEntry::FeatureVariation kLongScreenshotVariations[] = {
-    {"Autoscroll Experiment 1", kLongScreenshot_AutoscrollDragSlow,
-     std::size(kLongScreenshot_AutoscrollDragSlow), nullptr},
-    {"Autoscroll Experiment 2", kLongScreenshot_AutoscrollDragQuick,
-     std::size(kLongScreenshot_AutoscrollDragQuick), nullptr}};
-
 const FeatureEntry::FeatureParam kShowSingleRowMVTiles[] = {
     {"most_visited_max_rows_normal_screen", "1"},
     {"most_visited_max_rows_small_screen", "1"},
@@ -4021,12 +4011,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAssistantIntentTranslateInfoName,
      flag_descriptions::kAssistantIntentTranslateInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAssistantIntentTranslateInfo)},
-    {"chrome-share-long-screenshot",
-     flag_descriptions::kChromeShareLongScreenshotName,
-     flag_descriptions::kChromeShareLongScreenshotDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kChromeShareLongScreenshot,
-                                    kLongScreenshotVariations,
-                                    "ChromeShareLongScreenshot")},
     {"chrome-sharing-crow-launch-tab",
      flag_descriptions::kChromeSharingCrowLaunchTabName,
      flag_descriptions::kChromeSharingCrowLaunchTabDescription, kOsAndroid,

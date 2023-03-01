@@ -291,9 +291,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private void maybeAddLongScreenshotFirstPartyOption() {
-        // TODO(crbug.com/1250871): Long Screenshots on by default; supported on Android 7.0+.
-        if (!(ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
-                    && mTabProvider.hasValue())) {
+        if (!mTabProvider.hasValue()) {
             return;
         }
         FirstPartyOption option = createLongScreenshotsFirstPartyOption();

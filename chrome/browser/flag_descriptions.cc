@@ -3561,10 +3561,6 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
-const char kChromeShareLongScreenshotName[] = "Chrome Share Long Screenshots";
-const char kChromeShareLongScreenshotDescription[] =
-    "Enables UI to edit and share long screenshots on Android";
-
 const char kChromeSharingCrowLaunchTabName[] =
     "Launch Thank Creator actions in standard tab";
 const char kChromeSharingCrowLaunchTabDescription[] =

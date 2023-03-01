@@ -991,11 +991,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "chrome-share-long-screenshot",
-    "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "chrome-sharing-crow-launch-tab",
     "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 110

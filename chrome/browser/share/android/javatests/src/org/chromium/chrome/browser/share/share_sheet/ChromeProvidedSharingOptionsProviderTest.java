@@ -15,7 +15,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
-import android.os.Looper;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -82,8 +81,7 @@ import java.util.List;
  */
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures(
-        {ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT, ChromeFeatureList.WEBNOTES_STYLIZE})
+@EnableFeatures({ChromeFeatureList.WEBNOTES_STYLIZE})
 @DisableFeatures({ChromeFeatureList.UPCOMING_SHARING_FEATURES,
         ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -249,64 +247,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
-    public void getPropertyModels_linkAndTextShare() {
-        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
-                /*printingEnabled=*/false, LinkGeneration.MAX);
-
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.LINK_AND_TEXT,
-                                ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.TEXT),
-                        DetailedContentType.NOT_SPECIFIED,
-                        /*isMultiWindow=*/true);
-
-        assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy),
-                        mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
-    public void getPropertyModels_linkShare() {
-        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
-                /*printingEnabled=*/false, LinkGeneration.MAX);
-
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE),
-                        DetailedContentType.NOT_SPECIFIED,
-                        /*isMultiWindow=*/true);
-
-        assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_url),
-                        mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label)));
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
-    public void getPropertyModels_textShare() {
-        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
-                /*printingEnabled=*/false, LinkGeneration.MAX);
-
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.TEXT), DetailedContentType.NOT_SPECIFIED,
-                        /*isMultiWindow=*/true);
-
-        assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_text)));
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     public void getPropertyModels_multiWindow_doesNotIncludeScreenshot() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/false, LinkGeneration.MAX);
@@ -323,7 +263,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     public void getPropertyModels_isIncognito_doesNotIncludeQrCode() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/true,
                 /*printingEnabled=*/false, LinkGeneration.MAX);
@@ -340,7 +279,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     public void getPropertyModels_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/true, LinkGeneration.MAX);
@@ -359,7 +297,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     public void getPropertyModels_multipleTypes_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/true, LinkGeneration.MAX);
@@ -422,25 +359,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         .build();
 
         assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
-    public void getShareDetailsMetrics_LinkGeneration() {
-        @LinkGeneration
-        int linkGenerationStatus = LinkGeneration.LINK;
-
-        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
-                /*printingEnabled=*/false, linkGenerationStatus);
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT),
-                        DetailedContentType.NOT_SPECIFIED, /*isMultiWindow=*/false);
-
-        Looper.prepare();
-        assertCorrectLinkGenerationMetrics(propertyModels, linkGenerationStatus);
     }
 
     @Test
