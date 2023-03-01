@@ -88,9 +88,8 @@ LoginScreenStorageStorePersistentDataFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageStorePersistentDataFunction::Run() {
-  std::unique_ptr<login_screen_storage::StorePersistentData::Params> params =
-      login_screen_storage::StorePersistentData::Params::CreateDeprecated(
-          args());
+  absl::optional<login_screen_storage::StorePersistentData::Params> params =
+      login_screen_storage::StorePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   absl::optional<std::string> error = ValidateCrosapi();
@@ -126,9 +125,8 @@ LoginScreenStorageRetrievePersistentDataFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageRetrievePersistentDataFunction::Run() {
-  std::unique_ptr<login_screen_storage::RetrievePersistentData::Params> params =
-      login_screen_storage::RetrievePersistentData::Params::CreateDeprecated(
-          args());
+  absl::optional<login_screen_storage::RetrievePersistentData::Params> params =
+      login_screen_storage::RetrievePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   absl::optional<std::string> error = ValidateCrosapi();
@@ -153,8 +151,8 @@ LoginScreenStorageStoreCredentialsFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageStoreCredentialsFunction::Run() {
-  std::unique_ptr<login_screen_storage::StoreCredentials::Params> params =
-      login_screen_storage::StoreCredentials::Params::CreateDeprecated(args());
+  absl::optional<login_screen_storage::StoreCredentials::Params> params =
+      login_screen_storage::StoreCredentials::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   absl::optional<std::string> error = ValidateCrosapi();
