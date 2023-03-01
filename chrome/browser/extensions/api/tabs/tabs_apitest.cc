@@ -122,9 +122,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabMuted) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "muted.html"}))
-      << message_;
+// TODO(crbug.com/521410): Flaky on Wayland. Disabled for now on all platforms
+// pending further testing.
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Muted) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/muted")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Tabs2) {
@@ -132,10 +133,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Tabs2) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabDuplicate) {
-  ASSERT_TRUE(
-      RunExtensionTest("tabs/basics", {.extension_url = "duplicate.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Duplicate) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/duplicate")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Size) {
@@ -164,10 +163,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Events) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/events")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRelativeURLs) {
-  ASSERT_TRUE(
-      RunExtensionTest("tabs/basics", {.extension_url = "relative_urls.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, RelativeURLs) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/relative_urls")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
@@ -190,15 +187,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Opener) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/opener")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRemove) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "remove.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Remove) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/remove")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabRemoveMultiple) {
-  ASSERT_TRUE(RunExtensionTest("tabs/basics",
-                               {.extension_url = "remove-multiple.html"}))
-      << message_;
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, RemoveMultiple) {
+  ASSERT_TRUE(RunExtensionTest("tabs/basics/remove_multiple")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabGetCurrent) {
