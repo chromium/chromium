@@ -26,7 +26,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/guest_os/guest_os_engagement_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

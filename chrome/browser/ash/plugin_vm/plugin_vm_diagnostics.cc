@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "ui/base/l10n/l10n_util.h"

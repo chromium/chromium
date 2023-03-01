@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

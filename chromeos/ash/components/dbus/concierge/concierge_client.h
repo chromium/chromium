@@ -9,7 +9,7 @@
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"

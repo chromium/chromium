@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

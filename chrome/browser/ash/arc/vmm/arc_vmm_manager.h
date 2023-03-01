@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
