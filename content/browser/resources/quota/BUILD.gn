@@ -21,6 +21,7 @@ build_webui("build") {
   mojo_files =
       [ "$root_gen_dir/storage/browser/quota/quota_internals.mojom-webui.ts" ]
 
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/mojo:build_ts",

@@ -485,10 +485,12 @@ ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Optional parameter.
 ts_extra_deps: See |extra_deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
-ts_use_local_config: Whether to pass a local "tsconfig_base.json" file as the
-                     |tsconfig_base| to ts_library(). Optional, defaults to true.
-                     If false, the default //tools/typescript/tsconfig_base.json
-                     will be used.
+ts_tsconfig_base: The tsconfig file to use for ts_library(). Optional, defaults
+                  to "//tools/typescript/tsconfig_base_polymer.json" for Polymer
+                  UIs (i.e. UIs that specify |web_component_files| and/or
+                  |icons_html_files| and do not set |html_to_wrapper_template|
+                  to "native"). Defaults to
+                  "//tools/typescript/tsconfig_base.json" for non-Polymer UIs.
 
 HTML/CSS/JS optimization related params:
 optimize: Specifies whether any optimization steps will be used, defaults to

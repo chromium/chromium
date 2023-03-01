@@ -16,7 +16,6 @@ build_webui("build") {
     "region_search.css",
   ]
   non_web_component_files = [ "app.ts" ]
-  ts_use_local_config = false
 }
 
 generate_grd("build_untrusted_grd") {

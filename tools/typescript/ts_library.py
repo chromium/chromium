@@ -79,9 +79,11 @@ def main(argv):
   with io.open(tsconfig_base_file, encoding='utf-8', mode='r') as f:
     tsconfig_base = json.loads(f.read())
 
+    is_base_tsconfig = args.tsconfig_base is None or \
+        args.tsconfig_base.endswith('/tools/typescript/tsconfig_base.json')
     is_tsconfig_valid, error = validateTsconfigJson(tsconfig_base,
                                                     tsconfig_base_file,
-                                                    args.tsconfig_base is None)
+                                                    is_base_tsconfig)
     if not is_tsconfig_valid:
       raise AssertionError(error)
 

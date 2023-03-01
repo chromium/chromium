@@ -14,6 +14,5 @@ build_webui("build") {
   ]
   non_web_component_files = [ "most_visited_title.ts" ]
 
-  ts_use_local_config = false
   ts_definitions = [ "embedded_search.d.ts" ]
 }

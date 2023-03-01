@@ -206,7 +206,7 @@ copy("copy_checked_in_ts_js_files") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/preprocessed"
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   in_files = web_component_files + non_component_ts_files + html_wrapper_files +
              mojo_js_files + [ "fuse.js" ]
   allow_js = true

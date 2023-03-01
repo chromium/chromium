@@ -174,7 +174,7 @@ ts_library("build_ts") {
   composite = true
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/$out_folder"
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   in_files =
       js_files + css_wrapper_files + html_wrapper_files +
       rebase_path(get_target_outputs(":copy_shortcuts_mojo"),

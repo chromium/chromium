@@ -12,7 +12,6 @@ build_webui("build") {
   static_files = [ "webui_js_error.html" ]
   non_web_component_files = [ "webui_js_error.ts" ]
 
-  ts_use_local_config = false
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
 
   optimize = optimize_webui

@@ -103,8 +103,8 @@ copy("copy_mojo") {
 }
 
 ts_library("build_ts") {
-  tsconfig_base = "tsconfig_base.json"
   allow_js = true
+  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   deps = [
     "//ash/webui/common/resources:build_ts",
     "//third_party/polymer/v3_0:library",

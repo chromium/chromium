@@ -28,5 +28,4 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  ts_use_local_config = false
 }

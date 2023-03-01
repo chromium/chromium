@@ -14,7 +14,6 @@ build_webui("build") {
   ]
   non_web_component_files = [ "about_webapks.ts" ]
 
-  ts_use_local_config = false
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }

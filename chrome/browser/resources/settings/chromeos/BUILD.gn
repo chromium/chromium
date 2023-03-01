@@ -67,7 +67,7 @@ if (optimize_webui) {
 # TypeScript Build Configuration
 ts_library("build_ts") {
   allow_js = true
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   deps = [
     "//ash/webui/common/resources:build_ts",
     "//chrome/browser/resources/nearby_share/shared:build_ts",
