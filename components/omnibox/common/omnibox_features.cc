@@ -82,6 +82,12 @@ BASE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls,
              "OmniboxRemoveExcessiveRecycledViewClearCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, deduping prefers non-shortcut provider matches, while still
+// treating fuzzy provider matches as the least preferred.
+BASE_FEATURE(kPreferNonShortcutMatchesWhenDeduping,
+             "OmniboxPreferNonShortcutMatchesWhenDeduping",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Determines which are culled when both tail and history cluster suggestions
 // are available. See `MaybeCullTailSuggestions()`.
 BASE_FEATURE(kPreferTailOverHistoryClusterSuggestions,
