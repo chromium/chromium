@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -118,7 +117,7 @@ class HidReceiveFunction : public HidConnectionIoFunction {
                   uint8_t report_id,
                   const absl::optional<std::vector<uint8_t>>& buffer);
 
-  std::unique_ptr<api::hid::Receive::Params> parameters_;
+  absl::optional<api::hid::Receive::Params> parameters_;
 };
 
 class HidSendFunction : public HidConnectionIoFunction {
@@ -139,7 +138,7 @@ class HidSendFunction : public HidConnectionIoFunction {
 
   void OnFinished(bool success);
 
-  std::unique_ptr<api::hid::Send::Params> parameters_;
+  absl::optional<api::hid::Send::Params> parameters_;
 };
 
 class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
@@ -164,7 +163,7 @@ class HidReceiveFeatureReportFunction : public HidConnectionIoFunction {
   void OnFinished(bool success,
                   const absl::optional<std::vector<uint8_t>>& buffer);
 
-  std::unique_ptr<api::hid::ReceiveFeatureReport::Params> parameters_;
+  absl::optional<api::hid::ReceiveFeatureReport::Params> parameters_;
 };
 
 class HidSendFeatureReportFunction : public HidConnectionIoFunction {
@@ -186,7 +185,7 @@ class HidSendFeatureReportFunction : public HidConnectionIoFunction {
 
   void OnFinished(bool success);
 
-  std::unique_ptr<api::hid::SendFeatureReport::Params> parameters_;
+  absl::optional<api::hid::SendFeatureReport::Params> parameters_;
 };
 
 }  // namespace extensions
