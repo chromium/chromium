@@ -881,7 +881,7 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
     const libgav1::ObuFrameHeader& frame_hdr,
     const libgav1::RefCountedBufferPtr current_frame,
     const scoped_refptr<MmapedBuffer> buffer,
-    const uint32_t last_queued_buffer_index) {
+    const uint32_t last_queued_buffer_id) {
   state_->UpdateReferenceFrames(
       current_frame, base::strict_cast<int>(frame_hdr.refresh_frame_flags));
 
@@ -913,7 +913,7 @@ std::set<int> Av1Decoder::RefreshReferenceSlots(
 
     // Note that the CAPTURE buffer for previous frame can be used as well,
     // but it is already queued again at this point.
-    reusable_buffer_ids.erase(last_queued_buffer_index);
+    reusable_buffer_ids.erase(last_queued_buffer_id);
 
     // Updates to assign current key frame as a reference frame for all
     // reference frame slots in the reference frames list.
@@ -976,7 +976,7 @@ void Av1Decoder::QueueReusableBuffersInCaptureQueue(
       LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
 
     if (is_inter_frame)
-      CAPTURE_queue_->set_last_queued_buffer_index(reusable_buffer_id);
+      CAPTURE_queue_->set_last_queued_buffer_id(reusable_buffer_id);
   }
 }
 
@@ -1039,7 +1039,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
       const std::set<int> reusable_buffer_ids =
           RefreshReferenceSlots(current_frame_header, current_frame,
                                 ref_frames_[current_frame_header.frame_to_show],
-                                CAPTURE_queue_->last_queued_buffer_index());
+                                CAPTURE_queue_->last_queued_buffer_id());
 
       QueueReusableBuffersInCaptureQueue(
           reusable_buffer_ids,
@@ -1129,7 +1129,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   const std::set<int> reusable_buffer_ids = RefreshReferenceSlots(
       current_frame_header, current_frame, CAPTURE_queue_->GetBuffer(index),
-      CAPTURE_queue_->last_queued_buffer_index());
+      CAPTURE_queue_->last_queued_buffer_id());
 
   QueueReusableBuffersInCaptureQueue(
       reusable_buffer_ids,

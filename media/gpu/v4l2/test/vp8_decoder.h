@@ -63,7 +63,7 @@ class Vp8Decoder : public VideoDecoder {
   // can be reused for VIDIOC_QBUF ioctl call.
   std::set<int> RefreshReferenceSlots(const Vp8FrameHeader& frame_hdr,
                                       MmapedBuffer* buffer,
-                                      std::set<uint32_t> queued_buffer_indexes);
+                                      std::set<uint32_t> queued_buffer_ids);
 
   // Manages buffers holding reference frames and return buffer indexes
   // |reusable_buffer_slots| that can be reused in CAPTURE queue.

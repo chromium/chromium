@@ -224,7 +224,7 @@ VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
     LOG(FATAL) << "Failed to free all buffers for CAPTURE queue";
 
   // Free queued CAPTURE buffer indexes that are tracked by the client side.
-  CAPTURE_queue_->DequeueAllBufferIndexes();
+  CAPTURE_queue_->DequeueAllBufferIds();
 
   // Set the new resolution on OUTPUT queue. The driver will then pick up
   // the new resolution to be set on the coded size for CAPTURE queue.

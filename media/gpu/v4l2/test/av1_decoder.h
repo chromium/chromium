@@ -87,7 +87,7 @@ class Av1Decoder : public VideoDecoder {
       const libgav1::ObuFrameHeader& frame_hdr,
       const libgav1::RefCountedBufferPtr current_frame,
       const scoped_refptr<MmapedBuffer> buffer,
-      const uint32_t last_queued_buffer_index);
+      const uint32_t last_queued_buffer_id);
 
   // Queues reusable buffers in CAPTURE queue, indicated by
   // |reusable_buffer_ids|. Saves buffer ids for inter frames to prevent

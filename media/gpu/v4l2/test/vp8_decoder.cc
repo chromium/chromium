@@ -461,7 +461,7 @@ void Vp8Decoder::UpdateReusableReferenceBufferSlots(
 std::set<int> Vp8Decoder::RefreshReferenceSlots(
     const Vp8FrameHeader& frame_hdr,
     MmapedBuffer* buffer,
-    std::set<uint32_t> queued_buffer_indexes) {
+    std::set<uint32_t> queued_buffer_ids) {
   std::set<int> reusable_buffer_slots = {};
 
   if (frame_hdr.IsKeyframe()) {
@@ -469,8 +469,9 @@ std::set<int> Vp8Decoder::RefreshReferenceSlots(
     // current reconstructed frame. Then all CAPTURE buffers can be reused
     // except the CAPTURE buffer holding the key frame.
     for (size_t i = 0; i < kNumberOfBuffersInCaptureQueue; i++) {
-      if (!queued_buffer_indexes.count(i))
+      if (!queued_buffer_ids.count(i)) {
         reusable_buffer_slots.insert(i);
+      }
     }
     reusable_buffer_slots.erase(buffer->buffer_id());
 
@@ -622,7 +623,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   uint32_t CAPTURE_index;
 
   if (v4l2_ioctl_->DQBuf(CAPTURE_queue_, &CAPTURE_index))
-    CAPTURE_queue_->DequeueBufferIndex(CAPTURE_index);
+    CAPTURE_queue_->DequeueBufferId(CAPTURE_index);
   else
     LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
 
@@ -649,7 +650,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
       frame_hdr, CAPTURE_queue_->GetBuffer(CAPTURE_index).get(),
-      CAPTURE_queue_->queued_buffer_indexes());
+      CAPTURE_queue_->queued_buffer_ids());
 
   for (const auto reusable_buffer_slot : reusable_buffer_slots) {
     if (v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot)) {
@@ -658,7 +659,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
       // queuing the CAPTURE buffer slots that are already queued from the
       // previous key frame. So we need to keep track of which buffers are
       // queued for all frames.
-      CAPTURE_queue_->QueueBufferIndex(reusable_buffer_slot);
+      CAPTURE_queue_->QueueBufferId(reusable_buffer_slot);
     } else {
       LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
     }

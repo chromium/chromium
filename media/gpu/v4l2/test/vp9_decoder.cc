@@ -233,7 +233,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
 std::set<int> Vp9Decoder::RefreshReferenceSlots(
     uint8_t refresh_frame_flags,
     scoped_refptr<MmapedBuffer> buffer,
-    uint32_t last_queued_buffer_index) {
+    uint32_t last_queued_buffer_id) {
   const std::bitset<kVp9NumRefFrames> refresh_frame_slots(refresh_frame_flags);
 
   std::set<int> reusable_buffer_slots;
@@ -261,7 +261,7 @@ std::set<int> Vp9Decoder::RefreshReferenceSlots(
 
     // Note that the CAPTURE buffer for previous frame can be used as well,
     // but it is already queued again at this point.
-    reusable_buffer_slots.erase(last_queued_buffer_index);
+    reusable_buffer_slots.erase(last_queued_buffer_id);
 
     // Updates to assign current key frame as a reference frame for all
     // reference frame slots in the reference frames list.
@@ -545,7 +545,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
       frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(index),
-      CAPTURE_queue_->last_queued_buffer_index());
+      CAPTURE_queue_->last_queued_buffer_id());
 
   for (const auto reusable_buffer_slot : reusable_buffer_slots) {
     if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot))
@@ -562,7 +562,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     // Inter frames coming right after key frames doesn't have this issue, so we
     // don't need to track which buffer was queued for key frames.
     if (frame_hdr.frame_type == Vp9FrameHeader::INTERFRAME)
-      CAPTURE_queue_->set_last_queued_buffer_index(reusable_buffer_slot);
+      CAPTURE_queue_->set_last_queued_buffer_id(reusable_buffer_slot);
   }
 
   if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))

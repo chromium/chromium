@@ -108,13 +108,9 @@ class V4L2Queue {
   uint32_t num_planes() const { return num_planes_; }
   void set_num_planes(uint32_t num_planes) { num_planes_ = num_planes; }
 
-  // TODO(stevecho): change naming from |last_queued_buffer_index| to
-  // |last_queued_buffer_id|
-  uint32_t last_queued_buffer_index() const {
-    return last_queued_buffer_index_;
-  }
-  void set_last_queued_buffer_index(uint32_t last_queued_buffer_index) {
-    last_queued_buffer_index_ = last_queued_buffer_index;
+  uint32_t last_queued_buffer_id() const { return last_queued_buffer_id_; }
+  void set_last_queued_buffer_id(uint32_t last_queued_buffer_id) {
+    last_queued_buffer_id_ = last_queued_buffer_id;
   }
 
   int media_request_fd() const { return media_request_fd_; }
@@ -122,19 +118,16 @@ class V4L2Queue {
     media_request_fd_ = media_request_fd;
   }
 
-  std::set<uint32_t> queued_buffer_indexes() const {
-    return queued_buffer_indexes_;
+  std::set<uint32_t> queued_buffer_ids() const { return queued_buffer_ids_; }
+
+  void QueueBufferId(uint32_t last_queued_buffer_id) {
+    queued_buffer_ids_.insert(last_queued_buffer_id);
   }
 
-  void QueueBufferIndex(uint32_t last_queued_buffer_index) {
-    queued_buffer_indexes_.insert(last_queued_buffer_index);
-  }
+  // TODO(b/271016209): replace buffer |index| with buffer |id| if relevant
+  void DequeueBufferId(uint32_t index) { queued_buffer_ids_.erase(index); }
 
-  void DequeueBufferIndex(uint32_t index) {
-    queued_buffer_indexes_.erase(index);
-  }
-
-  void DequeueAllBufferIndexes() { queued_buffer_indexes_.clear(); }
+  void DequeueAllBufferIds() { queued_buffer_ids_.clear(); }
 
  private:
   const enum v4l2_buf_type type_;
@@ -152,8 +145,8 @@ class V4L2Queue {
   // to submit requests.
   int media_request_fd_;
   // Tracks which CAPTURE buffer was queued in the previous frame.
-  uint32_t last_queued_buffer_index_;
-  std::set<uint32_t> queued_buffer_indexes_;
+  uint32_t last_queued_buffer_id_;
+  std::set<uint32_t> queued_buffer_ids_;
 };
 
 // V4L2IoctlShim is a shallow wrapper which wraps V4L2 ioctl requests
