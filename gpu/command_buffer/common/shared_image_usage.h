@@ -67,14 +67,17 @@ enum SharedImageUsage : uint32_t {
   // DISPLAY_READ.
   SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE = 1 << 18,
 
+  // Image will be used as a WebGPU storage texture.
+  SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 19,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 19,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 20,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };

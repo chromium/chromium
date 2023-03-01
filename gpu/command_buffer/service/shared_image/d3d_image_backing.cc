@@ -630,8 +630,13 @@ WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
     case WGPUTextureFormat_RG8Unorm:
       return kBasicUsage;
     case WGPUTextureFormat_RGBA8Unorm:
-    case WGPUTextureFormat_RGBA16Float:
-      return kBasicUsage | WGPUTextureUsage_StorageBinding;
+    case WGPUTextureFormat_RGBA16Float: {
+      if (usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
+        return kBasicUsage | WGPUTextureUsage_StorageBinding;
+      } else {
+        return kBasicUsage;
+      }
+    }
     case WGPUTextureFormat_R8BG8Biplanar420Unorm:
       return WGPUTextureUsage_TextureBinding;
     default:

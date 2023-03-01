@@ -171,7 +171,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
     SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
+    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
 
 }  // anonymous namespace
 
@@ -387,9 +388,10 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   desc.MiscFlags = 0;
 
   // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
-  if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU) &&
+  if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) &&
       (format == viz::SinglePlaneFormat::kRGBA_8888 ||
        format == viz::SinglePlaneFormat::kRGBA_F16)) {
+    DCHECK(usage & gpu::SHARED_IMAGE_USAGE_WEBGPU);
     desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
   }
   if (is_shm_gmb) {
