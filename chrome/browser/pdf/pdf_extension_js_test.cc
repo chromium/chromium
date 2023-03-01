@@ -22,6 +22,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -279,6 +280,14 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerToolbarDropdown) {
   RunTestsInJsModule("viewer_toolbar_dropdown_test.js", "test.pdf");
 }
 #endif  // BUILDFLAG(ENABLE_INK)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, PdfOcrToolbar) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("pdf_ocr_toolbar_test.js", "test.pdf");
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
  protected:

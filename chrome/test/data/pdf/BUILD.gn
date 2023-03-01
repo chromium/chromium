@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -59,6 +60,10 @@ ts_library("build_ts") {
       "annotations_toolbar_test.ts",
       "viewer_toolbar_dropdown_test.ts",
     ]
+  }
+
+  if (enable_screen_ai_service) {
+    in_files += [ "pdf_ocr_toolbar_test.ts" ]
   }
 
   if (is_chromeos_ash) {
