@@ -398,17 +398,6 @@ bool FillLayer::ClipOccludesNextLayers() const {
   return Clip() == LayersClipMax();
 }
 
-bool FillLayer::ImagesAreLoaded() const {
-  const FillLayer* curr;
-  for (curr = this; curr; curr = curr->Next()) {
-    if (curr->image_ && !curr->image_->IsLoaded()) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 bool FillLayer::ImageIsOpaque(const Document& document,
                               const ComputedStyle& style) const {
   // Returns whether we have an image that will cover the content below it when
