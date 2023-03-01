@@ -193,6 +193,13 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
 #if DCHECK_IS_ON()
   unsigned disable_flush_check_scope_ = 0;
 #endif
+  // These fields are used to determine if lines should be rastered as paths.
+  // Rasterization may batch operations, and that batching may be disabled if
+  // drawLine() is used instead of drawPath(). These members are used to
+  // determine is a drawLine() should be rastered as a drawPath().
+  // TODO(https://crbug.com/1420380): figure out better heurstics.
+  uint32_t draw_path_count_ = 0;
+  uint32_t draw_line_count_ = 0;
 };
 
 // Besides the recording functions, this implementation of PaintCanvas allows
