@@ -450,7 +450,7 @@ class WebGLConformanceIntegrationTestBase(
       raise Exception('The WebGL conformance test path specified ' +
                       'does not exist: ' + full_path)
 
-    with open(full_path, 'r') as f:
+    with open(full_path, 'r', encoding='utf-8') as f:
       for line in f:
         line = line.strip()
 
