@@ -208,10 +208,6 @@ class NET_EXPORT IsolationInfo {
   // an empty string.
   std::string Serialize() const;
 
-  // Returns true if the IsolationInfo has a triple keyed scheme. This
-  // means both `frame_site_` and `top_frame_site_` are populated.
-  static bool IsFrameSiteEnabled();
-
   std::string DebugString() const;
 
  private:

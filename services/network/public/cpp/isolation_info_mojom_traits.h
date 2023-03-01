@@ -44,9 +44,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
   static const absl::optional<url::Origin>& frame_origin(
       const net::IsolationInfo& input) {
-    // This is trivially true right now, but crbug.com/1414808 will involve
-    // an experiment where this may be false.
-    CHECK(net::IsolationInfo::IsFrameSiteEnabled());
     return input.frame_origin();
   }
 

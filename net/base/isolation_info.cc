@@ -63,34 +63,32 @@ bool IsConsistent(IsolationInfo::RequestType request_type,
     return false;
 
   // Validate frame `frame_origin`
-  if (IsolationInfo::IsFrameSiteEnabled()) {
-    // IsolationInfo must have a `frame_origin` when frame origins are enabled
-    // and the IsolationInfo is not default-constructed.
-    if (!frame_origin) {
-      return false;
-    }
-    switch (request_type) {
-      case IsolationInfo::RequestType::kMainFrame:
-        // TODO(https://crbug.com/1056706): Check that |top_frame_origin| and
-        // |frame_origin| are the same, once the ViewSource code creates a
-        // consistent IsolationInfo object.
-        //
-        // TODO(https://crbug.com/1060631): Once CreatePartial() is removed,
-        // check if SiteForCookies is non-null if the scheme is HTTP or HTTPS.
-        //
-        // TODO(https://crbug.com/1151947): Once CreatePartial() is removed,
-        // check if party_context is non-null and empty.
-        break;
-      case IsolationInfo::RequestType::kSubFrame:
-        // For subframe navigations, the subframe's origin may not be consistent
-        // with the SiteForCookies, so SameSite cookies may be sent if there's a
-        // redirect to main frames site.
-        break;
-      case IsolationInfo::RequestType::kOther:
-        // SiteForCookies must consistent with the frame origin as well for
-        // subresources.
-        return ValidateSameSite(*frame_origin, site_for_cookies);
-    }
+  // IsolationInfo must have a `frame_origin` when frame origins are enabled
+  // and the IsolationInfo is not default-constructed.
+  if (!frame_origin) {
+    return false;
+  }
+  switch (request_type) {
+    case IsolationInfo::RequestType::kMainFrame:
+      // TODO(https://crbug.com/1056706): Check that |top_frame_origin| and
+      // |frame_origin| are the same, once the ViewSource code creates a
+      // consistent IsolationInfo object.
+      //
+      // TODO(https://crbug.com/1060631): Once CreatePartial() is removed,
+      // check if SiteForCookies is non-null if the scheme is HTTP or HTTPS.
+      //
+      // TODO(https://crbug.com/1151947): Once CreatePartial() is removed,
+      // check if party_context is non-null and empty.
+      break;
+    case IsolationInfo::RequestType::kSubFrame:
+      // For subframe navigations, the subframe's origin may not be consistent
+      // with the SiteForCookies, so SameSite cookies may be sent if there's a
+      // redirect to main frames site.
+      break;
+    case IsolationInfo::RequestType::kOther:
+      // SiteForCookies must consistent with the frame origin as well for
+      // subresources.
+      return ValidateSameSite(*frame_origin, site_for_cookies);
   }
   return true;
 }
@@ -235,8 +233,6 @@ IsolationInfo IsolationInfo::CreateForRedirect(
 }
 
 const absl::optional<url::Origin>& IsolationInfo::frame_origin() const {
-  // Frame origin will be empty if double-keying is enabled.
-  CHECK(IsolationInfo::IsFrameSiteEnabled());
   return frame_origin_;
 }
 
@@ -291,12 +287,6 @@ std::string IsolationInfo::Serialize() const {
   return info.SerializeAsString();
 }
 
-bool IsolationInfo::IsFrameSiteEnabled() {
-  // NIKs, and thus IsolationInfo's, are currently always triple-keyed, but we
-  // will experiment with 2.5-keying in crbug.com/1414808.
-  return true;
-}
-
 std::string IsolationInfo::DebugString() const {
   std::string s;
   s += "request_type: ";
@@ -319,13 +309,11 @@ std::string IsolationInfo::DebugString() const {
     s += "(none)";
   }
 
-  if (IsFrameSiteEnabled()) {
-    s += "; frame_origin: ";
-    if (frame_origin_) {
-      s += frame_origin_.value().GetDebugString(true);
-    } else {
-      s += "(none)";
-    }
+  s += "; frame_origin: ";
+  if (frame_origin_) {
+    s += frame_origin_.value().GetDebugString(true);
+  } else {
+    s += "(none)";
   }
 
   s += "; network_anonymization_key: ";
@@ -393,14 +381,12 @@ IsolationInfo::IsolationInfo(
     absl::optional<std::set<SchemefulSite>> party_context)
     : request_type_(request_type),
       top_frame_origin_(top_frame_origin),
-      frame_origin_(IsFrameSiteEnabled() ? frame_origin : absl::nullopt),
+      frame_origin_(frame_origin),
       network_isolation_key_(
           !top_frame_origin
               ? NetworkIsolationKey()
               : NetworkIsolationKey(SchemefulSite(*top_frame_origin),
-                                    IsFrameSiteEnabled()
-                                        ? SchemefulSite(*frame_origin)
-                                        : SchemefulSite(),
+                                    SchemefulSite(*frame_origin),
                                     nonce)),
       network_anonymization_key_(
           CreateNetworkAnonymizationKeyForIsolationInfo(top_frame_origin,

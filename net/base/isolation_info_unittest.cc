@@ -55,19 +55,13 @@ void DuplicateAndCompare(const IsolationInfo& isolation_info) {
   absl::optional<IsolationInfo> duplicate_isolation_info =
       IsolationInfo::CreateIfConsistent(
           isolation_info.request_type(), isolation_info.top_frame_origin(),
-          net::IsolationInfo::IsFrameSiteEnabled()
-              ? isolation_info.frame_origin()
-              : absl::nullopt,
-          isolation_info.site_for_cookies(), isolation_info.party_context(),
+          isolation_info.frame_origin(), isolation_info.site_for_cookies(),
+          isolation_info.party_context(),
           isolation_info.nonce().has_value() ? &isolation_info.nonce().value()
                                              : nullptr);
 
   ASSERT_TRUE(duplicate_isolation_info);
   EXPECT_TRUE(isolation_info.IsEqualForTesting(*duplicate_isolation_info));
-}
-
-TEST_F(IsolationInfoTest, IsFrameSiteEnabled) {
-  EXPECT_TRUE(IsolationInfo::IsFrameSiteEnabled());
 }
 
 TEST_F(IsolationInfoTest, DebugString) {
@@ -77,9 +71,7 @@ TEST_F(IsolationInfoTest, DebugString) {
   std::vector<std::string> parts;
   parts.push_back(
       "request_type: kMainFrame; top_frame_origin: https://a.foo.test; ");
-  if (IsolationInfo::IsFrameSiteEnabled()) {
-    parts.push_back("frame_origin: https://b.bar.test; ");
-  }
+  parts.push_back("frame_origin: https://b.bar.test; ");
   parts.push_back("network_anonymization_key: ");
   parts.push_back(isolation_info.network_anonymization_key().ToDebugString());
   parts.push_back("; network_isolation_key: ");
