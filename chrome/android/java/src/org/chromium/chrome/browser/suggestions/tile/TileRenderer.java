@@ -243,7 +243,8 @@ public class TileRenderer {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES)) {
             return false;
         }
-        TemplateUrlService searchService = TemplateUrlServiceFactory.get();
+        TemplateUrlService searchService =
+                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         return searchService != null
                 && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
     }

@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARC
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -62,6 +64,9 @@ public class SearchActivityPreferencesManagerTest {
     @Mock
     private TemplateUrl mTemplateUrlMock;
 
+    @Mock
+    private Profile mProfile;
+
     private LoadListener mTemplateUrlServiceLoadListener;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
@@ -71,6 +76,7 @@ public class SearchActivityPreferencesManagerTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         LibraryLoader.setLibraryLoaderForTesting(mLibraryLoaderMock);
+        Profile.setLastUsedProfileForTesting(mProfile);
 
         doAnswer(invocation -> {
             mTemplateUrlServiceLoadListener = (LoadListener) invocation.getArguments()[0];
@@ -95,6 +101,11 @@ public class SearchActivityPreferencesManagerTest {
         // Make sure there were no premature attempts to register observers.
         Assert.assertNull(mTemplateUrlServiceLoadListener);
         Assert.assertNull(mTemplateUrlServiceObserver);
+    }
+
+    @After
+    public void tearDown() {
+        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

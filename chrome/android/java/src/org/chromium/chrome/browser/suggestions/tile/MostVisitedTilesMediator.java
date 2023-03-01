@@ -20,11 +20,13 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,6 +62,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private TileGroup mTileGroup;
     private boolean mInitializationComplete;
     private boolean mSearchProviderHasLogo = true;
+    private TemplateUrlService mTemplateUrlService;
 
     public MostVisitedTilesMediator(Resources resources, UiConfig uiConfig, ViewGroup mvTilesLayout,
             ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
@@ -98,8 +101,11 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
                 tileGroupDelegate, /*observer=*/this, offlinePageBridge);
         mTileGroup.startObserving(MAX_RESULTS);
 
+        mTemplateUrlService =
+                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        mTemplateUrlService.addObserver(this);
+
         onSearchEngineHasLogoChanged();
-        TemplateUrlServiceFactory.get().addObserver(this);
 
         mInitializationComplete = true;
     }
@@ -157,7 +163,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             mTileGroup.destroy();
             mTileGroup = null;
         }
-        TemplateUrlServiceFactory.get().removeObserver(this);
+        if (mTemplateUrlService != null) mTemplateUrlService.removeObserver(this);
     }
 
     public boolean isMVTilesCleanedUp() {
@@ -245,8 +251,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     }
 
     private void onSearchEngineHasLogoChanged() {
-        boolean searchEngineHasLogo =
-                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+        boolean searchEngineHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
         if (mSearchProviderHasLogo == searchEngineHasLogo) return;
 
         mSearchProviderHasLogo = searchEngineHasLogo;

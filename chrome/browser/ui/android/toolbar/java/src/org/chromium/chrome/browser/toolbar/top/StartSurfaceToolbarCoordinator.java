@@ -18,6 +18,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -233,7 +234,8 @@ public class StartSurfaceToolbarCoordinator {
      */
     boolean shouldShowRealSearchBox() {
         boolean isBigLogoShownInContent = !mShouldCreateLogoInToolbar && mIsNativeInitialized
-                && TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+                && TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                           .doesDefaultSearchEngineHaveLogo();
         // This value should be equal to
         // |fakeSearchBoxToRealSearchBoxTop + realVerticalMargin| in
         // StartSurfaceCoordinator#initializeOffsetChangedListener

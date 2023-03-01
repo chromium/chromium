@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,6 +27,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -60,6 +64,8 @@ import java.util.List;
 public class TabAttributeCacheUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public JniMocker jniMocker = new JniMocker();
 
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -84,6 +90,8 @@ public class TabAttributeCacheUnitTest {
     ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
     ArgumentCaptor<TabModelSelectorTabObserver> mTabObserverCaptor;
+    @Mock
+    Profile.Natives mProfileJniMock;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -91,8 +99,8 @@ public class TabAttributeCacheUnitTest {
 
     @Before
     public void setUp() {
-
         MockitoAnnotations.initMocks(this);
+        jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
 
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, mCriticalPersistedTabData1);
         mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, mCriticalPersistedTabData2);
@@ -292,6 +300,7 @@ public class TabAttributeCacheUnitTest {
 
         WebContents webContents = mock(WebContents.class);
         doReturn(webContents).when(mTab1).getWebContents();
+        when(mProfileJniMock.fromWebContents(eq(webContents))).thenReturn(mock(Profile.class));
         NavigationController navigationController = mock(NavigationController.class);
         doReturn(navigationController).when(webContents).getNavigationController();
         NavigationHistory navigationHistory = mock(NavigationHistory.class);

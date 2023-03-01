@@ -253,7 +253,10 @@ class ContextualSearchPolicy {
         if (!isContextualSearchFullyEnabled()) return false;
 
         // Ensure that the default search provider is Google.
-        if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return false;
+        if (!TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                        .isDefaultSearchEngineGoogle()) {
+            return false;
+        }
 
         // Only allow HTTP or HTTPS URLs.
         GURL url = mNetworkCommunicator.getBasePageUrl();

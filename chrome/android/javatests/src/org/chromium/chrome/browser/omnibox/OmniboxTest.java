@@ -29,6 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -292,14 +293,14 @@ public class OmniboxTest {
     }
 
     private void setNonDefaultSearchEngine() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> TemplateUrlServiceFactory.get().load());
-        CriteriaHelper.pollUiThread(() -> TemplateUrlServiceFactory.get().isLoaded());
+        TemplateUrlService templateUrlService = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> templateUrlService.load());
+        CriteriaHelper.pollUiThread(() -> templateUrlService.isLoaded());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TemplateUrlService service = TemplateUrlServiceFactory.get();
-
-            List<TemplateUrl> searchEngines = service.getTemplateUrls();
-            TemplateUrl defaultEngine = service.getDefaultSearchEngineTemplateUrl();
+            List<TemplateUrl> searchEngines = templateUrlService.getTemplateUrls();
+            TemplateUrl defaultEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
 
             TemplateUrl notDefault = null;
             for (TemplateUrl searchEngine : searchEngines) {
@@ -311,13 +312,14 @@ public class OmniboxTest {
 
             Assert.assertNotNull(notDefault);
 
-            service.setSearchEngine(notDefault.getKeyword());
+            templateUrlService.setSearchEngine(notDefault.getKeyword());
         });
     }
 
     private void restoreDefaultSearchEngine() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TemplateUrlService service = TemplateUrlServiceFactory.get();
+            TemplateUrlService service =
+                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
             TemplateUrl defaultEngine = service.getDefaultSearchEngineTemplateUrl();
             service.setSearchEngine(defaultEngine.getKeyword());
         });

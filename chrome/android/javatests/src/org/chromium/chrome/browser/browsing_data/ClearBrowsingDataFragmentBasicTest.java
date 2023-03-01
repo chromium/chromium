@@ -15,7 +15,6 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -83,8 +82,6 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Mock
     public TemplateUrl mMockSearchEngine;
 
-    private @Nullable TemplateUrlService mActualTemplateUrlService;
-
     @Before
     public void setUp() throws InterruptedException {
         initMocks(this);
@@ -96,10 +93,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.resetForTests());
-        if (mActualTemplateUrlService != null) {
-            // Reset the actual service if the mock is used.
-            TemplateUrlServiceFactory.setInstanceForTesting(mActualTemplateUrlService);
-        }
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     private void setSyncable(boolean syncable) {
@@ -113,10 +107,6 @@ public class ClearBrowsingDataFragmentBasicTest {
     }
 
     private void configureMockSearchEngine() {
-        // Cache the actual Url Service, so the test can put it back after tests.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActualTemplateUrlService = TemplateUrlServiceFactory.get(); });
-
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
         Mockito.doReturn(mMockSearchEngine)
                 .when(mMockTemplateUrlService)

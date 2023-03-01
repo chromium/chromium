@@ -28,6 +28,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
@@ -326,7 +327,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 onNativeDependenciesFullyInitialized();
             }
         };
-        TemplateUrlServiceFactory.get().runWhenLoaded(onNativeFinished);
+        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                .runWhenLoaded(onNativeFinished);
     }
 
     private void onNativeDependenciesFullyInitialized() {

@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsMana
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog.DefaultSearchEnginePromoDialogObserver;
@@ -152,7 +153,9 @@ public class SearchActivityTest {
 
                         @Override
                         public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
-                            return TemplateUrlServiceFactory.get().getTemplateUrls();
+                            return TemplateUrlServiceFactory
+                                    .getForProfile(Profile.getLastUsedRegularProfile())
+                                    .getTemplateUrls();
                         }
                     });
                 });
@@ -589,8 +592,8 @@ public class SearchActivityTest {
             // them since on fast device tab jump to result page really quick but on slow device
             // may stay on upload page for a really long time.
             boolean isValid = tab.getUrl().equals(info.suggestion.getUrl())
-                    || TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
-                            tab.getUrl());
+                    || TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                               .isSearchResultsPageFromDefaultSearchProvider(tab.getUrl());
             Criteria.checkThat(
                     "Invalid URL: " + tab.getUrl().getSpec(), isValid, Matchers.is(true));
         });
@@ -629,8 +632,8 @@ public class SearchActivityTest {
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = cta.getActivityTab();
             Criteria.checkThat("Unexpected URL: " + tab.getUrl().getSpec(),
-                    TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
-                            tab.getUrl()),
+                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                            .isSearchResultsPageFromDefaultSearchProvider(tab.getUrl()),
                     Matchers.is(false));
         });
     }

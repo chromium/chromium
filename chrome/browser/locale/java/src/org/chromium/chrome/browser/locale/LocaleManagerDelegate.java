@@ -20,6 +20,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.PromoDialog;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.PageTransition;
 
 import java.lang.ref.WeakReference;
@@ -186,14 +188,18 @@ public class LocaleManagerDelegate {
     public void showSearchEnginePromoIfNeeded(
             final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
         assert LibraryLoader.getInstance().isInitialized();
-        TemplateUrlServiceFactory.get().runWhenLoaded(() -> {
-            handleSearchEnginePromoWithTemplateUrlsLoaded(activity, onSearchEngineFinalized);
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        templateUrlService.runWhenLoaded(() -> {
+            handleSearchEnginePromoWithTemplateUrlsLoaded(
+                    activity, templateUrlService, onSearchEngineFinalized);
         });
     }
 
-    private void handleSearchEnginePromoWithTemplateUrlsLoaded(
-            final Activity activity, final @Nullable Callback<Boolean> onSearchEngineFinalized) {
-        assert TemplateUrlServiceFactory.get().isLoaded();
+    private void handleSearchEnginePromoWithTemplateUrlsLoaded(final Activity activity,
+            TemplateUrlService templateUrlService,
+            final @Nullable Callback<Boolean> onSearchEngineFinalized) {
+        assert templateUrlService.isLoaded();
 
         final Callback<Boolean> finalizeInternalCallback = (result) -> {
             if (result != null && result) {
@@ -208,8 +214,7 @@ public class LocaleManagerDelegate {
             }
             if (onSearchEngineFinalized != null) onSearchEngineFinalized.onResult(result);
         };
-        if (TemplateUrlServiceFactory.get().isDefaultSearchManaged()
-                || ApiCompatibilityUtils.isDemoUser()) {
+        if (templateUrlService.isDefaultSearchManaged() || ApiCompatibilityUtils.isDemoUser()) {
             finalizeInternalCallback.onResult(true);
             return;
         }
@@ -338,7 +343,8 @@ public class LocaleManagerDelegate {
      */
     public void onUserSearchEngineChoiceFromPromoDialog(
             @SearchEnginePromoType int type, List<String> keywords, String keyword) {
-        TemplateUrlServiceFactory.get().setSearchEngine(keyword);
+        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                .setSearchEngine(keyword);
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
                 SearchEnginePromoState.CHECKED_AND_SHOWN);

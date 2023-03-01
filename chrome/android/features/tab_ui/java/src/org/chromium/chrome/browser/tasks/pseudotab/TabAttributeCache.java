@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -298,15 +299,18 @@ public class TabAttributeCache {
         NavigationController controller = tab.getWebContents().getNavigationController();
         NavigationHistory history = controller.getNavigationHistory();
 
-        if (!TextUtils.isEmpty(
-                    TemplateUrlServiceFactory.get().getSearchQueryForUrl(tab.getUrl()))) {
+        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        if (profile == null) return null;
+
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
+        if (!TextUtils.isEmpty(templateUrlService.getSearchQueryForUrl(tab.getUrl()))) {
             // If we are already at a search result page, do not show the last search term.
             return null;
         }
 
         for (int i = history.getCurrentEntryIndex() - 1; i >= 0; i--) {
             GURL url = history.getEntryAtIndex(i).getOriginalUrl();
-            String query = TemplateUrlServiceFactory.get().getSearchQueryForUrl(url);
+            String query = templateUrlService.getSearchQueryForUrl(url);
             if (!TextUtils.isEmpty(query)) {
                 return removeEscapedCodePoints(query);
             }

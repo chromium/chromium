@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.VersionNumber;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -87,7 +88,8 @@ public final class SearchEngineChoiceNotification {
         boolean searchEngineChoiceRequested = wasSearchEngineChoiceRequested();
         boolean searchEngineChoicePresented = wasSearchEngineChoicePresented();
         boolean searchEngineChoiceAvailable =
-                !TemplateUrlServiceFactory.get().isDefaultSearchManaged();
+                !TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                         .isDefaultSearchManaged();
 
         if (searchEngineChoiceRequested && searchEngineChoiceAvailable
                 && !searchEngineChoicePresented) {

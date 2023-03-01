@@ -39,6 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
@@ -69,6 +70,7 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -162,8 +164,6 @@ public class NewTabPageTest {
     @Mock
     FeedReliabilityLogger mFeedReliabilityLogger;
     @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
     private Callback mOnVisitComplete;
     @Mock
     private Runnable mOnPageLoaded;
@@ -174,6 +174,7 @@ public class NewTabPageTest {
     private static final String TEST_URL = "https://www.example.com/";
 
     private Tab mTab;
+    private TemplateUrlService mTemplateUrlService;
     private NewTabPage mNtp;
     private View mFakebox;
     private ViewGroup mMvTilesLayout;
@@ -204,6 +205,10 @@ public class NewTabPageTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
+        TemplateUrlService originalService = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile()));
+        mTemplateUrlService = Mockito.spy(originalService);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         Assume.assumeFalse(mActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);
 
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
@@ -232,6 +237,7 @@ public class NewTabPageTest {
         if (mTestServer != null) {
             mTestServer.stopAndDestroyServer();
         }
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test
@@ -482,7 +488,6 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testSetSearchProviderInfo() throws Throwable {
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         mActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -515,7 +520,6 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(MVTParams.class)
     public void testPlaceholder(boolean isScrollableMVTEnabled) {
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();

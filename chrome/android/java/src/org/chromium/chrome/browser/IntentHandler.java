@@ -737,9 +737,9 @@ public class IntentHandler {
         }
         String query = results.get(0);
 
+        Profile profile = Profile.getLastUsedRegularProfile();
         AutocompleteMatch match;
-        try (var controller = AutocompleteControllerProvider.createCloseableController(
-                     Profile.getLastUsedRegularProfile())) {
+        try (var controller = AutocompleteControllerProvider.createCloseableController(profile)) {
             match = controller.get().classify(query, false);
         }
 
@@ -750,7 +750,9 @@ public class IntentHandler {
         if (urls != null && urls.size() > 0) {
             return urls.get(0);
         } else {
-            return TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(query).getSpec();
+            return TemplateUrlServiceFactory.getForProfile(profile)
+                    .getUrlForVoiceSearchQuery(query)
+                    .getSpec();
         }
     }
 

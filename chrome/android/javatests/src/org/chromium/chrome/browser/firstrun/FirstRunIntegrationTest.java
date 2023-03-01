@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -253,13 +254,16 @@ public class FirstRunIntegrationTest {
 
     private void replaceMockTemplateUrlServiceWithInitReal() {
         CriteriaHelper.pollUiThread(() -> {
-            Assert.assertEquals(TemplateUrlServiceFactory.get(), mTemplateUrlService);
+            Assert.assertEquals(
+                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile()),
+                    mTemplateUrlService);
             TemplateUrlServiceFactory.setInstanceForTesting(null);
-            TemplateUrlServiceFactory.get().runWhenLoaded(() -> {
-                for (Runnable runnable : mTemplateUrlServiceWhenLoadedRunnables) {
-                    runnable.run();
-                }
-            });
+            TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                    .runWhenLoaded(() -> {
+                        for (Runnable runnable : mTemplateUrlServiceWhenLoadedRunnables) {
+                            runnable.run();
+                        }
+                    });
         });
     }
 
@@ -996,7 +1000,8 @@ public class FirstRunIntegrationTest {
 
             @Override
             public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
-                return TemplateUrlServiceFactory.get().getTemplateUrls();
+                return TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                        .getTemplateUrls();
             }
         };
         TestThreadUtils.runOnUiThreadBlocking(

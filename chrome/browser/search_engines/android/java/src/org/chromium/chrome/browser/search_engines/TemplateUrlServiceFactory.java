@@ -21,16 +21,6 @@ public class TemplateUrlServiceFactory {
     private TemplateUrlServiceFactory() {}
 
     /**
-     * USE {@link #getForProfile(Profile)} INSTEAD.
-     */
-    @Deprecated
-    public static TemplateUrlService get() {
-        ThreadUtils.assertOnUiThread();
-        if (sTemplateUrlServiceForTesting != null) return sTemplateUrlServiceForTesting;
-        return getForProfile(Profile.getLastUsedRegularProfile());
-    }
-
-    /**
      * Retrieve the TemplateUrlService for a given profile.
      * @param profile The profile associated with the TemplateUrlService.
      * @return The profile specific TemplateUrlService.
