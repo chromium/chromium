@@ -37,29 +37,6 @@ GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough(
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-    // Bind the GLImage if necessary.
-    auto texture = GetTexturePassthrough(plane);
-    if (texture->is_bind_pending()) {
-      GLenum target = texture->target();
-      gl::GLImage* image = texture->GetLevelImage(target, 0);
-
-      if (image) {
-        // First ensure that |target| is bound to |texture|.
-        gl::GLApi* const api = gl::g_current_gl_context;
-        gl::ScopedRestoreTexture scoped_restore(api, target);
-        api->glBindTextureFn(target, texture->service_id());
-
-        auto* image_d3d = gl::GLImage::ToGLImageD3D(image);
-        if (image_d3d) {
-          // Bind the GLImage to |texture| via |target|.
-          image_d3d->BindTexImage(target);
-        }
-
-        texture->clear_bind_pending();
-      }
-    }
-  }
   bool write_access = mode == GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   return d3d_image_backing->BeginAccessD3D11(write_access);
 }
