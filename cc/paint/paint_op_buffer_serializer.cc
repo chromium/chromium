@@ -72,11 +72,11 @@ void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer,
   // post-preamble canvas.
   PlaybackParams params = MakeParams(canvas.get());
 
-  int saveCount = canvas->getSaveCount();
+  int save_count = canvas->getSaveCount();
   Save(canvas.get(), params);
   SerializePreamble(canvas.get(), preamble, params);
   SerializeBuffer(canvas.get(), buffer, offsets);
-  RestoreToCount(canvas.get(), saveCount, params);
+  RestoreToCount(canvas.get(), save_count, params);
   TRACE_EVENT_END1("cc", "PaintOpBufferSerializer::Serialize",
                    "serialized_op_count", serialized_op_count_);
 }
