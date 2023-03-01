@@ -1054,6 +1054,44 @@ id<GREYMatcher> notPracticallyVisible() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Test that signing in and signing out results in the NTP scrolled to the top
+// and not in some unexpected layout state.
+- (void)testSignInSignOutScrolledToTop {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:identity];
+  [SigninEarlGreyUI signinWithFakeIdentity:identity];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Verify Identity Disc is visible since it is the top-most element and should
+  // be showing now.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSStringF(
+                                   IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
+                                   base::SysNSStringToUTF16(
+                                       identity.userFullName),
+                                   base::SysNSStringToUTF16(
+                                       identity.userEmail)))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Sign out
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - New Tab menu tests
 
 // Tests the "new search" menu item from the new tab menu.

@@ -1233,8 +1233,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     if (IsWebChannelsEnabled()) {
       [self.feedHeaderViewController updateForFollowingFeedVisibilityChanged];
       [self updateFeedLayout];
-      [self.NTPViewController setContentOffsetToTop];
     }
+    [self.NTPViewController setContentOffsetToTop];
   }
 }
 
