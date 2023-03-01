@@ -1,0 +1,10 @@
+instance=$rbe_instance
+service=remotebuildexecution.googleapis.com:443
+log_format=reducedtext
+# TODO(b/270201776) switch to automatic_auth once the option is rolled out in reproxy
+use_application_default_credentials=true
+# automatic_auth=true
+fail_early_min_action_count=4000
+fail_early_min_fallback_ratio=0.5
+deps_cache_max_mb=256
+enable_deps_cache=true
