@@ -380,12 +380,8 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
   switch (event) {
     case ui::SELECTION_HANDLES_SHOWN:
       quick_menu_requested_ = true;
-      UpdateQuickMenu();
-      env_event_observer_ = std::make_unique<EnvEventObserver>(
-          rwhva_->selection_controller(), rwhva_->GetNativeView());
-      break;
+      [[fallthrough]];
     case ui::INSERTION_HANDLE_SHOWN:
-      quick_menu_requested_ = false;
       UpdateQuickMenu();
       env_event_observer_ = std::make_unique<EnvEventObserver>(
           rwhva_->selection_controller(), rwhva_->GetNativeView());
