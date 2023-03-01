@@ -73,7 +73,8 @@ class CheckTODOFormatTest(unittest.TestCase):
         good_lines = [
             'TO'
             'DO(crbug.com/8675309): fix this', 'TO'
-            'DO(crbug.com/8675309): fix this (please)'
+            'DO(crbug.com/8675309): fix this (please)',
+            'TODO(b/12345): fix this'
         ]
         mock_input = PRESUBMIT_test_mocks.MockInputApi()
         mock_input.files = [

@@ -14,7 +14,7 @@ USE_PYTHON3 = True
 
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
-CRBUG_PATTERN = r'crbug\.com/\d+$'
+BUG_PATTERN = r'(crbug\.com|b)/\d+$'
 INCLUDE_PATTERN = r'^#include'
 PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
 IOS_PACKAGE_PATTERN = r'^ios'
@@ -181,13 +181,12 @@ def _HasIncludeDirective(input_api, line):
 def _HasToDoWithNoBug(input_api, line):
     """ Returns True if TODO is not identified by a bug number."""
     todo_regex = input_api.re.compile(TODO_PATTERN)
-    crbug_regex = input_api.re.compile(CRBUG_PATTERN)
+    bug_regex = input_api.re.compile(BUG_PATTERN)
 
     todo_match = todo_regex.search(line)
     if not todo_match:
         return False
-    crbug_match = crbug_regex.match(todo_match.group(1))
-    return not crbug_match
+    return not bug_regex.match(todo_match.group(1))
 
 def _CheckHasNoBoxedBOOL(input_api, output_api):
     """ Checks that there are no @(YES) or @(NO)."""
