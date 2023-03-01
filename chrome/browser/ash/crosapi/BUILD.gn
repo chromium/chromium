@@ -396,6 +396,7 @@ source_set("test_support") {
     "//chrome/browser/ash:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",
+    "//chromeos/crosapi/cpp:test_support",
     "//chromeos/crosapi/mojom",
     "//printing",
     "//testing/gmock",

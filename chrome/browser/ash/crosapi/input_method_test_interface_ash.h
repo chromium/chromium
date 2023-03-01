@@ -89,6 +89,8 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
                        KeyEventHandledCallback callback) override;
   void WaitForNextSurroundingTextChange(
       WaitForNextSurroundingTextChangeCallback callback) override;
+  void HasCapabilities(const std::vector<std::string>& capabilities,
+                       HasCapabilitiesCallback callback) override;
 
   // FakeTextInputMethod::Observer:
   void OnFocus() override;

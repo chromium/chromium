@@ -4988,6 +4988,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chromeos/crosapi/cpp:cpp",
+      "//chromeos/crosapi/cpp:test_support",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",

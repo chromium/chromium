@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/crosapi/cpp/input_method_test_interface_constants.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -42,24 +44,50 @@ int GetInputMethodTestInterfaceVersion() {
 // execute IME operations from Ash-Chrome.
 // `required_versions` are the `MethodMinVersion` values of all the test methods
 // from InputMethodTestInterface that will be used by the test.
-// Returns an unbound remote if the current version of InputMethodTestInterface
-// does not support the required test methods.
+// `required_test_capabilities` is a list of all test-only capabilities that Ash
+// needs to support. Returns an unbound remote if the current version of
+// InputMethodTestInterface does not support the required test methods or
+// capabilities.
 mojo::Remote<InputMethodTestInterface> BindInputMethodTestInterface(
     std::initializer_list<InputMethodTestInterface::MethodMinVersions>
-        required_versions) {
-  mojo::Remote<InputMethodTestInterface> remote;
+        required_versions,
+    const std::vector<base::StringPiece>& required_test_capabilities = {}) {
+  // TODO(b/238838841): Remove the `required_versions` check once all tested
+  // versions of Ash in skew tests support `HasCapabilities`.
   if (!IsInputMethodTestInterfaceAvailable() ||
       GetInputMethodTestInterfaceVersion() <
           static_cast<int>(std::max(required_versions))) {
-    return remote;
+    return {};
   }
 
+  // Bind an `InputMethodTestInterface`.
+  mojo::Remote<InputMethodTestInterface> remote;
   crosapi::mojom::TestControllerAsyncWaiter test_controller_async_waiter(
       chromeos::LacrosService::Get()
           ->GetRemote<crosapi::mojom::TestController>()
           .get());
   test_controller_async_waiter.BindInputMethodTestInterface(
       remote.BindNewPipeAndPassReceiver());
+
+  if (required_test_capabilities.empty()) {
+    return remote;
+  }
+
+  // Check if all the required test capabilities are satisfied.
+  if (GetInputMethodTestInterfaceVersion() <
+      static_cast<int>(InputMethodTestInterface::MethodMinVersions::
+                           kHasCapabilitiesMinVersion)) {
+    return {};
+  }
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(remote.get());
+  bool has_capabilities;
+  input_method_async_waiter.HasCapabilities(
+      std::vector<std::string>(required_test_capabilities.begin(),
+                               required_test_capabilities.end()),
+      &has_capabilities);
+  if (!has_capabilities) {
+    return {};
+  }
   return remote;
 }
 
