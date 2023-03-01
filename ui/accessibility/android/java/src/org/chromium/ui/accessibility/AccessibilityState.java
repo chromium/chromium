@@ -179,7 +179,6 @@ public class AccessibilityState {
         return sState.isAccessibilityToolPresent;
     }
 
-    @CalledByNative
     public static boolean isSpokenFeedbackServicePresent() {
         if (!sInitialized) updateAccessibilityServices();
         return sState.isSpokenFeedbackServicePresent;

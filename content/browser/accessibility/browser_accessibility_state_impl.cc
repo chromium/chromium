@@ -366,11 +366,6 @@ void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
 void BrowserAccessibilityStateImpl::SetImageLabelsModeForProfile(
     bool enabled,
     BrowserContext* profile) {}
-
-bool BrowserAccessibilityStateImpl::HasSpokenFeedbackServicePresent() {
-  NOTIMPLEMENTED();
-  return false;
-}
 #endif
 
 void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {

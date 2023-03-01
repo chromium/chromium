@@ -78,7 +78,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 #if BUILDFLAG(IS_ANDROID)
   void SetImageLabelsModeForProfile(bool enabled,
                                     BrowserContext* profile) override;
-  bool HasSpokenFeedbackServicePresent() override;
 #endif
   base::CallbackListSubscription RegisterFocusChangedCallback(
       FocusChangedCallback callback) override;
