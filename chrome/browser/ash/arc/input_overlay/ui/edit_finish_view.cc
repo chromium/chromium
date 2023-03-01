@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
@@ -312,6 +313,13 @@ void EditFinishView::OnMouseReleased(const ui::MouseEvent& event) {
   }
   OnDragEnd();
   RecordInputOverlayButtonGroupReposition(RepositionType::kMouseDragRepostion);
+}
+
+ui::Cursor EditFinishView::GetCursor(const ui::MouseEvent& event) {
+  if (AllowReposition()) {
+    return ui::mojom::CursorType::kHand;
+  }
+  return views::View::GetCursor(event);
 }
 
 void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {

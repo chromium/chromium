@@ -9,6 +9,7 @@
 #include "base/debug/stack_trace.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -492,6 +493,10 @@ class DotTouchPoint : public TouchPoint {
 
 TouchPointElement::TouchPointElement() = default;
 TouchPointElement::~TouchPointElement() = default;
+
+ui::Cursor TouchPointElement::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kHand;
+}
 
 // static
 TouchPoint* TouchPoint::Show(views::View* parent,

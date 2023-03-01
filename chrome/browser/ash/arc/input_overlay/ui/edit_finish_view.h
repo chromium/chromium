@@ -12,7 +12,15 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 
-// View displaying the 3 possible options to finish edit mode.
+namespace ui {
+class Cursor;
+}  // namespace ui
+
+namespace arc::input_overlay {
+
+class DisplayOverlayController;
+
+// EditFinishView displays the 3 possible options to finish edit mode.
 //
 // These actions refer to what the user can do wrt customized key-bindings, they
 // can either reset to a set of default key-bindings or just accept/cancel the
@@ -26,11 +34,6 @@
 // |                      |
 // |        Cancel        |
 // +----------------------+
-
-namespace arc::input_overlay {
-
-class DisplayOverlayController;
-
 class EditFinishView : public views::View {
  public:
   static std::unique_ptr<EditFinishView> BuildView(
@@ -50,6 +53,7 @@ class EditFinishView : public views::View {
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
 
  private:
   class ChildButton;
