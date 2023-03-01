@@ -165,13 +165,12 @@ constexpr RawPtrTraits Remove(RawPtrTraits a, RawPtrTraits b) {
 }
 
 constexpr bool AreValid(RawPtrTraits traits) {
-  return Remove(traits, RawPtrTraits::kMayDangle |
-                            RawPtrTraits::kDisableMTECheckedPtr |
-                            RawPtrTraits::kDisableHooks |
-                            RawPtrTraits::kAllowPtrArithmetic |
-                            RawPtrTraits::kDummyForTest |
-                            RawPtrTraits::kUseCountingWrapperForTest) ==
-         RawPtrTraits::kEmpty;
+  return Remove(traits,
+                RawPtrTraits::kMayDangle | RawPtrTraits::kDisableMTECheckedPtr |
+                    RawPtrTraits::kDisableHooks |
+                    RawPtrTraits::kAllowPtrArithmetic |
+                    RawPtrTraits::kUseCountingWrapperForTest |
+                    RawPtrTraits::kDummyForTest) == RawPtrTraits::kEmpty;
 }
 
 template <RawPtrTraits Traits>

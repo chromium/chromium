@@ -1359,21 +1359,20 @@ struct IsOnceCallback : std::false_type {};
 template <typename Signature>
 struct IsOnceCallback<OnceCallback<Signature>> : std::true_type {};
 
-// IsUnretainedMayDangle is true if |T| is of type
-// UnretainedWrapper<T, unretained_traits::MayDangle>.
+// IsUnretainedMayDangle is true if StorageType is of type
+// `UnretainedWrapper<T, unretained_traits::MayDangle, PtrTraits>.
 // Note that it is false for unretained_traits::MayDangleUntriaged.
-template <typename T>
+template <typename StorageType>
 inline constexpr bool IsUnretainedMayDangle = false;
 template <typename T, RawPtrTraits PtrTraits>
 inline constexpr bool IsUnretainedMayDangle<
     UnretainedWrapper<T, unretained_traits::MayDangle, PtrTraits>> = true;
 
-// UnretainedAndRawPtrHaveCompatibleTraits is true if |T| is of type
-// UnretainedWrapper<T, unretained_traits::MayDangle, Traits1> and U is of type
-// raw_ptr<T, Traits2>, and
-// UnretainedWrapper<T, unretained_traits::MayDangle, Traits1>::GetPtrType is of
-// type raw_ptr<T, Traits2>.
-template <typename T, typename U>
+// UnretainedAndRawPtrHaveCompatibleTraits is true if StorageType is of type
+// `UnretainedWrapper<T, unretained_traits::MayDangle, PtrTraits1>` and
+// FunctionParamType is of type `raw_ptr<T, PtrTraits2>`, and the former's
+// ::GetPtrType is the same type as the latter.
+template <typename StorageType, typename FunctionParamType>
 inline constexpr bool UnretainedAndRawPtrHaveCompatibleTraits = false;
 template <typename T,
           RawPtrTraits PtrTraitsInUnretained,
