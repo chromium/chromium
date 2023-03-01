@@ -83,6 +83,24 @@ void PopulateAutocompleteMatchesFromTestData(const T* data,
   }
 }
 
+// Basic match representation for testing `MaybeCullTailSuggestions()`.
+// Defined externally to allow for `PrintTo()`.
+struct CullTailTestMatch {
+  std::u16string id;
+  AutocompleteMatchType::Type type;
+  bool allowed_default;
+
+  bool operator==(const CullTailTestMatch& other) const {
+    return id == other.id && type == other.type &&
+           allowed_default == other.allowed_default;
+  }
+
+  // To help `EXPECT_THAT` pretty print `CullTailTestMatch`s.
+  friend void PrintTo(const CullTailTestMatch& match, std::ostream* os) {
+    *os << match.id << " " << match.type << " " << match.allowed_default;
+  }
+};
+
 }  // namespace
 
 class AutocompleteResultForTesting : public AutocompleteResult {
@@ -2584,44 +2602,29 @@ TEST_F(AutocompleteResultTest, ClipboardSuggestionOnTopOfSearchSuggestionTest) {
 }
 
 TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
-  struct TestMatch {
-    std::u16string id;
-    bool tail;
-    bool allowed_default;
-
-    bool operator==(const TestMatch& other) const {
-      return id == other.id && tail == other.tail &&
-             allowed_default == other.allowed_default;
-    }
-  };
-
-  auto test = [&](std::vector<TestMatch> input_matches) {
+  auto test = [&](std::vector<CullTailTestMatch> input_matches) {
     ACMatches matches;
-    base::ranges::transform(
-        input_matches, std::back_inserter(matches),
-        [&](const TestMatch& test_match) {
-          AutocompleteMatch match;
-          match.contents = test_match.id;
-          match.type = test_match.tail
-                           ? AutocompleteMatchType::SEARCH_SUGGEST_TAIL
-                           : AutocompleteMatchType::SEARCH_SUGGEST;
-          match.allowed_to_be_default_match = test_match.allowed_default;
-          match.relevance = 1000;
-          return match;
-        });
+    base::ranges::transform(input_matches, std::back_inserter(matches),
+                            [&](const CullTailTestMatch& test_match) {
+                              AutocompleteMatch match;
+                              match.contents = test_match.id;
+                              match.type = test_match.type;
+                              match.allowed_to_be_default_match =
+                                  test_match.allowed_default;
+                              match.relevance = 1000;
+                              return match;
+                            });
 
     auto page_classification = metrics::OmniboxEventProto::PageClassification::
         OmniboxEventProto_PageClassification_OTHER;
     AutocompleteResultForTesting::MaybeCullTailSuggestions(
         &matches, {page_classification});
 
-    std::vector<TestMatch> output_matches;
+    std::vector<CullTailTestMatch> output_matches;
     base::ranges::transform(
         matches, std::back_inserter(output_matches), [](const auto& match) {
-          return TestMatch{
-              match.contents,
-              match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
-              match.allowed_to_be_default_match};
+          return CullTailTestMatch{match.contents, match.type,
+                                   match.allowed_to_be_default_match};
         });
     return output_matches;
   };
@@ -2630,10 +2633,10 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
   EXPECT_THAT(test({}), testing::ElementsAre());
 
   // T = tail, N = non-tail; D = default-able
-  TestMatch t{u"T", true, false};
-  TestMatch n{u"N", false, false};
-  TestMatch td{u"TD", true, true};
-  TestMatch nd{u"ND", false, true};
+  CullTailTestMatch t{u"T", AutocompleteMatchType::SEARCH_SUGGEST_TAIL, false};
+  CullTailTestMatch n{u"N", AutocompleteMatchType::SEARCH_SUGGEST, false};
+  CullTailTestMatch td{u"TD", AutocompleteMatchType::SEARCH_SUGGEST_TAIL, true};
+  CullTailTestMatch nd{u"ND", AutocompleteMatchType::SEARCH_SUGGEST, true};
 
   // When there are only non-tail suggestions, no suggestions should be culled.
   EXPECT_THAT(test({n, n}), testing::ElementsAre(n, n));
@@ -2650,7 +2653,8 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
   // default.
   // A tail suggest that was originally default-able (`td`), but was
   // prevented from being default.
-  TestMatch tdp{u"TD", true, false};
+  CullTailTestMatch tdp{u"TD", AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
+                        false};
   EXPECT_THAT(test({nd, t, t}), testing::ElementsAre(nd, t, t));
   EXPECT_THAT(test({nd, td, td}), testing::ElementsAre(nd, tdp, tdp));
   EXPECT_THAT(test({nd, td, t}), testing::ElementsAre(nd, tdp, t));
@@ -2674,4 +2678,18 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
   EXPECT_THAT(test({n, n, t, t}), testing::ElementsAre(n, n));
   EXPECT_THAT(test({n, n, td, td}), testing::ElementsAre(td, td));
   EXPECT_THAT(test({n, n, td, t}), testing::ElementsAre(td, t));
+
+  // A history cluster suggestion.
+  CullTailTestMatch h{u"H", AutocompleteMatchType::HISTORY_CLUSTER, false};
+  // When there are both history cluster and tail suggestions, tail suggestions
+  // should be hidden.
+  EXPECT_THAT(test({nd, td, t, h}), testing::ElementsAre(nd, h));
+
+  {
+    // When there are both history cluster and tail suggestions, history cluster
+    // suggestions should be hidden.
+    base::test::ScopedFeatureList feature_list{
+        omnibox::kPreferTailOverHistoryClusterSuggestions};
+    EXPECT_THAT(test({nd, td, t, h}), testing::ElementsAre(nd, tdp, t));
+  }
 }

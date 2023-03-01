@@ -82,6 +82,12 @@ BASE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls,
              "OmniboxRemoveExcessiveRecycledViewClearCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Determines which are culled when both tail and history cluster suggestions
+// are available. See `MaybeCullTailSuggestions()`.
+BASE_FEATURE(kPreferTailOverHistoryClusterSuggestions,
+             "OmniboxPreferTailOverHistoryClusterSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to tweak how the default suggestion is preserved. Feature params
 // control which tweaks specifically are enabled. Enabling this feature without
 // params is a no-op.

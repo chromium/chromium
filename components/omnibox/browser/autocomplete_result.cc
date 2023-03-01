@@ -1120,47 +1120,63 @@ void AutocompleteResult::MaybeCullTailSuggestions(
       [](const AutocompleteMatch& match) {
         return match.type == ACMatchType::SEARCH_SUGGEST_TAIL;
       };
-  bool default_non_tail = false;
+  bool prefer_tail_over_history_cluster = base::FeatureList::IsEnabled(
+      omnibox::kPreferTailOverHistoryClusterSuggestions);
+  std::function<bool(const AutocompleteMatch&)> is_history_cluster =
+      [&](const AutocompleteMatch& match) {
+        return prefer_tail_over_history_cluster &&
+               match.type == ACMatchType::HISTORY_CLUSTER;
+      };
+  // 'normal' refers to a suggestion that is neither a tail nor history cluster.
+  bool default_normal = false;
+  bool other_normals = false;
+  bool any_normals = false;
   bool default_tail = false;
-  bool other_non_tails = false;
-  bool any_non_tails = false;
   bool any_tails = false;
+  bool any_history_clusters = false;
   for (const auto& match : *matches) {
     if (comparing_object.GetDemotedRelevance(match) == 0)
       continue;
-    if (!is_tail(match)) {
-      any_non_tails = true;
-      if (!default_non_tail && match.allowed_to_be_default_match)
-        default_non_tail = true;
-      else
-        other_non_tails = true;
-    } else {
+    if (is_tail(match)) {
       any_tails = true;
       if (!default_tail && match.allowed_to_be_default_match)
         default_tail = true;
+    } else if (is_history_cluster(match)) {
+      DCHECK(!match.allowed_to_be_default_match);
+      any_history_clusters = true;
+    } else {
+      any_normals = true;
+      if (!default_normal && match.allowed_to_be_default_match)
+        default_normal = true;
+      else
+        other_normals = true;
     }
   }
 
   // If there are only non-tail or only tail suggestions, then cull none.
-  if (!any_non_tails || !any_tails)
+  if (!any_normals || !any_tails)
     return;
 
   // Cull non-tail suggestions when the default is a tail suggestion.
-  if (!default_non_tail && default_tail) {
+  if (!default_normal && default_tail) {
     base::EraseIf(*matches, std::not_fn(is_tail));
     return;
   }
 
   // Cull tail suggestions when there is a non-tail, non-default suggestion.
-  if (other_non_tails) {
+  if (other_normals) {
     base::EraseIf(*matches, is_tail);
     return;
   }
 
+  // If showing tail suggestions, hide history cluster suggestions.
+  if (any_history_clusters)
+    base::EraseIf(*matches, is_history_cluster);
+
   // If showing tail suggestions with a default non-tail, make sure the tail
   // suggestions are not defaulted.
   if (default_tail) {
-    DCHECK(default_non_tail);
+    DCHECK(default_normal);
     for (auto& match : *matches) {
       if (is_tail(match))
         match.allowed_to_be_default_match = false;
