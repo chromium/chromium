@@ -166,10 +166,6 @@ class ChromiumDepGraph {
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
             licenseName: 'Apache 2.0'),
-        net_bytebuddy_byte_buddy_android: new PropertyOverride(
-            url: 'https://github.com/raphw/byte-buddy',
-            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0'),
         net_sf_kxml_kxml2: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/stefanhaustein/kxml2/master/license.txt',
             licenseName: 'MIT'),
@@ -194,9 +190,6 @@ class ChromiumDepGraph {
         org_jsoup_jsoup: new PropertyOverride(
             cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
             licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
-            licenseName: 'The MIT License'),
-        org_mockito_mockito_android: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
             licenseName: 'The MIT License'),
         org_mockito_mockito_core: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
