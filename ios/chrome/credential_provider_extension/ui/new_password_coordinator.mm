@@ -25,9 +25,6 @@
 // The view controller of this coordinator.
 @property(nonatomic, strong) UINavigationController* viewController;
 
-// The extension context for the credential provider.
-@property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
-
 // The mediator for this coordinator.
 @property(nonatomic, strong) NewPasswordMediator* mediator;
 
@@ -39,22 +36,27 @@
 // exists.
 @property(nonatomic, weak) id<CredentialStore> existingCredentials;
 
+// The handler to use when a credential is selected.
+@property(nonatomic, weak) id<CredentialResponseHandler>
+    credentialResponseHandler;
+
 @end
 
 @implementation NewPasswordCoordinator
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController
-                       context:(ASCredentialProviderExtensionContext*)context
             serviceIdentifiers:
                 (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
-           existingCredentials:(id<CredentialStore>)existingCredentials {
+           existingCredentials:(id<CredentialStore>)existingCredentials
+     credentialResponseHandler:
+         (id<CredentialResponseHandler>)credentialResponseHandler {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
-    _context = context;
     _serviceIdentifiers = serviceIdentifiers;
     _existingCredentials = existingCredentials;
+    _credentialResponseHandler = credentialResponseHandler;
   }
   return self;
 }
@@ -64,7 +66,7 @@
       initWithUserDefaults:app_group::GetGroupUserDefaults()
          serviceIdentifier:self.serviceIdentifiers.firstObject];
   self.mediator.existingCredentials = self.existingCredentials;
-  self.mediator.context = self.context;
+  self.mediator.credentialResponseHandler = self.credentialResponseHandler;
 
   NewPasswordViewController* newPasswordViewController =
       [[NewPasswordViewController alloc] init];
@@ -97,7 +99,7 @@
 
 - (void)navigationCancelButtonWasPressedInNewPasswordViewController:
     (NewPasswordViewController*)viewController {
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [self.delegate dismissNewPasswordCoordinator:self];
 }
 
 @end

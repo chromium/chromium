@@ -17,6 +17,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_mediator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/empty_credentials_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_coordinator.h"
@@ -27,7 +28,8 @@
 
 @interface CredentialListCoordinator () <ConfirmationAlertActionHandler,
                                          CredentialListUIHandler,
-                                         CredentialDetailsConsumerDelegate>
+                                         CredentialDetailsConsumerDelegate,
+                                         NewPasswordCoordinatorDelegate>
 
 // Base view controller from where `viewController` is presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
@@ -41,9 +43,6 @@
 // Interface for the persistent credential store.
 @property(nonatomic, weak) id<CredentialStore> credentialStore;
 
-// The extension context in which the credential list was started.
-@property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
-
 // The service identifiers to prioritize in a match is found.
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
@@ -55,6 +54,10 @@
 // hardware for authentication is available.
 @property(nonatomic, weak) ReauthenticationHandler* reauthenticationHandler;
 
+// The handler to use when a credential is selected.
+@property(nonatomic, weak) id<CredentialResponseHandler>
+    credentialResponseHandler;
+
 @end
 
 @implementation CredentialListCoordinator
@@ -62,18 +65,18 @@
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController
                credentialStore:(id<CredentialStore>)credentialStore
-                       context:(ASCredentialProviderExtensionContext*)context
             serviceIdentifiers:
                 (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
-       reauthenticationHandler:
-           (ReauthenticationHandler*)reauthenticationHandler {
+       reauthenticationHandler:(ReauthenticationHandler*)reauthenticationHandler
+     credentialResponseHandler:
+         (id<CredentialResponseHandler>)credentialResponseHandler {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
-    _context = context;
     _serviceIdentifiers = serviceIdentifiers;
     _credentialStore = credentialStore;
     _reauthenticationHandler = reauthenticationHandler;
+    _credentialResponseHandler = credentialResponseHandler;
   }
   return self;
 }
@@ -82,11 +85,11 @@
   CredentialListViewController* credentialListViewController =
       [[CredentialListViewController alloc] init];
   self.mediator = [[CredentialListMediator alloc]
-        initWithConsumer:credentialListViewController
-               UIHandler:self
-         credentialStore:self.credentialStore
-                 context:self.context
-      serviceIdentifiers:self.serviceIdentifiers];
+               initWithConsumer:credentialListViewController
+                      UIHandler:self
+                credentialStore:self.credentialStore
+             serviceIdentifiers:self.serviceIdentifiers
+      credentialResponseHandler:self.credentialResponseHandler];
 
   self.viewController = [[UINavigationController alloc]
       initWithRootViewController:credentialListViewController];
@@ -99,6 +102,10 @@
 }
 
 - (void)stop {
+  if (self.createPasswordCoordinator) {
+    [self.createPasswordCoordinator stop];
+    self.createPasswordCoordinator = nil;
+  }
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
@@ -128,8 +135,7 @@
       ASPasswordCredential* ASCredential =
           [ASPasswordCredential credentialWithUser:credential.user
                                           password:password];
-      [self.context completeRequestWithSelectedCredential:ASCredential
-                                        completionHandler:nil];
+      [self.credentialResponseHandler userSelectedCredential:ASCredential];
     }
   }];
 }
@@ -146,20 +152,18 @@
 - (void)showCreateNewPasswordUI {
   self.createPasswordCoordinator = [[NewPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         context:self.context
               serviceIdentifiers:self.serviceIdentifiers
-             existingCredentials:self.credentialStore];
+             existingCredentials:self.credentialStore
+       credentialResponseHandler:self.credentialResponseHandler];
+  self.createPasswordCoordinator.delegate = self;
   [self.createPasswordCoordinator start];
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate
 
 - (void)navigationCancelButtonWasPressed:(UIButton*)button {
-  NSError* error =
-      [[NSError alloc] initWithDomain:ASExtensionErrorDomain
-                                 code:ASExtensionErrorCodeUserCanceled
-                             userInfo:nil];
-  [self.context cancelRequestWithError:error];
+  [self.credentialResponseHandler
+      userCancelledRequestWithErrorCode:ASExtensionErrorCodeUserCanceled];
 }
 
 - (void)unlockPasswordForCredential:(id<Credential>)credential
@@ -179,15 +183,20 @@
 - (void)confirmationAlertDismissAction {
   // Finish the extension. There is no recovery from the empty credentials
   // state.
-  NSError* error =
-      [[NSError alloc] initWithDomain:ASExtensionErrorDomain
-                                 code:ASExtensionErrorCodeUserCanceled
-                             userInfo:nil];
-  [self.context cancelRequestWithError:error];
+  [self.credentialResponseHandler
+      userCancelledRequestWithErrorCode:ASExtensionErrorCodeUserCanceled];
 }
 
 - (void)confirmationAlertPrimaryAction {
   // No-op.
+}
+
+#pragma mark - NewPasswordCoordinatorDelegate
+
+- (void)dismissNewPasswordCoordinator:
+    (NewPasswordCoordinator*)newPasswordCoordinator {
+  [self.createPasswordCoordinator stop];
+  self.createPasswordCoordinator = nil;
 }
 
 #pragma mark - Private
