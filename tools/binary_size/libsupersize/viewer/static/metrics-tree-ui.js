@@ -20,17 +20,14 @@
  * @typedef {Object} MetricsTreeNode
  * @property {string|undefined} name - The full name of the node, and is shown
  *     in the UI.
- * @property {?MetricsTreeNode} parent - Parent tree node, null if this is a
- *     root node.
  * @property {!Array<!MetricsTreeNode>|undefined} children - Child nodes.
  *     Non-existent or null indicates this is a leaf node.
+ * @property {!Array<!MetricsTreeNode>|undefined} totals - An optional list of
+ *     special nodes (not in the tree via |children|). These nodes' |children|
+ *     stores a list of existing source leaves (in the tree), whose |items| are
+ *     to be summed to compute the desired total, subject to filtering.
  * @property {!Array<!MetricsItem>|undefined} items - For leaf nodes only, a
- *     list of named values for a metric. Mutually exclusive with |liveItems|.
- * @property {?function(function(string): boolean): !Array<!MetricsItem>|
- *            undefined} liveItems - For leaf nodes only, function to return a
- *     list of named values for a metric, taking a filtering function. To be
- *     included, the filter is eithe rnull, or needs to return true for names of
- *     all ancestor with |isFiltered| true. Mutually exclusive with |item|.
+ *     list of named values for a metric.
  * @property {boolean|undefined} isFiltered - For group nodes only, whether
  *     filtering is applied to the node.
  * @property {string|undefined} iconKey - For group nodes only, input for
@@ -41,13 +38,65 @@
  * States and helpers for the Metrics Tree.
  */
 class MetricsTreeModel {
+  constructor() {
+    /** @public {?MetricsTreeNode} */
+    this.rootNode = null;
+  }
+
   /**
-   * Extracts the underlying tree data for Metrics Tree rendering, and returns
-   * the root data node.
-   * @param {Object} metadata
+   * Creates MetricsTreeNode using commonly used fields.
+   * @param {string} name
+   * @param {?Array<!MetricsTreeNode>} children
+   * @param {string} iconKey
    * @return {!MetricsTreeNode}
+   * @public
    */
-  static extract(metadata) {
+  makeDataNode(name, children, iconKey) {
+    const node = /** @type {!MetricsTreeNode} */ ({name});
+    if (children)
+      node.children = children;
+    if (iconKey)
+      node.iconKey = iconKey;
+    return node;
+  };
+
+  /**
+   * Creates a MetricItems list summed from |items| from a list of leaf nodes.
+   * @param {!Array<!MetricsTreeNode>} srcNodes
+   * @return {!Array<!MetricsItem>}
+   * @public
+   */
+  makeTotalItemList(srcNodes) {
+    const diffMode = state.getDiffMode();
+    const dstItems = /** @type {!Map<string, !MetricsItem>}*/ (new Map());
+    const ret = /** @type {!Array<!MetricsItem>} */ ([]);
+
+    for (const srcNode of srcNodes) {
+      for (const srcItem of srcNode.items) {
+        const metricName = srcItem.name;
+        let dstItem = dstItems.get(metricName);
+        if (!dstItem) {
+          dstItem = /** @type {!MetricsItem} */ ({name: metricName, value: 0});
+          if (diffMode) {
+            dstItem.beforeValue = 0;
+          }
+          dstItems.set(metricName, dstItem);
+        }
+        dstItem.value += srcItem.value;
+        if (diffMode)
+          dstItem.beforeValue += srcItem.beforeValue;
+      }
+    }
+    return Array.from(dstItems.values())
+        .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  /**
+   * Extracts Metrics Tree data, and stores the result into |rootNode|.
+   * @param {Object} metadata
+   * @public
+   */
+  extractAndStoreRoot(metadata) {
     const EMPTY_OBJ = {};
     const diffMode = state.getDiffMode();
 
@@ -76,36 +125,11 @@ class MetricsTreeModel {
     const containerMap = makeContainerMap(containers);
     const beforeContainerMap = makeContainerMap(beforeContainers);
 
-    /**
-     * @param {string} name
-     * @param {?Array<!MetricsTreeNode>} children
-     * @param {string} iconKey
-     * @return !MetricsTreeNode
-     */
-    const makeNode = (name, children, iconKey) => {
-      const node = /** @type {!MetricsTreeNode} */ ({name});
-      if (children)
-        node.children = children;
-      if (iconKey)
-        node.iconKey = iconKey;
-      return node;
-    };
-
-    /**
-     * @param {!MetricsTreeNode} parent
-     * @param {!MetricsTreeNode} child
-     */
-    const addChild = (parent, child) => {
-      parent.children.push(child);
-      child.parent = parent;
-    };
-
     const containerNames = uniquifyIterToString(
         joinIter(containerMap.keys(), beforeContainerMap.keys()));
     const dexNodes = [];
 
-    const rootNode = makeNode('Metrics', [], 'metrics');
-    rootNode.parent = null;
+    const rootNode = this.makeDataNode('Metrics', [], 'metrics');
 
     // Populate with containers -> files -> table.
     for (const containerName of containerNames) {
@@ -118,7 +142,7 @@ class MetricsTreeModel {
       if (filenames.length === 0)
         continue;
 
-      const containerNode = makeNode(containerName, [], 'group');
+      const containerNode = this.makeDataNode(containerName, [], 'group');
       containerNode.isFiltered = true;
 
       for (const filename of filenames) {
@@ -128,8 +152,8 @@ class MetricsTreeModel {
         const metricNames = uniquifyIterToString(
             joinIter(Object.keys(metrics), Object.keys(beforeMetrics)));
         // |fileNode| has single |tableNode| child to enable UI show / hide.
-        const fileNode = makeNode(filename, [], 'file');
-        const tableNode = makeNode('', null, null);  // Leaf.
+        const fileNode = this.makeDataNode(filename, [], 'file');
+        const tableNode = this.makeDataNode('', null, null);  // Leaf.
         tableNode.items = [];
         if (isDex)
           dexNodes.push(tableNode);
@@ -141,73 +165,55 @@ class MetricsTreeModel {
             item.beforeValue = beforeMetrics[metricName] ?? 0;
           tableNode.items.push(item);
         }
-        addChild(fileNode, tableNode);
-        addChild(containerNode, fileNode);
+        fileNode.children.push(tableNode);
+        containerNode.children.push(fileNode);
       }
-      addChild(rootNode, containerNode);
+      rootNode.children.push(containerNode);
     }
 
-    // Add special node to compute totals.
+    // Add special nodes to compute totals.
     if (dexNodes.length > 0) {
-      const totalNode = makeNode('(TOTAL)', [], 'metrics');
-      const dexFileNode = makeNode('(DEX)', [], 'file');
-      const tableNode = makeNode('', null, null);  // Leaf.
-
-      /**
-       * @param {!Map<string, !MetricsItem>} items
-       * @param {string} metricName
-       * @return {!MetricsItem}
-       */
-      const getOrMakeMetricsItem = (items, metricName) => {
-        let ret = items.get(metricName);
-        if (!ret) {
-          ret = /** @type {!MetricsItem} */ ({name: metricName, value: 0})
-          if (diffMode) {
-            ret.beforeValue = 0;
-          }
-          items.set(metricName, ret);
-        }
-        return ret;
-      };
-
-      /**
-       * @param {!MetricsTreeNode} node
-       * @param {function(string): boolean} nameFilter
-       * @return {boolean}
-       */
-      const hasAncestorRejectedByFilter = (node, nameFilter) => {
-        if (nameFilter) {
-          for (; node; node = node.parent) {
-            if (node.isFiltered && !nameFilter(node.name))
-              return true;
-          }
-        }
-        return false;
-      };
-
-      /** @param {function(string): boolean} nameFilter */
-      tableNode.liveItems = (nameFilter) => {
-        const dstItems = /** @type {!Map<string, !MetricsItem>}*/ (new Map());
-        for (const srcNode of dexNodes) {
-          // Skip if any ancestor with |isFiltered| fails |nameFilter|.
-          if (hasAncestorRejectedByFilter(srcNode, nameFilter))
-            continue;
-          for (const srcItem of srcNode.items) {
-            const dstItem = getOrMakeMetricsItem(dstItems, srcItem.name);
-            dstItem.value += srcItem.value;
-            if (diffMode)
-              dstItem.beforeValue += srcItem.beforeValue;
-          }
-        }
-        return Array.from(dstItems.values())
-            .sort((a, b) => a.name.localeCompare(b.name));
-      };
-
-      addChild(dexFileNode, tableNode);
-      addChild(totalNode, dexFileNode);
-      addChild(rootNode, totalNode);
+      const dexFileNode = this.makeDataNode('(DEX)', dexNodes, 'file');
+      rootNode.totals = [dexFileNode];
     }
-    return rootNode;
+    this.rootNode = rootNode;
+  }
+
+  /**
+   * Decides whether a MetricsTreeNode is a leaf node.
+   * @param {!MetricsTreeNode} dataNode
+   * @return {Boolean}
+   * @public
+   */
+  isLeaf(dataNode) {
+    return Boolean(dataNode.items);
+  }
+
+  /**
+   * Visits all descendant leaf nodes from a list of nodes.
+   * @param {!Array<!MetricsTreeNode>} srcNodes
+   * @public @generator
+   */
+  * visitAllLeaves(srcNodes) {
+    function* makeIter(nodes) {
+      for (const node of nodes) {
+        yield node;
+      }
+    }
+    const st = [makeIter(srcNodes)];
+    while (st.length > 0) {
+      const v = st[st.length - 1].next();
+      if (v.done) {
+        st.pop();
+      } else {
+        const curNode = v.value;
+        if (this.isLeaf(curNode)) {
+          yield curNode;
+        } else {  // Is group.
+          st.push(makeIter(curNode.children));
+        }
+      }
+    }
   }
 }
 
@@ -217,8 +223,12 @@ class MetricsTreeModel {
  * @extends {TreeUi<MetricsTreeNode>}
  */
 class MetricsTreeUi extends TreeUi {
-  constructor() {
+  /** @param {!MetricsTreeModel} model */
+  constructor(model) {
     super(g_el.ulMetricsTree);
+
+    /** @private @const {!MetricsTreeModel} */
+    this.model = model;
 
     /** @private {?function(string): boolean} */
     this.nameFilter = null;
@@ -239,8 +249,7 @@ class MetricsTreeUi extends TreeUi {
    */
   populateMetricsTable(nodeData, table) {
     const diffMode = state.getDiffMode();
-    const items = nodeData.items ?? nodeData.liveItems(this.nameFilter);
-    if (items.length > 0) {
+    if (nodeData.items.length > 0) {
       const headings = ['Name'];
       headings.push(...(diffMode ? ['Before', 'After', 'Diff'] : ['Value']))
       const tr = document.createElement('tr');
@@ -249,7 +258,7 @@ class MetricsTreeUi extends TreeUi {
       }
       table.appendChild(tr);
     }
-    for (const item of items) {
+    for (const item of nodeData.items) {
       const tr = document.createElement('tr');
       tr.appendChild(dom.textElement('td', item.name, ''));
       if (diffMode) {
@@ -270,7 +279,7 @@ class MetricsTreeUi extends TreeUi {
 
   /** @override @protected */
   makeGroupOrLeafFragment(nodeData) {
-    const isLeaf = !nodeData.children;
+    const isLeaf = this.model.isLeaf(nodeData);
     // Use different template depending on whether node is group or leaf.
     const tmpl = isLeaf ? g_el.tmplMetricsTreeLeaf : g_el.tmplMetricsTreeGroup;
     const fragment = document.importNode(tmpl.content, true);
@@ -293,15 +302,37 @@ class MetricsTreeUi extends TreeUi {
       const icon = getMetricsIconTemplate(nodeData.iconKey);
       nodeElt.insertBefore(icon, nodeElt.firstElementChild);
     }
-
     return {fragment, isLeaf};
   }
 
   /** @override @protected */
   async getGroupChildrenData(link) {
-    let data = this.uiNodeToData.get(link);
-    return data.children.filter(
+    const data = this.uiNodeToData.get(link);
+    const ret = data.children.filter(
         ch => !ch.isFiltered || !this.nameFilter || this.nameFilter(ch.name));
+
+    // Dynamiclaly synthesize "(TOTAL)" node data.
+    if (data.totals) {
+      // Create set of table leaf nodes, for filtering.
+      const leafSet = new Set(this.model.visitAllLeaves(ret));
+      // Create "(TOTAL)" node data lazily, i.e., skip if empty.
+      let totalNode = null;
+      for (const totalData of data.totals) {
+        const srcNodes = totalData.children.filter(ch => leafSet.has(ch));
+        if (srcNodes.length === 0)
+          continue;
+        const title = totalData.name + `: ${srcNodes.length}`;
+        const tableNode = this.model.makeDataNode('', null, null);  // Leaf.
+        tableNode.items = this.model.makeTotalItemList(srcNodes);
+        const fileNode = this.model.makeDataNode(title, [tableNode], 'file');
+        if (!totalNode) {
+          totalNode = this.model.makeDataNode('(TOTAL)', [], 'metrics');
+          ret.push(totalNode);
+        }
+        totalNode.children.push(fileNode);
+      }
+    }
+    return ret;
   }
 
   /**
@@ -320,6 +351,7 @@ class MetricsTreeUi extends TreeUi {
     this.handleKeyNavigationCommon(event, nodeElt, focusIndex);
   }
 
+  /** @override @public */
   init() {
     super.init();
 

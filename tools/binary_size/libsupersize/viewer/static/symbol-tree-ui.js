@@ -220,7 +220,7 @@ class SymbolTreeUi extends TreeUi {
         .parentElement.classList.remove('focused');
   }
 
-  /** @public @override */
+  /** @override @public */
   init() {
     super.init();
 

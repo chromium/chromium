@@ -17,11 +17,11 @@
   const _symbolTreeUi = new SymbolTreeUi();
   _symbolTreeUi.init();
 
-  /** @type {?MetricsTreeNode} */
-  let _metricsRootData = null;
+  /** @type {!MetricsTreeModel} */
+  const _metricsTreeModel = new MetricsTreeModel();
 
   /** @type {!MetricsTreeUi} */
-  const _metricsTreeUi = new MetricsTreeUi();
+  const _metricsTreeUi = new MetricsTreeUi(_metricsTreeModel);
   _metricsTreeUi.init();
 
   /** @param {TreeProgress} message */
@@ -135,13 +135,13 @@
    */
   function renderAndShowMetricsTree(metadata) {
     if (metadata)
-      _metricsRootData = MetricsTreeModel.extract(metadata);
+      _metricsTreeModel.extractAndStoreRoot(metadata);
     _metricsTreeUi.updateFilter();
 
     /** @type {?DocumentFragment} */
     let rootElement = null;
-    if (_metricsRootData) {
-      rootElement = _metricsTreeUi.makeNodeElement(_metricsRootData);
+    if (_metricsTreeModel.rootNode) {
+      rootElement = _metricsTreeUi.makeNodeElement(_metricsTreeModel.rootNode);
       /** @type {!HTMLAnchorElement} */
       const link = rootElement.querySelector('.node');
       // Leave root UI node collapsed, but reachable by tab.
