@@ -24,8 +24,10 @@ FastPairRepository* g_instance = nullptr;
 
 // static
 FastPairRepository* FastPairRepository::Get() {
-  // b/240621764 team members have seen g_instance return null during testing.
-  // Fail loudly if that happens to avoid undefined behavior.
+  // This fails for component builds, however, production builds are not
+  // component builds and we have not seen any production crashes here. If
+  // crashes start appearing in production, we should re-evaluate the
+  // FastPairRepository setup.
   CHECK(g_instance);
   return g_instance;
 }
