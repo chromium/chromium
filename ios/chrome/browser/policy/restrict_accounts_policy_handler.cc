@@ -8,6 +8,7 @@
 
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -39,8 +40,11 @@ bool RestrictAccountsPolicyHandler::CheckPolicySettings(
     errors->AddError(policy_name(),
                      IDS_POLICY_INVALID_ACCOUNT_PATTERN_FORMAT_ERROR);
   }
-  if (!value->is_list())
+  if (!value->is_list()) {
+    LOG_POLICY(ERROR, POLICY_PROCESSING)
+        << "RestrictAccountsToPatterns Policy Error: value must be a list";
     return false;
+  }
   // Even if the pattern is not valid, the policy should be applied.
   return true;
 }

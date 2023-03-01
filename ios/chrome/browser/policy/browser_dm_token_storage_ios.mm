@@ -19,6 +19,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/core/common/policy_logger.h"
 #import "components/policy/policy_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -60,6 +61,7 @@ bool StoreDMTokenInDirAppDataDir(const std::string& token,
   }
 
   if (!base::ImportantFileWriter::WriteFileAtomically(token_file_path, token)) {
+    LOG_POLICY(ERROR, CBCM_ENROLLMENT) << "Failed to save DMToken to file";
     return false;
   }
 
@@ -106,18 +108,23 @@ std::string BrowserDMTokenStorageIOS::InitEnrollmentToken() {
 std::string BrowserDMTokenStorageIOS::InitDMToken() {
   base::FilePath token_file_path;
   if (!GetDmTokenFilePath(&token_file_path, InitClientId(),
-                          /*create_dir=*/false))
+                          /*create_dir=*/false)) {
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT) << "Failed to get DMToken file path";
     return std::string();
+  }
 
   std::string token;
-  if (!base::ReadFileToString(token_file_path, &token))
+  if (!base::ReadFileToString(token_file_path, &token)) {
+    LOG_POLICY(WARNING, CBCM_ENROLLMENT) << "Failed to read DMToken from file";
     return std::string();
+  }
 
   return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
 }
 
 bool BrowserDMTokenStorageIOS::InitEnrollmentErrorOption() {
   // No error should be shown if enrollment fails on iOS.
+  LOG_POLICY(ERROR, CBCM_ENROLLMENT) << "Error initializing enrollment token";
   return false;
 }
 
