@@ -187,7 +187,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-          initiator_policy_container_handle) = 0;
+          initiator_policy_container_handle,
+      bool is_container_initiated) = 0;
 
   virtual void DispatchWillSendSubmitEvent(HTMLFormElement*) = 0;
 

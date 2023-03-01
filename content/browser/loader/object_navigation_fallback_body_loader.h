@@ -21,12 +21,6 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 
-namespace network {
-namespace mojom {
-class URLResponseHead;
-}  // namespace mojom
-}  // namespace network
-
 namespace content {
 
 class NavigationRequest;
@@ -59,9 +53,6 @@ class ObjectNavigationFallbackBodyLoader
       public network::mojom::URLLoaderClient,
       public mojo::DataPipeDrainer::Client {
  public:
-  // `common_params, `commit_params`, and `response_head`  are used to
-  // (partially) generate the resource timing info.
-  //
   // `response_body` and `url_loader_client_endpoints` are used to drain the
   // responise body and calculate the body / data size needed for the
   // performance entry.
@@ -75,9 +66,6 @@ class ObjectNavigationFallbackBodyLoader
   // response body is successfully loaded.
   static void CreateAndStart(
       NavigationRequest& navigation_request,
-      const blink::mojom::CommonNavigationParams& common_params,
-      const blink::mojom::CommitNavigationParams& commit_params,
-      const network::mojom::URLResponseHead& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       base::OnceClosure completion_closure);
@@ -90,8 +78,6 @@ class ObjectNavigationFallbackBodyLoader
 
   ObjectNavigationFallbackBodyLoader(
       NavigationHandle& navigation_handle,
-      blink::mojom::ResourceTimingInfoPtr timing_info,
-      std::string server_timing_value,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       base::OnceClosure completion_closure);
@@ -123,8 +109,6 @@ class ObjectNavigationFallbackBodyLoader
   // `response_body_drainer_` will be reset to null when the response body is
   // completely drained.
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
-  blink::mojom::ResourceTimingInfoPtr timing_info_;
-  std::string server_timing_value_;
   base::OnceClosure completion_closure_;
 };
 

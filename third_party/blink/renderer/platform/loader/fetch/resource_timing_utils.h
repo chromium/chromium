@@ -17,9 +17,6 @@ namespace blink {
 class KURL;
 class ResourceResponse;
 
-BLINK_PLATFORM_EXPORT WTF::Vector<mojom::blink::ServerTimingInfoPtr>
-ParseServerTimingFromHeaderValueToMojo(const String& value);
-
 BLINK_PLATFORM_EXPORT mojom::blink::ResourceTimingInfoPtr
 CreateResourceTimingInfo(base::TimeTicks start_time,
                          const KURL& initial_url,

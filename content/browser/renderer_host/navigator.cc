@@ -872,7 +872,8 @@ void Navigator::NavigateFromFrameProxy(
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
-    bool force_new_browsing_instance) {
+    bool force_new_browsing_instance,
+    bool is_container_initiated) {
   // |method != "POST"| should imply absence of |post_body|.
   if (method != "POST" && post_body) {
     NOTREACHED();
@@ -917,7 +918,7 @@ void Navigator::NavigateFromFrameProxy(
       std::move(blob_url_loader_factory), is_form_submission, impression,
       initiator_activation_and_ad_status, navigation_start_time,
       is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
-      force_new_browsing_instance);
+      force_new_browsing_instance, is_container_initiated);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,

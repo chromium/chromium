@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "net/http/http_response_info.h"
+#include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
@@ -65,12 +67,6 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void ReportBlinkFeatureUsage(
       const std::vector<blink::mojom::WebFeature>&) override;
   void RenderFallbackContent() override;
-  void AddResourceTimingEntryFromNonNavigatedFrame(
-      blink::mojom::ResourceTimingInfoPtr timing,
-      blink::FrameOwnerElementType parent_frame_element_type) override;
-  void RenderFallbackContentWithResourceTiming(
-      blink::mojom::ResourceTimingInfoPtr,
-      const std::string& server_timing_value) override;
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override;
   void MediaPlayerActionAt(const gfx::Point& location,
                            blink::mojom::MediaPlayerActionPtr action) override;
@@ -150,6 +146,22 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
                          blink::mojom::TraverseCancelledReason reason) override;
   void SnapshotDocumentForViewTransition(
       SnapshotDocumentForViewTransitionCallback callback) override;
+  void AddResourceTimingEntryForFailedSubframeNavigation(
+      const ::blink::FrameToken& subframe_token,
+      const GURL& initial_url,
+      base::TimeTicks start_time,
+      base::TimeTicks redirect_time,
+      base::TimeTicks request_start,
+      base::TimeTicks response_start,
+      uint32_t response_code,
+      const std::string& mime_type,
+      const net::LoadTimingInfo& load_timing_info,
+      net::HttpResponseInfo::ConnectionInfo connection_info,
+      const std::string& alpn_negotiated_protocol,
+      bool is_secure_transport,
+      bool is_validated,
+      const std::string& normalized_server_timing,
+      const ::network::URLLoaderCompletionStatus& completion_status) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

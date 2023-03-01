@@ -342,17 +342,6 @@ void Frame::RenderFallbackContent() {
       HTMLObjectElement::ErrorEventPolicy::kDispatch);
 }
 
-void Frame::RenderFallbackContentWithResourceTiming(
-    mojom::blink::ResourceTimingInfoPtr timing,
-    const String& server_timing_value) {
-  auto* local_dom_window = To<LocalDOMWindow>(Parent()->DomWindow());
-  DOMWindowPerformance::performance(*local_dom_window)
-      ->AddResourceTimingWithUnparsedServerTiming(
-          std::move(timing), server_timing_value,
-          html_names::kObjectTag.LocalName());
-  RenderFallbackContent();
-}
-
 bool Frame::IsInFencedFrameTree() const {
   DCHECK(!IsDetached());
   if (!features::IsFencedFramesEnabled())

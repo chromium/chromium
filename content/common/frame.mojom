@@ -17,6 +17,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";

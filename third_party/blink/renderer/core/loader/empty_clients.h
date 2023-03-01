@@ -308,8 +308,8 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       const absl::optional<Impression>&,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation>,
-      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>)
-      override;
+      mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>,
+      bool is_container_initiated) override;
 
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
 

@@ -703,7 +703,10 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
       params->is_form_submission, params->impression,
-      params->initiator_activation_and_ad_status, navigation_start_time);
+      params->initiator_activation_and_ad_status, navigation_start_time,
+      /*is_embedder_initiated_fenced_frame_navigation=*/false,
+      /*is_unfenced_top_navigation=*/false,
+      /*force_new_browsing_instance=*/false, params->is_container_initiated);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(

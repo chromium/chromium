@@ -293,10 +293,6 @@ class CORE_EXPORT LocalFrame final
   BoxShadowPaintImageGenerator* GetBoxShadowPaintImageGenerator();
   ClipPathPaintImageGenerator* GetClipPathPaintImageGenerator();
 
-  void AddResourceTimingEntryFromNonNavigatedFrame(
-      mojom::blink::ResourceTimingInfoPtr timing,
-      blink::FrameOwnerElementType initiator_type);
-
   // A local root is the root of a connected subtree that contains only
   // LocalFrames. The local root is responsible for coordinating input, layout,
   // et cetera for that subtree of frames.

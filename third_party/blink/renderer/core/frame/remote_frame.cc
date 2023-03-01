@@ -304,6 +304,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       GetNavigationInitiatorActivationAndAdStatus(request.HasUserGesture(),
                                                   is_ad_script_in_stack);
 
+  params->is_container_initiated = frame_request.IsContainerInitiated();
   GetRemoteFrameHostRemote().OpenURL(std::move(params));
 }
 
@@ -409,25 +410,11 @@ void RemoteFrame::RenderFallbackContent() {
   Frame::RenderFallbackContent();
 }
 
-void RemoteFrame::RenderFallbackContentWithResourceTiming(
-    mojom::blink::ResourceTimingInfoPtr timing,
-    const String& server_timing_value) {
-  Frame::RenderFallbackContentWithResourceTiming(std::move(timing),
-                                                 server_timing_value);
-}
-
 void RemoteFrame::AddResourceTimingFromChild(
     mojom::blink::ResourceTimingInfoPtr timing) {
   HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(Owner());
   DCHECK(owner_element);
-
-  if (!owner_element->HasPendingFallbackTimingInfo()) {
-    return;
-  }
-
-  DOMWindowPerformance::performance(*owner_element->GetDocument().domWindow())
-      ->AddResourceTiming(std::move(timing), owner_element->localName());
-  owner_element->DidReportResourceTiming();
+  owner_element->AddResourceTiming(std::move(timing));
 }
 
 void RemoteFrame::DidStartLoading() {

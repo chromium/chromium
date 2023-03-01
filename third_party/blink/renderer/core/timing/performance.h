@@ -200,11 +200,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                          const AtomicString& initiator_type);
 
-  void AddResourceTimingWithUnparsedServerTiming(
-      mojom::blink::ResourceTimingInfoPtr,
-      const String& server_timing_value,
-      const AtomicString& initiator_type);
-
   void NotifyNavigationTimingToObservers();
 
   void AddFirstPaintTiming(base::TimeTicks start_time,

@@ -171,6 +171,16 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
     return false;
   }
 
+  if (params->is_container_initiated) {
+    if (!current_rfh->GetParent() ||
+        (current_rfh->GetParent()->GetFrameToken() !=
+         params->initiator_frame_token)) {
+      mojo::ReportBadMessage(
+          "container initiated navigation from non-parent process");
+      return false;
+    }
+  }
+
   // Verification succeeded.
   return true;
 }
