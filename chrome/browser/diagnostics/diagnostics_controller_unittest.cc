@@ -77,7 +77,7 @@ class DiagnosticsControllerTest : public testing::Test {
     // Just write some random characters into the file tInvaludUsero "corrupt"
     // it.
     const char bogus_data[] = "wwZ2uNYNuyUVzFbDm3DL";
-    base::WriteFile(path, bogus_data, std::size(bogus_data));
+    base::WriteFile(path, bogus_data);
   }
 
   std::unique_ptr<DiagnosticsModel> model_;
