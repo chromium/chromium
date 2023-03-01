@@ -577,6 +577,7 @@ public class PersonalDataManager {
         private String mOrigin;
         private boolean mIsLocal;
         private boolean mIsCached;
+        private boolean mIsVirtual;
         private String mName;
         private String mNumber;
         private String mNetworkAndLastFourDigits;
@@ -600,14 +601,14 @@ public class PersonalDataManager {
 
         @CalledByNative("CreditCard")
         public static CreditCard create(String guid, String origin, boolean isLocal,
-                boolean isCached, String name, String number, String networkAndLastFourDigits,
-                String month, String year, String basicCardIssuerNetwork, int iconId,
-                String billingAddressId, String serverId, long instrumentId, String cardLabel,
-                String nickname, GURL cardArtUrl,
+                boolean isCached, boolean isVirtual, String name, String number,
+                String networkAndLastFourDigits, String month, String year,
+                String basicCardIssuerNetwork, int iconId, String billingAddressId, String serverId,
+                long instrumentId, String cardLabel, String nickname, GURL cardArtUrl,
                 @VirtualCardEnrollmentState int virtualCardEnrollmentState,
                 String productDescription, String cardNameForAutofillDisplay,
                 String obfuscatedLastFourDigits) {
-            return new CreditCard(guid, origin, isLocal, isCached, name, number,
+            return new CreditCard(guid, origin, isLocal, isCached, isVirtual, name, number,
                     networkAndLastFourDigits, month, year, basicCardIssuerNetwork, iconId,
                     billingAddressId, serverId, instrumentId, cardLabel, nickname, cardArtUrl,
                     virtualCardEnrollmentState, productDescription, cardNameForAutofillDisplay,
@@ -618,8 +619,9 @@ public class PersonalDataManager {
                 String name, String number, String networkAndLastFourDigits, String month,
                 String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
                 String billingAddressId, String serverId) {
-            this(guid, origin, isLocal, isCached, name, number, networkAndLastFourDigits, month,
-                    year, basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
+            this(guid, origin, isLocal, isCached, /* isVirtual= */ false, name, number,
+                    networkAndLastFourDigits, month, year, basicCardIssuerNetwork,
+                    issuerIconDrawableId, billingAddressId, serverId,
                     /* instrumentId= */ 0, /* cardLabel= */ networkAndLastFourDigits,
                     /* nickname= */ "",
                     /* cardArtUrl= */ null,
@@ -629,8 +631,8 @@ public class PersonalDataManager {
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
-                String name, String number, String networkAndLastFourDigits, String month,
-                String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
+                boolean isVirtual, String name, String number, String networkAndLastFourDigits,
+                String month, String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
                 String billingAddressId, String serverId, long instrumentId, String cardLabel,
                 String nickname, GURL cardArtUrl,
                 @VirtualCardEnrollmentState int virtualCardEnrollmentState,
@@ -640,6 +642,7 @@ public class PersonalDataManager {
             mOrigin = origin;
             mIsLocal = isLocal;
             mIsCached = isCached;
+            mIsVirtual = isVirtual;
             mName = name;
             mNumber = number;
             mNetworkAndLastFourDigits = networkAndLastFourDigits;
@@ -715,6 +718,11 @@ public class PersonalDataManager {
         @CalledByNative("CreditCard")
         public boolean getIsCached() {
             return mIsCached;
+        }
+
+        @CalledByNative("CreditCard")
+        public boolean getIsVirtual() {
+            return mIsVirtual;
         }
 
         @CalledByNative("CreditCard")

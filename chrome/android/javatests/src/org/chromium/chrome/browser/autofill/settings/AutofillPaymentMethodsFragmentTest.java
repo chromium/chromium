@@ -71,7 +71,8 @@ public class AutofillPaymentMethodsFragmentTest {
                     /* serverId= */ "");
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED = new CreditCard(/* guid= */ "",
             /* origin= */ "",
-            /* isLocal= */ false, /* isCached= */ false, /* name= */ "John Doe",
+            /* isLocal= */ false, /* isCached= */ false, /* isVirtual= */ false,
+            /* name= */ "John Doe",
             /* number= */ "4444333322221111",
             /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
             /* basicCardIssuerNetwork =*/"visa",
@@ -83,7 +84,8 @@ public class AutofillPaymentMethodsFragmentTest {
             /* obfuscatedLastFourDigits= */ "");
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED = new CreditCard(/* guid= */ "",
             /* origin= */ "",
-            /* isLocal= */ false, /* isCached= */ false, /* name= */ "John Doe",
+            /* isLocal= */ false, /* isCached= */ false, /* isVirtual= */ false,
+            /* name= */ "John Doe",
             /* number= */ "4444333322221111",
             /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
             /* basicCardIssuerNetwork =*/"visa",
