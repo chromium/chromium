@@ -122,29 +122,11 @@ imageset("settings_language_settings") {
   ]
 }
 
-imageset("legacy_settings_passwords") {
-  sources = [
-    "legacy_settings_passwords.imageset/Contents.json",
-    "legacy_settings_passwords.imageset/settings_passwords@2x.png",
-    "legacy_settings_passwords.imageset/settings_passwords@3x.png",
-  ]
-}
-
 imageset("settings_passwords") {
   sources = [
     "settings_passwords.imageset/Contents.json",
     "settings_passwords.imageset/settings_passwords@2x.png",
     "settings_passwords.imageset/settings_passwords@3x.png",
-  ]
-}
-
-imageset("legacy_settings_passwords_in_other_apps_banner") {
-  sources = [
-    "legacy_settings_passwords_in_other_apps_banner.imageset/Contents.json",
-    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@2x.png",
-    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@3x.png",
-    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@2x.png",
-    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@3x.png",
   ]
 }
 

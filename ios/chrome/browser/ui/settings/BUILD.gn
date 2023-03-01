@@ -85,7 +85,6 @@ source_set("settings") {
     "resources:app_icon_placeholder",
     "resources:encryption_error",
     "resources:enterprise_icon",
-    "resources:legacy_settings_passwords",
     "resources:round_settings_unsafe_state",
     "resources:settings_about_chrome",
     "resources:settings_accounts_add_account",

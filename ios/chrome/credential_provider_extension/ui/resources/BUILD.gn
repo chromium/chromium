@@ -10,7 +10,6 @@ group("resources") {
     ":consent_view_controller",
     ":empty_credentials_illustration",
     ":info_icon",
-    ":legacy_consent_view_controller",
     ":password_hide_icon",
     ":password_reveal_icon",
   ]
@@ -23,16 +22,6 @@ imageset("consent_view_controller") {
     "consent_view_controller.imageset/promo_passwords_in_other_apps@3x.png",
     "consent_view_controller.imageset/promo_passwords_in_other_apps_dark@2x.png",
     "consent_view_controller.imageset/promo_passwords_in_other_apps_dark@3x.png",
-  ]
-}
-
-imageset("legacy_consent_view_controller") {
-  sources = [
-    "legacy_consent_view_controller.imageset/Contents.json",
-    "legacy_consent_view_controller.imageset/promo-passwords_in_other_apps-dark@2x.png",
-    "legacy_consent_view_controller.imageset/promo-passwords_in_other_apps-dark@3x.png",
-    "legacy_consent_view_controller.imageset/promo-passwords_in_other_apps-light@2x.png",
-    "legacy_consent_view_controller.imageset/promo-passwords_in_other_apps-light@3x.png",
   ]
 }
 

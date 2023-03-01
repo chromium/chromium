@@ -8950,21 +8950,6 @@
             ]
         }
     ],
-    "PasswordManagerRebranding": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSEnablePasswordManagerBrandingUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordNotesWithBackup": [
         {
             "platforms": [

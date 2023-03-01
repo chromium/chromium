@@ -37,7 +37,6 @@ source_set("passwords_in_other_apps_ui") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/resources:legacy_settings_passwords_in_other_apps_banner",
     "//ios/chrome/browser/ui/settings/resources:settings",
     "//ios/chrome/browser/ui/settings/resources:settings_passwords_in_other_apps_banner",
     "//ios/chrome/browser/ui/settings/utils",
