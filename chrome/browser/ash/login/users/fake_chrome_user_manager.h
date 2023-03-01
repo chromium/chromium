@@ -113,8 +113,6 @@ class FakeChromeUserManager : public ChromeUserManager {
                             const std::string& display_email) override;
   void SaveUserType(const user_manager::User* user) override;
   absl::optional<std::string> GetOwnerEmail() override;
-  void UpdateUserAccountData(const AccountId& account_id,
-                             const UserAccountData& account_data) override;
   bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNew() const override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;
