@@ -280,6 +280,7 @@ void RecordRefreshTokenRevokedFromSource(
   UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevoked.Source", source);
 }
 
+#if BUILDFLAG(IS_IOS)
 void RecordSigninAccountType(signin::ConsentLevel consent_level,
                              bool is_managed_account) {
   SigninAccountType account_type = is_managed_account
@@ -296,6 +297,7 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
       break;
   }
 }
+#endif
 
 // --------------------------------------------------------------
 // User actions

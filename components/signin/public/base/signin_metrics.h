@@ -578,9 +578,11 @@ void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
 // Records the source that revoked a refresh token.
 void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
 
+#if BUILDFLAG(IS_IOS)
 // Records the account type when the user signs in.
 void RecordSigninAccountType(signin::ConsentLevel consent_level,
                              bool is_managed_account);
+#endif
 
 // -----------------------------------------------------------------------------
 // User actions
