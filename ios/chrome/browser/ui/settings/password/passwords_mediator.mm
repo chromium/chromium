@@ -443,8 +443,8 @@ bool IsPasswordCheckupEnabled() {
 
 #pragma mark - TableViewFaviconDataSource
 
-- (void)faviconForURL:(CrURL*)URL
-           completion:(void (^)(FaviconAttributes*))completion {
+- (void)faviconForPageURL:(CrURL*)URL
+               completion:(void (^)(FaviconAttributes*))completion {
   BOOL isPasswordSyncEnabled =
       password_manager_util::IsPasswordSyncNormalEncryptionEnabled(
           _syncService);

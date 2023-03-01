@@ -2633,21 +2633,22 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
   [self.imageDataSource
-      faviconForURL:URLItem.URL
-         completion:^(FaviconAttributes* attributes) {
-           // Only set favicon if the cell hasn't been reused.
-           if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
-             DCHECK(attributes);
-             [URLCell.faviconView configureWithAttributes:attributes];
+      faviconForPageURL:URLItem.URL
+             completion:^(FaviconAttributes* attributes) {
+               // Only set favicon if the cell hasn't been reused.
+               if ([URLCell.cellUniqueIdentifier
+                       isEqualToString:itemIdentifier]) {
+                 DCHECK(attributes);
+                 [URLCell.faviconView configureWithAttributes:attributes];
 
-             // Value is YES if the favicon is an image not a monogram string.
-             // Storing as the value as an NSNumber object because values in an
-             // NSDictionary must be objects.
-             [self.passwordsLoadedWithFavicons
-                 setValue:(attributes.faviconImage != nil ? @YES : @NO)
-                   forKey:itemIdentifier];
-           }
-         }];
+                 // Value is YES if the favicon is an image not a monogram
+                 // string. Storing as the value as an NSNumber object because
+                 // values in an NSDictionary must be objects.
+                 [self.passwordsLoadedWithFavicons
+                     setValue:(attributes.faviconImage != nil ? @YES : @NO)
+                       forKey:itemIdentifier];
+               }
+             }];
 }
 
 #pragma mark PasswordExporterDelegate

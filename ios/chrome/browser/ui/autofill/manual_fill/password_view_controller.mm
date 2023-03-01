@@ -198,14 +198,15 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
   NSString* itemIdentifier = passwordItem.uniqueIdentifier;
   CrURL* crurl = [[CrURL alloc] initWithGURL:passwordItem.faviconURL];
   [self.imageDataSource
-      faviconForURL:crurl
-         completion:^(FaviconAttributes* attributes) {
-           // Only set favicon if the cell hasn't been reused.
-           if ([passwordCell.uniqueIdentifier isEqualToString:itemIdentifier]) {
-             DCHECK(attributes);
-             [passwordCell configureWithFaviconAttributes:attributes];
-           }
-         }];
+      faviconForPageURL:crurl
+             completion:^(FaviconAttributes* attributes) {
+               // Only set favicon if the cell hasn't been reused.
+               if ([passwordCell.uniqueIdentifier
+                       isEqualToString:itemIdentifier]) {
+                 DCHECK(attributes);
+                 [passwordCell configureWithFaviconAttributes:attributes];
+               }
+             }];
 }
 
 - (void)handleDoneButton {

@@ -130,10 +130,10 @@ NSInteger kFaviconSymbolPointSize = 17;
           initWithTitle:@"First Web Channel"
                  active:YES
           faviconSource:^(void (^completion)(UIImage* favicon)) {
-            [weakSelf faviconForURL:nil
-                         completion:^(FaviconAttributes* attributes) {
-                           completion(attributes.faviconImage);
-                         }];
+            [weakSelf faviconForPageURL:nil
+                             completion:^(FaviconAttributes* attributes) {
+                               completion(attributes.faviconImage);
+                             }];
           }];
 
   self.alerter.baseViewController = firstFollowViewController;
@@ -186,8 +186,8 @@ NSInteger kFaviconSymbolPointSize = 17;
 
 #pragma mark - TableViewFaviconDataSource
 
-- (void)faviconForURL:(CrURL*)URL
-           completion:(void (^)(FaviconAttributes*))completion {
+- (void)faviconForPageURL:(CrURL*)URL
+               completion:(void (^)(FaviconAttributes*))completion {
   // This mimics the behavior of favicon loader by immediately returning a
   // default image, then fetching and returning another image.
   UIImage* image1 =

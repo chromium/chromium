@@ -1348,14 +1348,15 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
   [self.imageDataSource
-      faviconForURL:URLItem.URL
-         completion:^(FaviconAttributes* attributes) {
-           // Only set favicon if the cell hasn't been reused.
-           if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
-             DCHECK(attributes);
-             [URLCell.faviconView configureWithAttributes:attributes];
-           }
-         }];
+      faviconForPageURL:URLItem.URL
+             completion:^(FaviconAttributes* attributes) {
+               // Only set favicon if the cell hasn't been reused.
+               if ([URLCell.cellUniqueIdentifier
+                       isEqualToString:itemIdentifier]) {
+                 DCHECK(attributes);
+                 [URLCell.faviconView configureWithAttributes:attributes];
+               }
+             }];
 }
 
 #pragma mark - Distant Sessions helpers

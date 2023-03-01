@@ -79,17 +79,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   FollowedWebChannelCell* followedWebChannelCell =
       base::mac::ObjCCastStrict<FollowedWebChannelCell>(cellToReturn);
 
-  [self.faviconDataSource faviconForURL:followedWebChannelItem.URL
-                             completion:^(FaviconAttributes* attributes) {
-                               // Only set favicon if the cell hasn't been
-                               // reused.
-                               if (followedWebChannelCell.followedWebChannel ==
-                                   followedWebChannelItem.followedWebChannel) {
-                                 DCHECK(attributes);
-                                 [followedWebChannelCell.faviconView
-                                     configureWithAttributes:attributes];
-                               }
-                             }];
+  [self.faviconDataSource
+      faviconForPageURL:followedWebChannelItem.URL
+             completion:^(FaviconAttributes* attributes) {
+               // Only set favicon if the cell hasn't been
+               // reused.
+               if (followedWebChannelCell.followedWebChannel ==
+                   followedWebChannelItem.followedWebChannel) {
+                 DCHECK(attributes);
+                 [followedWebChannelCell.faviconView
+                     configureWithAttributes:attributes];
+               }
+             }];
   return cellToReturn;
 }
 

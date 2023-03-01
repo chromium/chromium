@@ -81,7 +81,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                             ? YES
                             : NO
           faviconSource:^(void (^completion)(UIImage* favicon)) {
-            [weakSelf faviconForURL:followedSiteURL completion:completion];
+            [weakSelf faviconForPageURL:followedSiteURL completion:completion];
           }];
 
   firstFollowViewController.actionHandler = self;
@@ -144,7 +144,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 #pragma mark - Helpers
 
-- (void)faviconForURL:(NSURL*)URL completion:(void (^)(UIImage*))completion {
+- (void)faviconForPageURL:(NSURL*)URL
+               completion:(void (^)(UIImage*))completion {
   self.faviconLoader->FaviconForPageUrl(
       net::GURLWithNSURL(URL), kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
