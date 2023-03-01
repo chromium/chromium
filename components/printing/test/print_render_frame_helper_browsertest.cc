@@ -1474,7 +1474,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(571, 652, 69, 71, 20, 21, true);
+  VerifyDefaultPageLayout(571, 653, 69, 70, 20, 21, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
