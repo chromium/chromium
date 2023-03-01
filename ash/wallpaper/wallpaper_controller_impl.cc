@@ -533,7 +533,7 @@ void DownloadGooglePhotosImage(
   }
   ImageDownloader::Get()->Download(url_with_dimensions,
                                    kDownloadGooglePhotoTrafficAnnotation,
-                                   headers, absl::nullopt, std::move(callback));
+                                   account_id, headers, std::move(callback));
 }
 
 // Returns an appropriate ColorMode value based on the Light/Dark mode state.
@@ -2800,7 +2800,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     // wallpaper picker to the new one.
     std::string url = params.url.spec() + GetBackdropWallpaperSuffix();
     ImageDownloader::Get()->Download(
-        GURL(url), kDownloadOnlineWallpaperTrafficAnnotation,
+        GURL(url), kDownloadOnlineWallpaperTrafficAnnotation, params.account_id,
         base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                        set_wallpaper_weak_factory_.GetWeakPtr(), params,
                        /*save_file=*/true, std::move(callback)));
@@ -2818,7 +2818,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     for (size_t i = 0; i < variants.size(); i++) {
       ImageDownloader::Get()->Download(
           GURL(variants.at(i).raw_url.spec() + GetBackdropWallpaperSuffix()),
-          kDownloadOnlineWallpaperTrafficAnnotation,
+          kDownloadOnlineWallpaperTrafficAnnotation, params.account_id,
           base::BindOnce(
               &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
               set_wallpaper_weak_factory_.GetWeakPtr(), params, on_done,

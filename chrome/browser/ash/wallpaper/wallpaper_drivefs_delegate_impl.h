@@ -94,6 +94,7 @@ class WallpaperDriveFsDelegateImpl : public WallpaperDriveFsDelegate {
   // Drive authentication token. Can now attempt to download the wallpaper image
   // because `download_url` and `authentication_token` are both present.
   void OnGetDownloadUrlAndAuthentication(
+      const AccountId& account_id,
       ImageDownloader::DownloadCallback callback,
       const GURL& download_url,
       google_apis::ApiErrorCode error_code,

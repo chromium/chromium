@@ -11,10 +11,13 @@
 #include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -43,16 +46,21 @@ constexpr net::NetworkTrafficAnnotationTag kAmbientPhotoControllerTag =
            "The user setting is per device and cannot be overriden by admin."
         })");
 
-void DownloadImageFromUrl(
-    const std::string& url,
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+void DownloadImageFromUrl(const std::string& url,
+                          ImageDownloader::DownloadCallback callback) {
   DCHECK(!url.empty());
 
   // During shutdown, we may not have `ImageDownloader` when reach here.
-  if (!ImageDownloader::Get())
+  if (!ImageDownloader::Get()) {
     return;
+  }
+
+  const UserSession* active_user_session =
+      Shell::Get()->session_controller()->GetUserSession(0);
+  DCHECK(active_user_session);
 
   ImageDownloader::Get()->Download(GURL(url), kAmbientPhotoControllerTag,
+                                   active_user_session->user_info.account_id,
                                    std::move(callback));
 }
 

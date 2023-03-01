@@ -183,11 +183,13 @@ void AmbientClientImpl::DownloadImage(
           std::move(callback).Run({});
           return;
         }
+        const auto* user = GetActiveUser();
+        DCHECK(user);
         net::HttpRequestHeaders headers;
         headers.SetHeader("Authorization", "Bearer " + access_token);
         ash::ImageDownloader::Get()->Download(
-            GURL(url), kAmbientClientNetworkTag, headers,
-            /*credentials_account_id=*/absl::nullopt, std::move(callback));
+            GURL(url), kAmbientClientNetworkTag, user->GetAccountId(), headers,
+            std::move(callback));
       },
       url, std::move(callback)));
 }
