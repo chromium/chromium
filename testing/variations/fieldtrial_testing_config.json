@@ -5152,6 +5152,26 @@
             ]
         }
     ],
+    "FilteringScrollingPrediction": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "beta": "0.01",
+                        "filter": "one_euro_filter",
+                        "mincutoff": "4.7"
+                    },
+                    "enable_features": [
+                        "FilteringScrollingPrediction"
+                    ]
+                }
+            ]
+        }
+    ],
     "FirstPartySetsInitLatencyExperiment": [
         {
             "platforms": [
