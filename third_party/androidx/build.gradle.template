@@ -100,7 +100,7 @@ dependencies {
     androidTestCompile 'androidx.test:core:1.4.0-rc01'
     androidTestCompile 'androidx.test:monitor:1.4.0-rc01'
     androidTestCompile 'androidx.test:rules:1.2.0'
-    androidTestCompile 'androidx.test:runner:1.4.0'
+    androidTestCompile 'androidx.test:runner:1.5.0'
     androidTestCompile 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestCompile 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestCompile 'androidx.test.espresso:espresso-intents:3.2.0'
