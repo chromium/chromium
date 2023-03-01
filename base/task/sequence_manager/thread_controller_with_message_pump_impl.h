@@ -23,7 +23,6 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_map.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,7 +74,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
-  void EnablePeriodicYieldingToNative(base::TimeDelta delta) override;
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   void AttachToMessagePump() override;
 #endif
@@ -151,18 +149,13 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   friend class DoWorkScope;
   friend class RunScope;
 
-  // Returns a WorkDetails which has WakeUp for the next pending task,
-  // is_immediate() if the next task can run immediately, or nullopt if there
-  // are no more immediate tasks or delayed, also has |work_interval| which
-  // represents the time it took to execute the current batch in the looper.
-  WorkDetails DoWorkImpl(LazyNow* continuation_lazy_now);
+  // Returns a WakeUp for the next pending task, is_immediate() if the next task
+  // can run immediately, or nullopt if there are no more immediate or delayed
+  // tasks.
+  absl::optional<WakeUp> DoWorkImpl(LazyNow* continuation_lazy_now);
 
   void InitializeSingleThreadTaskRunnerCurrentDefaultHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
-
-  // Returns the rate at which the thread controller should alternate between
-  // work batches and yielding to the MessagePump.
-  base::TimeDelta GetAlternationInterval();
 
   MainThreadOnly& main_thread_only() {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
@@ -204,12 +197,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // on this thread). Cleared when going to sleep and at the end of a Run()
   // (i.e. when Quit()). Nested runs override their parent.
   absl::optional<WatchHangsInScope> hang_watch_scope_;
-
-  // This time delta represents the interval after which the scheduler will
-  // yield to the native OS looper if we keep getting immediate tasks
-  // if kBrowserPeriodicYieldingToNative finch experiment is enabled.
-  base::TimeDelta periodic_yielding_to_native_interval_ =
-      base::TimeDelta::Max();
 
   // Can only be set once (just before calling
   // work_deduplicator_.BindToCurrentThread()). After that only read access is

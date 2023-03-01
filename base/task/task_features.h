@@ -55,17 +55,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kExplicitHighResolutionTimerWin);
 // Feature to run tasks by batches before pumping out messages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
 
-// Feature to run tasks by batches before pumping out messages.
-BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserPeriodicYieldingToNative);
-extern const BASE_EXPORT base::FeatureParam<TimeDelta>
-    kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam;
-extern const BASE_EXPORT base::FeatureParam<TimeDelta>
-    kBrowserPeriodicYieldingToNativeFlingInputAfterMsParam;
-extern const BASE_EXPORT base::FeatureParam<TimeDelta>
-    kBrowserPeriodicYieldingToNativeNoInputAfterMsParam;
-extern const BASE_EXPORT base::FeatureParam<TimeDelta>
-    kBrowserPeriodicYieldingToNativeDelay;
-
 BASE_EXPORT void InitializeTaskLeeway();
 BASE_EXPORT TimeDelta GetTaskLeewayForCurrentThread();
 BASE_EXPORT TimeDelta GetDefaultTaskLeeway();

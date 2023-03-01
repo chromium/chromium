@@ -79,7 +79,6 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   // experiments.
   void PostFeatureListSetup();
   void EnableBrowserPrioritizesNativeWork();
-  void EnableAlternatingScheduler();
   void EnableDeferringBrowserUIThreadTasks();
 
   // Used in the BrowserPrioritizeNativeWork experiment, when we want to
@@ -157,7 +156,6 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   // There five variables are used in the kBrowserPeriodicYieldingToNative finch
   // experiment, |scroll_state_| should indicate the scroll state upton which
   // the yielding to looper delay will depend.
-  bool browser_enable_periodic_yielding_native_ = false;
   ScrollState scroll_state_ = ScrollState::kNone;
   base::TimeDelta yield_to_native_for_normal_input_after_ms_;
   base::TimeDelta yield_to_native_for_fling_input_after_ms_;

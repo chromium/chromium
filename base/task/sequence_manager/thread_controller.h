@@ -156,13 +156,6 @@ class BASE_EXPORT ThreadController {
   // pump).
   virtual void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) = 0;
 
-  // Currently only overridden on ThreadControllerWithMessagePumpImpl.
-  // While input is active, don't let sequence manager execute work
-  // for more than |delta|, which is exported from the feature param
-  // |kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam| or
-  // |kBrowserPeriodicYieldingToNativeFlingInputAfterMsParam| for flings.
-  virtual void EnablePeriodicYieldingToNative(base::TimeDelta delta) = 0;
-
   // Sets the SingleThreadTaskRunner that will be returned by
   // SingleThreadTaskRunner::GetCurrentDefault on the thread controlled by this
   // ThreadController.

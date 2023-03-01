@@ -68,7 +68,6 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void DetachFromMessagePump() override;
 #endif
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
-  void EnablePeriodicYieldingToNative(base::TimeDelta delta) override;
   bool ShouldQuitRunLoopWhenIdle() override;
 
   // RunLoop::NestingObserver:
