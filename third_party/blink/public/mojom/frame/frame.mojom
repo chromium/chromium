@@ -13,10 +13,7 @@ import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/load_timing_info.mojom";
-import "services/network/public/mojom/network_types.mojom";
 import "services/network/public/mojom/source_location.mojom";
-import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
@@ -698,6 +695,22 @@ interface LocalFrame {
       => (mojo_base.mojom.String16 content, uint32 start_offset,
           uint32 end_offset);
 
+  // Report ResourceTiming information about cancelled navigation in iframe
+  // initiated from this document. This is required to prevent revealing
+  // information about the status codes to the parent frame. (See crbug.com/1346924)
+  //
+  // Example of cancelled navigations:
+  // - 204 - No Content
+  // - 205 - Reset Content
+  // - Extension blocking navigation (e.g. Ad blocker)
+  // - etc
+  //
+  // |parent_frame_element_type| is used on the blink side to determine the
+  // 'initiator_type' of the entry.
+  AddResourceTimingEntryFromNonNavigatedFrame(
+    ResourceTimingInfo timing,
+    blink.mojom.FrameOwnerElementType parent_frame_element_type);
+
   // Creates an intervention report in the frame with contents |id| and
   // |message|, returns once the report has been queued. |id| identifies the
   // intervention that occurred. |message| is a human-readable string that
@@ -778,6 +791,13 @@ interface LocalFrame {
   // This is only used for <object> elements that failed a navigation with a
   // network error.
   RenderFallbackContent();
+
+  // Sent to this frame in parent frame's process to render fallback contents.
+  // This is only used for <object> elements that failed a navigation with an
+  // HTTP error.
+  RenderFallbackContentWithResourceTiming(
+      ResourceTimingInfo timing,
+      string server_timing_value);
 
   // Instructs the frame to invoke the beforeunload event handler.
   //
@@ -973,27 +993,6 @@ interface LocalFrame {
   // See https://drafts.csswg.org/css-view-transitions-1/ for details.
   SnapshotDocumentForViewTransition() => (
       blink.mojom.ViewTransitionState view_transition_state);
-
-  // Allows the browser to add a resource timing entry for a subframe
-  // navigation that has failed before committing - a non-ok object navigation
-  // or a no-content response (204/205).
-  AddResourceTimingEntryForFailedSubframeNavigation(
-    blink.mojom.FrameToken subframe_token,
-    url.mojom.Url initial_url,
-    mojo_base.mojom.TimeTicks start_time,
-    mojo_base.mojom.TimeTicks redirect_time,
-    mojo_base.mojom.TimeTicks request_start,
-    mojo_base.mojom.TimeTicks response_start,
-    uint32 response_code,
-    string mime_type,
-    network.mojom.LoadTimingInfo load_timing_info,
-    network.mojom.ConnectionInfo connection_info,
-    string alpn_negotiated_protocol,
-    bool is_secure_transport,
-    bool is_validated,
-    string normalized_server_timing,
-    network.mojom.URLLoaderCompletionStatus completion_status
-  );
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

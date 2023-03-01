@@ -20,8 +20,6 @@
 
 namespace blink {
 
-namespace {
-
 Vector<mojom::blink::ServerTimingInfoPtr>
 ParseServerTimingFromHeaderValueToMojo(const String& value) {
   std::unique_ptr<ServerTimingHeaderVector> headers =
@@ -34,8 +32,6 @@ ParseServerTimingFromHeaderValueToMojo(const String& value) {
   }
   return result;
 }
-
-}  // namespace
 
 mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
     base::TimeTicks start_time,
@@ -85,11 +81,11 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
     }
   }
 
-  bool allow_response_details = response->IsCorsSameOrigin();
+  bool passes_cors = response->IsCorsSameOrigin();
 
   info->content_type = g_empty_string;
 
-  if (allow_response_details) {
+  if (passes_cors) {
     info->response_status = response->HttpStatusCode();
     if (!response->HttpContentType().IsNull()) {
       info->content_type = response->HttpContentType();
@@ -98,7 +94,7 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
 
   bool expose_body_sizes =
       RuntimeEnabledFeatures::ResourceTimingUseCORSForBodySizesEnabled()
-          ? allow_response_details
+          ? passes_cors
           : info->allow_timing_details;
 
   if (expose_body_sizes && response) {

@@ -227,8 +227,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       base::TimeTicks navigation_start_time,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_unfenced_top_navigation = false,
-      bool force_new_browsing_instance = false,
-      bool is_container_initiated = false);
+      bool force_new_browsing_instance = false);
 
   // Navigates to the history entry associated with the given navigation API
   // |key|. Searches |entries_| for a FrameNavigationEntry associated with
@@ -654,8 +653,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       FrameNavigationEntry* frame_entry,
       base::TimeTicks navigation_start_time,
       bool is_embedder_initiated_fenced_frame_navigation = false,
-      bool is_unfenced_top_navigation = false,
-      bool is_container_initiated = false);
+      bool is_unfenced_top_navigation = false);
 
   // Creates and returns a NavigationRequest for a navigation to |entry|. Will
   // return nullptr if the parameters are invalid and the navigation cannot

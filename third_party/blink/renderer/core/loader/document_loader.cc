@@ -289,6 +289,7 @@ struct SameSizeAsDocumentLoader
   CommitReason commit_reason;
   uint64_t main_resource_identifier;
   mojom::blink::ResourceTimingInfoPtr resource_timing_info_for_parent;
+  base::TimeTicks last_redirect_end_time;
   WebScopedVirtualTimePauser virtual_time_pauser;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager;
   ukm::SourceId ukm_source_id;
@@ -313,7 +314,6 @@ struct SameSizeAsDocumentLoader
   absl::optional<FencedFrame::RedactedFencedFrameProperties>
       fenced_frame_properties;
   bool has_storage_access;
-  mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -533,8 +533,6 @@ DocumentLoader::DocumentLoader(
   document_policy_ = CreateDocumentPolicy();
 
   WebNavigationTimings& timings = params_->navigation_timings;
-  parent_resource_timing_access_ = timings.parent_resource_timing_access;
-
   if (!timings.input_start.is_null())
     document_load_timing_.SetInputStart(timings.input_start);
   if (timings.navigation_start.is_null()) {
@@ -1101,7 +1099,6 @@ void DocumentLoader::BodyLoadingFinished(
     const absl::optional<WebURLError>& error) {
   TRACE_EVENT0("loading", "DocumentLoader::BodyLoadingFinished");
 
-  DCHECK(frame_);
   if (!error) {
     GetFrameLoader().Progress().CompleteProgress(main_resource_identifier_);
     probe::DidFinishLoading(
@@ -1248,6 +1245,10 @@ void DocumentLoader::HandleRedirect(
   probe::WillSendNavigationRequest(
       probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
       url_after_redirect, http_method_, http_body_.get());
+
+  if (ResourceLoadTiming* timing = redirect_response.GetResourceLoadTiming()) {
+    redirect_end_time_ = timing->ReceiveHeadersEnd();
+  }
 
   DCHECK(!GetTiming().FetchStart().is_null());
   GetTiming().AddRedirect(url_before_redirect, url_after_redirect);
@@ -2625,32 +2626,27 @@ void DocumentLoader::CommitNavigation() {
 
   if (response_.ShouldPopulateResourceTiming() ||
       is_error_page_for_failed_navigation_) {
-    // We only report resource timing info to the parent if:
-    // 1. The navigation is container-initiated (e.g. iframe changed src)
-    // 2. TAO passed.
-    if (parent_resource_timing_access_ !=
-            mojom::blink::ParentResourceTimingAccess::kDoNotReport &&
-        response_.TimingAllowPassed()) {
-      ResourceResponse response_for_parent(response_);
-      if (parent_resource_timing_access_ ==
-          mojom::blink::ParentResourceTimingAccess::
-              kReportWithoutResponseDetails) {
-        response_for_parent.SetType(network::mojom::FetchResponseType::kOpaque);
-      }
-
-      DCHECK(frame_->Owner());
-      DCHECK(GetRequestorOrigin());
+    // We only report resource timing to the parent if:
+    // 1. We have a parent (owner)
+    // 2. Timing Allow Passed - otherwise we report fallback timing.
+    // 3. It's an external navigation (kWebNavigationTypeOther)
+    // TODO (crbug.com/1410705): Using navigation_type_ for this covers
+    // most cases but might still have very rare racy edge cases, such as
+    // extension or window.open with target cancelling an ongoing navigation
+    // and start a new navigation to the same URL.
+    if (frame_->Owner() && response_.TimingAllowPassed() &&
+        navigation_type_ == WebNavigationType::kWebNavigationTypeOther) {
       resource_timing_info_for_parent_ = CreateResourceTimingInfo(
-          GetTiming().NavigationStart(), original_url_, &response_for_parent);
-
+          GetTiming().NavigationStart(), original_url_, &response_);
+      if (!is_same_origin_initiator ||
+          document_load_timing_.HasCrossOriginRedirect()) {
+        resource_timing_info_for_parent_->content_type = g_empty_string;
+        resource_timing_info_for_parent_->response_status = 0;
+      }
       resource_timing_info_for_parent_->last_redirect_end_time =
-          document_load_timing_.RedirectEnd();
+          redirect_end_time_;
     }
 
-    // TimingAllowPassed only applies to resource
-    // timing reporting. Navigation timing is always same-origin with the
-    // document that holds to the timing entry, as navigation timing represents
-    // the timing of that document itself.
     response_.SetTimingAllowPassed(true);
     mojom::blink::ResourceTimingInfoPtr navigation_timing_info =
         CreateResourceTimingInfo(base::TimeTicks(),
@@ -2658,9 +2654,8 @@ void DocumentLoader::CommitNavigation() {
                                      ? pre_redirect_url_for_failed_navigations_
                                      : url_,
                                  &response_);
-    navigation_timing_info->last_redirect_end_time =
-        document_load_timing_.RedirectEnd();
-
+    navigation_timing_info->last_redirect_end_time = redirect_end_time_;
+    DCHECK(frame_);
     DCHECK(frame_->DomWindow());
     DOMWindowPerformance::performance(*frame_->DomWindow())
         ->CreateNavigationTimingInstance(std::move(navigation_timing_info));

@@ -944,8 +944,6 @@ blink::WebNavigationTimings BuildNavigationTimings(
       browser_navigation_timings.fetch_start;
 
   renderer_navigation_timings.input_start = input_start;
-  renderer_navigation_timings.parent_resource_timing_access =
-      browser_navigation_timings.parent_resource_timing_access;
 
   return renderer_navigation_timings;
 }
@@ -5759,7 +5757,7 @@ void RenderFrameImpl::BeginNavigationInternal(
               : nullptr,
           info->impression, renderer_before_unload_start,
           renderer_before_unload_end, web_bundle_token_params,
-          initiator_activation_and_ad_status, info->is_container_initiated);
+          initiator_activation_and_ad_status);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

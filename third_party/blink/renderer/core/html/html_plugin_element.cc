@@ -631,6 +631,8 @@ bool HTMLPlugInElement::RequestObject(const PluginParameters& plugin_params) {
       DCHECK(OwnedEmbeddedContentView());
     }
 
+    WillPerformContainerInitiatedNavigation(completed_url);
+
     // If the plugin element already contains a subframe,
     // loadOrRedirectSubframe will re-use it. Otherwise, it will create a
     // new frame and set it as the LayoutEmbeddedContent's EmbeddedContentView,
@@ -708,7 +710,6 @@ bool HTMLPlugInElement::LoadPlugin(const KURL& url,
 }
 
 void HTMLPlugInElement::DispatchErrorEvent() {
-  ReportFallbackResourceTimingIfNeeded();
   if (IsA<PluginDocument>(GetDocument()) && GetDocument().LocalOwner()) {
     GetDocument().LocalOwner()->DispatchEvent(
         *Event::Create(event_type_names::kError));

@@ -2692,8 +2692,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
-    bool force_new_browsing_instance,
-    bool is_container_initiated) {
+    bool force_new_browsing_instance) {
   if (is_renderer_initiated)
     DCHECK(initiator_origin.has_value());
 
@@ -2818,7 +2817,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
           false /* has_user_gesture */, std::move(source_location),
           ReloadType::NONE, entry.get(), frame_entry.get(),
           navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
-          is_unfenced_top_navigation, is_container_initiated);
+          is_unfenced_top_navigation);
 
   if (!request)
     return;
@@ -3761,8 +3760,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     FrameNavigationEntry* frame_entry,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
-    bool is_unfenced_top_navigation,
-    bool is_container_initiated) {
+    bool is_unfenced_top_navigation) {
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
   DCHECK(frame_entry);
   // All renderer-initiated navigations must have an initiator_origin.
@@ -3933,8 +3931,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
       params.impression, params.initiator_activation_and_ad_status,
-      params.is_pdf, is_embedder_initiated_fenced_frame_navigation,
-      is_container_initiated);
+      params.is_pdf, is_embedder_initiated_fenced_frame_navigation);
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
   navigation_request->set_force_new_browsing_instance(
