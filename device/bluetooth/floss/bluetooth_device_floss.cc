@@ -48,6 +48,9 @@ const int32_t kDefaultConnectionTimeout = 2000;
 // Maximum MTU size that can be requested by Android.
 const int32_t kMaxMtuSize = 517;
 
+// Timeout for connection response after Connect() method is called.
+const int32_t kDefaultConnectTimeoutMs = 10000;
+
 void OnCreateBond(DBusResult<bool> ret) {
   if (ret.has_value() && !*ret) {
     BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
@@ -272,7 +275,10 @@ void BluetoothDeviceFloss::Connect(
   // To simulate BlueZ API behavior, we don't reply the callback as soon as
   // Floss CreateBond API returns, but rather we trigger the callback later
   // after pairing is done and profiles are connected.
-  pending_callback_on_connect_profiles_ = std::move(callback);
+  pending_callback_on_connect_profiles_ =
+      WeaklyOwnedConnectCallback::CreateWithTimeout(
+          std::move(callback), kDefaultConnectTimeoutMs,
+          BluetoothDevice::ConnectErrorCode::ERROR_DEVICE_NOT_READY);
 
   if (IsPaired() || !pairing_delegate) {
     // No need to pair, or unable to, skip straight to connection.
@@ -440,6 +446,15 @@ void BluetoothDeviceFloss::SetIsConnected(bool is_connected) {
     connection_state_ = static_cast<uint32_t>(
         FlossAdapterClient::ConnectionState::kDisconnected);
   }
+
+  // Trigger connect callback with success if we are now connected or failure if
+  // we are disconnected.
+  if (is_connected) {
+    TriggerConnectCallback(absl::nullopt);
+  } else {
+    TriggerConnectCallback(
+        BluetoothDevice::ConnectErrorCode::ERROR_DEVICE_UNCONNECTED);
+  }
 }
 
 void BluetoothDeviceFloss::SetConnectionState(uint32_t connection_state) {
@@ -594,8 +609,6 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
       TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
     return;
   }
-
-  TriggerConnectCallback(absl::nullopt);
 }
 
 void BluetoothDeviceFloss::TriggerConnectCallback(
@@ -605,7 +618,7 @@ void BluetoothDeviceFloss::TriggerConnectCallback(
 
   if (pending_callback_on_connect_profiles_) {
     std::move(*pending_callback_on_connect_profiles_).Run(error_code);
-    pending_callback_on_connect_profiles_ = absl::nullopt;
+    pending_callback_on_connect_profiles_.reset();
   }
 }
 
