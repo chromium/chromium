@@ -374,9 +374,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Command handler for help commands
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 
-// Command handler for omnibox commands
-@property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
-
 // Command handler for popup menu commands
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
 
@@ -754,7 +751,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)shieldWasTapped:(id)sender {
-  [self.omniboxHandler cancelOmniboxEdit];
+  [self.omniboxCommandsHandler cancelOmniboxEdit];
 }
 
 - (void)userEnteredTabSwitcher {
@@ -767,7 +764,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   const BOOL offTheRecord = _isOffTheRecord;
   ProceduralBlock oldForegroundTabWasAddedCompletionBlock =
       self.foregroundTabWasAddedCompletionBlock;
-  id<OmniboxCommands> omniboxCommandHandler = self.omniboxHandler;
+  id<OmniboxCommands> omniboxCommandHandler = self.omniboxCommandsHandler;
   self.foregroundTabWasAddedCompletionBlock = ^{
     if (oldForegroundTabWasAddedCompletionBlock) {
       oldForegroundTabWasAddedCompletionBlock();
@@ -842,7 +839,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [_voiceSearchController
       startRecognitionOnViewController:self
                               webState:self.currentWebState];
-  [self.omniboxHandler cancelOmniboxEdit];
+  [self.omniboxCommandsHandler cancelOmniboxEdit];
 }
 
 // TODO:(crbug.com/1385847): Remove this when BVC is refactored to not know
@@ -886,7 +883,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:NO];
   [_bookmarksCoordinator dismissSnackbar];
   if (dismissOmnibox) {
-    [self.omniboxHandler cancelOmniboxEdit];
+    [self.omniboxCommandsHandler cancelOmniboxEdit];
   }
   [self.helpHandler hideAllHelpBubbles];
   [_voiceSearchController dismissMicPermissionHelp];
@@ -1087,8 +1084,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self setUpViewLayout:YES];
   [self addConstraintsToToolbar];
 
-  // Finish initialization.
-  [self addUIFunctionalityForBrowserAndBrowserState];
+  [_sideSwipeController addHorizontalGesturesToView:self.view];
 
   // Add a tap gesture recognizer to save the last tap location for the source
   // location of the new tab animation.
@@ -1713,19 +1709,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self addConstraintsToSecondaryToolbar];
   }
   [[self view] layoutIfNeeded];
-}
-
-// Updates view-related functionality with the given browser and browser
-// state. The view must have been loaded.  Uses `self.browserState` and
-// `self.browser`.
-- (void)addUIFunctionalityForBrowserAndBrowserState {
-  DCHECK(self.browserState);
-  DCHECK(self.browser);
-  DCHECK([self isViewLoaded]);
-
-  [_sideSwipeController addHorizontalGesturesToView:self.view];
-
-  self.omniboxHandler = self.omniboxCommandsHandler;
 }
 
 // Sets up the frame for the fake status bar. View must be loaded.
@@ -2480,7 +2463,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
   } else if (currentViewRevealState == ViewRevealState::Peeked) {
     // Close the omnibox after opening the thumb strip
-    [self.omniboxHandler cancelOmniboxEdit];
+    [self.omniboxCommandsHandler cancelOmniboxEdit];
   }
 }
 
@@ -3065,7 +3048,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(self.visible || self.dismissingModal);
 
   // Dismiss the omnibox (if open).
-  [self.omniboxHandler cancelOmniboxEdit];
+  [self.omniboxCommandsHandler cancelOmniboxEdit];
   // Dismiss the soft keyboard (if open).
   [[self viewForWebState:self.currentWebState] endEditing:NO];
   // Dismiss Find in Page focus.
@@ -3356,7 +3339,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.view addSubview:self.blockingView];
     AddSameConstraints(self.view, self.blockingView);
     self.blockingView.alpha = 1;
-    [self.omniboxHandler cancelOmniboxEdit];
+    [self.omniboxCommandsHandler cancelOmniboxEdit];
     // Resign the first responder. This achieves multiple goals:
     // 1. The keyboard is dismissed.
     // 2. Hardware keyboard events (such as space to scroll) will be ignored.
