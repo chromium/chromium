@@ -34,6 +34,8 @@ class WaylandDisplayOutput {
 
   // Delay interval between delete attempts.
   static constexpr base::TimeDelta kDeleteTaskDelay = base::Seconds(3);
+  // Number of times to retry deletion.
+  static constexpr int kDeleteRetries = 3;
 
   int64_t id() const;
   void set_global(wl_global* global);
@@ -46,6 +48,7 @@ class WaylandDisplayOutput {
   wl_resource* GetOutputResourceForClient(wl_client* client);
 
   // Self destruct in 5 seconeds.
+  // Caller must not access this object after calling this.
   void OnDisplayRemoved();
 
   int output_counts() const { return output_ids_.size(); }
@@ -56,6 +59,7 @@ class WaylandDisplayOutput {
   wl_global* global_ = nullptr;
   base::flat_map<wl_client*, wl_resource*> output_ids_;
   bool had_registered_output_ = false;
+  bool is_destructing_ = false;
 };
 
 }  // namespace wayland

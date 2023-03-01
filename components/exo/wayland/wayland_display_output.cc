@@ -10,9 +10,7 @@
 #include <wayland-server-protocol-core.h>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
 
@@ -43,20 +41,28 @@ WaylandDisplayOutput::WaylandDisplayOutput(int64_t id) : id_(id) {}
 WaylandDisplayOutput::~WaylandDisplayOutput() {
   // Empty the output_ids_ so that Unregister will be no op.
   auto ids = std::move(output_ids_);
-  for (auto pair : ids)
+  for (auto pair : ids) {
     wl_resource_destroy(pair.second);
+  }
 
-  if (global_)
+  if (global_) {
     wl_global_destroy(global_);
+  }
 }
 
 void WaylandDisplayOutput::OnDisplayRemoved() {
-  if (global_)
+  if (global_) {
     wl_global_remove(global_);
+  }
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&DoDelete, this, /*retry_count=*/3),
-      kDeleteTaskDelay);
+  is_destructing_ = true;
+
+  if (!base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(&DoDelete, this, kDeleteRetries),
+          kDeleteTaskDelay)) {
+    // If we can't schedule the delete task, just delete now to not leak memory.
+    delete this;
+  }
 }
 
 int64_t WaylandDisplayOutput::id() const {
@@ -78,18 +84,18 @@ void WaylandDisplayOutput::RegisterOutput(wl_resource* output_resource) {
   output_ids_.insert(std::make_pair(client, output_resource));
   had_registered_output_ = true;
 
+  if (is_destructing_) {
+    return;
+  }
+
   // Notify All wl surfaces that a new output was added.
-  // TODO(aluh): Skip this if output is being destroyed.
   wl_client_for_each_resource(
       client,
       [](wl_resource* resource, void*) {
-        constexpr char kWlSurfaceClass[] = "wl_surface";
-
-        const char* class_name = wl_resource_get_class(resource);
-        if (std::strcmp(kWlSurfaceClass, class_name) == 0) {
-          auto* surface = GetUserDataAs<Surface>(resource);
-          if (surface)
+        if (std::strcmp("wl_surface", wl_resource_get_class(resource)) == 0) {
+          if (auto* surface = GetUserDataAs<Surface>(resource)) {
             surface->OnNewOutputAdded();
+          }
         }
         return WL_ITERATOR_CONTINUE;
       },
@@ -99,8 +105,9 @@ void WaylandDisplayOutput::RegisterOutput(wl_resource* output_resource) {
 wl_resource* WaylandDisplayOutput::GetOutputResourceForClient(
     wl_client* client) {
   auto iter = output_ids_.find(client);
-  if (iter == output_ids_.end())
+  if (iter == output_ids_.end()) {
     return nullptr;
+  }
   return iter->second;
 }
 

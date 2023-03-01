@@ -73,8 +73,9 @@ TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestruct) {
   UpdateDisplay("800x600");
 
   // Fast forward until a couple deletes have been attempted.
-  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
-                                    2.5);
+  task_environment()->FastForwardBy(
+      WaylandDisplayOutput::kDeleteTaskDelay *
+      (WaylandDisplayOutput::kDeleteRetries - 0.5));
 
   // Try binding and check for client error.
   PostToClientAndWait([&](test::TestClient* client) {
@@ -111,8 +112,9 @@ TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestructBeforeFirstBind) {
   UpdateDisplay("800x600");
 
   // Fast forward so at least one delete has been attempted.
-  task_environment()->FastForwardBy(WaylandDisplayOutput::kDeleteTaskDelay *
-                                    2.5);
+  task_environment()->FastForwardBy(
+      WaylandDisplayOutput::kDeleteTaskDelay *
+      (WaylandDisplayOutput::kDeleteRetries - 0.5));
 
   // Unblock client thread so the bind request happens now.
   block_bind_event.Signal();
