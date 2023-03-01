@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroid;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
@@ -73,6 +75,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -96,7 +99,7 @@ import java.util.Map.Entry;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowProfile.class,
-                ShadowUmaSessionStats.class})
+                ShadowUmaSessionStats.class, ShadowDisplayAndroid.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -154,6 +157,20 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Implements(DisplayAndroid.class)
+    static class ShadowDisplayAndroid {
+        private static DisplayAndroid sDisplayAndroid;
+
+        public static void setDisplayAndroid(DisplayAndroid displayAndroid) {
+            sDisplayAndroid = displayAndroid;
+        }
+
+        @Implementation
+        public static DisplayAndroid getNonMultiDisplay(Context context) {
+            return sDisplayAndroid;
+        }
+    }
+
     @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
@@ -176,6 +193,8 @@ public class RequestDesktopUtilsUnitTest {
     private TabModel mIncognitoTabModel;
     @Mock
     private ObservableSupplier<Tab> mCurrentTabSupplier;
+    @Mock
+    private DisplayAndroid mDisplayAndroid;
 
     private Tab mTab;
     private @ContentSettingValues int mRdsDefaultValue;
@@ -246,6 +265,13 @@ public class RequestDesktopUtilsUnitTest {
         disableGlobalDefaultsExperimentFeatures();
 
         ShadowSysUtils.setMemoryInMB(2048);
+        ShadowDisplayAndroid.setDisplayAndroid(mDisplayAndroid);
+        when(mDisplayAndroid.getDisplayWidth()).thenReturn(1600);
+        when(mDisplayAndroid.getDisplayHeight()).thenReturn(2560);
+        when(mDisplayAndroid.getXdpi()).thenReturn(275.5f);
+        when(mDisplayAndroid.getYdpi()).thenReturn(276.5f);
+        enableFeatureWithParams(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING, null, false);
     }
 
     @After
@@ -254,6 +280,7 @@ public class RequestDesktopUtilsUnitTest {
         ShadowSysUtils.setLowEndDevice(false);
         ShadowProfile.reset();
         ShadowUmaSessionStats.reset();
+        ShadowDisplayAndroid.setDisplayAndroid(null);
         if (mSharedPreferencesManager != null) {
             mSharedPreferencesManager.removeKey(
                     ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
@@ -423,6 +450,38 @@ public class RequestDesktopUtilsUnitTest {
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11.0, mActivity);
         Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ devices.",
+                shouldDefaultEnable);
+    }
+
+    @Test
+    public void testShouldDefaultEnableGlobalSetting_WithLogging() {
+        Map<String, String> params = new HashMap<>();
+        params.put(
+                RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                "10.0");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        enableFeatureWithParams(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING, null, true);
+        boolean shouldDefaultEnable =
+                RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11.0, mActivity);
+        Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ devices.",
+                shouldDefaultEnable);
+        Assert.assertTrue(
+                "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC "
+                        + "should not be empty.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys
+                                .DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC)
+                        && !mSharedPreferencesManager
+                                    .readString(
+                                            ChromePreferenceKeys
+                                                    .DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
+                                            "")
+                                    .isEmpty());
+
+        shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(9.0, mActivity);
+        Assert.assertFalse(
+                "Desktop site global setting should only be default-enabled on 10\"+ devices.",
                 shouldDefaultEnable);
     }
 

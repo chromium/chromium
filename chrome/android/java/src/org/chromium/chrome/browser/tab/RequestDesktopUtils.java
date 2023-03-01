@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.tab;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 
@@ -17,6 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
@@ -47,6 +49,7 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -65,6 +68,7 @@ import java.util.Locale;
  * Utilities for requesting desktop sites support.
  */
 public class RequestDesktopUtils {
+    private static final double MAX_RECORDED_SCREEN_SIZE_INCHES = 15.2;
     private static final String SITE_WILDCARD = "*";
     // Global defaults experiment constants.
     private static final String ENABLED_GROUP_SUFFIX = "_Enabled";
@@ -391,16 +395,21 @@ public class RequestDesktopUtils {
         }
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(feature,
+                PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
+        if (displaySizeInInches < screenSizeThreshold
+                && sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)) {
+            silentlyReportingCrashes(
+                    context, displaySizeInInches, "Display size falls below threshold");
+        }
 
         boolean previouslyDefaultEnabled = sharedPreferencesManager.readBoolean(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false);
         boolean previouslyUpdatedByUser = sharedPreferencesManager.contains(
                 SingleCategorySettingsConstants
                         .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
-
-        double screenSizeThreshold = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(feature,
-                PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
 
         boolean inCohort = !previouslyUpdatedByUser && displaySizeInInches >= screenSizeThreshold;
         boolean wouldEnable = !previouslyDefaultEnabled && inCohort;
@@ -409,6 +418,12 @@ public class RequestDesktopUtils {
             // experiment for ongoing tracking in both enabled and control groups.
             sharedPreferencesManager.writeBoolean(
                     ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT, true);
+            captureDisplaySpec(context, displaySizeInInches);
+        }
+
+        if (displaySizeInInches > MAX_RECORDED_SCREEN_SIZE_INCHES) {
+            silentlyReportingCrashes(
+                    context, displaySizeInInches, "Display size falls into overflow bucket");
         }
 
         if (inCohort
@@ -422,6 +437,49 @@ public class RequestDesktopUtils {
 
         // Should enable the setting only in the enabled (not control) experiment group.
         return !isControlGroup && wouldEnable;
+    }
+
+    private static void silentlyReportingCrashes(
+            Context context, double displaySizeInInches, String message) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING)) {
+            return;
+        }
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
+        Configuration config = context.getResources().getConfiguration();
+        String logMessage = String.format(Locale.US,
+                message + ", silently reporting crashes for debugging, displaySizeInInches: %.1f "
+                        + "displayWidth: %d displayHeight: %d xdpi: %.1f ydpi: %.1f "
+                        + "densityDpi: %d screenWidthDp: %d screenHeightDp: %d",
+                displaySizeInInches, display.getDisplayWidth(), display.getDisplayHeight(),
+                display.getXdpi(), display.getYdpi(), config.densityDpi, config.screenWidthDp,
+                config.screenHeightDp);
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        String previousDisplaySpec = sharedPreferencesManager.readString(
+                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
+                "");
+        if (!previousDisplaySpec.isEmpty()) {
+            logMessage += " " + previousDisplaySpec;
+        }
+        ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+    }
+
+    private static void captureDisplaySpec(Context context, double displaySizeInInches) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING)) {
+            return;
+        }
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
+        Configuration config = context.getResources().getConfiguration();
+        String displaySpec = String.format(Locale.US,
+                "lastDisplaySizeInInches: %.1f lastDisplayWidth: %d lastDisplayHeight: %d "
+                        + "lastXdpi: %.1f lastYdpi: %.1f lastDensityDpi: %d "
+                        + "lastScreenWidthDp: %d lastScreenHeightDp: %d",
+                displaySizeInInches, display.getDisplayWidth(), display.getDisplayHeight(),
+                display.getXdpi(), display.getYdpi(), config.densityDpi, config.screenWidthDp,
+                config.screenHeightDp);
+        sharedPreferencesManager.writeString(
+                ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
+                displaySpec);
     }
 
     private static void updateNoLongerInCohort() {
