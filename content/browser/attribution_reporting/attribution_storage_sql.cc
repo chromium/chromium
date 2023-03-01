@@ -1374,37 +1374,21 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
     base::Time max_report_time,
-    int limit,
-    AttributionReport::Types report_types) {
+    int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!report_types.Empty());
 
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
     return {};
   }
 
-  std::vector<AttributionReport> reports;
+  std::vector<AttributionReport> reports =
+      GetEventLevelReportsInternal(max_report_time, limit);
 
-  for (AttributionReport::Type report_type : report_types) {
-    switch (report_type) {
-      case AttributionReport::Type::kEventLevel: {
-        std::vector<AttributionReport> event_level_reports =
-            GetEventLevelReportsInternal(max_report_time, limit);
-        reports.insert(reports.end(),
-                       std::make_move_iterator(event_level_reports.begin()),
-                       std::make_move_iterator(event_level_reports.end()));
-        break;
-      }
-      case AttributionReport::Type::kAggregatableAttribution: {
-        std::vector<AttributionReport> aggregatable_reports =
-            GetAggregatableAttributionReportsInternal(max_report_time, limit);
-        reports.insert(reports.end(),
-                       std::make_move_iterator(aggregatable_reports.begin()),
-                       std::make_move_iterator(aggregatable_reports.end()));
-        break;
-      }
-    }
-  }
+  std::vector<AttributionReport> aggregatable_reports =
+      GetAggregatableAttributionReportsInternal(max_report_time, limit);
+  reports.insert(reports.end(),
+                 std::make_move_iterator(aggregatable_reports.begin()),
+                 std::make_move_iterator(aggregatable_reports.end()));
 
   if (limit >= 0 && reports.size() > static_cast<size_t>(limit)) {
     base::ranges::partial_sort(reports, reports.begin() + limit, /*comp=*/{},

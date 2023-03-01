@@ -279,8 +279,7 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(
       void,
       GetPendingReportsForInternalUse,
-      (AttributionReport::Types report_types,
-       int limit,
+      (int limit,
        base::OnceCallback<void(std::vector<AttributionReport>)> callback),
       (override));
 
@@ -331,7 +330,7 @@ class MockAttributionManager : public AttributionManager {
   AttributionDataHostManager* GetDataHostManager() override;
 
   void NotifySourcesChanged();
-  void NotifyReportsChanged(AttributionReport::Type report_type);
+  void NotifyReportsChanged();
   void NotifySourceHandled(
       const StorableSource& source,
       StorableSource::Result result,
@@ -373,7 +372,7 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void, OnSourcesChanged, (), (override));
 
-  MOCK_METHOD(void, OnReportsChanged, (AttributionReport::Type), (override));
+  MOCK_METHOD(void, OnReportsChanged, (), (override));
 
   MOCK_METHOD(void,
               OnSourceHandled,

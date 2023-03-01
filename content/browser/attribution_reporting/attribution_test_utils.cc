@@ -362,10 +362,9 @@ void MockAttributionManager::NotifySourcesChanged() {
   }
 }
 
-void MockAttributionManager::NotifyReportsChanged(
-    AttributionReport::Type report_type) {
+void MockAttributionManager::NotifyReportsChanged() {
   for (auto& observer : observers_) {
-    observer.OnReportsChanged(report_type);
+    observer.OnReportsChanged();
   }
 }
 
@@ -1379,9 +1378,6 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
   base::RunLoop run_loop;
   std::vector<AttributionReport> attribution_reports;
   manager->GetPendingReportsForInternalUse(
-      AttributionReport::Types{
-          AttributionReport::Type::kEventLevel,
-          AttributionReport::Type::kAggregatableAttribution},
       /*limit=*/-1,
       base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
         attribution_reports = std::move(reports);

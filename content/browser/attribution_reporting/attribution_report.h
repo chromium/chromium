@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/enum_set.h"
 #include "base/guid.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
@@ -38,8 +37,6 @@ namespace content {
 class CONTENT_EXPORT AttributionReport {
  public:
   using Type = ::attribution_reporting::mojom::ReportType;
-
-  using Types = base::EnumSet<Type, Type::kMinValue, Type::kMaxValue>;
 
   // Struct that contains the data specific to the event-level report.
   struct CONTENT_EXPORT EventLevelData {

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 
 namespace content {
 
@@ -36,12 +37,12 @@ int AttributionStorageDelegate::GetMaxSourcesPerOrigin() const {
 }
 
 int AttributionStorageDelegate::GetMaxReportsPerDestination(
-    AttributionReport::Type report_type) const {
+    attribution_reporting::mojom::ReportType report_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (report_type) {
-    case AttributionReport::Type::kEventLevel:
+    case attribution_reporting::mojom::ReportType::kEventLevel:
       return config_.event_level_limit.max_reports_per_destination;
-    case AttributionReport::Type::kAggregatableAttribution:
+    case attribution_reporting::mojom::ReportType::kAggregatableAttribution:
       return config_.aggregate_limit.max_reports_per_destination;
   }
 }

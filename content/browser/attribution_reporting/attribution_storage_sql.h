@@ -121,10 +121,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionTrigger& trigger) override;
   std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
-      int limit = -1,
-      AttributionReport::Types report_types = {
-          AttributionReport::Type::kEventLevel,
-          AttributionReport::Type::kAggregatableAttribution}) override;
+      int limit = -1) override;
   absl::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) override;

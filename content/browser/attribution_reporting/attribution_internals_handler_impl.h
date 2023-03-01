@@ -13,7 +13,6 @@
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -60,8 +59,7 @@ class AttributionInternalsHandlerImpl
   void GetActiveSources(
       attribution_internals::mojom::Handler::GetActiveSourcesCallback callback)
       override;
-  void GetReports(AttributionReport::Type report_type,
-                  attribution_internals::mojom::Handler::GetReportsCallback
+  void GetReports(attribution_internals::mojom::Handler::GetReportsCallback
                       callback) override;
   void SendReports(const std::vector<AttributionReport::Id>& ids,
                    attribution_internals::mojom::Handler::SendReportsCallback
@@ -72,7 +70,7 @@ class AttributionInternalsHandlerImpl
  private:
   // AttributionObserver:
   void OnSourcesChanged() override;
-  void OnReportsChanged(AttributionReport::Type report_type) override;
+  void OnReportsChanged() override;
   void OnSourceHandled(
       const StorableSource& source,
       absl::optional<uint64_t> cleared_debug_key,

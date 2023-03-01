@@ -110,7 +110,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
         .WillByDefault(RunOnceCallback<0>(std::vector<StoredSource>{}));
 
     ON_CALL(*manager, GetPendingReportsForInternalUse)
-        .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{}));
+        .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
     static_cast<StoragePartitionImpl*>(shell()
                                            ->web_contents()
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SendResult(SendResult::Status::kTransientFailure, net::ERR_TIMED_OUT));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(AttributionInfoBuilder(
                             SourceBuilder(now)
                                 .SetSourceType(SourceType::kEvent)
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillRepeatedly(
-          [&](AttributionReport::Types, int limit,
+          [&](int limit,
               base::OnceCallback<void(std::vector<AttributionReport>)>
                   callback) { std::move(callback).Run(stored_reports); });
 
@@ -816,14 +816,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
               .SetPriority(7)
               .SetReportId(AttributionReport::EventLevelData::Id(5))
               .Build()}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}));
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
   EXPECT_CALL(
       *manager(),
@@ -874,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
-  manager()->NotifyReportsChanged(AttributionReport::Type::kEventLevel);
+  manager()->NotifyReportsChanged();
 
   ASSERT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
@@ -954,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(
       SendResult(SendResult::Status::kTransientFailure,
                  net::ERR_INTERNET_DISCONNECTED));
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder(now)
                                          .SetSourceType(SourceType::kEvent)
@@ -1116,8 +1115,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
               .SetReportId(
@@ -1125,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetAggregatableHistogramContributions(
                   {AggregatableHistogramContribution(1, 2)})
               .BuildAggregatableAttribution()}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}));
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
   EXPECT_CALL(
       *manager(),
@@ -1183,8 +1181,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
-  manager()->NotifyReportsChanged(
-      AttributionReport::Type::kAggregatableAttribution);
+  manager()->NotifyReportsChanged();
 
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
@@ -1206,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                  /*http_response_code=*/200));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
               .SetReportTime(now + base::Hours(1))

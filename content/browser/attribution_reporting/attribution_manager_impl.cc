@@ -712,18 +712,24 @@ void AttributionManagerImpl::OnReportStored(
 
   scheduler_timer_.MaybeSet(min_new_report_time);
 
+  bool reports_changed = false;
+
   if (result.event_level_status() !=
       AttributionTrigger::EventLevelResult::kInternalError) {
     // Sources are changed here because storing an event-level report can
     // cause sources to reach event-level attribution limit or become
     // associated with a dedup key.
     NotifySourcesChanged();
-    NotifyReportsChanged(AttributionReport::Type::kEventLevel);
+    reports_changed = true;
   }
 
   if (result.aggregatable_status() ==
       AttributionTrigger::AggregatableResult::kSuccess) {
-    NotifyReportsChanged(AttributionReport::Type::kAggregatableAttribution);
+    reports_changed = true;
+  }
+
+  if (reports_changed) {
+    NotifyReportsChanged();
   }
 
   for (auto& observer : observers_) {
@@ -757,12 +763,10 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
 }
 
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
-    AttributionReport::Types report_types,
     int limit,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
-      .WithArgs(
-          /*max_report_time=*/base::Time::Max(), limit, std::move(report_types))
+      .WithArgs(/*max_report_time=*/base::Time::Max(), limit)
       .Then(std::move(callback));
 }
 
@@ -830,8 +834,7 @@ void AttributionManagerImpl::OnClearDataComplete() {
   }
 
   NotifySourcesChanged();
-  NotifyReportsChanged(AttributionReport::Type::kEventLevel);
-  NotifyReportsChanged(AttributionReport::Type::kAggregatableAttribution);
+  NotifyReportsChanged();
 }
 
 void AttributionManagerImpl::GetAllDataKeys(
@@ -859,10 +862,7 @@ void AttributionManagerImpl::GetReportsToSend() {
   // TODO(apaseltiner): Consider limiting the number of reports being sent at
   // once, to avoid pulling an arbitrary number of reports into memory.
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
-      .WithArgs(/*max_report_time=*/base::Time::Now(), /*limit=*/-1,
-                AttributionReport::Types{
-                    AttributionReport::Type::kEventLevel,
-                    AttributionReport::Type::kAggregatableAttribution})
+      .WithArgs(/*max_report_time=*/base::Time::Now(), /*limit=*/-1)
       .Then(base::BindOnce(&AttributionManagerImpl::SendReports,
                            weak_factory_.GetWeakPtr(),
                            /*web_ui_callback=*/base::NullCallback()));
@@ -974,8 +974,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
         if (manager && success) {
           manager->MarkReportCompleted(report_id);
           manager->scheduler_timer_.MaybeSet(new_report_time);
-          manager->NotifyReportsChanged(
-              AttributionReport::GetReportType(report_id));
+          manager->NotifyReportsChanged();
         }
       },
       std::move(done), weak_factory_.GetWeakPtr(), report.ReportId(),
@@ -1086,10 +1085,9 @@ void AttributionManagerImpl::NotifySourcesChanged() {
   }
 }
 
-void AttributionManagerImpl::NotifyReportsChanged(
-    AttributionReport::Type report_type) {
+void AttributionManagerImpl::NotifyReportsChanged() {
   for (auto& observer : observers_) {
-    observer.OnReportsChanged(report_type);
+    observer.OnReportsChanged();
   }
 }
 

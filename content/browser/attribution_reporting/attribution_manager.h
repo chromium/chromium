@@ -73,7 +73,6 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI and simulator.
   virtual void GetPendingReportsForInternalUse(
-      AttributionReport::Types report_types,
       int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 

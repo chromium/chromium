@@ -1393,31 +1393,16 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
     // Each stored report should notify sources changed one time.
     for (size_t i = 1; i <= 3; i++) {
       EXPECT_CALL(observer, OnSourcesChanged);
-      EXPECT_CALL(observer,
-                  OnReportsChanged(AttributionReport::Type::kEventLevel));
-      EXPECT_CALL(
-          observer,
-          OnReportsChanged(AttributionReport::Type::kAggregatableAttribution));
+      EXPECT_CALL(observer, OnReportsChanged);
     }
 
     EXPECT_CALL(checkpoint, Call(2));
 
-    EXPECT_CALL(observer,
-                OnReportsChanged(AttributionReport::Type::kEventLevel))
-        .Times(3);
-    EXPECT_CALL(
-        observer,
-        OnReportsChanged(AttributionReport::Type::kAggregatableAttribution))
-        .Times(3);
+    EXPECT_CALL(observer, OnReportsChanged).Times(6);
     EXPECT_CALL(checkpoint, Call(3));
 
     EXPECT_CALL(observer, OnSourcesChanged);
-    EXPECT_CALL(observer,
-                OnReportsChanged(AttributionReport::Type::kEventLevel));
-    EXPECT_CALL(
-        observer,
-        OnReportsChanged(AttributionReport::Type::kAggregatableAttribution))
-        .Times(0);
+    EXPECT_CALL(observer, OnReportsChanged);
   }
 
   attribution_manager_->HandleSource(source, kFrameId);
@@ -1467,7 +1452,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
   observation.Observe(attribution_manager_.get());
 
   EXPECT_CALL(observer, OnSourcesChanged);
-  EXPECT_CALL(observer, OnReportsChanged).Times(2);
+  EXPECT_CALL(observer, OnReportsChanged);
 
   base::RunLoop run_loop;
   attribution_manager_->ClearData(

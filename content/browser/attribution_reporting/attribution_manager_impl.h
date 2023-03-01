@@ -132,7 +132,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StoredSource>)> callback) override;
   void GetPendingReportsForInternalUse(
-      AttributionReport::Types report_types,
       int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback)
       override;
@@ -231,7 +230,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void MaybeSendDebugReport(AttributionReport&&);
 
   void NotifySourcesChanged();
-  void NotifyReportsChanged(AttributionReport::Type report_type);
+  void NotifyReportsChanged();
   void NotifyReportSent(bool is_debug_report,
                         const AttributionReport&,
                         SendResult);

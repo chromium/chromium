@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 
 namespace attribution_reporting {
@@ -21,6 +20,7 @@ class SuitableOrigin;
 namespace content {
 
 class AttributionDebugReport;
+class AttributionReport;
 class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
@@ -37,7 +37,7 @@ class AttributionObserver : public base::CheckedObserver {
   virtual void OnSourcesChanged() {}
 
   // Called when reports in storage change.
-  virtual void OnReportsChanged(AttributionReport::Type report_type) {}
+  virtual void OnReportsChanged() {}
 
   // Called when a source is registered, regardless of success.
   virtual void OnSourceHandled(
