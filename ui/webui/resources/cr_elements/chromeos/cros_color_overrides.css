@@ -94,6 +94,6 @@ To get Chrome OS System Colors, an element must:
   /* TODO: cros-separator-color will be updated globally. Remove this definition
        after the swap. */
   --cros-separator-color: var(--cros-sys-separator);
-  --cr-primary-text-color: var(--cros-sys-primary);
+  --cr-primary-text-color: var(--cros-sys-on_surface);
   --cr-secondary-text-color: var(--cros-sys-secondary);
 }
