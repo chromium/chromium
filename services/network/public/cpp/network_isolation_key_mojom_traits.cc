@@ -16,15 +16,14 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
   absl::optional<net::SchemefulSite> top_frame_site, frame_site;
 
   if (!data.ReadTopFrameSite(&top_frame_site) ||
-      (net::NetworkIsolationKey::IsFrameSiteEnabled() &&
-       !data.ReadFrameSite(&frame_site))) {
+      !data.ReadFrameSite(&frame_site)) {
     return false;
   }
 
-  // A key is either fully empty or fully populated, or double keyed.
-  if ((top_frame_site.has_value() != frame_site.has_value()) &&
-      net::NetworkIsolationKey::IsFrameSiteEnabled())
+  // A key is either fully empty or fully populated.
+  if (top_frame_site.has_value() != frame_site.has_value()) {
     return false;
+  }
 
   absl::optional<base::UnguessableToken> nonce;
   if (!data.ReadNonce(&nonce))
@@ -37,9 +36,7 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
     *out = net::NetworkIsolationKey();
   } else {
     *out = net::NetworkIsolationKey(std::move(top_frame_site.value()),
-                                    frame_site.has_value()
-                                        ? std::move(frame_site.value())
-                                        : net::SchemefulSite(),
+                                    std::move(frame_site.value()),
                                     nonce ? &nonce.value() : nullptr);
   }
 

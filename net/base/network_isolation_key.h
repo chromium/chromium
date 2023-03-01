@@ -21,6 +21,10 @@ namespace url {
 class Origin;
 }
 
+namespace network::mojom {
+class NetworkIsolationKeyDataView;
+}
+
 namespace net {
 
 // Key used to isolate shared network stack resources used by requests based on
@@ -79,6 +83,11 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
+    if (!IsFrameSiteEnabled()) {
+      return std::tie(top_frame_site_, nonce_) ==
+             std::tie(other.top_frame_site_, other.nonce_);
+    }
+
     return std::tie(top_frame_site_, frame_site_, nonce_) ==
            std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
   }
@@ -90,6 +99,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
+    if (!IsFrameSiteEnabled()) {
+      return std::tie(top_frame_site_, nonce_) <
+             std::tie(other.top_frame_site_, other.nonce_);
+    }
     return std::tie(top_frame_site_, frame_site_, nonce_) <
            std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
   }
@@ -119,10 +132,32 @@ class NET_EXPORT NetworkIsolationKey {
     return top_frame_site_;
   }
 
+  // Note: This will CHECK if `IsFrameSiteEnabled()` returns false.
   const absl::optional<SchemefulSite>& GetFrameSite() const;
 
-  // Do not use outside of testing. Returns the `frame_site_`.
-  const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
+  // Do not use outside of testing. Returns the `frame_site_` if
+  // `IsFrameSiteEnabled()` returns true. Else it returns nullopt.
+  const absl::optional<SchemefulSite> GetFrameSiteForTesting() const {
+    if (!IsFrameSiteEnabled()) {
+      return absl::nullopt;
+    }
+    return frame_site_;
+  }
+
+  class SerializationPasskey {
+   private:
+    friend struct mojo::StructTraits<
+        network::mojom::NetworkIsolationKeyDataView,
+        NetworkIsolationKey>;
+    SerializationPasskey() = default;
+    ~SerializationPasskey() = default;
+  };
+
+  // When serializing a NIK for sending via mojo we want to always use the frame
+  // site regardless of whether general use of it is enabled. We don't want to
+  // expose this broadly, though, hence the passkey.
+  const absl::optional<SchemefulSite>& GetFrameSiteForSerialization(
+      SerializationPasskey) const {
     return frame_site_;
   }
 
@@ -135,7 +170,7 @@ class NET_EXPORT NetworkIsolationKey {
   bool IsEmpty() const;
 
   // Returns true if the NetworkIsolationKey has a triple keyed scheme. This
-  // means both `frame_site_` and `top_frame_site_` are populated.
+  // means both `frame_site_` and `top_frame_site_` will be used.
   static bool IsFrameSiteEnabled();
 
   // Returns a representation of |this| as a base::Value. Returns false on
@@ -163,7 +198,9 @@ class NET_EXPORT NetworkIsolationKey {
   // The origin/etld+1 of the top frame of the page making the request.
   absl::optional<SchemefulSite> top_frame_site_;
 
-  // The origin/etld+1 of the frame that initiates the request.
+  // The origin/etld+1 of the frame that initiates the request. Note that this
+  // value, if set, won't be returned by `GetFrameSite()` if
+  // `IsFrameSiteEnabled()` returns false.
   absl::optional<SchemefulSite> frame_site_;
 
   // Having a nonce is a way to force a transient opaque `NetworkIsolationKey`
