@@ -245,8 +245,20 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
-  closeButton.contentEdgeInsets = UIEdgeInsetsMake(
-      0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
+
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (@available(iOS 15, *)) {
+    closeButton.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    closeButton.contentEdgeInsets = UIEdgeInsetsMake(
+        0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   [closeButton setAccessibilityLabel:textData.closeButtonAccessibilityLabel];
 
   self.nextButton = nextButton;

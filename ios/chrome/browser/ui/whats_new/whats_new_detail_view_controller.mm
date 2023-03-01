@@ -354,8 +354,21 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     _primaryActionButton.pointerInteractionEnabled = YES;
     _primaryActionButton.pointerStyleProvider =
         CreateOpaqueButtonPointerStyleProvider();
-    _primaryActionButton.titleEdgeInsets = UIEdgeInsetsMake(
-        0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
+
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (@available(iOS 15, *)) {
+      _primaryActionButton.configuration.contentInsets =
+          NSDirectionalEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
+                                      kButtonHorizontalMargin);
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      _primaryActionButton.titleEdgeInsets = UIEdgeInsetsMake(
+          0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
