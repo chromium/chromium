@@ -6751,49 +6751,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GestureNavigation.Sheet.Peeked"
-    enum="GestureNavigationDirection" expires_after="2020-09-23">
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Overscroll gesture was made to trigger navigation bottom sheet to peeked
-    state. Peek state can be entered and exited more than once in a sequence of
-    overscroll gesture (until user lifts his finger). They are recorded as just
-    one event per sequence. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="GestureNavigation.Sheet.Selected" units="units"
-    expires_after="2020-09-23">
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Index of the entries in the navigation bottom sheet that user tapped.
-    Negative means navigating backward, positive forward. Zero index means that
-    the user chose &quot;Show full history&quot;.
-  </summary>
-</histogram>
-
-<histogram name="GestureNavigation.Sheet.Used"
-    enum="GestureNavigationDirection" expires_after="2020-09-23">
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    User tapped one of the entries in the expanded navigation bottom sheet to
-    navigate to other page. Implemented for Android.
-  </summary>
-</histogram>
-
-<histogram name="GestureNavigation.Sheet.Viewed"
-    enum="GestureNavigationDirection" expires_after="2020-09-23">
-  <owner>jinsukkim@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Overscroll gesture was made to trigger navigation bottom sheet to expanded
-    state where the whole list of history items are presented.
-  </summary>
-</histogram>
-
 <histogram name="GestureNavigation.Type" enum="GestureNavigationType"
     expires_after="2022-08-21">
   <owner>jinsukkim@chromium.org</owner>
