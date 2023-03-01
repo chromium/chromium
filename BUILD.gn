@@ -1032,11 +1032,6 @@ if (is_chromeos_ash) {
   }
 }
 
-# TODO(crbug.com/1311306) - Remove this target once all references to
-# it have been removed from this and other repos.
-group("gn_visibility") {
-}
-
 if (!is_ios) {
   group("chromedriver_group") {
     testonly = true
