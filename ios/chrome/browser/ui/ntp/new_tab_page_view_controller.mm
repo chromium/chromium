@@ -286,6 +286,15 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
 
+  if (!self.viewDidAppear) {
+    // The native views in the NTP are not top anchored to the surface in any
+    // way. They are stacked on top of the top of the Feed contents, and the top
+    // Safe Area insets are factored in the height needed above the feed in
+    // -updateFeedInsetsForContentAbove. Update that height here as it is the
+    // soonest place the Safe Area insets are ready.
+    [self updateHeightAboveFeedAndScrollToTopIfNeeded];
+  }
+
   [self.headerController updateConstraints];
 }
 
