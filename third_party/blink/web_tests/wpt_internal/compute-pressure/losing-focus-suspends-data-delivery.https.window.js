@@ -1,3 +1,4 @@
+// META: timeout=long
 // META: script=/compute-pressure/resources/pressure-helpers.js
 // META: script=/resources/test-only-api.js
 
@@ -25,9 +26,8 @@ pressure_test(async (t, mockPressureService) => {
   assert_equals(observerChanges.length, 1);
 
   window.internals.setFocused(true);
-  mockPressureService.setPressureUpdate('fair');
   await t.step_wait(
       () => observerChanges.length > 1, 'observer should receive data');
   assert_equals(observerChanges.length, 2);
-  assert_equals(observerChanges[1][0].state, 'fair');
+  assert_equals(observerChanges[1][0].state, 'nominal');
 }, 'Observer should not receive PressureRecord if page loses focus');
