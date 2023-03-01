@@ -58,17 +58,20 @@ static const CGFloat kButtonVerticalMargin = 12;
   self.titleLabel.adjustsFontForContentSizeCategory = YES;
   self.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
 
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
   // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
-  self.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
-      kButtonHorizontalMargin);
-#else
-  self.contentEdgeInsets =
-      UIEdgeInsetsMake(kButtonVerticalMargin, kButtonHorizontalMargin,
-                       kButtonVerticalMargin, kButtonHorizontalMargin);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+  if (@available(iOS 15, *)) {
+    self.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
+        kButtonHorizontalMargin);
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    self.contentEdgeInsets =
+        UIEdgeInsetsMake(kButtonVerticalMargin, kButtonHorizontalMargin,
+                         kButtonVerticalMargin, kButtonHorizontalMargin);
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 }
