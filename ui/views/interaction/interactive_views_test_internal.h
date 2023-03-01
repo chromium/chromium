@@ -38,7 +38,6 @@ class InteractiveViewsTestPrivate
   ~InteractiveViewsTestPrivate() override;
 
   // base::test::internal::InteractiveTestPrivate:
-  void DoTestTearDown() override;
   void OnSequenceComplete() override;
   void OnSequenceAborted(
       const ui::InteractionSequence::AbortedData& data) override;

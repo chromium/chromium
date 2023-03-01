@@ -167,11 +167,9 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ImmersiveFullscreenControllerTestApi immersive_test_api(
       chromeos::ImmersiveFullscreenController::Get(browser_view->GetWidget()));
   immersive_test_api.SetupForTest();
-#endif
 
   ImmersiveModeController* const immersive_mode_controller =
       browser_view->immersive_mode_controller();
@@ -258,9 +256,10 @@ class WebUITabStripDragInteractiveTest : public InteractiveBrowserTest {
 //
 // This sequence of events would crash without the associated bugfix. More
 // detail is provided in the actual test sequence.
-// TODO(https://crbug.com/1399655): Reenable this test.
+//
+// Note: if this test flakes, please reopen https://crbug.com/1399655.
 IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest,
-                       DISABLED_CloseTabDuringDragDoesNotCrash) {
+                       CloseTabDuringDragDoesNotCrash) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUiTabStripElementId);
 

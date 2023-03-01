@@ -520,7 +520,6 @@ void InteractiveBrowserTest::SetUpOnMainThread() {
 }
 
 void InteractiveBrowserTest::TearDownOnMainThread() {
-  SetContextWidget(nullptr);
   private_test_impl().DoTestTearDown();
   InProcessBrowserTest::TearDownOnMainThread();
 }
