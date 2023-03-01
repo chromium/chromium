@@ -79,9 +79,9 @@ GuestViewInternalSetSizeFunction::GuestViewInternalSetSizeFunction() = default;
 GuestViewInternalSetSizeFunction::~GuestViewInternalSetSizeFunction() = default;
 
 ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
-  std::unique_ptr<guest_view_internal::SetSize::Params> params(
-      guest_view_internal::SetSize::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<guest_view_internal::SetSize::Params> params =
+      guest_view_internal::SetSize::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   GuestViewBase* guest =
       GuestViewBase::FromInstanceID(source_process_id(), params->instance_id);
   if (!guest)
