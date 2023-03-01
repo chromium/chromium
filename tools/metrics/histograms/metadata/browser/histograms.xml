@@ -776,18 +776,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowserRenderProcessHost.InvisibleMediaStreamFrameDepth"
-    units="frame_depth" expires_after="M72">
-  <owner>boliu@chromium.org</owner>
-  <owner>alexmos@chromium.org</owner>
-  <summary>
-    Recorded at most once per renderer process when it first becomes invisible
-    and has media stream. Record the frame depth of the process. Note this
-    metric is only meaningful when some form of OOPIF is enabled; otherwise
-    frame depth is always 0.
-  </summary>
-</histogram>
-
 <histogram name="BrowserRenderProcessHost.LabeledInTaskManager"
     enum="BooleanLabeledRendererTask" expires_after="2023-06-04">
   <owner>creis@chromium.org</owner>

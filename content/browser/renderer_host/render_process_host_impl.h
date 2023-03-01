@@ -1219,9 +1219,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<mojo::Receiver<viz::mojom::CompositingModeReporter>>
       compositing_mode_reporter_;
 
-  // Fields for recording MediaStream UMA.
-  bool has_recorded_media_stream_frame_depth_metric_ = false;
-
   // Stores the amount of time that this RenderProcessHost's shutdown has been
   // delayed to run unload handlers, or zero if the process shutdown was not
   // delayed due to unload handlers.
