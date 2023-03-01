@@ -31,10 +31,6 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
     kEntepriseAccountSyncDisabled,
     kConsumerAccountSyncDisabled,
     kEnterpriseAccountCreation,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    kLacrosConsumerWelcome,
-    kLacrosEnterpriseWelcome
-#endif
   };
 
   explicit EnterpriseProfileWelcomeUI(content::WebUI* web_ui);

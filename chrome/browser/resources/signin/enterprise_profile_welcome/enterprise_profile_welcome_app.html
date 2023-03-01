@@ -10,7 +10,6 @@
     --info-box-margin-inline: auto;
     --info-box-margin-top: 32px;
     --info-box-width: 530px;
-    --text-font-size: 1.16em;
     color: var(--cr-primary-text-color);
     display: block;
   }
@@ -22,12 +21,7 @@
     --content-container-margin-inline: 32px;
     --content-container-margin-bottom: 0;
     --content-container-margin-top: 72px;
-<if expr="chromeos_lacros">
-    --info-box-margin-inline: 32px;
-</if>
-<if expr="not chromeos_lacros">
     --info-box-margin-inline: 0;
-</if>
     --info-box-margin-top: 28px;
     --info-box-width: auto;
     --footer-margin: 16px;
@@ -41,50 +35,6 @@
   :host([is-modal-dialog_]) #contentContainer h2 {
     margin-top: 0;
   }
-
-<if expr="chromeos_lacros">
-  :host {
-    --action-container-padding: 24px;
-    --background-image:
-        url(images/lacros_enterprise_profile_welcome_illustration.svg);
-    --buttons-container-max-width: 45%;
-    --content-container-font-size: 14px;
-    --content-container-line-height: 20px;
-    --content-container-margin-top: 72px;
-    --content-container-width: 382px;
-    --content-container-title-font-size: 24px;
-    --content-container-title-font-weight: 500;
-    --content-container-title-line-height: 32px;
-    --info-box-bottom: 0;
-    --info-box-padding: 24px 8px;
-    --info-box-position: absolute;
-    --info-box-border: none;
-    --info-box-border-radius: 0px;
-    --info-box-font-size: 11px;
-    --info-box-line-height: 16px;
-    --info-box-max-width: calc(100% - var(--buttons-container-max-width));
-  }
-</if>
-
-<if expr="not chromeos_lacros">
-  :host {
-    --background-image: url(images/enterprise_profile_welcome_illustration.svg);
-    --buttons-container-max-width: 100%;
-    --content-container-font-size: auto;
-    --content-container-line-height: auto;
-    --content-container-width: auto;
-    --content-container-title-font-size: 1.85em;
-    --content-container-title-font-weight: normal;
-    --content-container-title-line-height: auto;
-    --info-box-position: auto;
-    --info-box-border: 1px solid var(--google-grey-200);
-    --info-box-border-radius: 8px;
-    --info-box-font-size: auto;
-    --info-box-line-height: auto;
-    --info-box-max-width: none;
-    --info-box-padding: 12px 0;
-  }
-</if>
 
   .secondary {
     color: var(--cr-secondary-text-color);
@@ -104,6 +54,7 @@
   }
 
   #headerContainer {
+    /* --header-background-color will be defined in typescript */
     background-color: var(--header-background-color);
     height: var(--banner-height);
     position: relative;
@@ -111,7 +62,7 @@
   }
 
   #banner {
-    background-image: var(--background-image);
+    background-image: url(images/enterprise_profile_welcome_illustration.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: var(--banner-size);
@@ -164,38 +115,29 @@
   }
 
   #contentContainer {
-    font-size: var(--content-container-font-size);
-    line-height: var(--content-container-line-height);
     margin-bottom: var(--content-container-margin-bottom);
     margin-inline: var(--content-container-margin-inline);
     margin-top: var(--content-container-margin-top);
     text-align: center;
-    width: var(--content-container-width);
   }
 
   #contentContainer h2 {
-    font-size: var(--content-container-title-font-size);
-    font-weight: var(--content-container-title-font-weight);
-    line-height: var(--content-container-title-line-height);
+    font-size: 1.85em;
+    font-weight: normal;
     margin-bottom: 8px;
   }
 
   .info-box {
     align-items: center;
-    border: var(--info-box-border);
-    border-radius: var(--info-box-border-radius);
-    bottom: var(--info-box-bottom);
+    border: 1px solid var(--google-grey-200);
+    border-radius: 8px;
     color: var(--google-grey-700);
     display: flex;
     flex-direction: row;
-    font-size: var(--info-box-font-size);
-    line-height: var(--info-box-line-height);
     margin-inline: var(--info-box-margin-inline);
     margin-top: var(--info-box-margin-top);
-    max-width: var(--info-box-max-width);
-    padding: var(--info-box-padding);
+    padding: 12px 0;
     padding-inline-end: 18px;
-    position: var(--info-box-position);
     width: var(--info-box-width);
   }
 
@@ -224,12 +166,12 @@
 
   #buttonsContainer {
     flex-wrap: wrap-reverse;
-    max-width: var(--buttons-container-max-width);
+    max-width: 100%;
     right: 0;
   }
 
   #buttonsContainer cr-button {
-    font-size: var(--text-font-size);
+    font-size: 1.16em;
     margin: 5px 0;
     min-width: 111px;
   }
@@ -283,7 +225,6 @@
       [[subtitle_]]
     </p>
   </template>
-  <if expr="not chromeos_lacros">
   <template is="dom-if" if="[[enterpriseInfo_]]">
     <div class="info-box">
       <div class="icon-container">
@@ -294,20 +235,7 @@
       </p>
     </div>
   </template>
-  </if>
 </div>
-<if expr="chromeos_lacros">
-<template is="dom-if" if="[[enterpriseInfo_]]">
-  <div class="info-box">
-    <div class="icon-container">
-      <iron-icon icon="cr:domain"></iron-icon>
-    </div>
-    <p id="enterpriseInfo" >
-      [[enterpriseInfo_]]
-    </p>
-  </div>
-</template>
-</if>
 <template is="dom-if" if="[[showLinkDataCheckbox_]]">
   <cr-checkbox id="linkData" checked="{{linkData_}}">
     <div>$i18n{linkDataText}</div>

@@ -30,7 +30,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -187,7 +186,7 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
     }
 
     handle_identity_manager_change_.Run();
-    if (account_info.IsValid()) {
+    if (!account_info.account_image.IsEmpty() && account_info.IsValid()) {
       identity_manager_observation_.Reset();
     }
   }
@@ -258,9 +257,8 @@ base::Value::Dict GetProfileInfoValue(content::WebUI& web_ui) {
   }
   dict.Set("pictureUrl", GetPictureUrl(web_ui, account_info));
 
-  dict.Set("managementDisclaimer",
-           GetLacrosIntroManagementDisclaimer(
-               *profile, gaia::ExtractDomainName(account_info.email)));
+  dict.Set("managementDisclaimer", GetLacrosIntroManagementDisclaimer(
+                                       *profile, account_info.hosted_domain));
 
   dict.Set("title", GetLacrosIntroWelcomeTitle(account_info));
   dict.Set("subtitle",

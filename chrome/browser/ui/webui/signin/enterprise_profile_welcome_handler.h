@@ -98,10 +98,6 @@ class EnterpriseProfileWelcomeHandler
 
   std::string GetPictureUrl();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::string GetLacrosWelcomeTitle();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   base::FilePath profile_path_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>

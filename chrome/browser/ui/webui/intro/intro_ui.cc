@@ -73,6 +73,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},
+    {"windowTitle", IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE},
 #endif
   };
   source->AddLocalizedStrings(localized_strings);
@@ -98,12 +99,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath("images/gshield.svg", IDR_GSHIELD_ICON_SVG);
 #endif
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  source->AddResourcePath(
-      "images/lacros_intro_banner.svg",
-      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_LACROS_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG);
 #endif
 
   // Unretained ok: `this` owns the handler.

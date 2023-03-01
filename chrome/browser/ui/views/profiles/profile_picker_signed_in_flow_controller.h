@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,6 +73,12 @@ class ProfilePickerSignedInFlowController
   virtual void SwitchToEnterpriseProfileWelcome(
       EnterpriseProfileWelcomeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The default implementation is NOTREACHED
+  virtual void SwitchToLacrosIntro(
+      signin::SigninChoiceCallback proceed_callback);
+#endif
 
   // When the sign-in flow cannot be completed because another profile at
   // `profile_path` is already syncing with a chosen account, shows the profile

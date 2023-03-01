@@ -125,22 +125,6 @@ std::string GetManagedAccountTitleWithEmail(
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string GetLacrosFirstRunManagedAccountInfo(
-    ProfileAttributesEntry* entry,
-    const std::string& account_domain_name) {
-  DCHECK(entry);
-  if (entry->GetHostedDomain() == kNoHostedDomainFound)
-    return std::string();
-  const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? account_domain_name
-                                      : entry->GetHostedDomain();
-  return l10n_util::GetStringFUTF8(
-      IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION,
-      base::UTF8ToUTF16(domain_name));
-}
-#endif
-
 std::string GetManagedDeviceTitle() {
   absl::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
@@ -360,22 +344,6 @@ base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
                        prefs::kEnterpriseProfileCreationKeepBrowsingData));
 #endif
       break;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome:
-      dict.Set("showEnterpriseBadge", true);
-      enterprise_info =
-          GetLacrosFirstRunManagedAccountInfo(entry, domain_name_);
-      [[fallthrough]];
-    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome:
-      title = GetLacrosWelcomeTitle();
-      subtitle = l10n_util::GetStringFUTF8(
-          IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE, email_);
-      dict.Set("proceedLabel",
-               l10n_util::GetStringUTF8(
-                   IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL));
-      show_cancel_button = false;
-      break;
-#endif
   }
 
   dict.Set("title", title);
@@ -417,22 +385,6 @@ std::string EnterpriseProfileWelcomeHandler::GetPictureUrl() {
           avatar_icon_size, avatar_icon_size)
           .AsBitmap());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string EnterpriseProfileWelcomeHandler::GetLacrosWelcomeTitle() {
-  AccountInfo account_info =
-      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
-          ->FindExtendedAccountInfoByAccountId(account_id_);
-  bool has_given_name = !account_info.given_name.empty();
-  base::UmaHistogramBoolean("Profile.LacrosFre.WelcomeHasGivenName",
-                            has_given_name);
-  return has_given_name ? l10n_util::GetStringFUTF8(
-                              IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE,
-                              base::UTF8ToUTF16(account_info.given_name))
-                        : l10n_util::GetStringUTF8(
-                              IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 EnterpriseProfileWelcomeUI::ScreenType
 EnterpriseProfileWelcomeHandler::GetTypeForTesting() {

@@ -22,15 +22,15 @@ build_webui("build") {
     if (!is_chrome_branded) {
       static_files += [ "images/security.svg" ]
     }
-  }
-
-  if (is_chromeos_lacros) {
-    web_component_files = [ "lacros_app.ts" ]
-  } else if (enable_dice_support) {
     web_component_files = [
       "dice_app.ts",
       "sign_in_promo.ts",
     ]
+  }
+
+  if (is_chromeos_lacros) {
+    static_files += [ "images/lacros_intro_banner.svg" ]
+    web_component_files = [ "lacros_app.ts" ]
   }
 
   non_web_component_files = [ "browser_proxy.ts" ]
