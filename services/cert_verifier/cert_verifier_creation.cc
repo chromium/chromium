@@ -239,13 +239,6 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
   DCHECK(cert_net_fetcher || !IsUsingCertNetFetcher());
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier;
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  if (!cert_verifier && IsTrialVerificationOn(creation_params)) {
-    cert_verifier = CreateTrialCertVerifier(creation_params, cert_net_fetcher,
-                                            root_store_data);
-  }
-#endif
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   if (!cert_verifier && impl_params->use_chrome_root_store) {
     scoped_refptr<NewCertVerifyProcChromeRootStoreFactory> proc_factory =
@@ -254,6 +247,13 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
     cert_verifier = std::make_unique<net::MultiThreadedCertVerifier>(
         proc_factory->CreateCertVerifyProc(cert_net_fetcher, root_store_data),
         proc_factory);
+  }
+#endif
+
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+  if (!cert_verifier && IsTrialVerificationOn(creation_params)) {
+    cert_verifier = CreateTrialCertVerifier(creation_params, cert_net_fetcher,
+                                            root_store_data);
   }
 #endif
 
