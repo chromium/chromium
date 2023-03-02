@@ -37,7 +37,7 @@ void FakeAffiliationService::TrimCacheForFacetURI(const FacetURI& facet_uri) {}
 void FakeAffiliationService::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 }
 void FakeAffiliationService::GetGroupingInfo(std::vector<FacetURI> facet_uris,
-                                             GroupsCallback callback) const {
+                                             GroupsCallback callback) {
   // Put each facet into its own group because AffiliationService is supposed to
   // always return result for each requested facet.
   std::vector<GroupedFacets> result(facet_uris.size());
@@ -50,11 +50,6 @@ void FakeAffiliationService::GetGroupingInfo(std::vector<FacetURI> facet_uris,
 void FakeAffiliationService::GetPSLExtensions(
     base::OnceCallback<void(std::vector<std::string>)> callback) const {
   std::move(callback).Run({});
-}
-void FakeAffiliationService::UpdateAffiliationsAndBranding(
-    const std::vector<FacetURI>& facets,
-    base::OnceClosure callback) {
-  std::move(callback).Run();
 }
 
 }  // namespace password_manager

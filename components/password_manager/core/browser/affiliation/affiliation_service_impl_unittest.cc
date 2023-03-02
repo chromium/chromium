@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_backend.h"
@@ -24,6 +25,11 @@
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_fetcher_factory.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -129,9 +135,12 @@ class AffiliationServiceImplTest : public testing::Test {
   }
 
   void CreateService() {
+    prefs_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kPasswordsGroupingInfoRequested, true);
+
     service_ = std::make_unique<AffiliationServiceImpl>(
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
-        background_task_runner());
+        background_task_runner(), &pref_service());
 
     network::TestNetworkConnectionTracker* network_connection_tracker =
         network::TestNetworkConnectionTracker::GetInstance();
@@ -146,6 +155,7 @@ class AffiliationServiceImplTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+  TestingPrefServiceSimple& pref_service() { return prefs_; }
   AffiliationServiceImpl* service() { return service_.get(); }
   MockAffiliationConsumer* mock_consumer() { return &mock_consumer_; }
 
@@ -156,6 +166,7 @@ class AffiliationServiceImplTest : public testing::Test {
   FakeAffiliationAPI* fake_affiliation_api() { return &fake_affiliation_api_; }
 
  protected:
+  TestingPrefServiceSimple prefs_;
   std::unique_ptr<AffiliationServiceImpl> service_;
   FakeAffiliationAPI fake_affiliation_api_;
   scoped_refptr<base::TestSimpleTaskRunner> background_task_runner_ =
@@ -643,19 +654,85 @@ TEST_F(AffiliationServiceImplTestWithFetcherFactory,
 }
 
 TEST_F(AffiliationServiceImplTestWithFetcherFactory,
-       UpdateAffiliationsAndBranding) {
-  base::MockOnceClosure completion_callback;
+       KeepPrefetchForFacetsUpdatesPref) {
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
 
-  service()->UpdateAffiliationsAndBranding(
-      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
-      completion_callback.Get());
+  pref_service().SetBoolean(prefs::kPasswordsGroupingInfoRequested, false);
+
+  service()->KeepPrefetchForFacets(
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)});
+  background_task_runner()->RunUntilIdle();
+  ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
+  fake_affiliation_api()->IgnoreNextRequest();
+  background_task_runner()->RunUntilIdle();
+  RunUntilIdle();
+
+  EXPECT_TRUE(
+      pref_service().GetBoolean(prefs::kPasswordsGroupingInfoRequested));
+}
+
+TEST_F(AffiliationServiceImplTestWithFetcherFactory,
+       GetGroupingInfoFetchesGroups) {
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
+
+  pref_service().SetBoolean(prefs::kPasswordsGroupingInfoRequested, false);
+
+  base::MockCallback<AffiliationService::GroupsCallback> completion_callback;
+
+  service()->GetGroupingInfo({FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
+                             completion_callback.Get());
   background_task_runner()->RunUntilIdle();
 
-  EXPECT_CALL(completion_callback, Run);
+  GroupedFacets group;
+  group.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha3)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)),
+  };
+
   ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
+  fake_affiliation_api()->AddTestEquivalenceClass(
+      GetTestEquivalenceClassAlpha());
+  fake_affiliation_api()->AddTestGrouping(group);
   fake_affiliation_api()->ServeNextRequest();
   background_task_runner()->RunUntilIdle();
+  RunUntilIdle();
 
+  EXPECT_CALL(completion_callback, Run(testing::UnorderedElementsAre(group)));
+  background_task_runner()->RunUntilIdle();
+  RunUntilIdle();
+
+  EXPECT_TRUE(
+      pref_service().GetBoolean(prefs::kPasswordsGroupingInfoRequested));
+}
+
+TEST_F(AffiliationServiceImplTestWithFetcherFactory,
+       GetGroupingInfoUsesCacheIfGroupsWereRequested) {
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kPasswordsGrouping);
+
+  pref_service().SetBoolean(prefs::kPasswordsGroupingInfoRequested, true);
+
+  base::MockCallback<AffiliationService::GroupsCallback> completion_callback;
+
+  service()->GetGroupingInfo({FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
+                             completion_callback.Get());
+  background_task_runner()->RunUntilIdle();
+
+  EXPECT_FALSE(fake_affiliation_api()->HasPendingRequest());
+
+  GroupedFacets group;
+  group.facets = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)),
+  };
+
+  EXPECT_CALL(completion_callback, Run(testing::UnorderedElementsAre(group)));
   RunUntilIdle();
 }
 

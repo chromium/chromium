@@ -1130,6 +1130,24 @@ TEST_P(AffiliationBackendTest, GetGroupingInfoForInvalidFacet) {
               testing::UnorderedElementsAre(group));
 }
 
+TEST_P(AffiliationBackendTest,
+       UpdateAffiliationsAndBrandingSkipsInvalidFacets) {
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+
+  // Http schema is not supported by the affiliation service.
+  FacetURI facet = FacetURI::FromPotentiallyInvalidSpec("http://example.com");
+  base::MockOnceClosure completion_callback;
+
+  // Expect call to completion callback right away.
+  EXPECT_CALL(completion_callback, Run);
+  backend()->UpdateAffiliationsAndBranding({facet}, completion_callback.Get());
+  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
+  ASSERT_FALSE(mock_fetch_throttler()->has_signaled_network_request_needed());
+
+  EXPECT_GE(0u, backend_facet_manager_count());
+  EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+}
+
 INSTANTIATE_TEST_SUITE_P(, AffiliationBackendTest, testing::Bool());
 
 }  // namespace password_manager

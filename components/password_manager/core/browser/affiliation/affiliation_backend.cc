@@ -224,6 +224,12 @@ void AffiliationBackend::UpdateAffiliationsAndBranding(
       base::BarrierClosure(facets.size(), std::move(callback));
 
   for (const auto& facet_uri : facets) {
+    // Skip invalid facets as it's impossible to request affiliation info for
+    // them.
+    if (!facet_uri.is_valid()) {
+      pending_fetch_calls.Run();
+      continue;
+    }
     // Clear local cache for |facet_uri|.
     cache_->DeleteAffiliationsAndBrandingForFacetURI(facet_uri);
     FacetManager* facet_manager = GetOrCreateFacetManager(facet_uri);

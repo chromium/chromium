@@ -221,6 +221,11 @@ extern const char kBiometricAuthenticationBeforeFilling[];
 extern const char kHadBiometricsAvailable[];
 #endif
 
+// Boolean which indicates whether grouping info was requested from the
+// affiliation service.
+// TODO(crbug.com/1420597): Remove this after Passwords Grouping launch.
+extern const char kPasswordsGroupingInfoRequested[];
+
 }  // namespace prefs
 }  // namespace password_manager
 

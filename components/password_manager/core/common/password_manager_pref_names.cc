@@ -120,5 +120,8 @@ const char kHadBiometricsAvailable[] =
     "password_manager.had_biometrics_available";
 #endif
 
+extern const char kPasswordsGroupingInfoRequested[] =
+    "password_manager.passwords_grouping_info_requested";
+
 }  // namespace prefs
 }  // namespace password_manager

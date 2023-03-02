@@ -107,19 +107,12 @@ class AffiliationService : public KeyedService {
   // requested facet, the facet will be added to it's own group. This
   // information can be used to group passwords together.
   virtual void GetGroupingInfo(std::vector<FacetURI> facet_uris,
-                               GroupsCallback callback) const = 0;
+                               GroupsCallback callback) = 0;
 
   // Retrieves psl extension list. This list includes domain which shouldn't be
   // considered as PSL match.
   virtual void GetPSLExtensions(
       base::OnceCallback<void(std::vector<std::string>)> callback) const = 0;
-
-  // This method will fetch the latest affiliation and branding information for
-  // |facets| even if local cache is still fresh. |callback| is invoked on
-  // completion.
-  virtual void UpdateAffiliationsAndBranding(
-      const std::vector<FacetURI>& facets,
-      base::OnceClosure callback) = 0;
 };
 
 }  // namespace password_manager

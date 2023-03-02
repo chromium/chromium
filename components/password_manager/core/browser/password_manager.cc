@@ -337,6 +337,7 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kBiometricAuthenticationBeforeFilling,
                                 false);
 #endif
+  registry->RegisterBooleanPref(prefs::kPasswordsGroupingInfoRequested, false);
 }
 
 // static

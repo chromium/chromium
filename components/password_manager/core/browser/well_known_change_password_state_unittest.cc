@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
+#include <cstddef>
 
 #include "base/files/file_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -231,7 +232,7 @@ TEST_P(WellKnownChangePasswordStateTest,
   scoped_refptr<base::TestMockTimeTaskRunner> background_task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   auto affiliation_service = std::make_unique<AffiliationServiceImpl>(
-      test_shared_loader_factory(), background_task_runner);
+      test_shared_loader_factory(), background_task_runner, nullptr);
 
   network::TestNetworkConnectionTracker* network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
