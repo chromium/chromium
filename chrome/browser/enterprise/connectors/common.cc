@@ -93,7 +93,7 @@ bool ResultShouldAllowDataUse(
 RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
     safe_browsing::BinaryUploadService::Result upload_result,
-    ContentAnalysisResponse response) {
+    const ContentAnalysisResponse& response) {
   std::string tag;
   auto action = GetHighestPrecedenceAction(response, &tag);
 

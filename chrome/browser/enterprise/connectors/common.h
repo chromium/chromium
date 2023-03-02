@@ -181,7 +181,7 @@ struct RequestHandlerResult {
 RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
     safe_browsing::BinaryUploadService::Result upload_result,
-    ContentAnalysisResponse response);
+    const ContentAnalysisResponse& response);
 
 // Determines if a request result should be used to allow a data use or to
 // block it.
