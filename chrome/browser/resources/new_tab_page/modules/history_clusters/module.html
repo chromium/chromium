@@ -16,12 +16,41 @@
     font-size: 13px;
   }
 
-  #small-tiles {
+  .small-tiles {
     display: flex;
     flex-direction: row;
-    height: 144px;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
     justify-content: space-between;
-    width: 352px;
+  }
+
+  .layout {
+    display: grid;
+    grid-gap: 16px 16px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    padding: 0 24px 24px;
+  }
+
+  .main-tile {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3
+  }
+
+  .secondary-tile {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2
+  }
+
+  .related-searches-tile {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3
+  }
+
+  #layout3 .main-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 </style>
 <div id="content">
@@ -38,27 +67,58 @@
         [[i18n('modulesJourneyShowAll')]]
     </button>
   </ntp-module-header>
-  <ntp-history-clusters-tile id="main-tile" large-format
-                             visit="[[cluster.visits.1]]">
-  </ntp-history-clusters-tile>
-  <ntp-history-clusters-suggest-tile id="related-searches-tile"
-                                 related-searches="[[cluster.relatedSearches]]">
-  </ntp-history-clusters-suggest-tile>
-  <div id="small-tiles">
-      <ntp-history-clusters-tile small-format
-                               visit="[[smallTileVisits_.0]]">
-      </ntp-history-clusters-tile>
-      <ntp-history-clusters-tile small-format
-                               visit="[[smallTileVisits_.1]]">
-      </ntp-history-clusters-tile>
-  </div>
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
-    <div id="layout1" class="layout">Layout 1</div>
+    <div id="layout1" class="layout">
+      <ntp-history-clusters-tile class="main-tile" large-format
+                           visit="[[cluster.visits.1]]">
+      </ntp-history-clusters-tile>
+      <ntp-history-clusters-tile class="secondary-tile" medium-format
+                           visit="[[cluster.visits.2]]">
+      </ntp-history-clusters-tile>
+      <ntp-history-clusters-suggest-tile class="related-searches-tile"
+                               related-searches="[[cluster.relatedSearches]]">
+      </ntp-history-clusters-suggest-tile>
+    </div>
   </template>
   <template is="dom-if" if="[[isLayout_(2, layoutType)]]" restamp>
-    <div id="layout2" class="layout">Layout 2</div>
+    <div id="layout2" class="layout">
+      <ntp-history-clusters-tile class="main-tile" large-format
+                           visit="[[cluster.visits.1]]">
+      </ntp-history-clusters-tile>
+      <div class="small-tiles">
+        <ntp-history-clusters-tile small-format
+                                 visit="[[cluster.visits.2]]">
+        </ntp-history-clusters-tile>
+        <ntp-history-clusters-tile small-format
+                                 visit="[[cluster.visits.3]]">
+        </ntp-history-clusters-tile>
+      </div>
+      <ntp-history-clusters-suggest-tile class="related-searches-tile"
+                               related-searches="[[cluster.relatedSearches]]">
+      </ntp-history-clusters-suggest-tile>
+    </div>
   </template>
   <template is="dom-if" if="[[isLayout_(3, layoutType)]]" restamp>
-    <div id="layout3" class="layout">Layout 3</div>
+    <div id="layout3" class="layout">
+      <div class="main-tile">
+        <ntp-history-clusters-tile medium-format
+                           visit="[[cluster.visits.1]]">
+        </ntp-history-clusters-tile>
+        <ntp-history-clusters-tile medium-format
+                             visit="[[cluster.visits.2]]">
+        </ntp-history-clusters-tile>
+      </div>
+      <div class="small-tiles">
+        <ntp-history-clusters-tile small-format
+                                 visit="[[cluster.visits.3]]">
+        </ntp-history-clusters-tile>
+        <ntp-history-clusters-tile small-format
+                                 visit="[[cluster.visits.4]]">
+        </ntp-history-clusters-tile>
+      </div>
+      <ntp-history-clusters-suggest-tile class="related-searches-tile"
+                               related-searches="[[cluster.relatedSearches]]">
+      </ntp-history-clusters-suggest-tile>
+    </div>
   </template>
 </div>
