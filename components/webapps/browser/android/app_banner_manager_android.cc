@@ -197,7 +197,6 @@ void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
 }
 
 void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge() {
-  badge_state_ = AmbientBadgeState::PENDING_WORKER;
   manager()->GetData(
       ParamsToPerformWorkerCheck(),
       base::BindOnce(
@@ -213,8 +212,8 @@ void AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge(
 
   passed_worker_check_ = true;
 
-  if (state_ == State::PENDING_PROMPT_NOT_CANCELED) {
-    MaybeShowAmbientBadge();
+  if (badge_state_ == AmbientBadgeState::PENDING_WORKER) {
+    CheckEngagementForAmbientBadge();
   }
 }
 
@@ -578,9 +577,13 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
   if (!native_app_data_ && features::SkipServiceWorkerForInstallPromotion() &&
       !passed_worker_check_) {
     badge_state_ = AmbientBadgeState::PENDING_WORKER;
+    PerformWorkerCheckForAmbientBadge();
     return;
   }
+  CheckEngagementForAmbientBadge();
+}
 
+void AppBannerManagerAndroid::CheckEngagementForAmbientBadge() {
   if (ShouldSuppressAmbientBadge()) {
     badge_state_ = AmbientBadgeState::PENDING_ENGAGEMENT;
     return;

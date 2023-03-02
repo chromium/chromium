@@ -140,9 +140,6 @@ class AppBannerManagerAndroid : public AppBannerManager,
   void PerformInstallableChecks() override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void PerformInstallableWebAppCheck() override;
-  void PerformWorkerCheckForAmbientBadge() override;
-  void OnDidPerformWorkerCheckForAmbientBadge(
-      const InstallableData& data) override;
   void ResetCurrentPageData() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
   void MaybeShowAmbientBadge() override;
@@ -153,6 +150,17 @@ class AppBannerManagerAndroid : public AppBannerManager,
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
+
+  // Run before showing the ambient badge. This calls back to the
+  // InstallableManager to continue checking service worker criteria for showing
+  // ambient badge.
+  void PerformWorkerCheckForAmbientBadge();
+
+  // Callback invoked by the InstallableManager once it has finished checking
+  // service worker for showing ambient badge.
+  void OnDidPerformWorkerCheckForAmbientBadge(const InstallableData& data);
+
+  void CheckEngagementForAmbientBadge();
 
   // Called to show UI that promotes installation of a PWA. This is normally the
   // mini-infobar ("banner") but clients can override it by providing a
