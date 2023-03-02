@@ -230,13 +230,11 @@ bool SupervisedUserService::IsChild() const {
 }
 
 bool SupervisedUserService::IsURLFilteringEnabled() const {
+// TODO(b/271413641): Use capabilities to verify if filtering is enabled on iOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   return profile_->IsChild();
 #else
-  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  return account_info.capabilities.is_subject_to_parental_controls() ==
-             signin::Tribool::kTrue &&
+  return profile_->IsChild() &&
          base::FeatureList::IsEnabled(
              supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
 #endif

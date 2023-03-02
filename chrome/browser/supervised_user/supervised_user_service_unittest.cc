@@ -119,11 +119,9 @@ class SupervisedUserURLFilterObserver
 
 }  // namespace
 
-class SupervisedUserServiceTest
-    : public ::testing::TestWithParam<
-          /* is_subject_to_parental_controls */ bool> {
+class SupervisedUserServiceTestBase : public ::testing::Test {
  public:
-  SupervisedUserServiceTest() {
+  explicit SupervisedUserServiceTestBase(bool is_supervised) {
     // The testing browser process may be deleted following a crash.
     // Re-instantiate it before its use in testing profile creation.
     if (!g_browser_process) {
@@ -134,7 +132,9 @@ class SupervisedUserServiceTest
     TestingProfile::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
-    builder.SetIsSupervisedProfile();
+    if (is_supervised) {
+      builder.SetIsSupervisedProfile();
+    }
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_profile_adaptor_ =
@@ -151,35 +151,53 @@ class SupervisedUserServiceTest
       identity_test_env_profile_adaptor_;
 };
 
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-TEST_P(SupervisedUserServiceTest, IsURLFilteringEnabled) {
+class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
+ public:
+  SupervisedUserServiceTest()
+      : SupervisedUserServiceTestBase(/*is_supervised=*/true) {}
+};
+
+TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  EXPECT_TRUE(profile_->IsChild());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(service->IsURLFilteringEnabled());
+#else
+  EXPECT_FALSE(service->IsURLFilteringEnabled());
+#endif
+
+  // Enable filtering flag across platforms.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty));
 
-  signin::IdentityTestEnvironment* identity_test_env =
-      identity_test_env_profile_adaptor_->identity_test_env();
-  AccountInfo account = identity_test_env->MakePrimaryAccountAvailable(
-      "account@gmail.com", signin::ConsentLevel::kSignin);
-
-  bool is_subject_to_parental_controls = GetParam();
-  AccountCapabilitiesTestMutator mutator(&account.capabilities);
-  mutator.set_is_subject_to_parental_controls(is_subject_to_parental_controls);
-  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
-                                      account);
-
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  EXPECT_EQ(service->IsURLFilteringEnabled(), is_subject_to_parental_controls);
+  EXPECT_TRUE(service->IsURLFilteringEnabled());
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         SupervisedUserServiceTest,
-                         /* is_subject_to_parental_controls */ testing::Bool());
+class SupervisedUserServiceTestUnsupervised
+    : public SupervisedUserServiceTestBase {
+ public:
+  SupervisedUserServiceTestUnsupervised()
+      : SupervisedUserServiceTestBase(/*is_supervised=*/false) {}
+};
 
-#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(service->IsURLFilteringEnabled());
+
+  // Enable filtering flag across platforms.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty));
+
+  EXPECT_FALSE(service->IsURLFilteringEnabled());
+}
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
 // due to failed timezone conversion assertion.
