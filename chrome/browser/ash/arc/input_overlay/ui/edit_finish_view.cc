@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/cursor/cursor.h"
@@ -276,8 +277,8 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
 void EditFinishView::SetFocusRing() {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
-  // TODO(b/260868602): Update the name.
-  GetViewAccessibility().OverrideName(GetClassName());
+  GetViewAccessibility().OverrideName(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_LAYOUT_ACCTIONS_MENU));
   views::FocusRing::Install(this);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kButtonCornerRadius);

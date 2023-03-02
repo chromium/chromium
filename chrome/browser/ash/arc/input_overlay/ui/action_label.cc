@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -455,8 +457,12 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
 void ActionLabel::Init() {
   SetRequestFocusOnPress(true);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(0, allow_reposition_ ? kSideInset : kSideInsetAlpha)));
+  if (allow_reposition_) {
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInset)));
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kLabelText);
+  } else {
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kSideInsetAlpha)));
+  }
   CustomizeAccessibilityName();
 }
 
@@ -754,17 +760,18 @@ void ActionLabel::CustomizeAccessibilityName() {
     return;
   }
 
-  // TODO(b/260868602): Update the name.
+  std::u16string name =
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEYMAPPING_KEY).append(u" ");
   const std::string text = base::UTF16ToUTF8(label()->GetText());
-  std::u16string name;
   if (text.compare(kSpace) == 0) {
-    name = u"space";
+    name.append(l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEY_LABEL_SPACE));
   } else if (text.compare(kEnter) == 0) {
-    name = u"enter";
+    name.append(l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEY_LABEL_ENTER));
   } else if (text.compare(kBackSpace) == 0) {
-    name = u"backspace";
+    name.append(
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEY_LABEL_BACKSPACE));
   } else {
-    name = label()->GetText();
+    name.append(label()->GetText());
   }
   SetAccessibleName(name);
 }
