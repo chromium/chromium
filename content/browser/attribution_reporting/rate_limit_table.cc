@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -164,7 +165,7 @@ bool RateLimitTable::AddRateLimit(
   statement.BindTime(7, source_expiry_or_attribution_time);
 
   const base::flat_set<net::SchemefulSite>* destination_sites =
-      &common_info.destination_sites().destinations();
+      &source.destination_sites().destinations();
   base::flat_set<net::SchemefulSite> context_sites;
   if (source.attribution_logic() ==
           StoredSource::AttributionLogic::kTruthfully &&
@@ -229,7 +230,7 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginLimit(
   return AllowedForReportingOriginLimit(
       db, Scope::kSource, source.common_info(),
       source.common_info().source_time(),
-      source.common_info().destination_sites().destinations());
+      source.registration().destination_set.destinations());
 }
 
 RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
@@ -255,7 +256,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   DCHECK_GT(limit, 0);
 
   base::flat_set<net::SchemefulSite> destination_sites =
-      source.common_info().destination_sites().destinations();
+      source.registration().destination_set.destinations();
 
   while (statement.Step()) {
     destination_sites.insert(

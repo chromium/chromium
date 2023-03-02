@@ -31,6 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "sql/database.h"
@@ -1179,7 +1180,7 @@ TEST_F(AttributionStorageSqlTest,
 
   std::vector<StoredSource> sources = storage()->GetActiveSources();
   ASSERT_EQ(sources.size(), 1u);
-  ASSERT_THAT(sources.front().common_info().filter_data().filter_values(),
+  ASSERT_THAT(sources.front().filter_data().filter_values(),
               ElementsAre(Pair("x", ElementsAre("y"))));
 }
 

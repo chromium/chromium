@@ -154,10 +154,6 @@ MATCHER_P(SourceIsWithinFencedFrameIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(SourceDebugReportingIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.debug_reporting(), result_listener);
-}
-
 TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   base::HistogramTester histograms;
 
@@ -171,15 +167,19 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
   EXPECT_CALL(
       mock_manager_,
-      HandleSource(
-          AllOf(SourceTypeIs(SourceType::kEvent), SourceEventIdIs(10),
-                DestinationSiteIs(destination_site),
-                ImpressionOriginIs(page_origin),
-                ReportingOriginIs(reporting_origin), SourcePriorityIs(20),
-                SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
-                SourceIsWithinFencedFrameIs(false),
-                SourceDebugReportingIs(true)),
-          kFrameId));
+      HandleSource(AllOf(SourceRegistrationIs(SourceRegistrationMatches(
+                             SourceRegistrationMatcherConfig(
+                                 /*source_event_id=*/10,
+                                 *attribution_reporting::DestinationSet::Create(
+                                     {destination_site}),
+                                 /*priority=*/20,
+                                 /*debug_key=*/Optional(789), aggregation_keys,
+                                 /*debug_reporting=*/true))),
+                         SourceTypeIs(SourceType::kEvent),
+                         ImpressionOriginIs(page_origin),
+                         ReportingOriginIs(reporting_origin),
+                         SourceIsWithinFencedFrameIs(false)),
+                   kFrameId));
   {
     RemoteDataHost data_host_remote{.task_environment =
                                         raw_ref(task_environment_)};
@@ -512,13 +512,18 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(
         mock_manager_,
         HandleSource(
-            AllOf(SourceTypeIs(SourceType::kNavigation), SourceEventIdIs(10),
-                  DestinationSiteIs(destination_site),
+            AllOf(SourceRegistrationIs(
+                      SourceRegistrationMatches(SourceRegistrationMatcherConfig(
+                          /*source_event_id=*/10,
+                          *attribution_reporting::DestinationSet::Create(
+                              {destination_site}),
+                          /*priority=*/20, /*debug_key=*/Optional(789),
+                          aggregation_keys,
+                          /*debug_reporting=*/true))),
+                  SourceTypeIs(SourceType::kNavigation),
                   ImpressionOriginIs(page_origin),
-                  ReportingOriginIs(reporting_origin), SourcePriorityIs(20),
-                  SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
-                  SourceIsWithinFencedFrameIs(false),
-                  SourceDebugReportingIs(true)),
+                  ReportingOriginIs(reporting_origin),
+                  SourceIsWithinFencedFrameIs(false)),
             kFrameId));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_manager_, HandleSource);
@@ -1394,7 +1399,11 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        DuplicateAttributionSrcToken_NotRegistered) {
-  EXPECT_CALL(mock_manager_, HandleSource(SourceEventIdIs(1), kFrameId));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(SourceRegistrationIs(SourceRegistrationMatches(
+                       SourceRegistrationMatcherConfig(/*source_event_id=*/1))),
+                   kFrameId));
 
   const blink::AttributionSrcToken attribution_src_token;
 
@@ -1452,8 +1461,12 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   EXPECT_CALL(
       mock_manager_,
-      HandleSource(AllOf(SourceTypeIs(SourceType::kEvent), SourceEventIdIs(10),
-                         DestinationSiteIs(destination_site),
+      HandleSource(AllOf(SourceRegistrationIs(SourceRegistrationMatches(
+                             SourceRegistrationMatcherConfig(
+                                 /*source_event_id=*/10,
+                                 *attribution_reporting::DestinationSet::Create(
+                                     {destination_site})))),
+                         SourceTypeIs(SourceType::kEvent),
                          ImpressionOriginIs(page_origin),
                          ReportingOriginIs(reporting_origin),
                          SourceIsWithinFencedFrameIs(true)),

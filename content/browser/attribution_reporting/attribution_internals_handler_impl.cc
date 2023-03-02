@@ -26,6 +26,7 @@
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -73,19 +74,18 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
     Attributability attributability) {
   const CommonSourceInfo& common_info = source.common_info();
   return attribution_internals::mojom::WebUISource::New(
-      common_info.source_event_id(), common_info.source_origin(),
+      source.source_event_id(), common_info.source_origin(),
       std::vector<net::SchemefulSite>(
-          common_info.destination_sites().destinations().begin(),
-          common_info.destination_sites().destinations().end()),
+          source.destination_sites().destinations().begin(),
+          source.destination_sites().destinations().end()),
       common_info.reporting_origin(), common_info.source_time().ToJsTime(),
       common_info.expiry_time().ToJsTime(),
       common_info.event_report_window_time().ToJsTime(),
       common_info.aggregatable_report_window_time().ToJsTime(),
-      common_info.source_type(), common_info.priority(),
-      common_info.debug_key(), source.dedup_keys(),
-      common_info.filter_data().filter_values(),
+      common_info.source_type(), source.priority(), source.debug_key(),
+      source.dedup_keys(), source.filter_data().filter_values(),
       base::MakeFlatMap<std::string, std::string>(
-          common_info.aggregation_keys().keys(), {},
+          source.aggregation_keys().keys(), {},
           [](const auto& key) {
             return std::make_pair(
                 key.first,
@@ -327,7 +327,9 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
   auto web_ui_source = WebUISourceRegistration::New();
   web_ui_source->registration = GetRegistration(
       source.common_info().source_time(), source.common_info().source_origin(),
-      source.common_info().reporting_origin(), source.registration_json(),
+      source.common_info().reporting_origin(),
+      SerializeAttributionJson(source.registration().ToJson(),
+                               /*pretty_print=*/true),
       cleared_debug_key);
   web_ui_source->type = source.common_info().source_type();
   web_ui_source->status =

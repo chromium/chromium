@@ -147,7 +147,7 @@ class AttributionStorageTest : public testing::Test {
     auto event_trigger = base::ranges::find_if(
         conversion.registration().event_triggers,
         [&](const attribution_reporting::EventTriggerData& event_trigger) {
-          return source.common_info().filter_data().Matches(
+          return source.filter_data().Matches(
               source.common_info().source_type(), event_trigger.filters);
         });
     CHECK(event_trigger != conversion.registration().event_triggers.end());

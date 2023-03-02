@@ -16,6 +16,7 @@
 #include "base/time/time_override.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -179,7 +180,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(source1->common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_THAT(source1->common_info().destination_sites().destinations(),
+  EXPECT_THAT(source1->registration().destination_set.destinations(),
               ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_FALSE(source1->is_within_fenced_frame());
   EXPECT_TRUE(result->front().debug_permission);
@@ -192,7 +193,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://b.r.test"));
   EXPECT_EQ(source2->common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_THAT(source2->common_info().destination_sites().destinations(),
+  EXPECT_THAT(source2->registration().destination_set.destinations(),
               ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_FALSE(source2->is_within_fenced_frame());
   EXPECT_FALSE(result->back().debug_permission);

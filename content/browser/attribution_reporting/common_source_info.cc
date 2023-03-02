@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
-#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
@@ -70,22 +69,14 @@ absl::optional<base::Time> CommonSourceInfo::GetReportWindowTime(
 }
 
 CommonSourceInfo::CommonSourceInfo(
-    uint64_t source_event_id,
     SuitableOrigin source_origin,
-    attribution_reporting::DestinationSet destination_sites,
     SuitableOrigin reporting_origin,
     base::Time source_time,
     base::Time expiry_time,
     absl::optional<base::Time> event_report_window_time,
     absl::optional<base::Time> aggregatable_report_window_time,
-    SourceType source_type,
-    int64_t priority,
-    attribution_reporting::FilterData filter_data,
-    absl::optional<uint64_t> debug_key,
-    attribution_reporting::AggregationKeys aggregation_keys)
-    : source_event_id_(source_event_id),
-      source_origin_(std::move(source_origin)),
-      destination_sites_(std::move(destination_sites)),
+    SourceType source_type)
+    : source_origin_(std::move(source_origin)),
       reporting_origin_(std::move(reporting_origin)),
       source_time_(source_time),
       expiry_time_(expiry_time),
@@ -94,11 +85,7 @@ CommonSourceInfo::CommonSourceInfo(
       aggregatable_report_window_time_(
           ComputeReportWindowTime(aggregatable_report_window_time,
                                   expiry_time)),
-      source_type_(source_type),
-      priority_(priority),
-      filter_data_(std::move(filter_data)),
-      debug_key_(debug_key),
-      aggregation_keys_(std::move(aggregation_keys)) {
+      source_type_(source_type) {
   DCHECK_GE(kDefaultAttributionSourceExpiry, expiry_time_ - source_time);
   DCHECK_GE(kDefaultAttributionSourceExpiry,
             event_report_window_time_ - source_time);

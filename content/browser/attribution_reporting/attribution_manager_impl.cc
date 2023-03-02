@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/os_support.mojom.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -583,8 +584,8 @@ void AttributionManagerImpl::ProcessEvents() {
     const attribution_reporting::SuitableOrigin* cookie_origin = absl::visit(
         base::Overloaded{
             [](const StorableSource& source) {
-              return source.common_info().debug_key().has_value() ||
-                             source.debug_reporting()
+              return source.registration().debug_key.has_value() ||
+                             source.registration().debug_reporting
                          ? &source.common_info().reporting_origin()
                          : nullptr;
             },
@@ -626,7 +627,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
   absl::visit(
       base::Overloaded{
           [&](StorableSource source) {
-            CommonSourceInfo& common_info = source.common_info();
+            const CommonSourceInfo& common_info = source.common_info();
 
             bool allowed = IsOperationAllowed(
                 this->storage_partition_.get(),
@@ -645,10 +646,13 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
               return;
             }
 
+            attribution_reporting::SourceRegistration& registration =
+                source.registration();
+
             absl::optional<uint64_t> cleared_debug_key;
-            if (!is_debug_cookie_set && common_info.debug_key().has_value()) {
-              cleared_debug_key = common_info.debug_key();
-              common_info.ClearDebugKey();
+            if (!is_debug_cookie_set && registration.debug_key.has_value()) {
+              cleared_debug_key =
+                  std::exchange(registration.debug_key, absl::nullopt);
             }
 
             this->StoreSource(std::move(source), cleared_debug_key,
@@ -679,8 +683,8 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 
             absl::optional<uint64_t> cleared_debug_key;
             if (!is_debug_cookie_set && registration.debug_key.has_value()) {
-              cleared_debug_key = registration.debug_key;
-              registration.debug_key.reset();
+              cleared_debug_key =
+                  std::exchange(registration.debug_key, absl::nullopt);
             }
 
             this->StoreTrigger(std::move(trigger), cleared_debug_key,
@@ -741,8 +745,7 @@ void AttributionManagerImpl::OnReportStored(
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
   const AttributionInfo& attribution_info = report.attribution_info();
-  if (!attribution_info.debug_key ||
-      !attribution_info.source.common_info().debug_key() ||
+  if (!attribution_info.debug_key || !attribution_info.source.debug_key() ||
       !IsReportAllowed(report)) {
     return;
   }

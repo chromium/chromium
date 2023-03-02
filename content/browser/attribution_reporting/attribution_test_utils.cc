@@ -443,8 +443,7 @@ SourceBuilder& SourceBuilder::SetDebugReporting(bool debug_reporting) {
 
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
   return CommonSourceInfo(
-      source_event_id_, source_origin_, destination_sites_, reporting_origin_,
-      source_time_,
+      source_origin_, reporting_origin_, source_time_,
       /*expiry_time=*/source_time_ + expiry_,
       /*event_report_window_time=*/
       event_report_window_
@@ -454,17 +453,29 @@ CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
       aggregatable_report_window_
           ? absl::make_optional(source_time_ + *aggregatable_report_window_)
           : absl::nullopt,
-      source_type_, priority_, filter_data_, debug_key_, aggregation_keys_);
+      source_type_);
 }
 
 StorableSource SourceBuilder::Build() const {
-  return StorableSource(BuildCommonInfo(), is_within_fenced_frame_,
-                        debug_reporting_);
+  attribution_reporting::SourceRegistration registration(destination_sites_);
+  registration.source_event_id = source_event_id_;
+  registration.expiry = expiry_;
+  registration.event_report_window = event_report_window_;
+  registration.aggregatable_report_window = aggregatable_report_window_;
+  registration.priority = priority_;
+  registration.filter_data = filter_data_;
+  registration.debug_key = debug_key_;
+  registration.aggregation_keys = aggregation_keys_;
+  registration.debug_reporting = debug_reporting_;
+  return StorableSource(std::move(registration), BuildCommonInfo(),
+                        is_within_fenced_frame_);
 }
 
 StoredSource SourceBuilder::BuildStored() const {
-  StoredSource source(BuildCommonInfo(), attribution_logic_, active_state_,
-                      source_id_, aggregatable_budget_consumed_);
+  StoredSource source(BuildCommonInfo(), source_event_id_, destination_sites_,
+                      priority_, filter_data_, debug_key_, aggregation_keys_,
+                      attribution_logic_, active_state_, source_id_,
+                      aggregatable_budget_consumed_);
   source.SetDedupKeys(dedup_keys_);
   source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
   return source;
@@ -713,13 +724,9 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
     return std::make_tuple(
-        source.source_event_id(), source.source_origin(),
-        source.destination_sites().destinations(), source.reporting_origin(),
-        source.source_time(), source.expiry_time(),
-        source.event_report_window_time(),
-        source.aggregatable_report_window_time(), source.source_type(),
-        source.priority(), source.filter_data(), source.debug_key(),
-        source.aggregation_keys());
+        source.source_origin(), source.reporting_origin(), source.source_time(),
+        source.expiry_time(), source.event_report_window_time(),
+        source.aggregatable_report_window_time(), source.source_type());
   };
   return tie(a) == tie(b);
 }
@@ -751,9 +758,8 @@ bool operator<(const AttributionStorageDelegate::FakeReport& a,
 
 bool operator==(const StorableSource& a, const StorableSource& b) {
   const auto tie = [](const StorableSource& source) {
-    return std::make_tuple(source.common_info(),
-                           source.is_within_fenced_frame(),
-                           source.debug_reporting());
+    return std::make_tuple(source.registration(), source.common_info(),
+                           source.is_within_fenced_frame());
   };
   return tie(a) == tie(b);
 }
@@ -762,10 +768,13 @@ bool operator==(const StorableSource& a, const StorableSource& b) {
 // should not be tested.
 bool operator==(const StoredSource& a, const StoredSource& b) {
   const auto tie = [](const StoredSource& source) {
-    return std::make_tuple(source.common_info(), source.attribution_logic(),
-                           source.active_state(), source.dedup_keys(),
-                           source.aggregatable_budget_consumed(),
-                           source.aggregatable_dedup_keys());
+    return std::make_tuple(
+        source.common_info(), source.source_event_id(),
+        source.destination_sites(), source.priority(), source.filter_data(),
+        source.debug_key(), source.aggregation_keys(),
+        source.attribution_logic(), source.active_state(), source.dedup_keys(),
+        source.aggregatable_budget_consumed(),
+        source.aggregatable_dedup_keys());
   };
   return tie(a) == tie(b);
 }
@@ -947,9 +956,7 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
-  return out << "{source_event_id=" << source.source_event_id()
-             << ",source_origin=" << source.source_origin()
-             << "destination_sites=" << source.destination_sites()
+  return out << "{source_origin=" << source.source_origin()
              << "reporting_origin=" << source.reporting_origin()
              << ",source_time=" << source.source_time()
              << ",expiry_time=" << source.expiry_time()
@@ -957,12 +964,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << source.event_report_window_time()
              << ",aggregatable_report_window_time="
              << source.aggregatable_report_window_time()
-             << ",source_type=" << source.source_type()
-             << ",priority=" << source.priority()
-             << ",filter_data=" << source.filter_data() << ",debug_key="
-             << (source.debug_key() ? base::NumberToString(*source.debug_key())
-                                    : "null")
-             << ",aggregation_keys=" << source.aggregation_keys() << "}";
+             << ",source_type=" << source.source_type() << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -983,13 +985,21 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& source) {
-  return out << "{common_info=" << source.common_info()
+  return out << "{registration=" << source.registration().ToJson()
+             << ",common_info=" << source.common_info()
              << ",is_within_fenced_frame=" << source.is_within_fenced_frame()
-             << ",debug_reporting=" << source.debug_reporting() << "}";
+             << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
   out << "{common_info=" << source.common_info()
+      << ",source_event_id=" << source.source_event_id()
+      << "destination_sites=" << source.destination_sites()
+      << ",priority=" << source.priority()
+      << ",filter_data=" << source.filter_data() << ",debug_key="
+      << (source.debug_key() ? base::NumberToString(*source.debug_key())
+                             : "null")
+      << ",aggregation_keys=" << source.aggregation_keys()
       << ",attribution_logic=" << source.attribution_logic()
       << ",active_state=" << source.active_state()
       << ",source_id=" << *source.source_id()
@@ -1101,6 +1111,45 @@ std::ostream& operator<<(std::ostream& out, const SendResult& info) {
 std::ostream& operator<<(std::ostream& out,
                          const AttributionDataModel::DataKey& key) {
   return out << "{reporting_origin=" << key.reporting_origin() << "}";
+}
+
+SourceRegistrationMatcherConfig::SourceRegistrationMatcherConfig(
+    ::testing::Matcher<uint64_t> source_event_id,
+    ::testing::Matcher<const attribution_reporting::DestinationSet&>
+        destination_set,
+    ::testing::Matcher<uint64_t> priority,
+    ::testing::Matcher<absl::optional<uint64_t>> debug_key,
+    ::testing::Matcher<const attribution_reporting::AggregationKeys&>
+        aggregation_keys,
+    ::testing::Matcher<bool> debug_reporting)
+    : source_event_id(std::move(source_event_id)),
+      destination_set(std::move(destination_set)),
+      priority(std::move(priority)),
+      debug_key(std::move(debug_key)),
+      aggregation_keys(std::move(aggregation_keys)),
+      debug_reporting(std::move(debug_reporting)) {}
+
+SourceRegistrationMatcherConfig::~SourceRegistrationMatcherConfig() = default;
+
+::testing::Matcher<const attribution_reporting::SourceRegistration&>
+SourceRegistrationMatches(const SourceRegistrationMatcherConfig& cfg) {
+  return AllOf(
+      Field("source_event_id",
+            &attribution_reporting::SourceRegistration::source_event_id,
+            cfg.source_event_id),
+      Field("destination_set",
+            &attribution_reporting::SourceRegistration::destination_set,
+            cfg.destination_set),
+      Field("priority", &attribution_reporting::SourceRegistration::priority,
+            cfg.priority),
+      Field("debug_key", &attribution_reporting::SourceRegistration::debug_key,
+            cfg.debug_key),
+      Field("aggregation_keys",
+            &attribution_reporting::SourceRegistration::aggregation_keys,
+            cfg.aggregation_keys),
+      Field("debug_reporting",
+            &attribution_reporting::SourceRegistration::debug_reporting,
+            cfg.debug_reporting));
 }
 
 EventTriggerDataMatcherConfig::EventTriggerDataMatcherConfig(

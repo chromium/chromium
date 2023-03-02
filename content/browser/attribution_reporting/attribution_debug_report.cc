@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/check.h"
@@ -11,6 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -230,13 +234,13 @@ std::string SerializeReportDataType(DebugDataType data_type) {
 }
 
 void SetSourceData(base::Value::Dict& data_body,
-                   const CommonSourceInfo& common_info) {
-  data_body.Set("source_event_id",
-                base::NumberToString(common_info.source_event_id()));
-  data_body.Set("source_site", common_info.SourceSite().Serialize());
-  if (common_info.debug_key()) {
-    data_body.Set("source_debug_key",
-                  base::NumberToString(*common_info.debug_key()));
+                   uint64_t source_event_id,
+                   const net::SchemefulSite& source_site,
+                   absl::optional<uint64_t> source_debug_key) {
+  data_body.Set("source_event_id", base::NumberToString(source_event_id));
+  data_body.Set("source_site", source_site.Serialize());
+  if (source_debug_key) {
+    data_body.Set("source_debug_key", base::NumberToString(*source_debug_key));
   }
 }
 
@@ -252,11 +256,13 @@ base::Value::Dict GetReportDataBody(
     const AttributionStorage::StoreSourceResult& result) {
   DCHECK(!source.is_within_fenced_frame());
 
-  const CommonSourceInfo& common_info = source.common_info();
+  const attribution_reporting::SourceRegistration& registration =
+      source.registration();
+
   base::Value::Dict data_body;
-  data_body.Set(kAttributionDestination,
-                common_info.destination_sites().ToJson());
-  SetSourceData(data_body, common_info);
+  data_body.Set(kAttributionDestination, registration.destination_set.ToJson());
+  SetSourceData(data_body, registration.source_event_id,
+                source.common_info().SourceSite(), registration.debug_key);
 
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
@@ -309,8 +315,9 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
   }
 
-  if (result.source()) {
-    SetSourceData(data_body, result.source()->common_info());
+  if (const absl::optional<StoredSource>& source = result.source()) {
+    SetSourceData(data_body, source->source_event_id(),
+                  source->common_info().SourceSite(), source->debug_key());
   }
 
   switch (data_type) {
@@ -385,7 +392,8 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
     bool is_debug_cookie_set,
     const AttributionStorage::StoreSourceResult& result) {
-  if (!source.debug_reporting() || source.is_within_fenced_frame()) {
+  if (!source.registration().debug_reporting ||
+      source.is_within_fenced_frame()) {
     return absl::nullopt;
   }
 

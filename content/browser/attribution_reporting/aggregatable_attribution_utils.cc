@@ -127,7 +127,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   const AttributionInfo& attribution_info = report.attribution_info();
 
   AggregatableReportSharedInfo::DebugMode debug_mode =
-      attribution_info.source.common_info().debug_key().has_value() &&
+      attribution_info.source.debug_key().has_value() &&
               attribution_info.debug_key.has_value()
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;

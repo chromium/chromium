@@ -498,24 +498,21 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
 
 // Source matchers
 
+MATCHER_P(SourceRegistrationIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.registration(), result_listener);
+}
+
 MATCHER_P(CommonSourceInfoIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.common_info(), result_listener);
 }
 
 MATCHER_P(SourceEventIdIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().source_event_id(),
-                            result_listener);
+  return ExplainMatchResult(matcher, arg.source_event_id(), result_listener);
 }
 
 MATCHER_P(ImpressionOriginIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.common_info().source_origin(),
                             result_listener);
-}
-
-MATCHER_P(DestinationSiteIs, matcher, "") {
-  return ExplainMatchResult(
-      ::testing::ElementsAre(matcher),
-      arg.common_info().destination_sites().destinations(), result_listener);
 }
 
 MATCHER_P(ReportingOriginIs, matcher, "") {
@@ -528,19 +525,12 @@ MATCHER_P(SourceTypeIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(SourcePriorityIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().priority(),
-                            result_listener);
-}
-
 MATCHER_P(SourceDebugKeyIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().debug_key(),
-                            result_listener);
+  return ExplainMatchResult(matcher, arg.debug_key(), result_listener);
 }
 
 MATCHER_P(SourceFilterDataIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().filter_data(),
-                            result_listener);
+  return ExplainMatchResult(matcher, arg.filter_data(), result_listener);
 }
 
 MATCHER_P(DedupKeysAre, matcher, "") {
@@ -553,8 +543,7 @@ MATCHER_P(AggregatableDedupKeysAre, matcher, "") {
 }
 
 MATCHER_P(AggregationKeysAre, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().aggregation_keys(),
-                            result_listener);
+  return ExplainMatchResult(matcher, arg.aggregation_keys(), result_listener);
 }
 
 MATCHER_P(AggregatableBudgetConsumedIs, matcher, "") {
@@ -675,6 +664,32 @@ MATCHER_P(DroppedEventLevelReportIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.dropped_event_level_report(),
                             result_listener);
 }
+
+struct SourceRegistrationMatcherConfig {
+  ::testing::Matcher<uint64_t> source_event_id = ::testing::_;
+  ::testing::Matcher<const attribution_reporting::DestinationSet&>
+      destination_set = ::testing::_;
+  ::testing::Matcher<uint64_t> priority = ::testing::_;
+  ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
+  ::testing::Matcher<const attribution_reporting::AggregationKeys&>
+      aggregation_keys = ::testing::_;
+  ::testing::Matcher<bool> debug_reporting = ::testing::_;
+
+  SourceRegistrationMatcherConfig() = delete;
+  explicit SourceRegistrationMatcherConfig(
+      ::testing::Matcher<uint64_t> source_event_id = ::testing::_,
+      ::testing::Matcher<const attribution_reporting::DestinationSet&>
+          destination_set = ::testing::_,
+      ::testing::Matcher<uint64_t> priority = ::testing::_,
+      ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
+      ::testing::Matcher<const attribution_reporting::AggregationKeys&>
+          aggregation_keys = ::testing::_,
+      ::testing::Matcher<bool> debug_reporting = ::testing::_);
+  ~SourceRegistrationMatcherConfig();
+};
+
+::testing::Matcher<const attribution_reporting::SourceRegistration&>
+SourceRegistrationMatches(const SourceRegistrationMatcherConfig&);
 
 struct EventTriggerDataMatcherConfig {
   ::testing::Matcher<uint64_t> data;
