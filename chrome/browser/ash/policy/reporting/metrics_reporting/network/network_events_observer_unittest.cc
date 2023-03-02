@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -137,7 +138,22 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_InitiallyLowSignal) {
 
   ASSERT_TRUE(result_metric_data.has_event_data());
   EXPECT_THAT(result_metric_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW));
+              Eq(MetricEventType::WIFI_SIGNAL_STRENGTH_LOW));
+  ASSERT_TRUE(result_metric_data.has_telemetry_data());
+  ASSERT_TRUE(result_metric_data.telemetry_data().has_networks_telemetry());
+  ASSERT_TRUE(result_metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .has_signal_strength_event_data());
+  EXPECT_THAT(result_metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .signal_strength_event_data()
+                  .guid(),
+              Eq(kWifiGuid));
+  EXPECT_THAT(result_metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .signal_strength_event_data()
+                  .signal_strength_dbm(),
+              Eq(kLowSignalStrengthRssi));
 
   std::string service_config_very_low_signal = base::StringPrintf(
       kWifiConfig, kWifiGuid, shill::kStateReady, kVeryLowSignalStrengthRssi);
@@ -166,7 +182,22 @@ TEST_F(NetworkEventsObserverTest, WifiSignalStrength_InitiallyLowSignal) {
 
   ASSERT_TRUE(result_metric_data.has_event_data());
   EXPECT_THAT(result_metric_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_SIGNAL_STRENGTH_RECOVERED));
+              Eq(MetricEventType::WIFI_SIGNAL_STRENGTH_RECOVERED));
+  ASSERT_TRUE(result_metric_data.has_telemetry_data());
+  ASSERT_TRUE(result_metric_data.telemetry_data().has_networks_telemetry());
+  ASSERT_TRUE(result_metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .has_signal_strength_event_data());
+  EXPECT_THAT(result_metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .signal_strength_event_data()
+                  .guid(),
+              Eq(kWifiGuid));
+  EXPECT_THAT(result_metric_data.telemetry_data()
+                  .networks_telemetry()
+                  .signal_strength_event_data()
+                  .signal_strength_dbm(),
+              Eq(kGoodSignalStrengthRssi));
 }
 
 TEST_F(NetworkEventsObserverTest, WifiSignalStrength_NotConnected) {

@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW));
+              Eq(MetricEventType::WIFI_SIGNAL_STRENGTH_LOW));
 }
 
 }  // namespace

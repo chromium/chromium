@@ -11,14 +11,13 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -181,8 +180,13 @@ void NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived(
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
       signal_strength_dbm < kSignalThresholdDbm
-          ? MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW
-          : MetricEventType::NETWORK_SIGNAL_STRENGTH_RECOVERED);
+          ? MetricEventType::WIFI_SIGNAL_STRENGTH_LOW
+          : MetricEventType::WIFI_SIGNAL_STRENGTH_RECOVERED);
+  auto* const networks_telemetry =
+      metric_data.mutable_telemetry_data()->mutable_networks_telemetry();
+  networks_telemetry->mutable_signal_strength_event_data()->set_guid(guid);
+  networks_telemetry->mutable_signal_strength_event_data()
+      ->set_signal_strength_dbm(signal_strength_dbm);
   OnEventObserved(std::move(metric_data));
 }
 
