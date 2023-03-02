@@ -592,6 +592,10 @@ BASE_FEATURE(kInstalledAppProvider,
 // isolated web apps via the isolated-app:// scheme, and other advanced isolated
 // app functionality. See https://github.com/reillyeon/isolated-web-apps for a
 // general overview.
+// Please don't use this feature flag directly to guard the IWA code. Use
+// IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled() in the browser process
+// or check kEnableIsolatedWebAppsInRenderer command line flag in the renderer
+// process.
 BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
