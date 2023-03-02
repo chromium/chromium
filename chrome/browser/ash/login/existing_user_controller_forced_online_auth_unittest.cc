@@ -5,7 +5,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -18,12 +17,11 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 #include "chrome/browser/ash/login/ui/mock_login_display.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,9 +93,12 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
   set_hide_user_names_on_signin();
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
-  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  auto* user_manager = GetFakeUserManager();
+  user_manager->AddPublicAccountUser(saml_login_account1_id_,
+                                     /*with_saml=*/true);
+  user_manager->AddPublicAccountUser(saml_login_account2_id_,
+                                     /*with_saml=*/true);
+  existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 1);
   get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(true);
   task_environment_.FastForwardBy(kLoginOnlineShortDelay);
@@ -113,9 +114,12 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
 
   set_hide_user_names_on_signin();
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
-  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  auto* user_manager = GetFakeUserManager();
+  user_manager->AddPublicAccountUser(saml_login_account1_id_,
+                                     /*with_saml=*/true);
+  user_manager->AddPublicAccountUser(saml_login_account2_id_,
+                                     /*with_saml=*/true);
+  existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 2);
   get_password_sync_token_checker(kSamlToken1)
       ->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kServerError);
@@ -131,9 +135,12 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
 
   set_hide_user_names_on_signin();
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
-  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  auto* user_manager = GetFakeUserManager();
+  user_manager->AddPublicAccountUser(saml_login_account1_id_,
+                                     /*with_saml=*/true);
+  user_manager->AddPublicAccountUser(saml_login_account2_id_,
+                                     /*with_saml=*/true);
+  existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 2);
   get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(false);
   get_password_sync_token_checker(kSamlToken2)->OnTokenVerified(false);
@@ -148,9 +155,12 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
   known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
 
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
-  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
-  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  auto* user_manager = GetFakeUserManager();
+  user_manager->AddPublicAccountUser(saml_login_account1_id_,
+                                     /*with_saml=*/true);
+  user_manager->AddPublicAccountUser(saml_login_account2_id_,
+                                     /*with_saml=*/true);
+  existing_user_controller()->Init(user_manager->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 0);
 }
 
