@@ -597,15 +597,16 @@ bool NeuralStylusPalmDetectionFilter::
   absl::optional<base::Value> value =
       base::JSONReader::Read(ozone_params_switch_string);
   if (value != absl::nullopt && !ozone_params_switch_string.empty()) {
-    if (!value->is_dict()) {
+    base::Value::Dict* value_dict = value->GetIfDict();
+    if (!value_dict) {
       return false;
     }
     // If the key isn't set, default to false.
-    if (!value->GetDict().contains(kOzoneNNPalmTouchCompatibleProperty)) {
+    if (!value_dict->contains(kOzoneNNPalmTouchCompatibleProperty)) {
       return false;
     }
     std::string* touch_string_val =
-        value->FindStringKey(kOzoneNNPalmTouchCompatibleProperty);
+        value_dict->FindString(kOzoneNNPalmTouchCompatibleProperty);
     if (touch_string_val != nullptr) {
       if (*touch_string_val == "false") {
         return false;

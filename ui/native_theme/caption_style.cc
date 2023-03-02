@@ -17,14 +17,21 @@ CaptionStyle::~CaptionStyle() = default;
 absl::optional<CaptionStyle> CaptionStyle::FromSpec(const std::string& spec) {
   CaptionStyle style;
   absl::optional<base::Value> dict = base::JSONReader::Read(spec);
-
-  if (!dict.has_value() || !dict->is_dict())
+  if (!dict.has_value()) {
     return absl::nullopt;
+  }
 
-  if (const std::string* value = dict->FindStringKey("text-color"))
+  base::Value::Dict* value_dict = dict->GetIfDict();
+  if (!value_dict) {
+    return absl::nullopt;
+  }
+
+  if (const std::string* value = value_dict->FindString("text-color")) {
     style.text_color = *value;
-  if (const std::string* value = dict->FindStringKey("background-color"))
+  }
+  if (const std::string* value = value_dict->FindString("background-color")) {
     style.background_color = *value;
+  }
 
   return style;
 }

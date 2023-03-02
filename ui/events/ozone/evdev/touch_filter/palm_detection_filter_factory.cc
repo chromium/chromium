@@ -54,9 +54,9 @@ std::string FetchNeuralPalmRadiusPolynomial(const EventDeviceInfo& devinfo,
   absl::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kOzoneNNPalmSwitchName));
-  if (ozone_switch_value != absl::nullopt && ozone_switch_value->is_dict()) {
-    std::string* switch_string_value =
-        ozone_switch_value->FindStringKey(kOzoneNNPalmRadiusPolynomialProperty);
+  if (ozone_switch_value.has_value() && ozone_switch_value->is_dict()) {
+    std::string* switch_string_value = ozone_switch_value->GetDict().FindString(
+        kOzoneNNPalmRadiusPolynomialProperty);
     if (switch_string_value != nullptr) {
       return *switch_string_value;
     }
@@ -95,9 +95,9 @@ std::string FetchNeuralPalmModelVersion(const EventDeviceInfo& devinfo,
   absl::optional<base::Value> ozone_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kOzoneNNPalmSwitchName));
-  if (ozone_switch_value != absl::nullopt && ozone_switch_value->is_dict()) {
-    std::string* switch_string_value =
-        ozone_switch_value->FindStringKey(kOzoneNNPalmModelVersionProperty);
+  if (ozone_switch_value.has_value() && ozone_switch_value->is_dict()) {
+    std::string* switch_string_value = ozone_switch_value->GetDict().FindString(
+        kOzoneNNPalmModelVersionProperty);
     if (switch_string_value != nullptr) {
       return *switch_string_value;
     }

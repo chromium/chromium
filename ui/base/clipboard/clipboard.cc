@@ -151,8 +151,8 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
     if (!custom_format_json.empty()) {
       absl::optional<base::Value> json_val =
           base::JSONReader::Read(custom_format_json);
-      if (json_val.has_value()) {
-        for (const auto it : json_val->DictItems()) {
+      if (json_val.has_value() && json_val->is_dict()) {
+        for (const auto it : json_val->GetDict()) {
           const std::string* custom_format_name = it.second.GetIfString();
           if (custom_format_name) {
             // Prepend "web " prefix to the custom format.
