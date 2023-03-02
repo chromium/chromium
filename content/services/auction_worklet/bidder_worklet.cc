@@ -265,7 +265,7 @@ void BidderWorklet::BeginGenerateBid(
   // `generate_bid_task` here.
   generate_bid_task->generate_bid_client->OnBiddingSignalsReceived(
       /*priority_vector=*/{},
-      /*trusted_signals_fetch_duration=*/base::TimeDelta(),
+      /*trusted_signals_fetch_latency=*/base::TimeDelta(),
       base::BindOnce(&BidderWorklet::SignalsReceivedCallback,
                      base::Unretained(this), generate_bid_task));
 }
@@ -652,7 +652,7 @@ void BidderWorklet::V8State::GenerateBid(
   if (!result.has_value()) {
     PostErrorBidCallbackToUserThread(
         std::move(callback),
-        /*bidding_duration=*/base::TimeTicks::Now() - bidding_start);
+        /*bidding_latency=*/base::TimeTicks::Now() - bidding_start);
     return;
   }
 
@@ -697,7 +697,7 @@ void BidderWorklet::V8State::GenerateBid(
         if (!restricted_result.has_value()) {
           PostErrorBidCallbackToUserThread(
               std::move(callback),
-              /*bidding_duration=*/base::TimeTicks::Now() - bidding_start);
+              /*bidding_latency=*/base::TimeTicks::Now() - bidding_start);
           return;
         }
         result = std::move(restricted_result);
@@ -711,16 +711,15 @@ void BidderWorklet::V8State::GenerateBid(
 
   user_thread_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          std::move(callback), std::move(bid), std::move(kanon_bid),
-          std::move(result->bidding_signals_data_version),
-          std::move(result->debug_loss_report_url),
-          std::move(result->debug_win_report_url),
-          std::move(result->set_priority),
-          std::move(result->update_priority_signals_overrides),
-          std::move(result->pa_requests),
-          /*bidding_duration=*/base::TimeTicks::Now() - bidding_start,
-          std::move(result->error_msgs)));
+      base::BindOnce(std::move(callback), std::move(bid), std::move(kanon_bid),
+                     std::move(result->bidding_signals_data_version),
+                     std::move(result->debug_loss_report_url),
+                     std::move(result->debug_win_report_url),
+                     std::move(result->set_priority),
+                     std::move(result->update_priority_signals_overrides),
+                     std::move(result->pa_requests),
+                     /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
+                     std::move(result->error_msgs)));
 }
 
 absl::optional<BidderWorklet::V8State::SingleGenerateBidResult>
@@ -1083,7 +1082,7 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
     GenerateBidCallbackInternal callback,
-    base::TimeDelta bidding_duration,
+    base::TimeDelta bidding_latency,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
@@ -1098,7 +1097,7 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
           /*update_priority_signals_overrides=*/
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>(),
           /*pa_requests=*/
-          PrivateAggregationRequests(), bidding_duration,
+          PrivateAggregationRequests(), bidding_latency,
           std::move(error_msgs)));
 }
 
@@ -1261,7 +1260,7 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
   task->generate_bid_client->OnBiddingSignalsReceived(
       priority_vector ? *priority_vector
                       : TrustedSignals::Result::PriorityVector(),
-      /*trusted_signals_fetch_duration=*/base::TimeTicks::Now() -
+      /*trusted_signals_fetch_latency=*/base::TimeTicks::Now() -
           task->trace_wait_deps_start,
       base::BindOnce(&BidderWorklet::SignalsReceivedCallback,
                      base::Unretained(this), task));
@@ -1540,7 +1539,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
         update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
-    base::TimeDelta bidding_duration,
+    base::TimeDelta bidding_latency,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -1556,7 +1555,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       bidding_signals_data_version.has_value(), debug_loss_report_url,
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
       std::move(update_priority_signals_overrides), std::move(pa_requests),
-      bidding_duration, error_msgs);
+      bidding_latency, error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }
 
