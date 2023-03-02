@@ -33,20 +33,20 @@ namespace {
 // Obtain an authenticated DRM fd from X11 and create a GbmDevice with it.
 std::unique_ptr<ui::GbmDevice> CreateX11GbmDevice() {
   if (getenv("RUNNING_UNDER_RR") != nullptr) {
-    LOG(ERROR) << "Running under rr, disabling dri3";
+    LOG(WARNING) << "Running under rr, disabling dri3";
     return nullptr;
   }
 
   auto* connection = x11::Connection::Get();
   // |connection| may be nullptr in headless mode.
   if (!connection) {
-    LOG(ERROR) << "Could not create x11 connection.";
+    LOG(WARNING) << "Could not create x11 connection.";
     return nullptr;
   }
 
   auto& dri3 = connection->dri3();
   if (!dri3.present()) {
-    LOG(ERROR) << "dri3 extension not supported.";
+    LOG(WARNING) << "dri3 extension not supported.";
     return nullptr;
   }
 
