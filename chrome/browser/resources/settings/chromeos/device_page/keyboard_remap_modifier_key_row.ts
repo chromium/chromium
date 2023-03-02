@@ -12,6 +12,8 @@ import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 import '../../prefs/prefs.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -28,20 +30,10 @@ enum KeyState {
   MODIFIER_REMAPPED = 'modifier-remapped',
 }
 
-/**
- * Mapping for each modifier key to its default remapping key.
- */
-let defaultRemappings: {[key: number]: ModifierKey} = {
-  [ModifierKey.META]: ModifierKey.META,
-  [ModifierKey.CONTROL]: ModifierKey.CONTROL,
-  [ModifierKey.ALT]: ModifierKey.ALT,
-  [ModifierKey.ESC]: ModifierKey.ESC,
-  [ModifierKey.BACKSPACE]: ModifierKey.BACKSPACE,
-  [ModifierKey.ASSISTANT]: ModifierKey.ASSISTANT,
-  [ModifierKey.CAPS_LOCK]: ModifierKey.CAPS_LOCK,
-};
+const KeyboardRemapModifierKeyRowElementBase = I18nMixin(PolymerElement);
 
-export class KeyboardRemapModifierKeyRowElement extends PolymerElement {
+export class KeyboardRemapModifierKeyRowElement extends
+    KeyboardRemapModifierKeyRowElementBase {
   static get is(): string {
     return 'keyboard-remap-modifier-key-row';
   }
@@ -51,6 +43,13 @@ export class KeyboardRemapModifierKeyRowElement extends PolymerElement {
       keyLabel: {
         type: String,
         value: '',
+        computed: 'getKeyLabel(metaKey)',
+      },
+
+      metaKeyLabel: {
+        type: String,
+        value: '',
+        computed: 'getMetaKeyLabel(metaKey)',
       },
 
       keyState: {
@@ -60,31 +59,37 @@ export class KeyboardRemapModifierKeyRowElement extends PolymerElement {
         computed: 'computeKeyState(pref.value)',
       },
 
-      menuOptions: {
-        type: Array,
-      },
-
       pref: {
         type: Object,
       },
 
       metaKey: {
         type: Number,
-        observer: 'updateDefaultRemapping',
+        observer: 'onMetaKeyChanged',
       },
 
       key: {
         type: Number,
       },
+
+      defaultRemappings: {
+        type: Object,
+      },
+
+      keyMapTargets: {
+        type: Object,
+      },
     };
   }
 
-  keyLabel: string;
+  protected keyLabel: string;
+  private metaKeyLabel: string;
+  private keyMapTargets: DropdownMenuOptionList;
   keyState: KeyState;
-  menuOptions: DropdownMenuOptionList;
   pref: chrome.settingsPrivate.PrefObject;
   metaKey: MetaKey;
   key: ModifierKey;
+  defaultRemappings: {[key: number]: ModifierKey};
 
   static get template(): HTMLTemplateElement {
     return getTemplate();
@@ -95,21 +100,104 @@ export class KeyboardRemapModifierKeyRowElement extends PolymerElement {
    * the icon color between default and highlighted.
    */
   private computeKeyState(): KeyState {
-    return defaultRemappings[this.key] === this.pref.value ?
+    return this.defaultRemappings[this.key] === this.pref.value ?
         KeyState.DEFAULT_REMAPPING :
         KeyState.MODIFIER_REMAPPED;
   }
 
-  private updateDefaultRemapping(): void {
-    defaultRemappings = {
-      ...defaultRemappings,
-      [ModifierKey.META]:
-          this.metaKey === MetaKey.COMMAND ? ModifierKey.CONTROL :
-                                             ModifierKey.META,
-      [ModifierKey.CONTROL]:
-          this.metaKey === MetaKey.COMMAND ? ModifierKey.META :
-                                             ModifierKey.CONTROL,
-    };
+  private onMetaKeyChanged(): void {
+    this.setUpKeyMapTargets();
+  }
+
+  /**
+   * Populate the metaKey label required in the keyMapTargets menu dropdown.
+   */
+  private getMetaKeyLabel(): string {
+    switch (this.metaKey) {
+      case MetaKey.COMMAND: {
+        return this.i18n('keyboardKeyCommand');
+      }
+      case MetaKey.EXTERNAL_META: {
+        return this.i18n('keyboardKeyExternalMeta');
+      }
+      case MetaKey.LAUNCHER: {
+        return this.i18n('keyboardKeyLauncher');
+      }
+      case MetaKey.SEARCH: {
+        return this.i18n('keyboardKeySearch');
+      }
+    }
+  }
+
+  /**
+   * Populate the key label inside the keyboard key icon.
+   */
+  private getKeyLabel(): string {
+    switch (this.key) {
+      case ModifierKey.ALT: {
+        return this.i18n('keyboardKeyAlt');
+      }
+      case ModifierKey.ASSISTANT: {
+        return this.i18n('keyboardKeyAssistant');
+      }
+      case ModifierKey.BACKSPACE: {
+        return this.i18n('keyboardKeyBackspace');
+      }
+      case ModifierKey.CAPS_LOCK: {
+        return this.i18n('keyboardKeyCapsLock');
+      }
+      case ModifierKey.CONTROL: {
+        return this.i18n('keyboardKeyCtrl');
+      }
+      case ModifierKey.ESC: {
+        return this.i18n('keyboardKeyEscape');
+      }
+      case ModifierKey.META: {
+        // TODO(yyhyyh@): Replace the i18n string for launcher and search label
+        // with icon.
+        return this.getMetaKeyLabel();
+      }
+      default:
+        assertNotReached('Invalid modifier key: ' + this.key);
+    }
+  }
+
+  private setUpKeyMapTargets(): void {
+    // Ordering is according to UX, but values match ModifierKey.
+    this.keyMapTargets = [
+      {
+        value: ModifierKey.META,
+        name: this.metaKeyLabel,
+      },
+      {
+        value: ModifierKey.CONTROL,
+        name: this.i18n('keyboardKeyCtrl'),
+      },
+      {
+        value: ModifierKey.ALT,
+        name: this.i18n('keyboardKeyAlt'),
+      },
+      {
+        value: ModifierKey.CAPS_LOCK,
+        name: this.i18n('keyboardKeyCapsLock'),
+      },
+      {
+        value: ModifierKey.ESC,
+        name: this.i18n('keyboardKeyEscape'),
+      },
+      {
+        value: ModifierKey.BACKSPACE,
+        name: this.i18n('keyboardKeyBackspace'),
+      },
+      {
+        value: ModifierKey.ASSISTANT,
+        name: this.i18n('keyboardKeyAssistant'),
+      },
+      {
+        value: ModifierKey.VOID,
+        name: this.i18n('keyboardKeyDisabled'),
+      },
+    ];
   }
 }
 

@@ -16,44 +16,42 @@
   </cr-button>
 </div>
 <div id="container">
-  <keyboard-remap-modifier-key-row key-label="[[metaKeyLabel]]"
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.META]]" id="metaKey"
-      menu-options="[[keyMapTargets]]"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeMetaPref}}"></keyboard-remap-modifier-key-row>
-  <keyboard-remap-modifier-key-row key-label="[[i18n('keyboardKeyCtrl')]]"
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.CONTROL]]" id="ctrlKey"
-      menu-options="[[keyMapTargets]]"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeCtrlPref}}"></keyboard-remap-modifier-key-row>
-  <keyboard-remap-modifier-key-row key-label="[[i18n('keyboardKeyAlt')]]"
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.ALT]]" id="altKey"
-      menu-options="[[keyMapTargets]]"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeAltPref}}"></keyboard-remap-modifier-key-row>
-  <keyboard-remap-modifier-key-row key-label="[[i18n('keyboardKeyEscape')]]"
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.ESC]]" id="escapeKey"
-      menu-options="[[keyMapTargets]]"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeEscPref}}"></keyboard-remap-modifier-key-row>
-  <keyboard-remap-modifier-key-row key-label="[[i18n('keyboardKeyBackspace')]]"
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.BACKSPACE]]" id="backspaceKey"
-      menu-options="[[keyMapTargets]]"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeBackspacePref}}"></keyboard-remap-modifier-key-row>
   <template is="dom-if" if="[[hasAssistantKey_]]">
     <keyboard-remap-modifier-key-row
-    key-label="[[i18n('keyboardKeyAssistant')]]"
+      default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.ASSISTANT]]" id="assistantKey"
-      menu-options="[[keyMapTargets]]"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeAssistantPref}}"></keyboard-remap-modifier-key-row>
   </template>
   <template is="dom-if" if="[[hasCapsLockKey]]">
     <keyboard-remap-modifier-key-row
-    key-label="[[i18n('keyboardKeyCapsLock')]]"
+      default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.CAPS_LOCK]]" id="capsLockKey"
-      menu-options="[[keyMapTargets]]"
       meta-key="[[keyboard.metaKey]]"
       pref="{{fakeCapsLockPref}}"></keyboard-remap-modifier-key-row>
   </template>

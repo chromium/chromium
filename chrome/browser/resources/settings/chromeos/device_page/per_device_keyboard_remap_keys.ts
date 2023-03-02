@@ -19,7 +19,6 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -136,11 +135,12 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         type: Object,
       },
 
-      /** Menu items for key mapping. */
-      keyMapTargets: Object,
-
       metaKeyLabel: {
         type: String,
+      },
+
+      defaultRemappings: {
+        type: Object,
       },
     };
   }
@@ -162,9 +162,17 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   protected keyboard: Keyboard;
+  protected defaultRemappings: {[key: number]: ModifierKey} = {
+    [ModifierKey.META]: ModifierKey.META,
+    [ModifierKey.CONTROL]: ModifierKey.CONTROL,
+    [ModifierKey.ALT]: ModifierKey.ALT,
+    [ModifierKey.ESC]: ModifierKey.ESC,
+    [ModifierKey.BACKSPACE]: ModifierKey.BACKSPACE,
+    [ModifierKey.ASSISTANT]: ModifierKey.ASSISTANT,
+    [ModifierKey.CAPS_LOCK]: ModifierKey.CAPS_LOCK,
+  };
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
-  private keyMapTargets: DropdownMenuOptionList;
   private fakeAltPref: chrome.settingsPrivate.PrefObject;
   private fakeAssistantPref: chrome.settingsPrivate.PrefObject;
   private fakeBackspacePref: chrome.settingsPrivate.PrefObject;
@@ -197,6 +205,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         connectedKeyboards.find(keyboard => keyboard.id === keyboardId);
     assert(!!searchedKeyboard);
     this.keyboard = searchedKeyboard;
+    this.updateDefaultRemapping();
     this.defaultInitializePrefs();
 
     // Assistant key and caps lock key are optional. Their values depend on
@@ -205,10 +214,6 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         searchedKeyboard.modifierKeys.includes(ModifierKey.ASSISTANT);
     this.hasCapsLockKey =
         searchedKeyboard.modifierKeys.includes(ModifierKey.CAPS_LOCK);
-
-    // Get MetaKey label from keyboard settings.
-    this.metaKeyLabel = this.getMetaKeyLabel();
-    this.setUpKeyMapTargets();
 
     // Update Prefs according to keyboard modifierRemappings.
     Array.from(this.keyboard.settings.modifierRemappings.keys())
@@ -233,61 +238,20 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     }
   }
 
-  /**
-   * Initializes the dropdown menu options for remapping keys.
-   */
-  private setUpKeyMapTargets() {
-    // Ordering is according to UX, but values match ModifierKey.
-    this.keyMapTargets = [
-      {
-        value: ModifierKey.META,
-        name: this.metaKeyLabel,
-      },
-      {
-        value: ModifierKey.CONTROL,
-        name: 'Ctrl',
-      },
-      {
-        value: ModifierKey.ALT,
-        name: 'Alt',
-      },
-      {
-        value: ModifierKey.CAPS_LOCK,
-        name: 'Caps Lock',
-      },
-      {
-        value: ModifierKey.ESC,
-        name: 'Escape',
-      },
-      {
-        value: ModifierKey.BACKSPACE,
-        name: 'Backspace',
-      },
-      {
-        value: ModifierKey.ASSISTANT,
-        name: 'Assistant',
-      },
-      {
-        value: ModifierKey.VOID,
-        name: 'Disabled',
-      },
-    ];
-  }
-
   private defaultInitializePrefs(): void {
-    this.set('fakeAltPref.value', ModifierKey.ALT);
-    this.set('fakeAssitantPref.value', ModifierKey.ASSISTANT);
-    this.set('fakeBackspacePref.value', ModifierKey.BACKSPACE);
+    this.set('fakeAltPref.value', this.defaultRemappings[ModifierKey.ALT]);
     this.set(
-        'fakeCtrlPref.value',
-        this.keyboard.metaKey === MetaKey.COMMAND ? ModifierKey.META :
-                                                    ModifierKey.CONTROL);
-    this.set('fakeCapsLockPref.value', ModifierKey.CAPS_LOCK);
-    this.set('fakeEscPref.value', ModifierKey.ESC);
+        'fakeAssitantPref.value',
+        this.defaultRemappings[ModifierKey.ASSISTANT]);
     this.set(
-        'fakeMetaPref.value',
-        this.keyboard.metaKey === MetaKey.COMMAND ? ModifierKey.CONTROL :
-                                                    ModifierKey.META);
+        'fakeBackspacePref.value',
+        this.defaultRemappings[ModifierKey.BACKSPACE]);
+    this.set('fakeCtrlPref.value', this.defaultRemappings[ModifierKey.CONTROL]);
+    this.set(
+        'fakeCapsLockPref.value',
+        this.defaultRemappings[ModifierKey.CAPS_LOCK]);
+    this.set('fakeEscPref.value', this.defaultRemappings[ModifierKey.ESC]);
+    this.set('fakeMetaPref.value', this.defaultRemappings[ModifierKey.META]);
   }
 
   private setRemappedKey(originalKey: ModifierKey): void {
@@ -330,21 +294,16 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     // settings value.
   }
 
-  private getMetaKeyLabel(): string {
-    switch (this.keyboard.metaKey) {
-      case MetaKey.COMMAND: {
-        return this.i18n('keyboardKeyCommand');
-      }
-      case MetaKey.EXTERNAL_META: {
-        return this.i18n('keyboardKeyExternalMeta');
-      }
-      case MetaKey.LAUNCHER: {
-        return this.i18n('keyboardKeyLauncher');
-      }
-      case MetaKey.SEARCH: {
-        return this.i18n('keyboardKeySearch');
-      }
-    }
+  private updateDefaultRemapping(): void {
+    this.defaultRemappings = {
+      ...this.defaultRemappings,
+      [ModifierKey.META]:
+          this.keyboard.metaKey === MetaKey.COMMAND ? ModifierKey.CONTROL :
+                                                      ModifierKey.META,
+      [ModifierKey.CONTROL]:
+          this.keyboard.metaKey === MetaKey.COMMAND ? ModifierKey.META :
+                                                      ModifierKey.CONTROL,
+    };
   }
 }
 
