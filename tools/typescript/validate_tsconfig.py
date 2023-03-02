@@ -126,7 +126,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/browser/resources/chromeos/emoji_picker',
       'chrome/browser/resources/nearby_share/shared',
       'chrome/browser/resources/ntp4',
-      'chrome/browser/resources/settings/chromeos/tsc_input',
       'chrome/test/data/webui',
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/settings/chromeos',
