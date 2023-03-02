@@ -53,10 +53,6 @@ gfx::Rect AppListFolderItem::GetTargetIconRectInFolderForItem(
 // static
 const char AppListFolderItem::kItemType[] = "FolderItem";
 
-AppListFolderItem* AppListFolderItem::AsFolderItem() {
-  return this;
-}
-
 const char* AppListFolderItem::GetItemType() const {
   return AppListFolderItem::kItemType;
 }

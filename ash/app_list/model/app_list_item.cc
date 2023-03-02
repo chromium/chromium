@@ -4,7 +4,6 @@
 
 #include "ash/app_list/model/app_list_item.h"
 
-#include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ui/gfx/image/image_skia.h"
@@ -32,10 +31,6 @@ AppListItem::AppListItem(const std::string& id)
 AppListItem::~AppListItem() {
   for (auto& observer : observers_)
     observer.ItemBeingDestroyed();
-}
-
-AppListFolderItem* AppListItem::AsFolderItem() {
-  return nullptr;
 }
 
 void AppListItem::SetIcon(AppListConfigType config_type,

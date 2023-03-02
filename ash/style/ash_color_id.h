@@ -124,9 +124,7 @@ namespace ash {
   /* Color for drag image overflow badge text in holding space */ \
   E_CPONLY(kColorAshDragImageOverflowBadgeTextColor) \
   /* Color for feature tile small circle */ \
-  E_CPONLY(kColorAshTileSmallCircle) \
-  /* Color for the background of the app count indicator on a folder */ \
-  E_CPONLY(kColorAshFolderItemCountBackgroundColor)
+  E_CPONLY(kColorAshTileSmallCircle)
 
 #include "ui/color/color_id_macros.inc"
 

@@ -593,10 +593,6 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[kColorAshDragImageOverflowBadgeTextColor] =
       use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey900)
                      : ui::ColorTransform(gfx::kGoogleGrey200);
-
-  mixer[kColorAshFolderItemCountBackgroundColor] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue300)
-                     : ui::ColorTransform(gfx::kGoogleBlue600);
 }
 
 }  // namespace ash
