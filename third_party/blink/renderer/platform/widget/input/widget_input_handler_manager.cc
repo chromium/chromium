@@ -376,7 +376,7 @@ void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
   DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
   DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
 
-  uint64_t element_id =
+  cc::ElementId element_id =
       widget_->client()->FrameWidget()->GetScrollableContainerIdAt(point);
 
   InputThreadTaskRunner(TaskRunnerType::kInputBlocking)
@@ -869,9 +869,9 @@ void WidgetInputHandlerManager::FindScrollTargetReply(
     std::unique_ptr<WebCoalescedInputEvent> event,
     std::unique_ptr<cc::EventMetrics> metrics,
     mojom::blink::WidgetInputHandler::DispatchEventCallback browser_callback,
-    uint64_t hit_test_result) {
+    cc::ElementId hit_test_result) {
   TRACE_EVENT1("input", "WidgetInputHandlerManager::FindScrollTargetReply",
-               "hit_test_result", hit_test_result);
+               "hit_test_result", hit_test_result.ToString());
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
   DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
 

@@ -255,7 +255,7 @@ DamageTracker::LayerRectMapData& DamageTracker::RectDataForLayer(
 }
 
 DamageTracker::SurfaceRectMapData& DamageTracker::RectDataForSurface(
-    uint64_t surface_id,
+    ElementId surface_id,
     bool* surface_is_new) {
   SurfaceRectMapData data(surface_id);
 
@@ -271,7 +271,7 @@ DamageTracker::SurfaceRectMapData& DamageTracker::RectDataForSurface(
 }
 
 void DamageTracker::PrepareForUpdate() {
-  mailboxId_++;
+  mailbox_id_++;
   damage_for_this_update_ = DamageAccumulator();
   has_damage_from_contributing_content_ = false;
   contributing_surfaces_.clear();
@@ -297,7 +297,7 @@ DamageTracker::DamageAccumulator DamageTracker::TrackDamageFromLeftoverRects() {
   // If there are no deleted elements then copy_pos iterator is in sync with
   // cur_pos and no copy happens.
   while (layer_cur_pos < rect_history_for_layers_.end()) {
-    if (layer_cur_pos->mailboxId_ == mailboxId_) {
+    if (layer_cur_pos->mailbox_id_ == mailbox_id_) {
       if (layer_cur_pos != layer_copy_pos)
         *layer_copy_pos = *layer_cur_pos;
 
@@ -310,7 +310,7 @@ DamageTracker::DamageAccumulator DamageTracker::TrackDamageFromLeftoverRects() {
   }
 
   while (surface_cur_pos < rect_history_for_surfaces_.end()) {
-    if (surface_cur_pos->mailboxId_ == mailboxId_) {
+    if (surface_cur_pos->mailbox_id_ == mailbox_id_) {
       if (surface_cur_pos != surface_copy_pos)
         *surface_copy_pos = *surface_cur_pos;
 
@@ -366,7 +366,7 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
 
   gfx::Rect visible_rect_in_target_space =
       layer->GetEnclosingVisibleRectInTargetSpace();
-  data.Update(visible_rect_in_target_space, mailboxId_);
+  data.Update(visible_rect_in_target_space, mailbox_id_);
 
   if (layer_is_new || layer->LayerPropertyChanged()) {
     // If a layer is new or has changed, then its entire layer rect affects the
@@ -441,7 +441,7 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
 
   gfx::Rect surface_rect_in_target_space =
       gfx::ToEnclosingRect(render_surface->DrawableContentRect());
-  data.Update(surface_rect_in_target_space, mailboxId_);
+  data.Update(surface_rect_in_target_space, mailbox_id_);
   contributing_surfaces_.emplace_back(render_surface,
                                       surface_rect_in_target_space);
 

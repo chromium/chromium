@@ -53,8 +53,8 @@ void CompositorAnimation::AttachElement(const CompositorElementId& id) {
   animation_->AttachElement(id);
 }
 
-void CompositorAnimation::AttachNoElement() {
-  animation_->AttachNoElement();
+void CompositorAnimation::AttachPaintWorkletElement() {
+  animation_->AttachPaintWorkletElement();
 }
 
 void CompositorAnimation::DetachElement() {

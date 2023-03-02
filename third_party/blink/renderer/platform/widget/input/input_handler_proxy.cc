@@ -71,7 +71,7 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
       scroll_state_data.delta_granularity =
           event.data.scroll_begin.delta_hint_units;
 
-      if (cc::ElementId::IsValid(
+      if (cc::ElementId::IsValidInternalValue(
               event.data.scroll_begin.scrollable_area_element_id)) {
         cc::ElementId target_scroller(
             event.data.scroll_begin.scrollable_area_element_id);
@@ -382,7 +382,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
     std::unique_ptr<blink::WebCoalescedInputEvent> event,
     std::unique_ptr<cc::EventMetrics> metrics,
     EventDispositionCallback callback,
-    cc::ElementIdType hit_test_result) {
+    cc::ElementId hit_test_result) {
   DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
   DCHECK_EQ(event->Event().GetType(),
             WebGestureEvent::Type::kGestureScrollBegin);
@@ -400,9 +400,9 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
 
   auto* gesture_event =
       static_cast<blink::WebGestureEvent*>(event->EventPointer());
-  if (cc::ElementId::IsValid(hit_test_result)) {
+  if (hit_test_result) {
     gesture_event->data.scroll_begin.scrollable_area_element_id =
-        hit_test_result;
+        hit_test_result.GetInternalValue();
     gesture_event->data.scroll_begin.main_thread_hit_tested = true;
 
     if (metrics) {
@@ -584,7 +584,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
     // This will avoid hit testing and directly scroll the scroller with the
     // provided element_id.
     synthetic_gesture_event->data.scroll_begin.scrollable_area_element_id =
-        pointer_result.target_scroller.GetStableId();
+        pointer_result.target_scroller.GetInternalValue();
   }
 
   // Send in a LatencyInfo with SCROLLBAR type so that the end to end latency

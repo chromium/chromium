@@ -145,8 +145,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
 
   void SetShowBeforeUnloadDialog(bool show_dialog);
 
-  // See cc/paint/element_id.h for the definition of these id.
-  uint64_t GetVisualViewportScrollingElementIdForTesting();
+  cc::ElementId GetVisualViewportScrollingElementIdForTesting();
 
   bool IsLoaded();
 

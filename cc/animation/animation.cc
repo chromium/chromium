@@ -76,12 +76,12 @@ scoped_refptr<const ElementAnimations> Animation::element_animations() const {
 }
 
 void Animation::AttachElement(ElementId element_id) {
-  DCHECK_NE(element_id.GetStableId(), ElementId::kReservedElementId);
+  DCHECK_NE(element_id, kReservedElementIdForPaintWorklet);
   AttachElementInternal(element_id);
 }
 
-void Animation::AttachNoElement() {
-  AttachElementInternal(ElementId(ElementId::kReservedElementId));
+void Animation::AttachPaintWorkletElement() {
+  AttachElementInternal(kReservedElementIdForPaintWorklet);
 }
 
 void Animation::AttachElementInternal(ElementId element_id) {

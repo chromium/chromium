@@ -86,7 +86,7 @@ class EventHandlerSimTest : public SimTest {
     WebView().SetIsActive(true);
   }
 
-  void InjectScrollFromGestureEvents(cc::ElementIdType element_id,
+  void InjectScrollFromGestureEvents(cc::ElementId element_id,
                                      float delta_x,
                                      float delta_y) {
     WebGestureEvent gesture_scroll_begin{
@@ -95,7 +95,7 @@ class EventHandlerSimTest : public SimTest {
     gesture_scroll_begin.data.scroll_begin.delta_x_hint = 0;
     gesture_scroll_begin.data.scroll_begin.delta_y_hint = -delta_y;
     gesture_scroll_begin.data.scroll_begin.scrollable_area_element_id =
-        element_id;
+        element_id.GetInternalValue();
     WebView().MainFrameWidget()->HandleInputEvent(
         WebCoalescedInputEvent(gesture_scroll_begin, ui::LatencyInfo()));
 
@@ -2183,8 +2183,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterMainThreadScrollAtBeginFrame) {
   LocalFrameView* frame_view = GetDocument().View();
   constexpr float delta_y = 500;
   InjectScrollFromGestureEvents(
-      frame_view->LayoutViewport()->GetScrollElementId().GetStableId(), 0,
-      delta_y);
+      frame_view->LayoutViewport()->GetScrollElementId(), 0, delta_y);
   ASSERT_EQ(500, frame_view->LayoutViewport()->GetScrollOffset().y());
   EXPECT_EQ("currently hovered", element1.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element2.InnerHTML().Utf8());
@@ -2262,8 +2261,8 @@ TEST_F(EventHandlerSimTest,
   // Send scroll gesture events which will cause scroll happen in main thread
   // and mark hover state dirty in ScrollManager.
   constexpr float delta_y = 1000;
-  InjectScrollFromGestureEvents(
-      iframe_scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
+  InjectScrollFromGestureEvents(iframe_scrollable_area->GetScrollElementId(), 0,
+                                delta_y);
   LocalFrameView* frame_view = GetDocument().View();
   ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().y());
   ASSERT_EQ(1000, iframe_scrollable_area->ScrollOffsetInt().y());
@@ -2399,8 +2398,8 @@ TEST_F(EventHandlerSimTest,
   ScrollableArea* scrollable_area =
       scroller->GetLayoutBox()->GetScrollableArea();
   constexpr float delta_y = 300;
-  InjectScrollFromGestureEvents(
-      scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
+  InjectScrollFromGestureEvents(scrollable_area->GetScrollElementId(), 0,
+                                delta_y);
   ASSERT_EQ(300, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
@@ -2488,8 +2487,8 @@ TEST_F(EventHandlerSimTest,
       scroller->GetLayoutBox()->GetScrollableArea();
   ASSERT_EQ(0, scrollable_area->GetScrollOffset().y());
   constexpr float delta_y = 500;
-  InjectScrollFromGestureEvents(
-      scrollable_area->GetScrollElementId().GetStableId(), 0, delta_y);
+  InjectScrollFromGestureEvents(scrollable_area->GetScrollElementId(), 0,
+                                delta_y);
   ASSERT_EQ(500, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
@@ -2960,7 +2959,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
   ScrollableArea* scrollable_area =
       scroller->GetLayoutBox()->GetScrollableArea();
   gesture_scroll_begin.data.scroll_begin.scrollable_area_element_id =
-      scrollable_area->GetScrollElementId().GetStableId();
+      scrollable_area->GetScrollElementId().GetInternalValue();
 
   DispatchElementTargetedGestureScroll(gesture_scroll_begin);
   DispatchElementTargetedGestureScroll(gesture_scroll_update);
@@ -3016,7 +3015,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
   gesture_scroll_begin.data.scroll_begin.delta_x_hint = 0;
   gesture_scroll_begin.data.scroll_begin.delta_y_hint = -delta_y;
   gesture_scroll_begin.data.scroll_begin.scrollable_area_element_id =
-      scrollable_area->GetScrollElementId().GetStableId();
+      scrollable_area->GetScrollElementId().GetInternalValue();
   DispatchElementTargetedGestureScroll(gesture_scroll_begin);
 
   WebGestureEvent gesture_scroll_update{
@@ -3077,7 +3076,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrameNoCrash) {
   gesture_scroll_begin.data.scroll_begin.delta_x_hint = 0;
   gesture_scroll_begin.data.scroll_begin.delta_y_hint = -delta_y;
   gesture_scroll_begin.data.scroll_begin.scrollable_area_element_id =
-      scrollable_area->GetScrollElementId().GetStableId();
+      scrollable_area->GetScrollElementId().GetInternalValue();
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       gesture_scroll_begin);
 }
@@ -3115,7 +3114,7 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollViewport) {
   // are owned by the visual viewport, but they don't support interactions, so
   // we never see injected GSB targeting the visual viewport.
   gesture_scroll_begin.data.scroll_begin.scrollable_area_element_id =
-      layout_viewport.GetScrollElementId().GetStableId();
+      layout_viewport.GetScrollElementId().GetInternalValue();
 
   GetWebFrameWidget().DispatchThroughCcInputHandler(gesture_scroll_begin);
 

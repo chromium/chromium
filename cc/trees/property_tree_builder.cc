@@ -495,7 +495,8 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
   int node_id = effect_tree_->Insert(EffectNode(), parent_id);
   EffectNode* node = effect_tree_->back();
 
-  node->stable_id = layer->id();
+  node->element_id =
+      layer->element_id() ? layer->element_id() : ElementId(layer->id());
   node->opacity = layer->opacity();
   node->blend_mode = layer->blend_mode();
   node->subtree_capture_id = layer->subtree_capture_id();

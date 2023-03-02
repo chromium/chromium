@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 
+#include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -88,7 +89,7 @@ class BLINK_EXPORT WebNode {
   void SimulateClick();
 
   // See cc/paint/element_id.h for the definition of these ids.
-  uint64_t ScrollingElementIdForTesting() const;
+  cc::ElementId ScrollingElementIdForTesting() const;
 
   // The argument should be lower-cased.
   WebElementCollection GetElementsByHTMLTagName(const WebString&) const;

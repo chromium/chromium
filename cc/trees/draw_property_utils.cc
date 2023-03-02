@@ -1604,7 +1604,7 @@ bool LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
       if (filters.HasFilterOfType(FilterOperation::BLUR)) {
         if (!render_surface->content_rect().IsEmpty()) {
           const LayerImpl* layer_impl =
-              layer_tree_impl.LayerById(effect_node->stable_id);
+              layer_tree_impl.LayerByElementId(effect_node->element_id);
           gfx::Rect screen_space_rect = MathUtil::MapEnclosingClippedRect(
               render_surface->screen_space_transform(),
               render_surface->content_rect());

@@ -657,7 +657,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return GetBitFlag(kMayContainVideoFlagMask);
   }
 
-  // Stable identifier for clients. See comment in cc/trees/element_id.h.
+  // Stable identifier for clients. See comment in cc/paint/element_id.h.
   void SetElementId(ElementId id);
   ElementId element_id() const { return inputs_.Read(*this).element_id; }
 

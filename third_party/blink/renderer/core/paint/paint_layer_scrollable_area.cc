@@ -1696,9 +1696,8 @@ void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
 CompositorElementId PaintLayerScrollableArea::GetScrollCornerElementId() const {
   CompositorElementId scrollable_element_id = GetScrollElementId();
   DCHECK(scrollable_element_id);
-  return CompositorElementIdFromUniqueObjectId(
-      scrollable_element_id.GetStableId(),
-      CompositorElementIdNamespace::kScrollCorner);
+  return CompositorElementIdWithNamespace(
+      scrollable_element_id, CompositorElementIdNamespace::kScrollCorner);
 }
 
 bool PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {

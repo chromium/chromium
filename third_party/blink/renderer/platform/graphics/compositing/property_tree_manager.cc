@@ -276,8 +276,7 @@ void PropertyTreeManager::SetupRootEffectNode() {
 
   static UniqueObjectId unique_id = NewUniqueObjectId();
 
-  effect_node.stable_id =
-      CompositorElementIdFromUniqueObjectId(unique_id).GetStableId();
+  effect_node.element_id = CompositorElementIdFromUniqueObjectId(unique_id);
   effect_node.transform_id = cc::kRootPropertyNodeId;
   effect_node.clip_id = cc::kSecondaryRootPropertyNodeId;
   effect_node.render_surface_reason = cc::RenderSurfaceReason::kRoot;
@@ -621,10 +620,10 @@ void PropertyTreeManager::EmitClipMaskLayer() {
       *current_.clip, *current_.transform, needs_layer, mask_isolation_id,
       mask_effect_id);
 
-  // Now we know the actual mask_isolation.stable_id.
-  // This overrides the stable_id set in PopulateCcEffectNode() if the
+  // Now we know the actual mask_isolation.element_id.
+  // This overrides the element_id set in PopulateCcEffectNode() if the
   // backdrop effect was moved up to |mask_isolation|.
-  mask_isolation->stable_id = mask_isolation_id.GetStableId();
+  mask_isolation->element_id = mask_isolation_id;
 
   if (!needs_layer)
     return;
@@ -635,7 +634,7 @@ void PropertyTreeManager::EmitClipMaskLayer() {
   // |mask_effect| into the tree.
   mask_isolation = effect_tree_.Node(current_.effect_id);
 
-  mask_effect.stable_id = mask_effect_id.GetStableId();
+  mask_effect.element_id = mask_effect_id;
   mask_effect.clip_id = mask_isolation->clip_id;
   mask_effect.blend_mode = SkBlendMode::kDstIn;
 
@@ -654,8 +653,8 @@ void PropertyTreeManager::EmitClipMaskLayer() {
 
   if (!mask_isolation->backdrop_filters.IsEmpty()) {
     mask_layer->SetIsBackdropFilterMask(true);
-    auto element_id = CompositorElementIdFromUniqueObjectId(
-        mask_effect.stable_id, CompositorElementIdNamespace::kEffectMask);
+    auto element_id = CompositorElementIdWithNamespace(
+        mask_effect.element_id, CompositorElementIdNamespace::kEffectMask);
     mask_layer->SetElementId(element_id);
     mask_isolation->backdrop_mask_element_id = element_id;
   }
@@ -953,9 +952,8 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
         pending_clip.type = static_cast<CcEffectType>(
             pending_clip.type | CcEffectType::kSyntheticForNonTrivialClip);
       } else {
-        synthetic_effect.stable_id =
-            CompositorElementIdFromUniqueObjectId(NewUniqueObjectId())
-                .GetStableId();
+        synthetic_effect.element_id =
+            CompositorElementIdFromUniqueObjectId(NewUniqueObjectId());
         synthetic_effect.render_surface_reason =
             cc::RenderSurfaceReason::kClipAxisAlignment;
         // The clip of the synthetic effect is the parent of the clip, so that
@@ -984,8 +982,8 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
         }
         clip_id = EnsureCompositorClipNode(*clip);
       }
-      // For non-trivial clip, isolation_effect.stable_id will be assigned later
-      // when the effect is closed. For now the default value INVALID_STABLE_ID
+      // For non-trivial clip, isolation_effect.element_id will be assigned
+      // later when the effect is closed. For now the default value ElementId()
       // is used. See PropertyTreeManager::EmitClipMaskLayer().
       if (SupportsShaderBasedRoundedCorner(*pending_clip.clip,
                                            pending_clip.type, next_effect)) {
@@ -1113,16 +1111,15 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
     // node to mark the end of continuous synthetic effects for |next_effect|.
     effect_node.clip_id = output_clip_id;
     effect_node.transform_id = EnsureCompositorTransformNode(transform);
-    effect_node.stable_id = next_effect.GetCompositorElementId().GetStableId();
+    effect_node.element_id = next_effect.GetCompositorElementId();
   }
 
   if (has_multiple_groups) {
-    if (effect_node.stable_id != cc::EffectNode::INVALID_STABLE_ID) {
+    if (effect_node.element_id) {
       // We are creating more than one cc effect nodes for one blink effect.
       // Give the extra cc effect node a unique stable id.
-      effect_node.stable_id =
-          CompositorElementIdFromUniqueObjectId(NewUniqueObjectId())
-              .GetStableId();
+      effect_node.element_id =
+          CompositorElementIdFromUniqueObjectId(NewUniqueObjectId());
     }
   } else {
     next_effect.SetCcNodeId(new_sequence_number_, real_effect_node_id);
@@ -1193,7 +1190,7 @@ void PropertyTreeManager::PopulateCcEffectNode(
     cc::EffectNode& effect_node,
     const EffectPaintPropertyNode& effect,
     int output_clip_id) {
-  effect_node.stable_id = effect.GetCompositorElementId().GetStableId();
+  effect_node.element_id = effect.GetCompositorElementId();
   effect_node.clip_id = output_clip_id;
   effect_node.render_surface_reason = RenderSurfaceReasonForEffect(effect);
   effect_node.opacity = effect.Opacity();

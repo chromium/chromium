@@ -3463,7 +3463,7 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
             injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
     if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
-          scrollable_area_element_id.GetStableId();
+          scrollable_area_element_id.GetInternalValue();
       gesture_event->data.scroll_begin.main_thread_hit_tested = true;
     }
 
@@ -3534,7 +3534,7 @@ bool WebFrameWidgetImpl::IsProvisional() {
   return LocalRoot()->IsProvisional();
 }
 
-uint64_t WebFrameWidgetImpl::GetScrollableContainerIdAt(
+cc::ElementId WebFrameWidgetImpl::GetScrollableContainerIdAt(
     const gfx::PointF& point) {
   return HitTestResultAt(point).GetScrollableContainerId();
 }

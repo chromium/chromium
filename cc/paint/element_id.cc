@@ -5,6 +5,7 @@
 #include "cc/paint/element_id.h"
 
 #include <inttypes.h>
+
 #include <limits>
 #include <ostream>
 #include <string>
@@ -14,16 +15,11 @@
 
 namespace cc {
 
-const ElementIdType ElementId::kInvalidElementId = 0;
-const ElementIdType ElementId::kReservedElementId =
-    std::numeric_limits<ElementIdType>::max();
-
-// static
-bool ElementId::IsValid(ElementIdType id) {
-  return id != kInvalidElementId;
-}
-
 ElementId LayerIdToElementIdForTesting(int layer_id) {
+  // This intentionally returns an ElementId that is different from layer_id
+  // and is unlikely to conflict with other ElementIds. This ensures testing of
+  // our code not to depend on that the UI compositor uses ElementId(layer_id)
+  // as the element id of a layer.
   return ElementId(std::numeric_limits<int>::max() - layer_id);
 }
 
@@ -31,10 +27,6 @@ void ElementId::AddToTracedValue(base::trace_event::TracedValue* res) const {
   res->BeginDictionary("element_id");
   res->SetInteger("id_", id_);
   res->EndDictionary();
-}
-
-ElementIdType ElementId::GetStableId() const {
-  return id_;
 }
 
 std::string ElementId::ToString() const {

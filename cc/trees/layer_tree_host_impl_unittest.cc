@@ -5568,6 +5568,7 @@ class LayerTreeHostImplTestScrollbarOpacity
         GetPropertyTrees(pending_root), pending_root->effect_tree_index(),
         pending_root->transform_tree_index(), pending_root->clip_tree_index());
     new_effect_node.render_surface_reason = RenderSurfaceReason::kTest;
+    new_effect_node.element_id = ElementId(123);
     LayerImpl* pending_scrollbar_layer =
         host_impl_->pending_tree()->LayerById(scrollbar->id());
     GetEffectNode(pending_scrollbar_layer)->parent_id = new_effect_node.id;

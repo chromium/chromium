@@ -1870,7 +1870,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
 
 // Regression test for https://crbug.com/1095167. Render surfaces require that
 // EffectNode::stable_id is set.
-TEST_P(CompositingTest, EffectNodesShouldHaveStableIds) {
+TEST_P(CompositingTest, EffectNodesShouldHaveElementIds) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div style="overflow: hidden; border-radius: 2px; height: 10px;">
       <div style="backdrop-filter: grayscale(3%);">
@@ -1881,8 +1881,9 @@ TEST_P(CompositingTest, EffectNodesShouldHaveStableIds) {
   )HTML");
   auto* property_trees = RootCcLayer()->layer_tree_host()->property_trees();
   for (const auto& effect_node : property_trees->effect_tree().nodes()) {
-    if (effect_node.parent_id != -1)
-      EXPECT_TRUE(!!effect_node.stable_id);
+    if (effect_node.parent_id != cc::kInvalidPropertyNodeId) {
+      EXPECT_TRUE(!!effect_node.element_id);
+    }
   }
 }
 

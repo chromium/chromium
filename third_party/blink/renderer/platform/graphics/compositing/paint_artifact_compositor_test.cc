@@ -961,7 +961,7 @@ TEST_P(PaintArtifactCompositorTest, EffectTreeConversionWithAlias) {
              .Chunk()
              .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kWhite)
              .Build());
-  auto root_stable_id = GetPropertyTrees().effect_tree().Node(1)->stable_id;
+  auto root_element_id = GetPropertyTrees().effect_tree().Node(1)->element_id;
 
   auto real_effect1 =
       CreateOpacityEffect(e0(), t0(), &c0(), 0.5, CompositingReason::kAll);
@@ -990,13 +990,13 @@ TEST_P(PaintArtifactCompositorTest, EffectTreeConversionWithAlias) {
 
   const cc::EffectNode& converted_root_effect = *effect_tree.Node(1);
   EXPECT_EQ(-1, converted_root_effect.parent_id);
-  EXPECT_EQ(root_stable_id, converted_root_effect.stable_id);
+  EXPECT_EQ(root_element_id, converted_root_effect.element_id);
 
   const cc::EffectNode& converted_effect1 = *effect_tree.Node(2);
   EXPECT_EQ(converted_root_effect.id, converted_effect1.parent_id);
   EXPECT_FLOAT_EQ(0.5, converted_effect1.opacity);
-  EXPECT_EQ(real_effect1->GetCompositorElementId().GetStableId(),
-            converted_effect1.stable_id);
+  EXPECT_EQ(real_effect1->GetCompositorElementId(),
+            converted_effect1.element_id);
 
   const cc::EffectNode& converted_effect2 = *effect_tree.Node(3);
   EXPECT_EQ(converted_effect1.id, converted_effect2.parent_id);
@@ -1869,17 +1869,17 @@ TEST_P(PaintArtifactCompositorTest, NonContiguousEffectWithElementId) {
 
   ASSERT_EQ(3u, LayerCount());
   EXPECT_EQ(2, LayerAt(0)->effect_tree_index());
-  uint64_t stable_id = effect->GetCompositorElementId().GetStableId();
-  EXPECT_EQ(stable_id, GetPropertyTrees()
-                           .effect_tree()
-                           .Node(LayerAt(0)->effect_tree_index())
-                           ->stable_id);
+  cc::ElementId element_id = effect->GetCompositorElementId();
+  EXPECT_EQ(element_id, GetPropertyTrees()
+                            .effect_tree()
+                            .Node(LayerAt(0)->effect_tree_index())
+                            ->element_id);
   EXPECT_EQ(1, LayerAt(1)->effect_tree_index());
   EXPECT_EQ(3, LayerAt(2)->effect_tree_index());
-  EXPECT_NE(stable_id, GetPropertyTrees()
-                           .effect_tree()
-                           .Node(LayerAt(2)->effect_tree_index())
-                           ->stable_id);
+  EXPECT_NE(element_id, GetPropertyTrees()
+                            .effect_tree()
+                            .Node(LayerAt(2)->effect_tree_index())
+                            ->element_id);
 }
 
 TEST_P(PaintArtifactCompositorTest, EffectWithElementIdWithAlias) {
@@ -2906,10 +2906,10 @@ TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
 
   const cc::Layer* content0 = LayerAt(0);
 
-  uint64_t old_stable_id = GetPropertyTrees()
-                               .effect_tree()
-                               .Node(content0->effect_tree_index())
-                               ->stable_id;
+  cc::ElementId old_element_id = GetPropertyTrees()
+                                     .effect_tree()
+                                     .Node(content0->effect_tree_index())
+                                     ->element_id;
 
   TestPaintArtifact repeated_artifact;
   repeated_artifact.Chunk(t0(), *c1, e0())
@@ -2921,8 +2921,8 @@ TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
   EXPECT_EQ(GetPropertyTrees()
                 .effect_tree()
                 .Node(content1->effect_tree_index())
-                ->stable_id,
-            old_stable_id);
+                ->element_id,
+            old_element_id);
 
   TestPaintArtifact changed_artifact;
   changed_artifact.Chunk(t0(), *c2, e0())
@@ -2935,8 +2935,8 @@ TEST_P(PaintArtifactCompositorTest, ReuseSyntheticClip) {
   EXPECT_NE(GetPropertyTrees()
                 .effect_tree()
                 .Node(content2->effect_tree_index())
-                ->stable_id,
-            old_stable_id);
+                ->element_id,
+            old_element_id);
 }
 
 TEST_P(PaintArtifactCompositorTest,

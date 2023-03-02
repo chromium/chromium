@@ -41,7 +41,7 @@ class WebInputEventAttribution {
   }
 
   size_t GetHash() const {
-    return base::HashInts(type_, target_frame_id_.GetStableId());
+    return base::HashInts(type_, target_frame_id_.GetInternalValue());
   }
 
  private:

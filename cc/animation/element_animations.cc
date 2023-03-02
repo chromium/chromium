@@ -306,8 +306,9 @@ void ElementAnimations::UpdateClientAnimationState() {
   // For a custom property animation, or an animation that uses paint worklet,
   // it is not associated with any property node, and thus this function is not
   // needed.
-  if (element_id().GetStableId() == ElementId::kReservedElementId)
+  if (element_id() == kReservedElementIdForPaintWorklet) {
     return;
+  }
   DCHECK(animation_host_);
   if (!animation_host_->mutator_host_client())
     return;
@@ -502,7 +503,7 @@ void ElementAnimations::OnCustomPropertyAnimated(
   DCHECK(animation_host_->mutator_host_client());
   // No-op background-color animations can have no unique_id. See
   // CompositorAnimations::IsNoOpBackgroundColorAnimation for details.
-  if (!ElementId::IsValid(keyframe_model->element_id().GetStableId())) {
+  if (!keyframe_model->element_id()) {
     return;
   }
   ElementId id = CalculateTargetElementId(this, keyframe_model);

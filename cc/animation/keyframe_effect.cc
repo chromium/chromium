@@ -675,10 +675,11 @@ void KeyframeEffect::PushPropertiesTo(KeyframeEffect* keyframe_effect_impl) {
     if (keyframe_effect_impl->has_attached_element())
       keyframe_effect_impl->animation_->DetachElement();
     if (element_id_) {
-      if (element_id_.GetStableId() == ElementId::kReservedElementId)
-        keyframe_effect_impl->animation_->AttachNoElement();
-      else
+      if (element_id_ == kReservedElementIdForPaintWorklet) {
+        keyframe_effect_impl->animation_->AttachPaintWorkletElement();
+      } else {
         keyframe_effect_impl->animation_->AttachElement(element_id_);
+      }
     }
   }
 

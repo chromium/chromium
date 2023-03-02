@@ -34,9 +34,9 @@
 namespace cc {
 
 RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
-                                     uint64_t stable_id)
+                                     ElementId id)
     : layer_tree_impl_(layer_tree_impl),
-      stable_id_(stable_id),
+      id_(id),
       effect_tree_index_(kInvalidPropertyNodeId),
       num_contributors_(0),
       has_contributing_layer_that_escapes_clip_(false),
@@ -46,6 +46,7 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
       is_render_surface_list_member_(false),
       intersects_damage_under_(true),
       nearest_occlusion_immune_ancestor_(nullptr) {
+  DCHECK(id);
   damage_tracker_ = DamageTracker::Create();
 }
 

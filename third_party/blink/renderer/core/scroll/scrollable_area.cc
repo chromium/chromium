@@ -952,8 +952,8 @@ CompositorElementId ScrollableArea::GetScrollbarElementId(
       orientation == kHorizontalScrollbar
           ? CompositorElementIdNamespace::kHorizontalScrollbar
           : CompositorElementIdNamespace::kVerticalScrollbar;
-  return CompositorElementIdFromUniqueObjectId(
-      scrollable_element_id.GetStableId(), element_id_namespace);
+  return CompositorElementIdWithNamespace(scrollable_element_id,
+                                          element_id_namespace);
 }
 
 void ScrollableArea::OnScrollFinished() {

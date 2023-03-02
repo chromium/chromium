@@ -588,7 +588,7 @@ void WidgetBaseInputHandler::InjectGestureScrollEvent(
             injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
     if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
-          scrollable_area_element_id.GetStableId();
+          scrollable_area_element_id.GetInternalValue();
     }
 
     std::unique_ptr<WebCoalescedInputEvent> web_scoped_gesture_event =
@@ -676,7 +676,7 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
 
     if (params.type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
-          params.scrollable_area_element_id.GetStableId();
+          params.scrollable_area_element_id.GetInternalValue();
       last_injected_gesture_was_begin_ = true;
     } else {
       last_injected_gesture_was_begin_ = false;
