@@ -4,12 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.PAGE_CHANGE_LISTENER;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
 import androidx.annotation.Nullable;
@@ -54,14 +48,7 @@ public class AccessorySheetCoordinator {
      */
     @VisibleForTesting
     AccessorySheetCoordinator(ViewProvider<AccessorySheetView> viewProvider) {
-        PropertyModel model = new PropertyModel
-                                      .Builder(TABS, ACTIVE_TAB_INDEX, VISIBLE, HEIGHT,
-                                              TOP_SHADOW_VISIBLE, PAGE_CHANGE_LISTENER)
-                                      .with(TABS, new ListModel<>())
-                                      .with(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB)
-                                      .with(VISIBLE, false)
-                                      .with(TOP_SHADOW_VISIBLE, false)
-                                      .build();
+        PropertyModel model = AccessorySheetProperties.defaultPropertyModel().build();
 
         LazyConstructionPropertyMcp.create(
                 model, VISIBLE, viewProvider, AccessorySheetViewBinder::bind);

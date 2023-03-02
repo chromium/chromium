@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -17,10 +18,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
@@ -32,8 +36,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +58,6 @@ import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
-import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -78,14 +84,7 @@ public class AccessorySheetViewTest {
                     R.id.keyboard_accessory_sheet_stub);
             int height = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                     R.dimen.keyboard_accessory_sheet_height);
-            mModel = new PropertyModel
-                             .Builder(TABS, ACTIVE_TAB_INDEX, VISIBLE, HEIGHT, TOP_SHADOW_VISIBLE)
-                             .with(HEIGHT, height)
-                             .with(TABS, new ListModel<>())
-                             .with(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB)
-                             .with(VISIBLE, false)
-                             .with(TOP_SHADOW_VISIBLE, false)
-                             .build();
+            mModel = AccessorySheetProperties.defaultPropertyModel().with(HEIGHT, height).build();
             ViewProvider<AccessorySheetView> provider =
                     AsyncViewProvider.of(viewStub, R.id.keyboard_accessory_sheet_container);
             mViewPager = new ArrayBlockingQueue<>(1);
@@ -224,6 +223,44 @@ public class AccessorySheetViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, false));
         onView(isRoot()).check(
                 waitForView(withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE));
+    }
+
+    @Test
+    @MediumTest
+    public void testHeader() {
+        Runnable runnable = mock(Runnable.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(TABS).add(createTestTabWithTextView("Header"));
+            mModel.set(ACTIVE_TAB_INDEX, 0);
+            mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+            mModel.set(VISIBLE, true);
+        });
+
+        onView(isRoot()).check(waitForView(withId(R.id.show_keyboard), ViewUtils.VIEW_GONE));
+
+        // TODO(crbug/1420520): remove the anonymous ViewAction with click() once the header is
+        // enabled.
+        onView(withId(R.id.show_keyboard)).perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isAssignableFrom(View.class);
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                view.performClick();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Click the hidden view";
+            }
+        });
+
+        verify(runnable, times(1)).run();
+
+        onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
     }
 
     private Tab createTestTabWithTextView(String textViewCaption) {
