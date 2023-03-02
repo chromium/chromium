@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 
 #include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/fake_api_guard_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_api_guard_delegate.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"

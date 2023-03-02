@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_HARDWARE_INFO_DELEGATE_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_HARDWARE_INFO_DELEGATE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_FAKE_HARDWARE_INFO_DELEGATE_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_FAKE_HARDWARE_INFO_DELEGATE_H_
 
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 
 namespace chromeos {
 
@@ -39,4 +39,4 @@ class FakeHardwareInfoDelegate : public HardwareInfoDelegate {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_HARDWARE_INFO_DELEGATE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_FAKE_HARDWARE_INFO_DELEGATE_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
 
 #include <memory>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

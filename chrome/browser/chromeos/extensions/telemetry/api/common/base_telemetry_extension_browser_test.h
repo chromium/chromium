@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_BASE_TELEMETRY_EXTENSION_BROWSER_TEST_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_BASE_TELEMETRY_EXTENSION_BROWSER_TEST_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_BASE_TELEMETRY_EXTENSION_BROWSER_TEST_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_BASE_TELEMETRY_EXTENSION_BROWSER_TEST_H_
 
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 
 namespace chromeos {
@@ -41,4 +41,4 @@ class BaseTelemetryExtensionBrowserTest
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_BASE_TELEMETRY_EXTENSION_BROWSER_TEST_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_COMMON_BASE_TELEMETRY_EXTENSION_BROWSER_TEST_H_
