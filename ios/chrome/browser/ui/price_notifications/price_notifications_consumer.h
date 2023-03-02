@@ -37,6 +37,10 @@
 - (void)didStopPriceTrackingItem:(PriceNotificationsTableViewItem*)trackedItem
                    onCurrentSite:(BOOL)isViewingProductSite;
 
+// In the event that `item` was not able to be subscribed to, this function
+// re-enables user interactions on the item's cell.
+- (void)resetPriceTrackingItem:(PriceNotificationsTableViewItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_CONSUMER_H_
