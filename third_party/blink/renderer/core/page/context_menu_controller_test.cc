@@ -147,15 +147,9 @@ struct DowncastTraits<ContextMenuControllerTestPlugin> {
   static bool AllowFrom(const WebPlugin& object) { return true; }
 };
 
-class ContextMenuControllerTest : public testing::Test,
-                                  public ::testing::WithParamInterface<bool> {
+class ContextMenuControllerTest : public testing::Test {
  public:
-  ContextMenuControllerTest() {
-    bool penetrating_image_selection_enabled = GetParam();
-    feature_list_.InitWithFeatureState(
-        features::kEnablePenetratingImageSelection,
-        penetrating_image_selection_enabled);
-  }
+  ContextMenuControllerTest() = default;
 
   void SetUp() override {
     web_view_helper_.Initialize(&web_frame_client_);
@@ -219,9 +213,7 @@ class ContextMenuControllerTest : public testing::Test,
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, ContextMenuControllerTest, ::testing::Bool());
-
-TEST_P(ContextMenuControllerTest, CopyFromPlugin) {
+TEST_F(ContextMenuControllerTest, CopyFromPlugin) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   frame_test_helpers::LoadFrame(LocalMainFrame(), R"HTML(data:text/html,
   <html>
@@ -293,7 +285,7 @@ TEST_P(ContextMenuControllerTest, CopyFromPlugin) {
       !!(context_menu_data.edit_flags & ContextMenuDataEditFlags::kCanCopy));
 }
 
-TEST_P(ContextMenuControllerTest, VideoNotLoaded) {
+TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
   const char video_url[] = "https://example.com/foo.webm";
@@ -350,7 +342,7 @@ TEST_P(ContextMenuControllerTest, VideoNotLoaded) {
   }
 }
 
-TEST_P(ContextMenuControllerTest, VideoWithAudioOnly) {
+TEST_F(ContextMenuControllerTest, VideoWithAudioOnly) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
   const char video_url[] = "https://example.com/foo.webm";
@@ -411,7 +403,7 @@ TEST_P(ContextMenuControllerTest, VideoWithAudioOnly) {
   }
 }
 
-TEST_P(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
+TEST_F(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
 
@@ -468,7 +460,7 @@ TEST_P(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
   }
 }
 
-TEST_P(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
+TEST_F(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
   // Make sure Picture-in-Picture is disabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(false);
 
@@ -525,7 +517,7 @@ TEST_P(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
   }
 }
 
-TEST_P(ContextMenuControllerTest, MediaStreamVideoLoaded) {
+TEST_F(ContextMenuControllerTest, MediaStreamVideoLoaded) {
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
 
@@ -583,7 +575,7 @@ TEST_P(ContextMenuControllerTest, MediaStreamVideoLoaded) {
   }
 }
 
-TEST_P(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
+TEST_F(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
 
@@ -646,7 +638,7 @@ TEST_P(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
   }
 }
 
-TEST_P(ContextMenuControllerTest, HitTestVideoChildElements) {
+TEST_F(ContextMenuControllerTest, HitTestVideoChildElements) {
   // Test that hit tests on parts of a video element result in hits on the video
   // element itself as opposed to its child elements.
 
@@ -686,7 +678,7 @@ TEST_P(ContextMenuControllerTest, HitTestVideoChildElements) {
   check_location(PhysicalOffset(100, 195));
 }
 
-TEST_P(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
+TEST_F(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
   frame_test_helpers::LoadFrame(LocalMainFrame(), R"SVG(data:image/svg+xml,
     <svg xmlns='http://www.w3.org/2000/svg'
          xmlns:h='http://www.w3.org/1999/xhtml'
@@ -735,7 +727,7 @@ TEST_P(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
                 ContextMenuDataEditFlags::kCanEditRichly);
 }
 
-TEST_P(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
+TEST_F(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
   frame_test_helpers::LoadFrame(LocalMainFrame(), R"XML(data:text/xml,
     <root>
       <style xmlns="http://www.w3.org/1999/xhtml">
@@ -763,7 +755,7 @@ TEST_P(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
   EXPECT_EQ(context_menu_data.selected_text, "Blue text");
 }
 
-TEST_P(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
+TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
   GetDocument()->documentElement()->setInnerHTML(
       "<input id='sample' type='text' size='5' value='Sample Input Text'>");
 
@@ -810,7 +802,7 @@ TEST_P(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
 
 #if !BUILDFLAG(IS_MAC)
 // Mac has no way to open a context menu based on a keyboard event.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ValidateNonLocatedContextMenuOnLargeImageElement) {
   GetDocument()->documentElement()->setInnerHTML(
       "<img src=\"http://example.test/cat.jpg\" id=\"sample_image\" "
@@ -840,7 +832,7 @@ TEST_P(ContextMenuControllerTest,
 }
 #endif
 
-TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
+TEST_F(ContextMenuControllerTest, SelectionRectClipped) {
   GetDocument()->documentElement()->setInnerHTML(
       "<textarea id='text-area' cols=6 rows=2>Sample editable text</textarea>");
 
@@ -903,72 +895,10 @@ class MockEventListener final : public NativeEventListener {
   MOCK_METHOD2(Invoke, void(ExecutionContext*, Event*));
 };
 
-// Test that a basic image hit test works without penetration enabled.
-TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestStandardImageControl) {
-  if (base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
-  RegisterMockedImageURLLoad("http://test.png");
-  ContextMenuAllowedScope context_menu_allowed_scope;
-
-  GetDocument()->documentElement()->setInnerHTML(R"HTML(
-    <body>
-      <style>
-        #target {
-          top: 0;
-          left: 0;
-          position: absolute;
-          width: 100px;
-          height: 100px;
-          z-index: 1;
-        }
-      </style>
-      <img id=target src='http://test.png'>
-    </body>
-  )HTML");
-
-  base::HistogramTester histograms;
-
-  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
-  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
-
-  // Context menu info are sent to the WebLocalFrameClient.
-  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
-  // EXPECT_TRUE(context_menu_data.has_image_contents);
-  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
-            context_menu_data.media_type);
-
-  // No histograms should be sent in the control group.
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.Outcome",
-      ContextMenuController::ImageSelectionOutcome::kImageFoundStandard, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.Outcome",
-      ContextMenuController::ImageSelectionOutcome::kImageFoundPenetrating, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.Outcome",
-      ContextMenuController::ImageSelectionOutcome::kBlockedByOpaqueNode, 0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.Outcome",
-      ContextMenuController::ImageSelectionOutcome::kFoundContextMenuListener,
-      0);
-  histograms.ExpectBucketCount(
-      "Blink.ContextMenu.ImageSelection.Outcome",
-      ContextMenuController::ImageSelectionOutcome::kBlockedByCrossFrameNode,
-      0);
-}
-
 // Test that a basic image hit test works and is no† impacted by
 // penetrating image selection logic.
-TEST_P(ContextMenuControllerTest,
-       ContextMenuImageHitTestStandardImageSelectionExperiment) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
-
+TEST_F(ContextMenuControllerTest,
+       ContextMenuImageHitTestStandardImageSelection) {
   String url = "http://test.png";
   LOG(ERROR) << "URL IS: " << url.Utf8().c_str();
   RegisterMockedImageURLLoad(url);
@@ -1023,11 +953,7 @@ TEST_P(ContextMenuControllerTest,
 
 // Test that image selection can penetrate through a fully transparent div
 // above the target image.
-TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
+TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1088,11 +1014,7 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
 
 // Test that a basic image hit test works and is no† impacted by
 // penetrating image selection logic.
-TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
+TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
   ContextMenuAllowedScope context_menu_allowed_scope;
 
   GetDocument()->documentElement()->setInnerHTML(R"HTML(
@@ -1142,11 +1064,7 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
 
 // Test that  an image node will not be selected through an opaque div
 // above the target image.
-TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestOpaqueNodeBlocking) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
+TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestOpaqueNodeBlocking) {
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1218,12 +1136,8 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestOpaqueNodeBlocking) {
 // Test that an image node will not be selected if a node with a context menu
 // listener is above the image node, but that we will still log the presence of
 // the image.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageHitTestContextMenuListenerAboveImageBlocking) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1298,12 +1212,8 @@ TEST_P(ContextMenuControllerTest,
 
 // Test that an image node will not be selected if the image node itself has a
 // context menu listener on it (and the image node is not the topmost element)
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageHitTestContextMenuListenerOnImageBlocking) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1370,12 +1280,8 @@ TEST_P(ContextMenuControllerTest,
 
 // Test that an image node will be selected if the image node itself has an
 // unrelated event listener on it.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageHitTestNonBlockingNonContextMenuListenerOnImage) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1440,12 +1346,8 @@ TEST_P(ContextMenuControllerTest,
 
 // Test that an image node will still be selected if it is the topmost node
 // despite an ancestor having a context menu listener attached to it.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageHitTestStandardContextMenuListenerAncestorNonBlocking) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1514,12 +1416,8 @@ TEST_P(ContextMenuControllerTest,
 // Test that an image node will not be selected if a non image node with a
 // context listener ancestor is above it and verify that topmost context menu
 // listener special logic only applies if the topmost node is an image.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageHitTestContextMenuListenerAncestorBlocking) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1595,11 +1493,7 @@ TEST_P(ContextMenuControllerTest,
 
 // Test that an image node is successfully cached and retrieved in the common
 // case.
-TEST_P(ContextMenuControllerTest, ContextMenuImageRetrievalCachedImageFound) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
+TEST_F(ContextMenuControllerTest, ContextMenuImageRetrievalCachedImageFound) {
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1654,12 +1548,8 @@ TEST_P(ContextMenuControllerTest, ContextMenuImageRetrievalCachedImageFound) {
 
 // Test that an image node is not successfully retrieved if a hit test was never
 // conducted.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageRetrievalCachedImageNotFound) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1712,12 +1602,8 @@ TEST_P(ContextMenuControllerTest,
 
 // Test that the retrieved image node is null if another hit test has been
 // conducted in the same controller before the retrieval occurred.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageRetrievalAfterCachedImageReset) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1776,12 +1662,8 @@ TEST_P(ContextMenuControllerTest,
 
 // Test that the retrieved image node is null if the retrieval frame is
 // different than the one used in the initial context menu image selection.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        ContextMenuImageRetrievalCachedImageCrossFrame) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    return;
-  }
   RegisterMockedImageURLLoad("http://test.png");
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1835,7 +1717,7 @@ TEST_P(ContextMenuControllerTest,
       1);
 }
 
-TEST_P(ContextMenuControllerTest, OpenedFromHighlight) {
+TEST_F(ContextMenuControllerTest, OpenedFromHighlight) {
   WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
   frame_test_helpers::LoadHTMLString(LocalMainFrame(),
                                      R"(<html><head><style>body
@@ -1884,7 +1766,7 @@ TEST_P(ContextMenuControllerTest, OpenedFromHighlight) {
 }
 
 // Test that opening context menu with keyboard does not change text selection.
-TEST_P(ContextMenuControllerTest,
+TEST_F(ContextMenuControllerTest,
        KeyboardTriggeredContextMenuPreservesSelection) {
   ContextMenuAllowedScope context_menu_allowed_scope;
 
@@ -1911,7 +1793,7 @@ TEST_P(ContextMenuControllerTest,
   EXPECT_EQ(GetDocument()->GetFrame()->Selection().SelectedText(), "is a");
 }
 
-TEST_P(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
+TEST_F(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
   WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
   frame_test_helpers::LoadHTMLString(LocalMainFrame(),
                                      R"(<html><head><style>body
@@ -1969,7 +1851,7 @@ TEST_P(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
   }
 }
 
-TEST_P(ContextMenuControllerTest, AttributionSrc) {
+TEST_F(ContextMenuControllerTest, AttributionSrc) {
   // The context must be secure for attributionsrc to work at all.
   frame_test_helpers::LoadHTMLString(
       LocalMainFrame(), R"(<html><body>)",
@@ -2086,7 +1968,7 @@ TEST_P(ContextMenuControllerTest, AttributionSrc) {
 
 // Test that if text selection contains unselectable content, the opened context
 // menu should omit the unselectable content.
-TEST_P(ContextMenuControllerTest, SelectUnselectableContent) {
+TEST_F(ContextMenuControllerTest, SelectUnselectableContent) {
   GetDocument()->documentElement()->setInnerHTML(R"HTML(
     <body>
       <p id="test">A <span style="user-select:none;">test_none <span>test_span
@@ -2111,18 +1993,9 @@ TEST_P(ContextMenuControllerTest, SelectUnselectableContent) {
   EXPECT_EQ(context_menu_data.selected_text, "A test_all B");
 }
 
-// TODO(crbug.com/1184996): Add additional unit test for blocking frame logging.
-
-class ContextMenuControllerRemoteParentFrameTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<bool> {
+class ContextMenuControllerRemoteParentFrameTest : public testing::Test {
  public:
-  ContextMenuControllerRemoteParentFrameTest() {
-    bool penetrating_image_selection_enabled = GetParam();
-    feature_list_.InitWithFeatureState(
-        features::kEnablePenetratingImageSelection,
-        penetrating_image_selection_enabled);
-  }
+  ContextMenuControllerRemoteParentFrameTest() = default;
 
   void SetUp() override {
     web_view_helper_.InitializeRemote();
@@ -2159,11 +2032,7 @@ class ContextMenuControllerRemoteParentFrameTest
   Persistent<WebLocalFrameImpl> child_frame_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ContextMenuControllerRemoteParentFrameTest,
-                         ::testing::Bool());
-
-TEST_P(ContextMenuControllerRemoteParentFrameTest, ShowContextMenuInChild) {
+TEST_F(ContextMenuControllerRemoteParentFrameTest, ShowContextMenuInChild) {
   const gfx::Point kPoint(123, 234);
   ShowContextMenu(kPoint);
 

@@ -8021,11 +8021,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableLogControllerForDiagnosticsApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"enable-penetrating-image-selection",
-     flag_descriptions::kEnablePenetratingImageSelectionName,
-     flag_descriptions::kEnablePenetratingImageSelectionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnablePenetratingImageSelection)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"biometric-reauth-password-filling",
      flag_descriptions::kBiometricReauthForPasswordFillingName,

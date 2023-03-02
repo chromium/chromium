@@ -910,12 +910,6 @@ BASE_FEATURE(kScopeMemoryCachePerContext,
              "ScopeMemoryCachePerContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow image context menu selections to penetrate through transparent
-// elements.
-BASE_FEATURE(kEnablePenetratingImageSelection,
-             "EnablePenetratingImageSelection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Used to configure a per-origin allowlist of performance.mark events that are
 // permitted to be included in slow reports traces. See crbug.com/1181774.
 BASE_FEATURE(kBackgroundTracingPerformanceMark,

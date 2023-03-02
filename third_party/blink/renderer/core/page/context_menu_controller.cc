@@ -33,8 +33,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "services/metrics/public/cpp/ukm_entry_builder.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/features.h"
@@ -117,20 +115,6 @@ bool UnvisitedNodeOrAncestorHasContextMenuListener(
         current_node_for_parent_traversal->parentNode();
   }
   return false;
-}
-
-void MaybeRecordImageSelectionUkm(
-    ukm::SourceId source_id,
-    ContextMenuController::ImageSelectionOutcome outcome) {
-  DCHECK_NE(source_id, ukm::kInvalidSourceId);
-  static bool enable = base::GetFieldTrialParamByFeatureAsInt(
-      features::kEnablePenetratingImageSelection, "logUkm", false);
-
-  if (enable) {
-    ukm::UkmEntryBuilder builder(source_id, "Blink.ContextMenu.ImageSelection");
-    builder.SetMetric("Outcome", static_cast<int64_t>(outcome));
-    builder.Record(ukm::UkmRecorder::Get());
-  }
 }
 
 template <class enumType>
@@ -281,9 +265,6 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
         base::UmaHistogramEnumeration(
             "Blink.ContextMenu.ImageSelection.Outcome",
             ImageSelectionOutcome(i));
-        MaybeRecordImageSelectionUkm(
-            found_image_node->GetDocument().UkmSourceID(),
-            ImageSelectionOutcome(i));
       }
     }
   }
@@ -299,31 +280,24 @@ Node* ContextMenuController::GetContextMenuNodeWithImageContents() {
 }
 
 Node* ContextMenuController::ContextMenuImageNodeForFrame(LocalFrame* frame) {
-  if (base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    ImageSelectionRetrievalOutcome outcome;
-    // We currently will fail to retrieve an image if another hit test is made
-    // on
-    //  a non-image node is made before retrieval of the image.
-    if (!image_selection_cached_result_) {
-      outcome = ImageSelectionRetrievalOutcome::kImageNotFound;
-    } else if (image_selection_cached_result_->GetDocument().GetFrame() !=
-               frame) {
-      outcome = ImageSelectionRetrievalOutcome::kCrossFrameRetrieval;
-    } else {
-      outcome = ImageSelectionRetrievalOutcome::kImageFound;
-    }
-
-    base::UmaHistogramEnumeration(
-        "Blink.ContextMenu.ImageSelection.RetrievalOutcome", outcome);
-
-    if (outcome == ImageSelectionRetrievalOutcome::kImageFound) {
-      return image_selection_cached_result_;
-    }
-    return nullptr;
+  ImageSelectionRetrievalOutcome outcome;
+  // We currently will fail to retrieve an image if another hit test is made
+  // on a non-image node is made before retrieval of the image.
+  if (!image_selection_cached_result_) {
+    outcome = ImageSelectionRetrievalOutcome::kImageNotFound;
+  } else if (image_selection_cached_result_->GetDocument().GetFrame() !=
+             frame) {
+    outcome = ImageSelectionRetrievalOutcome::kCrossFrameRetrieval;
   } else {
-    return ContextMenuNodeForFrame(frame);
+    outcome = ImageSelectionRetrievalOutcome::kImageFound;
   }
+
+  base::UmaHistogramEnumeration(
+      "Blink.ContextMenu.ImageSelection.RetrievalOutcome", outcome);
+
+  return outcome == ImageSelectionRetrievalOutcome::kImageFound
+             ? image_selection_cached_result_
+             : nullptr;
 }
 
 // TODO(crbug.com/1184297) Cache image node when the context menu is shown and
@@ -452,11 +426,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     context_menu_client_receiver_.reset();
 
   HitTestRequest::HitTestRequestType type =
-      HitTestRequest::kReadOnly | HitTestRequest::kActive;
-  if (base::FeatureList::IsEnabled(
-          features::kEnablePenetratingImageSelection)) {
-    type |= HitTestRequest::kPenetratingList | HitTestRequest::kListBased;
-  }
+      HitTestRequest::kReadOnly | HitTestRequest::kActive |
+      HitTestRequest::kPenetratingList | HitTestRequest::kListBased;
 
   HitTestLocation location(point);
   HitTestResult result(type, location);
@@ -620,12 +591,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     // does not override a topmost media element.
     // TODO(benwgold): Consider extending penetration to all media types.
     Node* potential_image_node = result.InnerNodeOrImageMapImage();
-    if (base::FeatureList::IsEnabled(
-            features::kEnablePenetratingImageSelection)) {
-      SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
-          "Blink.ContextMenu.ImageSelection.ElapsedTime");
-      potential_image_node = GetContextMenuNodeWithImageContents();
-    }
+    SCOPED_BLINK_UMA_HISTOGRAM_TIMER(
+        "Blink.ContextMenu.ImageSelection.ElapsedTime");
+    potential_image_node = GetContextMenuNodeWithImageContents();
+
     if (potential_image_node != nullptr &&
         IsA<HTMLCanvasElement>(potential_image_node)) {
       data.media_type = mojom::blink::ContextMenuDataMediaType::kCanvas;

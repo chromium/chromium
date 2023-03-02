@@ -1300,12 +1300,6 @@ const char kEnableManagedConfigurationWebApiDescription[] =
     "Allows website to access a managed configuration provided by the device "
     "administrator for the origin.";
 
-const char kEnablePenetratingImageSelectionName[] =
-    "Penetrating Image Selection";
-const char kEnablePenetratingImageSelectionDescription[] =
-    "Enables image options to be surfaced in the context menu for nodes "
-    "covered by transparent overlays.";
-
 const char kEnablePixelCanvasRecordingName[] = "Enable pixel canvas recording";
 const char kEnablePixelCanvasRecordingDescription[] =
     "Pixel canvas recording allows the compositor to raster contents aligned "
