@@ -33,7 +33,7 @@ ActionRunner::ActionQueue ActionRunner::GetActions() {
       std::back_inserter(actions), [](const base::Value& action) {
         return static_cast<ActionType>(action.GetInt());
       });
-  return action_factory_->Build(actions);
+  return action_factory_->Build(profile_, actions);
 }
 
 void ActionRunner::RunNextAction(ActionQueue actions) {

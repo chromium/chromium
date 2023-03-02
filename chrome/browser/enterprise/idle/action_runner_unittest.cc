@@ -29,16 +29,12 @@ using testing::UnorderedElementsAre;
 
 namespace {
 
-struct RunEntry {
-  raw_ptr<Profile> profile;
-  base::flat_set<std::string> action_names;
-};
-
 class FakeActionFactory : public ActionFactory {
  public:
   FakeActionFactory() = default;
 
-  ActionQueue Build(const std::vector<ActionType>& action_types) override {
+  ActionQueue Build(Profile* profile,
+                    const std::vector<ActionType>& action_types) override {
     ActionQueue actions;
     for (ActionType action_type : action_types) {
       auto it = associations_.find(action_type);
@@ -60,9 +56,13 @@ class FakeActionFactory : public ActionFactory {
 
 class MockAction : public Action {
  public:
-  explicit MockAction(ActionType action_type) : Action(action_type) {}
+  explicit MockAction(ActionType action_type)
+      : Action(static_cast<int>(action_type)) {}
 
   MOCK_METHOD2(Run, void(Profile*, Continuation));
+  bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
+    return false;
+  }
 };
 
 // testing::InvokeArgument<N> does not work with base::OnceCallback, so we
@@ -489,6 +489,7 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
 
   ActionFactory::GetInstance()->SetBrowsingDataRemoverForTesting(remover());
   ActionFactory::ActionQueue actions = ActionFactory::GetInstance()->Build(
+      profile(),
       {ActionType::kClearBrowsingHistory, ActionType::kClearDownloadHistory,
        ActionType::kClearAutofill});
   ASSERT_EQ(1u, actions.size());

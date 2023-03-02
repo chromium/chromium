@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_IDLE_ACTION_H_
 #define CHROME_BROWSER_ENTERPRISE_IDLE_ACTION_H_
 
+#include <memory>
 #include <queue>
 #include <vector>
 
@@ -53,7 +54,7 @@ class Action {
  public:
   using Continuation = base::OnceCallback<void(bool succeeded)>;
 
-  explicit Action(ActionType action_type);
+  explicit Action(int priority);
   virtual ~Action();
 
   Action(const Action&) = delete;
@@ -61,12 +62,18 @@ class Action {
   Action(Action&&) = delete;
   Action& operator=(Action&&) = delete;
 
+  // Runs this action on `profile`, which may be asynchronous. When it's done,
+  // runs `continuation` with the result.
   virtual void Run(Profile* profile, Continuation continuation) = 0;
 
-  unsigned priority() const { return static_cast<unsigned>(action_type_); }
+  // Returns true if running this action on `profile` is destructive. If it is,
+  // a warning dialog will be shown to inform the user.
+  virtual bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) = 0;
+
+  int priority() const { return priority_; }
 
  private:
-  const ActionType action_type_;
+  const int priority_;
 };
 
 // A singleton factory that takes a list of `ActionType` and converts it to a
@@ -91,7 +98,8 @@ class ActionFactory {
   ~ActionFactory();
 
   // Converts the pref/policy value to a priority_queue<> of actions.
-  virtual ActionQueue Build(const std::vector<ActionType>& action_names);
+  virtual ActionQueue Build(Profile* profile,
+                            const std::vector<ActionType>& action_names);
 
   void SetBrowsingDataRemoverForTesting(content::BrowsingDataRemover* remover);
 
