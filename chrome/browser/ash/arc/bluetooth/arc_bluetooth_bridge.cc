@@ -1743,7 +1743,18 @@ void ArcBluetoothBridge::ReadGattDescriptor(
   BluetoothRemoteGattDescriptor* descriptor =
       FindGattDescriptor(std::move(remote_addr), std::move(service_id),
                          std::move(char_id), std::move(desc_id));
-  DCHECK(descriptor);
+
+  if (!descriptor) {
+    BLUETOOTH_LOG(ERROR)
+        << __func__
+        << " failed to read GATT descriptor, descriptor does not exist.";
+    arc::mojom::BluetoothGattValuePtr gatt_value =
+        mojom::BluetoothGattValue::New();
+    gatt_value->status = mojom::BluetoothGattStatus::GATT_FAILURE;
+    std::move(callback).Run(std::move(gatt_value));
+    return;
+  }
+
   DCHECK(descriptor->GetPermissions() & kGattReadPermission);
 
   descriptor->ReadRemoteDescriptor(
@@ -1760,7 +1771,15 @@ void ArcBluetoothBridge::WriteGattDescriptor(
   BluetoothRemoteGattDescriptor* descriptor =
       FindGattDescriptor(std::move(remote_addr), std::move(service_id),
                          std::move(char_id), std::move(desc_id));
-  DCHECK(descriptor);
+
+  if (!descriptor) {
+    BLUETOOTH_LOG(ERROR)
+        << __func__
+        << " failed to write GATT descriptor, descriptor does not exist.";
+    std::move(callback).Run(mojom::BluetoothGattStatus::GATT_FAILURE);
+    return;
+  }
+
   DCHECK(descriptor->GetPermissions() & kGattWritePermission);
 
   if (value->value.empty()) {
