@@ -2175,7 +2175,14 @@ void TemplateURLService::MergeInSyncTemplateURL(
       keyword_to_turl_and_length_.equal_range(sync_turl->keyword());
   for (auto it = match_range.first; it != match_range.second; ++it) {
     TemplateURL* local_turl = it->second.first;
-    if (local_turl->type() == TemplateURL::NORMAL) {
+    // The conflict resolution code below sometimes resets the TemplateURL's
+    // GUID, which can trigger deleting any Policy-created engines. Avoid this
+    // use-after-free bug by excluding any Policy-created engines. Also exclude
+    // Play API created engines, as those also seem local-only and should not
+    // be merged into Synced engines. crbug.com/1414224.
+    if (local_turl->type() == TemplateURL::NORMAL &&
+        !local_turl->created_by_policy() &&
+        !local_turl->created_from_play_api()) {
       local_duplicates.push_back(local_turl);
     }
   }
