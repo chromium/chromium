@@ -8,6 +8,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -40,15 +41,20 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FakeTimeTestRule;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -56,6 +62,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+
+import java.util.Map;
 
 /**
  * Tests for {@link ModalDialogView}.
@@ -68,6 +76,9 @@ public class ModalDialogViewTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    @Rule
+    public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private static Activity sActivity;
     private static Resources sResources;
@@ -467,6 +478,40 @@ public class ModalDialogViewTest {
         onView(withId(R.id.footer)).check(matches(isDisplayed()));
         onView(withId(R.id.footer_message))
                 .check(matches(allOf(isDisplayed(), withText(R.string.more))));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog"})
+    public void testButtonTapProtection() {
+        FeatureList.setTestFeatures(
+                Map.of(ModalDialogFeatureList.MODALDIALOG_BUTTON_PROTECTION, true));
+        final var callbackHelper = new CallbackHelper();
+        var controller = new ModalDialogProperties.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                callbackHelper.notifyCalled();
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
+        };
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, sResources, R.string.ok)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, sResources,
+                                R.string.cancel)
+                        .with(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 100)
+                        .with(ModalDialogProperties.CONTROLLER, controller));
+        onView(withId(R.id.button_bar)).check(matches(isDisplayed()));
+        mModalDialogView.onEnterAnimationStarted(0);
+        onView(withId(R.id.positive_button)).perform(click());
+        Assert.assertEquals(
+                "Not accept click event when button is frozen.", 0, callbackHelper.getCallCount());
+        mFakeTime.advanceMillis(200);
+        onView(withId(R.id.positive_button)).perform(click());
+        Assert.assertEquals(
+                "Button is clickable after time elapses", 1, callbackHelper.getCallCount());
     }
 
     private static Matcher<View> touchFilterEnabled() {

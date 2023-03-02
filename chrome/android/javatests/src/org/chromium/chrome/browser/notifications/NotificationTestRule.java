@@ -13,6 +13,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
@@ -43,10 +44,12 @@ public class NotificationTestRule extends ChromeTabbedActivityTestRule {
         mMockNotificationManager = new MockNotificationManagerProxy();
         NotificationPlatformBridge.overrideNotificationManagerForTesting(mMockNotificationManager);
         startMainActivityWithURL(UrlConstants.NTP_URL);
+        ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
     }
 
     private void tearDown() {
         NotificationPlatformBridge.overrideNotificationManagerForTesting(null);
+        ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
     }
 
     /**

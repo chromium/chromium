@@ -23,6 +23,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The presenter that shows a {@link ModalDialogView} in an Android dialog. */
 public class AppModalPresenter extends ModalDialogManager.Presenter {
+    // Duration of enter animation. This is an estimation because there is no reliable way to
+    // get duration of AlertDialog's enter animation.
+    private static final long ENTER_ANIMATION_ESTIMATION_MS = 200;
     private final Context mContext;
     private ComponentDialog mDialog;
     private PropertyModelChangeProcessor<PropertyModel, ModalDialogView, PropertyKey>
@@ -84,6 +87,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         mDialog = new ComponentDialog(mContext, styles[buttonIndex][index]);
         mDialog.setOnCancelListener(dialogInterface
                 -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
+
         // Cancel on touch outside should be disabled by default. The ModelChangeProcessor wouldn't
         // notify change if the property is not set during initialization.
         mDialog.setCanceledOnTouchOutside(false);
@@ -94,6 +98,10 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             mDialog.setContentView(dialogView);
         }
+
+        mDialog.setOnShowListener((dialogInterface) -> {
+            dialogView.onEnterAnimationStarted(ENTER_ANIMATION_ESTIMATION_MS);
+        });
 
         try {
             mDialog.show();

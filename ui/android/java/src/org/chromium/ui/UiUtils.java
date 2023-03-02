@@ -54,6 +54,10 @@ public class UiUtils {
     // Keep this variable in sync with the value defined in file_paths.xml.
     public static final String IMAGE_FILE_PATH = "images";
 
+    // crbug.com/1413586: Prevent potentially unintentional user interaction with any prompt for
+    // this long after the prompt is displayed.
+    public static long PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS = 600;
+
     /**
      * A static map of manufacturers to the version where theming Android UI is completely
      * supported. If there is no entry, it means the manufacturer supports theming at the same

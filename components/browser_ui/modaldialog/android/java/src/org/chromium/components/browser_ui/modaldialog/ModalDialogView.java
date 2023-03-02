@@ -20,6 +20,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
@@ -38,6 +39,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private static final String TAG = "ModalDialogView";
     private static final String UMA_SECURITY_FILTERED_TOUCH_RESULT =
             "Android.ModalDialog.SecurityFilteredTouchResult";
+
+    private static boolean sEnableButtonTapProtection = true;
+
+    private static long sCurrentTimeMsForTesting;
 
     // Intdef with constants for recording the result of filtering touch events on security
     // sensitive dialogs. Should stay in sync with the SecurityFilteredTouchResult enum defined in
@@ -68,6 +73,11 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private Runnable mOnTouchFilteredCallback;
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
+    private long mEnterAnimationMidpointTimestamp = -1;
+    // The duration for which dialog buttons should not react to any tap event after this view is
+    // displayed to prevent potentially unintentional user interactions. A value of zero turns off
+    // this kind of tap-jacking protection.
+    private long mButtonTapProtectionDurationMs;
 
     /**
      * Constructor for inflating from XML.
@@ -117,6 +127,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
     @Override
     public void onClick(View view) {
+        if (isWithinButtonTapProtectionPeriod()) return;
+
         if (view == mPositiveButton) {
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.POSITIVE);
         } else if (view == mNegativeButton) {
@@ -124,6 +136,33 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         } else if (view == mTitleIcon) {
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.TITLE_ICON);
         }
+    }
+
+    // Dialog buttons will not react to any tap event for a short period after this view is
+    // displayed. This is to prevent potentially unintentional user interactions.
+    private boolean isWithinButtonTapProtectionPeriod() {
+        if (!isButtonTapProtectionEnabled()) return false;
+
+        // Not set by feature clients.
+        if (mButtonTapProtectionDurationMs == 0) return false;
+
+        // The view has not even started animating yet.
+        if (mEnterAnimationMidpointTimestamp < 0) return true;
+
+        // True if not showing for sufficient time.
+        return TimeUtils.elapsedRealtimeMillis()
+                <= mEnterAnimationMidpointTimestamp + mButtonTapProtectionDurationMs;
+    }
+
+    /**
+     * Callback when view is starting to appear on screen.
+     * @param animationDuration Duration of enter animation.
+     */
+    void onEnterAnimationStarted(long animationDuration) {
+        // Start button protection as soon as dialog is presented, but timer is kicked off in the
+        // middle of the animation.
+        mEnterAnimationMidpointTimestamp =
+                TimeUtils.elapsedRealtimeMillis() + animationDuration / 2;
     }
 
     /**
@@ -201,6 +240,14 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         } else {
             assert false : "Shouldn't remove touch filter after setting it up";
         }
+    }
+
+    /**
+     * @param duration The duration for which dialog buttons should not react to any tap event after
+     *         this view is displayed to prevent potentially unintentional user interactions.
+     */
+    void setButtonTapProtectionDurationMs(long duration) {
+        mButtonTapProtectionDurationMs = duration;
     }
 
     /** Setup touch filters to block events when buttons are obscured by another window. */
@@ -387,5 +434,15 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mPositiveButton.setVisibility(positiveButtonVisible ? View.VISIBLE : View.GONE);
         mNegativeButton.setVisibility(negativeButtonVisible ? View.VISIBLE : View.GONE);
         mButtonBar.setVisibility(defaultButtonBarVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean isButtonTapProtectionEnabled() {
+        return sEnableButtonTapProtection
+                && ModalDialogFeatureList.isEnabled(
+                        ModalDialogFeatureList.MODALDIALOG_BUTTON_PROTECTION);
+    }
+
+    public static void overrideEnableButtonTapProtectionForTesting(boolean enable) {
+        sEnableButtonTapProtection = enable;
     }
 }

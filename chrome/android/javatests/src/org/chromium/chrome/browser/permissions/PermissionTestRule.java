@@ -10,6 +10,8 @@ import androidx.annotation.IdRes;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -102,6 +104,21 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
 
     public PermissionTestRule(boolean useHttpsServer) {
         getEmbeddedTestServerRule().setServerUsesHttps(useHttpsServer);
+    }
+
+    @Override
+    public Statement apply(Statement base, Description description) {
+        return super.apply(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
+                    base.evaluate();
+                } finally {
+                    ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
+                }
+            }
+        }, description);
     }
 
     /**

@@ -3355,6 +3355,7 @@ static_library("browser") {
       "//components/bookmarks/common/android",
       "//components/browser_ui/accessibility/android",
       "//components/browser_ui/contacts_picker/android",
+      "//components/browser_ui/modaldialog/android",
       "//components/browser_ui/photo_picker/android",
       "//components/browser_ui/settings/android",
       "//components/browser_ui/share/android",
