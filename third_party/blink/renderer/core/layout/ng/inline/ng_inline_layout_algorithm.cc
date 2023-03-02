@@ -439,6 +439,9 @@ void NGInlineLayoutAlgorithm::CreateLine(
     box_states_->LineBoxState().EnsureTextMetrics(
         line_info->LineStyle(), *box_states_->LineBoxState().font,
         baseline_type_);
+  } else if (UNLIKELY(initial_letter_item_result) &&
+             box_states_->LineBoxState().metrics.IsEmpty()) {
+    box_states_->LineBoxState().metrics = FontHeight();
   }
 
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
