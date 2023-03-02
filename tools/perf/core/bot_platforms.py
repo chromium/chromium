@@ -419,7 +419,7 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
-    ])
+    ]).Add(['speedometer2-minormc'])
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
