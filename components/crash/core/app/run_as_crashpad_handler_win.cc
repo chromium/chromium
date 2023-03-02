@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
+#include "components/stability_report/user_stream_data_source.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/simple_string_dictionary.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
@@ -80,6 +81,8 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
   argv.clear();
 
   crashpad::UserStreamDataSources user_stream_data_sources;
+  user_stream_data_sources.push_back(
+      std::make_unique<stability_report::UserStreamDataSource>());
 
 #if BUILDFLAG(ENABLE_GWP_ASAN)
   user_stream_data_sources.push_back(

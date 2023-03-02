@@ -160,6 +160,7 @@ if (is_win) {
       "//base",
       "//build:chromeos_buildflags",
       "//components/gwp_asan/buildflags",
+      "//components/stability_report",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/handler",
       "//third_party/crashpad/crashpad/minidump",

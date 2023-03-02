@@ -1,0 +1,70 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package stability_report;
+
+// The state of a process.
+// Next id: 7
+message ProcessState {
+  // Fields that were removed in https://crrev.com/c/4265975.
+  reserved 1, 2, 5, 6;
+
+  // The identifier of the process.
+  optional int64 process_id = 3;
+
+  // Records the state of process memory at the time of crash.
+  // Next id: 6
+  message MemoryState {
+    message WindowsMemory {
+      // The private byte usage of the process. Unit is 4K pages.
+      optional uint32 process_private_usage = 1;
+      // The peak working set usage of the process. Unit is 4K pages.
+      optional uint32 process_peak_workingset_size = 2;
+      // The peak pagefile usage of the process. Unit is 4K pages.
+      optional uint32 process_peak_pagefile_usage = 3;
+      // The allocation request that caused OOM, bytes.
+      optional uint32 process_allocation_attempt = 4;
+      // The number of opened handles in the process.
+      optional uint32 process_handle_count = 5;
+    }
+
+    optional WindowsMemory windows_memory = 1;
+  }
+
+  optional MemoryState memory_state = 4;
+}
+
+// Records the state of system memory at the time of crash.
+// Next id: 2
+message SystemMemoryState {
+  message WindowsMemory {
+    // The system commit limit. Unit is number of 4K pages.
+    optional uint32 system_commit_limit = 1;
+    // The amount of system commit remaining. Unit is number of 4K pages.
+    optional uint32 system_commit_remaining = 2;
+    // The current number of open handles.
+    optional uint32 system_handle_count = 3;
+  }
+
+  optional WindowsMemory windows_memory = 1;
+}
+
+// A stability report contains information pertaining to the execution of a
+// single logical instance of a "chrome browser". It is comprised of information
+// about the system state and about the chrome browser's processes.
+// Next id: 9
+message StabilityReport {
+  // Fields that were removed in https://crrev.com/c/4265975.
+  reserved 1, 3 to 6, 8;
+
+  // State pertaining to Chrome's processes.
+  repeated ProcessState process_states = 2;
+
+  // System-wide resource usage.
+  optional SystemMemoryState system_memory_state = 7;
+}

@@ -601,7 +601,10 @@ test("components_unittests") {
   }
 
   if (is_win) {
-    deps += [ "//components/winhttp:unit_tests" ]
+    deps += [
+      "//components/stability_report:unit_tests",
+      "//components/winhttp:unit_tests",
+    ]
   }
 
   if (enable_printing) {
