@@ -65,7 +65,7 @@ absl::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
 
   // Record the time spent getting the reduced accept language to better
   // understand whether this prefs read can introduce any large latency.
-  SCOPED_UMA_HISTOGRAM_TIMER("ReduceAcceptLanguage.FetchLatency");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ReduceAcceptLanguage.FetchLatencyUs");
 
   ContentSettingsForOneType accept_language_rules;
   settings_map_->GetSettingsForOneType(
