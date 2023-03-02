@@ -112,6 +112,16 @@ class PageContentAnnotationsService : public KeyedService,
                                       public history::HistoryServiceObserver,
                                       public ZeroSuggestCacheService::Observer {
  public:
+  // Observer interface to listen for PageContentAnnotations for page loads.
+  // Annotations will be sent for each page load for the registered annotation
+  // type.
+  class PageContentAnnotationsObserver : public base::CheckedObserver {
+   public:
+    virtual void OnPageContentAnnotated(
+        const GURL& url,
+        const PageContentAnnotationsResult& result) = 0;
+  };
+
   PageContentAnnotationsService(
       std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
       const std::string& application_locale,
@@ -178,6 +188,12 @@ class PageContentAnnotationsService : public KeyedService,
   void ExtractRelatedSearchesFromZeroSuggestResponse(
       const ZeroSuggestCacheService::CacheEntry& response,
       history::QueryURLResult url_result);
+
+  // Adds or removes PageContentAnnotations observers for |annotation_type|.
+  void AddObserver(AnnotationType annotation_type,
+                   PageContentAnnotationsObserver* observer);
+  void RemoveObserver(AnnotationType annotation_type,
+                      PageContentAnnotationsObserver* observer);
 
   OptimizationGuideLogger* optimization_guide_logger() const {
     return optimization_guide_logger_;
@@ -293,6 +309,13 @@ class PageContentAnnotationsService : public KeyedService,
                     PageContentAnnotationsType annotation_type,
                     history::QueryURLResult url_result);
 
+  // Notifies the PageContentAnnotationsResult to the observers for
+  // |annotation_type|.
+  void NotifyPageContentAnnotatedObservers(
+      AnnotationType annotation_type,
+      const GURL& url,
+      const PageContentAnnotationsResult& page_content_annotations_result);
+
   // Provider client instance used when parsing cached ZPS response data.
   std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
 
@@ -349,6 +372,11 @@ class PageContentAnnotationsService : public KeyedService,
   std::unique_ptr<PageContentAnnotationsValidator> validator_;
 
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_ = nullptr;
+
+  // Observers of PageContentAnnotations that have been registered per
+  // AnnotationType.
+  std::map<AnnotationType, base::ObserverList<PageContentAnnotationsObserver>>
+      page_content_annotations_observers_;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };

@@ -65,6 +65,19 @@ testing::Matcher<WeightedIdentifier> CrossPlatformMatcher(
           &WeightedIdentifier::weight,
           testing::DoubleNear(wi.weight(), kMaxScoreErrorBetweenPlatforms)));
 }
+
+class TestPageContentAnnotationsObserver
+    : public PageContentAnnotationsService::PageContentAnnotationsObserver {
+ public:
+  void OnPageContentAnnotated(
+      const GURL& url,
+      const PageContentAnnotationsResult& result) override {
+    last_page_content_annotations_result_ = result;
+  }
+  absl::optional<PageContentAnnotationsResult>
+      last_page_content_annotations_result_;
+};
+
 #endif
 
 }  // namespace
@@ -638,6 +651,30 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
     histogram_tester.ExpectTotalCount(
         "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 0);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       RegisterPageContentAnnotationsObserver) {
+  base::HistogramTester histogram_tester;
+  TestPageContentAnnotator test_annotator;
+  test_annotator.UseVisibilityScores(absl::nullopt, {{"Test Page", 0.5}});
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
+
+  TestPageContentAnnotationsObserver observer;
+  service()->AddObserver(AnnotationType::kContentVisibility, &observer);
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+  EXPECT_TRUE(observer.last_page_content_annotations_result_.has_value());
+  EXPECT_EQ(AnnotationType::kContentVisibility,
+            observer.last_page_content_annotations_result_->GetType());
+  EXPECT_NE(-1.0, observer.last_page_content_annotations_result_
+                      ->GetContentVisibilityScore());
 }
 
 class PageContentAnnotationsServiceRemoteMetadataBrowserTest

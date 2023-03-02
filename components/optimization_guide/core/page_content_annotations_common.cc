@@ -208,4 +208,35 @@ std::vector<BatchAnnotationResult> CreateEmptyBatchAnnotationResults(
   return results;
 }
 
+// static
+PageContentAnnotationsResult
+PageContentAnnotationsResult::CreateContentVisibilityScoreResult(
+    const PageContentAnnotationsResult::ContentVisibilityScore& score) {
+  PageContentAnnotationsResult result;
+  result.result_ = score;
+  return result;
+}
+
+PageContentAnnotationsResult::PageContentAnnotationsResult() = default;
+
+PageContentAnnotationsResult::PageContentAnnotationsResult(
+    const PageContentAnnotationsResult&) = default;
+PageContentAnnotationsResult& PageContentAnnotationsResult::operator=(
+    const PageContentAnnotationsResult&) = default;
+PageContentAnnotationsResult::~PageContentAnnotationsResult() = default;
+
+AnnotationType PageContentAnnotationsResult::GetType() const {
+  if (absl::holds_alternative<ContentVisibilityScore>(result_)) {
+    return AnnotationType::kContentVisibility;
+  }
+  return AnnotationType::kUnknown;
+}
+
+PageContentAnnotationsResult::ContentVisibilityScore
+PageContentAnnotationsResult::GetContentVisibilityScore() const {
+  DCHECK_EQ(AnnotationType::kContentVisibility, GetType());
+  return absl::get<PageContentAnnotationsResult::ContentVisibilityScore>(
+      result_);
+}
+
 }  // namespace optimization_guide
