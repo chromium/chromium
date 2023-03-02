@@ -29,13 +29,16 @@ preprocess_if_expr("preprocess") {
     "list.css",
     "menu_button.css",
     "menu.css",
-    "roboto.css",
     "spinner.css",
     "text_defaults.css",
     "text_defaults_md.css",
     "throbber.css",
     "widgets.css",
   ]
+
+  if (!is_chromeos_ash && !is_android) {
+    in_files += [ "roboto.css" ]
+  }
 
   if (include_polymer) {
     in_files += [ "md_colors.css" ]

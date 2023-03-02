@@ -5,15 +5,26 @@
 import {assertNotEquals, assertTrue} from './chai_assert.js';
 
 suite('TextDefaults', function() {
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  function assertFontFamilyExists(link: HTMLLinkElement) {
+    assertTrue(!!link.sheet);
+    const styleRules =
+        Array.from(link.sheet.cssRules)
+            .filter(r => r instanceof CSSStyleRule) as CSSStyleRule[];
+    assertTrue(styleRules.length > 0);
+    const fontFamily = styleRules[0]!.style.getPropertyValue('font-family');
+    assertNotEquals('', fontFamily);
+  }
+
   test('text_defaults.css', function(done) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'chrome://resources/css/text_defaults.css';
     link.onload = function() {
-      assertTrue(!!link.sheet);
-      const fontFamily = (link.sheet.rules[1] as CSSStyleRule)
-                             .style.getPropertyValue('font-family');
-      assertNotEquals('', fontFamily);
+      assertFontFamilyExists(link);
       done();
     };
     document.body.appendChild(link);
@@ -24,10 +35,7 @@ suite('TextDefaults', function() {
     link.rel = 'stylesheet';
     link.href = 'chrome://resources/css/text_defaults_md.css';
     link.onload = function() {
-      assertTrue(!!link.sheet);
-      const fontFamily = (link.sheet.rules[2] as CSSStyleRule)
-                             .style.getPropertyValue('font-family');
-      assertNotEquals('', fontFamily);
+      assertFontFamilyExists(link);
       done();
     };
     document.body.appendChild(link);
