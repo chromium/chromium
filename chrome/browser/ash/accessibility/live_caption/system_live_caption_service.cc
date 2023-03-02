@@ -19,6 +19,10 @@
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 
+namespace {
+static constexpr base::TimeDelta kStopDelay = base::Seconds(5);
+}  // namespace
+
 namespace ash {
 
 SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
@@ -26,15 +30,17 @@ SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
       controller_(
           ::captions::LiveCaptionControllerFactory::GetForProfile(profile)) {
   DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
-
   // The controller handles all SODA installation / languages etc. for us. We
   // just subscribe to the interface that informs us when we're ready to go.
   SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
       ->BindSpeechRecognitionBrowserObserver(
           browser_observer_receiver_.BindNewPipeAndPassRemote());
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
-SystemLiveCaptionService::~SystemLiveCaptionService() = default;
+SystemLiveCaptionService::~SystemLiveCaptionService() {
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
+}
 
 void SystemLiveCaptionService::Shutdown() {
   controller_ = nullptr;
@@ -46,7 +52,6 @@ void SystemLiveCaptionService::OnSpeechResult(
     bool /*is_final*/,
     const absl::optional<media::SpeechRecognitionResult>& result) {
   DCHECK(result.has_value());
-
   if (!controller_ || !controller_->DispatchTranscription(&context_, *result))
     StopRecognizing();
 }
@@ -55,13 +60,16 @@ void SystemLiveCaptionService::OnSpeechSoundLevelChanged(int16_t level) {}
 
 void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
+  current_recognizer_status_ = new_state;
   if (!controller_)
     return;
 
   DCHECK(client_);
 
   if (new_state == SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY) {
-    client_->Start();
+    if (output_running_) {
+      client_->Start();
+    }
     return;
   }
 
@@ -69,6 +77,8 @@ void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
   if (new_state != SpeechRecognizerStatus::SPEECH_RECOGNIZER_ERROR)
     return;
 
+  LOG(ERROR) << "state changed to error, setting controller to error. further "
+                "behavior not predictable.";
   controller_->OnError(
       &context_, ::captions::CaptionBubbleErrorType::kGeneric,
       base::RepeatingClosure(),
@@ -93,16 +103,7 @@ void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
 
   if (is_speech_recognition_available && !client_) {
     // Need to wait for the recognizer to be ready before starting.
-    client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
-        weak_ptr_factory_.GetWeakPtr(), profile_,
-        media::AudioDeviceDescription::kLoopbackInputDeviceId,
-        media::mojom::SpeechRecognitionOptions::New(
-            media::mojom::SpeechRecognitionMode::kCaption,
-            /*enable_formatting=*/false,
-            prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
-            /*is_server_based=*/false,
-            media::mojom::RecognizerClientType::kLiveCaption));
-
+    CreateClient();
     // Inject a fake audio system in tests.
     if (!create_audio_system_for_testing_.is_null()) {
       client_->set_audio_system_for_testing(  // IN-TEST
@@ -112,8 +113,9 @@ void SystemLiveCaptionService::SpeechRecognitionAvailabilityChanged(
     return;
   }
 
-  if (!is_speech_recognition_available)
+  if (!is_speech_recognition_available) {
     StopRecognizing();
+  }
 }
 
 void SystemLiveCaptionService::SpeechRecognitionLanguageChanged(
@@ -124,9 +126,48 @@ void SystemLiveCaptionService::SpeechRecognitionLanguageChanged(
 void SystemLiveCaptionService::StopRecognizing() {
   if (!client_)
     return;
-
   client_->Stop();
   client_.reset();
+}
+
+void SystemLiveCaptionService::OnOutputStarted() {
+  if (!output_running_) {
+    stop_countdown_timer_.reset();  // delete a death timeout.
+    if (current_recognizer_status_ ==
+        SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY) {
+      if (!client_) {
+        CreateClient();
+      }
+      client_->Start();
+    }
+  }
+  output_running_ = true;
+}
+
+void SystemLiveCaptionService::OnOutputStopped() {
+  if (output_running_) {
+    stop_countdown_timer_ = std::make_unique<base::OneShotTimer>();
+    stop_countdown_timer_->Start(
+        FROM_HERE, kStopDelay, this,
+        &SystemLiveCaptionService::StopTimeoutFinished);
+  }
+  output_running_ = false;
+}
+
+void SystemLiveCaptionService::StopTimeoutFinished() {
+  StopRecognizing();
+}
+
+void SystemLiveCaptionService::CreateClient() {
+  client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
+      weak_ptr_factory_.GetWeakPtr(), profile_,
+      media::AudioDeviceDescription::kLoopbackInputDeviceId,
+      media::mojom::SpeechRecognitionOptions::New(
+          media::mojom::SpeechRecognitionMode::kCaption,
+          /*enable_formatting=*/false,
+          prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
+          /*is_server_based=*/false,
+          media::mojom::RecognizerClientType::kLiveCaption));
 }
 
 }  // namespace ash

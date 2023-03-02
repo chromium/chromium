@@ -175,6 +175,9 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
         speech::LanguageCode::kEnUs);
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    SystemLiveCaptionServiceFactory::GetInstance()
+        ->GetForProfile(primary_profile_)
+        ->OnOutputStarted();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -211,6 +214,17 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, Triggering) {
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   base::RunLoop().RunUntilIdle();
 
+  // After language and binary install, still should be false until output is
+  // triggered.
+  EXPECT_FALSE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // Start audio.
+  // Set audio output running.
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnOutputStarted();
+  base::RunLoop().RunUntilIdle();
+
   // Should now be processing system audio.
   EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
 
@@ -238,6 +252,10 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaError) {
 
 // Tests that our feature listens to the correct SODA language.
 IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
+  // Set audio output running
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnOutputStarted();
   // Enable feature so that we start listening for SODA install status.
   SetLiveCaptionsPref(primary_profile_, /*enabled=*/true);
 
