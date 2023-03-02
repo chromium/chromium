@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
+#include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -296,6 +297,8 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   passwords_private_delegate_ =
       extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
                                                                         true);
+  web_ui->AddMessageHandler(
+      std::make_unique<password_manager::SyncHandler>(profile));
   auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);

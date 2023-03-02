@@ -92,6 +92,19 @@ void TestWebUI::RegisterMessageCallback(base::StringPiece message,
       std::move(callback));
 }
 
+void TestWebUI::ProcessWebUIMessage(const GURL& source_url,
+                                    const std::string& message,
+                                    base::Value::List args) {
+  auto callback_entry = message_callbacks_.find(message);
+  if (callback_entry == message_callbacks_.end()) {
+    return;
+  }
+
+  for (auto& callback : callback_entry->second) {
+    callback.Run(args);
+  }
+}
+
 bool TestWebUI::CanCallJavascript() {
   return true;
 }

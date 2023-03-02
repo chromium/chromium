@@ -52,7 +52,7 @@ class TestWebUI : public WebUI {
                                MessageCallback callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
-                           base::Value::List args) override {}
+                           base::Value::List args) override;
   bool CanCallJavascript() override;
   void CallJavascriptFunctionUnsafe(base::StringPiece function_name) override;
   void CallJavascriptFunctionUnsafe(
