@@ -69,6 +69,11 @@ bool ShouldForceFeedSigninPromo() {
       boolForKey:@"ForceFeedSigninPromo"];
 }
 
+bool ShouldIgnoreTileAblationConditions() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"IgnoreTileAblationConditions"];
+}
+
 void DidResetFirstFollowCount() {
   [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"ResetFirstFollow"];
 }

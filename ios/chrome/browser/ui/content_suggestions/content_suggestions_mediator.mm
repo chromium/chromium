@@ -27,6 +27,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
@@ -658,6 +659,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   // `kTileAblationImpressionThresholdMinutes` minutes per impression.
   // (eg. 2 NTP impressions within <5 minutes of each other will count as 1 NTP
   // impression for the purposes of this test.
+
+  // Return NO if the experimental setting to ignore `isTileAblationComplete` is
+  // true.
+  if (experimental_flags::ShouldIgnoreTileAblationConditions()) {
+    return NO;
+  }
 
   // Return early if ablation was already complete.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
