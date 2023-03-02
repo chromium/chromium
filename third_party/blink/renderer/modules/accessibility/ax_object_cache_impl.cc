@@ -3817,7 +3817,7 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithDetails(
       AXDirtyObject::Create(obj, event_from, event_from_action, event_intents));
 
   if (subtree)
-    InvalidateSerializerSubtree(*obj);
+    MarkSerializerSubtreeDirty(*obj);
 }
 
 void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(

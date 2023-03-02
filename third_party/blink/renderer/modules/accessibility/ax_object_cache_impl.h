@@ -482,13 +482,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool AddPendingEvent(const ui::AXEvent& event,
                        bool insert_at_beginning) override;
 
-  void InvalidateSerializerSubtree(AXObject& obj) {
-    ax_tree_serializer_->InvalidateSubtree(&obj);
+  void MarkSerializerSubtreeDirty(AXObject& obj) {
+    ax_tree_serializer_->MarkSubtreeDirty(&obj);
   }
 
-  bool IsInClientTree(AXObject& obj) {
-    return ax_tree_serializer_->IsInClientTree(&obj);
-  }
+  bool IsDirty(AXObject& obj) { return ax_tree_serializer_->IsDirty(&obj); }
 
   void OnLoadInlineTextBoxes(AXObject& obj) {
     ax_tree_source_->OnLoadInlineTextBoxes(obj);

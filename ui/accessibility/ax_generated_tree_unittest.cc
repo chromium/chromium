@@ -288,9 +288,9 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
               tree1.CreateTreeSource());
           serializer.ChangeTreeSourceForTesting(tree1_source.get());
 
-          // Invalidate a subtree rooted at one of the nodes.
+          // Mark as dirty the subtree rooted at one of the nodes.
           if (l > 0)
-            serializer.InvalidateSubtree(tree1.GetFromId(l));
+            serializer.MarkSubtreeDirty(tree1.GetFromId(l));
 
           // Serialize a sequence of updates to |dst_tree| to match.
           for (int k_index = 0; k_index < tree_size; ++k_index) {

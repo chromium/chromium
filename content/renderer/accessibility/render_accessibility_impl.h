@@ -205,7 +205,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void OnGetImageData(const ui::AXActionTarget* target,
                       const gfx::Size& max_size);
   void AddPluginTreeToUpdate(ui::AXTreeUpdate* update,
-                             bool invalidate_plugin_subtree);
+                             bool mark_plugin_subtree_dirty);
 
   // If the document is loaded, fire a load complete event.
   void FireLoadCompleteIfLoaded();
@@ -257,7 +257,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                  blink::WebAXObject root,
                                  std::vector<ui::AXEvent>& events,
                                  std::vector<ui::AXTreeUpdate>& updates,
-                                 bool invalidate_plugin_subtree);
+                                 bool mark_plugin_subtree_dirty);
 
   void AddImageAnnotations(const blink::WebDocument& document,
                            std::vector<ui::AXNodeData>&);

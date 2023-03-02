@@ -208,10 +208,10 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   private_->Serialize(node_data, accessibility_mode);
 }
 
-void WebAXObject::InvalidateSerializerSubtree() const {
+void WebAXObject::MarkSerializerSubtreeDirty() const {
   if (IsDetached())
     return;
-  private_->AXObjectCache().InvalidateSerializerSubtree(*private_);
+  private_->AXObjectCache().MarkSerializerSubtreeDirty(*private_);
 }
 
 void WebAXObject::MarkAXObjectDirtyWithDetails(
@@ -225,10 +225,10 @@ void WebAXObject::MarkAXObjectDirtyWithDetails(
       private_.Get(), subtree, event_from, event_from_action, event_intents);
 }
 
-bool WebAXObject::IsInClientTree() {
+bool WebAXObject::IsDirty() {
   if (IsDetached())
     return false;
-  return private_->AXObjectCache().IsInClientTree(*private_);
+  return private_->AXObjectCache().IsDirty(*private_);
 }
 
 void WebAXObject::OnLoadInlineTextBoxes() const {

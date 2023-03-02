@@ -198,7 +198,7 @@ TEST_F(AXTreeSerializerTest, ReparentingUpdatesSubtree) {
 // Similar to ReparentingUpdatesSubtree, except that InvalidateSubtree is
 // called on id=1 - we need to make sure that the reparenting is still
 // detected.
-TEST_F(AXTreeSerializerTest, ReparentingWithInvalidationUpdatesSubtree) {
+TEST_F(AXTreeSerializerTest, ReparentingWithDirtySubtreeUpdates) {
   // (1 (2 (3 (4 (5)))))
   treedata0_.root_id = 1;
   treedata0_.nodes.resize(5);
@@ -229,7 +229,7 @@ TEST_F(AXTreeSerializerTest, ReparentingWithInvalidationUpdatesSubtree) {
 
   CreateTreeSerializer();
   AXTreeUpdate update;
-  serializer_->InvalidateSubtree(tree1_->GetFromId(1));
+  serializer_->MarkSubtreeDirty(tree1_->GetFromId(1));
   ASSERT_TRUE(serializer_->SerializeChanges(tree1_->GetFromId(4), &update));
 
   // The update should unserialize without errors.

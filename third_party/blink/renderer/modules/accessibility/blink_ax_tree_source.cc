@@ -414,7 +414,7 @@ void BlinkAXTreeSource::OnLoadInlineTextBoxes(AXObject& obj) {
 
   SetLoadInlineTextBoxesForId(obj.AXObjectID());
 
-  ax_object_cache_->InvalidateSerializerSubtree(obj);
+  ax_object_cache_->MarkSerializerSubtreeDirty(obj);
 }
 
 AXObject* BlinkAXTreeSource::GetPluginRoot() {

@@ -248,7 +248,7 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
   update_ids.push_back(node_id_to_clear);
 
   for (const int32_t update_id : update_ids)
-    current_tree_serializer_->InvalidateSubtree(GetFromId(update_id));
+    current_tree_serializer_->MarkSubtreeDirty(GetFromId(update_id));
 
   std::vector<ui::AXTreeUpdate> updates;
   for (const int32_t update_id : update_ids) {
