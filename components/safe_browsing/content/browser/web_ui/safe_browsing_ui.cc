@@ -1830,7 +1830,7 @@ base::Value::Dict SerializeRTThreatInfo(
       break;
     case RTLookupResponse::ThreatInfo::SUSPICIOUS:
       verdict_type = "SUSPICIOUS";
-      break;  
+      break;
     case RTLookupResponse::ThreatInfo::WARN:
       verdict_type = "WARN";
       break;
@@ -1857,6 +1857,20 @@ base::Value::Dict SerializeRTThreatInfo(
                        cache_expression_match_type);
   threat_info_dict.Set("cache_expression_using_match_type",
                        threat_info.cache_expression_using_match_type());
+
+  if (threat_info.has_matched_url_navigation_rule()) {
+    base::Value::Dict matched_rule;
+    matched_rule.Set("rule_id",
+                     threat_info.matched_url_navigation_rule().rule_id());
+    matched_rule.Set("rule_name",
+                     threat_info.matched_url_navigation_rule().rule_name());
+    matched_rule.Set(
+        "matched_url_category",
+        threat_info.matched_url_navigation_rule().matched_url_category());
+    threat_info_dict.Set("matched_url_navigation_rule",
+                         std::move(matched_rule));
+  }
+
   return threat_info_dict;
 }
 
