@@ -2436,6 +2436,10 @@ buildflag_header("debugging_buildflags") {
   enable_lldbinit_warning =
       is_debug && strip_absolute_paths_from_debug_symbols && is_mac
 
+  # TODO(crbug.com/1420774): Try and enable these checks on Android too.
+  enable_commandline_sequence_checks =
+      (is_debug || dcheck_always_on) && !is_android
+
   flags = [
     "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
     "ENABLE_LOCATION_SOURCE=$enable_location_source",
@@ -2448,6 +2452,7 @@ buildflag_header("debugging_buildflags") {
     "ENABLE_LLDBINIT_WARNING=$enable_lldbinit_warning",
     "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
     "ENABLE_STACK_TRACE_LINE_NUMBERS=$enable_stack_trace_line_numbers",
+    "ENABLE_COMMANDLINE_SEQUENCE_CHECKS=$enable_commandline_sequence_checks",
   ]
 }
 

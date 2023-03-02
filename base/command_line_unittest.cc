@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -23,6 +24,13 @@
 
 #include "base/win/scoped_localalloc.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#endif  // BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
 
 namespace base {
 
@@ -734,5 +742,24 @@ TEST(CommandLineTest, ParseAsSingleArgument) {
   EXPECT_TRUE(cl_without_arg.GetArgs().empty());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+TEST(CommandLineDeathTest, ThreadChecks) {
+  test::TaskEnvironment task_environment;
+  RunLoop run_loop;
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        ThreadPool::PostTask(FROM_HERE, BindLambdaForTesting([&run_loop]() {
+                               auto* command_line =
+                                   CommandLine::ForCurrentProcess();
+                               command_line->AppendSwitch("test");
+                               run_loop.Quit();
+                             }));
+
+        run_loop.Run();
+      },
+      "");
+}
+#endif  // BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
 
 } // namespace base

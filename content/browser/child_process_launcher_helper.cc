@@ -96,6 +96,9 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
       can_use_warm_up_connection_(can_use_warm_up_connection)
 #endif
 {
+  // command_line_ is always accessed from the launcher thread, so detach it
+  // from the client thread here.
+  command_line_->DetachFromCurrentSequence();
 }
 
 ChildProcessLauncherHelper::~ChildProcessLauncherHelper() = default;
