@@ -156,27 +156,24 @@
     gap: 2px;
   }
 
-  ::slotted([slot=title]) {
-    color: var(--cr-primary-text-color);
-    font-size: 13px;
-    font-weight: 400;
-  }
-
-  :host-context([chrome-refresh-2023]) ::slotted([slot=title]) {
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  ::slotted(button[slot=title]) {
+  .title {
     appearance: none;
     background: transparent;
     border: 0;
+    color: var(--cr-primary-text-color);
     display: inline;
+    font-size: 13px;
+    font-weight: 400;
     padding: 0;
     text-align: start;
   }
 
-  ::slotted(button[slot=title]:focus) {
+  :host-context([chrome-refresh-2023]) .title {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .title:focus {
     outline: none;
   }
 
@@ -198,19 +195,23 @@
     height: auto;
   }
 
-  ::slotted([slot=description]) {
+  :host(:not([has-descriptions_])) .descriptions {
+    display: none;
+  }
+
+  .description {
     color: var(--cr-secondary-text-color);
     font-size: 13px;
     font-weight: 400;
   }
 
-  :host-context([chrome-refresh-2023]) ::slotted([slot=description]) {
+  :host-context([chrome-refresh-2023]) .description {
     font-size: 11px;
     font-weight: 400;
   }
 
-  ::slotted([slot=title]),
-  ::slotted([slot=description]) {
+  .title,
+  .description {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -222,6 +223,10 @@
     display: flex;
     gap: 4px;
     min-width: fit-content;
+  }
+
+  :host(:not([has-badges_])) .badges {
+    display: none;
   }
 
   .suffix-icons {
@@ -258,13 +263,23 @@
     <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>
 </div>
-<div class="metadata">
-  <slot name="title"></slot>
-  <div class="descriptions">
-    <slot name="description"></slot>
-    <div class="badges"><slot name="badges"></slot></div>
+<slot name="content">
+  <div id="metadata" class="metadata">
+    <button class="title"
+        aria-label="[[getButtonAriaLabel_(title, buttonAriaLabel)]]"
+        aria-description="[[
+            getButtonAriaDescription_(description, buttonAriaDescription)]]">
+      [[title]]
+    </button>
+    <div class="descriptions">
+      <div class="description" hidden$="[[!description]]">[[description]]</div>
+      <div class="badges">
+        <slot id="badges" name="badges" on-slotchange="onBadgesSlotChange_">
+        </slot>
+      </div>
+    </div>
   </div>
-</div>
+</slot>
 <div class="suffix-icons">
   <slot name="suffix-icon"></slot>
 </div>

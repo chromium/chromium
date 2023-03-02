@@ -21,6 +21,13 @@ export enum CrUrlListItemSize {
   LARGE = 'large',
 }
 
+export interface CrUrlListItemElement {
+  $: {
+    badges: HTMLSlotElement,
+    description: HTMLSlotElement,
+  };
+}
+
 const CrUrlListItemElementBase = MouseHoverableMixin(PolymerElement);
 
 export class CrUrlListItemElement extends CrUrlListItemElementBase {
@@ -34,24 +41,45 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
 
   static get properties() {
     return {
-      alwaysShowSuffixIcons: {
-        reflectToAttribute: true,
-        type: Boolean,
-      },
+      buttonAriaLabel: String,
+      buttonAriaDescription: String,
       count: Number,
+      description: String,
+      hasBadges_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+      hasDescriptions_: {
+        type: Boolean,
+        computed: 'computeHasDescriptions_(hasBadges_, description)',
+        reflectToAttribute: true,
+      },
+      isFolder_: {
+        computed: 'computeIsFolder_(count)',
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
       size: {
         observer: 'onSizeChanged_',
         reflectToAttribute: true,
         type: String,
         value: CrUrlListItemSize.MEDIUM,
       },
+      title: String,
       url: String,
     };
   }
 
+  buttonAriaLabel?: string;
+  buttonAriaDescription?: string;
   count?: number;
-  iconsAlwaysVisible: boolean;
+  description?: string;
+  private hasBadges_: boolean;
+  private hasDescription_: boolean;
+  private isFolder_: boolean;
   size: CrUrlListItemSize;
+  override title: string;
   url?: string;
 
   override ready() {
@@ -60,6 +88,22 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     this.addEventListener('pointerdown', () => this.setActiveState_(true));
     this.addEventListener('pointerup', () => this.setActiveState_(false));
     this.addEventListener('pointerleave', () => this.setActiveState_(false));
+  }
+
+  private computeHasDescriptions_(): boolean {
+    return !!this.description || this.hasBadges_;
+  }
+
+  private computeIsFolder_(): boolean {
+    return this.count !== undefined;
+  }
+
+  private getButtonAriaDescription_(): string|undefined {
+    return this.buttonAriaDescription || this.description;
+  }
+
+  private getButtonAriaLabel_(): string {
+    return this.buttonAriaLabel || this.title;
   }
 
   private getDisplayedCount_() {
@@ -73,6 +117,11 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
 
   private getFavicon_(): string {
     return getFaviconForPageURL(this.url || '', false);
+  }
+
+  private onBadgesSlotChange_() {
+    this.hasBadges_ =
+        this.$.badges.assignedElements({flatten: true}).length > 0;
   }
 
   private onSizeChanged_() {

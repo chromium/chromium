@@ -48,6 +48,9 @@
     url="[[bookmark.url]]"
     count="[[bookmark.children.length]]"
     title="[[bookmark.title]]"
+    description="[[description]]"
+    button-aria-label="[[rowAriaLabel]]"
+    button-aria-description="[[rowAriaDescription]]"
     on-click="onRowClicked_"
     on-contextmenu="onContextMenu_">
   <template is="dom-if" if="[[hasCheckbox]]" restamp>
@@ -58,8 +61,9 @@
     </cr-checkbox>
   </template>
 
-  <template is="dom-if" if="[[hasInput]]" on-dom-change="onInputDisplayChange_">
-    <cr-input slot="title" id="input" value="[[bookmark.title]]"
+  <template is="dom-if" if="[[hasInput]]" on-dom-change="onInputDisplayChange_"
+      restamp>
+    <cr-input slot="content" id="input" value="[[bookmark.title]]"
         on-change="onInputChange_" on-blur="onInputChange_"
         on-keypress="onInputKeyPress_"
         aria-label="[[rowAriaLabel]]"
@@ -69,16 +73,7 @@
 
   <template is="dom-if" if="[[!hasInput]]"
       on-dom-change="onInputDisplayChange_">
-    <button slot="title" id="title" role="button" tabindex="0"
-        aria-label="[[rowAriaLabel]]" aria-description="[[rowAriaDescription]]">
-      [[bookmark.title]]
-    </button>
-
-    <div slot="description" id="description" hidden$="[[!description]]">
-      [[description]]
-    </div>
-2   <slot slot="badges" id="badges" name="badges"></slot>
-
+   <slot slot="badges" id="badges" name="badges"></slot>
     <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
         hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
         disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel]]">

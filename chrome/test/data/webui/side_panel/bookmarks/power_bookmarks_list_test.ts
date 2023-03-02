@@ -120,9 +120,10 @@ suite('SidePanelPowerBookmarksListTest', () => {
         (bookmarkElement as PowerBookmarkRowElement).bookmark.url);
     assertNotEquals(
         undefined,
-        Array.from(bookmarkElement.shadowRoot!.querySelectorAll('button'))
-            .find(
-                el => el.textContent && el.textContent.trim() === 'New title'));
+        Array
+            .from(bookmarkElement.shadowRoot!.querySelectorAll(
+                'cr-url-list-item'))
+            .find(el => el.title === 'New title'));
   });
 
   test('AddsCreatedBookmark', async () => {
@@ -212,11 +213,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
     const folderElement = bookmarkElements[0]!;
     assertEquals(folderElement.id, 'bookmark-5');
 
-    const descriptionElement =
-        folderElement.shadowRoot!.getElementById('description');
+    const urlListItemElement =
+        folderElement.shadowRoot!.querySelector('cr-url-list-item');
     const pluralString =
         await PluralStringProxyImpl.getInstance().getPluralString('foo', 1);
-    assertEquals(descriptionElement!.textContent!.includes(pluralString), true);
+    assertEquals(urlListItemElement!.description!.includes(pluralString), true);
   });
 
   test('SetsExpandedDescription', () => {
@@ -230,11 +231,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
     const folderElement = bookmarkElements[1]!;
     assertEquals(folderElement.id, 'bookmark-4');
 
-    const descriptionElement =
-        folderElement.shadowRoot!.getElementById('description');
+    const urlListItemElement =
+        folderElement.shadowRoot!.querySelector('cr-url-list-item');
     const expandedDescription = 'child';
     assertEquals(
-        descriptionElement!.textContent!.includes(expandedDescription), true);
+        urlListItemElement!.description!.includes(expandedDescription), true);
   });
 
   test('SetsExpandedSearchResultDescription', () => {
@@ -256,10 +257,10 @@ suite('SidePanelPowerBookmarksListTest', () => {
     const folderElement = bookmarkElements[0]!;
     assertEquals(folderElement.id, 'bookmark-4');
 
-    const descriptionElement =
-        folderElement.shadowRoot!.getElementById('description');
+    const urlListItemElement =
+        folderElement.shadowRoot!.querySelector('cr-url-list-item');
     const expandedDescription = 'child - All Bookmarks';
     assertEquals(
-        descriptionElement!.textContent!.includes(expandedDescription), true);
+        urlListItemElement!.description!.includes(expandedDescription), true);
   });
 });

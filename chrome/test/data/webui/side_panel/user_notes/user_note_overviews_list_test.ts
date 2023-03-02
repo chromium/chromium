@@ -65,8 +65,8 @@ suite('UserNoteOverviewsListTest', () => {
     assertEquals(noteOverviewElements.length, 2);
     for (let i = 0; i < noteOverviews.length; i++) {
       assertEquals(
-          noteOverviewElements[i]!.shadowRoot!.querySelector('#title')!
-              .textContent!.trim(),
+          noteOverviewElements[i]!.shadowRoot!
+              .querySelector('cr-url-list-item')!.title.trim(),
           noteOverviews[i]!.title);
     }
 

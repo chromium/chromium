@@ -197,23 +197,22 @@
               row-aria-label="[[getBookmarkAllyLabel_(item)]]"
               row-aria-description="[[getBookmarkA11yDescription_(item)]]"
               tabindex$="[[tabIndex]]">
-            <div slot="badges">
-              <template is="dom-if" restamp
-                  if="[[isPriceTracked(item, trackedProductInfos_.*)]]">
-                <sp-list-item-badge updated="[[showDiscountedPrice_(
+            <template is="dom-if" restamp
+                if="[[isPriceTracked(item, trackedProductInfos_.*)]]">
+              <sp-list-item-badge slot="badges"
+                  updated="[[showDiscountedPrice_(
                       item, trackedProductInfos_.*)]]">
-                  <iron-icon icon="bookmarks:price-tracking"></iron-icon>
-                  <div>
-                    [[getCurrentPrice_(item, trackedProductInfos_.*)]]
-                  </div>
-                  <div slot="previous-badge"
-                      hidden$="[[!showDiscountedPrice_(
-                                  item, trackedProductInfos_.*)]]">
-                    [[getPreviousPrice_(item, trackedProductInfos_.*)]]
-                  </div>
-                </sp-list-item-badge>
-              </template>
-            </div>
+                <iron-icon icon="bookmarks:price-tracking"></iron-icon>
+                <div>
+                  [[getCurrentPrice_(item, trackedProductInfos_.*)]]
+                </div>
+                <div slot="previous-badge"
+                    hidden$="[[!showDiscountedPrice_(
+                                item, trackedProductInfos_.*)]]">
+                  [[getPreviousPrice_(item, trackedProductInfos_.*)]]
+                </div>
+              </sp-list-item-badge>
+            </template>
           </power-bookmark-row>
         </template>
       </iron-list>
