@@ -38,7 +38,7 @@ import javax.net.ssl.SSLContext;
  * for loopback testing without the need to setup TCP forwarding to the
  * host computer.
  */
-public class WebServer {
+public class WebServer implements AutoCloseable {
     private static final String TAG = "WebServer";
 
     private static Set<WebServer> sInstances = new HashSet<>();
@@ -379,6 +379,15 @@ public class WebServer {
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Make the WebServer AutoCloseable.
+     * Calls the shutdown method.
+     */
+    @Override
+    public void close() {
+        shutdown();
     }
 
     public String getBaseUrl() {
