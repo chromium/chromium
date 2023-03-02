@@ -30072,30 +30072,6 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Drive disabled"/>
 </enum>
 
-<enum name="DriveMetadataDBInitStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Not found"/>
-  <int value="2" label="Corruption"/>
-  <int value="3" label="IO error"/>
-  <int value="4" label="Failed to open DB for unknown reason"/>
-  <int value="5" label="Incompatible DB format"/>
-  <int value="6" label="DB is broken"/>
-  <int value="7" label="Opened existing DB."/>
-  <int value="8" label="No existing DB was found. Created new DB."/>
-  <int value="9" label="Cannot open existing DB. Created new DB."/>
-</enum>
-
-<enum name="DriveMetadataDBValidityCheckFailureReason">
-  <int value="0" label="Invalid header"/>
-  <int value="1" label="Broken ID entry"/>
-  <int value="2" label="Broken entry"/>
-  <int value="3" label="Invalid local ID"/>
-  <int value="4" label="Invalid parent ID"/>
-  <int value="5" label="Broken child map"/>
-  <int value="6" label="Child entry count mismatch"/>
-  <int value="7" label="Iterator error"/>
-</enum>
-
 <enum name="DriveMountStatus">
   <int value="0" label="Success"/>
   <int value="1" label="UnknownFailure"/>
