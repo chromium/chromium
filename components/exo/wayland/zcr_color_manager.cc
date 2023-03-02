@@ -6,6 +6,8 @@
 
 #include <chrome-color-management-server-protocol.h>
 #include <wayland-server-core.h>
+
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 
@@ -290,7 +292,8 @@ void color_management_output_get_color_space(
       color_management_output_observer->GetColorSpace());
 
   wl_resource* color_space_resource = wl_resource_create(
-      client, &zcr_color_space_v1_interface, kZcrColorManagerVersion, id);
+      client, &zcr_color_space_v1_interface,
+      wl_resource_get_version(color_management_output_resource), id);
 
   SetImplementation(color_space_resource, &color_space_v1_implementation,
                     std::move(color_space));
@@ -363,16 +366,16 @@ const struct zcr_color_management_surface_v1_interface
 // zcr_color_manager_v1_interface:
 
 void CreateColorSpace(struct wl_client* client,
+                      int32_t resource_version,
                       int32_t color_space_creator_id,
                       std::unique_ptr<ColorManagerColorSpace> color_space) {
   wl_resource* color_space_resource = wl_resource_create(
-      client, &zcr_color_space_v1_interface, kZcrColorManagerVersion, /*id=*/0);
-  SetImplementation(color_space_resource, &color_space_v1_implementation,
-                    std::move(color_space));
-
+      client, &zcr_color_space_v1_interface, resource_version, /*id=*/0);
   wl_resource* color_space_creator_resource =
       wl_resource_create(client, &zcr_color_space_creator_v1_interface,
-                         /*version=*/1, color_space_creator_id);
+                         resource_version, color_space_creator_id);
+  SetImplementation(color_space_resource, &color_space_v1_implementation,
+                    std::move(color_space));
   zcr_color_space_creator_v1_send_created(color_space_creator_resource,
                                           color_space_resource);
   // The resource should be immediately destroyed once it's sent its event.
@@ -464,7 +467,7 @@ void color_manager_create_color_space_from_complete_names(
   } else if (ui::wayland::kHDRTransferMap.contains(eotf)) {
     auto transfer_fn = ui::wayland::kHDRTransferMap.at(eotf);
     CreateColorSpace(
-        client, id,
+        client, wl_resource_get_version(color_manager_resource), id,
         std::make_unique<NameBasedColorSpace>(
             gfx::ColorSpace(chromaticity_id,
                             gfx::ColorSpace::TransferID::CUSTOM_HDR, matrix_id,
@@ -486,7 +489,7 @@ void color_manager_create_color_space_from_complete_names(
     SendColorCreationError(client, id, error_flags);
 
   CreateColorSpace(
-      client, id,
+      client, wl_resource_get_version(color_manager_resource), id,
       std::make_unique<NameBasedColorSpace>(
           gfx::ColorSpace(chromaticity_id, eotf_id, matrix_id, range_id),
           static_cast<zcr_color_manager_v1_chromaticity_names>(chromaticity),
@@ -597,7 +600,7 @@ void color_manager_create_color_space_from_complete_params(
 
   auto primary_id = gfx::ColorSpace::PrimaryID::CUSTOM;
   CreateColorSpace(
-      client, id,
+      client, wl_resource_get_version(color_manager_resource), id,
       std::make_unique<ColorManagerColorSpace>(gfx::ColorSpace(
           primary_id, eotf_id, matrix_id, range_id, &xyzd50, nullptr)));
 }
@@ -629,13 +632,13 @@ void color_manager_get_color_management_output(
     struct wl_resource* color_manager_resource,
     uint32_t id,
     struct wl_resource* output) {
-  wl_resource* color_management_output_resource = wl_resource_create(
-      client, &zcr_color_management_output_v1_interface, 1, id);
+  wl_resource* color_management_output_resource =
+      wl_resource_create(client, &zcr_color_management_output_v1_interface,
+                         wl_resource_get_version(color_manager_resource), id);
   auto* display_handler = GetUserDataAs<WaylandDisplayHandler>(output);
   auto color_management_output_observer =
       std::make_unique<ColorManagerObserver>(
           display_handler, color_management_output_resource, output);
-
   SetImplementation(color_management_output_resource,
                     &color_management_output_v1_implementation,
                     std::move(color_management_output_observer));
@@ -646,8 +649,9 @@ void color_manager_get_color_management_surface(
     struct wl_resource* color_manager_resource,
     uint32_t id,
     struct wl_resource* surface_resource) {
-  wl_resource* color_management_surface_resource = wl_resource_create(
-      client, &zcr_color_management_surface_v1_interface, 1, id);
+  wl_resource* color_management_surface_resource =
+      wl_resource_create(client, &zcr_color_management_surface_v1_interface,
+                         wl_resource_get_version(color_manager_resource), id);
 
   SetImplementation(color_management_surface_resource,
                     &color_management_surface_v1_implementation,
@@ -679,7 +683,8 @@ void bind_zcr_color_manager(wl_client* client,
                             uint32_t version,
                             uint32_t id) {
   wl_resource* color_manager_resource =
-      wl_resource_create(client, &zcr_color_manager_v1_interface, version, id);
+      wl_resource_create(client, &zcr_color_manager_v1_interface,
+                         std::min(version, kZcrColorManagerVersion), id);
 
   wl_resource_set_implementation(color_manager_resource,
                                  &color_manager_v1_implementation, data,
