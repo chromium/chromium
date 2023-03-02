@@ -122,11 +122,17 @@
 #pragma mark - Private
 
 - (UIWindow*)anyKeyWindow {
-  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
-  for (UIWindow* window in windows) {
-    if (window.isKeyWindow)
-      return window;
+  for (UIWindowScene* windowScene in UIApplication.sharedApplication
+           .connectedScenes) {
+    NSAssert([windowScene isKindOfClass:[UIWindowScene class]],
+             @"UIScene is not a UIWindowScene: %@", windowScene);
+    for (UIWindow* window in windowScene.windows) {
+      if (window.isKeyWindow) {
+        return window;
+      }
+    }
   }
+
   return nil;
 }
 

@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/logging.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -24,8 +25,12 @@
 }
 
 + (void)enableFastAnimation {
-  for (UIWindow* window in [UIApplication sharedApplication].windows) {
-    [[window layer] setSpeed:100];
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+    for (UIWindow* window in windowScene.windows) {
+      [[window layer] setSpeed:100];
+    }
   }
 }
 

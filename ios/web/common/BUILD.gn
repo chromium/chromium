@@ -53,6 +53,7 @@ source_set("uikit") {
     "uikit_ui_util.mm",
   ]
 
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
