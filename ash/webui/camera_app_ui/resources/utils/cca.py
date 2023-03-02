@@ -133,6 +133,8 @@ def generate_tsconfig(board):
     tsconfig['files'].append(os.path.join(common_definitions, 'pending.d.ts'))
     tsconfig['compilerOptions']['noEmit'] = True
     tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
+    # TODO(b:269971867): Remove this once we have type definition for ffmpeg.js
+    tsconfig['compilerOptions']['allowJs'] = True
 
     with open(os.path.join(cca_root, 'tsconfig.json'), 'w') as f:
         json.dump(tsconfig, f)
@@ -366,8 +368,8 @@ def check_strings(args):
             unused_ids.append(id)
 
         if len(unused_ids) > 0:
-            print(f'The following strings are defined in i18n_string.ts but \
-unused. Please remove them:')
+            print('The following strings are defined in i18n_string.ts but '
+                  'unused. Please remove them:')
             for id in unused_ids:
                 print(f'    {id}')
             returncode = 1
