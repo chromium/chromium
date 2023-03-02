@@ -39,9 +39,9 @@ constexpr float kMaxScaleFactor = 1000.0f;
 
 std::string GetWebUiCssTextDefaults(const std::string& css_template) {
   ui::TemplateReplacements placeholders;
-  placeholders["textDirection"] = GetTextDirection();
-  placeholders["fontFamily"] = GetFontFamily();
-  placeholders["fontSize"] = GetFontSize();
+  placeholders["textdirection"] = GetTextDirection();
+  placeholders["fontfamily"] = GetFontFamily();
+  placeholders["fontsize"] = GetFontSize();
   return ui::ReplaceTemplateExpressions(css_template, placeholders);
 }
 

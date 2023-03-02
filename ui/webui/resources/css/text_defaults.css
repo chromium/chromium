@@ -16,10 +16,10 @@
  * Otherwise its placeholders won't be expanded. */
 
 body {
-  font-family: $i18nRaw{fontFamily};
-  font-size: $i18n{fontSize};
+  font-family: $i18nRaw{fontfamily};
+  font-size: $i18n{fontsize};
 }
 
 button {
-  font-family: $i18nRaw{fontFamily};
+  font-family: $i18nRaw{fontfamily};
 }

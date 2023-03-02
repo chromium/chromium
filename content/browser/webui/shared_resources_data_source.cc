@@ -94,9 +94,6 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   AddResources(GetAshMojoResourceIds(), kAshResources, kAshResourcesSize,
                source);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  source->AddString("fontFamily", webui::GetFontFamily());
-  source->AddString("fontSize", webui::GetFontSize());
 }
 
 }  // namespace
