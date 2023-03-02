@@ -530,6 +530,10 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
       rwhva_->BeginRotationBatching();
     rwhva_->EndRotationAndSyncIfNecessary();
   } else if (sync_needed) {
+    // If any sync is recorded, disable the fullscreen throttling.
+    if (pending_screen_state_.is_fullscreen) {
+      pending_screen_state_.any_non_rotation_size_changed = true;
+    }
     rwhva_->SynchronizeVisualProperties(deadline_policy, absl::nullopt);
   }
 
