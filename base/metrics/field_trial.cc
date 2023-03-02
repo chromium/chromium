@@ -34,10 +34,6 @@
 #include "base/process/launch.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mach_port_rendezvous.h"
-#endif
-
 // On POSIX, the fd is shared using the mapping in GlobalDescriptors.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include "base/posix/global_descriptors.h"

@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
-#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 // Use the MACH_LOG family of macros along with a mach_error_t (kern_return_t)
@@ -98,7 +97,7 @@ class BASE_EXPORT MachLogMessage : public logging::LogMessage {
               DCHECK_IS_ON() && !(condition))   \
       << "Check failed: " #condition << ". "
 
-#if BUILDFLAG(USE_BLINK)
+#if !BUILDFLAG(IS_IOS)
 
 namespace logging {
 
@@ -166,6 +165,6 @@ class BASE_EXPORT BootstrapLogMessage : public logging::LogMessage {
               DCHECK_IS_ON() && !(condition))             \
       << "Check failed: " #condition << ". "
 
-#endif  //  BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_IOS)
 
 #endif  // BASE_MAC_MACH_LOGGING_H_

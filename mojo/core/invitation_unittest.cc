@@ -24,7 +24,6 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "mojo/buildflags.h"
 #include "mojo/core/core.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/node_controller.h"
@@ -36,10 +35,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-#include "base/mac/mach_port_rendezvous.h"
-#endif
 
 namespace mojo {
 namespace core {
@@ -95,7 +90,7 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
   std::string value;
 #if BUILDFLAG(IS_FUCHSIA)
   channel->PrepareToPassRemoteEndpoint(&options->handles_to_transfer, &value);
-#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
+#elif BUILDFLAG(IS_MAC)
   channel->PrepareToPassRemoteEndpoint(&options->mach_ports_for_rendezvous,
                                        &value);
 #elif BUILDFLAG(IS_POSIX)

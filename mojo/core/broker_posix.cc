@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "build/build_config.h"
-#include "mojo/buildflags.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/platform_handle_utils.h"
@@ -116,8 +115,7 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     return base::WritableSharedMemoryRegion();
   }
 
-#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
+#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   // Non-POSIX systems, as well as Android and Mac, only use a single handle to
   // represent a writable region.
   constexpr size_t kNumExpectedHandles = 1;

@@ -1259,6 +1259,39 @@ template("mojom") {
             "${bindings_configuration.component_macro_suffix}_IMPL" ]
     }
 
+    export_args = []
+    export_args_overridden = false
+    if (defined(bindings_configuration.for_blink) &&
+        bindings_configuration.for_blink) {
+      if (defined(invoker.export_class_attribute_blink)) {
+        export_args_overridden = true
+        export_args += [
+          "--export_attribute",
+          invoker.export_class_attribute_blink,
+          "--export_header",
+          invoker.export_header_blink,
+        ]
+      }
+    } else if (defined(invoker.export_class_attribute)) {
+      export_args_overridden = true
+      export_args += [
+        "--export_attribute",
+        invoker.export_class_attribute,
+        "--export_header",
+        invoker.export_header,
+      ]
+    }
+
+    if (!export_args_overridden && defined(invoker.component_macro_prefix)) {
+      export_args += [
+        "--export_attribute",
+        "COMPONENT_EXPORT(${invoker.component_macro_prefix}" +
+            "${bindings_configuration.component_macro_suffix})",
+        "--export_header",
+        "base/component_export.h",
+      ]
+    }
+
     generate_java = false
     if (!cpp_only && defined(invoker.generate_java)) {
       generate_java = invoker.generate_java
@@ -1267,38 +1300,6 @@ template("mojom") {
     type_mappings_path =
         "$target_gen_dir/${target_name}${variant_suffix}__type_mappings"
     if (sources_list != []) {
-      export_args = []
-      export_args_overridden = false
-      if (defined(bindings_configuration.for_blink) &&
-          bindings_configuration.for_blink) {
-        if (defined(invoker.export_class_attribute_blink)) {
-          export_args_overridden = true
-          export_args += [
-            "--export_attribute",
-            invoker.export_class_attribute_blink,
-            "--export_header",
-            invoker.export_header_blink,
-          ]
-        }
-      } else if (defined(invoker.export_class_attribute)) {
-        export_args_overridden = true
-        export_args += [
-          "--export_attribute",
-          invoker.export_class_attribute,
-          "--export_header",
-          invoker.export_header,
-        ]
-      }
-      if (!export_args_overridden && defined(invoker.component_macro_prefix)) {
-        export_args += [
-          "--export_attribute",
-          "COMPONENT_EXPORT(${invoker.component_macro_prefix}" +
-              "${bindings_configuration.component_macro_suffix})",
-          "--export_header",
-          "base/component_export.h",
-        ]
-      }
-
       generator_cpp_output_suffixes = []
       variant_dash_suffix = ""
       if (defined(variant)) {

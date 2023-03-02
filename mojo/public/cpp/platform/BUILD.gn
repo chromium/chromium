@@ -35,7 +35,6 @@ component("platform") {
 
   public_deps = [
     "//base",
-    "//mojo:buildflags",
     "//mojo/public/c/system:headers",
   ]
 

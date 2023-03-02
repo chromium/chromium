@@ -5,10 +5,6 @@
 #include "base/process/launch.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
-#include "base/mac/mach_port_rendezvous.h"
-#endif
-
 namespace base {
 
 LaunchOptions::LaunchOptions() = default;

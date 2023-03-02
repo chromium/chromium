@@ -10,13 +10,9 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(USE_BLINK)
-#if BUILDFLAG(IS_IOS)
-#include "base/ios/bsm_headers.h"
-#else
+#if !BUILDFLAG(IS_IOS)
 #include <servers/bootstrap.h>
-#endif  // BUILDFLAG(IS_IOS)
-#endif  // BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace {
 
@@ -48,7 +44,7 @@ MachLogMessage::~MachLogMessage() {
            << FormatMachErrorNumber(mach_err_);
 }
 
-#if BUILDFLAG(USE_BLINK)
+#if !BUILDFLAG(IS_IOS)
 
 BootstrapLogMessage::BootstrapLogMessage(const char* file_path,
                                          int line,
@@ -87,6 +83,6 @@ BootstrapLogMessage::~BootstrapLogMessage() {
   }
 }
 
-#endif  // BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace logging
