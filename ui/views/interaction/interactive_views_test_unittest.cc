@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/interactive_views_test.h"
 
+#include <functional>
 #include <memory>
 
 #include "base/test/bind.h"
@@ -181,7 +182,7 @@ TEST_F(InteractiveViewsTestTest, NameViewAbsoluteDeferred) {
   View* view = nullptr;
   RunTestSequence(
       Do(base::BindLambdaForTesting([&]() { view = button2_.get(); })),
-      NameView(kViewName, &view),
+      NameView(kViewName, std::ref(view)),
       WithElement(kViewName,
                   base::BindLambdaForTesting([&](ui::TrackedElement* el) {
                     EXPECT_EQ(view, AsView(el));

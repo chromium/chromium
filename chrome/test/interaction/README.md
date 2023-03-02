@@ -72,6 +72,9 @@ verbs, like `Check()` and `Do()` don't care about specific elements.
 
 Verbs fall into a number of different categories:
 - **Do** performs an action you specify.
+- **Log** prints its arguments to the output at log level `INFO`.
+    - By default, arguments are captured by value when the sequence is built.
+    - If you want a variable's value read at runtime, use `std::ref(var)`.
 - **Check** verbs ensure that some condition is true; if it is not, the test
   fails. Some *Check* verbs use `Matcher`s, some use callbacks, etc. Examples
   include:

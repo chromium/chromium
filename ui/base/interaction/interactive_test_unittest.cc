@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/base/interaction/interactive_test.h"
+#include <functional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -1015,6 +1017,34 @@ TEST_F(InteractiveTestTest, AnyOfAllFail) {
   RunTestSequenceInContext(
       e1.context(), InParallel(Check(base::BindOnce([]() { return false; })),
                                Check(base::BindOnce([]() { return false; }))));
+}
+
+// This test that various types of logging can compile with different types of
+// parameters. The output of this test must be verified manually.
+TEST_F(InteractiveTestTest, Log) {
+  TestElement e1(kTestId1, kTestContext1);
+  int x = 0;
+  int y = 0;
+  constexpr char kSomeString[] = "A string.";
+  std::u16string deferred_string1;
+  const char* deferred_string2;
+  struct {
+    bool b = false;
+  } unnamed_struct, *unnamed_struct_ptr = nullptr;
+
+  RunTestSequenceInContext(
+      e1.context(), Do(base::BindLambdaForTesting([&]() {
+        y = 2;
+        deferred_string1 = u"The quick brown fox";
+        deferred_string2 = "Lorem ipsum";
+        unnamed_struct_ptr = &unnamed_struct;
+      })),
+      Log("literal int: ", x, " deferred int: ", std::ref(y),
+          " constexpr string: ", kSomeString,
+          " deferred string 1: ", std::ref(deferred_string1),
+          " deferred string 2: ", std::ref(deferred_string2),
+          " pointer to object: ", &unnamed_struct,
+          " deferred pointer to object: ", std::ref(unnamed_struct_ptr)));
 }
 
 }  // namespace ui::test

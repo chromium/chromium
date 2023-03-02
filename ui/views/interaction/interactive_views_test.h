@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_INTERACTION_INTERACTIVE_VIEWS_TEST_H_
 #define UI_VIEWS_INTERACTION_INTERACTIVE_VIEWS_TEST_H_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -100,11 +101,10 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
       // Specify a view that is known at the time the sequence is created. The
       // View must persist until the step executes.
       View*,
-      // Specify a view that will be valid by the time the step executes (i.e.
-      // is set in a previous step callback) but not at the time the test
-      // sequence is built. The view will be read from the target variable,
-      // which must point to a valid view.
-      View**,
+      // Specify a view pointer that will be valid by the time the step
+      // executes. Use `std::ref()` to wrap the pointer that will receive the
+      // value.
+      std::reference_wrapper<View*>,
       // Find and return a view based on an arbitrary rule.
       base::OnceCallback<View*()>>;
 

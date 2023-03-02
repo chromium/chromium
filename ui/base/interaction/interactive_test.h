@@ -6,11 +6,11 @@
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_H_
 
 #include <memory>
-#include <sstream>
 #include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -117,12 +117,31 @@ class InteractiveTestApi {
 #endif
   [[nodiscard]] StepBuilder Confirm(ElementSpecifier element);
 
-  // Specifies a test action that is not tied to any one UI element.
-  // Returns true on success, false on failure (which will fail the test).
-  using CheckCallback = base::OnceCallback<bool()>;
+  // Logs the given arguments, in order, at level INFO.
+  //
+  // This is *roughly* (but not exactly) equivalent to:
+  //   `Do(base::BindLambdaForTesting([=](){ LOG(INFO) << args...; }))`
+  //
+  // By default, values are captured at the time the Log step is created, rather
+  // than when it is run. If you want the value to be captured at runtime, pass
+  // `std::ref(value)` instead:
+  //
+  // ```
+  //   int x = 0;
+  //   RunTestSequence(
+  //       /* maybe change the value of x */
+  //       Log("Value of x at sequence creation: ", x),
+  //       Log("Value of x right now: ", std::ref(x)));
+  // ```
+  template <typename... Args>
+  [[nodiscard]] static StepBuilder Log(Args... args);
 
   // Does an action at this point in the test sequence.
   [[nodiscard]] static StepBuilder Do(base::OnceClosure action);
+
+  // Specifies a test action that is not tied to any one UI element.
+  // Returns true on success, false on failure (which will fail the test).
+  using CheckCallback = base::OnceCallback<bool()>;
 
   // Performs a check and fails the test if `check_callback` returns false.
   [[nodiscard]] static StepBuilder Check(CheckCallback check_callback);
@@ -524,6 +543,17 @@ InteractionSequence::StepBuilder InteractiveTestApi::AnyOf(
   (step.AddSubsequence(internal::BuildSubsequence(Steps(std::move(sequences)))),
    ...);
   step.SetDescription("AnyOf()");
+  return step;
+}
+
+// static
+template <typename... Args>
+InteractiveTestApi::StepBuilder InteractiveTestApi::Log(Args... args) {
+  auto step = Do(base::BindLambdaForTesting([=]() {
+    auto info = COMPACT_GOOGLE_LOG_INFO;
+    ((info.stream() << args), ...);
+  }));
+  step.SetDescription("Log()");
   return step;
 }
 
