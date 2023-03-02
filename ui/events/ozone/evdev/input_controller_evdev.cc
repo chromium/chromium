@@ -21,6 +21,34 @@
 #include "ui/events/ozone/evdev/mouse_button_map_evdev.h"
 
 namespace ui {
+namespace {
+
+TouchpadSettingsEvdev& GetTouchpadSettings(InputDeviceSettingsEvdev& settings,
+                                           absl::optional<int> device_id) {
+  if (!device_id.has_value()) {
+    return settings.GetTouchpadSettings();
+  }
+  return settings.GetTouchpadSettings(device_id.value());
+}
+
+MouseSettingsEvdev& GetMouseSettings(InputDeviceSettingsEvdev& settings,
+                                     absl::optional<int> device_id) {
+  if (!device_id.has_value()) {
+    return settings.GetMouseSettings();
+  }
+  return settings.GetMouseSettings(device_id.value());
+}
+
+PointingStickSettingsEvdev& GetPointingStickSettings(
+    InputDeviceSettingsEvdev& settings,
+    absl::optional<int> device_id) {
+  if (!device_id.has_value()) {
+    return settings.GetPointingStickSettings();
+  }
+  return settings.GetPointingStickSettings(device_id.value());
+}
+
+}  // namespace
 
 InputControllerEvdev::InputControllerEvdev(
     KeyboardEvdev* keyboard,
@@ -154,70 +182,151 @@ void InputControllerEvdev::SetInternalKeyboardFilter(
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetTouchpadSensitivity(int value) {
-  input_device_settings_.GetTouchpadSettings().sensitivity = value;
-  ScheduleUpdateDeviceSettings();
-}
-
-void InputControllerEvdev::SetTouchpadScrollSensitivity(int value) {
-  input_device_settings_.GetTouchpadSettings().scroll_sensitivity = value;
-  ScheduleUpdateDeviceSettings();
-}
-
-void InputControllerEvdev::SetTouchpadHapticFeedback(bool enabled) {
-  input_device_settings_.GetTouchpadSettings().haptic_feedback_enabled =
-      enabled;
-  ScheduleUpdateDeviceSettings();
-}
-
-void InputControllerEvdev::SetTouchpadHapticClickSensitivity(int value) {
-  input_device_settings_.GetTouchpadSettings().haptic_click_sensitivity = value;
-  ScheduleUpdateDeviceSettings();
-}
-
-void InputControllerEvdev::SetTapToClick(bool enabled) {
-  input_device_settings_.GetTouchpadSettings().tap_to_click_enabled = enabled;
-  ScheduleUpdateDeviceSettings();
-}
-
 void InputControllerEvdev::SetThreeFingerClick(bool enabled) {
   input_device_settings_.three_finger_click_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetTapDragging(bool enabled) {
-  input_device_settings_.GetTouchpadSettings().tap_dragging_enabled = enabled;
+void InputControllerEvdev::SetTouchpadSensitivity(absl::optional<int> device_id,
+                                                  int value) {
+  GetTouchpadSettings(input_device_settings_, device_id).sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetNaturalScroll(bool enabled) {
-  input_device_settings_.GetTouchpadSettings().natural_scroll_enabled = enabled;
+void InputControllerEvdev::SetTouchpadAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {
+  GetTouchpadSettings(input_device_settings_, device_id).acceleration_enabled =
+      enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetMouseSensitivity(int value) {
-  input_device_settings_.GetMouseSettings().sensitivity = value;
+void InputControllerEvdev::SetTouchpadScrollAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {
+  GetTouchpadSettings(input_device_settings_, device_id)
+      .scroll_acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetMouseScrollSensitivity(int value) {
-  input_device_settings_.GetMouseSettings().scroll_sensitivity = value;
+void InputControllerEvdev::SetTouchpadScrollSensitivity(
+    absl::optional<int> device_id,
+    int value) {
+  GetTouchpadSettings(input_device_settings_, device_id).scroll_sensitivity =
+      value;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetPointingStickSensitivity(int value) {
-  input_device_settings_.GetPointingStickSettings().sensitivity = value;
+void InputControllerEvdev::SetTouchpadHapticFeedback(
+    absl::optional<int> device_id,
+    bool enabled) {
+  GetTouchpadSettings(input_device_settings_, device_id)
+      .haptic_feedback_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
-void InputControllerEvdev::SetPointingStickAcceleration(bool enabled) {
+void InputControllerEvdev::SetTouchpadHapticClickSensitivity(
+    absl::optional<int> device_id,
+    int value) {
+  GetTouchpadSettings(input_device_settings_, device_id)
+      .haptic_click_sensitivity = value;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetTapToClick(absl::optional<int> device_id,
+                                         bool enabled) {
+  GetTouchpadSettings(input_device_settings_, device_id).tap_to_click_enabled =
+      enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetTapDragging(absl::optional<int> device_id,
+                                          bool enabled) {
+  GetTouchpadSettings(input_device_settings_, device_id).tap_dragging_enabled =
+      enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetNaturalScroll(absl::optional<int> device_id,
+                                            bool enabled) {
+  GetTouchpadSettings(input_device_settings_, device_id)
+      .natural_scroll_enabled = enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetMouseSensitivity(absl::optional<int> device_id,
+                                               int value) {
+  GetMouseSettings(input_device_settings_, device_id).sensitivity = value;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetMouseScrollSensitivity(
+    absl::optional<int> device_id,
+    int value) {
+  GetMouseSettings(input_device_settings_, device_id).scroll_sensitivity =
+      value;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetMouseScrollAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {
+  GetMouseSettings(input_device_settings_, device_id)
+      .scroll_acceleration_enabled = enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetPointingStickSensitivity(
+    absl::optional<int> device_id,
+    int value) {
+  GetPointingStickSettings(input_device_settings_, device_id).sensitivity =
+      value;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetMouseReverseScroll(absl::optional<int> device_id,
+                                                 bool enabled) {
+  GetMouseSettings(input_device_settings_, device_id).reverse_scroll_enabled =
+      enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetPointingStickAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {
+  // TODO(dpad): Implement acceleration suspending with multiple devices.
   if (is_mouse_acceleration_suspended()) {
     stored_acceleration_settings_->pointing_stick = enabled;
     return;
   }
-  input_device_settings_.GetPointingStickSettings().acceleration_enabled =
+  GetPointingStickSettings(input_device_settings_, device_id)
+      .acceleration_enabled = enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetMouseAcceleration(absl::optional<int> device_id,
+                                                bool enabled) {
+  // TODO(dpad): Implement acceleration suspending with multiple devices.
+  if (is_mouse_acceleration_suspended()) {
+    stored_acceleration_settings_->mouse = enabled;
+    return;
+  }
+  GetMouseSettings(input_device_settings_, device_id).acceleration_enabled =
       enabled;
   ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetPrimaryButtonRight(absl::optional<int> device_id,
+                                                 bool right) {
+  // TODO(dpad): Implement button remapping per-device.
+  mouse_button_map_->SetPrimaryButtonRight(right);
+}
+
+void InputControllerEvdev::SetPointingStickPrimaryButtonRight(
+    absl::optional<int> device_id,
+    bool right) {
+  // TODO(dpad): Implement button remapping per-device.
+  pointing_stick_button_map_->SetPrimaryButtonRight(right);
 }
 
 void InputControllerEvdev::SetGamepadKeyBitsMapping(
@@ -230,28 +339,6 @@ std::vector<uint64_t> InputControllerEvdev::GetGamepadKeyBits(int id) {
   return gamepad_key_bits_iter == gamepad_key_bits_mapping_.end()
              ? std::vector<uint64_t>()
              : gamepad_key_bits_iter->second;
-}
-
-void InputControllerEvdev::SetPrimaryButtonRight(bool right) {
-  mouse_button_map_->SetPrimaryButtonRight(right);
-}
-
-void InputControllerEvdev::SetPointingStickPrimaryButtonRight(bool right) {
-  pointing_stick_button_map_->SetPrimaryButtonRight(right);
-}
-
-void InputControllerEvdev::SetMouseReverseScroll(bool enabled) {
-  input_device_settings_.GetMouseSettings().reverse_scroll_enabled = enabled;
-  ScheduleUpdateDeviceSettings();
-}
-
-void InputControllerEvdev::SetMouseAcceleration(bool enabled) {
-  if (is_mouse_acceleration_suspended()) {
-    stored_acceleration_settings_->mouse = enabled;
-    return;
-  }
-  input_device_settings_.GetMouseSettings().acceleration_enabled = enabled;
-  ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SuspendMouseAcceleration() {
@@ -271,25 +358,8 @@ void InputControllerEvdev::SuspendMouseAcceleration() {
 
 void InputControllerEvdev::EndMouseAccelerationSuspension() {
   auto stored_settings = std::move(stored_acceleration_settings_);
-  SetMouseAcceleration(stored_settings->mouse);
-  SetPointingStickAcceleration(stored_settings->pointing_stick);
-}
-
-void InputControllerEvdev::SetMouseScrollAcceleration(bool enabled) {
-  input_device_settings_.GetMouseSettings().scroll_acceleration_enabled =
-      enabled;
-  ScheduleUpdateDeviceSettings();
-}
-
-void InputControllerEvdev::SetTouchpadAcceleration(bool enabled) {
-  input_device_settings_.GetTouchpadSettings().acceleration_enabled = enabled;
-  ScheduleUpdateDeviceSettings();
-}
-
-void InputControllerEvdev::SetTouchpadScrollAcceleration(bool enabled) {
-  input_device_settings_.GetTouchpadSettings().scroll_acceleration_enabled =
-      enabled;
-  ScheduleUpdateDeviceSettings();
+  SetMouseAcceleration(absl::nullopt, stored_settings->mouse);
+  SetPointingStickAcceleration(absl::nullopt, stored_settings->pointing_stick);
 }
 
 void InputControllerEvdev::SetTapToClickPaused(bool state) {

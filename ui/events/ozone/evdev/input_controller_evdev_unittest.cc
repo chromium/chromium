@@ -11,8 +11,8 @@ namespace ui {
 
 TEST(InputControllerEvdevTest, AccelerationSuspension) {
   InputControllerEvdev controller(nullptr, nullptr, nullptr);
-  controller.SetMouseAcceleration(true);
-  controller.SetPointingStickAcceleration(true);
+  controller.SetMouseAcceleration(absl::nullopt, true);
+  controller.SetPointingStickAcceleration(absl::nullopt, true);
 
   EXPECT_TRUE(controller.input_device_settings_.GetMouseSettings()
                   .acceleration_enabled);
@@ -36,8 +36,8 @@ TEST(InputControllerEvdevTest, AccelerationSuspension) {
 
 TEST(InputControllerEvdevTest, AccelerationChangeDuringSuspension) {
   InputControllerEvdev controller(nullptr, nullptr, nullptr);
-  controller.SetMouseAcceleration(true);
-  controller.SetPointingStickAcceleration(true);
+  controller.SetMouseAcceleration(absl::nullopt, true);
+  controller.SetPointingStickAcceleration(absl::nullopt, true);
 
   // Suspending should disable the acceleration temporarily.
   controller.SuspendMouseAcceleration();
@@ -47,16 +47,16 @@ TEST(InputControllerEvdevTest, AccelerationChangeDuringSuspension) {
                    .acceleration_enabled);
 
   // Settings changes while suspended should not take effect immediately...
-  controller.SetMouseAcceleration(true);
-  controller.SetPointingStickAcceleration(true);
+  controller.SetMouseAcceleration(absl::nullopt, true);
+  controller.SetPointingStickAcceleration(absl::nullopt, true);
   EXPECT_FALSE(controller.input_device_settings_.GetMouseSettings()
                    .acceleration_enabled);
   EXPECT_FALSE(controller.input_device_settings_.GetPointingStickSettings()
                    .acceleration_enabled);
 
   // ...instead being applied when the suspension ends.
-  controller.SetMouseAcceleration(false);
-  controller.SetPointingStickAcceleration(false);
+  controller.SetMouseAcceleration(absl::nullopt, false);
+  controller.SetPointingStickAcceleration(absl::nullopt, false);
   controller.EndMouseAccelerationSuspension();
   EXPECT_FALSE(controller.input_device_settings_.GetMouseSettings()
                    .acceleration_enabled);
