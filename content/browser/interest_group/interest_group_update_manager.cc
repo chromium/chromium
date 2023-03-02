@@ -34,8 +34,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
-#include "third_party/blink/public/common/interest_group/interest_group_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -319,7 +319,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (!maybe_sizes) {
     return true;
   }
-  base::flat_map<std::string, blink::InterestGroup::Size> size_map;
+  base::flat_map<std::string, blink::AdSize> size_map;
   for (std::pair<const std::string&, const base::Value&> pair : *maybe_sizes) {
     const base::Value::Dict* maybe_size = pair.second.GetIfDict();
     if (!maybe_size) {
@@ -331,14 +331,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       return false;
     }
 
-    auto [width_val, width_units] =
-        blink::ParseInterestGroupSizeString(*width_str);
-    auto [height_val, height_units] =
-        blink::ParseInterestGroupSizeString(*height_str);
+    auto [width_val, width_units] = blink::ParseAdSizeString(*width_str);
+    auto [height_val, height_units] = blink::ParseAdSizeString(*height_str);
 
-    size_map.emplace(pair.first,
-                     blink::InterestGroup::Size(width_val, width_units,
-                                                height_val, height_units));
+    size_map.emplace(pair.first, blink::AdSize(width_val, width_units,
+                                               height_val, height_units));
   }
   interest_group_update.ad_sizes.emplace(size_map);
   return true;

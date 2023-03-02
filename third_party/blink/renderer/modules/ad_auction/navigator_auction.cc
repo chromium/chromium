@@ -21,7 +21,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
-#include "third_party/blink/public/common/interest_group/interest_group_utils.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -647,13 +647,13 @@ bool CopyAdSizesFromIdlToMojo(const ExecutionContext& context,
   output.ad_sizes.emplace();
   for (const auto& [name, size] : input.adSizes()) {
     auto [width_val, width_units] =
-        blink::ParseInterestGroupSizeString(size->width().Ascii());
+        blink::ParseAdSizeString(size->width().Ascii());
     auto [height_val, height_units] =
-        blink::ParseInterestGroupSizeString(size->height().Ascii());
+        blink::ParseAdSizeString(size->height().Ascii());
 
     output.ad_sizes->insert(
-        name, mojom::blink::InterestGroupSize::New(width_val, width_units,
-                                                   height_val, height_units));
+        name, mojom::blink::AdSize::New(width_val, width_units, height_val,
+                                        height_units));
   }
   return true;
 }

@@ -101,6 +101,7 @@ mojom("mojom_platform") {
     "input/stylus_writing_gesture.mojom",
     "input/touch_event.mojom",
     "interest_group/ad_auction_service.mojom",
+    "interest_group/ad_display_size.mojom",
     "interest_group/interest_group_types.mojom",
     "keyboard_lock/keyboard_lock.mojom",
     "leak_detector/leak_detector.mojom",
@@ -770,15 +771,19 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.InterestGroup"
-          cpp = "::blink::InterestGroup"
+          mojom = "blink.mojom.AdSize"
+          cpp = "::blink::AdSize"
         },
       ]
-      traits_headers = [ "//third_party/blink/public/common/interest_group/interest_group_mojom_traits.h" ]
+      traits_headers = [ "//third_party/blink/public/common/interest_group/ad_display_size_mojom_traits.h" ]
       traits_public_deps = [ "//url/mojom:mojom_traits" ]
     },
     {
       types = [
+        {
+          mojom = "blink.mojom.InterestGroup"
+          cpp = "::blink::InterestGroup"
+        },
         {
           mojom = "blink.mojom.InterestGroupAd"
           cpp = "::blink::InterestGroup::Ad"

@@ -20,19 +20,6 @@ bool StructTraits<
   return true;
 }
 
-bool StructTraits<blink::mojom::InterestGroupSizeDataView,
-                  blink::InterestGroup::Size>::
-    Read(blink::mojom::InterestGroupSizeDataView data,
-         blink::InterestGroup::Size* out) {
-  if (!data.ReadWidthUnits(&out->width_units) ||
-      !data.ReadHeightUnits(&out->height_units)) {
-    return false;
-  }
-  out->width = data.width();
-  out->height = data.height();
-  return true;
-}
-
 bool StructTraits<blink::mojom::SellerCapabilitiesDataView,
                   blink::SellerCapabilitiesType>::
     Read(blink::mojom::SellerCapabilitiesDataView data,

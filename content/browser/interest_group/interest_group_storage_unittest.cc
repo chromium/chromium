@@ -125,13 +125,10 @@ class InterestGroupStorageTest : public testing::Test {
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent2"), "metadata2c")},
         /*ad_sizes=*/
-        {{{"size_1", blink::InterestGroup::Size(
-                         300, blink::InterestGroup::Size::LengthUnit::kPixels,
-                         150, blink::InterestGroup::Size::LengthUnit::kPixels)},
-          {"size_2",
-           blink::InterestGroup::Size(
-               640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
-               blink::InterestGroup::Size::LengthUnit::kPixels)}}},
+        {{{"size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
+                                   blink::AdSize::LengthUnit::kPixels)},
+          {"size_2", blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
+                                   blink::AdSize::LengthUnit::kPixels)}}},
         /*size_groups=*/
         {{{"group_1", std::vector<std::string>{"size_1"}},
           {"group_2", std::vector<std::string>{"size_1", "size_2"}}}});
@@ -167,11 +164,10 @@ class InterestGroupStorageTest : public testing::Test {
     update.trusted_bidding_signals_keys =
         std::vector<std::string>{"a", "b2", "c", "d"};
     update.ads = full.ads;
-    update.ads->emplace_back(blink::InterestGroup::Ad(
-        GURL("https://full.example.com/ad3"), "metadata3"));
+    update.ads->emplace_back(GURL("https://full.example.com/ad3"), "metadata3");
     update.ad_components = full.ad_components;
-    update.ad_components->emplace_back(blink::InterestGroup::Ad(
-        GURL("https://full.example.com/adcomponent3"), "metadata3c"));
+    update.ad_components->emplace_back(
+        GURL("https://full.example.com/adcomponent3"), "metadata3c");
     storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
                                  update);
 

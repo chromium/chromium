@@ -200,8 +200,8 @@ DeserializeInterestGroupAdVector(const std::string& serialized_ads) {
 }
 
 std::string Serialize(
-    const absl::optional<
-        base::flat_map<std::string, blink::InterestGroup::Size>>& ad_sizes) {
+    const absl::optional<base::flat_map<std::string, blink::AdSize>>&
+        ad_sizes) {
   if (!ad_sizes) {
     return std::string();
   }
@@ -219,13 +219,13 @@ std::string Serialize(
   }
   return Serialize(base::Value(std::move(dict)));
 }
-absl::optional<base::flat_map<std::string, blink::InterestGroup::Size>>
+absl::optional<base::flat_map<std::string, blink::AdSize>>
 DeserializeStringSizeMap(const std::string& serialized_sizes) {
   std::unique_ptr<base::Value> dict = DeserializeValue(serialized_sizes);
   if (!dict || !dict->is_dict()) {
     return absl::nullopt;
   }
-  std::vector<std::pair<std::string, blink::InterestGroup::Size>> result;
+  std::vector<std::pair<std::string, blink::AdSize>> result;
   for (std::pair<const std::string&, base::Value&> entry : dict->GetDict()) {
     std::unique_ptr<base::Value> ads_size =
         DeserializeValue(entry.second.GetString());
@@ -239,13 +239,12 @@ DeserializeStringSizeMap(const std::string& serialized_sizes) {
       return absl::nullopt;
     }
     result.emplace_back(entry.first,
-                        blink::InterestGroup::Size(
-                            width_val->GetDouble(),
-                            static_cast<blink::InterestGroup::Size::LengthUnit>(
-                                width_units_val->GetInt()),
-                            height_val->GetDouble(),
-                            static_cast<blink::InterestGroup::Size::LengthUnit>(
-                                height_units_val->GetInt())));
+                        blink::AdSize(width_val->GetDouble(),
+                                      static_cast<blink::AdSize::LengthUnit>(
+                                          width_units_val->GetInt()),
+                                      height_val->GetDouble(),
+                                      static_cast<blink::AdSize::LengthUnit>(
+                                          height_units_val->GetInt())));
   }
   return result;
 }

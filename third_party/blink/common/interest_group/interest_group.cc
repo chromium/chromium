@@ -76,23 +76,6 @@ bool InterestGroup::Ad::operator==(const Ad& other) const {
   return render_url == other.render_url && metadata == other.metadata;
 }
 
-InterestGroup::Size::Size() = default;
-
-InterestGroup::Size::Size(double width,
-                          LengthUnit width_units,
-                          double height,
-                          LengthUnit height_units)
-    : width(width),
-      width_units(width_units),
-      height(height),
-      height_units(height_units) {}
-
-InterestGroup::Size::~Size() = default;
-
-bool InterestGroup::Size::operator==(const Size& other) const {
-  return width == other.width && height == other.height;
-}
-
 InterestGroup::InterestGroup() = default;
 
 InterestGroup::InterestGroup(
@@ -116,7 +99,7 @@ InterestGroup::InterestGroup(
     absl::optional<std::string> user_bidding_signals,
     absl::optional<std::vector<InterestGroup::Ad>> ads,
     absl::optional<std::vector<InterestGroup::Ad>> ad_components,
-    absl::optional<base::flat_map<std::string, InterestGroup::Size>> ad_sizes,
+    absl::optional<base::flat_map<std::string, blink::AdSize>> ad_sizes,
     absl::optional<base::flat_map<std::string, std::vector<std::string>>>
         size_groups)
     : expiry(expiry),
@@ -211,8 +194,8 @@ bool InterestGroup::IsValid() const {
           !std::isfinite(size_obj.width) || !std::isfinite(size_obj.height)) {
         return false;
       }
-      if (size_obj.width_units == InterestGroup::Size::LengthUnit::kInvalid ||
-          size_obj.height_units == InterestGroup::Size::LengthUnit::kInvalid) {
+      if (size_obj.width_units == AdSize::LengthUnit::kInvalid ||
+          size_obj.height_units == AdSize::LengthUnit::kInvalid) {
         return false;
       }
     }

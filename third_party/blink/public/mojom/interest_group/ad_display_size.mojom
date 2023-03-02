@@ -1,0 +1,22 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The dimensions that an ad for an interest group can be. Note that an interest
+// group can have more than one `InterestGroupSize` associated with it.
+struct AdSize {
+  //  This is stable because it is persisted to storage.
+  [Stable, Extensible]
+  enum LengthUnit {
+    [Default] kInvalid,
+    kPixels,
+    kScreenWidth,
+  };
+  // Must be valid dimensions (ex. 100px, 50sw)
+  double width;
+  LengthUnit width_units;
+  double height;
+  LengthUnit height_units;
+};

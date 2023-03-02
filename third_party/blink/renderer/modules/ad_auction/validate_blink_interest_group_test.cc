@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/ad_display_size.mojom-blink.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -708,9 +709,9 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeAdSizes) {
     // size of the length unit, and 5 is the length of the string "size ".
     String name_string = String::FromUTF8(base::StringPrintf("size %.71i", i));
     blink_interest_group->ad_sizes->insert(
-        name_string, mojom::blink::InterestGroupSize::New(
-                         150, blink::InterestGroup::Size::LengthUnit::kPixels,
-                         100, blink::InterestGroup::Size::LengthUnit::kPixels));
+        name_string,
+        mojom::blink::AdSize::New(150, blink::AdSize::LengthUnit::kPixels, 100,
+                                  blink::AdSize::LengthUnit::kPixels));
   }
   size_t current_estimate =
       EstimateBlinkInterestGroupSize(*blink_interest_group);
@@ -744,9 +745,9 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargeSizeGroups) {
   // There must be at least 1 ad size for the size groups to map to.
   blink_interest_group->ad_sizes.emplace();
   blink_interest_group->ad_sizes->insert(
-      "size1", blink::mojom::blink::InterestGroupSize::New(
-                   100, blink::InterestGroup::Size::LengthUnit::kPixels, 100,
-                   blink::InterestGroup::Size::LengthUnit::kPixels));
+      "size1", blink::mojom::blink::AdSize::New(
+                   100, blink::AdSize::LengthUnit::kPixels, 100,
+                   blink::AdSize::LengthUnit::kPixels));
 
   size_t initial_estimate =
       EstimateBlinkInterestGroupSize(*blink_interest_group);
@@ -862,40 +863,37 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidAdSizes) {
   struct {
     const char* ad_name;
     const double width;
-    const blink::InterestGroup::Size::LengthUnit width_units;
+    const blink::AdSize::LengthUnit width_units;
     const double height;
-    const blink::InterestGroup::Size::LengthUnit height_units;
+    const blink::AdSize::LengthUnit height_units;
     const char* expected_error;
     const char* expected_error_field_value;
   } test_cases[] = {
-      {"ad_name", 0, blink::InterestGroup::Size::LengthUnit::kPixels, 0,
-       blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
-       "0.000000 x 0.000000"},
-      {"ad_name", 300, blink::InterestGroup::Size::LengthUnit::kPixels, 0,
-       blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
-       "300.000000 x 0.000000"},
-      {"ad_name", 0, blink::InterestGroup::Size::LengthUnit::kScreenWidth, 300,
-       blink::InterestGroup::Size::LengthUnit::kScreenWidth, kSizeError,
+      {"ad_name", 0, blink::AdSize::LengthUnit::kPixels, 0,
+       blink::AdSize::LengthUnit::kPixels, kSizeError, "0.000000 x 0.000000"},
+      {"ad_name", 300, blink::AdSize::LengthUnit::kPixels, 0,
+       blink::AdSize::LengthUnit::kPixels, kSizeError, "300.000000 x 0.000000"},
+      {"ad_name", 0, blink::AdSize::LengthUnit::kScreenWidth, 300,
+       blink::AdSize::LengthUnit::kScreenWidth, kSizeError,
        "0.000000 x 300.000000"},
-      {"ad_name", -300, blink::InterestGroup::Size::LengthUnit::kScreenWidth,
-       300, blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
+      {"ad_name", -300, blink::AdSize::LengthUnit::kScreenWidth, 300,
+       blink::AdSize::LengthUnit::kPixels, kSizeError,
        "-300.000000 x 300.000000"},
-      {"", 300, blink::InterestGroup::Size::LengthUnit::kScreenWidth, 300,
-       blink::InterestGroup::Size::LengthUnit::kPixels, kNameError, ""},
+      {"", 300, blink::AdSize::LengthUnit::kScreenWidth, 300,
+       blink::AdSize::LengthUnit::kPixels, kNameError, ""},
       {"ad_name", std::numeric_limits<double>::infinity(),
-       blink::InterestGroup::Size::LengthUnit::kPixels,
+       blink::AdSize::LengthUnit::kPixels,
        std::numeric_limits<double>::infinity(),
-       blink::InterestGroup::Size::LengthUnit::kPixels, kSizeError,
-       "inf x inf"},
-      {"ad_name", 300, blink::InterestGroup::Size::LengthUnit::kInvalid, 300,
-       blink::InterestGroup::Size::LengthUnit::kPixels, kUnitError, ""},
+       blink::AdSize::LengthUnit::kPixels, kSizeError, "inf x inf"},
+      {"ad_name", 300, blink::AdSize::LengthUnit::kInvalid, 300,
+       blink::AdSize::LengthUnit::kPixels, kUnitError, ""},
   };
   for (const auto& test_case : test_cases) {
     mojom::blink::InterestGroupPtr blink_interest_group =
         CreateMinimalInterestGroup();
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
-        test_case.ad_name, blink::mojom::blink::InterestGroupSize::New(
+        test_case.ad_name, blink::mojom::blink::AdSize::New(
                                test_case.width, test_case.width_units,
                                test_case.height, test_case.height_units));
     ExpectInterestGroupIsNotValid(
@@ -927,10 +925,9 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidSizeGroups) {
     if (test_case.has_ad_sizes) {
       blink_interest_group->ad_sizes.emplace();
       blink_interest_group->ad_sizes->insert(
-          "size_name",
-          blink::mojom::blink::InterestGroupSize::New(
-              300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
-              blink::InterestGroup::Size::LengthUnit::kPixels));
+          "size_name", blink::mojom::blink::AdSize::New(
+                           300, blink::AdSize::LengthUnit::kPixels, 150,
+                           blink::AdSize::LengthUnit::kPixels));
     }
     blink_interest_group->size_groups.emplace();
     blink_interest_group->size_groups->insert(

@@ -177,19 +177,18 @@ base::Value::Dict SellerCapabilitiesToDict(
 }
 
 std::string InterestGroupSizeUnitToString(
-    const blink::InterestGroup::Size::LengthUnit unit) {
-  if (unit == blink::InterestGroup::Size::LengthUnit::kPixels) {
+    const blink::AdSize::LengthUnit unit) {
+  if (unit == blink::AdSize::LengthUnit::kPixels) {
     return "px";
   }
-  if (unit == blink::InterestGroup::Size::LengthUnit::kScreenWidth) {
+  if (unit == blink::AdSize::LengthUnit::kScreenWidth) {
     return "sw";
   }
   // kInvalid and default case
   return "";
 }
 
-base::Value::Dict InterestGroupSizeToDict(
-    const blink::InterestGroup::Size& size) {
+base::Value::Dict InterestGroupSizeToDict(const blink::AdSize& size) {
   base::Value::Dict output;
   output.Set("width", base::NumberToString(size.width) +
                           InterestGroupSizeUnitToString(size.width_units));
@@ -199,7 +198,7 @@ base::Value::Dict InterestGroupSizeToDict(
 }
 
 base::Value::Dict AdSizesToDict(
-    const base::flat_map<std::string, blink::InterestGroup::Size>& map) {
+    const base::flat_map<std::string, blink::AdSize>& map) {
   base::Value::Dict dict;
   for (const auto& [size_name, size] : map) {
     dict.Set(size_name, InterestGroupSizeToDict(size));
@@ -1606,7 +1605,7 @@ interestGroupBuyers: [$1]
                          RenderFrameHostImpl* render_frame_host) {
     while (expected_ad_component_urls.size() <
            blink::kMaxAdAuctionAdComponents) {
-      expected_ad_component_urls.emplace_back(GURL(url::kAboutBlankURL));
+      expected_ad_component_urls.emplace_back(url::kAboutBlankURL);
     }
 
     absl::optional<std::vector<GURL>> all_component_urls =
@@ -2695,10 +2694,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*ads=*/absl::nullopt,
           /*ad_components=*/absl::nullopt,
           /*ad_sizes=*/
-          {{{"size_1",
-             blink::InterestGroup::Size(
-                 150, blink::InterestGroup::Size::LengthUnit::kPixels, 75,
-                 blink::InterestGroup::Size::LengthUnit::kPixels)}}},
+          {{{"size_1", blink::AdSize(150, blink::AdSize::LengthUnit::kPixels,
+                                     75, blink::AdSize::LengthUnit::kPixels)}}},
           /*size_groups=*/{{{"group_1", {"size_1"}}}})));
 
   WaitForAccessObserved({});
@@ -2708,9 +2705,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   const blink::InterestGroup& group = groups[0].interest_group;
   EXPECT_EQ(group.ad_sizes->size(), 1u);
   ASSERT_EQ(group.ad_sizes->at("size_1"),
-            blink::InterestGroup::Size(
-                150, blink::InterestGroup::Size::LengthUnit::kPixels, 75,
-                blink::InterestGroup::Size::LengthUnit::kPixels));
+            blink::AdSize(150, blink::AdSize::LengthUnit::kPixels, 75,
+                          blink::AdSize::LengthUnit::kPixels));
   EXPECT_EQ(group.size_groups->size(), 1u);
   ASSERT_EQ(group.size_groups->at("group_1").size(), 1u);
   ASSERT_EQ(group.size_groups->at("group_1").at(0), "size_1");
@@ -4685,8 +4681,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       disabled_domain.host(),
       "/interest_group/bidding_logic_stop_bidding_after_win.js");
   disabled_group.ads.emplace();
-  disabled_group.ads->emplace_back(blink::InterestGroup::Ad(
-      GURL("https://stop_bidding_after_win.com/render"), absl::nullopt));
+  disabled_group.ads->emplace_back(
+      GURL("https://stop_bidding_after_win.com/render"), absl::nullopt);
   manager_->JoinInterestGroup(std::move(disabled_group), disabled_domain);
   ASSERT_EQ(1, GetJoinCount(disabled_origin, "candy"));
 

@@ -249,10 +249,9 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error = "Ad sizes cannot map from an empty event name.";
         return false;
       }
-      if (it.value->width_units ==
-              mojom::blink::InterestGroupSize::LengthUnit::kInvalid ||
+      if (it.value->width_units == mojom::blink::AdSize::LengthUnit::kInvalid ||
           it.value->height_units ==
-              mojom::blink::InterestGroupSize::LengthUnit::kInvalid) {
+              mojom::blink::AdSize::LengthUnit::kInvalid) {
         error_field_name = "adSizes";
         error_field_value = "";
         error =
