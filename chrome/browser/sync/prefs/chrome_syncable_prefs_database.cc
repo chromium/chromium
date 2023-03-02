@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefs/chrome_syncable_prefs_database.h"
+#include "chrome/browser/sync/prefs/chrome_syncable_prefs_database.h"
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_piece.h"
 
+namespace browser_sync {
 namespace {
 // Non-iOS specific list of syncable preferences.
 constexpr auto kChromeSyncablePrefsAllowlist =
@@ -20,3 +21,4 @@ bool ChromeSyncablePrefsDatabase::IsPreferenceSyncable(
          // preferences.
          common_syncable_prefs_database_.IsPreferenceSyncable(pref_name);
 }
+}  // namespace browser_sync

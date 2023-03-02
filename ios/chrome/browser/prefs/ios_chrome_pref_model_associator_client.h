@@ -9,7 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
-#include "ios/chrome/browser/prefs/ios_chrome_syncable_prefs_database.h"
+#include "ios/chrome/browser/sync/prefs/ios_chrome_syncable_prefs_database.h"
 
 class IOSChromePrefModelAssociatorClient
     : public sync_preferences::PrefModelAssociatorClient {
@@ -39,7 +39,8 @@ class IOSChromePrefModelAssociatorClient
   const sync_preferences::SyncablePrefsDatabase& GetSyncablePrefsDatabase()
       const override;
 
-  IOSChromeSyncablePrefsDatabase ios_chrome_syncable_prefs_database_;
+  browser_sync::IOSChromeSyncablePrefsDatabase
+      ios_chrome_syncable_prefs_database_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PREFS_IOS_CHROME_PREF_MODEL_ASSOCIATOR_CLIENT_H_

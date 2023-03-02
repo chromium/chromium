@@ -9,8 +9,6 @@ source_set("prefs") {
     "ios_chrome_pref_model_associator_client.h",
     "ios_chrome_pref_service_factory.h",
     "ios_chrome_pref_service_factory.mm",
-    "ios_chrome_syncable_prefs_database.cc",
-    "ios_chrome_syncable_prefs_database.h",
   ]
   deps = [
     "//base",
@@ -22,6 +20,7 @@ source_set("prefs") {
     "//components/search_engines",
     "//components/sync_preferences",
     "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/sync/prefs",
   ]
 }
 
