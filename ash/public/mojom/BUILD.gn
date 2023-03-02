@@ -77,6 +77,8 @@ mojom("accelerator_info") {
 mojom("input_device_settings") {
   disable_variants = true
   webui_module_path = "/"
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 
   sources = [ "input_device_settings.mojom" ]
 
