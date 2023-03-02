@@ -161,7 +161,7 @@ absl::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
 
   content_analysis::sdk::ContentAnalysisResponse response;
   if (wrapped && wrapped->client()) {
-    int status = wrapped->client()->Send(sdk_request, &response);
+    int status = wrapped->client()->Send(std::move(sdk_request), &response);
     if (status == 0)
       return response;
   }
@@ -392,9 +392,17 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(RequestKey key,
     DVLOG(1) << "DoLocalContentAnalysis key=" << key
              << " file=" << data.path.AsUTF8Unsafe();
   } else if (data.page.IsValid()) {
+#if BUILDFLAG(IS_WIN)
+    sdk_request.mutable_print_data()->set_handle(
+        reinterpret_cast<int64_t>(data.page.GetPlatformHandle()));
+    sdk_request.mutable_print_data()->set_size(data.page.GetSize());
+#else
+    // TODO(b/270942162, b/270941037): Migrate other platforms to handle-based
+    // print scanning.
     auto mapping = data.page.Map();
     sdk_request.mutable_text_content()->assign(mapping.GetMemoryAs<char>(),
                                                mapping.size());
+#endif
   } else {
     NOTREACHED();
   }
@@ -405,11 +413,12 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(RequestKey key,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SendRequestToSDK, wrapped, std::move(sdk_request)),
       base::BindOnce(&LocalBinaryUploadService::HandleResponse,
-                     factory_.GetWeakPtr(), wrapped));
+                     factory_.GetWeakPtr(), wrapped, std::move(data)));
 }
 
 void LocalBinaryUploadService::HandleResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+    safe_browsing::BinaryUploadService::Request::Data data,
     absl::optional<content_analysis::sdk::ContentAnalysisResponse>
         sdk_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

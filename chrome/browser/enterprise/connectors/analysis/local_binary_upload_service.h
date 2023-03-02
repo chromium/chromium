@@ -97,8 +97,11 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
                               Request::Data data);
 
   // Handles a response from the agent for a given request.
+  // `data` is not used directly by this function, but is needed to keep a
+  // scoped handle alive.
   void HandleResponse(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+      safe_browsing::BinaryUploadService::Request::Data data,
       absl::optional<content_analysis::sdk::ContentAnalysisResponse>
           sdk_response);
 
