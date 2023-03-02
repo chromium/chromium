@@ -83,6 +83,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
     NSRange range = NSMakeRange(line_range.location, line_range.length);
     [line_ranges addObject:[NSValue valueWithRange:range]];
   }
+  CFRelease(frame_setter);
   return line_ranges;
 }
 
