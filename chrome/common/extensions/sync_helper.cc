@@ -8,9 +8,6 @@
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/features/behavior_feature.h"
-#include "extensions/common/features/feature.h"
-#include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_url_handlers.h"
 
@@ -18,11 +15,6 @@ namespace extensions {
 namespace sync_helper {
 
 bool IsSyncable(const Extension* extension) {
-  const Feature* feature =
-      FeatureProvider::GetBehaviorFeature(behavior_feature::kDoNotSync);
-  if (feature && feature->IsAvailableToExtension(extension).is_available())
-    return false;
-
   // Default apps are not synced because otherwise they will pollute profiles
   // that don't already have them. Specially, if a user doesn't have default
   // apps, creates a new profile (which get default apps) and then enables sync

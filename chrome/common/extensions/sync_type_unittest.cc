@@ -9,7 +9,6 @@
 #include "base/values.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
@@ -210,16 +209,6 @@ TEST_F(ExtensionSyncTypeTest, DontSyncDefault) {
       EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kInternal,
       base::FilePath(), Extension::WAS_INSTALLED_BY_DEFAULT));
   EXPECT_FALSE(sync_helper::IsSyncable(extension_default.get()));
-}
-
-TEST_F(ExtensionSyncTypeTest, DontSyncExtensionInDoNotSyncList) {
-  scoped_refptr<Extension> extension(MakeSyncTestExtension(
-      EXTENSION, GURL(), GURL(), mojom::ManifestLocation::kInternal,
-      base::FilePath(), Extension::NO_FLAGS));
-  EXPECT_TRUE(extension->is_extension());
-  EXPECT_TRUE(sync_helper::IsSyncable(extension.get()));
-  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(extension->id());
-  EXPECT_FALSE(sync_helper::IsSyncable(extension.get()));
 }
 
 }  // namespace extensions
