@@ -43,6 +43,12 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/zlib/google/compression_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/signin/chrome_signin_client.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "components/signin/public/base/signin_client.h"
+#endif
+
 using syncer::SyncCycleSnapshot;
 using syncer::SyncServiceImpl;
 
@@ -185,7 +191,17 @@ SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
       password_(password),
       signin_type_(signin_type),
       profile_debug_name_(profile->GetDebugName()),
-      signin_delegate_(CreateSyncSigninDelegate()) {}
+      signin_delegate_(CreateSyncSigninDelegate()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The Main profile already has a primary account that cannot be changed.
+  // Allow changing it for test purposes only.
+  if (profile_->IsMainProfile()) {
+    ChromeSigninClientFactory::GetForProfile(profile_)
+        ->set_is_clear_primary_account_allowed_for_testing(
+            SigninClient::SignoutDecision::ALLOW);
+  }
+#endif
+}
 
 SyncServiceImplHarness::~SyncServiceImplHarness() = default;
 

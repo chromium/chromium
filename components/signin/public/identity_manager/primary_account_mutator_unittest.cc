@@ -383,6 +383,97 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_AlreadyHasPrimaryAccount) {
             primary_account_info.account_id);
 }
 
+// Checks that trying to set the primary account works when there is already a
+// primary account without sync.
+TEST_F(PrimaryAccountMutatorTest,
+       SetPrimaryAccount_AlreadyHasNonSyncPrimaryAccount) {
+  base::test::TaskEnvironment task_environment;
+  signin::IdentityTestEnvironment environment;
+
+  signin::IdentityManager* identity_manager = environment.identity_manager();
+  signin::PrimaryAccountMutator* primary_account_mutator =
+      identity_manager->GetPrimaryAccountMutator();
+
+  // Abort the test if the current platform does not support mutation of the
+  // primary account (the returned PrimaryAccountMutator* will be null).
+  if (!primary_account_mutator) {
+    return;
+  }
+
+  AccountInfo primary_account_info =
+      environment.MakeAccountAvailable(kPrimaryAccountEmail);
+  AccountInfo another_account_info =
+      environment.MakeAccountAvailable(kAnotherAccountEmail);
+
+  EXPECT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
+      primary_account_mutator->SetPrimaryAccount(
+          primary_account_info.account_id, signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+            setPrimaryAccountResult);
+
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
+      another_account_info.account_id, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+            setPrimaryAccountResult);
+
+  EXPECT_EQ(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      another_account_info.account_id);
+}
+
+// Checks that trying to set the primary account works when there is already a
+// managed primary account without sync.
+TEST_F(PrimaryAccountMutatorTest,
+       SetPrimaryAccount_AlreadyHasNonSyncPrimaryAccountChangeNotAllowed) {
+  base::test::TaskEnvironment task_environment;
+  signin::IdentityTestEnvironment environment;
+
+  signin::IdentityManager* identity_manager = environment.identity_manager();
+  environment.signin_client()->set_is_clear_primary_account_allowed_for_testing(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+  signin::PrimaryAccountMutator* primary_account_mutator =
+      identity_manager->GetPrimaryAccountMutator();
+
+  // Abort the test if the current platform does not support mutation of the
+  // primary account (the returned PrimaryAccountMutator* will be null).
+  if (!primary_account_mutator) {
+    return;
+  }
+
+  AccountInfo primary_account_info =
+      environment.MakeAccountAvailable(kPrimaryAccountEmail);
+  AccountInfo another_account_info =
+      environment.MakeAccountAvailable(kAnotherAccountEmail);
+
+  EXPECT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
+      primary_account_mutator->SetPrimaryAccount(
+          primary_account_info.account_id, signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+            setPrimaryAccountResult);
+
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
+      another_account_info.account_id, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::
+                kPrimaryAccountChangeNotAllowed,
+            setPrimaryAccountResult);
+
+  EXPECT_EQ(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      primary_account_info.account_id);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Checks that trying to set the primary account fails if setting the primary
 // account is not allowed.

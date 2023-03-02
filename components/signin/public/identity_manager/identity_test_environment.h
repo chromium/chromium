@@ -114,6 +114,8 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // The IdentityManager instance associated with this instance.
   IdentityManager* identity_manager();
 
+  SigninClient* signin_client();
+
   // Returns the |TestIdentityManagerObserver| watching the IdentityManager.
   TestIdentityManagerObserver* identity_manager_observer();
 

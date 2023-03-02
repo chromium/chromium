@@ -74,6 +74,8 @@ class SigninClient : public KeyedService {
   virtual bool IsClearPrimaryAccountAllowed(bool has_sync_account) const;
   virtual bool IsRevokeSyncConsentAllowed() const;
 
+  bool is_clear_primary_account_allowed_for_testing() const;
+
   void set_is_clear_primary_account_allowed_for_testing(SignoutDecision value) {
     is_clear_primary_account_allowed_for_testing_ = value;
   }
