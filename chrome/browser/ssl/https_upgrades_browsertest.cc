@@ -1303,6 +1303,30 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
           contents));
 }
 
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       EnterprisePolicyDisablesUpgrades) {
+  // Disable HTTPS-Upgrades via enterprise policy.
+  auto* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kHttpsUpgradesEnabled, false);
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
+  GURL https_url = https_server()->GetURL("foo.test", "/simple.html");
+
+  if (IsHttpInterstitialEnabled()) {
+    // HTTPS-First Mode should supercede HTTPS-Upgrades and upgrade the
+    // navigation despite the HttpsUpgradeMode policy setting.
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  } else {
+    // If HTTPS-First Mode is not enabled, then the policy should cause
+    // HTTPS-Upgrades to be disabled.
+    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  }
+}
+
 // A simple test fixture that ensures the kHttpsFirstModeV2 feature is enabled
 // and constructs a HistogramTester (so that it gets initialized before browser
 // startup). Used for testing pref tracking logic.

@@ -3617,4 +3617,8 @@ const char kQuickDeleteDialogSuppressed[] = "quick_delete.dialog_suppressed";
 // A list of hostnames to disable HTTPS Upgrades / HTTPS-First Mode warnings on.
 const char kHttpAllowlist[] = "https_upgrades.policy.http_allowlist";
 
+// Whether the HTTPS Upgrades feature is enabled or disabled by the
+// `HttpsUpgradesEnabled` enterprise policy.
+const char kHttpsUpgradesEnabled[] = "https_upgrades.policy.upgrades_enabled";
+
 }  // namespace prefs
