@@ -51,6 +51,10 @@
 
   // The handler used for CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoHandler;
+
+  // Tells whether or not to support move to account option. If YES, move option
+  // will be supported, NO otherwise.
+  BOOL _supportMoveToAccount;
 }
 
 // Main view controller for this coordinator.
@@ -82,7 +86,8 @@
                           credential:
                               (const password_manager::CredentialUIEntry&)
                                   credential
-                        reauthModule:(ReauthenticationModule*)reauthModule {
+                        reauthModule:(ReauthenticationModule*)reauthModule
+                supportMoveToAccount:(BOOL)supportMoveToAccount {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -91,6 +96,7 @@
     _baseNavigationController = navigationController;
     _credential = credential;
     _reauthenticationModule = reauthModule;
+    _supportMoveToAccount = supportMoveToAccount;
     if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
           browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
@@ -105,7 +111,8 @@
                              browser:(Browser*)browser
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
-                        reauthModule:(ReauthenticationModule*)reauthModule {
+                        reauthModule:(ReauthenticationModule*)reauthModule
+                supportMoveToAccount:(BOOL)supportMoveToAccount {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -114,6 +121,7 @@
     _baseNavigationController = navigationController;
     _affiliatedGroup = affiliatedGroup;
     _reauthenticationModule = reauthModule;
+    _supportMoveToAccount = supportMoveToAccount;
     if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
           browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
@@ -152,6 +160,7 @@
                                     .get()
                 prefService:browserState->GetPrefs()
                 syncService:SyncServiceFactory::GetForBrowserState(browserState)
+       supportMoveToAccount:_supportMoveToAccount
       passwordManagerClient:PasswordTabHelper::FromWebState(webState)
                                 ->GetPasswordManagerClient()];
   self.mediator.consumer = self.viewController;

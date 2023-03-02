@@ -28,6 +28,7 @@ class Browser;
                               (const password_manager::CredentialUIEntry&)
                                   credential
                         reauthModule:(ReauthenticationModule*)reauthModule
+                supportMoveToAccount:(BOOL)supportMoveToAccount
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)
@@ -37,6 +38,7 @@ class Browser;
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
                         reauthModule:(ReauthenticationModule*)reauthModule
+                supportMoveToAccount:(BOOL)supportMoveToAccount
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

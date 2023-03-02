@@ -38,6 +38,7 @@ class IOSChromePasswordCheckManager;
              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
+             supportMoveToAccount:(BOOL)supportMoveToAccount
             passwordManagerClient:
                 (password_manager::PasswordManagerClient*)passwordManagerClient
     NS_DESIGNATED_INITIALIZER;

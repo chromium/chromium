@@ -219,7 +219,8 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
                             credential:credential
-                          reauthModule:self.reauthModule];
+                          reauthModule:self.reauthModule
+                  supportMoveToAccount:YES];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
@@ -231,7 +232,8 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
                        affiliatedGroup:affiliatedGroup
-                          reauthModule:self.reauthModule];
+                          reauthModule:self.reauthModule
+                  supportMoveToAccount:YES];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
