@@ -2030,12 +2030,12 @@ BASE_FEATURE(kTerminalTmuxIntegration,
 
 // Enables time of day screen saver.
 BASE_FEATURE(kTimeOfDayScreenSaver,
-             "TimeOfDayScreenSaver",
+             "FeatureManagementTimeOfDayScreenSaver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables time of day wallpaper.
 BASE_FEATURE(kTimeOfDayWallpaper,
-             "TimeOfDayWallpaper",
+             "FeatureManagementTimeOfDayWallpaper",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the TrafficCountersHandler class to auto-reset traffic counters
