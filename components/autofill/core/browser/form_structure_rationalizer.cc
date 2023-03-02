@@ -20,15 +20,19 @@ namespace {
 // Defines necessary types for the rationalization logic, meaning that fields of
 // `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
 // is present.
-// TODO(crbug.com/1311937) Cleanup PHONE_HOME_CITY_AND_NUMBER when launched.
+// TODO(crbug.com/1311937) Cleanup when launched.
 ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
   switch (type) {
-    case PHONE_HOME_COUNTRY_CODE:
-      return {PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
-              base::FeatureList::IsEnabled(
-                  features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-                  ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
-                  : PHONE_HOME_CITY_AND_NUMBER};
+    case PHONE_HOME_COUNTRY_CODE: {
+      ServerFieldTypeSet necessary_types{PHONE_HOME_NUMBER,
+                                         PHONE_HOME_NUMBER_PREFIX,
+                                         PHONE_HOME_CITY_AND_NUMBER};
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
+        necessary_types.insert(PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX);
+      }
+      return necessary_types;
+    }
     default:
       return {};
   }
