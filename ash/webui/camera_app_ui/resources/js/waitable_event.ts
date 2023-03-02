@@ -11,7 +11,7 @@ export class WaitableEvent<T = void> {
   // The field is definitely assigned in the constructor since the argument to
   // the Promise constructor is called immediately, but TypeScript can't
   // recognize that. Disable the check by adding "!" to the property name.
-  protected resolve!: (val: T) => void;
+  protected resolve!: (val: PromiseLike<T>|T) => void;
 
   protected reject!: (val: Error) => void;
 
@@ -69,7 +69,6 @@ export class CancelableEvent<T> extends WaitableEvent<T> {
   }
 
   signalAs(promise: Promise<T>): void {
-    promise.then((v) => this.resolve(v));
-    promise.catch((e) => this.reject(e));
+    this.resolve(promise);
   }
 }
