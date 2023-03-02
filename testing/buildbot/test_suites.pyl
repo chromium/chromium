@@ -491,7 +491,7 @@
         'test': 'webview_instrumentation_test_apk',
         'experiment_percentage': 100,
         'swarming': {
-          'shards': 7,
+          'shards': 10,
         },
       },
     },

@@ -4435,6 +4435,7 @@
       },
       'android-12-x64-rel': {
         'swarming': {
+          'shards': 10,
           'inverse_quickrun_shards': 14,
         },
       },
