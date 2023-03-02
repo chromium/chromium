@@ -1810,22 +1810,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Liveness.BrowserStateAtTimeout"
-    enum="ChromeOSBrowserProcessState" expires_after="2023-04-09">
-  <owner>iby@google.com</owner>
-  <owner>xiyuan@google.com</owner>
-  <owner>kaznacheev@google.com</owner>
-  <summary>
-    Records the state of the Chrome browser process at the moment
-    session_manager's LivenessChecker ping times out. This is the moment when
-    LivenessChecker will send an abort signal, if sending an abort signal is
-    enabled, but this metric is recorded regardless of whether or not aborting
-    from LivenessChecker is enabled. Exactly one sample of this metric is
-    recorded when the timeout occurs. If aborting is enabled, this should mean
-    one sample per abort.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.Liveness.PingResponseTime" units="ms"
     expires_after="2023-08-20">
   <owner>rtinkoff@google.com</owner>
