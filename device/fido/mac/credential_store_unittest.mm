@@ -84,7 +84,7 @@ TEST_F(CredentialStoreTest, CreateCredential) {
   EXPECT_NE(public_key, nullptr);
   EXPECT_EQ(
       credential.metadata,
-      CredentialMetadata(CredentialMetadata::Version::kCurrent, kUser.id,
+      CredentialMetadata(CredentialMetadata::CurrentVersion(), kUser.id,
                          *kUser.name, *kUser.display_name, /*is_resident=*/true,
                          CredentialMetadata::SignCounter::kZero));
 }

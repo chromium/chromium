@@ -20,6 +20,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/random.h"
+#include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/keychain.h"
@@ -192,22 +193,13 @@ bool Credential::operator==(const Credential& other) const {
          credential_id == other.credential_id && metadata == other.metadata;
 }
 
+bool Credential::RequiresUvForSignature() const {
+  return metadata.version < CredentialMetadata::Version::kV4;
+}
+
 TouchIdCredentialStore::TouchIdCredentialStore(AuthenticatorConfig config)
     : config_(std::move(config)) {}
 TouchIdCredentialStore::~TouchIdCredentialStore() = default;
-
-base::ScopedCFTypeRef<SecAccessControlRef>
-TouchIdCredentialStore::DefaultAccessControl() {
-  return base::ScopedCFTypeRef<SecAccessControlRef>(
-      SecAccessControlCreateWithFlags(
-          kCFAllocatorDefault,
-          // Credential can only be used when the device is unlocked.
-          kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-          // Private key is available for signing after user authorization with
-          // biometrics or password.
-          kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
-          nullptr));
-}
 
 absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
 TouchIdCredentialStore::CreateCredential(
@@ -247,8 +239,17 @@ TouchIdCredentialStore::CreateCredential(
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(params, kSecPrivateKeyAttrs, private_key_params);
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
-  CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
-                       DefaultAccessControl());
+  // The credential can only be used for signing, and the device needs to be in
+  // an unlocked state.
+  auto flags =
+      base::FeatureList::IsEnabled(kWebAuthnMacPlatformAuthenticatorOptionalUv)
+          ? kSecAccessControlPrivateKeyUsage
+          : kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence;
+  CFDictionarySetValue(
+      private_key_params, kSecAttrAccessControl,
+      SecAccessControlCreateWithFlags(
+          kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+          flags, nullptr));
   if (authentication_context_) {
     CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
                          authentication_context_);
@@ -319,8 +320,15 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(params, kSecPrivateKeyAttrs, private_key_params);
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @YES);
-  CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
-                       DefaultAccessControl());
+  // Credential can only be used when the device is unlocked. Private key is
+  // available for signing after user authorization with biometrics or
+  // password.
+  CFDictionarySetValue(
+      private_key_params, kSecAttrAccessControl,
+      SecAccessControlCreateWithFlags(
+          kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+          kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
+          nullptr));
   if (authentication_context_) {
     CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
                          authentication_context_);

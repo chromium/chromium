@@ -456,6 +456,18 @@ device::AuthenticatorData AuthDataFromMakeCredentialResponse(
   return std::move(parsed_auth_data.value());
 }
 
+bool HasUV(const MakeCredentialAuthenticatorResponsePtr& response) {
+  return AuthDataFromMakeCredentialResponse(response)
+      .obtained_user_verification();
+}
+
+bool HasUV(const GetAssertionAuthenticatorResponsePtr& response) {
+  absl::optional<device::AuthenticatorData> auth_data =
+      device::AuthenticatorData::DecodeAuthenticatorData(
+          response->info->authenticator_data);
+  return auth_data->obtained_user_verification();
+}
+
 url::Origin GetTestOrigin() {
   const GURL test_relying_party_url(kTestOrigin1);
   CHECK(test_relying_party_url.is_valid());
@@ -5300,18 +5312,6 @@ class UVAuthenticatorImplTest : public AuthenticatorImplTest {
     }
   }
 
-  static bool HasUV(const MakeCredentialAuthenticatorResponsePtr& response) {
-    return AuthDataFromMakeCredentialResponse(response)
-        .obtained_user_verification();
-  }
-
-  static bool HasUV(const GetAssertionAuthenticatorResponsePtr& response) {
-    absl::optional<device::AuthenticatorData> auth_data =
-        device::AuthenticatorData::DecodeAuthenticatorData(
-            response->info->authenticator_data);
-    return auth_data->obtained_user_verification();
-  }
-
   UVTestAuthenticatorContentBrowserClient test_client_;
 
  private:
@@ -8779,6 +8779,46 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential) {
   EXPECT_TRUE(metadata.is_resident);
   auto expected_user = GetTestPublicKeyCredentialUserEntity();
   EXPECT_EQ(metadata.ToPublicKeyCredentialUserEntity(), expected_user);
+}
+
+TEST_F(TouchIdAuthenticatorImplTest, OptionalUv) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  for (const auto uv : {device::UserVerificationRequirement::kDiscouraged,
+                        device::UserVerificationRequirement::kPreferred,
+                        device::UserVerificationRequirement::kRequired}) {
+    auto options = GetTestPublicKeyCredentialCreationOptions();
+    options->authenticator_selection->authenticator_attachment =
+        device::AuthenticatorAttachment::kPlatform;
+    options->authenticator_selection->user_verification_requirement = uv;
+    bool requires_uv = uv == device::UserVerificationRequirement::kRequired;
+    if (requires_uv) {
+      touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+    } else {
+      touch_id_test_environment_.DoNotResolveNextPrompt();
+    }
+    auto result = AuthenticatorMakeCredential(std::move(options));
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(HasUV(result.response), requires_uv);
+    auto credentials = GetCredentials(kTestRelyingPartyId);
+    EXPECT_EQ(credentials.size(), 1u);
+
+    auto assertion_options = GetTestPublicKeyCredentialRequestOptions();
+    assertion_options->user_verification = uv;
+    assertion_options->allow_credentials =
+        std::vector<device::PublicKeyCredentialDescriptor>(
+            {{device::CredentialType::kPublicKey,
+              credentials[0].credential_id}});
+    if (requires_uv) {
+      touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+    } else {
+      touch_id_test_environment_.DoNotResolveNextPrompt();
+    }
+    auto assertion = AuthenticatorGetAssertion(std::move(assertion_options));
+    EXPECT_EQ(assertion.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(HasUV(assertion.response), requires_uv);
+  }
 }
 
 TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Resident) {

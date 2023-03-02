@@ -57,6 +57,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Credential {
 
   bool operator==(const Credential&) const;
 
+  // Returns whether the user must be verified via Touch ID or device unlock
+  // in order to sign with the secure enclave key pair for this credential.
+  bool RequiresUvForSignature() const;
+
   // An opaque reference to the private key that can be used for signing.
   base::ScopedCFTypeRef<SecKeyRef> private_key;
 
@@ -84,10 +88,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   TouchIdCredentialStore(const TouchIdCredentialStore&) = delete;
   TouchIdCredentialStore& operator=(const TouchIdCredentialStore&) = delete;
   ~TouchIdCredentialStore() override;
-
-  // Returns the access control object used when creating platform authenticator
-  // credentials.
-  static base::ScopedCFTypeRef<SecAccessControlRef> DefaultAccessControl();
 
   // An LAContext that has been successfully evaluated using |TouchIdContext|
   // may be passed in |authenticaton_context|, in order to authorize

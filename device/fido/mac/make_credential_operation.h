@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
 
  private:
   void PromptTouchIdDone(bool success);
+  void CreateCredential(bool has_uv);
 
   const std::unique_ptr<TouchIdContext> touch_id_context_ =
       TouchIdContext::Create();
