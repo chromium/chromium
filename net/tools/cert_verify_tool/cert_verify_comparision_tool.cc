@@ -221,6 +221,8 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
       return "ignored_builtin_authority_invalid_platform_symantec";
     case net::TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot:
       return "ignored_lets_encrypt_expired_root";
+    case net::TrialComparisonResult::kIgnoredAndroidErrorDatePriority:
+      return "ignored_android_error_date_priority";
   }
 }
 

@@ -223,6 +223,20 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // In the case where a cert is expired and does not have a trusted root,
+  // Android prefers ERR_CERT_DATE_INVALID whereas builtin prefers
+  // ERR_CERT_AUTHORITY_INVALID.
+  if (primary_error == ERR_CERT_DATE_INVALID &&
+      trial_error == ERR_CERT_AUTHORITY_INVALID &&
+      (primary_result.cert_status & CERT_STATUS_ALL_ERRORS) ==
+          CERT_STATUS_DATE_INVALID &&
+      (trial_result.cert_status & CERT_STATUS_ALL_ERRORS) ==
+          CERT_STATUS_AUTHORITY_INVALID) {
+    return TrialComparisonResult::kIgnoredAndroidErrorDatePriority;
+  }
+#endif
+
   return TrialComparisonResult::kInvalid;
 }
 
