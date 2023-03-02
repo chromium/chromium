@@ -226,15 +226,73 @@ absl::optional<std::vector<uint8_t>> GetRSASPKI(NCRYPT_KEY_HANDLE key) {
   return CBBToVector(cbb.get());
 }
 
+absl::optional<std::vector<uint8_t>> SignECDSA(NCRYPT_KEY_HANDLE key,
+                                               base::span<const uint8_t> data) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
+  // The signature is written as a pair of big-endian field elements for P-256
+  // ECDSA.
+  std::vector<uint8_t> sig(64);
+  DWORD sig_size;
+  {
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    if (FAILED(NCryptSignHash(key, nullptr, digest.data(), digest.size(),
+                              sig.data(), sig.size(), &sig_size,
+                              NCRYPT_SILENT_FLAG))) {
+      return absl::nullopt;
+    }
+  }
+  CHECK_EQ(sig.size(), sig_size);
+
+  bssl::UniquePtr<BIGNUM> r(BN_bin2bn(sig.data(), 32, nullptr));
+  bssl::UniquePtr<BIGNUM> s(BN_bin2bn(sig.data() + 32, 32, nullptr));
+  ECDSA_SIG sig_st;
+  sig_st.r = r.get();
+  sig_st.s = s.get();
+
+  bssl::ScopedCBB cbb;
+  CHECK(CBB_init(cbb.get(), /*initial_capacity=*/72) &&
+        ECDSA_SIG_marshal(cbb.get(), &sig_st));
+  return CBBToVector(cbb.get());
+}
+
+absl::optional<std::vector<uint8_t>> SignRSA(NCRYPT_KEY_HANDLE key,
+                                             base::span<const uint8_t> data) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
+  BCRYPT_PKCS1_PADDING_INFO padding_info = {0};
+  padding_info.pszAlgId = NCRYPT_SHA256_ALGORITHM;
+
+  DWORD sig_size;
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+  if (FAILED(NCryptSignHash(key, &padding_info, digest.data(), digest.size(),
+                            nullptr, 0, &sig_size,
+                            NCRYPT_SILENT_FLAG | BCRYPT_PAD_PKCS1))) {
+    return absl::nullopt;
+  }
+
+  std::vector<uint8_t> sig(sig_size);
+  if (FAILED(NCryptSignHash(key, &padding_info, digest.data(), digest.size(),
+                            sig.data(), sig.size(), &sig_size,
+                            NCRYPT_SILENT_FLAG | BCRYPT_PAD_PKCS1))) {
+    return absl::nullopt;
+  }
+  CHECK_EQ(sig.size(), sig_size);
+
+  return sig;
+}
+
 // ECDSAKey wraps a TPM-stored P-256 ECDSA key.
 class ECDSAKey : public UnexportableSigningKey {
  public:
-  ECDSAKey(ScopedNCryptProvider provider,
-           ScopedNCryptKey key,
+  ECDSAKey(ScopedNCryptKey key,
            std::vector<uint8_t> wrapped,
            std::vector<uint8_t> spki)
-      : provider_(std::move(provider)),
-        key_(std::move(key)),
+      : key_(std::move(key)),
         wrapped_(std::move(wrapped)),
         spki_(std::move(spki)) {}
 
@@ -250,38 +308,10 @@ class ECDSAKey : public UnexportableSigningKey {
 
   absl::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::WILL_BLOCK);
-
-    std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
-    // The signature is written as a pair of big-endian field elements for P-256
-    // ECDSA.
-    std::vector<uint8_t> sig(64);
-    DWORD sig_size;
-    {
-      SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-      if (FAILED(NCryptSignHash(key_.get(), nullptr, digest.data(),
-                                digest.size(), sig.data(), sig.size(),
-                                &sig_size, NCRYPT_SILENT_FLAG))) {
-        return absl::nullopt;
-      }
-    }
-    CHECK_EQ(sig.size(), sig_size);
-
-    bssl::UniquePtr<BIGNUM> r(BN_bin2bn(sig.data(), 32, nullptr));
-    bssl::UniquePtr<BIGNUM> s(BN_bin2bn(sig.data() + 32, 32, nullptr));
-    ECDSA_SIG sig_st;
-    sig_st.r = r.get();
-    sig_st.s = s.get();
-
-    bssl::ScopedCBB cbb;
-    CHECK(CBB_init(cbb.get(), /*initial_capacity=*/72) &&
-          ECDSA_SIG_marshal(cbb.get(), &sig_st));
-    return CBBToVector(cbb.get());
+    return SignECDSA(key_.get(), data);
   }
 
  private:
-  ScopedNCryptProvider provider_;
   ScopedNCryptKey key_;
   const std::vector<uint8_t> wrapped_;
   const std::vector<uint8_t> spki_;
@@ -290,12 +320,10 @@ class ECDSAKey : public UnexportableSigningKey {
 // RSAKey wraps a TPM-stored RSA key.
 class RSAKey : public UnexportableSigningKey {
  public:
-  RSAKey(ScopedNCryptProvider provider,
-         ScopedNCryptKey key,
+  RSAKey(ScopedNCryptKey key,
          std::vector<uint8_t> wrapped,
          std::vector<uint8_t> spki)
-      : provider_(std::move(provider)),
-        key_(std::move(key)),
+      : key_(std::move(key)),
         wrapped_(std::move(wrapped)),
         spki_(std::move(spki)) {}
 
@@ -311,34 +339,10 @@ class RSAKey : public UnexportableSigningKey {
 
   absl::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::WILL_BLOCK);
-
-    std::array<uint8_t, kSHA256Length> digest = SHA256Hash(data);
-    BCRYPT_PKCS1_PADDING_INFO padding_info = {0};
-    padding_info.pszAlgId = NCRYPT_SHA256_ALGORITHM;
-
-    DWORD sig_size;
-    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-    if (FAILED(NCryptSignHash(key_.get(), &padding_info, digest.data(),
-                              digest.size(), nullptr, 0, &sig_size,
-                              NCRYPT_SILENT_FLAG | BCRYPT_PAD_PKCS1))) {
-      return absl::nullopt;
-    }
-
-    std::vector<uint8_t> sig(sig_size);
-    if (FAILED(NCryptSignHash(key_.get(), &padding_info, digest.data(),
-                              digest.size(), sig.data(), sig.size(), &sig_size,
-                              NCRYPT_SILENT_FLAG | BCRYPT_PAD_PKCS1))) {
-      return absl::nullopt;
-    }
-    CHECK_EQ(sig.size(), sig_size);
-
-    return sig;
+    return SignRSA(key_.get(), data);
   }
 
  private:
-  ScopedNCryptProvider provider_;
   ScopedNCryptKey key_;
   const std::vector<uint8_t> wrapped_;
   const std::vector<uint8_t> spki_;
@@ -417,16 +421,14 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         if (!spki) {
           return nullptr;
         }
-        return std::make_unique<ECDSAKey>(std::move(provider), std::move(key),
-                                          std::move(*wrapped_key),
-                                          std::move(spki.value()));
+        return std::make_unique<ECDSAKey>(
+            std::move(key), std::move(*wrapped_key), std::move(spki.value()));
       case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
         spki = GetRSASPKI(key.get());
         if (!spki) {
           return nullptr;
         }
-        return std::make_unique<RSAKey>(std::move(provider), std::move(key),
-                                        std::move(*wrapped_key),
+        return std::make_unique<RSAKey>(std::move(key), std::move(*wrapped_key),
                                         std::move(spki.value()));
       default:
         return nullptr;
@@ -477,8 +479,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         return nullptr;
       }
       return std::make_unique<ECDSAKey>(
-          std::move(provider), std::move(key),
-          std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
+          std::move(key), std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
           std::move(spki.value()));
     } else if (algo_bytes->size() == sizeof(kRSA) &&
                memcmp(algo_bytes->data(), kRSA, sizeof(kRSA)) == 0) {
@@ -487,8 +488,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         return nullptr;
       }
       return std::make_unique<RSAKey>(
-          std::move(provider), std::move(key),
-          std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
+          std::move(key), std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
           std::move(spki.value()));
     }
 
