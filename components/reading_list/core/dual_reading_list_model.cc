@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -249,8 +250,35 @@ void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
 void DualReadingListModel::SetEntryTitleIfExists(const GURL& url,
                                                  const std::string& title) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(loaded());
+
+  scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
+  if (!entry) {
+    return;
+  }
+
+  const bool notify_observers =
+      entry->Title() != ReadingListModelImpl::TrimTitle(title);
+
+  if (notify_observers) {
+    NotifyObserversWithWillUpdateEntry(url);
+  }
+
+  // The update propagates to both underlying ReadingListModelImpl instances
+  // even if the `entry` title is equal to `title`. This is because if `entry`
+  // was a merged entry, then one of the two underlying entries may contain a
+  // different title.
+  {
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_observer_notifications_, true);
+    local_or_syncable_model_->SetEntryTitleIfExists(url, title);
+    account_model_->SetEntryTitleIfExists(url, title);
+  }
+
+  if (notify_observers) {
+    NotifyObserversWithDidUpdateEntry(url);
+    NotifyObserversWithDidApplyChanges();
+  }
 }
 
 void DualReadingListModel::SetEstimatedReadTimeIfExists(
@@ -407,6 +435,18 @@ void DualReadingListModel::NotifyObserversWithWillMoveEntry(const GURL& url) {
 void DualReadingListModel::NotifyObserversWithDidMoveEntry(const GURL& url) {
   for (auto& observer : observers_) {
     observer.ReadingListDidMoveEntry(this, url);
+  }
+}
+
+void DualReadingListModel::NotifyObserversWithWillUpdateEntry(const GURL& url) {
+  for (auto& observer : observers_) {
+    observer.ReadingListWillUpdateEntry(this, url);
+  }
+}
+
+void DualReadingListModel::NotifyObserversWithDidUpdateEntry(const GURL& url) {
+  for (auto& observer : observers_) {
+    observer.ReadingListDidUpdateEntry(this, url);
   }
 }
 

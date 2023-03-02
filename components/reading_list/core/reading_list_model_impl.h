@@ -117,6 +117,8 @@ class ReadingListModelImpl : public ReadingListModel {
   // download of data and corresponding merge has completed.
   bool IsTrackingSyncMetadata() const;
 
+  static std::string TrimTitle(const std::string& title);
+
   // Test-only factory function to inject an arbitrary change processor.
   static std::unique_ptr<ReadingListModelImpl> BuildNewForTest(
       std::unique_ptr<ReadingListModelStorage> storage_layer,

@@ -374,8 +374,7 @@ TEST_F(DualReadingListModelTest, GetEntryByURL) {
   scoped_refptr<const ReadingListEntry> merged_entry2 =
       dual_model_->GetEntryByURL(GURL("http://common_url2.com/"));
   // The expected title of the merged entry is the title that was most recently
-  // updated, and initially the update time of the title is equal to the
-  // creation time.
+  // updated.
   EXPECT_THAT(merged_entry1,
               MatchesEntry("http://common_url1.com/",
                            "merged_entry_title_from_local_entry"));
@@ -821,14 +820,11 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForAccountEntry) {
 
 TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForLocalCommonEntry) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
-      /*initial_local_or_syncable_entries_builders=*/{TestEntryBuilder(
-                                                          kUrl, clock_.Now())
-                                                          .SetRead(
-                                                              clock_.Now() +
-                                                              base::Seconds(
-                                                                  1))},
-      /*initial_account_entries_builders=*/{
-          TestEntryBuilder(kUrl, clock_.Now())}));
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetRead(clock_.Now() + base::Seconds(1))},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())}));
   ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
             StorageStateForTesting::kExistsInBothModels);
 
@@ -870,6 +866,156 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForAccountCommonEntry) {
   dual_model_->SetReadStatusIfExists(kUrl, false);
 
   EXPECT_FALSE(dual_model_->GetEntryByURL(kUrl)->IsRead());
+}
+
+TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForNonExistingEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->SetEntryTitleIfExists(kUrl, "new_title");
+}
+
+TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForLocalEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/{TestEntryBuilder(
+          kUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->SetEntryTitleIfExists(kUrl, "new_title");
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "new_title");
+}
+
+TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForAccountEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/{},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->SetEntryTitleIfExists(kUrl, "new_title");
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "new_title");
+}
+
+TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForLocalCommonEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetTitle("current_title", clock_.Now() + base::Seconds(1))},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetTitle("old_title_will_be_used_again", clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  // The expected title of the merged entry is the title that was most recently
+  // updated.
+  ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "current_title");
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->SetEntryTitleIfExists(kUrl, "old_title_will_be_used_again");
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(),
+            "old_title_will_be_used_again");
+}
+
+TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForAccountCommonEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetTitle("old_title_will_be_used_again", clock_.Now())},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetTitle("current_title", clock_.Now() + base::Seconds(1))}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  // The expected title of the merged entry is the title that was most recently
+  // updated.
+  ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "current_title");
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->SetEntryTitleIfExists(kUrl, "old_title_will_be_used_again");
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(),
+            "old_title_will_be_used_again");
+}
+
+TEST_F(DualReadingListModelTest,
+       SetEntryTitleIfExistsForMergedEntryHasSameTitle) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetTitle("entry_title", clock_.Now())},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetTitle("merge_view_title", clock_.Now() + base::Seconds(1))}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_EQ(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->Title(),
+            "entry_title");
+  // The expected title of the merged entry is the title that was most recently
+  // updated.
+  ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(), "merge_view_title");
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->SetEntryTitleIfExists(kUrl, "merge_view_title");
+
+  EXPECT_EQ(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->Title(),
+            "merge_view_title");
+}
+
+// Tests that new line characters and spaces are collapsed in title.
+TEST_F(DualReadingListModelTest, TestTrimmingTitle) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
+
+  std::string title = "\n  This\ttitle \n contains new     line \n characters ";
+  dual_model_->AddOrReplaceEntry(kUrl, title,
+                                 reading_list::ADDED_VIA_CURRENT_APP,
+                                 /*estimated_read_time=*/base::TimeDelta());
+  scoped_refptr<const ReadingListEntry> entry =
+      dual_model_->GetEntryByURL(kUrl);
+  EXPECT_EQ(entry->Title(), "This title contains new line characters");
+
+  dual_model_->SetEntryTitleIfExists(kUrl, "test");
+  EXPECT_EQ(entry->Title(), "test");
+
+  dual_model_->SetEntryTitleIfExists(kUrl, title);
+  EXPECT_EQ(entry->Title(), "This title contains new line characters");
 }
 
 }  // namespace

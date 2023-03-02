@@ -125,6 +125,8 @@ class DualReadingListModel : public ReadingListModel,
   void NotifyObserversWithDidRemoveEntry(const GURL& url);
   void NotifyObserversWithWillMoveEntry(const GURL& url);
   void NotifyObserversWithDidMoveEntry(const GURL& url);
+  void NotifyObserversWithWillUpdateEntry(const GURL& url);
+  void NotifyObserversWithDidUpdateEntry(const GURL& url);
   void NotifyObserversWithDidApplyChanges();
 
   const std::unique_ptr<ReadingListModelImpl> local_or_syncable_model_;
