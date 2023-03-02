@@ -695,8 +695,9 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
        ++it) {
     const DrawQuad& quad = **it;
 
-    if (render_pass_is_clipped &&
-        ShouldSkipQuad(quad, render_pass_scissor_in_draw_space)) {
+    if (ShouldSkipQuad(quad, render_pass_is_clipped
+                                 ? render_pass_scissor_in_draw_space
+                                 : surface_rect_in_draw_space)) {
       continue;
     }
 
