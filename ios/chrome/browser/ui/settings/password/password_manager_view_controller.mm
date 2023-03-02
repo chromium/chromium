@@ -163,7 +163,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
 }
 
 // The size of trailing symbol icons for safe/insecure state.
-NSInteger kTrailingSymbolSize = 18;
+NSInteger kTrailingSymbolSize = IsPasswordCheckupEnabled() ? 22 : 18;
 
 // Helper method to get the right trailing image for the Password Check cell
 // depending on the check state.
