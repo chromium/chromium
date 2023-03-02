@@ -430,7 +430,6 @@ static_library("tflite") {
     "src/tensorflow/lite/core/async/async_signature_runner.h",
     "src/tensorflow/lite/core/async/async_subgraph.cc",
     "src/tensorflow/lite/core/async/async_subgraph.h",
-    "src/tensorflow/lite/core/async/common.h",
     "src/tensorflow/lite/core/async/task_internal.cc",
     "src/tensorflow/lite/core/async/task_internal.h",
     "src/tensorflow/lite/core/c/common.cc",
