@@ -190,19 +190,7 @@ export class EventManager implements IEventManager {
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    // First check if all the contexts are known.
-    for (const contextId of contextIds) {
-      if (contextId !== null) {
-        // Assert the context is known. Throw exception otherwise.
-        this.#bidiServer.getBrowsingContextStorage().getKnownContext(contextId);
-      }
-    }
-
-    for (const eventName of eventNames) {
-      for (const contextId of contextIds) {
-        this.#subscriptionManager.unsubscribe(eventName, contextId, channel);
-      }
-    }
+    this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
   }
 
   /**

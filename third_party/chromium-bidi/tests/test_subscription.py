@@ -502,7 +502,6 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="#482")
 async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
     await subscribe(websocket, "log.entryAdded", iframe_id)
 

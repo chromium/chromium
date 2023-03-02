@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "pwa-node",
+      "type": "node",
       "request": "launch",
       "name": "Run Server",
       "skipFiles": ["<node_internals>/**"],
@@ -24,7 +24,6 @@
       "request": "launch",
       "name": "Mocha Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": [],
       "internalConsoleOptions": "openOnSessionStart",
       "env": {
         "TS_NODE_PROJECT": "${workspaceFolder}/src/tsconfig.json"

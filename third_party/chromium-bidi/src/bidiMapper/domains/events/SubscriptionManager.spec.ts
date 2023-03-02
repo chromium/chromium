@@ -21,23 +21,26 @@ import {SubscriptionManager} from './SubscriptionManager.js';
 import sinon from 'sinon';
 
 const expect = chai.expect;
+
 const ALL_EVENTS = BrowsingContext.AllEvents;
 const SOME_EVENT = BrowsingContext.EventNames.LoadEvent;
 const ANOTHER_EVENT = BrowsingContext.EventNames.ContextCreatedEvent;
 const YET_ANOTHER_EVENT = BrowsingContext.EventNames.DomContentLoadedEvent;
+
 const SOME_CONTEXT = 'SOME_CONTEXT';
 const SOME_NESTED_CONTEXT = 'SOME_NESTED_CONTEXT';
 const ANOTHER_CONTEXT = 'ANOTHER_CONTEXT';
 const ANOTHER_NESTED_CONTEXT = 'ANOTHER_NESTED_CONTEXT';
+
 const SOME_CHANNEL = 'SOME_CHANNEL';
 const ANOTHER_CHANNEL = 'ANOTHER_CHANNEL';
 
 describe('test SubscriptionManager', () => {
   let subscriptionManager: SubscriptionManager;
+
   beforeEach(() => {
-    const browsingContextStorage = sinon.createStubInstance(
-      BrowsingContextStorage
-    ) as BrowsingContextStorage;
+    const browsingContextStorage: BrowsingContextStorage =
+      sinon.createStubInstance(BrowsingContextStorage);
     browsingContextStorage.findContext = sinon
       .stub()
       .callsFake((contextId: string) => {
@@ -52,80 +55,7 @@ describe('test SubscriptionManager', () => {
 
     subscriptionManager = new SubscriptionManager(browsingContextStorage);
   });
-  describe('with null context', () => {
-    it('should send proper event in any context', () => {
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
-          SOME_EVENT,
-          SOME_CONTEXT
-        )
-      ).to.deep.equal([SOME_CHANNEL]);
-    });
-    it('should not send wrong event', () => {
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
-          ANOTHER_EVENT,
-          SOME_CONTEXT
-        )
-      ).to.deep.equal([]);
-    });
-    it('should unsubscribe', () => {
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      subscriptionManager.unsubscribe(SOME_EVENT, null, SOME_CHANNEL);
-      expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
-          SOME_EVENT,
-          SOME_CONTEXT
-        )
-      ).to.deep.equal([]);
-    });
-    it('should not unsubscribe specific context subscription', () => {
-      subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      subscriptionManager.unsubscribe(SOME_EVENT, null, SOME_CHANNEL);
-      expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
-          SOME_EVENT,
-          SOME_CONTEXT
-        )
-      ).to.deep.equal([SOME_CHANNEL]);
-    });
-    it('should subscribe in proper order', () => {
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
-      expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
-          SOME_EVENT,
-          SOME_CONTEXT
-        )
-      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
-    });
-    it('should re-subscribe in proper order', () => {
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
-      subscriptionManager.unsubscribe(SOME_EVENT, null, SOME_CHANNEL);
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
-          SOME_EVENT,
-          SOME_CONTEXT
-        )
-      ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
-    });
-    it('should re-subscribe global and specific context in proper order', () => {
-      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
-      subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
-      subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
-      expect(
-        subscriptionManager.getChannelsSubscribedToEvent(
-          SOME_EVENT,
-          SOME_CONTEXT
-        )
-      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
-    });
-  });
+
   it('should re-subscribe global and specific event in proper order', () => {
     subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
     subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
@@ -156,6 +86,88 @@ describe('test SubscriptionManager', () => {
       )
     ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
   });
+
+  describe('with null context', () => {
+    it('should send proper event in any context', () => {
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([SOME_CHANNEL]);
+    });
+
+    it('should not send wrong event', () => {
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          ANOTHER_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([]);
+    });
+
+    it('should unsubscribe', () => {
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      subscriptionManager.unsubscribe(SOME_EVENT, null, SOME_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([]);
+    });
+
+    it('should not unsubscribe specific context subscription', () => {
+      subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      subscriptionManager.unsubscribe(SOME_EVENT, null, SOME_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([SOME_CHANNEL]);
+    });
+
+    it('should subscribe in proper order', () => {
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
+    });
+
+    it('should re-subscribe in proper order', () => {
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
+      subscriptionManager.unsubscribe(SOME_EVENT, null, SOME_CHANNEL);
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
+    });
+
+    it('should re-subscribe global and specific context in proper order', () => {
+      subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+      subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
+      subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
+      expect(
+        subscriptionManager.getChannelsSubscribedToEvent(
+          SOME_EVENT,
+          SOME_CONTEXT
+        )
+      ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
+    });
+  });
+
   describe('with some context', () => {
     it('should send proper event in proper context', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
@@ -166,6 +178,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([SOME_CHANNEL]);
     });
+
     it('should not send proper event in wrong context', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       expect(
@@ -175,6 +188,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([]);
     });
+
     it('should not send wrong event in proper context', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       expect(
@@ -184,6 +198,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([]);
     });
+
     it('should unsubscribe', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.unsubscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
@@ -194,6 +209,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([]);
     });
+
     it('should unsubscribe the domain', () => {
       subscriptionManager.subscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.unsubscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
@@ -204,6 +220,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([]);
     });
+
     it('should not unsubscribe the domain if not subscribed', () => {
       subscriptionManager.subscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.unsubscribe(ALL_EVENTS, SOME_CONTEXT, SOME_CHANNEL);
@@ -214,6 +231,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([]);
     });
+
     it('should not unsubscribe global subscription', () => {
       subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
@@ -225,6 +243,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([SOME_CHANNEL]);
     });
+
     it('should subscribe in proper order', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, ANOTHER_CHANNEL);
@@ -235,6 +254,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
     });
+
     it('should re-subscribe in proper order', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, ANOTHER_CHANNEL);
@@ -247,6 +267,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([ANOTHER_CHANNEL, SOME_CHANNEL]);
     });
+
     it('should re-subscribe global and specific context in proper order', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
