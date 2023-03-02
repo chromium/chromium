@@ -57,12 +57,6 @@ if (current_toolchain == default_toolchain) {
 
   app_hooks_impl = "java/src/org/chromium/chrome/browser/AppHooksImpl.java"
 
-  # Exclude it from JNI registration if VR is not enabled.
-  chrome_jni_file_exclusions = []
-  if (!enable_vr) {
-    chrome_jni_file_exclusions += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
-  }
-
   jinja_template("chrome_public_android_feature_vr_manifest") {
     input = "features/vr/java/AndroidManifest.xml"
     output = feature_module_vr_android_manifest_path
@@ -227,13 +221,6 @@ if (current_toolchain == default_toolchain) {
       "//components/language/android:ulp_delegate_public_java",
       "//components/signin/public/android:account_email_domain_displayability_java",
     ]
-  }
-
-  java_cpp_template("vr_build_config") {
-    sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/vr/VrBuildConfig.template" ]
-    if (enable_vr) {
-      defines = [ "ENABLE_VR" ]
-    }
   }
 
   android_library("chrome_java") {
@@ -592,7 +579,6 @@ if (current_toolchain == default_toolchain) {
       ":chrome_android_java_google_api_keys_srcjar",
       ":chrome_strict_mode_switch",
       ":resource_id_javagen",
-      ":vr_build_config",
       "//chrome:offline_pages_enum_javagen",
       "//chrome:partner_bookmarks_javagen",
       "//chrome:supervised_user_url_filter_enum_javagen",
@@ -2039,7 +2025,6 @@ if (current_toolchain == default_toolchain) {
       targets += [ "//chrome/android/features/vr:java" ]
     }
     manual_jni_registration = true
-    file_exclusions = chrome_jni_file_exclusions
     if (allow_jni_multiplexing) {
       enable_jni_multiplexing = true
     }
@@ -2054,7 +2039,6 @@ if (current_toolchain == default_toolchain) {
       targets += [ "//chrome/android/features/vr:java" ]
     }
     manual_jni_registration = true
-    file_exclusions = chrome_jni_file_exclusions
     if (allow_jni_multiplexing) {
       enable_jni_multiplexing = true
     }
@@ -2069,7 +2053,6 @@ if (current_toolchain == default_toolchain) {
       if (enable_vr) {
         targets += [ "//chrome/android/features/vr:java" ]
       }
-      file_exclusions = chrome_jni_file_exclusions
       enable_jni_multiplexing = true
     }
   }

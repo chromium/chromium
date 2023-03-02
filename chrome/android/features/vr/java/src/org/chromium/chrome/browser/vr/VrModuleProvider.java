@@ -23,7 +23,6 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("vr")
 public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
     private static VrDelegateProvider sDelegateProvider;
-    private static boolean sAlwaysUseFallbackDelegate;
 
     private long mNativeVrModuleProvider;
     private Tab mTab;
@@ -33,7 +32,6 @@ public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
      * into Chrome.
      */
     public static void maybeInit() {
-        if (!VrBuildConfig.IS_VR_ENABLED) return;
         // Always install the VR module on Daydream-ready devices.
         maybeRequestModuleIfDaydreamReady();
     }
@@ -43,7 +41,6 @@ public class VrModuleProvider implements ModuleInstallUi.FailureUiListener {
      * VR is not compiled into Chrome.
      */
     public static void maybeRequestModuleIfDaydreamReady() {
-        if (!VrBuildConfig.IS_VR_ENABLED) return;
         if (!BundleUtils.isBundle()) return;
         if (VrModule.isInstalled()) return;
         if (!getDelegate().isDaydreamReadyDevice()) return;
