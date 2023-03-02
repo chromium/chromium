@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/performance_controls/high_efficiency_iph_controller.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_opt_in_iph_controller.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -13,28 +13,29 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 
-HighEfficiencyIPHController::HighEfficiencyIPHController(Browser* browser)
+HighEfficiencyOptInIPHController::HighEfficiencyOptInIPHController(
+    Browser* browser)
     : browser_(browser) {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   high_efficiency_observer_.Observe(manager);
 }
 
-HighEfficiencyIPHController::~HighEfficiencyIPHController() = default;
+HighEfficiencyOptInIPHController::~HighEfficiencyOptInIPHController() = default;
 
-void HighEfficiencyIPHController::OnMemoryThresholdReached() {
+void HighEfficiencyOptInIPHController::OnMemoryThresholdReached() {
   MaybeTriggerPromo();
 }
 
-void HighEfficiencyIPHController::OnTabCountThresholdReached() {
+void HighEfficiencyOptInIPHController::OnTabCountThresholdReached() {
   MaybeTriggerPromo();
 }
 
-void HighEfficiencyIPHController::OnJankThresholdReached() {
+void HighEfficiencyOptInIPHController::OnJankThresholdReached() {
   MaybeTriggerPromo();
 }
 
-void HighEfficiencyIPHController::MaybeTriggerPromo() {
+void HighEfficiencyOptInIPHController::MaybeTriggerPromo() {
   BrowserWindow* browser_window = browser_->window();
   PrefService* prefs = g_browser_process->local_state();
   if (browser_window != nullptr &&
