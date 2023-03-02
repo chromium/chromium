@@ -50,8 +50,8 @@ void VerifyReturnToAppButtonInfo(
 }
 
 // Used for verifying displayed url.
-const std::string kGoogleMeetTestUrl = "https://meet.google.com/abc-xyz/ab-123";
-const std::u16string kExpectedGoogleMeetDisplayedUrl =
+const std::string kMeetTestUrl = "https://meet.google.com/abc-xyz/ab-123";
+const std::u16string kExpectedMeetDisplayedUrl =
     u"meet.google.com/abc-xyz/ab-123";
 
 }  // namespace
@@ -124,12 +124,14 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
   bool is_capturing_camera = true;
   bool is_capturing_microphone = false;
   bool is_capturing_screen = false;
+  auto* title = u"Meet";
+
   controller()->ClearMediaApps();
   controller()->AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfo::New(
       /*id=*/base::UnguessableToken::Create(),
       /*last_activity_time=*/base::Time::Now(), is_capturing_camera,
-      is_capturing_microphone, is_capturing_screen, /*title=*/u"Google Meet",
-      /*url=*/GURL(kGoogleMeetTestUrl)));
+      is_capturing_microphone, is_capturing_screen, title,
+      /*url=*/GURL(kMeetTestUrl)));
 
   // There should be one child representing the only one running media app.
   auto panel = std::make_unique<ReturnToAppPanel>();
@@ -142,19 +144,21 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
   EXPECT_FALSE(app_button->expand_indicator()->GetVisible());
   VerifyReturnToAppButtonInfo(app_button, is_capturing_camera,
                               is_capturing_microphone, is_capturing_screen,
-                              kExpectedGoogleMeetDisplayedUrl);
+                              /*display_text=*/title);
 }
 
 TEST_F(ReturnToAppPanelTest, MultipleApps) {
+  auto* title = u"Meet";
+
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
-      /*url=*/kGoogleMeetTestUrl));
+      /*is_capturing_screen=*/false, title,
+      /*url=*/kMeetTestUrl));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
-      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*is_capturing_screen=*/true, /*title=*/u"",
+      /*url=*/kMeetTestUrl));
 
   // There should be three children, one representing the summary row and two
   // for two running media apps.
@@ -179,22 +183,23 @@ TEST_F(ReturnToAppPanelTest, MultipleApps) {
   VerifyReturnToAppButtonInfo(first_app_row, /*is_capturing_camera=*/true,
                               /*is_capturing_microphone=*/false,
                               /*is_capturing_screen=*/false,
-                              kExpectedGoogleMeetDisplayedUrl);
+                              /*display_text=*/title);
 
-  // If the url is not provided, the button should display the app title.
+  // If the title is empty, the button should display the app url.
   auto* second_app_row =
       static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
   VerifyReturnToAppButtonInfo(second_app_row, /*is_capturing_camera=*/false,
                               /*is_capturing_microphone=*/true,
-                              /*is_capturing_screen=*/true, u"Zoom");
+                              /*is_capturing_screen=*/true,
+                              /*display_text=*/kExpectedMeetDisplayedUrl);
 }
 
 TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
-      /*url=*/kGoogleMeetTestUrl));
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
@@ -245,8 +250,8 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
-      /*url=*/kGoogleMeetTestUrl));
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
@@ -257,8 +262,8 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
-      /*url=*/kGoogleMeetTestUrl));
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
@@ -269,8 +274,8 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
-      /*url=*/kGoogleMeetTestUrl));
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
@@ -286,8 +291,8 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
-      /*url=*/kGoogleMeetTestUrl, /*id=*/app_id1));
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl, /*id=*/app_id1));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
