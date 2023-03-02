@@ -65,12 +65,11 @@ export class AsyncWriter {
       return;
     }
     this.closed = true;
-    this.queue.push(async () => {
+    await this.queue.push(async () => {
       if (this.ops.close !== null) {
         await this.ops.close();
       }
     });
-    await this.queue.flush();
   }
 
   /**
