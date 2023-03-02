@@ -1995,8 +1995,6 @@ if (!is_android) {
       "../browser/optimization_guide/optimization_guide_keyed_service_browsertest.cc",
       "../browser/optimization_guide/page_content_annotations_service_browsertest.cc",
       "../browser/optimization_guide/page_text_observer_browsertest.cc",
-      "../browser/optimization_guide/prediction/prediction_manager_browsertest.cc",
-      "../browser/optimization_guide/prediction/prediction_model_store_browsertest.cc",
       "../browser/origin_trials/origin_trials_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ad_density_intervention_browsertest.cc",
       "../browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer_browsertest.cc",
@@ -2418,6 +2416,13 @@ if (!is_android) {
       "interaction/webcontents_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
+
+    if (build_with_tflite_lib) {
+      sources += [
+        "../browser/optimization_guide/prediction/prediction_manager_browsertest.cc",
+        "../browser/optimization_guide/prediction/prediction_model_store_browsertest.cc",
+      ]
+    }
 
     if (is_chrome_for_testing) {
       sources += [ "../browser/chrome_for_testing/chrome_for_testing_info_bar_browsertest.cc" ]
