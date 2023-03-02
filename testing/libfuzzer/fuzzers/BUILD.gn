@@ -80,7 +80,7 @@ fuzzer_test("libsrtp_fuzzer") {
 }
 
 libpng_seed_corpuses = [
-  "//components/viz/test/data",
+  "//components/test/data/viz",
   "//third_party/blink/web_tests/images/png-suite/samples",
   "//third_party/blink/web_tests/images/resources/pngfuzz",
 ]

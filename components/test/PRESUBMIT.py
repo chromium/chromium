@@ -26,6 +26,9 @@ def CheckChange(input_api, output_api):
                 'data/password_manager/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/viz/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/web_database/unit_tests_bundle_data')
     finally:
         sys.path = old_sys_path

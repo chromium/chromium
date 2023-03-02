@@ -70,6 +70,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/password_manager/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("viz_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/viz/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("web_database_test_bundle_data") {
     testonly = true
     filelist_name = "data/web_database/unit_tests_bundle_data.filelist"

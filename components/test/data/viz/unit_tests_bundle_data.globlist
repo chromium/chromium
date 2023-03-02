@@ -5,4 +5,6 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 
-//components/viz/test/data/**
+//components/test/data/viz/**
+-//components/test/data/viz/*.filelist
+-//components/test/data/viz/*.globlist

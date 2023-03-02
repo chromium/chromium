@@ -182,7 +182,7 @@ if (pdf_enable_v8) {
         dict = "dicts/pdf_codec_png.dict"
         seed_corpuses = [
           "corpora/pdf_codec_png",
-          "//components/viz/test/data",
+          "//components/test/data/viz",
           "//third_party/blink/web_tests/images/png-suite/samples",
           "//third_party/blink/web_tests/images/resources/pngfuzz",
         ]

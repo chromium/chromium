@@ -908,7 +908,7 @@ cc_test("cc_unittests") {
     "//ui/gl:test_support",
   ]
 
-  data = [ "//components/viz/test/data/" ]
+  data = [ "//components/test/data/viz/" ]
   data_deps = [
     "//testing/buildbot/filters:cc_unittests_filters",
     "//third_party/mesa_headers",
@@ -1001,7 +1001,7 @@ cc_test("cc_perftests") {
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]
 
-  data = [ "//components/viz/test/data/" ]
+  data = [ "//components/test/data/viz/" ]
 
   data_deps = [
     # Needed for isolate script to execute.
