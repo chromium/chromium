@@ -7328,7 +7328,7 @@
       "yuhengh",
       "tluk"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name" : "webui-tab-strip-context-menu-after-tap",
@@ -7336,7 +7336,7 @@
       "yuhengh",
       "tluk"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "webui-tab-strip-ntb-in-tab-strip",
@@ -7344,7 +7344,7 @@
       "yuhengh",
       "tluk"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "webui-tab-strip-tab-drag-integration",
@@ -7352,7 +7352,7 @@
       "yuhengh",
       "tluk"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 116
   },
   {
     "name": "webxr-incubations",
