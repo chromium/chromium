@@ -4155,6 +4155,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "history-journeys-hide-visits",
+    "owners": [ "manukh", "chrome-journeys@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "history-journeys-images",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 115

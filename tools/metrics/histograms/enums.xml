@@ -61117,6 +61117,7 @@ from previous Chrome versions.
   <int value="-426815606" label="HomepageTile:enabled"/>
   <int value="-425754211" label="FirstPartyVietnameseInput:disabled"/>
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
+  <int value="-424689493" label="HistoryClustersHideVisits:enabled"/>
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
   <int value="-423134304" label="VirtualKeyboardMultitouch:disabled"/>
@@ -62870,6 +62871,7 @@ from previous Chrome versions.
   <int value="576701073" label="WebPaymentsJustInTimePaymentApp:disabled"/>
   <int value="576730168" label="GetDisplayMediaSet:enabled"/>
   <int value="576878329" label="enable-background-blur"/>
+  <int value="578633424" label="HistoryClustersHideVisits:disabled"/>
   <int value="578695119" label="ImprovedCookieControls:disabled"/>
   <int value="578894559" label="IPH_Snooze:enabled"/>
   <int value="581118445" label="enable-eol-notification"/>

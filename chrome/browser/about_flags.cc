@@ -1280,6 +1280,17 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam kJourneysHideVisitsVariationsMenuItem[] = {
+    {"hide_visits_icon", "false"}};
+const FeatureEntry::FeatureParam kJourneysHideVisitsVariationsIcon[] = {
+    {"hide_visits_icon", "true"}};
+const FeatureEntry::FeatureVariation kJourneysHideVisitsVariations[] = {
+    {"Menu item", kJourneysHideVisitsVariationsMenuItem,
+     std::size(kJourneysHideVisitsVariationsMenuItem), nullptr},
+    {"Thumbs-down Icon", kJourneysHideVisitsVariationsIcon,
+     std::size(kJourneysHideVisitsVariationsIcon), nullptr},
+};
+
 const FeatureEntry::FeatureParam kSidePanelJourneysOpensFromOmniboxParams[] = {
     {"SidePanelJourneysOpensFromOmnibox", "true"},
 };
@@ -5515,6 +5526,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          history_clusters::internal::kJourneysIncludeSyncedVisits)},
+
+    {"history-journeys-hide-visits", flag_descriptions::kJourneysHideVisitsName,
+     flag_descriptions::kJourneysHideVisitsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kHideVisits,
+                                    kJourneysHideVisitsVariations,
+                                    "JourneysHide")},
 
     {"extract-related-searches-from-prefetched-zps-response",
      flag_descriptions::kExtractRelatedSearchesFromPrefetchedZPSResponseName,

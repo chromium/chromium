@@ -1030,6 +1030,9 @@ extern const char kJourneysDescription[];
 extern const char kJourneysContentClusteringName[];
 extern const char kJourneysContentClusteringDescription[];
 
+extern const char kJourneysHideVisitsName[];
+extern const char kJourneysHideVisitsDescription[];
+
 extern const char kJourneysImagesName[];
 extern const char kJourneysImagesDescription[];
 
