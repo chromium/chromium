@@ -45,6 +45,7 @@ class ShellSurfaceBuilder {
   // builder as they need the widget created in the commit process.
   ShellSurfaceBuilder& SetNoCommit();
   ShellSurfaceBuilder& SetCanMinimize(bool can_minimize);
+  ShellSurfaceBuilder& SetCanMaximize(bool can_maximize);
   ShellSurfaceBuilder& SetMaximumSize(const gfx::Size& size);
   ShellSurfaceBuilder& SetMinimumSize(const gfx::Size& size);
   ShellSurfaceBuilder& SetGeometry(const gfx::Rect& geometry);
@@ -98,6 +99,7 @@ class ShellSurfaceBuilder {
   bool system_modal_ = false;
   bool commit_on_build_ = true;
   bool can_minimize_ = true;
+  bool can_maximize_ = true;
   bool disable_movement_ = false;
   bool centered_ = false;
   bool built_ = false;

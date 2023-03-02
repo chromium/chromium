@@ -1263,7 +1263,7 @@ void remote_surface_set_min_size(wl_client* client,
                                  int32_t height) {
   ClientControlledShellSurface* shell_surface =
       GetUserDataAs<ClientControlledShellSurface>(resource);
-  float scale = shell_surface->GetClientToDpScale();
+  float scale = shell_surface->GetClientToDpPendingScale();
   gfx::Size s(width, height);
   shell_surface->SetMinimumSize(gfx::ScaleToRoundedSize(s, scale));
 }
@@ -1274,7 +1274,7 @@ void remote_surface_set_max_size(wl_client* client,
                                  int32_t height) {
   ClientControlledShellSurface* shell_surface =
       GetUserDataAs<ClientControlledShellSurface>(resource);
-  float scale = shell_surface->GetClientToDpScale();
+  float scale = shell_surface->GetClientToDpPendingScale();
   gfx::Size s(width, height);
   shell_surface->SetMaximumSize(gfx::ScaleToRoundedSize(s, scale));
 }
