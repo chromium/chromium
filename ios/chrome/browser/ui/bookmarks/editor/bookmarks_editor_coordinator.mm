@@ -99,10 +99,9 @@
 
   _navigationController =
       [[TableViewNavigationController alloc] initWithTable:_viewController];
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   _navigationController.toolbarHidden = YES;
   _navigationController.presentationController.delegate = self;
-  [_navigationController
-      setModalPresentationStyle:UIModalPresentationFormSheet];
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES

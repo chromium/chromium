@@ -607,7 +607,7 @@ enum class PresentedState {
         (NSArray<ChromeTableViewController*>*)replacementViewControllers {
   TableViewNavigationController* navController =
       [[TableViewNavigationController alloc] initWithTable:viewController];
-  [navController setModalPresentationStyle:UIModalPresentationFormSheet];
+  navController.modalPresentationStyle = UIModalPresentationFormSheet;
   self.bookmarkNavigationController = navController;
   if (replacementViewControllers) {
     [navController setViewControllers:replacementViewControllers];

@@ -116,8 +116,8 @@
         self.browser->GetCommandDispatcher(), SnackbarCommands);
     _navigationController = [[BookmarkNavigationController alloc]
         initWithRootViewController:_viewController];
-    _navigationController.presentationController.delegate = self;
     _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    _navigationController.presentationController.delegate = self;
 
     [self.baseViewController presentViewController:_navigationController
                                           animated:YES
