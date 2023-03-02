@@ -196,10 +196,7 @@ bool DrmDevice::Initialize() {
   }
 
   // Use atomic only if kernel allows it.
-  uint64_t atomic_cap = 0;
-  const bool is_atomic =
-      GetCapability(DRM_CLIENT_CAP_ATOMIC, &atomic_cap) && atomic_cap;
-  if (is_atomic) {
+  if (is_atomic()) {
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerAtomic>(this);
   } else {
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
