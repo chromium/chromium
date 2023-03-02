@@ -1665,6 +1665,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [self.tableView selectRowAtIndexPath:path
                                   animated:NO
                             scrollPosition:UITableViewScrollPositionMiddle];
+      [self.tableView.delegate tableView:self.tableView
+                 didSelectRowAtIndexPath:path];
       break;
     }
   }
