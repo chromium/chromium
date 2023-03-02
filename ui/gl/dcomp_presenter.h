@@ -54,12 +54,12 @@ class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
   DCompPresenter(const DCompPresenter&) = delete;
   DCompPresenter& operator=(const DCompPresenter&) = delete;
 
+  bool Initialize();
   void Destroy();
   gfx::VSyncProvider* GetVSyncProvider();
   bool SupportsProtectedVideo() const;
 
   // Presenter implementation.
-  bool Initialize(GLSurfaceFormat format) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,

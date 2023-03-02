@@ -41,8 +41,7 @@ GbmSurfaceless::GbmSurfaceless(GbmSurfaceFactory* surface_factory,
                                gl::GLDisplayEGL* display,
                                std::unique_ptr<DrmWindowProxy> window,
                                gfx::AcceleratedWidget widget)
-    : Presenter(display, gfx::Size()),
-      surface_factory_(surface_factory),
+    : surface_factory_(surface_factory),
       window_(std::move(window)),
       widget_(widget),
       has_implicit_external_sync_(

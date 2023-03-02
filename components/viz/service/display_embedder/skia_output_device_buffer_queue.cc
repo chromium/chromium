@@ -469,8 +469,8 @@ void SkiaOutputDeviceBufferQueue::SwapBuffers(BufferPresentedCallback feedback,
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
 
-  presenter_->SwapBuffers(swap_completion_callbacks_.back()->callback(),
-                          std::move(feedback), data);
+  presenter_->Present(swap_completion_callbacks_.back()->callback(),
+                      std::move(feedback), data);
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 
@@ -509,8 +509,8 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
 
-  presenter_->PostSubBuffer(rect, swap_completion_callbacks_.back()->callback(),
-                            std::move(feedback), data);
+  presenter_->Present(swap_completion_callbacks_.back()->callback(),
+                      std::move(feedback), data);
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 
@@ -541,8 +541,8 @@ void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
 
-  presenter_->CommitOverlayPlanes(swap_completion_callbacks_.back()->callback(),
-                                  std::move(feedback), data);
+  presenter_->Present(swap_completion_callbacks_.back()->callback(),
+                      std::move(feedback), data);
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 

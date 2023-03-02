@@ -14,11 +14,8 @@
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/gfx/surface_origin.h"
 #include "ui/gfx/swap_result.h"
-#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_surface_format.h"
 
 // This temporary for OverlayImage and FrameData.
 #include "ui/gl/gl_surface.h"
@@ -36,9 +33,6 @@
 #endif
 
 namespace gfx {
-namespace mojom {
-class DelegatedInkPointRenderer;
-}  // namespace mojom
 class ColorSpace;
 class GpuFence;
 struct OverlayPlaneData;
@@ -67,48 +61,17 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   using SwapCompletionCallback =
       base::OnceCallback<void(gfx::SwapCompletionResult)>;
 
-  Presenter(GLDisplayEGL* display, const gfx::Size& size);
+  Presenter();
 
-  bool SupportsAsyncSwap();
-  bool SupportsPostSubBuffer();
   virtual bool SupportsCommitOverlayPlanes();
   virtual bool SupportsOverridePlatformSize() const;
   virtual bool SupportsViewporter() const;
   virtual bool SupportsPlaneGpuFences() const;
-  bool IsOffscreen();
-  bool IsSurfaceless();
-  bool SupportsDCLayers() const;
 
   virtual bool SupportsGpuVSync() const;
   virtual void SetGpuVSyncEnabled(bool enabled) {}
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
-  gfx::SurfaceOrigin GetOrigin() const;
-
-  void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback,
-                        gfx::FrameData data);
-  void PostSubBufferAsync(int x,
-                          int y,
-                          int width,
-                          int height,
-                          SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback,
-                          gfx::FrameData data);
-  void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
-                                PresentationCallback presentation_callback,
-                                gfx::FrameData data);
-  gfx::SwapResult SwapBuffers(PresentationCallback callback,
-                              gfx::FrameData data);
-  gfx::SwapResult PostSubBuffer(int x,
-                                int y,
-                                int width,
-                                int height,
-                                PresentationCallback presentation_callback,
-                                gfx::FrameData data);
-  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gfx::FrameData data);
-  virtual bool Initialize(GLSurfaceFormat format);
   virtual bool OnMakeCurrent(GLContext* context);
 
   // Resizes the presenter, returning success.

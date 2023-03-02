@@ -53,34 +53,26 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     return nullptr;
   }
 
-  scoped_refptr<gl::Presenter> surface;
-  absl::visit(base::Overloaded{
-                  [&](gl::ScopedJavaSurface&& scoped_java_surface) {
-                    gl::ScopedANativeWindow window(scoped_java_surface);
-                    if (!window) {
-                      LOG(WARNING) << "Failed to acquire ANativeWindow";
-                      return;
-                    }
-                    surface = new gl::GLSurfaceEGLSurfaceControl(
-                        display->GetAs<gl::GLDisplayEGL>(), std::move(window),
-                        base::SingleThreadTaskRunner::GetCurrentDefault());
-                  },
-                  [&](gl::ScopedJavaSurfaceControl&& surface_control) {
-                    surface = new gl::GLSurfaceEGLSurfaceControl(
-                        display->GetAs<gl::GLDisplayEGL>(),
-                        std::move(surface_control),
-                        base::SingleThreadTaskRunner::GetCurrentDefault());
-                  }},
-              std::move(surface_variant));
-  if (!surface) {
-    return nullptr;
-  }
+  scoped_refptr<gl::Presenter> presenter;
+  absl::visit(
+      base::Overloaded{[&](gl::ScopedJavaSurface&& scoped_java_surface) {
+                         gl::ScopedANativeWindow window(scoped_java_surface);
+                         if (!window) {
+                           LOG(WARNING) << "Failed to acquire ANativeWindow";
+                           return;
+                         }
+                         presenter = new gl::GLSurfaceEGLSurfaceControl(
+                             std::move(window),
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
+                       },
+                       [&](gl::ScopedJavaSurfaceControl&& surface_control) {
+                         presenter = new gl::GLSurfaceEGLSurfaceControl(
+                             std::move(surface_control),
+                             base::SingleThreadTaskRunner::GetCurrentDefault());
+                       }},
+      std::move(surface_variant));
 
-  bool initialize_success = surface->Initialize(format);
-  if (!initialize_success)
-    return nullptr;
-
-  return surface;
+  return presenter;
 }
 
 // static

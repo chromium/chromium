@@ -37,7 +37,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
 
   ImageTransportSurfaceOverlayMacEGL(
-      gl::GLDisplayEGL* display,
       base::WeakPtr<ImageTransportSurfaceDelegate> delegate);
 
   // Presenter implementation

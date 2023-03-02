@@ -109,8 +109,7 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
     gl::GLDisplayEGL* display,
     WaylandBufferManagerGpu* buffer_manager,
     gfx::AcceleratedWidget widget)
-    : Presenter(display, gfx::Size()),
-      buffer_manager_(buffer_manager),
+    : buffer_manager_(buffer_manager),
       widget_(widget),
       solid_color_buffers_holder_(std::make_unique<SolidColorBufferHolder>()),
       display_(display),

@@ -38,18 +38,15 @@ class ScopedJavaSurfaceControl;
 class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
  public:
   GLSurfaceEGLSurfaceControl(
-      GLDisplayEGL* display,
       gl::ScopedANativeWindow window,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   GLSurfaceEGLSurfaceControl(
-      GLDisplayEGL* display,
       gl::ScopedJavaSurfaceControl scoped_java_surface_control,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  bool Initialize();
   void Destroy();
-
   // Presenter implementation.
-  bool Initialize(GLSurfaceFormat format) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
@@ -73,7 +70,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
 
  private:
   GLSurfaceEGLSurfaceControl(
-      GLDisplayEGL* display,
       scoped_refptr<gfx::SurfaceControl::Surface> root_surface,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~GLSurfaceEGLSurfaceControl() override;

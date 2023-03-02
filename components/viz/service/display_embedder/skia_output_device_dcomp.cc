@@ -417,13 +417,10 @@ SkiaOutputDeviceDCompPresenter::SkiaOutputDeviceDCompPresenter(
       presenter_(std::move(presenter)),
       shared_image_factory_(shared_image_factory) {
   DCHECK(presenter_);
-
-  DCHECK(presenter_->SupportsDCLayers());
-  DCHECK_EQ(presenter_->GetOrigin(), gfx::SurfaceOrigin::kTopLeft);
   DCHECK(presenter_->SupportsGpuVSync());
   DCHECK(!presenter_->SupportsCommitOverlayPlanes());
 
-  capabilities_.supports_post_sub_buffer = presenter_->SupportsPostSubBuffer();
+  capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps = 1;
 }

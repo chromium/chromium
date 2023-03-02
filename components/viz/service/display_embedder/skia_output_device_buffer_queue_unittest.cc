@@ -29,7 +29,6 @@
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/types/display_snapshot.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/presenter.h"
 
@@ -222,8 +221,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
 
 class MockPresenter : public gl::Presenter {
  public:
-  explicit MockPresenter(gl::GLDisplayEGL* display)
-      : gl::Presenter(display, gfx::Size()) {}
+  MockPresenter() = default;
 
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
@@ -312,9 +310,7 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   void SetUpOnGpu() override {
-    // TODO(vasilyt): Remove this once presenter doesn't need display.
-    display_ = gl::GetDefaultDisplayEGL();
-    presenter_ = base::MakeRefCounted<MockPresenter>(display_);
+    presenter_ = base::MakeRefCounted<MockPresenter>();
     memory_tracker_ = std::make_unique<MemoryTrackerStub>();
     shared_image_factory_ = std::make_unique<gpu::SharedImageFactory>(
         dependency_->GetGpuPreferences(),
@@ -491,7 +487,6 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
  protected:
   std::unique_ptr<SkiaOutputSurfaceDependency> dependency_;
-  raw_ptr<gl::GLDisplayEGL> display_;
   scoped_refptr<MockPresenter> presenter_;
   std::unique_ptr<MemoryTrackerStub> memory_tracker_;
   TestImageBackingFactory test_backing_factory_;

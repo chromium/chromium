@@ -125,8 +125,7 @@ class TestSharedImageBackingFactory : public gpu::SharedImageBackingFactory {
 // No-op surface compatible with SkiaOutputDeviceDCompPresenter
 class NoopDCompPresenter : public gl::Presenter {
  public:
-  NoopDCompPresenter()
-      : gl::Presenter(gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(1, 1)) {}
+  NoopDCompPresenter() = default;
 
   bool SupportsGpuVSync() const override { return true; }
   bool SupportsCommitOverlayPlanes() override { return false; }

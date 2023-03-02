@@ -45,8 +45,7 @@ DCompPresenter::DCompPresenter(
     GLDisplayEGL* display,
     VSyncCallback vsync_callback,
     const DirectCompositionSurfaceWin::Settings& settings)
-    : Presenter(display, gfx::Size(1, 1)),
-      vsync_callback_(std::move(vsync_callback)),
+    : vsync_callback_(std::move(vsync_callback)),
       vsync_thread_(VSyncThreadWin::GetInstance()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       max_pending_frames_(settings.max_pending_frames),
@@ -60,7 +59,7 @@ DCompPresenter::~DCompPresenter() {
   Destroy();
 }
 
-bool DCompPresenter::Initialize(GLSurfaceFormat format) {
+bool DCompPresenter::Initialize() {
   if (!DirectCompositionSupported()) {
     DLOG(ERROR) << "Direct composition not supported";
     return false;

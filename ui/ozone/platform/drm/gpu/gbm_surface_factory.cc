@@ -144,13 +144,9 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   scoped_refptr<gl::Presenter> CreateSurfacelessViewGLSurface(
       gl::GLDisplay* display,
       gfx::AcceleratedWidget window) override {
-    scoped_refptr<gl::Presenter> presenter =
-        base::MakeRefCounted<GbmSurfaceless>(
-            surface_factory_, display->GetAs<gl::GLDisplayEGL>(),
-            drm_thread_proxy_->CreateDrmWindowProxy(window), window);
-    if (!presenter->Initialize(gl::GLSurfaceFormat()))
-      return nullptr;
-    return presenter;
+    return base::MakeRefCounted<GbmSurfaceless>(
+        surface_factory_, display->GetAs<gl::GLDisplayEGL>(),
+        drm_thread_proxy_->CreateDrmWindowProxy(window), window);
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(

@@ -1730,7 +1730,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
       if (presenter_) {
-        DCHECK(presenter_->IsSurfaceless());
 #if !BUILDFLAG(IS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
             std::make_unique<OutputPresenterGL>(
@@ -1740,7 +1739,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
             shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback());
 #else   // !BUILDFLAG(IS_WIN)
-        DCHECK(presenter_->SupportsDCLayers());
         output_device_ = std::make_unique<SkiaOutputDeviceDCompPresenter>(
             shared_image_factory_.get(),
             shared_image_representation_factory_.get(), context_state_.get(),
@@ -1792,10 +1790,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     DCHECK(!gl_surface_->IsSurfaceless());
 #endif
   } else {
-    // If there is no gl_surface there must be presenter and it's always
-    // surfaceless.
+    // If there is no gl_surface there must be presenter.
     DCHECK(presenter_);
-    DCHECK(presenter_->IsSurfaceless());
   }
 
   return true;

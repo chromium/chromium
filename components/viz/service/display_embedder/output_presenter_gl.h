@@ -46,16 +46,9 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       size_t num_images) final;
   std::unique_ptr<Image> AllocateSingleImage(gfx::ColorSpace color_space,
                                              gfx::Size image_size) final;
-  void SwapBuffers(SwapCompletionCallback completion_callback,
-                   BufferPresentedCallback presentation_callback,
-                   gfx::FrameData data) final;
-  void PostSubBuffer(const gfx::Rect& rect,
-                     SwapCompletionCallback completion_callback,
-                     BufferPresentedCallback presentation_callback,
-                     gfx::FrameData data) final;
-  void CommitOverlayPlanes(SwapCompletionCallback completion_callback,
-                           BufferPresentedCallback presentation_callback,
-                           gfx::FrameData data) final;
+  void Present(SwapCompletionCallback completion_callback,
+               BufferPresentedCallback presentation_callback,
+               gfx::FrameData data) final;
   void SchedulePrimaryPlane(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
@@ -74,7 +67,6 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
  private:
   scoped_refptr<gl::Presenter> presenter_;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
-  const bool supports_async_swap_;
 
   ResourceFormat image_format_ = RGBA_8888;
 

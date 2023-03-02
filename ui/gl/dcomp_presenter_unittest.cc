@@ -157,7 +157,7 @@ class DCompPresenterTest : public testing::Test {
         base::MakeRefCounted<DCompPresenter>(
             gl::GLSurfaceEGL::GetGLDisplayEGL(),
             DCompPresenter::VSyncCallback(), settings);
-    EXPECT_TRUE(presenter->Initialize(GLSurfaceFormat()));
+    EXPECT_TRUE(presenter->Initialize());
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in
     // production code here. However, to remove dependency from

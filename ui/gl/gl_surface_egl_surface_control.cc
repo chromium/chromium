@@ -58,30 +58,24 @@ base::TimeTicks GetSignalTime(const base::ScopedFD& fence) {
 }  // namespace
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
-    GLDisplayEGL* display,
     gl::ScopedANativeWindow window,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : GLSurfaceEGLSurfaceControl(
-          display,
           base::MakeRefCounted<gfx::SurfaceControl::Surface>(
               window.a_native_window(),
               BuildSurfaceName(kRootSurfaceName).c_str()),
           std::move(task_runner)) {}
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
-    GLDisplayEGL* display,
     gl::ScopedJavaSurfaceControl scoped_java_surface_control,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : GLSurfaceEGLSurfaceControl(display,
-                                 scoped_java_surface_control.MakeSurface(),
+    : GLSurfaceEGLSurfaceControl(scoped_java_surface_control.MakeSurface(),
                                  std::move(task_runner)) {}
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
-    GLDisplayEGL* display,
     scoped_refptr<gfx::SurfaceControl::Surface> root_surface,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : Presenter(display, gfx::Size()),
-      child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
+    : child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
       root_surface_(std::move(root_surface)),
       transaction_ack_timeout_manager_(task_runner),
       gpu_task_runner_(std::move(task_runner)),
@@ -93,7 +87,7 @@ GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
   Destroy();
 }
 
-bool GLSurfaceEGLSurfaceControl::Initialize(GLSurfaceFormat format) {
+bool GLSurfaceEGLSurfaceControl::Initialize() {
   if (!root_surface_->surface())
     return false;
 
