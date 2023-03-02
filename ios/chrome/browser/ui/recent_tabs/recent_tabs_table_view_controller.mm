@@ -1470,6 +1470,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)openTabWithContentOfDistantTab:
     (synced_sessions::DistantTab const*)distantTab {
+  if (!self.browser) {
+    // Prevent interactions if the browser is nil, for example during dismissal.
+    return;
+  }
+
   // Shouldn't reach this if in incognito.
   DCHECK(!self.isIncognito);
 
@@ -1525,6 +1530,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)openTabWithTabRestoreEntryId:(const SessionID)entry_id {
+  if (!self.browser) {
+    // Prevent interactions if the browser is nil, for example during dismissal.
+    return;
+  }
+
   // It is reasonable to ignore this request if a modal UI is already showing
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
@@ -1553,6 +1563,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)openNewTabWithCurrentSearchTerm {
+  if (!self.browser) {
+    // Prevent interactions if the browser is nil, for example during dismissal.
+    return;
+  }
+
   // It is reasonable to ignore this request if a modal UI is already showing
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
