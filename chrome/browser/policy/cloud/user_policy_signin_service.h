@@ -27,8 +27,6 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
-class CloudPolicyClientRegistrationHelper;
-
 class UserPolicySigninService;
 
 // Observer bridge for UserPolicySigninService to observe profile manager
@@ -102,7 +100,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void InitializeUserCloudPolicyManager(
       const AccountId& account_id,
       std::unique_ptr<CloudPolicyClient> client) override;
-  void PrepareForUserCloudPolicyManagerShutdown() override;
   void ProhibitSignoutIfNeeded() override;
   bool CanApplyPolicies(bool check_for_refresh_token) override;
 
@@ -121,8 +118,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // from the test fixture. This is used to bypass the check on the profile
   // attributes entry.
   bool profile_can_be_managed_for_testing_ = false;
-
-  std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
 
   // Parent profile for this service.
   raw_ptr<Profile> profile_;

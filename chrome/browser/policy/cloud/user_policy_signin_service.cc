@@ -28,7 +28,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
-#include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/base/consent_level.h"
@@ -89,15 +88,6 @@ UserPolicySigninService::UserPolicySigninService(
 }
 
 UserPolicySigninService::~UserPolicySigninService() {
-}
-
-void UserPolicySigninService::PrepareForUserCloudPolicyManagerShutdown() {
-  // Stop any pending registration helper activity. We do this here instead of
-  // in the destructor because we want to shutdown the registration helper
-  // before UserCloudPolicyManager shuts down the CloudPolicyClient.
-  registration_helper_.reset();
-
-  UserPolicySigninServiceBase::PrepareForUserCloudPolicyManagerShutdown();
 }
 
 void UserPolicySigninService::OnPrimaryAccountChanged(
