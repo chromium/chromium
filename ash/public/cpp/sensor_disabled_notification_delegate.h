@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/containers/enum_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -24,9 +25,12 @@ class ASH_PUBLIC_EXPORT SensorDisabledNotificationDelegate {
   enum class Sensor {
     kCamera,
     kMinValue = kCamera,
+    kLocation,
     kMicrophone,
     kMaxValue = kMicrophone,
   };
+
+  using SensorSet = base::EnumSet<Sensor, Sensor::kMinValue, Sensor::kMaxValue>;
 
   // Returns a list of names of the applications that have attempted to use the
   // sensor (camera or microphone), in order of most-recently-launched. If an

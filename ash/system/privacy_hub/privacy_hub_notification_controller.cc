@@ -13,6 +13,7 @@
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
+#include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/message_center/message_center.h"
 
@@ -35,36 +36,38 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
       Sensor::kCamera,
       std::make_unique<PrivacyHubNotification>(
           kPrivacyHubCameraOffNotificationId,
-          IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE,
-          PrivacyHubNotification::MessageIds{
-              IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE,
-              IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-              IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
-          PrivacyHubNotification::SensorSet{
-              SensorDisabledNotificationDelegate::Sensor::kCamera},
-          base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-              base::BindRepeating([]() {
-                CameraPrivacySwitchController::
-                    SetAndLogCameraPreferenceFromNotification(true);
-              })),
-          ash::NotificationCatalogName::kPrivacyHubCamera,
-          IDS_PRIVACY_HUB_TURN_ON_CAMERA_ACTION_BUTTON));
+          NotificationCatalogName::kPrivacyHubCamera,
+          PrivacyHubNotificationDescriptor{
+              SensorDisabledNotificationDelegate::SensorSet{Sensor::kCamera},
+              IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE,
+              IDS_PRIVACY_HUB_TURN_ON_CAMERA_ACTION_BUTTON,
+              std::vector<int>{
+                  IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE,
+                  IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+                  IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+              base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+                  base::BindRepeating([]() {
+                    CameraPrivacySwitchController::
+                        SetAndLogCameraPreferenceFromNotification(true);
+                  }))}));
 
   sw_notifications_.emplace(
       Sensor::kMicrophone,
       std::make_unique<PrivacyHubNotification>(
           MicrophonePrivacySwitchController::kNotificationId,
-          IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE,
-          PrivacyHubNotification::MessageIds{
-              IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE,
-              IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-              IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
-          PrivacyHubNotification::SensorSet{
-              SensorDisabledNotificationDelegate::Sensor::kMicrophone},
-          base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-              base::BindRepeating([]() { SetAndLogMicrophoneMute(false); })),
-          ash::NotificationCatalogName::kMicrophoneMute,
-          IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON));
+          NotificationCatalogName::kMicrophoneMute,
+          PrivacyHubNotificationDescriptor{
+              SensorDisabledNotificationDelegate::SensorSet{
+                  Sensor::kMicrophone},
+              IDS_MICROPHONE_MUTED_BY_SW_SWITCH_NOTIFICATION_TITLE,
+              IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON,
+              std::vector<int>{
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE,
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+              base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+                  base::BindRepeating(
+                      []() { SetAndLogMicrophoneMute(false); }))}));
 
   auto combined_delegate = base::MakeRefCounted<
       PrivacyHubNotificationClickDelegate>(base::BindRepeating([]() {
@@ -77,17 +80,17 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
       weak_ptr_factory_.GetWeakPtr()));
 
   combined_notification_ = std::make_unique<PrivacyHubNotification>(
-      kCombinedNotificationId,
-      IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
-      PrivacyHubNotification::MessageIds{
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
-      PrivacyHubNotification::SensorSet{
-          SensorDisabledNotificationDelegate::Sensor::kCamera,
-          SensorDisabledNotificationDelegate::Sensor::kMicrophone},
-      combined_delegate, NotificationCatalogName::kPrivacyHubMicAndCamera,
-      IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON);
+      kCombinedNotificationId, NotificationCatalogName::kPrivacyHubMicAndCamera,
+      PrivacyHubNotificationDescriptor{
+          SensorDisabledNotificationDelegate::SensorSet{Sensor::kCamera,
+                                                        Sensor::kMicrophone},
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
+          IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON,
+          std::vector<int>{
+              IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
+              IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+              IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+          combined_delegate});
 
   combined_notification_->SetSecondButton(
       base::BindRepeating(

@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
-#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 
@@ -18,17 +18,10 @@ namespace ash {
 // A class managing when to show notifications for microphone, camera and
 // geolocation to the user or combining them if necessary.
 class ASH_EXPORT PrivacyHubNotificationController {
+  using Sensor = SensorDisabledNotificationDelegate::Sensor;
+  using SensorSet = SensorDisabledNotificationDelegate::SensorSet;
+
  public:
-  enum class Sensor {
-    kCamera,
-    kMin = kCamera,
-    kLocation,
-    kMicrophone,
-    kMax = kMicrophone
-  };
-
-  using SensorEnumSet = base::EnumSet<Sensor, Sensor::kMin, Sensor::kMax>;
-
   PrivacyHubNotificationController();
   PrivacyHubNotificationController(const PrivacyHubNotificationController&) =
       delete;
@@ -69,12 +62,12 @@ class ASH_EXPORT PrivacyHubNotificationController {
 
   void HandleNotificationMessageClicked();
 
-  const SensorEnumSet combinable_sensors_{Sensor::kMicrophone, Sensor::kCamera};
+  const SensorSet combinable_sensors_{Sensor::kMicrophone, Sensor::kCamera};
   // Flag to keep track if the user opened the settings page and don't show
   // them new notifications of sensors that can be combined or the combined
   // notification until the number of active uses falls to 0.
   bool ignore_new_combinable_notifications_{false};
-  SensorEnumSet sensors_;
+  SensorSet sensors_;
   std::unique_ptr<PrivacyHubNotification> combined_notification_;
   base::flat_map<Sensor, std::unique_ptr<PrivacyHubNotification>>
       sw_notifications_;

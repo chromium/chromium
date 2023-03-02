@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -49,17 +50,20 @@ MicrophonePrivacySwitchController::MicrophonePrivacySwitchController()
           CrasAudioHandler::Get()->input_muted_by_microphone_mute_switch()),
       mute_switch_notification_(
           kNotificationId,
-          IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE,
-          {IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE,
-           IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-           IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
-          {SensorDisabledNotificationDelegate::Sensor::kMicrophone},
-          base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-              base::BindRepeating(
+          NotificationCatalogName::kMicrophoneMute,
+          PrivacyHubNotificationDescriptor{
+              SensorDisabledNotificationDelegate::SensorSet{
+                  SensorDisabledNotificationDelegate::Sensor::kMicrophone},
+              IDS_MICROPHONE_MUTED_BY_HW_SWITCH_NOTIFICATION_TITLE,
+              IDS_ASH_LEARN_MORE,
+              std::vector<int>{
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE,
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+                  IDS_MICROPHONE_MUTED_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+              base::MakeRefCounted<
+                  PrivacyHubNotificationClickDelegate>(base::BindRepeating(
                   PrivacyHubNotificationController::OpenSupportUrl,
-                  PrivacyHubNotificationController::Sensor::kMicrophone)),
-          ash::NotificationCatalogName::kMicrophoneMute,
-          IDS_ASH_LEARN_MORE) {
+                  SensorDisabledNotificationDelegate::Sensor::kMicrophone))}) {
   Shell::Get()->session_controller()->AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
 }
@@ -175,10 +179,10 @@ void MicrophonePrivacySwitchController::SetMicrophoneNotificationVisible(
       Shell::Get()->system_notification_controller()->privacy_hub();
   if (visible) {
     privacy_hub_notification_controller->ShowSensorDisabledNotification(
-        PrivacyHubNotificationController::Sensor::kMicrophone);
+        SensorDisabledNotificationDelegate::Sensor::kMicrophone);
   } else {
     privacy_hub_notification_controller->RemoveSensorDisabledNotification(
-        PrivacyHubNotificationController::Sensor::kMicrophone);
+        SensorDisabledNotificationDelegate::Sensor::kMicrophone);
   }
 }
 
@@ -192,7 +196,7 @@ void MicrophonePrivacySwitchController::UpdateMicrophoneNotification() {
       ->system_notification_controller()
       ->privacy_hub()
       ->UpdateSensorDisabledNotification(
-          PrivacyHubNotificationController::Sensor::kMicrophone);
+          SensorDisabledNotificationDelegate::Sensor::kMicrophone);
 }
 
 }  // namespace ash

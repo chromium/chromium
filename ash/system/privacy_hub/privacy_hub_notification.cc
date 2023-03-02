@@ -4,7 +4,9 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,28 +68,44 @@ void PrivacyHubNotificationClickDelegate::RunCallbackIfNotNull(
   }
 }
 
+PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(
+    const SensorDisabledNotificationDelegate::SensorSet& sensors,
+    const int title_id,
+    const int button_id,
+    const std::vector<int>& message_ids,
+    const scoped_refptr<PrivacyHubNotificationClickDelegate> delegate)
+    : title_id_(title_id),
+      button_id_(button_id),
+      sensors_(sensors),
+      message_ids_(message_ids),
+      delegate_(delegate) {
+  DCHECK(!message_ids.empty());
+  DCHECK(delegate);
+  DCHECK(message_ids.size() < 2u || !sensors.Empty())
+      << "Specify at least one sensor when providing more than one message ID";
+}
+
+PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(
+    const PrivacyHubNotificationDescriptor& other) = default;
+
+PrivacyHubNotificationDescriptor& PrivacyHubNotificationDescriptor::operator=(
+    const PrivacyHubNotificationDescriptor& other) = default;
+
+PrivacyHubNotificationDescriptor::~PrivacyHubNotificationDescriptor() = default;
+
 PrivacyHubNotification::PrivacyHubNotification(
     const std::string& id,
-    const int title_id,
-    const MessageIds& message_ids,
-    const SensorSet sensors_for_apps,
-    const scoped_refptr<PrivacyHubNotificationClickDelegate> delegate,
     const ash::NotificationCatalogName catalog_name,
-    const int button_id)
+    const PrivacyHubNotificationDescriptor& descriptor)
     : id_(id),
-      message_ids_(message_ids),
-      sensors_for_apps_(sensors_for_apps),
-      delegate_(delegate),
-      button_text_(l10n_util::GetStringUTF16(button_id)) {
-  DCHECK(!message_ids_.empty());
-  DCHECK(message_ids_.size() < 2u || !sensors_for_apps_.Empty())
-      << "Specify at least one sensor when providing more than one message ID";
-  DCHECK(delegate);
-
+      message_ids_(descriptor.message_ids()),
+      sensors_(descriptor.sensors()),
+      delegate_(descriptor.delegate()),
+      button_text_(l10n_util::GetStringUTF16(descriptor.button_id_)) {
   builder_.SetId(id)
       .SetCatalogName(catalog_name)
-      .SetDelegate(std::move(delegate))
-      .SetTitleId(title_id)
+      .SetDelegate(descriptor.delegate())
+      .SetTitleId(descriptor.title_id_)
       .SetOptionalFields(MakeOptionalFields())
       .SetSmallImage(vector_icons::kSettingsIcon)
       .SetWarningLevel(message_center::SystemNotificationWarningLevel::NORMAL);
@@ -100,7 +118,7 @@ void PrivacyHubNotification::Show() {
     remove_timer_.Stop();
   }
 
-  SetNotificationMessage();
+  SetNotificationContent();
   if (HasNotification(id_)) {
     // The notification is already in the message center. Update the content and
     // pop it up again.
@@ -133,7 +151,7 @@ void PrivacyHubNotification::Hide() {
 
 void PrivacyHubNotification::Update() {
   if (HasNotification(id_)) {
-    SetNotificationMessage();
+    SetNotificationContent();
     message_center::MessageCenter::Get()->UpdateNotification(
         id_, builder_.BuildPtr());
   }
@@ -153,8 +171,7 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()
 
   if (SensorDisabledNotificationDelegate* delegate =
           SensorDisabledNotificationDelegate::Get()) {
-    for (SensorDisabledNotificationDelegate::Sensor sensor :
-         sensors_for_apps_) {
+    for (SensorDisabledNotificationDelegate::Sensor sensor : sensors_) {
       for (const std::u16string& app :
            delegate->GetAppsAccessingSensor(sensor)) {
         if (!base::Contains(app_names, app)) {
@@ -170,7 +187,7 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()
   return app_names;
 }
 
-void PrivacyHubNotification::SetNotificationMessage() {
+void PrivacyHubNotification::SetNotificationContent() {
   const std::vector<std::u16string> apps = GetAppsAccessingSensors();
 
   if (const size_t num_apps = apps.size(); num_apps < message_ids_.size()) {

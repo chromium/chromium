@@ -56,6 +56,8 @@ absl::optional<std::u16string> MapAppIdToShortName(
     case ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone:
       apps_accessing_sensor = capability_cache->GetAppsAccessingMicrophone();
       break;
+    default:
+      return absl::nullopt;
   }
 
   for (const std::string& app : apps_accessing_sensor) {
@@ -120,6 +122,8 @@ std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingSensor(
     case ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone:
       app_id_list = &mic_using_app_ids_[active_user_account_id_];
       break;
+    default:
+      return {};
   }
 
   // A reg_cache and/or cap_cache of value nullptr is possible if we have no

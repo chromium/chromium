@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
@@ -108,15 +109,18 @@ class PrivacyHubNotificationTest : public AshTestBase {
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         notification_(
             kNotificationId,
-            IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
-            {IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
-             IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-             IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
-            {SensorDisabledNotificationDelegate::Sensor::kMicrophone},
-            base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-                base::DoNothing()),
             ash::NotificationCatalogName::kTestCatalogName,
-            IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON) {}
+            PrivacyHubNotificationDescriptor{
+                SensorDisabledNotificationDelegate::SensorSet{
+                    SensorDisabledNotificationDelegate::Sensor::kMicrophone},
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON,
+                std::vector<int>{
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+                base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+                    base::DoNothing())}) {}
   ~PrivacyHubNotificationTest() override = default;
 
   PrivacyHubNotification& notification() { return notification_; }

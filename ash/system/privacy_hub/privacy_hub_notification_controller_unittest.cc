@@ -73,9 +73,9 @@ class MockNewWindowDelegate
               (override));
 };
 
-}  // namespace
+using Sensor = SensorDisabledNotificationDelegate::Sensor;
 
-using Sensor = PrivacyHubNotificationController::Sensor;
+}  // namespace
 
 class PrivacyHubNotificationControllerTest : public AshTestBase {
  public:
