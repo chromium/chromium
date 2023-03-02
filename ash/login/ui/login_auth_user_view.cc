@@ -47,6 +47,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -1814,6 +1815,14 @@ void LoginAuthUserView::OnOnlineSignInMessageTap() {
       session_manager::SessionState::LOGIN_SECONDARY) {
     return;
   }
+
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  int reauth_reason =
+      known_user.FindReauthReason(current_user().basic_user_info.account_id)
+          .value_or(-1);
+  LOG(WARNING) << "Showing online GAIA signin, the reauth reason was: "
+               << reauth_reason;
+
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(
       current_user().basic_user_info.account_id);
 }
