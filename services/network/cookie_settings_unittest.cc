@@ -1071,9 +1071,8 @@ TEST_P(
 
 namespace {
 
-net::CookieAccessResultList MakeUnpartitionedAndPartitionedCookies() {
+net::CookieAccessResultList MakePartitionedCookie() {
   return {
-      {*MakeCanonicalCookie("unpartitioned", kURL), {}},
       {*MakeCanonicalCookie(
            "__Host-partitioned", kURL,
            net::CookiePartitionKey::FromURLForTesting(GURL(kOtherURL))),
@@ -1087,8 +1086,7 @@ TEST_P(CookieSettingsTest,
        AnnotateAndMoveUserBlockedCookies_PartitionedCookies) {
   CookieSettings settings;
 
-  net::CookieAccessResultList maybe_included_cookies =
-      MakeUnpartitionedAndPartitionedCookies();
+  net::CookieAccessResultList maybe_included_cookies = MakePartitionedCookie();
   net::CookieAccessResultList excluded_cookies = {};
 
   url::Origin top_level_origin = url::Origin::Create(GURL(kOtherURL));
@@ -1102,34 +1100,15 @@ TEST_P(CookieSettingsTest,
                                  /*frame_entry=*/nullptr,
                                  /*top_frame_entry=*/nullptr),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
-  if (IsForceAllowThirdPartyCookies()) {
-    EXPECT_THAT(
-        maybe_included_cookies,
-        ElementsAre(MatchesCookieWithAccessResult(
-                        net::MatchesCookieWithName("unpartitioned"),
-                        MatchesCookieAccessResult(net::IsInclude(), _, _, _)),
-                    MatchesCookieWithAccessResult(
-                        net::MatchesCookieWithName("__Host-partitioned"),
-                        MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
-    EXPECT_THAT(excluded_cookies, IsEmpty());
-  } else {
-    EXPECT_THAT(maybe_included_cookies,
-                ElementsAre(MatchesCookieWithAccessResult(
-                    net::MatchesCookieWithName("__Host-partitioned"),
-                    MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        ElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("unpartitioned"),
-            MatchesCookieAccessResult(
-                net::HasExclusionReason(
-                    net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
-                _, _, _))));
-  }
+  EXPECT_THAT(maybe_included_cookies,
+              ElementsAre(MatchesCookieWithAccessResult(
+                  net::MatchesCookieWithName("__Host-partitioned"),
+                  MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
+  EXPECT_THAT(excluded_cookies, IsEmpty());
 
   // If there is a site-specific content setting blocking cookies, then
   // partitioned cookies should not be allowed.
-  maybe_included_cookies = MakeUnpartitionedAndPartitionedCookies();
+  maybe_included_cookies = MakePartitionedCookie();
   excluded_cookies = {};
   settings.set_block_third_party_cookies(false);
   settings.set_content_settings(
@@ -1141,25 +1120,17 @@ TEST_P(CookieSettingsTest,
                                  /*top_frame_entry=*/nullptr),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
   EXPECT_THAT(maybe_included_cookies, IsEmpty());
-  EXPECT_THAT(
-      excluded_cookies,
-      UnorderedElementsAre(
-          MatchesCookieWithAccessResult(
-              net::MatchesCookieWithName("__Host-partitioned"),
-              MatchesCookieAccessResult(
-                  net::HasExclusionReason(
-                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
-                  _, _, _)),
-          MatchesCookieWithAccessResult(
-              net::MatchesCookieWithName("unpartitioned"),
-              MatchesCookieAccessResult(
-                  net::HasExclusionReason(
-                      net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
-                  _, _, _))));
+  EXPECT_THAT(excluded_cookies,
+              UnorderedElementsAre(MatchesCookieWithAccessResult(
+                  net::MatchesCookieWithName("__Host-partitioned"),
+                  MatchesCookieAccessResult(
+                      net::HasExclusionReason(
+                          net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                      _, _, _))));
 
   // If there is a site-specific content setting blocking cookies on the
   // current top-level origin, then partitioned cookies should not be allowed.
-  maybe_included_cookies = MakeUnpartitionedAndPartitionedCookies();
+  maybe_included_cookies = MakePartitionedCookie();
   excluded_cookies = {};
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
@@ -1174,38 +1145,27 @@ TEST_P(CookieSettingsTest,
             IsForceAllowThirdPartyCookies());
 
   if (IsForceAllowThirdPartyCookies()) {
-    EXPECT_THAT(
-        maybe_included_cookies,
-        ElementsAre(MatchesCookieWithAccessResult(
-                        net::MatchesCookieWithName("unpartitioned"),
-                        MatchesCookieAccessResult(net::IsInclude(), _, _, _)),
-                    MatchesCookieWithAccessResult(
-                        net::MatchesCookieWithName("__Host-partitioned"),
-                        MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
+    EXPECT_THAT(maybe_included_cookies,
+                ElementsAre(MatchesCookieWithAccessResult(
+                    net::MatchesCookieWithName("__Host-partitioned"),
+                    MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
     EXPECT_THAT(excluded_cookies, IsEmpty());
   } else {
     EXPECT_THAT(maybe_included_cookies, IsEmpty());
     EXPECT_THAT(
         excluded_cookies,
-        UnorderedElementsAre(
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("__Host-partitioned"),
-                MatchesCookieAccessResult(
-                    net::HasExclusionReason(
-                        net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
-                    _, _, _)),
-            MatchesCookieWithAccessResult(
-                net::MatchesCookieWithName("unpartitioned"),
-                MatchesCookieAccessResult(
-                    net::HasExclusionReason(
-                        net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
-                    _, _, _))));
+        UnorderedElementsAre(MatchesCookieWithAccessResult(
+            net::MatchesCookieWithName("__Host-partitioned"),
+            MatchesCookieAccessResult(
+                net::HasExclusionReason(
+                    net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
+                _, _, _))));
   }
 
   // If there is a site-specific content setting blocking cookies on the
   // current top-level origin but only when it is embedded on an unrelated site,
   // then partitioned cookies should still be allowed.
-  maybe_included_cookies = MakeUnpartitionedAndPartitionedCookies();
+  maybe_included_cookies = MakePartitionedCookie();
   excluded_cookies = {};
   settings.set_block_third_party_cookies(true);
   settings.set_content_settings(
@@ -1216,30 +1176,11 @@ TEST_P(CookieSettingsTest,
                                  /*frame_entry=*/nullptr,
                                  /*top_frame_entry=*/nullptr),
       GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies));
-  if (IsForceAllowThirdPartyCookies()) {
-    EXPECT_THAT(
-        maybe_included_cookies,
-        ElementsAre(MatchesCookieWithAccessResult(
-                        net::MatchesCookieWithName("unpartitioned"),
-                        MatchesCookieAccessResult(net::IsInclude(), _, _, _)),
-                    MatchesCookieWithAccessResult(
-                        net::MatchesCookieWithName("__Host-partitioned"),
-                        MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
-    EXPECT_THAT(excluded_cookies, IsEmpty());
-  } else {
-    EXPECT_THAT(maybe_included_cookies,
-                ElementsAre(MatchesCookieWithAccessResult(
-                    net::MatchesCookieWithName("__Host-partitioned"),
-                    MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
-    EXPECT_THAT(
-        excluded_cookies,
-        ElementsAre(MatchesCookieWithAccessResult(
-            net::MatchesCookieWithName("unpartitioned"),
-            MatchesCookieAccessResult(
-                net::HasExclusionReason(
-                    net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
-                _, _, _))));
-  }
+  EXPECT_THAT(maybe_included_cookies,
+              ElementsAre(MatchesCookieWithAccessResult(
+                  net::MatchesCookieWithName("__Host-partitioned"),
+                  MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
+  EXPECT_THAT(excluded_cookies, IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(
