@@ -190,7 +190,7 @@ absl::optional<std::vector<std::string>> ParseLocales(
   }
 
   std::vector<std::string> locales;
-  for (const auto& iter : as_value.value().GetList()) {
+  for (const auto& iter : as_value->GetList()) {
     if (!iter.is_string())
       continue;
     locales.push_back(iter.GetString());
@@ -210,10 +210,11 @@ absl::optional<ParsedManufacturers> ParseManufacturers(
     return absl::nullopt;
   }
   ParsedManufacturers manufacturers;
-  for (const auto iter : as_value.value().DictItems()) {
-    if (!iter.second.is_string())
+  for (const auto [key, value] : as_value->GetDict()) {
+    if (!value.is_string()) {
       continue;
-    manufacturers[iter.first] = iter.second.GetString();
+    }
+    manufacturers[key] = value.GetString();
   }
   return manufacturers.empty() ? absl::nullopt
                                : absl::make_optional(manufacturers);
@@ -232,10 +233,10 @@ absl::optional<ParsedIndex> ParseForwardIndex(
 
   // Secondly, we iterate on the key-value pairs of the ppdIndex.
   // This yields a list of leaf values (dictionaries).
-  for (const auto kv : ppd_index->DictItems()) {
-    absl::optional<ParsedIndexValues> values = UnnestPpdMetadata(kv.second);
+  for (const auto [key, value] : ppd_index->GetDict()) {
+    absl::optional<ParsedIndexValues> values = UnnestPpdMetadata(value);
     if (values.has_value()) {
-      parsed_index.insert_or_assign(kv.first, values.value());
+      parsed_index.insert_or_assign(key, values.value());
     }
   }
 
@@ -253,14 +254,17 @@ absl::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
   }
 
   ParsedUsbIndex parsed_usb_index;
-  for (const auto kv : usb_index->DictItems()) {
+  for (const auto [key, value] : usb_index->GetDict()) {
     int product_id;
-    if (!base::StringToInt(kv.first, &product_id)) {
+    if (!base::StringToInt(key, &product_id)) {
+      continue;
+    }
+    if (!value.is_dict()) {
       continue;
     }
 
     const std::string* effective_make_and_model =
-        kv.second.FindStringKey("effectiveMakeAndModel");
+        value.GetDict().FindString("effectiveMakeAndModel");
     if (!effective_make_and_model || effective_make_and_model->empty()) {
       continue;
     }
@@ -312,11 +316,11 @@ absl::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
 
   ParsedPrinters printers;
   for (const auto& printer_value : as_value->GetList()) {
-    if (!printer_value.is_dict()) {
+    const base::Value::Dict* printer_dict = printer_value.GetIfDict();
+    if (!printer_dict) {
       continue;
     }
-    absl::optional<ParsedPrinter> printer =
-        ParsePrinterFromDict(printer_value.GetDict());
+    absl::optional<ParsedPrinter> printer = ParsePrinterFromDict(*printer_dict);
     if (!printer.has_value()) {
       continue;
     }
@@ -337,17 +341,16 @@ absl::optional<ParsedReverseIndex> ParseReverseIndex(
   }
 
   ParsedReverseIndex parsed;
-  for (const auto kv : makes_and_models->GetDict()) {
-    if (!kv.second.is_dict()) {
+  for (const auto [key, value] : makes_and_models->GetDict()) {
+    const base::Value::Dict* value_dict = value.GetIfDict();
+    if (!value_dict) {
       continue;
     }
 
-    const base::Value::Dict& kv_dict = kv.second.GetDict();
-    const std::string* manufacturer = kv_dict.FindString("manufacturer");
-    const std::string* model = kv_dict.FindString("model");
+    const std::string* manufacturer = value_dict->FindString("manufacturer");
+    const std::string* model = value_dict->FindString("model");
     if (manufacturer && model && !manufacturer->empty() && !model->empty()) {
-      parsed.insert_or_assign(kv.first,
-                              ReverseIndexLeaf{*manufacturer, *model});
+      parsed.insert_or_assign(key, ReverseIndexLeaf{*manufacturer, *model});
     }
   }
 

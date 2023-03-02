@@ -76,17 +76,16 @@ void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
 }
 
 void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
-  base::Value user_prefs_dict(base::Value::Type::DICT);
+  base::Value::Dict user_prefs_dict;
 
-  user_prefs_dict.SetBoolKey(ash::multidevice_setup::kSmartLockAllowedPrefName,
-                             IsEasyUnlockAllowed());
-  user_prefs_dict.SetBoolKey(ash::multidevice_setup::kSmartLockEnabledPrefName,
-                             IsEasyUnlockEnabled());
-  user_prefs_dict.SetBoolKey(
-      ash::multidevice_setup::kSmartLockSigninAllowedPrefName,
-      IsChromeOSLoginAllowed());
-  user_prefs_dict.SetBoolKey(prefs::kProximityAuthIsChromeOSLoginEnabled,
-                             IsChromeOSLoginEnabled());
+  user_prefs_dict.Set(ash::multidevice_setup::kSmartLockAllowedPrefName,
+                      IsEasyUnlockAllowed());
+  user_prefs_dict.Set(ash::multidevice_setup::kSmartLockEnabledPrefName,
+                      IsEasyUnlockEnabled());
+  user_prefs_dict.Set(ash::multidevice_setup::kSmartLockSigninAllowedPrefName,
+                      IsChromeOSLoginAllowed());
+  user_prefs_dict.Set(prefs::kProximityAuthIsChromeOSLoginEnabled,
+                      IsChromeOSLoginEnabled());
 
   // If Signin with Smart Lock is enabled, then the "has shown Signin with
   // Smart Lock is disabled message" flag should be false, to ensure the message
@@ -94,8 +93,8 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
   // old value.
   bool has_shown_login_disabled_message =
       IsChromeOSLoginEnabled() ? false : HasShownLoginDisabledMessage();
-  user_prefs_dict.SetBoolKey(prefs::kProximityAuthHasShownLoginDisabledMessage,
-                             has_shown_login_disabled_message);
+  user_prefs_dict.Set(prefs::kProximityAuthHasShownLoginDisabledMessage,
+                      has_shown_login_disabled_message);
 
   ScopedDictPrefUpdate update(local_state_,
                               prefs::kEasyUnlockLocalStateUserPrefs);

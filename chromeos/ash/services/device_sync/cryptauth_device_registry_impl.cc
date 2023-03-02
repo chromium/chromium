@@ -47,18 +47,17 @@ void CryptAuthDeviceRegistryImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 CryptAuthDeviceRegistryImpl::CryptAuthDeviceRegistryImpl(
     PrefService* pref_service)
     : pref_service_(pref_service) {
-  const base::Value& dict =
-      pref_service_->GetValue(prefs::kCryptAuthDeviceRegistry);
+  const base::Value::Dict& dict =
+      pref_service_->GetDict(prefs::kCryptAuthDeviceRegistry);
 
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap instance_id_to_device_map;
-  for (const auto id_device_pair : dict.DictItems()) {
-    absl::optional<std::string> instance_id =
-        util::DecodeFromString(id_device_pair.first);
+  for (const auto [key, value] : dict) {
+    absl::optional<std::string> instance_id = util::DecodeFromString(key);
     absl::optional<CryptAuthDevice> device =
-        CryptAuthDevice::FromDictionary(id_device_pair.second.GetDict());
+        CryptAuthDevice::FromDictionary(value.GetDict());
     if (!instance_id || !device || *instance_id != device->instance_id()) {
-      PA_LOG(ERROR) << "Error retrieving device with Instance ID "
-                    << id_device_pair.first << " from preferences.";
+      PA_LOG(ERROR) << "Error retrieving device with Instance ID " << key
+                    << " from preferences.";
       continue;
     }
 

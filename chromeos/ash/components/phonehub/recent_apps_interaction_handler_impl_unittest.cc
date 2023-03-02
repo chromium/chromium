@@ -107,7 +107,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     const char16_t app_visible_name1[] = u"Fake App";
     const char package_name1[] = "com.fakeapp";
     const int64_t expected_user_id1 = 1;
-    base::Value app_metadata_value =
+    base::Value::Dict app_metadata_value =
         Notification::AppMetadata(
             app_visible_name1, package_name1, gfx::Image(),
             /*icon_color=*/kIconColor, /*icon_is_monochrome=*/false,
@@ -115,10 +115,10 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
             .ToValue();
 
     // Simulate an un-migrated preference without new fields.
-    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconIsMonochrome));
-    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorR));
-    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorG));
-    EXPECT_TRUE(app_metadata_value.GetDict().Remove(kIconColorB));
+    EXPECT_TRUE(app_metadata_value.Remove(kIconIsMonochrome));
+    EXPECT_TRUE(app_metadata_value.Remove(kIconColorR));
+    EXPECT_TRUE(app_metadata_value.Remove(kIconColorG));
+    EXPECT_TRUE(app_metadata_value.Remove(kIconColorB));
 
     base::Value::List app_metadata_value_list;
     app_metadata_value_list.Append(std::move(app_metadata_value));
