@@ -1522,6 +1522,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kChromeUINetworkUrl),
         GURL(chrome::kChromeUIOfficeFallbackURL), GURL(chrome::kOsUINetworkURL),
         GURL(chrome::kChromeUIOSCreditsURL), GURL(chrome::kChromeUIPowerUrl),
+        GURL(chrome::kOsUIPrefsInternalsURL),
         GURL(chrome::kChromeUIPrintManagementUrl),
         GURL(ash::multidevice::kChromeUIProximityAuthURL),
         GURL(ash::multidevice::kOsUIProximityAuthURL),
