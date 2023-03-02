@@ -2444,37 +2444,6 @@
             ]
         }
     ],
-    "CertDualVerificationTrial": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "use_crs": "true"
-                    },
-                    "enable_features": [
-                        "CertDualVerificationTrial"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CertDualVerificationTrial"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChangeExtensionEventPageSuspendDelay": [
         {
             "platforms": [

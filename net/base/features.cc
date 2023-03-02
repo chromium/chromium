@@ -152,10 +152,6 @@ BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
 BASE_FEATURE(kCertDualVerificationTrialFeature,
              "CertDualVerificationTrial",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_MAC)
-const base::FeatureParam<int> kCertDualVerificationTrialImpl{
-    &kCertDualVerificationTrialFeature, "impl", 0};
-#endif /* BUILDFLAG(IS_MAC) */
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

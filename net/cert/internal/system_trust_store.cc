@@ -259,11 +259,6 @@ TrustStoreMac::TrustImplType GetTrustStoreImplParam(
     return ParamToTrustImplType(features::kChromeRootStoreSysImpl.Get(),
                                 default_impl);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kCertDualVerificationTrialFeature)) {
-    return ParamToTrustImplType(features::kCertDualVerificationTrialImpl.Get(),
-                                default_impl);
-  }
   return default_impl;
 }
 
