@@ -22,8 +22,10 @@ inline LayoutUnit InlineOffsetForDisplayMathCentering(
     bool is_display_block_math,
     LayoutUnit available_inline_size,
     LayoutUnit max_row_inline_size) {
-  if (is_display_block_math)
-    return (available_inline_size - max_row_inline_size) / 2;
+  if (is_display_block_math) {
+    return ((available_inline_size - max_row_inline_size) / 2)
+        .ClampNegativeToZero();
+  }
   return LayoutUnit();
 }
 
