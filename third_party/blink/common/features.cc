@@ -223,9 +223,7 @@ BASE_FEATURE(kMixedContentAutoupgrade,
 // Used to control the collection of anchor element metrics (crbug.com/856683).
 // If kNavigationPredictor is enabled, then metrics of anchor elements
 // in the first viewport after the page load and the metrics of the clicked
-// anchor element will be extracted and recorded. Additionally, navigation
-// predictor may preconnect/prefetch to resources/origins to make the
-// future navigations faster.
+// anchor element will be extracted and recorded.
 BASE_FEATURE(kNavigationPredictor,
              "NavigationPredictor",
 #if BUILDFLAG(IS_ANDROID)
