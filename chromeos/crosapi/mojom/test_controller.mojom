@@ -155,12 +155,17 @@ enum KeyEventType {
   kKeyRelease = 1
 };
 
+// Next version: 2
+// Next id: 5
 [Stable]
 struct KeyEvent {
   KeyEventType type@0;
   int32 dom_key@1;
   int32 dom_code@2;
   int32 key_code@3;
+  // This corresponds to ui::EventFlags from:
+  // https://source.chromium.org/chromium/chromium/src/+/main:ui/events/event_constants.h;l=16;drc=19f3c214cd4f78e0fe47b2ccafaca406aaacd42f
+  [MinVersion=1] int32 flags@4;
 };
 
 // This interface is implemented by Ash-Chrome.
