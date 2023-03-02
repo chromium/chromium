@@ -53,9 +53,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.autofill.AutofillHintsServiceTestHelper;
@@ -78,6 +80,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -2171,6 +2174,59 @@ public class AwAutofillTest {
 
     @Test
     @SmallTest
+    public void testUmaFunnelMetrics() throws Throwable {
+        HistogramWatcher.Builder histogramWatcherBuilder = HistogramWatcher.newBuilder();
+
+        histogramWatcherBuilder
+                .expectBooleanRecord("Autofill.WebView.Funnel.ParsedAsType.Address", true)
+                // Ignore histogram for pages without any forms.
+                .allowExtraRecords("Autofill.WebView.Funnel.ParsedAsType.Address")
+                .expectBooleanRecord(
+                        "Autofill.WebView.Funnel.InteractionAfterParsedAsType.Address", true)
+                .expectBooleanRecord("Autofill.WebView.Funnel.FillAfterInteraction.Address", true)
+                .expectBooleanRecord("Autofill.WebView.Funnel.SubmissionAfterFill.Address", true)
+                .expectBooleanRecord("Autofill.WebView.KeyMetrics.FillingCorrectness.Address", true)
+                .expectBooleanRecord("Autofill.WebView.KeyMetrics.FillingAssistance.Address", true)
+                .expectBooleanRecord(
+                        "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled.Address", true);
+
+        histogramWatcherBuilder
+                .expectBooleanRecord("Autofill.WebView.Funnel.ParsedAsType.CreditCard", true)
+                // Ignore histogram for pages without any forms.
+                .allowExtraRecords("Autofill.WebView.Funnel.ParsedAsType.CreditCard")
+                .expectBooleanRecord(
+                        "Autofill.WebView.Funnel.InteractionAfterParsedAsType.CreditCard", false);
+        histogramWatcherBuilder.expectNoRecords(
+                "Autofill.WebView.Funnel.SubmissionAfterFill.CreditCard");
+
+        HistogramWatcher histogramWatcher = histogramWatcherBuilder.build();
+
+        final String url = getAbsoluteTestPageUrl("page_address_credit_card_forms.html");
+        loadUrlSync(url);
+        executeJavaScriptAndWaitForResult("document.getElementById('address1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        waitForEvents(new Integer[] {AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED});
+
+        invokeOnProvideAutoFillVirtualStructure();
+        int address1Id = mTestValues.testViewStructure.getChild(0).getId();
+        SparseArray<AutofillValue> autofillValues = new SparseArray<AutofillValue>();
+        autofillValues.append(address1Id, AutofillValue.forText("Jane Doe"));
+        invokeAutofill(autofillValues);
+        executeJavaScriptAndWaitForResult("document.getElementById('addressFormId').submit();");
+
+        // All of the metrics are recorded at the same time. Wait for one of the metrics to be
+        // recorded.
+        CriteriaHelper.pollUiThread(() -> {
+            int numSamples = RecordHistogram.getHistogramValueCountForTesting(
+                    "Autofill.WebView.Funnel.ParsedAsType.Address", /*true=*/1);
+            return numSamples > 0;
+        });
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
     @Feature({"AndroidWebView"})
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
@@ -3167,6 +3223,42 @@ public class AwAutofillTest {
                     adjustedEventArray, resultArray);
             throw e;
         }
+    }
+
+    /**
+     * Consumes all observed events from {@link mEventQueue} until the
+     * {@code expectedEvents} have been observed (in proper order). Calls
+     * {@code mCallbackHelper.waitForNext();} in case the {@link mEventQueue}
+     * runs out of events. Unexpected events are just ignored.
+     *
+     * @param expectedEvents the events that need to happen.
+     * @return Whether the {@code expectedEvents} were observed.
+     * @throws TimeoutException
+     */
+    private boolean waitForEvents(Integer[] expectedEvents) throws TimeoutException {
+        // Chosen arbitrarily.
+        final int maxCallsToWaitFor = 20;
+        int numCallsToWaitFor = 0;
+
+        LinkedList<Integer> expectedEventsQueue =
+                new LinkedList<Integer>(Arrays.asList(expectedEvents));
+
+        while (!expectedEventsQueue.isEmpty() && numCallsToWaitFor < maxCallsToWaitFor) {
+            if (mEventQueue.isEmpty()) {
+                // Wait for new events.
+                ++numCallsToWaitFor;
+                mCallbackHelper.waitForNext();
+                continue;
+            }
+
+            int nextExpectedEvent = expectedEventsQueue.peek();
+            // Actually consumes the event.
+            int nextObservedEvent = mEventQueue.poll();
+            if (nextExpectedEvent == nextObservedEvent) {
+                expectedEventsQueue.poll();
+            }
+        }
+        return expectedEventsQueue.isEmpty();
     }
 
     private static String buildEventList(Integer[] eventArray) {
