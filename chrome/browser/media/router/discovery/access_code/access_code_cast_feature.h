@@ -56,7 +56,7 @@ constexpr char kAccessCodeCastDeviceAdditionTime[] =
 // |registry|.
 void RegisterAccessCodeProfilePrefs(PrefRegistrySimple* registry);
 
-// Returns true if this user is allowed to use Access Codes & QR codes to
+// Returns true if this user is allowed to use Access Codes to
 // discover cast devices.
 bool GetAccessCodeCastEnabledPref(Profile* profile);
 
@@ -64,9 +64,13 @@ bool GetAccessCodeCastEnabledPref(Profile* profile);
 // in the cast list.
 base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile);
 
-// Returns true if this user is allowed to use Access Codes & QR codes to
+// Returns true if this user is allowed to use Access Codes to
 // discover cast devices, and AccessCodeCastTabSwitchingUI flag is enabled.
 bool IsAccessCodeCastTabSwitchingUiEnabled(Profile* profile);
+
+// Returns true if this user is allowed to use Access Codes to
+// discover cast devices, and AccessCodeCastFreezeUI flag is enabled.
+bool IsAccessCodeCastFreezeUiEnabled(Profile* profile);
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
