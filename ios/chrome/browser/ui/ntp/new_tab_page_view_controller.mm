@@ -1148,13 +1148,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)updateFeedInsetsForContentAbove {
   self.collectionView.contentInset = UIEdgeInsetsMake(
       [self heightAboveFeed], 0, self.collectionView.contentInset.bottom, 0);
-  [self updateAdditionalOffset];
-  [self updateScrolledToMinimumHeight];
-}
-
-// Updates additionalOffset using the content above the feed.
-- (void)updateAdditionalOffset {
+  // Updates `additionalOffset` using the content above the feed.
   self.additionalOffset = [self heightAboveFeed];
+  // Update `scrolledToMinimumHeight` after updating `additionalOffset`.
+  [self updateScrolledToMinimumHeight];
 }
 
 // Checks whether the feed top section is visible and updates the
