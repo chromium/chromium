@@ -80,6 +80,15 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
     return triggered_debug_events_;
   }
 
+  std::vector<std::string>& set_qs_phone_instance_id_args() {
+    return set_qs_phone_instance_id_args_;
+  }
+
+  std::vector<GetQuickStartPhoneInstanceIDCallback>&
+  get_qs_phone_instance_id_args() {
+    return get_qs_phone_instance_id_args_;
+  }
+
   std::vector<
       std::pair<std::string,
                 mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback>>&
@@ -113,6 +122,10 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
   void TriggerEventForDebugging(
       mojom::EventTypeForDebugging type,
       TriggerEventForDebuggingCallback callback) override;
+  void SetQuickStartPhoneInstanceID(
+      const std::string& qs_phone_instance_id) override;
+  void GetQuickStartPhoneInstanceID(
+      GetQuickStartPhoneInstanceIDCallback callback) override;
 
   // MultiDeviceSetupBase:
   void SetHostDeviceWithoutAuthToken(
@@ -141,6 +154,9 @@ class FakeMultiDeviceSetup : public MultiDeviceSetupBase {
   std::vector<
       std::pair<mojom::EventTypeForDebugging, TriggerEventForDebuggingCallback>>
       triggered_debug_events_;
+  std::vector<std::string> set_qs_phone_instance_id_args_;
+  std::vector<GetQuickStartPhoneInstanceIDCallback>
+      get_qs_phone_instance_id_args_;
   std::vector<
       std::pair<std::string,
                 mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback>>

@@ -66,6 +66,13 @@ FakeMultiDeviceSetup::~FakeMultiDeviceSetup() {
       std::move(triggered_debug_event.second).Run(false /* success */);
   }
 
+  for (auto& get_qs_phone_instance_id_arg : get_qs_phone_instance_id_args_) {
+    if (get_qs_phone_instance_id_arg) {
+      std::move(get_qs_phone_instance_id_arg)
+          .Run("" /* qs_phone_instance_id */);
+    }
+  }
+
   for (auto& set_host_without_auth_arg : set_host_without_auth_args_) {
     if (set_host_without_auth_arg.second)
       std::move(set_host_without_auth_arg.second).Run(false /* success */);
@@ -162,6 +169,16 @@ void FakeMultiDeviceSetup::TriggerEventForDebugging(
     mojom::EventTypeForDebugging type,
     TriggerEventForDebuggingCallback callback) {
   triggered_debug_events_.emplace_back(type, std::move(callback));
+}
+
+void FakeMultiDeviceSetup::SetQuickStartPhoneInstanceID(
+    const std::string& qs_phone_instance_id) {
+  set_qs_phone_instance_id_args_.emplace_back(qs_phone_instance_id);
+}
+
+void FakeMultiDeviceSetup::GetQuickStartPhoneInstanceID(
+    GetQuickStartPhoneInstanceIDCallback callback) {
+  get_qs_phone_instance_id_args_.emplace_back(std::move(callback));
 }
 
 void FakeMultiDeviceSetup::SetHostDeviceWithoutAuthToken(

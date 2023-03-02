@@ -251,6 +251,26 @@ void MultiDeviceSetupInitializer::TriggerEventForDebugging(
   std::move(callback).Run(false /* success */);
 }
 
+void MultiDeviceSetupInitializer::SetQuickStartPhoneInstanceID(
+    const std::string& qs_phone_instance_id) {
+  if (multidevice_setup_impl_) {
+    multidevice_setup_impl_->SetQuickStartPhoneInstanceID(qs_phone_instance_id);
+    return;
+  }
+
+  pending_set_qs_phone_instance_id_args_.push_back(qs_phone_instance_id);
+}
+
+void MultiDeviceSetupInitializer::GetQuickStartPhoneInstanceID(
+    GetQuickStartPhoneInstanceIDCallback callback) {
+  if (multidevice_setup_impl_) {
+    multidevice_setup_impl_->GetQuickStartPhoneInstanceID(std::move(callback));
+    return;
+  }
+
+  pending_get_qs_phone_instance_id_args_.push_back(std::move(callback));
+}
+
 void MultiDeviceSetupInitializer::SetHostDeviceWithoutAuthToken(
     const std::string& host_instance_id_or_legacy_device_id,
     mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback) {
@@ -354,6 +374,18 @@ void MultiDeviceSetupInitializer::InitializeImplementation() {
   for (auto& get_host_callback : pending_get_host_args_)
     multidevice_setup_impl_->GetHostStatus(std::move(get_host_callback));
   pending_get_host_args_.clear();
+
+  for (auto& qs_phone_instance_id : pending_set_qs_phone_instance_id_args_) {
+    multidevice_setup_impl_->SetQuickStartPhoneInstanceID(qs_phone_instance_id);
+  }
+  pending_set_qs_phone_instance_id_args_.clear();
+
+  for (auto& get_qs_phone_instance_id_callback :
+       pending_get_qs_phone_instance_id_args_) {
+    multidevice_setup_impl_->GetQuickStartPhoneInstanceID(
+        std::move(get_qs_phone_instance_id_callback));
+  }
+  pending_get_qs_phone_instance_id_args_.clear();
 }
 
 }  // namespace multidevice_setup

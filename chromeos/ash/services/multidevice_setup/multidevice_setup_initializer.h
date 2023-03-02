@@ -127,6 +127,10 @@ class MultiDeviceSetupInitializer
   void TriggerEventForDebugging(
       mojom::EventTypeForDebugging type,
       TriggerEventForDebuggingCallback callback) override;
+  void SetQuickStartPhoneInstanceID(
+      const std::string& qs_phone_instance_id) override;
+  void GetQuickStartPhoneInstanceID(
+      GetQuickStartPhoneInstanceIDCallback callback) override;
 
   // MultiDeviceSetupBase:
   void SetHostDeviceWithoutAuthToken(
@@ -169,6 +173,9 @@ class MultiDeviceSetupInitializer
       pending_set_feature_enabled_args_;
   std::vector<GetFeatureStatesCallback> pending_get_feature_states_args_;
   std::vector<RetrySetHostNowCallback> pending_retry_set_host_args_;
+  std::vector<std::string> pending_set_qs_phone_instance_id_args_;
+  std::vector<GetQuickStartPhoneInstanceIDCallback>
+      pending_get_qs_phone_instance_id_args_;
 
   // Special case: for SetHostDevice(), SetHostDeviceWithoutAuthToken(), and
   // RemoveHostDevice(), only keep track of the most recent call. Since each
