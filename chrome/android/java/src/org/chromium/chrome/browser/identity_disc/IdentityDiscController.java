@@ -211,7 +211,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     }
 
     /**
-     * Hides IdentityDisc and resets ProfileDataCache. Used for flushing cached image
+     * Resets ProfileDataCache. Used for flushing cached image
      * when sign-in state changes.
      */
     private void resetIdentityDiscCache() {
@@ -251,17 +251,17 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     /**
      * Implements {@link IdentityManager.Observer}.
      *
-     * IdentityDisc should be shown as long as the user is signed in. Whether the user is syncing
-     * or not should not matter.
+     * IdentityDisc should be shown as long as the user is signed in or IDENTITY_STATUS_CONSISTENCY
+     * is enabled. Whether the user is syncing or not should not matter.
      */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         switch (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)) {
             case PrimaryAccountChangeEvent.Type.SET:
-                resetIdentityDiscCache();
                 notifyObservers(true);
                 break;
             case PrimaryAccountChangeEvent.Type.CLEARED:
+                resetIdentityDiscCache();
                 notifyObservers(false);
                 break;
             case PrimaryAccountChangeEvent.Type.NONE:
@@ -367,6 +367,10 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);
         }
+    }
+
+    boolean isProfileDataCacheEmpty() {
+        return mProfileDataCache == null;
     }
 
     private static boolean shouldUseSignedOutAvatar(@Nullable String email) {
