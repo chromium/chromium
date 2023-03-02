@@ -1115,6 +1115,8 @@ TEST_F(AdAuctionServiceImplTest, FixExpiryOnJoin) {
 
 // The server JSON updates all fields that can be updated.
 TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
+  // TODO(caraitto): Remove camelCase sellerCapabilities fields when no longer
+  // supported.
   network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({
@@ -1123,7 +1125,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "priorityVector": {"old1": 2, "new1": 1.1},
 "prioritySignalsOverrides": {"old2": 1, "new1": 1.1,
                              "browserSignals.reserved":-1},
-"sellerCapabilities": {"%s": ["latencyStats"], "*": ["interestGroupCounts"]},
+"sellerCapabilities": {"%s": ["latency-stats"],
+                       "*": ["interest-group-counts", "latencyStats"]},
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
 "biddingWasmHelperUrl":"%s/interest_group/new_bidding_wasm_helper_url.wasm",
 "trustedBiddingSignalsUrl":
@@ -1197,7 +1200,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
             expected_priority_signals_overrides);
 
   EXPECT_EQ(group.all_sellers_capabilities,
-            blink::SellerCapabilities::kInterestGroupCounts);
+            blink::SellerCapabilitiesType(
+                blink::SellerCapabilities::kInterestGroupCounts,
+                blink::SellerCapabilities::kLatencyStats));
   ASSERT_TRUE(group.seller_capabilities);
   ASSERT_EQ(group.seller_capabilities->size(), 1u);
   EXPECT_EQ(group.seller_capabilities->at(kOriginA),
@@ -1980,17 +1985,17 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidPriorityCancelsAllUpdates) {
   EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
 }
 
-// The `sellerCapabilities` field has an invalid capability. The entire update
-// should get cancelled, since updates are atomic.
-TEST_F(AdAuctionServiceImplTest,
-       UpdateInvalidSellerCapabilitiesCancelsAllUpdates) {
+// The `sellerCapabilities` field has an invalid capability. The invalid
+// capability gets skipped, but the rest of the update proceeds.
+TEST_F(AdAuctionServiceImplTest, UpdateInvalidSellerCapabilitiesIgnored) {
+  // TODO(caraitto): Convert interestGroupCounts to interest-group-counts when
+  // support for the camelCase version is dropped.
   network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath, base::StringPrintf(R"({
-"sellerCapabilities": {"%s": ["latencyStats"], "*": ["interestGroupCounts",
-                                                     "invalidCapability"]},
-"biddingLogicUrl": "%s/interest_group/new_bidding_logic.js"
+"sellerCapabilities": {"%s": ["latency-stats"], "*": ["interestGroupCounts",
+                                                     "invalid-capability"]}
 })",
-                                              kOriginStringA, kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.daily_update_url = kUpdateUrlA;
@@ -2009,14 +2014,18 @@ TEST_F(AdAuctionServiceImplTest,
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
-  // Check that the seller capabilities and bidding logic URL didn't change.
+  // Check that the seller capabilities was updated, with the invalid capability
+  // ignored.
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
   const auto& group = groups[0].interest_group;
-  EXPECT_EQ(group.all_sellers_capabilities, blink::SellerCapabilitiesType());
-  EXPECT_FALSE(group.seller_capabilities);
-  EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
+  EXPECT_EQ(group.all_sellers_capabilities,
+            blink::SellerCapabilities::kInterestGroupCounts);
+  ASSERT_TRUE(group.seller_capabilities);
+  ASSERT_EQ(group.seller_capabilities->size(), 1u);
+  EXPECT_EQ(group.seller_capabilities->at(kOriginA),
+            blink::SellerCapabilities::kLatencyStats);
 }
 
 // The server response can't be parsed as valid JSON. The update is cancelled.

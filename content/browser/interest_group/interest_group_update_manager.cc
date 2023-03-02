@@ -187,12 +187,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       if (!maybe_capability.is_string())
         return false;
       const std::string& capability = maybe_capability.GetString();
-      if (capability == "interestGroupCounts") {
+      if (capability == "interest-group-counts" ||
+          capability == "interestGroupCounts") {
         capabilities.Put(blink::SellerCapabilities::kInterestGroupCounts);
-      } else if (capability == "latencyStats") {
+      } else if (capability == "latency-stats" ||
+                 capability == "latencyStats") {
         capabilities.Put(blink::SellerCapabilities::kLatencyStats);
       } else {
-        return false;
+        continue;
       }
     }
     if (pair.first == "*") {
