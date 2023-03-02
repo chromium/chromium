@@ -107,7 +107,7 @@ void GPUShaderModule::OnCompilationInfoCallback(
   resolver->Resolve(result);
 }
 
-ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
+ScriptPromise GPUShaderModule::getCompilationInfo(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -121,6 +121,10 @@ ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
   // need to ensure commands are flushed.
   EnsureFlush(ToEventLoop(script_state));
   return promise;
+}
+
+ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
+  return getCompilationInfo(script_state);
 }
 
 }  // namespace blink

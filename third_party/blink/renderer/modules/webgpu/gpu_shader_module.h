@@ -28,6 +28,11 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
   GPUShaderModule(const GPUShaderModule&) = delete;
   GPUShaderModule& operator=(const GPUShaderModule&) = delete;
 
+  ScriptPromise getCompilationInfo(ScriptState* script_state);
+
+  // Deprecated. compilationInfo() has been renamed to getCompilationInfo()
+  // in the WebGPU specification. But we keep this until CTS will be rolled.
+  // We will remove this when CTS is rolled.
   ScriptPromise compilationInfo(ScriptState* script_state);
 
  private:
