@@ -99,6 +99,9 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
   supports_clip_rect_ = ui::OzonePlatform::GetInstance()
                             ->GetPlatformRuntimeProperties()
                             .supports_clip_rect;
+  needs_background_image_ = ui::OzonePlatform::GetInstance()
+                                ->GetPlatformRuntimeProperties()
+                                .needs_background_image;
 }
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
@@ -158,7 +161,8 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
       is_delegated_context, supports_clip_rect_ && enable_clip_rect());
 
-  candidates->reserve(quad_list->size());
+  const auto kExtraCandiates = needs_background_image_ ? 1 : 0;
+  candidates->reserve(quad_list->size() + kExtraCandiates);
   int num_quads_skipped = 0;
 
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
