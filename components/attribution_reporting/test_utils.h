@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_ATTRIBUTION_REPORTING_TEST_UTILS_H_
 #define COMPONENTS_ATTRIBUTION_REPORTING_TEST_UTILS_H_
 
-#include <ostream>
+#include <iosfwd>
+
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 
 namespace attribution_reporting {
 
@@ -22,6 +24,8 @@ struct EventTriggerData;
 struct FilterPair;
 struct SourceRegistration;
 struct TriggerRegistration;
+
+Filters FiltersForSourceType(mojom::SourceType);
 
 bool operator==(const AggregationKeys&, const AggregationKeys&);
 

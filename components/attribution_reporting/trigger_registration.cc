@@ -178,7 +178,7 @@ TriggerRegistration::Parse(base::StringPiece json) {
   }
 
   if (!trigger.has_value()) {
-    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError3",
+    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError4",
                                   trigger.error());
   }
 

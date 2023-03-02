@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -359,14 +360,13 @@ AttributionTrigger TriggerBuilder::Build(
   if (generate_event_trigger_data) {
     event_triggers.emplace_back(
         trigger_data_, priority_, dedup_key_,
-        FilterPair{.positive =
-                       attribution_reporting::Filters::ForSourceTypeForTesting(
-                           SourceType::kNavigation)});
+        FilterPair{.positive = attribution_reporting::FiltersForSourceType(
+                       SourceType::kNavigation)});
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
         attribution_reporting::FilterPair{
-            .positive = attribution_reporting::Filters::ForSourceTypeForTesting(
+            .positive = attribution_reporting::FiltersForSourceType(
                 SourceType::kEvent)});
   }
 

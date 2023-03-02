@@ -87,7 +87,7 @@ TEST(EventTriggerDataTest, FromJSON) {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
           EventTriggerDataWith([](EventTriggerData& data) {
-            data.filters.positive = *Filters::Create({{{"a", {"b"}}}});
+            data.filters.positive = Filters({{{"a", {"b"}}}});
           }),
       },
       {
@@ -99,7 +99,7 @@ TEST(EventTriggerDataTest, FromJSON) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           EventTriggerDataWith([](EventTriggerData& data) {
-            data.filters.negative = *Filters::Create({{{"a", {"b"}}}});
+            data.filters.negative = Filters({{{"a", {"b"}}}});
           }),
       },
       {
@@ -133,8 +133,8 @@ TEST(EventTriggerDataTest, ToJson) {
               /*data=*/1,
               /*priority=*/-2,
               /*dedup_key=*/3,
-              FilterPair{.positive = *Filters::Create({{{"a", {}}}}),
-                         .negative = *Filters::Create({{{"b", {}}}})}),
+              FilterPair{.positive = Filters({{{"a", {}}}}),
+                         .negative = Filters({{{"b", {}}}})}),
           R"json({
             "trigger_data": "1",
             "priority": "-2",

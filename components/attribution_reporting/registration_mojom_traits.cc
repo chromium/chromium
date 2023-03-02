@@ -150,13 +150,7 @@ bool StructTraits<attribution_reporting::mojom::FiltersDataView,
     return false;
   }
 
-  absl::optional<attribution_reporting::Filters> filters =
-      attribution_reporting::Filters::Create(std::move(disjunction));
-  if (!filters.has_value()) {
-    return false;
-  }
-
-  *out = std::move(*filters);
+  *out = attribution_reporting::Filters(std::move(disjunction));
   return true;
 }
 

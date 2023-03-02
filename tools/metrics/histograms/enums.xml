@@ -19637,12 +19637,8 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Invalid JSON"/>
   <int value="1" label="Root JSON value has wrong type"/>
   <int value="2" label="Filters has wrong type"/>
-  <int value="3" label="Filters has too many keys"/>
-  <int value="4" label="Filters key too long"/>
   <int value="5" label="Filters value has wrong type"/>
-  <int value="6" label="Filters list too long"/>
   <int value="7" label="Filters list value has wrong type"/>
-  <int value="8" label="Filters list value too long"/>
   <int value="9" label="aggregatable_values has wrong type"/>
   <int value="10" label="aggregatable_values has too many keys"/>
   <int value="11" label="aggregatable_values key too long"/>

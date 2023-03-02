@@ -11,12 +11,8 @@ enum TriggerRegistrationError {
   kRootWrongType = 1,
 
   kFiltersWrongType = 2,
-  kFiltersTooManyKeys = 3,
-  kFiltersKeyTooLong = 4,
   kFiltersListWrongType = 5,
-  kFiltersListTooLong = 6,
   kFiltersValueWrongType = 7,
-  kFiltersValueTooLong = 8,
 
   kAggregatableValuesWrongType = 9,
   kAggregatableValuesTooManyKeys = 10,

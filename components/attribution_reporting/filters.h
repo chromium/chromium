@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
@@ -64,20 +63,19 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 };
 
 // Set on triggers.
+// TODO(apaseltiner): Consider removing this class and using
+// `Filters::Disjunction` within `FilterPair`, since this type is a thin wrapper
+// around the former.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
  public:
   using Disjunction = std::vector<FilterValues>;
 
-  // Filters are allowed to contain a `source_type` filter.
-  static absl::optional<Filters> Create(Disjunction);
-
   static base::expected<Filters, mojom::TriggerRegistrationError> FromJSON(
       base::Value*);
 
-  // Returns filters that match only the given source type.
-  static Filters ForSourceTypeForTesting(mojom::SourceType);
-
   Filters();
+
+  explicit Filters(Disjunction);
 
   ~Filters();
 
@@ -91,11 +89,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
 
   base::Value::List ToJson() const;
 
-  void SerializeIfNotEmpty(base::Value::Dict&, base::StringPiece key) const;
-
  private:
-  explicit Filters(Disjunction);
-
   Disjunction disjunction_;
 };
 
