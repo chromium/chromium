@@ -378,10 +378,8 @@ void MockDrmDevice::InitializeState(MockDrmState& state, bool use_atomic) {
 bool MockDrmDevice::InitializeStateWithResult(MockDrmState& state,
                                               bool use_atomic) {
   if (use_atomic) {
-    SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerAtomic>(this);
   } else {
-    SetCapability(DRM_CLIENT_CAP_ATOMIC, 0);
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
   }
   SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);

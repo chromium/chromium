@@ -176,9 +176,6 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
 
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
 
-// Whether or not |drm| is set to use atomic DRM API.
-bool IsAtomic(const DrmWrapper& drm);
-
 // Whether or not |drm| supports supplying modifiers for AddFramebuffer2.
 bool IsAddfb2ModifierCapable(const DrmWrapper& drm);
 
