@@ -9,6 +9,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {SitePermissionsEditPermissionsDialogElement} from 'chrome://extensions/extensions.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -53,9 +54,15 @@ suite('SitePermissionsEditPermissionsDialog', function() {
       };
 
   setup(function() {
+    loadTimeData.overrideValues({'enableUserPermittedSites': true});
+
     delegate = new TestService();
     delegate.matchingExtensionsInfo = matchingExtensionsInfo;
 
+    setupElement();
+  });
+
+  function setupElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element =
         document.createElement('site-permissions-edit-permissions-dialog');
@@ -64,7 +71,7 @@ suite('SitePermissionsEditPermissionsDialog', function() {
     element.site = 'http://example.com';
     element.originalSiteSet = SiteSet.USER_PERMITTED;
     document.body.appendChild(element);
-  });
+  }
 
   test('extra text shown if site matches subdomains', function() {
     assertEquals('http://example.com', element.$.site.innerText);
@@ -360,5 +367,34 @@ suite('SitePermissionsEditPermissionsDialog', function() {
 
         await whenClosed;
         assertFalse(element.$.dialog.open);
+      });
+
+  test(
+      'permitted sites not visible when enableUserPermittedSites flag is false',
+      function() {
+        loadTimeData.overrideValues({'enableUserPermittedSites': false});
+
+        // set up the element again to capture the updated value of
+        // enableUserPermittedSites.
+        setupElement();
+
+        flush();
+
+        // Only the user restricted and extension specified radio buttons should
+        // be visible.
+        const permittedSiteRadioButton =
+            element.shadowRoot!.querySelector<HTMLElement>(
+                `cr-radio-button[name=${SiteSet.USER_PERMITTED}]`);
+        assertFalse(isVisible(permittedSiteRadioButton));
+
+        const restrictedSiteRadioButton =
+            element.shadowRoot!.querySelector<HTMLElement>(
+                `cr-radio-button[name=${SiteSet.USER_RESTRICTED}]`);
+        assertTrue(isVisible(restrictedSiteRadioButton));
+
+        const extensionSiteRadioButton =
+            element.shadowRoot!.querySelector<HTMLElement>(
+                `cr-radio-button[name=${SiteSet.EXTENSION_SPECIFIED}]`);
+        assertTrue(isVisible(extensionSiteRadioButton));
       });
 });

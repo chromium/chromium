@@ -6,6 +6,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {ExtensionsSitePermissionsElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -24,16 +25,22 @@ suite('SitePermissions', function() {
   };
 
   setup(function() {
+    loadTimeData.overrideValues({'enableUserPermittedSites': true});
+
     delegate = new TestService();
     delegate.userSiteSettings = userSiteSettings;
     Service.setInstance(delegate);
 
+    setupElement();
+  });
+
+  function setupElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('extensions-site-permissions');
     element.delegate = delegate;
     element.enableEnhancedSiteControls = true;
     document.body.appendChild(element);
-  });
+  }
 
   teardown(function() {
     if (listenerId !== 0) {
@@ -109,4 +116,22 @@ suite('SitePermissions', function() {
 
     assertDeepEquals(currentPage, {page: Page.SITE_PERMISSIONS_ALL_SITES});
   });
+
+  test(
+      'permitted sites not visible when enableUserPermittedSites flag is false',
+      function() {
+        loadTimeData.overrideValues({'enableUserPermittedSites': false});
+
+        // set up the element again to capture the updated value of
+        // enableUserPermittedSites.
+        setupElement();
+
+        flush();
+        const sitePermissionLists =
+            element!.shadowRoot!.querySelectorAll<HTMLElement>(
+                'site-permissions-list');
+
+        // Only the list of user restricted sites should be visible.
+        assertEquals(1, sitePermissionLists.length);
+      });
 });

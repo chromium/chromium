@@ -31,12 +31,14 @@
   <div id="header">$i18n{sitePermissionsPageTitle}</div>
   <div id="site-permissions-container">
     <div id="site-lists">
-      <site-permissions-list
-          delegate="[[delegate]]"
-          extensions="[[extensions]]"
-          header="$i18n{permittedSites}"
-          site-set="[[siteSetEnum_.USER_PERMITTED]]"
-          sites="[[permittedSites]]"></site-permissions-list>
+      <template is="dom-if" if="[[showPermittedSites_]]">
+        <site-permissions-list
+            delegate="[[delegate]]"
+            extensions="[[extensions]]"
+            header="$i18n{permittedSites}"
+            site-set="[[siteSetEnum_.USER_PERMITTED]]"
+            sites="[[permittedSites]]"></site-permissions-list>
+      </template>
       <site-permissions-list
           delegate="[[delegate]]"
           extensions="[[extensions]]"
