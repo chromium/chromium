@@ -27,7 +27,6 @@
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_features.h"
-#include "ui/gl/gpu_switching_manager.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/io_surface_context.h"
@@ -63,9 +62,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 #endif
       scale_factor_(1),
       vsync_callback_(delegate->GetGpuVSyncCallback()),
-      gl_renderer_id_(0),
       weak_ptr_factory_(this) {
-  ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 
   static bool av_disabled_at_command_line =
       !base::FeatureList::IsEnabled(kAVFoundationOverlays);
@@ -95,7 +92,6 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 }
 
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
-  ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
   ca_layer_tree_coordinator_.reset();
 }
 
@@ -216,14 +212,6 @@ bool ImageTransportSurfaceOverlayMacEGL::SupportsCommitOverlayPlanes() {
   return true;
 }
 
-bool ImageTransportSurfaceOverlayMacEGL::OnMakeCurrent(gl::GLContext* context) {
-  // Ensure that the context is on the appropriate GL renderer. The GL renderer
-  // will generally only change when the GPU changes.
-  if (gl_renderer_id_ && context)
-    context->share_group()->SetRendererID(gl_renderer_id_);
-  return true;
-}
-
 bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
     gl::OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
@@ -273,31 +261,6 @@ bool ImageTransportSurfaceOverlayMacEGL::Resize(
   scale_factor_ = scale_factor;
   ca_layer_tree_coordinator_->Resize(pixel_size, scale_factor);
   return true;
-}
-
-void ImageTransportSurfaceOverlayMacEGL::OnGpuSwitched(
-    gl::GpuPreference active_gpu_heuristic) {
-#if BUILDFLAG(IS_MAC)
-  // Create a new context, and use the GL renderer ID that the new context gets.
-  scoped_refptr<ui::IOSurfaceContext> context_on_new_gpu =
-      ui::IOSurfaceContext::Get(ui::IOSurfaceContext::kCALayerContext);
-  if (!context_on_new_gpu)
-    return;
-  GLint context_renderer_id = -1;
-  if (CGLGetParameter(context_on_new_gpu->cgl_context(),
-                      kCGLCPCurrentRendererID,
-                      &context_renderer_id) != kCGLNoError) {
-    LOG(ERROR) << "Failed to create test context after GPU switch";
-    return;
-  }
-  gl_renderer_id_ = context_renderer_id & kCGLRendererIDMatchingMask;
-
-  // Delay releasing the reference to the new GL context. The reason for this
-  // is to avoid creating-then-destroying the context for every image transport
-  // surface that is observing the GPU switch.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->ReleaseSoon(
-      FROM_HERE, std::move(context_on_new_gpu));
-#endif
 }
 
 void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(

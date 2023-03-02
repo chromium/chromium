@@ -41,13 +41,6 @@ class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
   void SetSharedContext(GLContext* context);
   GLContext* shared_context() { return shared_context_; }
 
-#if BUILDFLAG(IS_APPLE)
-  // Sets and returns the ID of the renderer that all contexts in this share
-  // group should be on.
-  void SetRendererID(int renderer_id);
-  int GetRendererID();
-#endif
-
  private:
   friend class base::RefCounted<GLShareGroup>;
 
@@ -59,10 +52,6 @@ class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
   ContextSet contexts_;
 
   raw_ptr<GLContext> shared_context_ = nullptr;
-
-#if BUILDFLAG(IS_APPLE)
-  int renderer_id_;
-#endif
 };
 
 }  // namespace gl

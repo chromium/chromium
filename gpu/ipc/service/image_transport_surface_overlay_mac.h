@@ -15,7 +15,6 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface.h"
-#include "ui/gl/gpu_switching_observer.h"
 #include "ui/gl/presenter.h"
 
 @class CAContext;
@@ -32,8 +31,7 @@ class GLFence;
 
 namespace gpu {
 
-class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
-                                           public ui::GpuSwitchingObserver {
+class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
@@ -53,15 +51,11 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
 
   // TODO(vasilyt): Remove this.
   bool SupportsCommitOverlayPlanes() override;
-  bool OnMakeCurrent(gl::GLContext* context) override;
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
-
-  // ui::GpuSwitchingObserver implementation.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
   void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) override;
 
@@ -99,9 +93,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
   const VSyncCallback vsync_callback_;
   bool gpu_vsync_enabled_ = false;
 
-  // The renderer ID that all contexts made current to this surface should be
-  // targeting.
-  GLint gl_renderer_id_;
   base::WeakPtrFactory<ImageTransportSurfaceOverlayMacEGL> weak_ptr_factory_;
 };
 
