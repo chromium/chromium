@@ -913,8 +913,9 @@ class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
   }
 };
 
+// TODO(b/271419599): Flaky.
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
-                       SetupProgessStepsDisplayCorrectly) {
+                       DISABLED_SetupProgessStepsDisplayCorrectly) {
   SimulateNetworkConnected();
   TriggerDemoModeOnWelcomeScreen();
   UseOnlineModeOnNetworkScreen();
