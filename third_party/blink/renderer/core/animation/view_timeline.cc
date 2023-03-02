@@ -35,7 +35,7 @@ double ComputeOffset(Element* source_element,
                      LayoutBox* subject_layout,
                      LayoutBox* source_layout,
                      ScrollOrientation physical_orientation) {
-  MapCoordinatesFlags flags = kIgnoreScrollOffset;
+  MapCoordinatesFlags flags = kIgnoreScrollOffset | kIgnoreTransforms;
   gfx::PointF point = gfx::PointF(subject_layout->LocalToAncestorPoint(
       PhysicalOffset(), source_layout, flags));
 
