@@ -171,9 +171,35 @@ void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
   cache_->RemoveMissingFacetURI(facet_uris);
 }
 
-std::vector<GroupedFacets> AffiliationBackend::GetAllGroups() const {
+std::vector<GroupedFacets> AffiliationBackend::GetGroupingInfo(
+    std::vector<FacetURI> facet_uris) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return cache_->GetAllGroups();
+  std::vector<GroupedFacets> cache = cache_->GetAllGroups();
+  std::map<std::string, size_t> facet_to_group_id;
+  for (size_t i = 0; i < cache.size(); i++) {
+    for (const auto& facet : cache[i].facets) {
+      facet_to_group_id[facet.uri.potentially_invalid_spec()] = i;
+    }
+  }
+  base::flat_set<FacetURI> unique_facets(std::move(facet_uris));
+  std::set<int> added_groups;
+  std::vector<GroupedFacets> result;
+
+  for (FacetURI& facet : unique_facets) {
+    auto it = facet_to_group_id.find(facet.potentially_invalid_spec());
+    // Add a new group with single facet if there is no matching facet in cache.
+    if (it == facet_to_group_id.end()) {
+      GroupedFacets new_group;
+      new_group.facets.emplace_back(std::move(facet));
+      result.push_back(std::move(new_group));
+      continue;
+    }
+    // If group was added before there is nothing to do.
+    if (added_groups.insert(it->second).second) {
+      result.push_back(std::move(cache[it->second]));
+    }
+  }
+  return result;
 }
 
 std::vector<std::string> AffiliationBackend::GetPSLExtensions() const {

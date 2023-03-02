@@ -282,13 +282,14 @@ void AffiliationServiceImpl::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
                      base::Unretained(backend_), std::move(facet_uris)));
 }
 
-void AffiliationServiceImpl::GetAllGroups(GroupsCallback callback) const {
+void AffiliationServiceImpl::GetGroupingInfo(std::vector<FacetURI> facet_uris,
+                                             GroupsCallback callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&AffiliationBackend::GetAllGroups,
-                     base::Unretained(backend_)),
+      base::BindOnce(&AffiliationBackend::GetGroupingInfo,
+                     base::Unretained(backend_), std::move(facet_uris)),
       std::move(callback));
 }
 

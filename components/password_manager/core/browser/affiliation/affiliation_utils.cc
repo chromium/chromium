@@ -217,26 +217,18 @@ FacetURI FacetURI::FromCanonicalSpec(const std::string& canonical_spec) {
 }
 
 bool FacetURI::operator==(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ == other.canonical_spec_;
 }
 
 bool FacetURI::operator!=(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ != other.canonical_spec_;
 }
 
 bool FacetURI::operator<(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ < other.canonical_spec_;
 }
 
 bool FacetURI::operator>(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ > other.canonical_spec_;
 }
 

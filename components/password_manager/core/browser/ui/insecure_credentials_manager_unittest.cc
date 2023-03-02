@@ -1201,8 +1201,8 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
   grouped_facets[0].facets.push_back(facet);
   facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
   grouped_facets[0].facets.push_back(facet);
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
   store().AddLogin(form1);
   store().AddLogin(form2);

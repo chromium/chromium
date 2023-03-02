@@ -43,15 +43,6 @@ namespace {
 
 using StrategyOnCacheMiss = AffiliationBackend::StrategyOnCacheMiss;
 
-// Creates matcher for a given GroupedFacets.
-auto ExpectGroup(const GroupedFacets& group) {
-  return AllOf(
-      testing::Field(&GroupedFacets::branding_info,
-                     testing::Eq(group.branding_info)),
-      testing::Field(&GroupedFacets::facets,
-                     testing::UnorderedElementsAreArray(group.facets)));
-}
-
 // Mock fetch throttler that has some extra logic to accurately portray the real
 // AffiliationFetchThrottler in how it ignores SignalNetworkRequestNeeded()
 // requests when a request is already known to be needed or one is already in
@@ -979,7 +970,10 @@ TEST_P(AffiliationBackendTest, KeepPrefetchForFacets) {
   testing::Mock::VerifyAndClearExpectations(mock_consumer());
 }
 
-TEST_P(AffiliationBackendTest, GetGrouping) {
+TEST_P(AffiliationBackendTest, GetGroupingWith) {
+  if (!IsGroupingEnabled()) {
+    return;
+  }
   std::vector<FacetURI> fetched_uris;
   fetched_uris.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
   fetched_uris.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIBeta1));
@@ -989,18 +983,15 @@ TEST_P(AffiliationBackendTest, GetGrouping) {
   ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(fetched_uris));
 
-  if (IsGroupingEnabled()) {
-    EXPECT_THAT(
-        backend()->GetAllGroups(),
-        testing::UnorderedElementsAre(ExpectGroup(GetTestGropingAlpha()),
-                                      ExpectGroup(GetTestGropingAlpha()),
-                                      ExpectGroup(GetTestGropingBeta())));
-  } else {
-    EXPECT_EQ(0u, backend()->GetAllGroups().size());
-  }
+  EXPECT_THAT(backend()->GetGroupingInfo(fetched_uris),
+              testing::UnorderedElementsAre(GetTestGropingAlpha(),
+                                            GetTestGropingBeta()));
 }
 
 TEST_P(AffiliationBackendTest, SingleGroupForAffiliatedFacets) {
+  if (!IsGroupingEnabled()) {
+    return;
+  }
   std::vector<FacetURI> fetched_uris;
   fetched_uris.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
   fetched_uris.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2));
@@ -1009,13 +1000,8 @@ TEST_P(AffiliationBackendTest, SingleGroupForAffiliatedFacets) {
   ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
   ASSERT_NO_FATAL_FAILURE(ExpectAndCompleteFetch(fetched_uris));
 
-  if (IsGroupingEnabled()) {
-    EXPECT_THAT(
-        backend()->GetAllGroups(),
-        testing::UnorderedElementsAre(ExpectGroup(GetTestGropingAlpha())));
-  } else {
-    EXPECT_EQ(0u, backend()->GetAllGroups().size());
-  }
+  EXPECT_THAT(backend()->GetGroupingInfo(fetched_uris),
+              testing::UnorderedElementsAre(GetTestGropingAlpha()));
 }
 
 TEST_P(AffiliationBackendTest, UpdateAffiliationsAndBrandingClearsOldCache) {
@@ -1089,6 +1075,59 @@ TEST_P(AffiliationBackendTest, UpdateAffiliationsAndBrandingFailsIfNoInternet) {
 
   EXPECT_GE(0u, backend_facet_manager_count());
   EXPECT_EQ(0u, GetNumOfEquivalenceClassInDatabase());
+}
+
+TEST_P(AffiliationBackendTest, GetGroupingInfoInjectsGroupsForMissingFacets) {
+  if (!IsGroupingEnabled()) {
+    return;
+  }
+
+  std::vector<FacetURI> facets;
+  facets.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+  facets.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2));
+
+  GroupedFacets group1;
+  group1.facets = {Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1))};
+
+  GroupedFacets group2;
+  group2.facets = {Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2))};
+
+  EXPECT_THAT(backend()->GetGroupingInfo(facets),
+              testing::UnorderedElementsAre(group1, group2));
+}
+
+TEST_P(AffiliationBackendTest, GetGroupingInfoWithDuplicates) {
+  if (!IsGroupingEnabled()) {
+    return;
+  }
+
+  std::vector<FacetURI> facets;
+  facets.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+  facets.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+  facets.push_back(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1));
+
+  GroupedFacets group;
+  group.facets = {Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1))};
+
+  EXPECT_THAT(backend()->GetGroupingInfo(facets),
+              testing::UnorderedElementsAre(group));
+}
+
+TEST_P(AffiliationBackendTest, GetGroupingInfoForInvalidFacet) {
+  if (!IsGroupingEnabled()) {
+    return;
+  }
+
+  // Http schema is not supported by the affiliation service.
+  FacetURI facet_uri = FacetURI::FromPotentiallyInvalidSpec("http://test.com");
+  ASSERT_FALSE(facet_uri.is_valid());
+
+  GroupedFacets group;
+  group.facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec("http://test.com"))};
+
+  EXPECT_THAT(backend()->GetGroupingInfo({facet_uri}),
+              testing::UnorderedElementsAre(group));
 }
 
 INSTANTIATE_TEST_SUITE_P(, AffiliationBackendTest, testing::Bool());

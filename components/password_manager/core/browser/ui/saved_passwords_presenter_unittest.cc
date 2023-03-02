@@ -1454,8 +1454,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordsInCredentialGroup) {
   grouped_facets[0].facets.push_back(std::move(facet));
   Facet facet2(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet2));
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
   RunUntilIdle();
 
@@ -1506,8 +1506,8 @@ TEST_F(SavedPasswordsPresenterTest, DeletePasswordsInCredentialGroup) {
   grouped_facets[0].facets.push_back(std::move(facet));
   Facet facet2(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet2));
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
   store().AddLogin(form);
   store().AddLogin(form2);
@@ -1679,12 +1679,14 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   store().AddLogin(form3);
   store().AddLogin(blocked_form);
 
-  std::vector<password_manager::GroupedFacets> grouped_facets(1);
+  std::vector<password_manager::GroupedFacets> grouped_facets(2);
   grouped_facets[0].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  grouped_facets[1].facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(form3.signon_realm))};
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
   RunUntilIdle();
 

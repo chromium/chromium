@@ -160,31 +160,6 @@ std::vector<GroupedFacets> MergeRelatedGroups(
   return result;
 }
 
-// Inserts a new group for each |signon_realms| which is missing in |groups|
-std::vector<GroupedFacets> InsertMissingFacets(
-    const std::vector<std::string>& signon_realms,
-    const std::vector<GroupedFacets>& groups) {
-  std::vector<GroupedFacets> groups_copy = groups;
-  std::map<std::string, size_t> facet_to_group_id;
-  for (size_t i = 0; i < groups_copy.size(); i++) {
-    for (const auto& facet : groups_copy[i].facets) {
-      facet_to_group_id[facet.uri.potentially_invalid_spec()] = i;
-    }
-  }
-  for (const auto& signon_realm : signon_realms) {
-    if (facet_to_group_id.contains(signon_realm)) {
-      continue;
-    }
-
-    facet_to_group_id[signon_realm] = groups_copy.size();
-    GroupedFacets new_group;
-    new_group.facets.emplace_back(
-        FacetURI::FromPotentiallyInvalidSpec(signon_realm));
-    groups_copy.push_back(std::move(new_group));
-  }
-  return groups_copy;
-}
-
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     const CredentialUIEntry& credential) {
   FacetBrandingInfo branding_info;
@@ -214,26 +189,27 @@ PasswordsGrouper::~PasswordsGrouper() = default;
 
 void PasswordsGrouper::GroupPasswords(std::vector<PasswordForm> forms,
                                       base::OnceClosure callback) {
-  // Extract signon realms to add missing groups.
-  std::vector<std::string> signon_realms;
-  signon_realms.reserve(forms.size());
+  // Convert forms to Facets.
+  std::vector<FacetURI> facets;
+  facets.reserve(forms.size());
   for (const auto& form : forms) {
-    signon_realms.push_back(GetFacetRepresentation(form));
+    // Blocked forms aren't grouped.
+    if (!form.blocked_by_user) {
+      facets.emplace_back(
+          FacetURI::FromPotentiallyInvalidSpec(GetFacetRepresentation(form)));
+    }
   }
-
-  auto merge_callback = base::BindOnce(&MergeRelatedGroups, psl_extensions_);
 
   AffiliationService::GroupsCallback group_callback =
       base::BindOnce(&PasswordsGrouper::GroupPasswordsImpl,
                      weak_ptr_factory_.GetWeakPtr(), std::move(forms));
 
-  // Before grouping passwords insert a separate groups for missing signon_realm
-  // and merge related groups. After grouping is finished invoke |callback|.
-  affiliation_service_->GetAllGroups(
-      base::BindOnce(&InsertMissingFacets, std::move(signon_realms))
-          .Then(std::move(merge_callback))
-          .Then(std::move(group_callback))
-          .Then(std::move(callback)));
+  // Before grouping passwords merge related groups. After grouping is finished
+  // invoke |callback|.
+  affiliation_service_->GetGroupingInfo(
+      std::move(facets), base::BindOnce(&MergeRelatedGroups, psl_extensions_)
+                             .Then(std::move(group_callback))
+                             .Then(std::move(callback)));
 }
 
 std::vector<AffiliatedGroup>
