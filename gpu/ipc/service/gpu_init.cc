@@ -212,10 +212,10 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   const GPUInfo::GPUDevice* gpu_default =
       gpu_low_power ? gpu_low_power : &(gpu_info.gpu);
   uint64_t system_device_id_high_perf =
-      gpu_high_perf ? gpu_high_perf->register_id : 0;
+      gpu_high_perf ? gpu_high_perf->system_device_id : 0;
   uint64_t system_device_id_low_power =
-      gpu_low_power ? gpu_low_power->register_id : 0;
-  uint64_t system_device_id_default = gpu_default->register_id;
+      gpu_low_power ? gpu_low_power->system_device_id : 0;
+  uint64_t system_device_id_default = gpu_default->system_device_id;
 #endif
   DCHECK(gpu_default);
 
