@@ -23,6 +23,7 @@ android_library("java") {
     "//chrome/browser/notifications:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//components/browser_ui/notifications/android:java",

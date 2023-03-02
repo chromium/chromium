@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -33,18 +34,22 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Preferences for features related to price tracking. */
-public class PriceNotificationPreferenceFragment extends PreferenceFragmentCompat {
+public class PriceNotificationPreferenceFragment
+        extends PreferenceFragmentCompat implements ProfileDependentSetting {
     private static final String PREF_MOBILE_NOTIFICATIONS = "mobile_notifications_text";
     private static final String PREF_EMAIL_NOTIFICATIONS = "send_email_switch";
 
-    private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
     private final PrefChangeRegistrar mPrefChangeRegistrar = new PrefChangeRegistrar();
+
+    private PrefService mPrefService;
+    private Profile mProfile;
     private TextMessagePreference mMobileNotificationsText;
     private ChromeSwitchPreference mEmailNotificationsSwitch;
     private NotificationManagerProxy mNotificationManagerProxy;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        mPrefService = UserPrefs.get(mProfile);
         mNotificationManagerProxy =
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
 
@@ -65,7 +70,7 @@ public class PriceNotificationPreferenceFragment extends PreferenceFragmentCompa
                 (ChromeSwitchPreference) findPreference(PREF_EMAIL_NOTIFICATIONS);
         mEmailNotificationsSwitch.setOnPreferenceChangeListener(this::onPreferenceChange);
         String email = IdentityServicesProvider.get()
-                               .getIdentityManager(Profile.getLastUsedRegularProfile())
+                               .getIdentityManager(mProfile)
                                .getPrimaryAccountInfo(ConsentLevel.SYNC)
                                .getEmail();
         mEmailNotificationsSwitch.setSummary(
@@ -80,8 +85,12 @@ public class PriceNotificationPreferenceFragment extends PreferenceFragmentCompa
         super.onStart();
         updateMobileNotificationsText();
 
-        ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
-                .fetchPriceEmailPref();
+        ShoppingServiceFactory.getForProfile(mProfile).fetchPriceEmailPref();
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 
     /** Handle preference changes from any of the toggles in this UI. */
