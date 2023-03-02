@@ -14,7 +14,6 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
-#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -37,10 +36,8 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/navigation/impression.h"
 
 namespace net {
 class SchemefulSite;
@@ -62,32 +59,6 @@ constexpr auto kSourceTypes =
                   attribution_reporting::mojom::SourceType::kMaxValue>::All();
 
 base::GUID DefaultExternalReportID();
-
-// WebContentsObserver that waits until a source is available on a
-// navigation handle for a finished navigation.
-class SourceObserver : public TestNavigationObserver {
- public:
-  explicit SourceObserver(WebContents* contents, size_t num_impressions = 1u);
-  ~SourceObserver() override;
-
-  // WebContentsObserver:
-  void OnDidFinishNavigation(NavigationHandle* navigation_handle) override;
-
-  const blink::Impression& last_impression() const { return *last_impression_; }
-
-  // Waits for |expected_num_impressions_| navigations with impressions, and
-  // returns the last impression.
-  const blink::Impression& Wait();
-
-  bool WaitForNavigationWithNoImpression();
-
- private:
-  size_t num_impressions_ = 0u;
-  const size_t expected_num_impressions_ = 0u;
-  absl::optional<blink::Impression> last_impression_;
-  bool waiting_for_null_impression_ = false;
-  base::RunLoop impression_loop_;
-};
 
 // Helper class to construct a StorableSource for tests using default data.
 // StorableSource members are not mutable after construction requiring a

@@ -31,7 +31,6 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/public/browser/attribution_data_model.h"
-#include "content/public/browser/navigation_handle.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/trigger_attestation.h"
@@ -62,47 +61,6 @@ const int64_t kExpiryTime = 30;
 
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
-}
-
-SourceObserver::SourceObserver(WebContents* contents, size_t num_impressions)
-    : TestNavigationObserver(contents),
-      expected_num_impressions_(num_impressions) {}
-
-SourceObserver::~SourceObserver() = default;
-
-void SourceObserver::OnDidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  if (!navigation_handle->GetImpression()) {
-    if (waiting_for_null_impression_) {
-      impression_loop_.Quit();
-    }
-    return;
-  }
-
-  last_impression_ = *(navigation_handle->GetImpression());
-  num_impressions_++;
-
-  if (!waiting_for_null_impression_ &&
-      num_impressions_ >= expected_num_impressions_) {
-    impression_loop_.Quit();
-  }
-}
-
-// Waits for |expected_num_impressions_| navigations with impressions, and
-// returns the last impression.
-const blink::Impression& SourceObserver::Wait() {
-  if (num_impressions_ >= expected_num_impressions_) {
-    return *last_impression_;
-  }
-  impression_loop_.Run();
-  return last_impression();
-}
-
-bool SourceObserver::WaitForNavigationWithNoImpression() {
-  waiting_for_null_impression_ = true;
-  impression_loop_.Run();
-  waiting_for_null_impression_ = false;
-  return true;
 }
 
 // Builds an impression with default values. This is done as a builder because

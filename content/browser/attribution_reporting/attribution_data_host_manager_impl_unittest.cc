@@ -54,6 +54,7 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
