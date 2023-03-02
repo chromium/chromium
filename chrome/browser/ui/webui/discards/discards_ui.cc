@@ -182,10 +182,11 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   }
 
   void DiscardById(int32_t id,
+                   mojom::LifecycleUnitDiscardReason reason,
                    DiscardByIdCallback callback) override {
     auto* lifecycle_unit = GetLifecycleUnitById(id);
     if (lifecycle_unit)
-      lifecycle_unit->Discard(mojom::LifecycleUnitDiscardReason::URGENT);
+      lifecycle_unit->Discard(reason);
     std::move(callback).Run();
   }
 
