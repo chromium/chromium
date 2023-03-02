@@ -87,10 +87,12 @@ To get Chrome OS System Colors, an element must:
 
 /** General color overrides */
 :host-context(body.jelly-enabled) {
-  /* TODO(b/266837484) --cros-* values will be updated globally. Remove this
-    definition after the swap. */
+  /* TODO(b/266837484) --cros-* values will be updated globally. Remove these
+    definitions after the swap. */
+  --cros-button-label-color-primary: var(--cros-sys-on_primary);
   --cros-link-color: var(--cros-sys-primary);
   --cros-separator-color: var(--cros-sys-separator);
+  --cros-tab-slider-track-color: var(--cros-sys-surface_variant, 80%);
 
   --cr-link-color: var(--cros-sys-primary);
   --cr-primary-text-color: var(--cros-sys-on_surface);
