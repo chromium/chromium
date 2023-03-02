@@ -66,14 +66,14 @@ const char kActivationMarker = '*';
 // Constants for the field trial allocator.
 const char kAllocatorName[] = "FieldTrialAllocator";
 
-// We allocate 128 KiB to hold all the field trial data. This should be enough,
+// We allocate 256 KiB to hold all the field trial data. This should be enough,
 // as most people use 3 - 25 KiB for field trials (as of 11/25/2016).
-// This also doesn't allocate all 128 KiB at once -- the pages only get mapped
+// This also doesn't allocate all 256 KiB at once -- the pages only get mapped
 // to physical memory when they are touched. If the size of the allocated field
-// trials does get larger than 128 KiB, then we will drop some field trials in
+// trials does get larger than 256 KiB, then we will drop some field trials in
 // child processes, leading to an inconsistent view between browser and child
 // processes and possibly causing crashes (see crbug.com/661617).
-const size_t kFieldTrialAllocationSize = 128 << 10;  // 128 KiB
+const size_t kFieldTrialAllocationSize = 256 << 10;  // 256 KiB
 
 #if BUILDFLAG(IS_MAC)
 constexpr MachPortsForRendezvous::key_type kFieldTrialRendezvousKey = 'fldt';
@@ -969,6 +969,9 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     size_t total_size = sizeof(FieldTrial::FieldTrialEntry) + pickle.size();
     FieldTrial::FieldTrialEntry* new_entry =
         allocator->New<FieldTrial::FieldTrialEntry>(total_size);
+    DCHECK(new_entry)
+        << "Failed to allocate a new entry, likely because the allocator is "
+           "full. Consider increasing kFieldTrialAllocationSize.";
     subtle::NoBarrier_Store(&new_entry->activated,
                             subtle::NoBarrier_Load(&prev_entry->activated));
     new_entry->pickle_size = pickle.size();
