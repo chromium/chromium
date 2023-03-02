@@ -159,7 +159,14 @@ const struct DOMExceptionEntry {
     // Smart Card API
     // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
     {DOMExceptionCode::kSmartCardError, "SmartCardError",
-     "A Smart Card operation failed."}};
+     "A Smart Card operation failed."},
+
+    // WebGPU https://www.w3.org/TR/webgpu/
+    {DOMExceptionCode::kGPUPipelineError, "GPUPipelineError",
+     "A WebGPU pipeline creation failed."},
+
+    // Extra comment to keep the end of the initializer list on its own line.
+};
 
 uint16_t ToLegacyErrorCode(DOMExceptionCode exception_code) {
   if (DOMExceptionCode::kLegacyErrorCodeMin <= exception_code &&

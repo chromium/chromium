@@ -117,6 +117,9 @@ enum class DOMExceptionCode : ExceptionCode {
   // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
   kSmartCardError,
 
+  // WebGPU https://www.w3.org/TR/webgpu/
+  kGPUPipelineError,
+
   kNumOfCodes,
 };
 
