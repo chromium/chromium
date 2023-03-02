@@ -2514,6 +2514,12 @@ void DocumentLoader::CommitNavigation() {
     Deprecation::CountDeprecation(frame_->DomWindow(),
                                   mojom::blink::WebFeature::kExpectCTHeader);
   }
+  for (const auto& policy : security_init.PermissionsPolicyHeader()) {
+    if (policy.deprecated_feature.has_value()) {
+      Deprecation::CountDeprecation(frame_->DomWindow(),
+                                    *policy.deprecated_feature);
+    }
+  }
 
   // Clear the user activation state.
   // TODO(crbug.com/736415): Clear this bit unconditionally for all frames.

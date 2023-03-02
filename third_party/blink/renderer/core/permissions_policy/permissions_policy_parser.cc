@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -54,8 +55,9 @@ class ParsedFeaturePolicies final
 
   bool Observed(mojom::blink::PermissionsPolicyFeature feature) {
     wtf_size_t feature_index = static_cast<wtf_size_t>(feature);
-    if (policies_[feature_index])
+    if (policies_[feature_index]) {
       return true;
+    }
     policies_[feature_index] = true;
     return false;
   }
@@ -181,8 +183,9 @@ void ParsingContext::ReportFeatureUsageLegacy(
 
 void ParsingContext::ReportFeatureUsage(
     mojom::blink::PermissionsPolicyFeature feature) {
-  if (!execution_context_ || !execution_context_->IsWindow())
+  if (!execution_context_ || !execution_context_->IsWindow()) {
     return;
+  }
 
   LocalDOMWindow* local_dom_window = To<LocalDOMWindow>(execution_context_);
 
@@ -198,23 +201,25 @@ void ParsingContext::RecordAllowlistTypeUsage(size_t origin_count) {
   if (origin_count == 0) {
     allowlist_types_used_.insert(FeaturePolicyAllowlistType::kEmpty);
   } else if (origin_count == 1) {
-    if (allowlist_includes_star_)
+    if (allowlist_includes_star_) {
       allowlist_types_used_.insert(FeaturePolicyAllowlistType::kStar);
-    else if (allowlist_includes_self_)
+    } else if (allowlist_includes_self_) {
       allowlist_types_used_.insert(FeaturePolicyAllowlistType::kSelf);
-    else if (allowlist_includes_src_)
+    } else if (allowlist_includes_src_) {
       allowlist_types_used_.insert(FeaturePolicyAllowlistType::kSrc);
-    else if (allowlist_includes_none_)
+    } else if (allowlist_includes_none_) {
       allowlist_types_used_.insert(FeaturePolicyAllowlistType::kNone);
-    else
+    } else {
       allowlist_types_used_.insert(FeaturePolicyAllowlistType::kOrigins);
+    }
   } else {
     if (allowlist_includes_origin_) {
       if (allowlist_includes_star_ || allowlist_includes_none_ ||
-          allowlist_includes_src_ || allowlist_includes_self_)
+          allowlist_includes_src_ || allowlist_includes_self_) {
         allowlist_types_used_.insert(FeaturePolicyAllowlistType::kMixed);
-      else
+      } else {
         allowlist_types_used_.insert(FeaturePolicyAllowlistType::kOrigins);
+      }
     } else {
       allowlist_types_used_.insert(FeaturePolicyAllowlistType::kKeywordsOnly);
     }
@@ -230,14 +235,8 @@ void ParsingContext::RecordAllowlistTypeUsage(size_t origin_count) {
 absl::optional<mojom::blink::PermissionsPolicyFeature>
 ParsingContext::ParseFeatureName(const String& feature_name) {
   DCHECK(!feature_name.empty());
-  // window-management is an alias for window-placement (crbug.com/1328581).
-  // Track usage of the alias used.
-  if (feature_name == "window-placement") {
-    UseCounter::Count(this->execution_context_,
-                      WebFeature::kWindowPlacementPermissionPolicyParsed);
-  }
   if (feature_name == "window-management") {
-    UseCounter::Count(this->execution_context_,
+    UseCounter::Count(execution_context_,
                       WebFeature::kWindowManagementPermissionPolicyParsed);
   }
   const String& effective_feature_name =
@@ -372,8 +371,9 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
   }
 
   // Size reduction: remove all items in the allowlist if target is all.
-  if (allowlist.matches_all_origins)
+  if (allowlist.matches_all_origins) {
     allowlist.allowed_origins.clear();
+  }
 
   // Sort |allowed_origins| in alphabetical order.
   std::sort(allowlist.allowed_origins.begin(), allowlist.allowed_origins.end());
@@ -388,20 +388,29 @@ absl::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
     const OriginWithPossibleWildcards::NodeType type) {
   absl::optional<mojom::blink::PermissionsPolicyFeature> feature =
       ParseFeatureName(declaration_node.feature_name);
-  if (!feature)
+  if (!feature) {
     return absl::nullopt;
+  }
 
   ParsedAllowlist parsed_allowlist =
       ParseAllowlist(declaration_node.allowlist, type);
 
   // If same feature appeared more than once, only the first one counts.
-  if (feature_observer_.FeatureObserved(*feature))
+  if (feature_observer_.FeatureObserved(*feature)) {
     return absl::nullopt;
+  }
 
   ParsedPermissionsPolicyDeclaration parsed_feature(*feature);
   parsed_feature.allowed_origins = std::move(parsed_allowlist.allowed_origins);
   parsed_feature.matches_all_origins = parsed_allowlist.matches_all_origins;
   parsed_feature.matches_opaque_src = parsed_allowlist.matches_opaque_src;
+
+  // "window-placement" permission policy is deprecated, so add the deprecation
+  // feature to the policy declaration.
+  if (declaration_node.feature_name == "window-placement") {
+    parsed_feature.deprecated_feature =
+        WebFeature::kWindowPlacementPermissionPolicyParsed;
+  }
 
   return parsed_feature;
 }
@@ -479,8 +488,9 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
       Vector<String> tokens;
       feature_entry.Split(' ', tokens);
 
-      if (tokens.empty())
+      if (tokens.empty()) {
         continue;
+      }
 
       PermissionsPolicyParser::Declaration declaration_node;
       // Break tokens into head & tail, where
@@ -560,12 +570,14 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
                            feature_name));
         continue;
       }
-      if (!allowlist_item.empty())
+      if (!allowlist_item.empty()) {
         allowlist.push_back(allowlist_item);
+      }
     }
 
-    if (allowlist.empty())
+    if (allowlist.empty()) {
       allowlist.push_back("'none'");
+    }
 
     ir_root.declarations.push_back(
         PermissionsPolicyParser::Declaration{feature_name, allowlist});
@@ -682,16 +694,18 @@ bool RemoveFeatureIfPresent(mojom::blink::PermissionsPolicyFeature feature,
                                 [feature](const auto& declaration) {
                                   return declaration.feature == feature;
                                 });
-  if (new_end == policy.end())
+  if (new_end == policy.end()) {
     return false;
+  }
   policy.erase(new_end, policy.end());
   return true;
 }
 
 bool DisallowFeatureIfNotPresent(mojom::blink::PermissionsPolicyFeature feature,
                                  ParsedPermissionsPolicy& policy) {
-  if (IsFeatureDeclared(feature, policy))
+  if (IsFeatureDeclared(feature, policy)) {
     return false;
+  }
   ParsedPermissionsPolicyDeclaration allowlist(feature);
   policy.push_back(allowlist);
   return true;
@@ -700,8 +714,9 @@ bool DisallowFeatureIfNotPresent(mojom::blink::PermissionsPolicyFeature feature,
 bool AllowFeatureEverywhereIfNotPresent(
     mojom::blink::PermissionsPolicyFeature feature,
     ParsedPermissionsPolicy& policy) {
-  if (IsFeatureDeclared(feature, policy))
+  if (IsFeatureDeclared(feature, policy)) {
     return false;
+  }
   ParsedPermissionsPolicyDeclaration allowlist(feature);
   allowlist.matches_all_origins = true;
   allowlist.matches_opaque_src = true;
@@ -740,8 +755,9 @@ const Vector<String> GetAvailableFeatures(ExecutionContext* execution_context) {
 const String& GetNameForFeature(
     mojom::blink::PermissionsPolicyFeature feature) {
   for (const auto& entry : GetDefaultFeatureNameMap()) {
-    if (entry.value == feature)
+    if (entry.value == feature) {
       return entry.key;
+    }
   }
   return g_empty_string;
 }
