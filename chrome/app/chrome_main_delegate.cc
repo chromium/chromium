@@ -68,11 +68,10 @@
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "components/gwp_asan/buildflags/buildflags.h"
-#include "components/heap_profiling/in_process/heap_profiler_controller.h"
+#include "components/memory_system/initializer.h"
+#include "components/memory_system/parameters.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -212,10 +211,6 @@
 #include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/process_singleton.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_GWP_ASAN)
-#include "components/gwp_asan/client/gwp_asan.h"  // nogncheck
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
@@ -900,9 +895,10 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 }
 
 void ChromeMainDelegate::CommonEarlyInitialization() {
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
   std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
+      command_line->GetSwitchValueASCII(switches::kProcessType);
   bool is_browser_process = process_type.empty();
 
   // Enable Split cache by default here and not in content/ so as to not
@@ -915,36 +911,17 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::PlatformThread::InitFeaturesPostFieldTrial();
 #endif
 
-  version_info::Channel channel = chrome::GetChannel();
-  [[maybe_unused]] bool is_canary_dev =
-      (channel == version_info::Channel::CANARY ||
-       channel == version_info::Channel::DEV);
-  // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
-  // not always enabled on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  bool enable_gwp_asan = crash_reporter::IsCrashpadEnabled();
-#else
-  bool enable_gwp_asan = true;
-#endif
+  const version_info::Channel channel = chrome::GetChannel();
+  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
+                              channel == version_info::Channel::DEV);
 
-  if (enable_gwp_asan) {
-#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
-    gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
-                              process_type.c_str());
-#endif
-#if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
-    gwp_asan::EnableForPartitionAlloc(is_canary_dev || is_browser_process,
-                                      process_type.c_str());
-#endif
-  }
+  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
 
-  // Start heap profiling as early as possible so it can start recording
-  // memory allocations.
-  heap_profiler_controller_ =
-      std::make_unique<heap_profiling::HeapProfilerController>(
-          channel,
-          GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
-  heap_profiler_controller_->StartIfEnabled();
+  memory_system::Initializer()
+      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
+      .SetProfilingClientParameters(channel,
+                                    GetProfileParamsProcess(*command_line))
+      .Initialize(memory_system_);
 
   if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1241,14 +1218,6 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
     diagnostics::DiagnosticsController::GetInstance()->RecordRegularStartup();
   }
 #endif
-
-  // The TLS slot used by the memlog allocator shim needs to be initialized
-  // early to ensure that it gets assigned a low slot number. If it gets
-  // initialized too late, the glibc TLS system will require a malloc call in
-  // order to allocate storage for a higher slot number. Since malloc is hooked,
-  // this causes re-entrancy into the allocator shim, while the TLS object is
-  // partially-initialized, which the TLS object is supposed to protect again.
-  heap_profiling::InitTLSSlot();
 
   return absl::nullopt;
 }

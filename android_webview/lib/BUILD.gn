@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
-import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//weblayer/variables.gni")
 
@@ -27,7 +26,8 @@ source_set("lib") {
     "//components/autofill/core/common",
     "//components/crash/core/common",
     "//components/embedder_support:embedder_support",
-    "//components/gwp_asan/buildflags",
+    "//components/gwp_asan/common:crash_keys",
+    "//components/memory_system",
     "//components/metrics",
     "//components/power_scheduler",
     "//components/safe_browsing/android:safe_browsing_api_handler",
@@ -53,10 +53,6 @@ source_set("lib") {
     "//ui/base",
     "//ui/events:gesture_detection",
   ]
-
-  if (enable_gwp_asan) {
-    deps += [ "//components/gwp_asan/client" ]
-  }
 
   if (enable_spellcheck) {
     deps += [ "//components/spellcheck/common" ]
