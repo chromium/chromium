@@ -342,7 +342,6 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
       switch (auto_enrollment_check_type_) {
         case AutoEnrollmentTypeChecker::CheckType::
             kForcedReEnrollmentExplicitlyRequired:
-          // [[fallthrough]];
         case AutoEnrollmentTypeChecker::CheckType::
             kForcedReEnrollmentImplicitlyRequired:
           ++request_state_keys_tries_;
@@ -359,7 +358,6 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
           break;
         case AutoEnrollmentTypeChecker::CheckType::
             kUnknownDueToMissingSystemClockSync:
-          // [[fallthrough]];
         case AutoEnrollmentTypeChecker::CheckType::kNone:
           // The ownership check is only triggered if
           // `auto_enrollment_check_type_` indicates that an auto-enrollment

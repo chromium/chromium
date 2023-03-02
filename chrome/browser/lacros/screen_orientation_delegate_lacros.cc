@@ -16,7 +16,6 @@ ui::WaylandOrientationLockType ToWaylandOrientationLockType(
     device::mojom::ScreenOrientationLockType blink_orientation_lock) {
   switch (blink_orientation_lock) {
     case device::mojom::ScreenOrientationLockType::DEFAULT:
-      // [[fallthrough]];
     case device::mojom::ScreenOrientationLockType::ANY:
       return ui::WaylandOrientationLockType::kAny;
     case device::mojom::ScreenOrientationLockType::PORTRAIT:
