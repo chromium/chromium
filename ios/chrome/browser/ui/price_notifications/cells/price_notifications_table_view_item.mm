@@ -30,6 +30,7 @@ namespace {
 
 const CGFloat kCellContentHeight = 64.0;
 const CGFloat kCellContentSpacing = 14;
+const CGFloat kTableViewColumnSpacing = 8;
 // Notification icon's point size.
 const CGFloat kNotificationIconPointSize = 20;
 // The space in between elements in the vertical UIStackView element.
@@ -106,8 +107,8 @@ UIStackView* CreateHorizontalStack(TableViewItemStackContent content) {
         verticalStack, content.menu_button, content.track_button
       ]];
   horizontalStack.axis = UILayoutConstraintAxisHorizontal;
-  horizontalStack.spacing = kTableViewHorizontalSpacing;
-  horizontalStack.distribution = UIStackViewDistributionEqualSpacing;
+  horizontalStack.spacing = kTableViewColumnSpacing;
+  horizontalStack.distribution = UIStackViewDistributionFill;
   horizontalStack.alignment = UIStackViewAlignmentCenter;
   horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
