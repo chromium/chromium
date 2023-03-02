@@ -225,7 +225,7 @@ TEST_F(SimpleIndexFileTest, Serialize) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -265,7 +265,7 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::APP_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::APP_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -309,7 +309,7 @@ TEST_F(SimpleIndexFileTest, ReadV7Format) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -351,7 +351,7 @@ TEST_F(SimpleIndexFileTest, ReadV8Format) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -397,7 +397,7 @@ TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::APP_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::APP_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -532,10 +532,7 @@ TEST_F(SimpleIndexFileTest, LoadCorruptIndex2) {
   base::Pickle bad_payload;
   bad_payload.WriteString("nothing to be seen here");
 
-  EXPECT_TRUE(base::WriteFile(
-      index_path,
-      base::make_span(static_cast<const uint8_t*>(bad_payload.data()),
-                      bad_payload.size())));
+  EXPECT_TRUE(base::WriteFile(index_path, bad_payload));
   base::File::Info file_info;
   ASSERT_TRUE(
       base::GetFileInfo(simple_index_file.GetIndexFilePath(), &file_info));

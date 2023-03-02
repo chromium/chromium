@@ -217,8 +217,7 @@ bool FileSystemUsageCache::Write(const base::FilePath& usage_file_path,
   write_pickle.WriteUInt32(dirty);
   write_pickle.WriteInt64(usage);
 
-  if (!WriteBytes(usage_file_path,
-                  static_cast<const char*>(write_pickle.data()),
+  if (!WriteBytes(usage_file_path, write_pickle.data_as_char(),
                   write_pickle.size())) {
     Delete(usage_file_path);
     return false;

@@ -217,9 +217,9 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
           {{kFileSystemSourcesType, base::JoinString(source_list, u"\n")}}),
       &custom_data);
 
-  return SetCustomData(ui::ClipboardFormatType::WebCustomDataType().GetName(),
-                       std::string(static_cast<const char*>(custom_data.data()),
-                                   custom_data.size()));
+  return SetCustomData(
+      ui::ClipboardFormatType::WebCustomDataType().GetName(),
+      std::string(custom_data.data_as_char(), custom_data.size()));
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetWebSmartPaste(

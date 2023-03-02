@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -57,7 +58,7 @@ class BASE_EXPORT PickleIterator {
   [[nodiscard]] bool ReadData(const char** data, size_t* length);
 
   // Similar, but using base::span for convenience.
-  [[nodiscard]] bool ReadData(base::span<const uint8_t>* data);
+  [[nodiscard]] absl::optional<base::span<const uint8_t>> ReadData();
 
   // A pointer to the data will be placed in |*data|. The caller specifies the
   // number of bytes to read, and ReadBytes will validate this length. The
@@ -180,7 +181,14 @@ class BASE_EXPORT Pickle {
   }
 
   // Returns the data for this Pickle.
-  const void* data() const { return header_; }
+  const uint8_t* data() const {
+    return reinterpret_cast<const uint8_t*>(header_);
+  }
+
+  // Handy method to simplify calling data() with a reinterpret_cast.
+  const char* data_as_char() const {
+    return reinterpret_cast<const char*>(data());
+  }
 
   // Returns the effective memory capacity of this Pickle, that is, the total
   // number of bytes currently dynamically allocated or 0 in the case of a

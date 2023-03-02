@@ -159,7 +159,7 @@ struct SerializeObject {
   }
 
   std::string GetAsString() {
-    return std::string(static_cast<const char*>(pickle.data()), pickle.size());
+    return std::string(pickle.data_as_char(), pickle.size());
   }
 
   base::Pickle pickle;

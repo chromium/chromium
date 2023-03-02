@@ -437,7 +437,7 @@ TEST_F(PageStateSerializationTest, BadMessagesTest1) {
   // Bad real number.
   p.WriteInt(-1);
 
-  std::string s(static_cast<const char*>(p.data()), p.size());
+  std::string s(p.data_as_char(), p.size());
 
   ExplodedPageState output;
   EXPECT_FALSE(DecodePageState(s, &output));
@@ -463,7 +463,7 @@ TEST_F(PageStateSerializationTest, BadMessagesTest2) {
   p.WriteInt(1);
   p.WriteInt(static_cast<int>(HTTPBodyElementType::kTypeData));
 
-  std::string s(static_cast<const char*>(p.data()), p.size());
+  std::string s(p.data_as_char(), p.size());
 
   ExplodedPageState output;
   EXPECT_FALSE(DecodePageState(s, &output));

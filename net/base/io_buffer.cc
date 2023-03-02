@@ -145,7 +145,7 @@ PickledIOBuffer::PickledIOBuffer() : IOBuffer() {
 }
 
 void PickledIOBuffer::Done() {
-  data_ = const_cast<char*>(static_cast<const char*>(pickle_.data()));
+  data_ = const_cast<char*>(pickle_.data_as_char());
 }
 
 PickledIOBuffer::~PickledIOBuffer() {
