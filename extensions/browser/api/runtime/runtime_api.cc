@@ -624,8 +624,8 @@ ExtensionFunction::ResponseAction RuntimeOpenOptionsPageFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction RuntimeSetUninstallURLFunction::Run() {
-  std::unique_ptr<api::runtime::SetUninstallURL::Params> params(
-      api::runtime::SetUninstallURL::Params::CreateDeprecated(args()));
+  absl::optional<api::runtime::SetUninstallURL::Params> params =
+      api::runtime::SetUninstallURL::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   if (!params->url.empty() && !GURL(params->url).SchemeIsHTTPOrHTTPS()) {
     return RespondNow(Error(kInvalidUrlError, params->url));
@@ -661,7 +661,7 @@ void RuntimeRequestUpdateCheckFunction::CheckComplete(
   api::runtime::RequestUpdateCheck::Results::Result return_result;
   return_result.status = result.status;
   return_result.version = absl::optional<std::string>(result.version);
-  Respond(OneArgument(base::Value(return_result.ToValue())));
+  Respond(WithArguments(return_result.ToValue()));
 }
 
 ExtensionFunction::ResponseAction RuntimeRestartFunction::Run() {
@@ -681,9 +681,9 @@ ExtensionFunction::ResponseAction RuntimeRestartAfterDelayFunction::Run() {
     return RespondNow(Error(kErrorOnlyKioskModeAllowed));
   }
 
-  std::unique_ptr<api::runtime::RestartAfterDelay::Params> params(
-      api::runtime::RestartAfterDelay::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::runtime::RestartAfterDelay::Params> params =
+      api::runtime::RestartAfterDelay::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   int seconds = params->seconds;
 
   if (seconds <= 0 && seconds != -1) {
@@ -741,7 +741,7 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   base::Value::Dict dict;
   dict.Set("fileSystemId", filesystem.id());
   dict.Set("baseName", relative_path);
-  return RespondNow(OneArgument(base::Value(std::move(dict))));
+  return RespondNow(WithArguments(std::move(dict)));
 }
 
 }  // namespace extensions

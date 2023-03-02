@@ -280,9 +280,9 @@ ExtensionFunction::ResponseAction ManagementGetAllFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction ManagementGetFunction::Run() {
-  std::unique_ptr<management::Get::Params> params(
-      management::Get::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::Get::Params> params =
+      management::Get::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
 
   const Extension* target_extension =
@@ -301,9 +301,9 @@ ExtensionFunction::ResponseAction ManagementGetSelfFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ManagementGetPermissionWarningsByIdFunction::Run() {
-  std::unique_ptr<management::GetPermissionWarningsById::Params> params(
-      management::GetPermissionWarningsById::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::GetPermissionWarningsById::Params> params =
+      management::GetPermissionWarningsById::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   const Extension* extension =
       ExtensionRegistry::Get(browser_context())
@@ -318,10 +318,9 @@ ManagementGetPermissionWarningsByIdFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ManagementGetPermissionWarningsByManifestFunction::Run() {
-  std::unique_ptr<management::GetPermissionWarningsByManifest::Params> params(
-      management::GetPermissionWarningsByManifest::Params::CreateDeprecated(
-          args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::GetPermissionWarningsByManifest::Params> params =
+      management::GetPermissionWarningsByManifest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
                                               ->Get(browser_context())
@@ -378,9 +377,9 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
 }
 
 ExtensionFunction::ResponseAction ManagementLaunchAppFunction::Run() {
-  std::unique_ptr<management::LaunchApp::Params> params(
-      management::LaunchApp::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::LaunchApp::Params> params =
+      management::LaunchApp::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode())
     return RespondNow(Error(keys::kNotAllowedInKioskError));
@@ -405,9 +404,9 @@ ManagementSetEnabledFunction::ManagementSetEnabledFunction() = default;
 ManagementSetEnabledFunction::~ManagementSetEnabledFunction() = default;
 
 ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
-  std::unique_ptr<management::SetEnabled::Params> params(
-      management::SetEnabled::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::SetEnabled::Params> params =
+      management::SetEnabled::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   extension_id_ = params->id;
 
   if (ExtensionsBrowserClient::Get()->IsAppModeForcedForApp(extension_id_))
@@ -688,9 +687,9 @@ ManagementUninstallFunction::~ManagementUninstallFunction() {
 }
 
 ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
-  std::unique_ptr<management::Uninstall::Params> params(
-      management::Uninstall::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::Uninstall::Params> params =
+      management::Uninstall::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   bool show_confirm_dialog =
       params->options && params->options->show_confirm_dialog.value_or(false);
@@ -704,9 +703,9 @@ ManagementUninstallSelfFunction::~ManagementUninstallSelfFunction() {
 }
 
 ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
-  std::unique_ptr<management::UninstallSelf::Params> params(
-      management::UninstallSelf::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::UninstallSelf::Params> params =
+      management::UninstallSelf::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension_.get());
 
   bool show_confirm_dialog =
@@ -738,9 +737,9 @@ ExtensionFunction::ResponseAction ManagementCreateAppShortcutFunction::Run() {
   if (!user_gesture())
     return RespondNow(Error(keys::kGestureNeededForCreateAppShortcutError));
 
-  std::unique_ptr<management::CreateAppShortcut::Params> params(
-      management::CreateAppShortcut::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::CreateAppShortcut::Params> params =
+      management::CreateAppShortcut::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension =
       ExtensionRegistry::Get(browser_context())
           ->GetExtensionById(params->id, ExtensionRegistry::EVERYTHING);
@@ -789,9 +788,9 @@ ExtensionFunction::ResponseAction ManagementSetLaunchTypeFunction::Run() {
   if (!user_gesture())
     return RespondNow(Error(keys::kGestureNeededForSetLaunchTypeError));
 
-  std::unique_ptr<management::SetLaunchType::Params> params(
-      management::SetLaunchType::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::SetLaunchType::Params> params =
+      management::SetLaunchType::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension =
       ExtensionRegistry::Get(browser_context())
           ->GetExtensionById(params->id, ExtensionRegistry::EVERYTHING);
@@ -861,9 +860,9 @@ ExtensionFunction::ResponseAction ManagementGenerateAppForLinkFunction::Run() {
   if (!user_gesture())
     return RespondNow(Error(keys::kGestureNeededForGenerateAppForLinkError));
 
-  std::unique_ptr<management::GenerateAppForLink::Params> params(
-      management::GenerateAppForLink::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<management::GenerateAppForLink::Params> params =
+      management::GenerateAppForLink::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL launch_url(params->url);
   if (!launch_url.is_valid() || !launch_url.SchemeIsHTTPOrHTTPS()) {

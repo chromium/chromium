@@ -10,24 +10,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/api/events.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
-
-namespace api {
-namespace events {
-namespace Event {
-namespace AddRules {
-struct Params;
-}  // namespace AddRules
-namespace GetRules {
-struct Params;
-}  // namespace GetRules
-namespace RemoveRules {
-struct Params;
-}  // namespace RemoveRules
-}  // namespace Event
-}  // namespace events
-}  // namespace api
 
 class RulesFunction : public ExtensionFunction {
  public:
@@ -75,7 +61,7 @@ class EventsEventAddRulesFunction : public RulesFunction {
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  std::unique_ptr<api::events::Event::AddRules::Params> params_;
+  absl::optional<api::events::Event::AddRules::Params> params_;
 };
 
 class EventsEventRemoveRulesFunction : public RulesFunction {
@@ -93,7 +79,7 @@ class EventsEventRemoveRulesFunction : public RulesFunction {
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  std::unique_ptr<api::events::Event::RemoveRules::Params> params_;
+  absl::optional<api::events::Event::RemoveRules::Params> params_;
 };
 
 class EventsEventGetRulesFunction : public RulesFunction {
@@ -111,7 +97,7 @@ class EventsEventGetRulesFunction : public RulesFunction {
   void RecordUMA(const std::string& event_name) const override;
 
  private:
-  std::unique_ptr<api::events::Event::GetRules::Params> params_;
+  absl::optional<api::events::Event::GetRules::Params> params_;
 };
 
 }  // namespace extensions

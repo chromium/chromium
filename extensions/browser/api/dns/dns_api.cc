@@ -29,9 +29,8 @@ DnsResolveFunction::~DnsResolveFunction() = default;
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Resolve::Params> params(
-      Resolve::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Resolve::Params> params = Resolve::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // Intentionally pass host only (no scheme or non-zero port) to only get a
   // basic resolution for the hostname itself.

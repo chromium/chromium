@@ -55,7 +55,7 @@ DiagnosticsSendPacketFunction::DiagnosticsSendPacketFunction() = default;
 DiagnosticsSendPacketFunction::~DiagnosticsSendPacketFunction() = default;
 
 ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
-  auto params = api::diagnostics::SendPacket::Params::CreateDeprecated(args());
+  auto params = api::diagnostics::SendPacket::Params::Create(args());
 
   std::map<std::string, std::string> config;
   config[kCount] = kDefaultCount;
@@ -86,7 +86,7 @@ void DiagnosticsSendPacketFunction::OnTestICMPCompleted(
   api::diagnostics::SendPacketResult result;
   result.ip = ip;
   result.latency = latency;
-  Respond(OneArgument(base::Value(SendPacket::Results::Create(result))));
+  Respond(WithArguments(SendPacket::Results::Create(result)));
 }
 
 }  // namespace extensions

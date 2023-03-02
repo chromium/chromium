@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 #include <vector>
 
@@ -206,8 +205,8 @@ EventsEventAddRulesFunction::~EventsEventAddRulesFunction() = default;
 
 bool EventsEventAddRulesFunction::CreateParams() {
   ConvertBinaryListElementsToBase64(mutable_args());
-  params_ = AddRules::Params::CreateDeprecated(args());
-  return params_ != nullptr;
+  params_ = AddRules::Params::Create(args());
+  return params_.has_value();
 }
 
 ExtensionFunction::ResponseValue
@@ -222,7 +221,7 @@ EventsEventAddRulesFunction::RunAsyncOnCorrectThread() {
   rules_value.reserve(rules_out.size());
   for (const auto* rule : rules_out)
     rules_value.Append(rule->ToValue());
-  return OneArgument(base::Value(std::move(rules_value)));
+  return WithArguments(std::move(rules_value));
 }
 
 void EventsEventAddRulesFunction::RecordUMA(
@@ -250,8 +249,8 @@ EventsEventRemoveRulesFunction::EventsEventRemoveRulesFunction() = default;
 EventsEventRemoveRulesFunction::~EventsEventRemoveRulesFunction() = default;
 
 bool EventsEventRemoveRulesFunction::CreateParams() {
-  params_ = RemoveRules::Params::CreateDeprecated(args());
-  return params_ != nullptr;
+  params_ = RemoveRules::Params::Create(args());
+  return params_.has_value();
 }
 
 ExtensionFunction::ResponseValue
@@ -292,8 +291,8 @@ EventsEventGetRulesFunction::EventsEventGetRulesFunction() = default;
 EventsEventGetRulesFunction::~EventsEventGetRulesFunction() = default;
 
 bool EventsEventGetRulesFunction::CreateParams() {
-  params_ = GetRules::Params::CreateDeprecated(args());
-  return params_ != nullptr;
+  params_ = GetRules::Params::Create(args());
+  return params_.has_value();
 }
 
 ExtensionFunction::ResponseValue
@@ -310,7 +309,7 @@ EventsEventGetRulesFunction::RunAsyncOnCorrectThread() {
   rules_value.reserve(rules.size());
   for (const auto* rule : rules)
     rules_value.Append(rule->ToValue());
-  return OneArgument(base::Value(std::move(rules_value)));
+  return WithArguments(std::move(rules_value));
 }
 
 void EventsEventGetRulesFunction::RecordUMA(
