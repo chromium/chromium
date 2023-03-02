@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -32,6 +33,21 @@ NSString* const kFirstStepAnimation = @"CPE_promo_animation_edu_autofill";
 NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 UIImage* kImage = ios::provider::GetBrandedImage(
     ios::provider::BrandedImage::kPasswordSuggestionKey);
+
+NSString* LearnMoreSubtitleString() {
+  if (@available(iOS 16, *)) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
+        base::SysNSStringToUTF16(l10n_util::GetNSString(
+            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16)));
+  } else {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
+        base::SysNSStringToUTF16(l10n_util::GetNSString(
+            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16)));
+  }
+}
+
 }  // namespace
 
 // Test fixture for testing the CredentialProviderPromoMediator class.
@@ -56,8 +72,6 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
       IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE);
   NSString* learnMoreTitleString = l10n_util::GetNSString(
       IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
-  NSString* learnMoreSubtitleString = l10n_util::GetNSString(
-      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE);
   NSString* goToSettingsString =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_GO_TO_SETTINGS);
   NSString* learnHowString =
@@ -108,7 +122,7 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
 
   void ExpectConsumerSetFieldsForLearnMore() {
     OCMExpect([consumer_ setTitleString:learnMoreTitleString
-                         subtitleString:learnMoreSubtitleString
+                         subtitleString:LearnMoreSubtitleString()
                     primaryActionString:goToSettingsString
                   secondaryActionString:noThanksString
                    tertiaryActionString:remindMeLaterString
