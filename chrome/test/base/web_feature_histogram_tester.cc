@@ -36,37 +36,27 @@ std::vector<WebFeature> Keys(const std::map<WebFeature, int>& counts) {
   return keys;
 }
 
-// Helper for `AllCountsAreLess()`.
-// ASSERT_* macros can only be used in functions with a `void` return type.
-void AssertKeysAreEqual(const std::map<WebFeature, int>& lhs,
-                        const std::map<WebFeature, int>& rhs) {
-  ASSERT_EQ(Keys(lhs), Keys(rhs));
-}
-
 bool AllCountsAreLessThanOrEqual(const std::map<WebFeature, int>& lhs,
                                  const std::map<WebFeature, int>& rhs) {
-  AssertKeysAreEqual(lhs, rhs);
+  // Prints both sets of keys in case of mismatch, for debugging.
+  EXPECT_EQ(Keys(lhs), Keys(rhs));
 
   for (const auto& entry : lhs) {
     WebFeature feature = entry.first;
     int lhs_count = entry.second;
 
     const auto it = rhs.find(feature);
-    int rhs_count = it->second;  // Always present because keys are equal.
+    if (it == rhs.end()) {
+      return false;
+    }
 
+    int rhs_count = it->second;
     if (lhs_count > rhs_count) {
       return false;
     }
   }
 
   return true;
-}
-
-// Helper for `WaitForCountsAtLeast()`.
-// ASSERT_* macros can only be used in functions with a `void` return type.
-void AssertCountsAreNonNegative(const std::map<WebFeature, int>& counts) {
-  ASSERT_THAT(counts, Each(Pair(_, Ge(0))))
-      << "All counts must be non-negative.";
 }
 
 }  // namespace
@@ -133,7 +123,8 @@ std::map<WebFeature, int> WebFeatureHistogramTester::GetCountsInternal(
 
 std::map<WebFeature, int> WebFeatureHistogramTester::WaitForCountsAtLeast(
     const std::map<WebFeature, int>& expected) const {
-  AssertCountsAreNonNegative(expected);
+  EXPECT_THAT(expected, Each(Pair(_, Ge(0))))
+      << "All counts must be non-negative.";
 
   std::vector<WebFeature> features = Keys(expected);
   std::map<WebFeature, int> counts;

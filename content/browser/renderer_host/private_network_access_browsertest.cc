@@ -356,7 +356,7 @@ class FakeAddressSpaceServer {
     server_.RegisterRequestMonitor(request_observer_.BindCallback());
     server_.RegisterRequestHandler(base::BindRepeating(&HandleRangeRequest));
     server_.AddDefaultHandlers(test_data_path);
-    StartServer(server_);
+    CHECK(server_.Start());
 
     // Set up the command line in order for this server to be considered a part
     // of `ip_address_space`, irrespective of the actual IP it binds to.
@@ -388,12 +388,6 @@ class FakeAddressSpaceServer {
   const RequestObserver& request_observer() const { return request_observer_; }
 
  private:
-  // Constructor helper.
-  // ASSERT macros can only be used in functions returning void.
-  static void StartServer(net::EmbeddedTestServer& server) {
-    ASSERT_TRUE(server.Start());
-  }
-
   static base::StringPiece IPAddressSpaceToSwitchValue(
       network::mojom::IPAddressSpace space) {
     switch (space) {
@@ -1046,31 +1040,21 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
 namespace {
 
-// Helper for CreateBlobURL() and CreateFilesystemURL().
-// ASSERT_* macros can only be used in functions returning void.
-void AssertResultIsString(const EvalJsResult& result) {
-  // We could skip this assert, but it helps in case of error.
-  ASSERT_EQ("", result.error);
-  // We could use result.value.is_string(), but this logs the actual type in
-  // case of mismatch.
-  ASSERT_EQ(base::Value::Type::STRING, result.value.type()) << result.value;
-}
-
 // Creates a blob containing dummy HTML, then returns its URL.
 // Executes javascript to do so in |frame_host|, which must not be nullptr.
 GURL CreateBlobURL(RenderFrameHostImpl* frame_host) {
+  // Define a variable to avoid awkward `ExtractString()` indentation.
   EvalJsResult result = EvalJs(frame_host, R"(
     const blob = new Blob(["foo"], {type: "text/html"});
     URL.createObjectURL(blob)
   )");
-
-  AssertResultIsString(result);
   return GURL(result.ExtractString());
 }
 
 // Writes some dummy HTML to a file, then returns its `filesystem:` URL.
 // Executes javascript to do so in |frame_host|, which must not be nullptr.
 GURL CreateFilesystemURL(RenderFrameHostImpl* frame_host) {
+  // Define a variable to avoid awkward `ExtractString()` indentation.
   EvalJsResult result = EvalJs(frame_host, R"(
     // It seems anonymous async functions are not available yet, so we cannot
     // use an immediately-invoked function expression.
@@ -1092,31 +1076,25 @@ GURL CreateFilesystemURL(RenderFrameHostImpl* frame_host) {
     }
     run()
   )");
-
-  AssertResultIsString(result);
   return GURL(result.ExtractString());
-}
-
-// Helper for AddChildWithScript().
-// ASSERT_* macros can only be used in functions returning void.
-void AssertChildCountEquals(RenderFrameHostImpl* parent, size_t count) {
-  ASSERT_EQ(parent->child_count(), count);
 }
 
 // Executes |script| to add a new child iframe to the given |parent| document.
 //
 // |parent| must not be nullptr.
-// |script| must return true / resolve to true upon success.
 //
 // Returns a pointer to the child frame host.
 RenderFrameHostImpl* AddChildWithScript(RenderFrameHostImpl* parent,
                                         const std::string& script) {
   size_t initial_child_count = parent->child_count();
 
-  EvalJsResult result = EvalJs(parent, script);
-  EXPECT_EQ(true, result);  // For the error message.
+  EXPECT_EQ(true, ExecJs(parent, script));
 
-  AssertChildCountEquals(parent, initial_child_count + 1);
+  EXPECT_EQ(parent->child_count(), initial_child_count + 1);
+  if (parent->child_count() < initial_child_count + 1) {
+    return nullptr;
+  }
+
   return parent->child_at(initial_child_count)->current_frame_host();
 }
 
@@ -1125,7 +1103,7 @@ RenderFrameHostImpl* AddChildWithScript(RenderFrameHostImpl* parent,
 // |parent| must not be nullptr.
 RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
                                      base::StringPiece url) {
-  std::string script_template = R"(
+  constexpr base::StringPiece kScriptTemplate = R"(
     new Promise((resolve) => {
       const iframe = document.createElement("iframe");
       iframe.src = $1;
@@ -1133,7 +1111,7 @@ RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
       document.body.appendChild(iframe);
     })
   )";
-  return AddChildWithScript(parent, JsReplace(script_template, url));
+  return AddChildWithScript(parent, JsReplace(kScriptTemplate, url));
 }
 
 RenderFrameHostImpl* AddChildFromURL(RenderFrameHostImpl* parent,
