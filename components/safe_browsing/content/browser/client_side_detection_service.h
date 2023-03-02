@@ -180,6 +180,7 @@ class ClientSideDetectionService
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            SendClientReportPhishingRequest);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTest);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTestESB);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            TestModelFollowsPrefs);
 

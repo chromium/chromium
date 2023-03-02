@@ -278,6 +278,14 @@ BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
              "SafeBrowsingPhishingClassificationESBThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
+             "SafeBrowsingDailyPhishingReportsLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
+    &kSafeBrowsingDailyPhishingReportsLimit,
+    /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/20};
+
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should
 // be set to true if the experiment state should be listed on

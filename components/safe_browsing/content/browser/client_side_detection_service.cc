@@ -399,6 +399,11 @@ void ClientSideDetectionService::UpdateCache() {
 }
 
 bool ClientSideDetectionService::OverPhishingReportLimit() {
+  if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit) &&
+      IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return GetPhishingNumReports() >
+           kSafeBrowsingDailyPhishingReportsLimitESB.Get();
+  }
   return GetPhishingNumReports() > kMaxReportsPerInterval;
 }
 

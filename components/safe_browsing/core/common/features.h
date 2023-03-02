@@ -286,5 +286,12 @@ BASE_DECLARE_FEATURE(kClientSideDetectionModelOptimizationGuide);
 // Enables new ESB specific threshold fields in Visual TF Lite model files
 BASE_DECLARE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold);
 
+// Enables client side phishing daily reports limit to be configured via Finch
+// for ESB and SBER users
+BASE_DECLARE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit);
+
+// Specifies the CSD-Phishing daily reports limit for ESB users
+extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
+
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_
