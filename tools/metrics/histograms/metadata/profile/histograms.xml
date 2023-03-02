@@ -862,6 +862,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ProfilePicker.StartupReason.{StartupStep}"
+    enum="ProfilePickerStartupProfileReason" expires_after="2024-02-13">
+  <owner>droger@chromium.org</owner>
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The reason for the startup mode, used to decide whether the profile picker
+    is shown at startup. Recorded during Chrome startup, at {StartupStep}.
+  </summary>
+  <token key="StartupStep">
+    <variant name="GetStartupProfile" summary="the GetStartupProfile call"/>
+    <variant name="NotificationCallback" summary="notification processing"/>
+  </token>
+</histogram>
+
 <histogram name="ProfilePicker.StartupTime.BeforeCreation" units="ms"
     expires_after="2023-07-30">
   <owner>alexilin@chromium.org</owner>

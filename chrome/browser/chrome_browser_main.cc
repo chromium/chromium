@@ -479,11 +479,13 @@ void ProcessSingletonNotificationCallbackImpl(
   StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_directory, command_line,
                             /*ignore_profile_picker=*/false);
+  DCHECK_NE(startup_profile_path_info.reason, StartupProfileModeReason::kError);
   base::UmaHistogramEnumeration(
       "ProfilePicker.StartupMode.NotificationCallback",
-      startup_profile_path_info.mode);
-
-  DCHECK_NE(startup_profile_path_info.mode, StartupProfileMode::kError);
+      StartupProfileModeFromReason(startup_profile_path_info.reason));
+  base::UmaHistogramEnumeration(
+      "ProfilePicker.StartupReason.NotificationCallback",
+      startup_profile_path_info.reason);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_directory, startup_profile_path_info);

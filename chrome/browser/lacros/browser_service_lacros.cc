@@ -166,7 +166,8 @@ Browser* FindBrowserWithTabId(const std::string& tab_id_str) {
 }
 
 bool ShowProfilePickerIfNeeded(bool incognito) {
-  if (ProfilePicker::ShouldShowAtLaunch() &&
+  if (StartupProfileModeFromReason(ProfilePicker::GetStartupModeReason()) ==
+          StartupProfileMode::kProfilePicker &&
       chrome::GetTotalBrowserCount() == 0 && !incognito) {
     // Profile picker does not support passing through the incognito param. It
     // also does not support passing through the

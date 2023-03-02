@@ -25,6 +25,8 @@ class View;
 class WebView;
 }  // namespace views
 
+enum class StartupProfileModeReason;
+
 class ProfilePicker {
  public:
   // This is used for logging, so do not remove or reorder existing entries.
@@ -275,8 +277,7 @@ class ProfilePicker {
   // Returns whether to show profile picker at launch. This can be called on
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
-  // This returns true if the user has multiple profiles and has not opted-out.
-  static bool ShouldShowAtLaunch();
+  static StartupProfileModeReason GetStartupModeReason();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Calls the callback passed to

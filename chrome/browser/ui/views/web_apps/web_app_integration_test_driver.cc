@@ -2230,7 +2230,7 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
   command_line.AppendSwitchASCII(switches::kUninstallAppId, app_id);
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, {},
-      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
+      {profile()->GetPath(), StartupProfileModeReason::kAppRequested});
 
   uninstall_waiter.Wait();
   site_remember_deny_open_file_.erase(site);

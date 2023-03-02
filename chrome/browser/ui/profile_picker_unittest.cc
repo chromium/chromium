@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -64,11 +65,13 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_TwoActive) {
       testing_profile_manager()->CreateTestingProfile("profile2");
   GetProfileAttributes(profile2)->SetActiveTimeToNow();
 
-  EXPECT_TRUE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kMultipleProfiles);
 
   // Should be within the activity time threshold.
   task_environment()->FastForwardBy(base::Days(27));
-  EXPECT_TRUE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kMultipleProfiles);
 }
 
 TEST_F(ProfilePickerTest,
@@ -77,7 +80,8 @@ TEST_F(ProfilePickerTest,
   testing_profile_manager()->CreateTestingProfile("profile2");
   local_state()->SetBoolean(prefs::kBrowserProfilePickerShown, true);
 
-  EXPECT_TRUE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kMultipleProfiles);
 }
 
 TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_OneGuest) {
@@ -87,7 +91,8 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_OneGuest) {
   testing_profile_manager()->CreateTestingProfile("profile2");
   testing_profile_manager()->CreateGuestProfile();
 
-  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kInactiveProfiles);
 }
 
 TEST_F(ProfilePickerTest,
@@ -100,14 +105,16 @@ TEST_F(ProfilePickerTest,
   GetProfileAttributes(profile2)->SetActiveTimeToNow();
   local_state()->SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, false);
 
-  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kUserOptedOut);
 }
 
 TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Inactive) {
   testing_profile_manager()->CreateTestingProfile("profile1");
   testing_profile_manager()->CreateTestingProfile("profile2");
 
-  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kInactiveProfiles);
 }
 
 TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Expired) {
@@ -120,7 +127,8 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_Expired) {
   // Should be outside of the activity time threshold.
   task_environment()->FastForwardBy(base::Days(29));
 
-  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kInactiveProfiles);
 }
 
 TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_OneActive) {
@@ -128,15 +136,15 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_MultipleProfiles_OneActive) {
       testing_profile_manager()->CreateTestingProfile("profile1");
   GetProfileAttributes(profile1)->SetActiveTimeToNow();
   testing_profile_manager()->CreateTestingProfile("profile2");
-
-  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kInactiveProfiles);
 }
 
 TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile) {
   testing_profile_manager()->CreateTestingProfile("profile1");
   local_state()->SetBoolean(prefs::kBrowserProfilePickerShown, true);
-
-  EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
+  EXPECT_EQ(ProfilePicker::GetStartupModeReason(),
+            StartupProfileModeReason::kSingleProfile);
 }
 
 class ProfilePickerParamsTest : public testing::Test {
