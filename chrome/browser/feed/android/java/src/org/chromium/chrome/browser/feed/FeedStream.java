@@ -798,7 +798,7 @@ public class FeedStream implements Stream {
     public void bind(RecyclerView rootView, NtpListContentManager manager,
             FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
             HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
-            int headerCount, boolean shouldScrollToTop) {
+            int headerCount) {
         mLaunchReliabilityLogger = launchReliabilityLogger;
         launchReliabilityLogger.sendPendingEvents(getStreamType(),
                 FeedStreamJni.get().getSurfaceId(mNativeFeedStream, FeedStream.this));
@@ -826,15 +826,6 @@ public class FeedStream implements Stream {
             // Set recyclerView as transparent until first batch of articles are loaded. Before
             // that, the placeholder is shown.
             mRecyclerView.getBackground().setAlpha(0);
-        }
-
-        // Add a spacer to allow us to scroll the feed to the top.  On a bind,
-        // we scroll the Following feed to the top (but not the For You feed).
-        if (isOnboardingEnabled() && shouldScrollToTop) {
-            ArrayList<NtpListContentManager.FeedContent> list = new ArrayList<>();
-            addSpacer(list);
-            updateContentsInPlace(list);
-            scrollFeedToTop();
         }
 
         FeedStreamJni.get().surfaceOpened(mNativeFeedStream, FeedStream.this);
@@ -998,12 +989,6 @@ public class FeedStream implements Stream {
         return maybeLoadMore(mLoadMoreTriggerLookahead);
     }
 
-    /** returns true if we can use the onboarding feature. */
-    boolean isOnboardingEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_ONBOARDING)
-                && mStreamKind != StreamKind.SINGLE_WEB_FEED;
-    }
-
     /**
      * Attempts to load more content if it can be triggered.
      * @param lookaheadTrigger The threshold of off-screen cards below which the feed should attempt
@@ -1116,13 +1101,11 @@ public class FeedStream implements Stream {
         // * existing headers
         // * both new and existing contents
         ArrayList<NtpListContentManager.FeedContent> newContentList = new ArrayList<>();
-        boolean isZeroStateSlice = false;
         for (FeedUiProto.StreamUpdate.SliceUpdate sliceUpdate :
                 streamUpdate.getUpdatedSlicesList()) {
             if (sliceUpdate.hasSlice()) {
                 NtpListContentManager.FeedContent content =
                         createContentFromSlice(sliceUpdate.getSlice(), loggingParameters);
-                isZeroStateSlice = sliceUpdate.getSlice().hasZeroStateSlice();
                 if (content != null) {
                     newContentList.add(content);
                     if (!content.isNativeView()) {
@@ -1141,13 +1124,6 @@ public class FeedStream implements Stream {
                 // We intentionially don't add the spacer back in. The spacer has a key SPACER_KEY,
                 // not a slice id.
             }
-        }
-
-        // If there was empty space left on the screen, add the spacer back in.  Since card size has
-        // not yet been calculated, we use an approximation of adding the spacer if two or less
-        // items are in the recycler view.
-        if (isOnboardingEnabled() && newContentList.size() <= 2 && !isZeroStateSlice) {
-            addSpacer(newContentList);
         }
 
         updateContentsInPlace(newContentList);
@@ -1270,20 +1246,6 @@ public class FeedStream implements Stream {
             layoutHelper.scrollToPositionWithOffset(state.position, state.offset);
         }
         return true;
-    }
-
-    /** Scrolls a feed to the top. */
-    public void scrollFeedToTop() {
-        if (!isOnboardingEnabled()) return;
-
-        // Scroll to the first position, which should be the tab header.
-        ListLayoutHelper layoutHelper = mRenderer.getListLayoutHelper();
-        if (layoutHelper != null) {
-            int omnibarHeight = (int) (mActivity.getResources().getDimensionPixelSize(
-                    R.dimen.toolbar_height_no_shadow));
-            layoutHelper.scrollToPositionWithOffset(/*position=*/mHeaderCount - 1,
-                    /*offset=*/omnibarHeight);
-        }
     }
 
     private void notifyContentChange() {

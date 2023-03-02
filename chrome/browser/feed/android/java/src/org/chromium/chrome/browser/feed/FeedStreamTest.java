@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAcceleratorController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -110,7 +109,6 @@ public class FeedStreamTest {
     private FakeLinearLayoutManager mLayoutManager;
     private FeedStream mFeedStream;
     private NtpListContentManager mContentManager;
-    private boolean mFirstLoadWatcherCalled;
 
     @Mock
     private FeedStream.Natives mFeedStreamJniMock;
@@ -126,13 +124,9 @@ public class FeedStreamTest {
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-    @Mock
     private WindowAndroid mWindowAndroid;
     @Mock
     private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock
-    private FeedActionsHandler.SnackbarController mMockSnackbarController;
     private StubSnackbarController mSnackbarController = new StubSnackbarController();
     @Mock
     private Runnable mMockRunnable;
@@ -156,8 +150,6 @@ public class FeedStreamTest {
     WebFeedBridge.Natives mWebFeedBridgeJni;
 
     @Captor
-    private ArgumentCaptor<Map<String, String>> mMapCaptor;
-    @Captor
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
     @Captor
     private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
@@ -177,10 +169,9 @@ public class FeedStreamTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn, boolean onboardingOn) {
+    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
-        overrides.put(ChromeFeatureList.WEB_FEED_ONBOARDING, onboardingOn);
         FeatureList.setTestFeatures(overrides);
     }
 
@@ -214,7 +205,7 @@ public class FeedStreamTest {
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
 
-        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/true, /*onboardingOn=*/false);
+        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/true);
 
         // Print logs to stdout.
         ShadowLog.stream = System.out;
@@ -308,7 +299,7 @@ public class FeedStreamTest {
 
         // Bind again with correct headercount.
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, 2, /*shouldScrollToTop=*/false);
+                mLaunchReliabilityLogger, 2);
 
         // Add different feed content.
         update = FeedUiProto.StreamUpdate.newBuilder()
@@ -1112,7 +1103,7 @@ public class FeedStreamTest {
     @Test
     @SmallTest
     public void testShowSpinner_PlaceholderDisabled() {
-        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/false, /*onboardingOn=*/false);
+        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/false);
         createHeaderContent(1);
         bindToView();
         FeedUiProto.StreamUpdate update =
@@ -1132,29 +1123,6 @@ public class FeedStreamTest {
 
         assertThat(nativeViewContent.getNativeView(layout),
                 not(hasDescendant(instanceOf(FeedPlaceholderLayout.class))));
-    }
-
-    @Test
-    public void testStreamUpdatedCreatesSpacer() {
-        // Redo the feature overrides with onboarding turned on this time.
-        setFeatureOverrides(/*loading placeholder=*/true, /*onboardingOn=*/true);
-        FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
-                /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ StreamKind.FOLLOWING,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
-                /*SingleWebFeedHelper=*/null);
-        mFeedStream = stream;
-        createHeaderContent(1);
-        bindToView();
-        FeedUiProto.StreamUpdate update =
-                FeedUiProto.StreamUpdate.newBuilder()
-                        .addUpdatedSlices(createSliceUpdateForLoadingSpinnerSlice("a", true))
-                        .build();
-        stream.onStreamUpdated(update.toByteArray());
-        assertEquals(3, mContentManager.getItemCount());
-        assertEquals("Spacer", mContentManager.getContent(2).getKey());
     }
 
     @Test
@@ -1320,8 +1288,7 @@ public class FeedStreamTest {
 
     void bindToView() {
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, mContentManager.getItemCount(),
-                /*shouldScrollToTop=*/false);
+                mLaunchReliabilityLogger, mContentManager.getItemCount());
     }
 
     class StubSnackbarController implements FeedActionsHandler.SnackbarController {
