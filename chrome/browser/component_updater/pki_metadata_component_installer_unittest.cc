@@ -67,9 +67,9 @@ const char kPopularSCT1[] = "EBESExQVFhcYGRobHB0eHwEjRWeJq83v";
 const char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
 
 // Constants for test pinset.
-const std::string kPinsetName = "example";
-const std::string kPinsetHostName = "example.test";
-const std::string kPinsetReportURI = "http://example-reports.test";
+const char kPinsetName[] = "example";
+const char kPinsetHostName[] = "example.test";
+const char kPinsetReportURI[] = "http://example-reports.test";
 const bool kPinsetIncludeSubdomains = true;
 
 // SHA256 SPKI hashes.
