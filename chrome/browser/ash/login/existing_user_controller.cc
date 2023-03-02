@@ -884,9 +884,9 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
 
   // Mark device will be consumer owned if the device is not managed and this is
   // the first user on the device.
-  if (!is_enterprise_managed && InstallAttributes::Get()->IsFirstSignIn()) {
+  if (!is_enterprise_managed &&
+      user_manager::UserManager::Get()->GetUsers().empty()) {
     DeviceSettingsService::Get()->MarkWillEstablishConsumerOwnership();
-    user_manager::UserManager::Get()->RecordOwner(user_context.GetAccountId());
   }
 
   if (user_context.CanLockManagedGuestSession()) {

@@ -133,7 +133,6 @@ void InstallAttributes::Init(const base::FilePath& cache_file) {
   if (!base::PathExists(cache_file)) {
     LOG_IF(WARNING, base::SysInfo::IsRunningOnChromeOS())
         << "Install attributes missing, first sign in";
-    first_sign_in_ = true;
     return;
   }
 
