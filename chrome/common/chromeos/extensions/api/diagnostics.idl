@@ -6,7 +6,7 @@
 //
 // Many types defined here map with Mojo structs defined in
 // chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
-[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"]
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api.h"]
 namespace os.diagnostics {
   enum RoutineType {
     ac_power,

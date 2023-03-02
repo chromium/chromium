@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
@@ -21,7 +21,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service_factory.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

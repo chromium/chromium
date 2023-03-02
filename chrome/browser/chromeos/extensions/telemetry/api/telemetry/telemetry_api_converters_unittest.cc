@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"

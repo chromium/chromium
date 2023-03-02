@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api.h"
 
 #include <cstddef>
 #include <string>
@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/remote_diagnostics_service_strategy.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"

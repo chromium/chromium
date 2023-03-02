@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api.h"
 
 #include <inttypes.h>
 
@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api_converters.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"

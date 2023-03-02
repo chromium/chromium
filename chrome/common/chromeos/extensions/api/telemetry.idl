@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.os.telemetry</code> API to get telemetry data.
-[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"]
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api.h"]
 namespace os.telemetry {
   dictionary AudioInputNodeInfo {
     double? id;

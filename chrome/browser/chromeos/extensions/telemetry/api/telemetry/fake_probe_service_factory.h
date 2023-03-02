@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_PROBE_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_PROBE_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_FAKE_PROBE_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_FAKE_PROBE_SERVICE_FACTORY_H_
 
 #include <memory>
 
 #include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -34,4 +34,4 @@ class FakeProbeServiceFactory : public ash::ProbeServiceAsh::Factory {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_FAKE_PROBE_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_FAKE_PROBE_SERVICE_FACTORY_H_

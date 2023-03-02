@@ -13,7 +13,8 @@ source_set("telemetry") {
   ]
 
   deps = [
-    "api:api_registration",
+    "api/diagnostics:api_registration",
+    "api/telemetry:api_registration",
     "//base",
     "//extensions/browser",
   ]

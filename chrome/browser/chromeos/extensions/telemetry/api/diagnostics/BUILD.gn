@@ -1,0 +1,107 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/chromeos/extensions/api/api_sources.gni")
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/json_schema_compiler/json_schema_api.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("diagnostics") {
+  sources = [
+    "diagnostics_api.cc",
+    "diagnostics_api.h",
+    "diagnostics_api_converters.cc",
+    "diagnostics_api_converters.h",
+    "remote_diagnostics_service_strategy.cc",
+    "remote_diagnostics_service_strategy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//extensions/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/telemetry_extension" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+}
+
+function_registration("api_registration") {
+  sources = chromeos_system_extensions_api_schema_sources
+  impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api/diagnostics"
+  configs = [ "//build/config:precompiled_headers" ]
+  bundle_name = "ChromeOS"
+  root_namespace = chromeos_system_extensions_api_root_namespace
+  schema_include_rules = chromeos_system_extensions_api_schema_include_rules
+
+  deps = [
+    ":diagnostics",
+    "//base",
+    "//extensions/common",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "diagnostics_api_browsertest.cc",
+    "fake_diagnostics_service.cc",
+    "fake_diagnostics_service.h",
+  ]
+
+  deps = [
+    ":diagnostics",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
+    "//chromeos/crosapi/mojom",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  data = [ "//chrome/test/data" ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "fake_diagnostics_service_factory.cc",
+      "fake_diagnostics_service_factory.h",
+    ]
+
+    deps += [ "//chrome/browser/ash/telemetry_extension" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/startup",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "diagnostics_api_converters_unittest.cc" ]
+
+  deps = [
+    ":diagnostics",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
+}
