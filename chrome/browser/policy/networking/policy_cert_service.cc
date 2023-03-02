@@ -30,8 +30,7 @@
 namespace policy {
 
 PolicyCertService::~PolicyCertService() {
-  if (policy_certificate_provider_)
-    policy_certificate_provider_->RemovePolicyProvidedCertsObserver(this);
+  StopListeningToPolicyCertificateProvider();
 }
 
 PolicyCertService::PolicyCertService(
@@ -78,6 +77,10 @@ void PolicyCertService::OnPolicyProvidedCertsChanged() {
   auto* profile_network_context =
       ProfileNetworkContextServiceFactory::GetForContext(profile_);
   profile_network_context->UpdateAdditionalCertificates();
+}
+
+void PolicyCertService::OnPolicyCertificateProviderDestroying() {
+  StopListeningToPolicyCertificateProvider();
 }
 
 void PolicyCertService::GetPolicyCertificatesForStoragePartition(
@@ -192,6 +195,14 @@ void PolicyCertService::SetPolicyTrustAnchorsForTesting(
 
   profile_wide_all_server_and_authority_certs_ = trust_anchors;
   profile_wide_trust_anchors_ = trust_anchors;
+}
+
+void PolicyCertService::StopListeningToPolicyCertificateProvider() {
+  if (!policy_certificate_provider_) {
+    return;
+  }
+  policy_certificate_provider_->RemovePolicyProvidedCertsObserver(this);
+  policy_certificate_provider_ = nullptr;
 }
 
 }  // namespace policy

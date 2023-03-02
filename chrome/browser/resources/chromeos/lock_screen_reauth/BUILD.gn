@@ -121,6 +121,7 @@ js_library("lock_screen_reauth") {
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+    "//ui/webui/resources/cr_elements/policy/cr_tooltip_icon_externs.js",
   ]
   extra_deps = [ ":web_components" ]
 }

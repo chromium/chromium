@@ -64,6 +64,9 @@ BASE_FEATURE(kDisablePolicyEthernetRecommendedWorkaround,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 NetworkConfigurationUpdater::~NetworkConfigurationUpdater() {
+  for (auto& observer : observer_list_) {
+    observer.OnPolicyCertificateProviderDestroying();
+  }
   policy_service_->RemoveObserver(POLICY_DOMAIN_CHROME, this);
 }
 

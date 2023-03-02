@@ -56,6 +56,8 @@ source_set("onc") {
     ]
   }
 
+  deps = []
+
   if (is_chromeos_ash) {
     sources += [
       "networking/device_network_configuration_updater_ash.cc",
@@ -63,9 +65,11 @@ source_set("onc") {
       "networking/user_network_configuration_updater_ash.cc",
       "networking/user_network_configuration_updater_ash.h",
     ]
-  }
 
-  deps = []
+    deps += [
+      "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    ]
+  }
 
   if (is_chromeos) {
     deps += [

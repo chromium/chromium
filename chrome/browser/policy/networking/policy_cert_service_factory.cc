@@ -18,9 +18,11 @@
 #include "services/network/cert_verifier_with_trust_anchors.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -38,6 +40,13 @@ ash::PolicyCertificateProvider* GetPolicyCertificateProvider(Profile* profile) {
         ->GetDeviceNetworkConfigurationUpdater();
   }
 
+  // The lock screen profile has access to the policy provided CA certs from the
+  // primary profile.
+  if (ash::ProfileHelper::Get()->IsLockScreenProfile(profile)) {
+    return UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(
+        ProfileManager::GetPrimaryUserProfile());
+  }
+
   return UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
 }
 
@@ -52,6 +61,12 @@ KeyedService* BuildServiceInstanceAsh(content::BrowserContext* context) {
   if (ash::ProfileHelper::Get()->IsSigninProfile(profile)) {
     return new PolicyCertService(profile, policy_certificate_provider,
                                  /*may_use_profile_wide_trust_anchors=*/false);
+  }
+
+  if (ash::ProfileHelper::Get()->IsLockScreenProfile(profile) &&
+      ash::features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen()) {
+    return new PolicyCertService(profile, policy_certificate_provider,
+                                 /*may_use_profile_wide_trust_anchors=*/true);
   }
 
   // Don't allow policy-provided certificates for "special" Profiles except the

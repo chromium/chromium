@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
@@ -19,6 +21,7 @@
 #include "chrome/grit/lock_screen_reauth_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources_map.h"
 #include "chrome/grit/oobe_unconditional_resources_map.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -119,6 +122,14 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->AddString(
       "samlChangeProviderButton",
       l10n_util::GetStringUTF16(IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON));
+  source->AddBoolean(
+      "policyProvidedCaCertsPresent",
+      profile->GetPrefs()->GetBoolean(prefs::kUsedPolicyCertificates) &&
+          features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen());
+  source->AddString(
+      "policyProvidedCaCertsTooltipMessage",
+      l10n_util::GetStringUTF16(
+          IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP));
 
   source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
                                            kLockScreenReauthResourcesSize));
