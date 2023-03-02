@@ -1984,9 +1984,6 @@ extern const char kAccessibilityFormControlsModeDescription[];
 extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];
 
-extern const char kActivateMetricsReportingEnabledPolicyAndroidName[];
-extern const char kActivateMetricsReportingEnabledPolicyAndroidDescription[];
-
 extern const char kAddToHomescreenIPHName[];
 extern const char kAddToHomescreenIPHDescription[];
 

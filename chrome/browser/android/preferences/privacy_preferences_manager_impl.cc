@@ -29,12 +29,6 @@ static void JNI_PrivacyPreferencesManagerImpl_SetMetricsReportingEnabled(
 static jboolean
 JNI_PrivacyPreferencesManagerImpl_IsMetricsReportingDisabledByPolicy(
     JNIEnv* env) {
-  // Metrics reporting can only be disabled by policy if the policy is active.
-  if (!base::FeatureList::IsEnabled(
-          policy::features::kActivateMetricsReportingEnabledPolicyAndroid)) {
-    return false;
-  }
-
   const PrefService* local_state = g_browser_process->local_state();
   return local_state->IsManagedPreference(
              metrics::prefs::kMetricsReportingEnabled) &&

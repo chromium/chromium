@@ -8411,14 +8411,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsForTabletsName,
      flag_descriptions::kTabGroupsForTabletsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabGroupsForTablets)},
-
-    {"activate-metrics-reporting-enabled-policy",
-     flag_descriptions::kActivateMetricsReportingEnabledPolicyAndroidName,
-     flag_descriptions::
-         kActivateMetricsReportingEnabledPolicyAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         policy::features::kActivateMetricsReportingEnabledPolicyAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

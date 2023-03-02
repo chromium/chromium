@@ -30,11 +30,6 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kPasswordBreachEventReporting);
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kEnableUserCloudSigninRestrictionPolicyFetcher);
 
-// Enable MetricsReportingEnabled policy to alter MetricsReportingState on
-// Android.
-POLICY_EXPORT BASE_DECLARE_FEATURE(
-    kActivateMetricsReportingEnabledPolicyAndroid);
-
 // Causes the DMToken to be deleted (rather than invalidated) when a browser is
 // deleted from CBCM.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);

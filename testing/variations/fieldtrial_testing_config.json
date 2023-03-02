@@ -29,27 +29,6 @@
             ]
         }
     ],
-    "ActivateMetricsReportingEnabledPolicyAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ActivateMetricsReportingEnabledPolicyAndroid"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "ActivateMetricsReportingEnabledPolicyAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "AdaptiveSuggestionsPhoneiOS": [
         {
             "platforms": [
