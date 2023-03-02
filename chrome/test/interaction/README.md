@@ -258,12 +258,20 @@ Kombucha now provides two options for control flow:
 In some cases, you may want to execute part of a test only if, for example, a
 particular flag is set. In order to do this, we provide the various `If()`
 control-flow statements:
- - `If(condition, step[s])` - executes `step[s]` if `condition` returns true.
- - `IfElement(element, condition, step[s])` - executes `step[s]` if `condition`
-   returns true when `element` is passed to it.
- - `IfView(view, condition, step[s])` - executes `step[s]` if `condition`
-   returns true when `view` is converted to the type accepted by `condition` and
-   passed to it (the element must be of the correct type).
+ - `If(condition, then_steps[, else_steps])` - executes `then_steps`, which can
+   be a single step or a `MultiStep`, if `condition` returns true. If
+   `else_steps` is present, it will be executed if `condition` returns false.
+ - `IfMatches(function, matcher, then_steps[, else_steps])` - same as above
+   but `then_steps` executes if the result of `function` matches `matcher`.
+ - `IfElement()`, `IfElementMatches()` - same as above, but the `condition` or
+   `function` receives the specified element as an argument. If the element is
+   not visible, the condition callback receives `nullptr` (it does not fail). 
+ - `IfView()`, `IfViewMatches()` - same as above, except that the callback takes
+   a pointer to a `View` or `View` subclass; if the element is not present, null
+   is passed, but if it is the wrong type, the test fails.
+ - `IfViewPropertyMatches()` - same as above, but you specify a readonly method
+   on the View rather than an arbitrary callback. Syntax is similar to
+   `CheckViewProperty()`.
 
 Example:
 ```cpp
@@ -285,12 +293,34 @@ RunTestSequence(
   /* ... */
   // If the side panel is still visible, close it.
   IfView(kSidePanelElementId,
+         // If the side panel is visible...
          base::BindOnce([](const SidePanel* side_panel) {
-              // If the element is visible, it will be passed here, otherwise it
-              // will be null.
-              return side_panel != nullptr;
-            }),
-            PressButton(kSidePanelButtonElementId))
+           return side_panel != nullptr;
+         }),
+         // Then press the side panel button to close the side panel.
+         Steps(PressButton(kSidePanelButtonElementId),
+               WaitForHide(kSidePanelElementId)),
+         // Else note that it was not open.
+         Do(base::BindOnce([]() {
+           LOG(INFO) << "Side panel was already closed.";
+         })))
+  /* ... */
+)
+```
+
+Matchers are straightforward; consider the following case where we want to open
+a new tab, but only if there are fewer than two tabs open:
+```cpp
+RunTestSequence(
+  /* ... */
+  IfMatches(
+      // If there are fewer than two tabs...
+      base::BindLambdaForTesting([this]() {
+        return browser()->tab_strip_model()->count();
+      }),
+      testing::Lt(2),
+      // Then open a new tab:
+      PressButton(kNewTabButtonElementId)),
   /* ... */
 )
 ```

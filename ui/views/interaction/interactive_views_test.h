@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -255,10 +256,47 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // As IfElement(), but `condition` takes a single argument that is a const
   // View pointer. If `element` is not a view of type V, then the test will
   // fail.
-  template <template <typename...> typename C, typename V, typename T>
+  template <template <typename...> typename C,
+            typename V,
+            typename T,
+            typename U = MultiStep>
   [[nodiscard]] static StepBuilder IfView(ElementSpecifier element,
                                           C<bool(const V*)> condition,
-                                          T&& steps);
+                                          T&& then_steps,
+                                          U&& else_steps = MultiStep());
+
+  // As IfElementMatches(), but `function` takes a single argument that is a
+  // const View pointer. If `element` is not a view of type V, then the test
+  // will fail.
+  template <template <typename...> typename C,
+            typename R,
+            typename M,
+            typename V,
+            typename T,
+            typename U = MultiStep>
+  [[nodiscard]] static StepBuilder IfViewMatches(ElementSpecifier element,
+                                                 C<R(const V*)> function,
+                                                 M&& matcher,
+                                                 T&& then_steps,
+                                                 U&& else_steps = MultiStep());
+
+  // Executes `then_steps` if `property` of the view `element` (which must be of
+  // the correct View type) matches `matcher`, otherwise executes `else_steps`.
+  //
+  // Note that bare literal strings cannot be passed as `matcher` for properties
+  // with string values, you will need to either explicitly pass a
+  // std::[u16]string or explicitly construct a testing::Eq matcher.
+  template <typename R,
+            typename M,
+            typename V,
+            typename T,
+            typename U = MultiStep>
+  [[nodiscard]] static StepBuilder IfViewPropertyMatches(
+      ElementSpecifier element,
+      R (V::*property)() const,
+      M&& matcher,
+      T&& then_steps,
+      U&& else_steps = MultiStep());
 
   // Sets the context widget. Must be called before RunTestSequence() or any of
   // the mouse functions.
@@ -422,11 +460,12 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::WithView(
 }
 
 // static
-template <template <typename...> typename C, typename V, typename T>
+template <template <typename...> typename C, typename V, typename T, typename U>
 ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfView(
     ElementSpecifier element,
     C<bool(const V*)> condition,
-    T&& steps) {
+    T&& then_steps,
+    U&& else_steps) {
   return std::move(
       IfElement(element,
                 base::BindOnce(
@@ -437,8 +476,57 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfView(
                       return std::move(condition).Run(view);
                     },
                     base::OnceCallback<bool(const V*)>(std::move(condition))),
-                std::move(steps))
+                std::forward<T>(then_steps), std::forward<U>(else_steps))
           .SetDescription("IfView()"));
+}
+
+// static
+template <template <typename...> typename C,
+          typename R,
+          typename M,
+          typename V,
+          typename T,
+          typename U>
+ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfViewMatches(
+    ElementSpecifier element,
+    C<R(const V*)> function,
+    M&& matcher,
+    T&& then_steps,
+    U&& else_steps) {
+  return std::move(
+      IfElementMatches(
+          element,
+          base::BindOnce(
+              [](base::OnceCallback<R(const V*)> condition,
+                 const ui::InteractionSequence* seq,
+                 const ui::TrackedElement* el) {
+                const V* const view = el ? AsView<V>(el) : nullptr;
+                return std::move(condition).Run(view);
+              },
+              base::OnceCallback<R(const V*)>(std::move(function))),
+          std::forward<M>(matcher), std::forward<T>(then_steps),
+          std::forward<U>(else_steps))
+          .SetDescription("IfViewMatches()"));
+}
+
+// static
+template <typename R, typename M, typename V, typename T, typename U>
+ui::InteractionSequence::StepBuilder
+InteractiveViewsTestApi::IfViewPropertyMatches(ElementSpecifier element,
+                                               R (V::*property)() const,
+                                               M&& matcher,
+                                               T&& then_steps,
+                                               U&& else_steps) {
+  using Return = std::remove_cvref_t<R>;
+  base::OnceCallback<Return(const V*)> function = base::BindOnce(
+      [](R (V::*property)() const, const V* view) -> Return {
+        return (view->*property)();
+      },
+      std::move(property));
+  return std::move(
+      IfViewMatches(element, std::move(function), std::forward<M>(matcher),
+                    std::forward<T>(then_steps), std::forward<U>(else_steps))
+          .SetDescription("IfViewPropertyMatches()"));
 }
 
 // static
