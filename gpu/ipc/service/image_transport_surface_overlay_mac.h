@@ -43,22 +43,16 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
       base::WeakPtr<ImageTransportSurfaceDelegate> delegate);
 
   // Presenter implementation
-  bool Initialize(gl::GLSurfaceFormat format) override;
-  void Destroy() override;
-  void PrepareToDestroy(bool have_context) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  void Present(gl::GLSurface::SwapCompletionCallback completion_callback,
-               gl::GLSurface::PresentationCallback presentation_callback,
+  void Present(SwapCompletionCallback completion_callback,
+               PresentationCallback presentation_callback,
                gfx::FrameData data) override;
 
   // TODO(vasilyt): Remove this.
   bool SupportsCommitOverlayPlanes() override;
-  gfx::Size GetSize() override;
-  void* GetHandle() override;
-  gl::GLSurfaceFormat GetFormat() override;
   bool OnMakeCurrent(gl::GLContext* context) override;
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,

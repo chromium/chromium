@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
@@ -230,7 +231,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
     return canvas;
   }
 
-  void ScheduleOverlayPlane(gl::GLSurface* gl_surface,
+  void ScheduleOverlayPlane(gl::Presenter* gl_surface,
                             gl::OverlayImage image,
                             int z_order) {
     gl_surface->ScheduleOverlayPlane(

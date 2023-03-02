@@ -165,10 +165,6 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
       .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
 }
 
-bool DCompPresenter::SupportsDCLayers() const {
-  return true;
-}
-
 bool DCompPresenter::SupportsProtectedVideo() const {
   // TODO(magchen): Check the gpu driver date (or a function) which we know this
   // new support is enabled.

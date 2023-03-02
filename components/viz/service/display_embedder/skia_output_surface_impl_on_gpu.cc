@@ -1994,10 +1994,12 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
     if (presenter_) {
       presenter_->SetChoreographerVsyncIdForNextFrame(
           frame->choreographer_vsync_id);
+#if BUILDFLAG(IS_WIN)
       if (frame->delegated_ink_metadata) {
         presenter_->SetDelegatedInkTrailStartPoint(
             std::move(frame->delegated_ink_metadata));
       }
+#endif
     }
   }
 
@@ -2255,8 +2257,10 @@ void SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver(
     gl_surface_->InitDelegatedInkPointRendererReceiver(
         std::move(pending_receiver));
   } else if (presenter_) {
+#if BUILDFLAG(IS_WIN)
     presenter_->InitDelegatedInkPointRendererReceiver(
         std::move(pending_receiver));
+#endif
   }
 }
 

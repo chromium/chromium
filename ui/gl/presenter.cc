@@ -4,10 +4,19 @@
 
 #include "ui/gl/presenter.h"
 
+#include "ui/gfx/gpu_fence.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/gl/dc_layer_overlay_params.h"
+#else
+namespace gl {
+struct DCLayerOverlayParams {};
+}  // namespace gl
+#endif
+
 namespace gl {
 
-Presenter::Presenter(GLDisplayEGL* display, const gfx::Size& size)
-    : SurfacelessEGL(display, size) {}
+Presenter::Presenter(GLDisplayEGL* display, const gfx::Size& size) {}
 Presenter::~Presenter() = default;
 
 bool Presenter::SupportsAsyncSwap() {
@@ -22,7 +31,35 @@ bool Presenter::SupportsCommitOverlayPlanes() {
   return false;
 }
 
+bool Presenter::SupportsOverridePlatformSize() const {
+  return false;
+}
+
+bool Presenter::SupportsViewporter() const {
+  return false;
+}
+
+bool Presenter::SupportsPlaneGpuFences() const {
+  return false;
+}
+
 bool Presenter::IsOffscreen() {
+  return false;
+}
+
+bool Presenter::IsSurfaceless() {
+  return true;
+}
+
+bool Presenter::SupportsDCLayers() const {
+#if BUILDFLAG(IS_WIN)
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool Presenter::SupportsGpuVSync() const {
   return false;
 }
 
@@ -77,6 +114,39 @@ void Presenter::CommitOverlayPlanesAsync(
     gfx::FrameData data) {
   Present(std::move(completion_callback), std::move(presentation_callback),
           data);
+}
+
+bool Presenter::ScheduleOverlayPlane(
+    OverlayImage image,
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    const gfx::OverlayPlaneData& overlay_plane_data) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool Presenter::ScheduleCALayer(const ui::CARendererLayerParams& params) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool Presenter::ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool Presenter::Resize(const gfx::Size& size,
+                       float scale_factor,
+                       const gfx::ColorSpace& color_space,
+                       bool has_alpha) {
+  return true;
+}
+
+bool Presenter::Initialize(GLSurfaceFormat format) {
+  return true;
+}
+
+bool Presenter::OnMakeCurrent(GLContext* context) {
+  return true;
 }
 
 }  // namespace gl

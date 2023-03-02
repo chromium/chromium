@@ -22,6 +22,8 @@
 #include "ui/accelerated_widget_mac/ca_layer_tree_coordinator.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_features.h"
@@ -94,17 +96,6 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
-  Destroy();
-}
-
-bool ImageTransportSurfaceOverlayMacEGL::Initialize(
-    gl::GLSurfaceFormat format) {
-  return true;
-}
-
-void ImageTransportSurfaceOverlayMacEGL::PrepareToDestroy(bool have_context) {}
-
-void ImageTransportSurfaceOverlayMacEGL::Destroy() {
   ca_layer_tree_coordinator_.reset();
 }
 
@@ -119,15 +110,15 @@ void ImageTransportSurfaceOverlayMacEGL::ApplyBackpressure() {
 }
 
 void ImageTransportSurfaceOverlayMacEGL::BufferPresented(
-    gl::GLSurface::PresentationCallback callback,
+    PresentationCallback callback,
     const gfx::PresentationFeedback& feedback) {
   DCHECK(!callback.is_null());
   std::move(callback).Run(feedback);
 }
 
 void ImageTransportSurfaceOverlayMacEGL::Present(
-    gl::GLSurface::SwapCompletionCallback completion_callback,
-    gl::GLSurface::PresentationCallback presentation_callback,
+    SwapCompletionCallback completion_callback,
+    PresentationCallback presentation_callback,
     gfx::FrameData data) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::Present");
 
@@ -223,18 +214,6 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
 
 bool ImageTransportSurfaceOverlayMacEGL::SupportsCommitOverlayPlanes() {
   return true;
-}
-
-gfx::Size ImageTransportSurfaceOverlayMacEGL::GetSize() {
-  return gfx::Size();
-}
-
-void* ImageTransportSurfaceOverlayMacEGL::GetHandle() {
-  return nullptr;
-}
-
-gl::GLSurfaceFormat ImageTransportSurfaceOverlayMacEGL::GetFormat() {
-  return gl::GLSurfaceFormat();
 }
 
 bool ImageTransportSurfaceOverlayMacEGL::OnMakeCurrent(gl::GLContext* context) {

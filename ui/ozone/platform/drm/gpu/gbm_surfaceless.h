@@ -8,6 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
@@ -42,7 +45,6 @@ class GbmSurfaceless : public gl::Presenter {
   void QueueOverlayPlane(DrmOverlayPlane plane);
 
   // gl::Presenter:
-  bool Initialize(gl::GLSurfaceFormat format) override;
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
@@ -52,7 +54,6 @@ class GbmSurfaceless : public gl::Presenter {
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool SupportsPlaneGpuFences() const override;
-  EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
@@ -86,6 +87,8 @@ class GbmSurfaceless : public gl::Presenter {
   void OnSubmission(gfx::SwapResult result, gfx::GpuFenceHandle release_fence);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
 
+  EGLDisplay GetEGLDisplay();
+
   GbmSurfaceFactory* const surface_factory_;
   const std::unique_ptr<DrmWindowProxy> window_;
   std::vector<DrmOverlayPlane> planes_;
@@ -104,6 +107,8 @@ class GbmSurfaceless : public gl::Presenter {
   // Conservatively assume we begin on a device that requires
   // explicit synchronization.
   bool is_on_external_drm_device_ = true;
+
+  const raw_ptr<gl::GLDisplayEGL> display_;
 
   base::WeakPtrFactory<GbmSurfaceless> weak_factory_{this};
 };
