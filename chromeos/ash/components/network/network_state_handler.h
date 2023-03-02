@@ -371,9 +371,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Clears the last_error value for the NetworkState for |service_path|.
   void ClearLastErrorForNetwork(const std::string& service_path);
 
-  // Sets the list of devices on which portal check is enabled.
-  void SetCheckPortalList(const std::string& check_portal_list);
-
   // Sets the Manager.WakeOnLan property. Note: we do not track this state, we
   // only set it.
   void SetWakeOnLanEnabled(bool enabled);

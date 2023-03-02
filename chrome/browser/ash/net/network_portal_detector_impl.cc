@@ -146,12 +146,6 @@ void NetworkPortalDetectorImpl::Enable() {
   DCHECK(is_idle());
   enabled_ = true;
 
-  // Ensure that Shill portal detection is enabled.
-  // TODO(b/265806000): Remove calls to SetCheckPortalList entirely once
-  // shill/init/shill.sh is updated.
-  NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
-      NetworkStateHandler::kDefaultCheckPortalList);
-
   const NetworkState* network = DefaultNetwork();
   if (!network)
     return;

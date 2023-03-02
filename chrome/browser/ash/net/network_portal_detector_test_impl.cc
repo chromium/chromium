@@ -63,10 +63,6 @@ bool NetworkPortalDetectorTestImpl::IsEnabled() {
 void NetworkPortalDetectorTestImpl::Enable() {
   DVLOG(1) << "NetworkPortalDetectorTestImpl: Enabled.";
   enabled_ = true;
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
-        NetworkStateHandler::kDefaultCheckPortalList);
-  }
 }
 
 }  // namespace ash

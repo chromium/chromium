@@ -220,16 +220,6 @@ void ShillPropertyHandler::SetProhibitedTechnologies(
                      network_handler::ErrorCallback()));
 }
 
-void ShillPropertyHandler::SetCheckPortalList(
-    const std::string& check_portal_list) {
-  base::Value value(check_portal_list);
-  shill_manager_->SetProperty(
-      shill::kCheckPortalListProperty, value, base::DoNothing(),
-      base::BindOnce(&network_handler::ShillErrorCallbackFunction,
-                     "SetCheckPortalList Failed", "Manager",
-                     network_handler::ErrorCallback()));
-}
-
 void ShillPropertyHandler::SetWakeOnLanEnabled(bool enabled) {
   base::Value value(enabled);
   shill_manager_->SetProperty(

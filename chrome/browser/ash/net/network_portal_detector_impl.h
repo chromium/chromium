@@ -42,7 +42,7 @@ class NetworkStateHandler;
 // 1. Provides an interface to enable captive portal detection (once the
 //    EULA is accepted).
 // 2. Provides an interface to start portal detection.
-//    Currently this is Chrome only, TODO(b/207088236): Trigger Shill detection.
+//    Currently this is Chrome only.
 // 3. Observes the NetworkStateHandler class and triggers Chrome captive portal
 //    detection (captive_portal::CaptivePortalService) when the Shill state
 //    changes (if required) then updates NetworkStateHandler accordingly.

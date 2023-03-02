@@ -132,9 +132,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   // listed in |technologies|. Note: Modifies Manager state.
   void SetProhibitedTechnologies(const std::vector<std::string>& technologies);
 
-  // Sets the list of devices on which portal check is enabled.
-  void SetCheckPortalList(const std::string& check_portal_list);
-
   // Sets the Manager.WakeOnLan property. Note: we do not track this state, we
   // only set it.
   void SetWakeOnLanEnabled(bool enabled);

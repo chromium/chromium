@@ -1200,12 +1200,6 @@ void NetworkStateHandler::ClearLastErrorForNetwork(
     network->ClearError();
 }
 
-void NetworkStateHandler::SetCheckPortalList(
-    const std::string& check_portal_list) {
-  NET_LOG(EVENT) << "SetCheckPortalList: " << check_portal_list;
-  shill_property_handler_->SetCheckPortalList(check_portal_list);
-}
-
 void NetworkStateHandler::SetWakeOnLanEnabled(bool enabled) {
   NET_LOG(EVENT) << "SetWakeOnLanEnabled: " << enabled;
   shill_property_handler_->SetWakeOnLanEnabled(enabled);
