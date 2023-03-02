@@ -2077,6 +2077,11 @@ const char kOmniboxGM3SteadyStateHeightName[] = "Omnibox Steady State Height";
 const char kOmniboxGM3SteadyStateHeightDescription[] =
     "Updates Omnibox steady state height to comply with GM3 guidelines.";
 
+const char kOmniboxGM3SteadyStateTextStyleName[] =
+    "Omnibox Steady State Text Style";
+const char kOmniboxGM3SteadyStateTextStyleDescription[] =
+    "Updates Omnibox steady state text style to comply with GM3 guidelines.";
+
 const char kOmniboxGroupingFrameworkName[] = "Omnibox Grouping Framework";
 const char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "

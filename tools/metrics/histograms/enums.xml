@@ -64454,6 +64454,7 @@ from previous Chrome versions.
   <int value="1471491886"
       label="AutofillOfferToSaveCardWithSameLastFour:enabled"/>
   <int value="1472042346" label="ClickToCall:enabled"/>
+  <int value="1472060209" label="OmniboxSteadyStateTextStyle:disabled"/>
   <int value="1472798894" label="UseIDNA2008NonTransitional:enabled"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>
@@ -65513,6 +65514,7 @@ from previous Chrome versions.
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
   <int value="2065833330" label="CanvasContextLostInBackground:enabled"/>
   <int value="2066015302" label="QueryTiles:disabled"/>
+  <int value="2066304836" label="OmniboxSteadyStateTextStyle:enabled"/>
   <int value="2066508701" label="WebViewOriginTrials:disabled"/>
   <int value="2067136444" label="AudioPeripheralVolumeGranularity:disabled"/>
   <int value="2067634730" label="LsdPermissionPrompt:disabled"/>

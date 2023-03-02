@@ -1173,6 +1173,9 @@ extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 extern const char kOmniboxGM3SteadyStateHeightName[];
 extern const char kOmniboxGM3SteadyStateHeightDescription[];
 
+extern const char kOmniboxGM3SteadyStateTextStyleName[];
+extern const char kOmniboxGM3SteadyStateTextStyleDescription[];
+
 extern const char kOmniboxGroupingFrameworkName[];
 extern const char kOmniboxGroupingFrameworkDescription[];
 

@@ -5453,6 +5453,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxGM3SteadyStateHeightDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateHeight)},
 
+    {"omnibox-gm3-steady-state-text-style",
+     flag_descriptions::kOmniboxGM3SteadyStateTextStyleName,
+     flag_descriptions::kOmniboxGM3SteadyStateTextStyleDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateTextStyle)},
+
     {"omnibox-grouping-framework",
      flag_descriptions::kOmniboxGroupingFrameworkName,
      flag_descriptions::kOmniboxGroupingFrameworkDescription, kOsAll,

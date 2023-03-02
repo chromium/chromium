@@ -437,6 +437,12 @@ BASE_FEATURE(kOmniboxSteadyStateHeight,
              "OmniboxSteadyStateHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Omnibox "steady state" text style is updated to match GM3
+// guidelines.
+BASE_FEATURE(kOmniboxSteadyStateTextStyle,
+             "OmniboxSteadyStateTextStyle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, switching tabs will not restore the omnibox state.
 // TODO(manukh): Should also blur the omnibox on tab switch.
 BASE_FEATURE(kDiscardTemporaryInputOnTabSwitch,

@@ -103,6 +103,7 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 // popup).
 BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateHeight);
+BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);
 BASE_DECLARE_FEATURE(kDiscardTemporaryInputOnTabSwitch);
 BASE_DECLARE_FEATURE(kRedoCurrentMatch);
 BASE_DECLARE_FEATURE(kRevertModelBeforeClosingPopup);
