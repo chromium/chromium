@@ -62,14 +62,6 @@ class FederatedMetricsManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // Start a new IO thread to run IPC tasks.
-    io_thread_.StartWithOptions(
-        base::Thread::Options(base::MessagePumpType::IO, 0));
-    mojo::core::Init();
-    ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
-        io_thread_.task_runner(),
-        mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
-
     // Set up federated service connection.
     FederatedClient::InitializeFake();
 
@@ -78,11 +70,7 @@ class FederatedMetricsManagerTest : public testing::Test {
         &app_list_notifier_, &federated_service_controller_);
   }
 
-  void TearDown() override {
-    FederatedClient::Shutdown();
-    ipc_support_.reset();
-    io_thread_.Stop();
-  }
+  void TearDown() override { FederatedClient::Shutdown(); }
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
@@ -93,8 +81,6 @@ class FederatedMetricsManagerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::Thread io_thread_{"IoThread"};
-  std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
 
   FakeServiceConnectionImpl fake_service_connection_;
   ScopedFakeServiceConnectionForTest scoped_fake_for_test_;
@@ -104,13 +90,7 @@ class FederatedMetricsManagerTest : public testing::Test {
   TestFederatedServiceController federated_service_controller_;
 };
 
-// TODO(crbug.com/1416382): Test is flaky on sanitizers.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OnAbandon DISABLED_OnAbandon
-#else
-#define MAYBE_OnAbandon OnAbandon
-#endif
-TEST_F(FederatedMetricsManagerTest, MAYBE_OnAbandon) {
+TEST_F(FederatedMetricsManagerTest, OnAbandon) {
   Location location = Location::kList;
   std::vector<Result> shown_results;
   metrics_manager_->OnAbandon(location, shown_results, u"fake_query");
@@ -132,13 +112,7 @@ TEST_F(FederatedMetricsManagerTest, MAYBE_OnAbandon) {
   // functionality is available.
 }
 
-// TODO(crbug.com/1416382): Test is flaky on sanitizers.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OnLaunch DISABLED_OnLaunch
-#else
-#define MAYBE_OnLaunch OnLaunch
-#endif
-TEST_F(FederatedMetricsManagerTest, MAYBE_OnLaunch) {
+TEST_F(FederatedMetricsManagerTest, OnLaunch) {
   Location location = Location::kList;
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
@@ -161,13 +135,7 @@ TEST_F(FederatedMetricsManagerTest, MAYBE_OnLaunch) {
   // functionality is available.
 }
 
-// TODO(crbug.com/1416382): Test is flaky on sanitizers.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ZeroState DISABLED_ZeroState
-#else
-#define MAYBE_ZeroState ZeroState
-#endif
-TEST_F(FederatedMetricsManagerTest, MAYBE_ZeroState) {
+TEST_F(FederatedMetricsManagerTest, ZeroState) {
   Location location = Location::kList;
   std::vector<Result> shown_results;
   Result launched_result = CreateFakeResult(Type::EXTENSION_APP, "fake_id");
