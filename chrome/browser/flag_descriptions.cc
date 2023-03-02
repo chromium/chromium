@@ -82,6 +82,12 @@ const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "
     "to catch up to the frame that should be drawn based on current time.";
 
+const char kAppCollectionFolderRefreshName[] =
+    "App Collection feature: Folder icon refresh";
+const char kAppCollectionFolderRefreshDescription[] =
+    "Enables the App Collection feature: the new folder icon style in the app "
+    "list.";
+
 const char kAriaElementReflectionName[] = "Enable ARIA element reflection";
 const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
