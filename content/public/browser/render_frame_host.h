@@ -1030,6 +1030,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Updated on every cross-document navigation.
   virtual bool IsCredentialless() const = 0;
 
+  // Whether the last cross-document committed navigation was initiated from the
+  // browser (e.g. typing on the location bar) or from the renderer while having
+  // transient user activation
+  virtual bool IsLastCrossDocumentNavigationStartedByUser() const = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;

@@ -1322,8 +1322,11 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
           absl::nullopt /* web_bundle_token */,
-          blink::mojom::NavigationInitiatorActivationAndAdStatus::
-              kDidNotStartWithTransientActivation,
+          has_user_gesture_
+              ? blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                    kStartedWithTransientActivationFromNonAd
+              : blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                    kDidNotStartWithTransientActivation,
           false /* is_container_initiated */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();

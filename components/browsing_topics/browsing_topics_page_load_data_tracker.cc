@@ -62,7 +62,8 @@ BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
           blink::mojom::PermissionsPolicyFeature::kBrowsingTopics) &&
       page.GetMainDocument().IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::
-              kBrowsingTopicsBackwardCompatible)) {
+              kBrowsingTopicsBackwardCompatible) &&
+      page.GetMainDocument().IsLastCrossDocumentNavigationStartedByUser()) {
     eligible_to_commit_ = true;
   }
 }

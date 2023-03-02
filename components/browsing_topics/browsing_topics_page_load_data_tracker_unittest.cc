@@ -69,10 +69,19 @@ class BrowsingTopicsPageLoadDataTrackerTest
   void NavigateToPage(const GURL& url,
                       bool publicly_routable,
                       bool browsing_topics_permissions_policy_allowed,
-                      bool interest_cohort_permissions_policy_allowed) {
-    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-        url, web_contents());
-    simulator->SetTransition(ui::PageTransition::PAGE_TRANSITION_TYPED);
+                      bool interest_cohort_permissions_policy_allowed,
+                      bool browser_initiated = true,
+                      bool has_user_gesture = false,
+                      bool add_same_document_nav = false) {
+    std::unique_ptr<content::NavigationSimulator> simulator;
+    if (browser_initiated) {
+      simulator = content::NavigationSimulator::CreateBrowserInitiated(
+          url, web_contents());
+    } else {
+      simulator = content::NavigationSimulator::CreateRendererInitiated(
+          url, main_rfh());
+    }
+    simulator->SetHasUserGesture(has_user_gesture);
 
     if (!publicly_routable) {
       net::IPAddress address;
@@ -102,6 +111,10 @@ class BrowsingTopicsPageLoadDataTrackerTest
     simulator->SetPermissionsPolicyHeader(std::move(policy));
 
     simulator->Commit();
+    if (add_same_document_nav) {
+      content::NavigationSimulator::CreateRendererInitiated(url, main_rfh())
+          ->CommitSameDocument();
+    }
 
     history_service_->AddPage(
         url, base::Time::Now(),
@@ -361,6 +374,67 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
   EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
   EXPECT_TRUE(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).empty());
+}
+
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
+       RendererInitiatedWithUserGesture) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true,
+                 /*browser_initiated=*/false,
+                 /*has_user_gesture=*/true);
+
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), history_service_.get());
+
+  EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
+
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
+  EXPECT_EQ(api_usage_contexts[0].hashed_main_frame_host,
+            HashMainFrameHostForStorage("foo.com"));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain, HashedDomain(123));
+}
+
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest, RendererInitiatedNoUserGesture) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true,
+                 /*browser_initiated=*/false,
+                 /*has_user_gesture=*/false);
+
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), history_service_.get());
+
+  EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
+  EXPECT_TRUE(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).empty());
+}
+
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
+       RendererInitiatedPlusExtraSamePageNav) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true,
+                 /*browser_initiated=*/false,
+                 /*has_user_gesture=*/true,
+                 /*add_same_document_nav=*/true);
+
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), history_service_.get());
+
+  EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
+
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
+  EXPECT_EQ(api_usage_contexts[0].hashed_main_frame_host,
+            HashMainFrameHostForStorage("foo.com"));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain, HashedDomain(123));
 }
 
 }  // namespace browsing_topics

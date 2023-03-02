@@ -3649,6 +3649,10 @@ bool RenderFrameHostImpl::IsCredentialless() const {
   return policy_container_host_->policies().is_credentialless;
 }
 
+bool RenderFrameHostImpl::IsLastCrossDocumentNavigationStartedByUser() const {
+  return last_cross_document_navigation_started_by_user_;
+}
+
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
@@ -3833,6 +3837,18 @@ void RenderFrameHostImpl::DidNavigate(
   // not.
   last_committed_common_params_has_user_gesture_ =
       navigation_request->common_params().has_user_gesture;
+
+  // Sets whether the last cross-document navigation was initiated from the
+  // browser (e.g. typing on the location bar) or from the renderer while having
+  // transient user activation
+  if (!was_within_same_document) {
+    last_cross_document_navigation_started_by_user_ =
+        !navigation_request->IsRendererInitiated() ||
+        (navigation_request->begin_params()
+             .initiator_activation_and_ad_status !=
+         blink::mojom::NavigationInitiatorActivationAndAdStatus::
+             kDidNotStartWithTransientActivation);
+  }
 
   // Navigations that activate an existing bfcached or prerendered document do
   // not create a new document.
