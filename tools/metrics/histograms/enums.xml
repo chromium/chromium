@@ -35541,11 +35541,13 @@ Called by update_extension_histograms.py.-->
   <int value="1161" label="AUDIO_SETMUTE"/>
   <int value="1162" label="AUDIO_GETDEVICES"/>
   <int value="1163" label="VIRTUALKEYBOARD_RESTRICTFEATURES"/>
-  <int value="1164" label="NETWORKINGCASTPRIVATE_VERIFYDESTINATION"/>
-  <int value="1165" label="NETWORKINGCASTPRIVATE_VERIFYANDENCRYPTCREDENTIALS"/>
-  <int value="1166" label="NETWORKINGCASTPRIVATE_VERIFYANDENCRYPTDATA"/>
-  <int value="1167" label="NETWORKINGCASTPRIVATE_SETWIFITDLSENABLEDSTATE"/>
-  <int value="1168" label="NETWORKINGCASTPRIVATE_GETWIFITDLSSTATUS"/>
+  <int value="1164" label="DELETED_NETWORKINGCASTPRIVATE_VERIFYDESTINATION"/>
+  <int value="1165"
+      label="DELETED_NETWORKINGCASTPRIVATE_VERIFYANDENCRYPTCREDENTIALS"/>
+  <int value="1166" label="DELETED_NETWORKINGCASTPRIVATE_VERIFYANDENCRYPTDATA"/>
+  <int value="1167"
+      label="DELETED_NETWORKINGCASTPRIVATE_SETWIFITDLSENABLEDSTATE"/>
+  <int value="1168" label="DELETED_NETWORKINGCASTPRIVATE_GETWIFITDLSSTATUS"/>
   <int value="1169" label="ACCESSIBILITY_PRIVATE_DARKENSCREEN"/>
   <int value="1170" label="WEBRTC_AUDIO_PRIVATE_SET_AUDIO_EXPERIMENTS"/>
   <int value="1171" label="AUTOTESTPRIVATE_GETPLAYSTORESTATE"/>
@@ -36767,7 +36769,7 @@ Called by update_extension_permission.py.-->
   <int value="200" label="kClipboard"/>
   <int value="201" label="kNetworkingOnc"/>
   <int value="202" label="kVirtualKeyboard"/>
-  <int value="203" label="kNetworkingCastPrivate"/>
+  <int value="203" label="kDeleted_NetworkingCastPrivate"/>
   <int value="204" label="kMediaPerceptionPrivate"/>
   <int value="205" label="kLockScreen"/>
   <int value="206" label="kNewTabPageOverride"/>
