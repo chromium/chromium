@@ -112,8 +112,10 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
       // inconsistency).
       DCHECK(batch->GetAllMetadata().empty());
     }
+  } else {
+    DLOG(ERROR) << "The persisted metadata was invalid and was cleared for "
+                << ModelTypeToDebugString(type_) << ". Start over fresh.";
   }
-  // Else: The persisted metadata was invalid and was cleared. Start over fresh.
 
   DCHECK(model_ready_to_sync_);
   ConnectIfReady();
