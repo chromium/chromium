@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_ALMANAC_API_UTIL_H_
-#define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_ALMANAC_API_UTIL_H_
+#ifndef CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_
+#define CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_
 
 #include <string>
 
@@ -16,4 +16,4 @@ std::string GetAlmanacApiUrl();
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_ALMANAC_API_UTIL_H_
+#endif  // CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_ALMANAC_API_UTIL_H_

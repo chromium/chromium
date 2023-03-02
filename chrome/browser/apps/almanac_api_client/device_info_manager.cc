@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_preload_service/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
 #include "base/functional/callback.h"
 #include "base/task/task_traits.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_preload_service/almanac_api_util.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"

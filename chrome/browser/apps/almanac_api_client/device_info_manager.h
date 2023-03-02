@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_DEVICE_INFO_MANAGER_H_
-#define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_DEVICE_INFO_MANAGER_H_
+#ifndef CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_DEVICE_INFO_MANAGER_H_
+#define CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_DEVICE_INFO_MANAGER_H_
 
 #include <ostream>
 #include <string>
@@ -51,8 +51,8 @@ struct DeviceInfo {
   std::string locale;
 };
 
-// This class is a helper interface to get info about the device the code is
-// currently running on.
+// Fetches information about the device the code is currently running on, used
+// to populate the device context for requests to the Almanac API server.
 class DeviceInfoManager {
  public:
   explicit DeviceInfoManager(Profile* profile);
@@ -60,6 +60,8 @@ class DeviceInfoManager {
   DeviceInfoManager& operator=(const DeviceInfoManager&) = delete;
   ~DeviceInfoManager();
 
+  // Asynchronously fetches device information. Must be called from the UI
+  // thread.
   void GetDeviceInfo(base::OnceCallback<void(DeviceInfo)> callback);
 
  private:
@@ -83,4 +85,4 @@ std::ostream& operator<<(std::ostream& os, const VersionInfo& version_info);
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_DEVICE_INFO_MANAGER_H_
+#endif  // CHROME_BROWSER_APPS_ALMANAC_API_CLIENT_DEVICE_INFO_MANAGER_H_
