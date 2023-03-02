@@ -244,4 +244,8 @@ bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
   return CreateSortKey(lhs) < CreateSortKey(rhs);
 }
 
+bool IsCompromised(const CredentialUIEntry& credential) {
+  return credential.IsLeaked() || credential.IsPhished();
+}
+
 }  // namespace password_manager

@@ -209,7 +209,7 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
     const CredentialUIEntry& credential) {
   api::passwords_private::CompromisedInfo compromise_info;
   // Weak credentials don't have compromise time, they also can't be muted.
-  if (credential.IsLeaked() || credential.IsPhished()) {
+  if (IsCompromised(credential)) {
     compromise_info.compromise_time =
         credential.GetLastLeakedOrPhishedTime().ToJsTimeIgnoringNull();
     compromise_info.elapsed_time_since_compromise =

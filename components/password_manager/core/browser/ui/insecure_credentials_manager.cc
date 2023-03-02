@@ -163,7 +163,7 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
 #if BUILDFLAG(IS_ANDROID)
   // Otherwise erase entries which aren't leaked and phished.
   base::EraseIf(credentials, [](const auto& credential) {
-    return !credential.IsLeaked() && !credential.IsPhished();
+    return !IsCompromised(credential);
   });
   return credentials;
 #else

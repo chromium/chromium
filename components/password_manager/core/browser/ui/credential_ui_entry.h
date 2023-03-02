@@ -160,6 +160,9 @@ bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator!=(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 
+// Returns true when the credential is either leaked or phished.
+bool IsCompromised(const CredentialUIEntry& credential);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_CREDENTIAL_UI_ENTRY_H_

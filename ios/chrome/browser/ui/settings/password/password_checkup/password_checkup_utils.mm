@@ -20,7 +20,7 @@ WarningType GetWarningOfHighestPriority(
   for (const auto& credential : insecure_credentials) {
     if (credential.IsMuted()) {
       has_muted_warnings = true;
-    } else if (credential.IsPhished() || credential.IsLeaked()) {
+    } else if (IsCompromised(credential)) {
       return WarningType::kCompromisedPasswordsWarning;
     } else if (credential.IsReused()) {
       has_reused_passwords = true;
@@ -49,7 +49,7 @@ InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
     // account in the compromised count.
     if (credential.IsMuted()) {
       counts.dismissedCount++;
-    } else if (credential.IsPhished() || credential.IsLeaked()) {
+    } else if (IsCompromised(credential)) {
       counts.compromisedCount++;
     }
     if (credential.IsReused()) {
