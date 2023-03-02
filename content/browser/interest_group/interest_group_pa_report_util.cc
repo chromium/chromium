@@ -53,7 +53,7 @@ absl::optional<double> GetBaseValue(
       return absl::nullopt;
     case auction_worklet::mojom::BaseValue::kBidRejectReason:
       // reportWin() and reportResult() have no reject reason, so their private
-      // aggregation requests with "bidRejectReason" base value are not sent.
+      // aggregation requests with "bid-reject-reason" base value are not sent.
       // If scoreAd() doesn't return a reject reason, it's reported as
       // kNotAvailable, instead of not being reported.
       if (reject_reason.has_value()) {

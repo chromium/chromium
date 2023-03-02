@@ -2192,7 +2192,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("baseValue", std::string("bidRejectReason"));
+    bucket_dict.Set("baseValue", std::string("bid-reject-reason"));
     bucket_dict.Set("scale", 2);
     bucket_dict.Set("offset", std::string("-255"));
 
@@ -2232,7 +2232,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("baseValue", std::string("bidRejectReason"));
+    bucket_dict.Set("baseValue", std::string("bid-reject-reason"));
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     dict.Set("bucket", bucket_dict);
@@ -2316,7 +2316,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("baseValue", std::string("winningBid"));
+    bucket_dict.Set("baseValue", std::string("winning-bid"));
     bucket_dict.Set("scale", std::string("255"));
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
@@ -2341,7 +2341,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("baseValue", std::string("winningBid"));
+    bucket_dict.Set("baseValue", std::string("winning-bid"));
     bucket_dict.Set("offset", 255);
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
@@ -2366,7 +2366,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary value_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    value_dict.Set("baseValue", std::string("winningBid"));
+    value_dict.Set("baseValue", std::string("winning-bid"));
     value_dict.Set("scale", 2);
     value_dict.Set("offset", -5);
 
