@@ -97,26 +97,6 @@ Banned in the
 [Google Style Guide](https://google.github.io/styleguide/cppguide.html#Operator_Overloading).
 ***
 
-### thread_local Storage Class <sup>[banned]</sup>
-
-```c++
-thread_local int foo = 1;
-```
-
-**Description:** Puts variables into thread local storage.
-
-**Documentation:**
-[Storage duration](https://en.cppreference.com/w/cpp/language/storage_duration)
-
-**Notes:**
-*** promo
-Some surprising effects on Mac
-([discussion](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/2msN8k3Xzgs),
-[fork](https://groups.google.com/a/chromium.org/forum/#!topic/cxx/h7O5BdtWCZw)).
-Use `base::SequenceLocalStorageSlot` for sequence support, and
-`base::ThreadLocal`/`base::ThreadLocalStorage` otherwise.
-***
-
 ## C++11 Banned Library Features {#library-blocklist-11}
 
 The following C++11 library features are not allowed in the Chromium codebase.

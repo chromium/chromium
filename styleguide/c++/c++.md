@@ -247,6 +247,29 @@ pointers).  Tooling will help to encourage use of these types in the future. See
 [raw_ptr.md](../../base/memory/raw_ptr.md#When-to-use-raw_ptr_T) for how to add
 exclusions.
 
+## thread_local variables
+
+Much code in Chrome needs to be "sequence-aware" rather than "thread-aware". If
+you need a sequence-local variable, see
+[`base::SequenceLocalStorageSlot`](../../base/threading/sequence_local_storage_slot.h).
+
+If you truly need a thread-local variable, then you can use a `thread_local`, as
+long as it complies with the following requirements:
+  * Its type must satisfy `std::is_trivially_desructible_v<T>`, due to past
+    problems with "spooky action at a distance" during destruction.
+  * It must not be exported (e.g. via `COMPONENT_EXPORT`), since this may result
+    in codegen bugs on Mac; and at least on Windows, this probably won't compile
+    in the component build anyway. As a workaround, create an exported getter
+    function that creates a `thread_local` internally and returns a ref to it.
+  * If it lives at class/namespace scope, it must be marked `ABSL_CONST_INIT`,
+    as specified in
+    [the Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html#thread_local).
+  * It must not be constructed inside OOM handlers or any other code that cannot
+    allocate memory, since on POSIX, construction may alloc.
+If you can't comply with these requirements, consider
+[`base::ThreadLocalOwnedPointer`](../../base/threading/thread_local.h) or
+another nearby low-level utility.
+
 ## Forward declarations vs. #includes
 
 Unlike the Google style guide, Chromium style prefers forward declarations to
