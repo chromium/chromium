@@ -481,23 +481,11 @@ TEST_P(UmaPageLoadMetricsObserverTest, Reload) {
       internal::kHistogramLoadTypeNetworkBytesReload,
       static_cast<int>((network_bytes) / 1024), 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeNetworkBytesForwardBack, 0);
-  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeNetworkBytesNewNavigation, 0);
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      internal::kHistogramLoadTypeCacheBytesReload,
-      static_cast<int>((cache_bytes) / 1024), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeCacheBytesForwardBack, 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeCacheBytesNewNavigation, 0);
 
   tester()->histogram_tester().ExpectUniqueSample(
       internal::kHistogramLoadTypeTotalBytesReload,
       static_cast<int>((network_bytes + cache_bytes) / 1024), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeTotalBytesForwardBack, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeTotalBytesNewNavigation, 0);
 }
@@ -523,17 +511,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, ForwardBack) {
   auto resources =
       GetSampleResourceDataUpdateForTesting(10 * 1024 /* resource_size */);
   tester()->SimulateResourceDataUseUpdate(resources);
-  int64_t network_bytes = 0;
-  int64_t cache_bytes = 0;
-  for (const auto& resource : resources) {
-    if (resource->is_complete) {
-      if (resource->cache_type ==
-          page_load_metrics::mojom::CacheType::kNotCached)
-        network_bytes += resource->encoded_body_length;
-      else
-        cache_bytes += resource->encoded_body_length;
-    }
-  }
 
   tester()->NavigateToUntrackedUrl();
 
@@ -556,25 +533,11 @@ TEST_P(UmaPageLoadMetricsObserverTest, ForwardBack) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeParseStartNewNavigation, 0);
 
-  tester()->histogram_tester().ExpectUniqueSample(
-      internal::kHistogramLoadTypeNetworkBytesForwardBack,
-      static_cast<int>((network_bytes) / 1024), 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeNetworkBytesNewNavigation, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeNetworkBytesReload, 0);
 
-  tester()->histogram_tester().ExpectUniqueSample(
-      internal::kHistogramLoadTypeCacheBytesForwardBack,
-      static_cast<int>((cache_bytes) / 1024), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeCacheBytesNewNavigation, 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeCacheBytesReload, 0);
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      internal::kHistogramLoadTypeTotalBytesForwardBack,
-      static_cast<int>((network_bytes + cache_bytes) / 1024), 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeTotalBytesNewNavigation, 0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -665,23 +628,11 @@ TEST_P(UmaPageLoadMetricsObserverTest, NewNavigation) {
       internal::kHistogramLoadTypeNetworkBytesNewNavigation,
       static_cast<int>((network_bytes) / 1024), 1);
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeNetworkBytesForwardBack, 0);
-  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeNetworkBytesReload, 0);
-
-  tester()->histogram_tester().ExpectUniqueSample(
-      internal::kHistogramLoadTypeCacheBytesNewNavigation,
-      static_cast<int>((cache_bytes) / 1024), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeCacheBytesForwardBack, 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeCacheBytesReload, 0);
 
   tester()->histogram_tester().ExpectUniqueSample(
       internal::kHistogramLoadTypeTotalBytesNewNavigation,
       static_cast<int>((network_bytes + cache_bytes) / 1024), 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramLoadTypeTotalBytesForwardBack, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramLoadTypeTotalBytesReload, 0);
 }
@@ -693,8 +644,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, BytesAndResourcesCounted) {
       internal::kHistogramPageLoadTotalBytes, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageLoadNetworkBytes, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramPageLoadCacheBytes, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageLoadNetworkBytesIncludingHeaders, 1);
 }
@@ -1317,25 +1266,6 @@ TEST_P(UmaPageLoadMetricsObserverTest,
       internal::kHistogramUserGestureNavigationToForwardBack, 1);
 }
 
-TEST_P(UmaPageLoadMetricsObserverTest, UnfinishedBytesRecorded) {
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-
-  std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
-  // Incomplete resource.
-  resources.push_back(
-      CreateResource(false /* was_cached */, 10 * 1024 /* delta_bytes */,
-                     0 /* encoded_body_length */, 0 /* decoded_body_length */,
-                     false /* is_complete */));
-  tester()->SimulateResourceDataUseUpdate(resources);
-
-  // Navigate again to force histogram recording.
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-
-  // Verify that the unfinished resource bytes are recorded.
-  tester()->histogram_tester().ExpectUniqueSample(
-      internal::kHistogramPageLoadUnfinishedBytes, 10, 1);
-}
-
 TEST_P(UmaPageLoadMetricsObserverTest, MainFrame_MaxMemoryBytesRecorded) {
   // Commit the main frame and a subframe.
   NavigateAndCommit(GURL(kDefaultTestUrl));
@@ -1357,8 +1287,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, MainFrame_MaxMemoryBytesRecorded) {
       internal::kHistogramMemorySubframeAggregate, 0, 1);
   histogram_tester().ExpectUniqueSample(internal::kHistogramMemoryTotal, 150,
                                         1);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMemoryUpdateReceived, true, 1);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest, SingleSubFrame_MaxMemoryBytesRecorded) {
@@ -1387,8 +1315,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, SingleSubFrame_MaxMemoryBytesRecorded) {
       internal::kHistogramMemorySubframeAggregate, 40, 1);
   histogram_tester().ExpectUniqueSample(internal::kHistogramMemoryTotal, 140,
                                         1);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMemoryUpdateReceived, true, 1);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest, MultiSubFrames_MaxMemoryBytesRecorded) {
@@ -1431,8 +1357,6 @@ TEST_P(UmaPageLoadMetricsObserverTest, MultiSubFrames_MaxMemoryBytesRecorded) {
       10 + 20 + 30 + 5 - 2 + 5 - 2 + 5, 1);
   histogram_tester().ExpectUniqueSample(
       internal::kHistogramMemoryTotal, 500 + 10 + 20 + 30 + 100 + 5 - 2 + 5, 1);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMemoryUpdateReceived, true, 1);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest,

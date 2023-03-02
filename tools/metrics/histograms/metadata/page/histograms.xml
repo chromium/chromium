@@ -1606,18 +1606,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Experimental.Bytes.Cache2" units="KB"
-    expires_after="2020-05-30">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <summary>
-    The number of prefiltered (e.g., compressed) response body KiloBytes loaded
-    from the cache via the browser process for a page load. Recorded when the
-    page load is terminated. Only recorded for complete resources. Includes
-    resources from both the http cache and memory cache.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Experimental.Bytes.Network" units="KB"
     expires_after="2022-10-09">
   <owner>jkarlin@chromium.org</owner>
@@ -1649,18 +1637,6 @@ chromium-metrics-reviews@google.com.
     via the browser process for a page load. Does not include any header or
     overhead bytes. Recorded when the page load is terminated. Only recorded for
     complete resources. Includes resources from both the http and memory cache.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.Bytes.Unfinished" units="KB"
-    expires_after="2021-04-05">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Total number of network bytes that were used to load resources that did not
-    finish loading on the page (e.g. ongoing video). This includes resource
-    loads that were canceled or resource loads that were ongoing when the page
-    was destroyed.
   </summary>
 </histogram>
 
@@ -1810,18 +1786,6 @@ chromium-metrics-reviews@google.com.
 
     Only recorded if memory tracking is enabled. Recorded in PageLoadMetrics
     when the page is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.Memory.Core.UpdateReceived"
-    enum="BooleanReceived" expires_after="2021-09-30">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <summary>
-    Whether or not any V8 memory measurement updates were received by
-    UmaPageLoadMetricsObserver for this pageload. Only recorded if memory
-    tracking is enabled. Recorded in PageLoadMetrics when the page is destroyed.
   </summary>
 </histogram>
 
@@ -2054,37 +2018,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time between the OS-level input event that initiated a navigation, and
     the first contentful paint of the page that was loaded in the navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.PaintTiming.InputToFirstContentfulPaint.Background"
-    units="ms" expires_after="2020-09-05">
-  <owner>sullivan@chromium.org</owner>
-  <summary>
-    The time between the OS-level input event that initiated a navigation, and
-    the first contentful paint of the page that was loaded in the navigation,
-    for background loads.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Experimental.PaintTiming.InputToFirstPaint"
-    units="ms" expires_after="2020-09-05">
-  <owner>sullivan@chromium.org</owner>
-  <summary>
-    The time between the OS-level input event that initiated a navigation, and
-    the first paint of the page that was loaded in the navigation.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Experimental.PaintTiming.InputToFirstPaint.Background"
-    units="ms" expires_after="2020-09-05">
-  <owner>sullivan@chromium.org</owner>
-  <summary>
-    The time between the OS-level input event that initiated a navigation, and
-    the first paint of the page that was loaded in the navigation, for
-    background loads.
   </summary>
 </histogram>
 

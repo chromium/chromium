@@ -3647,7 +3647,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Cache2"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Network"/>
   <affected-histogram name="PageLoad.Experimental.Bytes.Total2"/>
   <affected-histogram

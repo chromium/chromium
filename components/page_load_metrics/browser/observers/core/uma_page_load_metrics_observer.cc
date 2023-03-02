@@ -253,12 +253,8 @@ const char kHistogramPageLoadTotalBytes[] =
     "PageLoad.Experimental.Bytes.Total2";
 const char kHistogramPageLoadNetworkBytes[] =
     "PageLoad.Experimental.Bytes.Network";
-const char kHistogramPageLoadCacheBytes[] =
-    "PageLoad.Experimental.Bytes.Cache2";
 const char kHistogramPageLoadNetworkBytesIncludingHeaders[] =
     "PageLoad.Experimental.Bytes.NetworkIncludingHeaders";
-const char kHistogramPageLoadUnfinishedBytes[] =
-    "PageLoad.Experimental.Bytes.Unfinished";
 
 const char kHistogramPageLoadCpuTotalUsage[] = "PageLoad.Cpu.TotalUsage";
 const char kHistogramPageLoadCpuTotalUsageForegrounded[] =
@@ -268,22 +264,16 @@ const char kHistogramLoadTypeTotalBytesForwardBack[] =
     "PageLoad.Experimental.Bytes.Total2.LoadType.ForwardBackNavigation";
 const char kHistogramLoadTypeNetworkBytesForwardBack[] =
     "PageLoad.Experimental.Bytes.Network.LoadType.ForwardBackNavigation";
-const char kHistogramLoadTypeCacheBytesForwardBack[] =
-    "PageLoad.Experimental.Bytes.Cache2.LoadType.ForwardBackNavigation";
 
 const char kHistogramLoadTypeTotalBytesReload[] =
     "PageLoad.Experimental.Bytes.Total2.LoadType.Reload";
 const char kHistogramLoadTypeNetworkBytesReload[] =
     "PageLoad.Experimental.Bytes.Network.LoadType.Reload";
-const char kHistogramLoadTypeCacheBytesReload[] =
-    "PageLoad.Experimental.Bytes.Cache2.LoadType.Reload";
 
 const char kHistogramLoadTypeTotalBytesNewNavigation[] =
     "PageLoad.Experimental.Bytes.Total2.LoadType.NewNavigation";
 const char kHistogramLoadTypeNetworkBytesNewNavigation[] =
     "PageLoad.Experimental.Bytes.Network.LoadType.NewNavigation";
-const char kHistogramLoadTypeCacheBytesNewNavigation[] =
-    "PageLoad.Experimental.Bytes.Cache2.LoadType.NewNavigation";
 
 const char kHistogramInputToNavigation[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart";
@@ -293,14 +283,8 @@ const char kHistogramInputToNavigationLinkClick[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart.FromLinkClick";
 const char kHistogramInputToNavigationOmnibox[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart.FromOmnibox";
-const char kHistogramInputToFirstPaint[] =
-    "PageLoad.Experimental.PaintTiming.InputToFirstPaint";
-const char kBackgroundHistogramInputToFirstPaint[] =
-    "PageLoad.Experimental.PaintTiming.InputToFirstPaint.Background";
 const char kHistogramInputToFirstContentfulPaint[] =
     "PageLoad.Experimental.PaintTiming.InputToFirstContentfulPaint";
-const char kBackgroundHistogramInputToFirstContentfulPaint[] =
-    "PageLoad.Experimental.PaintTiming.InputToFirstContentfulPaint.Background";
 
 const char kHistogramBackForwardCacheEvent[] =
     "PageLoad.BackForwardCache.Event";
@@ -351,8 +335,6 @@ const char kHistogramMemorySubframeAggregate[] =
     "PageLoad.Experimental.Memory.Core.Subframe.Aggregate.Max";
 const char kHistogramMemoryTotal[] =
     "PageLoad.Experimental.Memory.Core.Total.Max";
-const char kHistogramMemoryUpdateReceived[] =
-    "PageLoad.Experimental.Memory.Core.UpdateReceived";
 
 }  // namespace internal
 
@@ -480,20 +462,9 @@ void UmaPageLoadMetricsObserver::OnFirstPaintInPage(
           timing.paint_timing->first_paint.value() -
               timing.paint_timing->first_eligible_to_paint.value());
     }
-
-    if (timing.input_to_navigation_start) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramInputToFirstPaint,
-                          timing.input_to_navigation_start.value() +
-                              timing.paint_timing->first_paint.value());
-    }
   } else {
     PAGE_LOAD_HISTOGRAM(internal::kBackgroundHistogramFirstPaint,
                         timing.paint_timing->first_paint.value());
-    if (timing.input_to_navigation_start) {
-      PAGE_LOAD_HISTOGRAM(internal::kBackgroundHistogramInputToFirstPaint,
-                          timing.input_to_navigation_start.value() +
-                              timing.paint_timing->first_paint.value());
-    }
   }
 }
 
@@ -650,10 +621,6 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     if (timing.input_to_navigation_start) {
       PAGE_LOAD_HISTOGRAM(internal::kBackgroundHistogramInputToNavigation,
                           timing.input_to_navigation_start.value());
-      PAGE_LOAD_HISTOGRAM(
-          internal::kBackgroundHistogramInputToFirstContentfulPaint,
-          timing.input_to_navigation_start.value() +
-              timing.paint_timing->first_contentful_paint.value());
     }
   }
 
@@ -1137,32 +1104,20 @@ void UmaPageLoadMetricsObserver::RecordByteAndResourceHistograms(
 
   PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadNetworkBytes,
                        network_bytes_);
-  PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadCacheBytes, cache_bytes_);
   PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadTotalBytes, total_bytes);
   PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadNetworkBytesIncludingHeaders,
                        network_bytes_including_headers_);
-
-  size_t unfinished_bytes = 0;
-  for (auto const& kv :
-       GetDelegate().GetResourceTracker().unfinished_resources())
-    unfinished_bytes += kv.second->received_data_length;
-  PAGE_BYTES_HISTOGRAM(internal::kHistogramPageLoadUnfinishedBytes,
-                       unfinished_bytes);
 
   switch (GetPageLoadType(transition_)) {
     case LOAD_TYPE_RELOAD:
       PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeNetworkBytesReload,
                            network_bytes_);
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeCacheBytesReload,
-                           cache_bytes_);
       PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeTotalBytesReload,
                            total_bytes);
       break;
     case LOAD_TYPE_FORWARD_BACK:
       PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeNetworkBytesForwardBack,
                            network_bytes_);
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeCacheBytesForwardBack,
-                           cache_bytes_);
       PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeTotalBytesForwardBack,
                            total_bytes);
       break;
@@ -1170,8 +1125,6 @@ void UmaPageLoadMetricsObserver::RecordByteAndResourceHistograms(
       PAGE_BYTES_HISTOGRAM(
           internal::kHistogramLoadTypeNetworkBytesNewNavigation,
           network_bytes_);
-      PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeCacheBytesNewNavigation,
-                           cache_bytes_);
       PAGE_BYTES_HISTOGRAM(internal::kHistogramLoadTypeTotalBytesNewNavigation,
                            total_bytes);
       break;
@@ -1242,8 +1195,6 @@ void UmaPageLoadMetricsObserver::RecordV8MemoryHistograms() {
                          aggregate_subframe_memory_usage_.max_bytes_used());
     PAGE_BYTES_HISTOGRAM(internal::kHistogramMemoryTotal,
                          aggregate_total_memory_usage_.max_bytes_used());
-    UMA_HISTOGRAM_BOOLEAN(internal::kHistogramMemoryUpdateReceived,
-                          memory_update_received_);
   }
 }
 

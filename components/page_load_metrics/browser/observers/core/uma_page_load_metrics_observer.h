@@ -73,33 +73,25 @@ extern const char kHistogramFirstEligibleToPaintToFirstPaint[];
 
 extern const char kHistogramPageLoadTotalBytes[];
 extern const char kHistogramPageLoadNetworkBytes[];
-extern const char kHistogramPageLoadCacheBytes[];
 extern const char kHistogramPageLoadNetworkBytesIncludingHeaders[];
-extern const char kHistogramPageLoadUnfinishedBytes[];
 
 extern const char kHistogramPageLoadCpuTotalUsage[];
 extern const char kHistogramPageLoadCpuTotalUsageForegrounded[];
 
 extern const char kHistogramLoadTypeTotalBytesForwardBack[];
 extern const char kHistogramLoadTypeNetworkBytesForwardBack[];
-extern const char kHistogramLoadTypeCacheBytesForwardBack[];
 
 extern const char kHistogramLoadTypeTotalBytesReload[];
 extern const char kHistogramLoadTypeNetworkBytesReload[];
-extern const char kHistogramLoadTypeCacheBytesReload[];
 
 extern const char kHistogramLoadTypeTotalBytesNewNavigation[];
 extern const char kHistogramLoadTypeNetworkBytesNewNavigation[];
-extern const char kHistogramLoadTypeCacheBytesNewNavigation[];
 
 extern const char kHistogramInputToNavigation[];
 extern const char kBackgroundHistogramInputToNavigation[];
 extern const char kHistogramInputToNavigationLinkClick[];
 extern const char kHistogramInputToNavigationOmnibox[];
-extern const char kHistogramInputToFirstPaint[];
-extern const char kBackgroundHistogramInputToFirstPaint[];
 extern const char kHistogramInputToFirstContentfulPaint[];
-extern const char kBackgroundHistogramInputToFirstContentfulPaint[];
 extern const char kHistogramBackForwardCacheEvent[];
 
 // Navigation metrics from the navigation start.
@@ -134,7 +126,6 @@ extern const char
 extern const char kHistogramMemoryMainframe[];
 extern const char kHistogramMemorySubframeAggregate[];
 extern const char kHistogramMemoryTotal[];
-extern const char kHistogramMemoryUpdateReceived[];
 
 // Please keep in sync with PageLoadBackForwardCacheEvent in
 // tools/metrics/histograms/enums.xml. These values should not be renumbered.
