@@ -10476,36 +10476,6 @@
             ]
         }
     ],
-    "SafeBrowsingEnhancedProtection": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingEnhancedProtection"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingEnhancedProtectionPhase2IOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingEnhancedProtectionPhase2IOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingLookupMechanismExperiment": [
         {
             "platforms": [
