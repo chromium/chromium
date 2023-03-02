@@ -32,7 +32,9 @@ class KerberosInBrowserDialog : public SystemWebDialogDelegate {
   ~KerberosInBrowserDialog() override;
 
   // ui::WebDialogDelegate overrides
+  ui::ModalType GetDialogModalType() const override;
   void GetDialogSize(gfx::Size* size) const override;
+  bool ShouldShowCloseButton() const override;
   bool ShouldShowDialogTitle() const override;
 
  private:

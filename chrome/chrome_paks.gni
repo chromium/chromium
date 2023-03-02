@@ -413,8 +413,14 @@ template("chrome_extra_paks") {
       }
     }
     if (is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak" ]
-      deps += [ "//chrome/common/chromeos/extensions:resources" ]
+      sources += [
+        "$root_gen_dir/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.pak",
+        "$root_gen_dir/chrome/kerberos_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources/chromeos/kerberos:resources",
+        "//chrome/common/chromeos/extensions:resources",
+      ]
     }
     if (is_linux || is_chromeos) {
       sources += [ "$root_gen_dir/chrome/webui_js_error_resources.pak" ]

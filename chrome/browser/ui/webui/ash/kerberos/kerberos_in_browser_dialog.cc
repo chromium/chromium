@@ -23,8 +23,8 @@ namespace ash {
 namespace {
 KerberosInBrowserDialog* g_dialog = nullptr;
 
-constexpr int kKerberosInBrowserDialogWidth = 500;
-constexpr int kKerberosInBrowserDialogHeight = 240;
+constexpr int kKerberosInBrowserDialogWidth = 370;
+constexpr int kKerberosInBrowserDialogHeight = 155;
 }  // namespace
 
 // static
@@ -55,6 +55,10 @@ KerberosInBrowserDialog::~KerberosInBrowserDialog() {
   g_dialog = nullptr;
 }
 
+ui::ModalType KerberosInBrowserDialog::GetDialogModalType() const {
+  return ui::MODAL_TYPE_SYSTEM;
+}
+
 void KerberosInBrowserDialog::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(dialog_window());
@@ -62,6 +66,10 @@ void KerberosInBrowserDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(
       std::min(kKerberosInBrowserDialogWidth, display.work_area().width()),
       std::min(kKerberosInBrowserDialogHeight, display.work_area().height()));
+}
+
+bool KerberosInBrowserDialog::ShouldShowCloseButton() const {
+  return false;
 }
 
 bool KerberosInBrowserDialog::ShouldShowDialogTitle() const {
