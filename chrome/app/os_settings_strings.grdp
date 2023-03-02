@@ -1004,8 +1004,17 @@
   <message name="IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL" desc="Label for button to open ChromeVox tutorial.">
     ChromeVox tutorial
   </message>
-  <message name="IDS_SETTINGS_CHROMEVOX_GENERAL_LABEL" desc="Label for general ChromeVox settings.">
+  <message name="IDS_SETTINGS_CHROMEVOX_GENERAL_LABEL" desc="In the ChromeVox settings subpage, the label for the General section header.">
     General
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_VOICES_LABEL" desc="In the ChromeVox settings subpage, the label for the Voices section header.">
+    Voices
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_LABEL" desc="In the ChromeVox settings subpage, the label for the Braille section header.">
+    Braille
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_DEVELOPER_OPTIONS_LABEL" desc="In the ChromeVox settings subpage, the label for the Developer Options section header.">
+    Developer Options
   </message>
   <message name="IDS_SETTINGS_CHROMEVOX_USE_VERBOSE_MODE" desc="In the ChromeVox settings subpage, the label for the toggle to enable verbose descriptions (An option for ChromeVox to speak more verbosely when giving descriptions to the user).">
     Enable verbose descriptions
