@@ -34615,7 +34615,7 @@ Called by update_extension_histograms.py.-->
   <int value="284" label="TOPSITES_GET"/>
   <int value="285" label="BROWSINGDATA_REMOVEDOWNLOADS"/>
   <int value="286" label="BROWSINGDATA_REMOVELOCALSTORAGE"/>
-  <int value="287" label="FILEBROWSERHANDLERINTERNAL_SELECTFILE"/>
+  <int value="287" label="DELETED_FILEBROWSERHANDLERINTERNAL_SELECTFILE"/>
   <int value="288" label="INPUT_IME_UPDATEMENUITEMS"/>
   <int value="289" label="FILEMANAGERPRIVATE_GETSTRINGS"/>
   <int value="290" label="CONTENTSETTINGS_GET"/>
