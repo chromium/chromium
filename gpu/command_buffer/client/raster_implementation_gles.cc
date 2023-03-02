@@ -480,7 +480,21 @@ void RasterImplementationGLES::ReadbackImagePixels(
     int src_y,
     int plane_index,
     void* dst_pixels) {
-  NOTREACHED();
+  DCHECK_GE(dst_row_bytes, dst_info.minRowBytes());
+
+  sk_sp<SkData> dst_color_space_data;
+  if (dst_info.colorSpace()) {
+    dst_color_space_data = dst_info.colorSpace()->serialize();
+  }
+
+  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
+  gl_->ReadbackARGBImagePixelsINTERNAL(
+      source_mailbox.name,
+      dst_color_space_data ? dst_color_space_data->data() : nullptr,
+      dst_color_space_data ? dst_color_space_data->size() : 0, dst_size,
+      dst_info.width(), dst_info.height(), dst_info.colorType(),
+      dst_info.alphaType(), dst_row_bytes, src_x, src_y, plane_index,
+      dst_pixels);
 }
 
 GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
