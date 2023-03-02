@@ -3821,6 +3821,8 @@ enum WebFeature {
   kPopoverTypeHint = 4480,
   kWebGPUWebCodecs = 4481,
   kRTCPeerConnectionLegacyGetStatsTrial = 4482,
+  kExecutedEmptyJavaScriptURLFromFrame = 4483,
+  kExecutedJavaScriptURLFromFrame = 4484,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

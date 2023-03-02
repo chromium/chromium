@@ -2093,6 +2093,49 @@ IN_PROC_BROWSER_TEST_F(SameDocumentCrossOriginInitiatorTest,
   CheckCounter(WebFeature::kSameDocumentCrossOriginInitiator, 0);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       JavascriptUrlNavigationInIFrame) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.src = 'javascript:1';
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+  CheckCounter(WebFeature::kExecutedEmptyJavaScriptURLFromFrame, 0);
+  CheckCounter(WebFeature::kExecutedJavaScriptURLFromFrame, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       EmptyStringJavascriptUrlNavigationInIFrame) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    new Promise(resolve => {
+      let iframe = document.createElement("iframe");
+      iframe.src = 'javascript:""';
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+  CheckCounter(WebFeature::kExecutedEmptyJavaScriptURLFromFrame, 1);
+  CheckCounter(WebFeature::kExecutedJavaScriptURLFromFrame, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       JavascriptUrlNavigationInTopFrame) {
+  GURL url = https_server().GetURL("a.test", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    location.href = 'javascript:""';
+  )"));
+  CheckCounter(WebFeature::kExecutedEmptyJavaScriptURLFromFrame, 0);
+  CheckCounter(WebFeature::kExecutedJavaScriptURLFromFrame, 0);
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // [ ] CrossOriginOpenerPolicySameOrigin
 // [ ] CrossOriginOpenerPolicySameOriginAllowPopups

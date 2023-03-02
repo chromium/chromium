@@ -133,6 +133,22 @@
 
 namespace blink {
 
+namespace {
+
+void LogJavaScriptUrlHistogram(LocalDOMWindow* origin_window, String script) {
+  origin_window->CountUse(WebFeature::kExecutedJavaScriptURLFromFrame);
+  if (script.length() > 6) {
+    return;
+  }
+
+  script = script.StripWhiteSpace().Replace(";", "");
+  if (script == "''" || script == "\"\"") {
+    origin_window->CountUse(WebFeature::kExecutedEmptyJavaScriptURLFromFrame);
+  }
+}
+
+}  // namespace
+
 bool IsBackForwardLoadType(WebFrameLoadType type) {
   return type == WebFrameLoadType::kBackForward;
 }
@@ -750,6 +766,11 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   if (url.ProtocolIsJavaScript()) {
     if (!origin_window ||
         origin_window->CanExecuteScripts(kAboutToExecuteScript)) {
+      if (origin_window && request.GetFrameType() ==
+                               mojom::blink::RequestContextFrameType::kNested) {
+        LogJavaScriptUrlHistogram(origin_window, url.GetPath());
+      }
+
       frame_->GetDocument()->ProcessJavaScriptUrl(url,
                                                   request.JavascriptWorld());
     }
