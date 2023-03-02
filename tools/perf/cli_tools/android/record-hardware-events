@@ -1,0 +1,332 @@
+#!/bin/sh
+#
+# Record hardware counter events using 'simpleperf' on Android.
+#
+# Usage:
+#   $0 [-a APP] [-d DURATION] [-e EVENT]...
+#
+# The script has two modes of operation:
+#
+# - In 'timed' mode (with flag '-d' specified), the events specified
+#   will be recorded for 'DURATION' seconds.
+# - In 'free-running' mode (without '-d' specified), recording will continue
+#   till explicitly stopped by pressing 'ENTER'.
+#
+# Output Format:
+#
+#   The output is a CSV file, with the following structure:
+#
+#     THREAD_NAME,CPU,EVENT-COUNT,EVENT-COUNT,...
+#
+#   where each 'EVENT' is the name of the event specified on invocation.
+#
+#   Event counts for a given <thread-name, CPU> pair across processes
+#   are merged.
+#
+# Prerequisites (on the host):
+#
+#   ADB     https://developer.android.com/studio/command-line/adb
+#   MILLER  https://miller.readthedocs.io/en/latest/
+#
+local_tmpdir=$(mktemp --directory) || {
+  echo ERROR: Cannot create temporary directory.
+  exit 1
+}
+trap "rm -r ${local_tmpdir}" EXIT INT
+
+default_app="com.android.chrome"
+default_event="cpu-cycles"
+print_test_time=NO
+verbose=NO
+
+debug_dir=""
+duration=""
+simpleperf_events=""
+
+# Print usage and exit.
+usage()
+{
+  [[ ${#} -gt 0 ]] && {
+    echo ERROR: $*
+    echo
+  }
+
+  echo "Usage: $0 [options]
+
+Measure performance counter events using 'simpleperf'.
+
+Options:
+  -D DIR     Save intermediate files to directory DIR for debugging.
+  -T         Display the test run time reported by 'simpleperf'.
+  -a APP     Measure APP [default: '${default_app}'].
+  -d DUR     Run for duration seconds [default: run till asked to exit].
+  -e EVENT   Measure perf event 'EVENT' [default: ${default_event}].
+  -n         Dry-run.  Implies -v.
+  -v         Be verbose.
+"
+  exit 2
+}
+
+# Parse command-line options.
+parse_options_and_set_defaults() {
+  local OPTIND
+  while getopts D:HTa:d:e:nv option; do
+    case $option in
+    D)    debug_dir="$OPTARG"
+          ;;
+    T)    print_test_time=YES
+          ;;
+    a)    app="$OPTARG"
+          ;;
+    d)    duration="$OPTARG"
+          ;;
+    e)    simpleperf_events="${simpleperf_events} ${OPTARG}"
+          ;;
+    n)    dry_run=YES
+          verbose=YES
+          ;;
+    v)    verbose=YES
+          ;;
+    ?)    usage
+          exit 2
+          ;;
+    esac
+  done
+
+  shift $(($OPTIND - 1))
+
+  # Set defaults.
+  [[ ${verbose} = YES ]] && echo "[V] TMPDIR: ${local_tmpdir}"
+
+  [[ -n "${simpleperf_events}" ]] || simpleperf_events="${default_event}"
+
+  [[ -z "${app}" ]] && app=${default_app}
+}
+
+# Prepares the command line to use on the device.
+#
+# The prepared command line is displayed to the user if verbose mode (-v)
+# is in effect.
+prepare_simpleperf_command_line() {
+  measurement_command="/system/bin/simpleperf stat --per-core --per-thread --csv "
+  measurement_command="${measurement_command} --app ${app}"
+
+  if [[ -n ${duration} ]]; then
+    measurement_command="${measurement_command} --duration ${duration}"
+  fi
+
+  # Add the simpleperf events specified, while remembering the desired output
+  # order of events.
+  output_order=""
+  for event in ${simpleperf_events}; do
+    measurement_command="${measurement_command} -e ${event} "
+    if [[ -z "${output_order}" ]]; then
+      output_order="${event}"
+    else
+      output_order="${output_order},${event}"
+    fi
+  done
+
+  [[ ${verbose} = YES ]] && echo "[V] COMMAND: ${measurement_command}"
+}
+
+# Bail early if preconditions are not satisfied.
+run_sanity_checks() {
+  if ! which mlr > /dev/null; then
+    echo ERROR: "'mlr' is not installed."
+    echo
+    echo Please install it using "'apt install miller'" or equivalent.
+    exit 1
+  fi
+
+  is_adb_root=$(adb shell id -u) || { \
+    echo ERROR: Cannot run 'adb'.
+    exit 1
+  }
+
+  if [[ "${is_adb_root}" -ne 0 ]]; then
+     echo ERROR: Please run 'adb root'.
+     exit 1
+  fi
+}
+
+# Prepare the script for execution on the phone/tablet.
+prepare_device_script() {
+  device_tmpfile="$(adb shell mktemp)"
+  device_errors="$(adb shell mktemp)"
+  device_script="$(adb shell mktemp)"
+
+  script_file=${local_tmpdir}/script
+  cat > ${script_file} <<EOF
+#!/bin/sh -e
+#
+# Runs the measurement command in the background, returning its PID.
+${measurement_command} 2> ${device_errors} > ${device_tmpfile} &
+echo \$!
+EOF
+
+  # If '-D' is specified, make a copy of the generated script for later
+  # debugging.
+  if [[ -n ${debug_dir} ]]; then
+    mkdir -p ${debug_dir}
+    cp ${script_file} ${debug_dir}/script
+  fi
+
+  # Copy the generated script to the device.
+  adb push ${script_file} ${device_script} > /dev/null
+  adb shell "/system/bin/chmod +x ${device_script}"
+}
+
+# Runs the prepared script on the device.
+run_simpleperf_on_device() {
+  # Run the generated script, remembering its PID on the device for later.
+  device_pid=$(adb shell /bin/sh ${device_script})
+
+  if [[ -n ${duration} ]]; then
+    # If a duration was specified, wait for slightly longer than specified.
+    sleep $((${duration} + 1))
+  else
+    # Otherwise wait for a manual signal terminating the run.
+    read -r -p "Press ENTER to stop the measurement:"
+  fi
+
+  # Interrupt the measurement script.  This can fail if the script has already
+  # exited due to an error.
+  adb shell kill -INT ${device_pid} || true
+
+  # Flush in-memory buffers.
+  adb shell /system/bin/sync
+
+  # Wait for 'simpleperf' to exit on the device.
+  while true; do
+    simpleperf_running="$(adb shell pgrep simpleperf)"
+    if [[ -z ${simpleperf_is_running} ]]; then
+      break;
+    else
+      sleep 1
+    fi
+  done
+
+  # Wait a bit before pulling data in.  For some reason it takes a while for
+  # simpleperf's output file to get populated.
+  sleep 1
+
+  adb shell fsync ${device_tmpfile}
+}
+
+# Copies simpleperf's output to the host, for further processing.
+copy_simpleperf_output() {
+  # Copy over simpleperf's output.
+  simpleperf_output="${local_tmpdir}/simpleperf-output"
+  adb pull ${device_tmpfile} ${simpleperf_output} > /dev/null
+
+  # Make a copy of simpleperf's output, if '-D' was specified.
+  [[ -n ${debug_dir} ]] && {
+    cp ${simpleperf_output} ${debug_dir}/simpleperf-output
+    adb pull ${device_errors} ${debug_dir}/simpleperf-errors > /dev/null;
+  }
+
+  # Clean up temporary files on the device.
+  adb shell rm ${device_tmpfile} ${device_script} ${device_errors}
+}
+
+# Check for a successful run of simpleperf.
+sanity_check_simpleperf_output() {
+  # Verify that the output is complete.
+  test_time=$(awk -F, '/Total test time/ { print $2 }' ${simpleperf_output})
+  if [[ -z "${test_time}" ]]; then
+    echo ERROR: truncated test data from simpleperf.
+    exit 1
+  fi
+}
+
+# Removes non-CSV lines from simpleperf's output and fills in missing rows.
+preprocess_simpleperf_output() {
+  # The output uses the following CSV schema, as of simpleperf version
+  # '1.build.9558342':
+  #
+  #   thread_name,pid,tid,cpu,count,event_name,count/runtime,units,always-empty
+  #
+  # However, there are also extra lines in the CSV output, namely:
+  #
+  #  1) "Performance counter statistics,"
+  #  2) "Total test time,DURATION,seconds,"
+
+  # The "CSV-like" lines in the output of 'simpleperf' have the following
+  # structure:
+  #
+  #    threadname,pid,tid,cpu,count,eventname,rate,units,<empty-field>
+  #
+  # Remove the non-CSV lines and ensure that every [thread,cpu,event] combination
+  # is present in the processed output.
+  #
+  # Counts are merged across TIDs and PIDs for a given event.  If a
+  # [thread,cpu,event] combination is not present in the input, it is given
+  # a count of zero in the processed output.
+  #
+  # TODO(b/1398262): Use 'mlr' for preprocessing instead of 'awk'.
+  processed_output="${local_tmpdir}/processed-output"
+  awk -F, '
+    $1 ~ /Total test time/ { next }
+    $1 ~ /Performance counter/ { next }
+    {
+      t = $1; c = $4; e = $6;
+      thread_name[t] = 1; cpu[c] = 1; event_name[e] = 1;
+      event_count[t,c,e] += $5;  # Merge counts across TIDs and PIDs.
+    }
+    END {
+      for (e in event_name) {
+        for (t in thread_name) {
+          for (c in cpu) {
+            printf("%s,%d,%d,%s\n", t, c, event_count[t,c,e], e);
+          }
+        }
+      }
+    }
+    ' ${simpleperf_output} > ${processed_output}
+
+  [[ -n ${debug_dir} ]] && cp ${processed_output} ${debug_dir}/processed-output
+}
+
+# Label, sort, and reshape CSV data.
+process_simpleperf_output() {
+  # Group event counts by thread and CPU.
+  mlr_first_pass=${local_tmpdir}/mlr-first-pass
+  mlr --csv --from ${processed_output} --implicit-csv-header \
+    label "thread_name,cpu,count,event_name" then \
+      sort -f thread_name,cpu then \
+      reshape -s event_name,count then \
+      reorder -e -f "${output_order}" then \
+      gap -g event_name > ${mlr_first_pass}
+
+  # Make a copy of 'mlr's output if '-D' was specified.
+  [[ -n ${debug_dir} ]] && cp ${mlr_first_pass} ${debug_dir}/
+}
+
+# Show the processed output.
+display_processed_output() {
+  cat ${mlr_first_pass}
+}
+
+maybe_print_test_time() {
+  [[ ${print_test_time} = YES ]] && echo "Test time: ${test_time}"
+}
+
+
+# MAIN
+
+parse_options_and_set_defaults "$@"
+prepare_simpleperf_command_line
+
+# Exit at this point if a dry run was specified.
+[[ ${dry_run} = YES ]] && exit 0
+
+run_sanity_checks
+prepare_device_script
+run_simpleperf_on_device
+copy_simpleperf_output
+sanity_check_simpleperf_output
+preprocess_simpleperf_output
+process_simpleperf_output
+display_processed_output
+maybe_print_test_time
