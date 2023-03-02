@@ -465,6 +465,7 @@ android_library("ui_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/modaldialog/android:java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",

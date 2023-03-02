@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import androidx.annotation.StringDef;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -312,6 +314,10 @@ public class RenderTestRule extends TestWatcher {
             if (drawable instanceof AnimatedVectorDrawableCompat) {
                 ((AnimatedVectorDrawableCompat) drawable).stop();
             }
+        }
+        if (view instanceof TextInputLayout) {
+            TextInputLayout textInputLayout = (TextInputLayout) view;
+            textInputLayout.setHintAnimationEnabled(false);
         }
         // Scrollbars fade slowly, making tests flaky due to differences in rendered images.
         view.setVerticalScrollBarEnabled(false);
