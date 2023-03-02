@@ -24,9 +24,10 @@ class ArcVmDataMigrationScreenView
   enum class UIState {
     kLoading = 0,
     kWelcome = 1,
-    kProgress = 2,
-    kSuccess = 3,
-    kFailure = 4,
+    kResume = 2,
+    kProgress = 3,
+    kSuccess = 4,
+    kFailure = 5,
   };
 
   virtual ~ArcVmDataMigrationScreenView() = default;

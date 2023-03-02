@@ -45,6 +45,7 @@ constexpr char kProfileName[] = "user@gmail.com";
 constexpr char kGaiaId[] = "1234567890";
 
 constexpr char kUserActionUpdate[] = "update";
+constexpr char kUserActionResume[] = "resume";
 
 constexpr int64_t kFreeDiskSpaceLessThanThreshold = 1LL << 29;
 constexpr int64_t kFreeDiskSpaceMoreThanThreshold = 1LL << 31;
@@ -241,6 +242,12 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
   void PressUpdateButton() {
     base::Value::List args;
     args.Append(kUserActionUpdate);
+    screen_->HandleUserAction(args);
+  }
+
+  void PressResumeButton() {
+    base::Value::List args;
+    args.Append(kUserActionResume);
     screen_->HandleUserAction(args);
   }
 
@@ -480,6 +487,22 @@ TEST_F(ArcVmDataMigrationScreenTest, MigrationInProgress) {
   SendDataMigrationProgress(40, 400);
   EXPECT_EQ(static_cast<int>(std::round(view_->migration_progress())), 10);
   EXPECT_EQ(view_->estimated_remaining_time().InMilliseconds(), 18947);
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kProgress);
+  EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
+            arc::ArcVmDataMigrationStatus::kStarted);
+  EXPECT_FALSE(screen_->encountered_fatal_error());
+}
+
+TEST_F(ArcVmDataMigrationScreenTest, Resume) {
+  arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                                   arc::ArcVmDataMigrationStatus::kStarted);
+
+  screen_->Show(wizard_context_.get());
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kResume);
+
+  PressResumeButton();
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(view_->state(), ArcVmDataMigrationScreenView::UIState::kProgress);
   EXPECT_EQ(arc::GetArcVmDataMigrationStatus(profile_->GetPrefs()),
             arc::ArcVmDataMigrationStatus::kStarted);

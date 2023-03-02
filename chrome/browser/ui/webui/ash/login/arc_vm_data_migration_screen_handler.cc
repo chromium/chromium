@@ -33,6 +33,11 @@ void ArcVmDataMigrationScreenHandler::DeclareLocalizedValues(
   builder->Add("connectToChargerMessage", u"Connect your device to a charger");
   builder->Add("skipButtonLabel", u"Remind me later");
   builder->Add("updateButtonLabel", u"Next");
+  builder->Add("resumeScreenTitle", u"Resume update");
+  builder->Add("resumeScreenDescriptionHeader", u"What to expect");
+  builder->Add("resumeScreenDescriptionBody",
+               u"Your device was interupted during the update process.");
+  builder->Add("resumeButtonLabel", u"Resume");
   builder->Add("progressScreenTitle", u"Installing updates");
   builder->Add("progressScreenSubtitle", u"$1\% completed | $2");
   builder->Add("successScreenTitle", u"Finished updating!");

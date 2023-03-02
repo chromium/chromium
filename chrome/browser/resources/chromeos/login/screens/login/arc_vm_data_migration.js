@@ -26,6 +26,7 @@ import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 var ArcVmDataMigrationUIState = {
   LOADING: 'loading',
   WELCOME: 'welcome',
+  RESUM: 'resume',
   PROGRESS: 'progress',
   SUCCESS: 'success',
   FAILURE: 'failure',
@@ -35,6 +36,7 @@ var ArcVmDataMigrationUIState = {
 var ArcVmDataMigrationUserAction = {
   SKIP: 'skip',
   UPDATE: 'update',
+  RESUME: 'resume',
   FINISH: 'finish',
   REPORT: 'report',
 };
@@ -155,6 +157,10 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
 
   onUpdateButtonClicked_() {
     this.userActed(ArcVmDataMigrationUserAction.UPDATE);
+  }
+
+  onResumeButtonClicked_() {
+    this.userActed(ArcVmDataMigrationUserAction.RESUME);
   }
 
   onFinishButtonClicked_() {

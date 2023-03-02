@@ -40,9 +40,6 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
-  // chromeos::PowerManagerClient::Observer override:
-  void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
-
  private:
   // BaseScreen overrides:
   void ShowImpl() override;
@@ -64,6 +61,11 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   void SetUpInitialView();
 
   void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
+
+  void CheckBatteryState();
+
+  // chromeos::PowerManagerClient::Observer override:
+  void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
   // Sets up the destination of the migration, and then triggers the migration.
   void SetUpDestinationAndTriggerMigration();
@@ -93,6 +95,7 @@ class ArcVmDataMigrationScreen : public BaseScreen,
 
   void HandleSkip();
   void HandleUpdate();
+  void HandleResume();
   void HandleFinish();
   void HandleReport();
 
@@ -116,6 +119,11 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   // Average speed of migration (bytes per millisecond) adjusted with a smooth
   // factor.
   double average_speed_ = 0.0;
+
+  // Indicates whether the migration was previously stopped halfway and is being
+  // resumed. When this is true, the free space check is skipped and the resume
+  // screen (not the default welcome screen) is displayed as the initial screen.
+  bool resuming_ = false;
 
   bool update_button_pressed_ = false;
 

@@ -55,6 +55,7 @@ constexpr base::TimeDelta kMaximumEstimatedRemainingTime = base::Days(1);
 
 constexpr char kUserActionSkip[] = "skip";
 constexpr char kUserActionUpdate[] = "update";
+constexpr char kUserActionResume[] = "resume";
 constexpr char kUserActionFinish[] = "finish";
 constexpr char kUserActionReport[] = "report";
 
@@ -79,32 +80,6 @@ ArcVmDataMigrationScreen::~ArcVmDataMigrationScreen() = default;
 void ArcVmDataMigrationScreen::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
-}
-
-void ArcVmDataMigrationScreen::PowerChanged(
-    const power_manager::PowerSupplyProperties& proto) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (proto.has_battery_percent()) {
-    battery_percent_ = proto.battery_percent();
-  }
-
-  if (proto.has_external_power()) {
-    is_connected_to_charger_ =
-        proto.external_power() !=
-        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
-  }
-
-  if (!view_) {
-    return;
-  }
-  view_->SetBatteryState(battery_percent_ >= kMinimumBatteryPercent,
-                         is_connected_to_charger_);
-
-  // TODO(b/258278176): Properly handle the resume screen case.
-  if (!update_button_pressed_ &&
-      current_ui_state_ == ArcVmDataMigrationScreenView::UIState::kLoading) {
-    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
-  }
 }
 
 void ArcVmDataMigrationScreen::ShowImpl() {
@@ -144,6 +119,8 @@ void ArcVmDataMigrationScreen::OnUserAction(const base::Value::List& args) {
     HandleSkip();
   } else if (action_id == kUserActionUpdate) {
     HandleUpdate();
+  } else if (action_id == kUserActionResume) {
+    HandleResume();
   } else if (action_id == kUserActionFinish) {
     HandleFinish();
   } else if (action_id == kUserActionReport) {
@@ -232,9 +209,9 @@ void ArcVmDataMigrationScreen::OnArcUpstartJobsStopped(bool result) {
 }
 
 void ArcVmDataMigrationScreen::SetUpInitialView() {
-  arc::ArcVmDataMigrationStatus data_migration_status =
-      arc::GetArcVmDataMigrationStatus(profile_->GetPrefs());
-  switch (data_migration_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(profile_);
+  switch (arc::GetArcVmDataMigrationStatus(profile_->GetPrefs())) {
     case arc::ArcVmDataMigrationStatus::kConfirmed:
       // Set the status back to kNotified to prepare for cases where the
       // migration is skipped or the device is shut down before the migration is
@@ -248,8 +225,8 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case arc::ArcVmDataMigrationStatus::kStarted:
-      // TODO(b/258278176): Show the resume screen.
-      UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+      resuming_ = true;
+      CheckBatteryState();
       break;
     default:
       NOTREACHED();
@@ -282,6 +259,14 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
     return;
   }
 
+  CheckBatteryState();
+}
+
+void ArcVmDataMigrationScreen::CheckBatteryState() {
+  if (!view_) {
+    return;
+  }
+
   view_->SetMinimumBatteryPercent(kMinimumBatteryPercent);
 
   // Request PowerManager to report the battery status updates. The UI will be
@@ -290,6 +275,44 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
   DCHECK(!power_manager_observation_.IsObserving());
   power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
   chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
+}
+
+void ArcVmDataMigrationScreen::PowerChanged(
+    const power_manager::PowerSupplyProperties& proto) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (proto.has_battery_percent()) {
+    battery_percent_ = proto.battery_percent();
+  } else {
+    LOG(WARNING) << "No battery percent is reported. Reusing the old value: "
+                 << battery_percent_;
+  }
+
+  if (proto.has_external_power()) {
+    is_connected_to_charger_ =
+        proto.external_power() !=
+        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+  } else {
+    LOG(WARNING) << "No external power info is reported. Reusing the old info: "
+                 << "is_connected_to_charger_ = " << is_connected_to_charger_;
+  }
+
+  if (!view_) {
+    return;
+  }
+  view_->SetBatteryState(battery_percent_ >= kMinimumBatteryPercent,
+                         is_connected_to_charger_);
+
+  if (update_button_pressed_ ||
+      current_ui_state_ != ArcVmDataMigrationScreenView::UIState::kLoading) {
+    // No need to update the UI state if this is not the initial loading screen.
+    return;
+  }
+
+  if (resuming_) {
+    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kResume);
+  } else {
+    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+  }
 }
 
 void ArcVmDataMigrationScreen::SetUpDestinationAndTriggerMigration() {
@@ -542,7 +565,16 @@ void ArcVmDataMigrationScreen::HandleUpdate() {
   }
   update_button_pressed_ = true;
   UpdateUIState(ArcVmDataMigrationScreenView::UIState::kLoading);
-  SetUpDestinationAndTriggerMigration();
+  if (resuming_) {
+    TriggerMigration();
+  } else {
+    SetUpDestinationAndTriggerMigration();
+  }
+}
+
+void ArcVmDataMigrationScreen::HandleResume() {
+  DCHECK(resuming_);
+  HandleUpdate();
 }
 
 void ArcVmDataMigrationScreen::HandleFinish() {

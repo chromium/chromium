@@ -74,14 +74,53 @@ found in the LICENSE file.
         on-click="onSkipButtonClicked_"
         text-key="skipButtonLabel">
     </oobe-text-button>
-    <oobe-text-button inverse id="update-button"
+    <oobe-next-button inverse id="update-button"
         disabled="[[shouldDisableUpdateButton_(hasEnoughFreeDiskSpace,
                                                hasEnoughBattery)]]"
         on-click="onUpdateButtonClicked_"
         text-key="updateButtonLabel">
-    </oobe-text-button>
+    </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="resume-dialog" for-step="resume" role="dialog">
+  <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
+  </iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'resumeScreenTitle')]]</h1>
+  <div slot="content" class="landscape-header-aligned">
+    <div id="description-header">
+      <b>[[i18nDynamic(locale, 'resumeScreenDescriptionHeader')]]</b>
+    </div>
+    <div id="description-body">
+      [[i18nDynamic(locale, 'resumeScreenDescriptionBody')]]
+    </div>
+    <div class="message-container">
+      <template is="dom-if" if="[[!hasEnoughBattery]]">
+        <div class="warning" hidden="[[isConnectedToCharger]]">
+          <iron-icon icon="oobe-32:warning"></iron-icon>
+          <span class="warning-message">
+            [[i18nDynamic(locale, 'connectToChargerMessage')]]
+          </span>
+        </div>
+        <div class="warning-last-child">
+          <iron-icon icon="oobe-32:warning"></iron-icon>
+          <span class="warning-message">
+            [[i18nDynamic(locale, 'notEnoughBatteryMessage',
+                          minimumBatteryPercent)]]
+          </span>
+        </div>
+      </template>
+    </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button inverse id="resume-button"
+        disabled="[[!hasEnoughBattery]]"
+        on-click="onResumeButtonClicked_"
+        text-key="resumeButtonLabel">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
 
 <oobe-adaptive-dialog id="progress-dialog" for-step="progress" role="dialog">
   <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
