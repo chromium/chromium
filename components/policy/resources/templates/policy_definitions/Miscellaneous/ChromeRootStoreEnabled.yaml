@@ -34,5 +34,8 @@ schema:
 supported_on:
 - chrome.win:105-
 - chrome.mac:105-
+future_on:
+- chrome.linux
+- chrome_os
 tags: []
 type: main

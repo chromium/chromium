@@ -2698,7 +2698,10 @@
   "ChromeRootStoreEnabled": {
     "os": [
       "win",
-      "mac"
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
       {
