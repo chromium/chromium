@@ -9,7 +9,6 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class SchemefulSite;
@@ -17,26 +16,12 @@ class SchemefulSite;
 
 namespace content {
 
-constexpr base::TimeDelta kDefaultAttributionSourceExpiry = base::Days(30);
-
 // Contains common attributes of `StorableSource` and `StoredSource`.
 class CONTENT_EXPORT CommonSourceInfo {
  public:
-  static base::Time GetExpiryTime(
-      absl::optional<base::TimeDelta> declared_expiry,
-      base::Time source_time,
-      attribution_reporting::mojom::SourceType);
-
-  static absl::optional<base::Time> GetReportWindowTime(
-      absl::optional<base::TimeDelta> declared_window,
-      base::Time source_time);
-
   CommonSourceInfo(attribution_reporting::SuitableOrigin source_origin,
                    attribution_reporting::SuitableOrigin reporting_origin,
                    base::Time source_time,
-                   base::Time expiry_time,
-                   absl::optional<base::Time> event_report_window_time,
-                   absl::optional<base::Time> aggregatable_report_window_time,
                    attribution_reporting::mojom::SourceType);
 
   ~CommonSourceInfo();
@@ -57,16 +42,6 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   base::Time source_time() const { return source_time_; }
 
-  base::Time expiry_time() const { return expiry_time_; }
-
-  base::Time event_report_window_time() const {
-    return event_report_window_time_;
-  }
-
-  base::Time aggregatable_report_window_time() const {
-    return aggregatable_report_window_time_;
-  }
-
   attribution_reporting::mojom::SourceType source_type() const {
     return source_type_;
   }
@@ -81,9 +56,6 @@ class CONTENT_EXPORT CommonSourceInfo {
   attribution_reporting::SuitableOrigin source_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   base::Time source_time_;
-  base::Time expiry_time_;
-  base::Time event_report_window_time_;
-  base::Time aggregatable_report_window_time_;
   attribution_reporting::mojom::SourceType source_type_;
 
   // When adding new members, the corresponding `operator==()` definition in

@@ -10,6 +10,8 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -23,7 +25,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -33,6 +38,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "sql/database.h"
@@ -1301,6 +1307,116 @@ TEST_F(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
     ASSERT_TRUE(s.Step());
     ASSERT_EQ(s.ColumnString(0), "https://a.s.test");
   }
+}
+
+TEST_F(AttributionStorageSqlTest, ReportTimes) {
+  OpenDatabase();
+
+  const attribution_reporting::DestinationSet destinations =
+      *attribution_reporting::DestinationSet::Create(
+          {net::SchemefulSite::Deserialize("https://dest.test")});
+
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://report.test");
+
+  const base::Time kSourceTime = base::Time::Now();
+
+  const struct {
+    const char* desc;
+    absl::optional<base::TimeDelta> expiry;
+    absl::optional<base::TimeDelta> event_report_window;
+    absl::optional<base::TimeDelta> aggregatable_report_window;
+    base::Time expected_expiry_time;
+    base::Time expected_event_report_window_time;
+    base::Time expected_aggregatable_report_window_time;
+  } kTestCases[] = {
+      {
+          .desc = "expiry",
+          .expiry = base::Days(4),
+          .expected_expiry_time = kSourceTime + base::Days(4),
+          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(4),
+      },
+      {
+          .desc = "event-report-window",
+          .event_report_window = base::Days(4),
+          .expected_expiry_time = kSourceTime + base::Days(30),
+          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(30),
+      },
+      {
+          .desc = "clamp-event-report-window",
+          .expiry = base::Days(4),
+          .event_report_window = base::Days(30),
+          .expected_expiry_time = kSourceTime + base::Days(4),
+          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(4),
+      },
+      {
+          .desc = "aggregatable-report-window",
+          .aggregatable_report_window = base::Days(4),
+          .expected_expiry_time = kSourceTime + base::Days(30),
+          .expected_event_report_window_time = kSourceTime + base::Days(30),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(4),
+      },
+      {
+          .desc = "clamp-aggregatable-report-window",
+          .expiry = base::Days(4),
+          .aggregatable_report_window = base::Days(30),
+          .expected_expiry_time = kSourceTime + base::Days(4),
+          .expected_event_report_window_time = kSourceTime + base::Days(4),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(4),
+      },
+      {
+          .desc = "all",
+          .expiry = base::Days(9),
+          .event_report_window = base::Days(7),
+          .aggregatable_report_window = base::Days(5),
+          .expected_expiry_time = kSourceTime + base::Days(9),
+          .expected_event_report_window_time = kSourceTime + base::Days(7),
+          .expected_aggregatable_report_window_time =
+              kSourceTime + base::Days(5),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    attribution_reporting::SourceRegistration reg(destinations);
+    reg.expiry = test_case.expiry.value_or(base::Days(30));
+    reg.event_report_window = test_case.event_report_window;
+    reg.aggregatable_report_window = test_case.aggregatable_report_window;
+
+    storage()->StoreSource(
+        StorableSource(reporting_origin, std::move(reg), kSourceTime,
+                       *SuitableOrigin::Deserialize("https://source.test"),
+                       attribution_reporting::mojom::SourceType::kNavigation,
+                       /*is_within_fenced_frame=*/false));
+
+    std::vector<StoredSource> sources = storage()->GetActiveSources();
+    ASSERT_THAT(sources, SizeIs(1)) << test_case.desc;
+    const StoredSource& actual = sources.front();
+
+    EXPECT_EQ(actual.expiry_time(), test_case.expected_expiry_time)
+        << test_case.desc;
+
+    EXPECT_EQ(actual.event_report_window_time(),
+              test_case.expected_event_report_window_time)
+        << test_case.desc;
+
+    EXPECT_EQ(actual.aggregatable_report_window_time(),
+              test_case.expected_aggregatable_report_window_time)
+        << test_case.desc;
+
+    storage()->ClearData(/*delete_begin=*/base::Time::Min(),
+                         /*delete_end=*/base::Time::Max(),
+                         /*filter=*/base::NullCallback());
+  }
+
+  CloseDatabase();
 }
 
 }  // namespace

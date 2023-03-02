@@ -10,17 +10,32 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/stored_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+namespace {
+
+base::Time GetClampedTime(base::TimeDelta time_delta, base::Time source_time) {
+  constexpr base::TimeDelta kMinDeltaTime = base::Days(1);
+  return source_time + base::clamp(time_delta, kMinDeltaTime,
+                                   kDefaultAttributionSourceExpiry);
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<AttributionStorageDelegate>
@@ -64,13 +79,14 @@ AttributionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
 }
 
 base::Time AttributionStorageDelegateImpl::GetEventLevelReportTime(
-    const CommonSourceInfo& source,
+    const StoredSource& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (delay_mode_) {
     case AttributionDelayMode::kDefault:
-      return ComputeReportTime(source, trigger_time);
+      return ComputeReportTime(source.common_info(),
+                               source.event_report_window_time(), trigger_time);
     case AttributionDelayMode::kNone:
       return trigger_time;
   }
@@ -137,7 +153,8 @@ void AttributionStorageDelegateImpl::ShuffleReports(
 
 AttributionStorageDelegate::RandomizedResponse
 AttributionStorageDelegateImpl::GetRandomizedResponse(
-    const CommonSourceInfo& source) {
+    const CommonSourceInfo& source,
+    base::Time event_report_window_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (noise_mode_) {
@@ -148,7 +165,8 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
       DCHECK_LE(randomized_trigger_rate, 1);
 
       return base::RandDouble() < randomized_trigger_rate
-                 ? absl::make_optional(GetRandomFakeReports(source))
+                 ? absl::make_optional(
+                       GetRandomFakeReports(source, event_report_window_time))
                  : absl::nullopt;
     }
     case AttributionNoiseMode::kNone:
@@ -158,7 +176,8 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
 
 std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetRandomFakeReports(
-    const CommonSourceInfo& source) {
+    const CommonSourceInfo& source,
+    base::Time event_report_window_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
 
@@ -170,12 +189,14 @@ AttributionStorageDelegateImpl::GetRandomFakeReports(
   // Subtract 1 because `AttributionRandomGenerator::RandInt()` is inclusive.
   const int sequence_index = base::RandInt(0, num_combinations - 1);
 
-  return GetFakeReportsForSequenceIndex(source, sequence_index);
+  return GetFakeReportsForSequenceIndex(source, event_report_window_time,
+                                        sequence_index);
 }
 
 std::vector<AttributionStorageDelegate::FakeReport>
 AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     const CommonSourceInfo& source,
+    base::Time event_report_window_time,
     int random_stars_and_bars_sequence_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
@@ -208,11 +229,12 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     DCHECK_GE(trigger_data, 0);
     DCHECK_LT(trigger_data, trigger_data_cardinality);
 
-    base::Time report_time =
-        ReportTimeAtWindow(source, /*window_index=*/result.quot);
+    base::Time report_time = ReportTimeAtWindow(
+        source, event_report_window_time, /*window_index=*/result.quot);
     base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
 
-    DCHECK_EQ(ComputeReportTime(source, trigger_time), report_time);
+    DCHECK_EQ(ComputeReportTime(source, event_report_window_time, trigger_time),
+              report_time);
 
     fake_reports.push_back({
         .trigger_data = static_cast<uint64_t>(trigger_data),
@@ -221,6 +243,35 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     });
   }
   return fake_reports;
+}
+
+base::Time AttributionStorageDelegateImpl::GetExpiryTime(
+    absl::optional<base::TimeDelta> declared_expiry,
+    base::Time source_time,
+    attribution_reporting::mojom::SourceType source_type) {
+  // Default to the maximum expiry time.
+  base::TimeDelta expiry =
+      declared_expiry.value_or(kDefaultAttributionSourceExpiry);
+
+  // Expiry time for event sources must be a whole number of days.
+  if (source_type == attribution_reporting::mojom::SourceType::kEvent) {
+    expiry = expiry.RoundToMultiple(base::Days(1));
+  }
+
+  // If the impression specified its own expiry, clamp it to the minimum and
+  // maximum.
+  return GetClampedTime(expiry, source_time);
+}
+
+absl::optional<base::Time> AttributionStorageDelegateImpl::GetReportWindowTime(
+    absl::optional<base::TimeDelta> declared_window,
+    base::Time source_time) {
+  // If the impression specified its own window, clamp it to the minimum and
+  // maximum.
+  return declared_window.has_value()
+             ? absl::make_optional(
+                   GetClampedTime(declared_window.value(), source_time))
+             : absl::nullopt;
 }
 
 }  // namespace content

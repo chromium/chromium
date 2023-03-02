@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -71,10 +72,10 @@ void ConfigurableStorageDelegate::DetachFromSequence() {
 }
 
 base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
-    const CommonSourceInfo& source,
+    const StoredSource& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return source.source_time() + report_delay_;
+  return source.common_info().source_time() + report_delay_;
 }
 
 base::Time ConfigurableStorageDelegate::GetAggregatableReportTime(
@@ -116,9 +117,26 @@ void ConfigurableStorageDelegate::ShuffleReports(
 
 AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
-    const CommonSourceInfo& source) {
+    const CommonSourceInfo& source,
+    base::Time event_report_window_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_;
+}
+
+base::Time ConfigurableStorageDelegate::GetExpiryTime(
+    absl::optional<base::TimeDelta> declared_expiry,
+    base::Time source_time,
+    attribution_reporting::mojom::SourceType) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetExpiryTimeForTesting(
+      declared_expiry.value_or(kDefaultAttributionSourceExpiry), source_time);
+}
+
+absl::optional<base::Time> ConfigurableStorageDelegate::GetReportWindowTime(
+    absl::optional<base::TimeDelta> declared_window,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetReportWindowTimeForTesting(declared_window, source_time);
 }
 
 void ConfigurableStorageDelegate::set_max_attributions_per_source(int max) {

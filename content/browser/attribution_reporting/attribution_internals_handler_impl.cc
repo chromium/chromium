@@ -79,9 +79,9 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
           source.destination_sites().destinations().begin(),
           source.destination_sites().destinations().end()),
       common_info.reporting_origin(), common_info.source_time().ToJsTime(),
-      common_info.expiry_time().ToJsTime(),
-      common_info.event_report_window_time().ToJsTime(),
-      common_info.aggregatable_report_window_time().ToJsTime(),
+      source.expiry_time().ToJsTime(),
+      source.event_report_window_time().ToJsTime(),
+      source.aggregatable_report_window_time().ToJsTime(),
       common_info.source_type(), source.priority(), source.debug_key(),
       source.dedup_keys(), source.filter_data().filter_values(),
       base::MakeFlatMap<std::string, std::string>(

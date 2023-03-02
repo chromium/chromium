@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -45,6 +46,9 @@ class CONTENT_EXPORT StoredSource {
   StoredSource(CommonSourceInfo common_info,
                uint64_t source_event_id,
                attribution_reporting::DestinationSet,
+               base::Time expiry_time,
+               base::Time event_report_window_time,
+               base::Time aggregatable_report_window_time,
                int64_t priority,
                attribution_reporting::FilterData,
                absl::optional<uint64_t> debug_key,
@@ -68,6 +72,16 @@ class CONTENT_EXPORT StoredSource {
 
   const attribution_reporting::DestinationSet& destination_sites() const {
     return destination_sites_;
+  }
+
+  base::Time expiry_time() const { return expiry_time_; }
+
+  base::Time event_report_window_time() const {
+    return event_report_window_time_;
+  }
+
+  base::Time aggregatable_report_window_time() const {
+    return aggregatable_report_window_time_;
   }
 
   int64_t priority() const { return priority_; }
@@ -111,6 +125,9 @@ class CONTENT_EXPORT StoredSource {
 
   uint64_t source_event_id_;
   attribution_reporting::DestinationSet destination_sites_;
+  base::Time expiry_time_;
+  base::Time event_report_window_time_;
+  base::Time aggregatable_report_window_time_;
   int64_t priority_;
   attribution_reporting::FilterData filter_data_;
   absl::optional<uint64_t> debug_key_;

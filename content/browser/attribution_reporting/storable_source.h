@@ -26,11 +26,6 @@ class CONTENT_EXPORT StorableSource {
  public:
   using Result = ::attribution_reporting::mojom::StoreSourceResult;
 
-  // TODO(apaseltiner): Make this constructor test-only.
-  StorableSource(attribution_reporting::SourceRegistration,
-                 CommonSourceInfo common_info,
-                 bool is_within_fenced_frame);
-
   StorableSource(attribution_reporting::SuitableOrigin reporting_origin,
                  attribution_reporting::SourceRegistration,
                  base::Time source_time,

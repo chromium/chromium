@@ -233,17 +233,19 @@ void AttributionReport::SetExternalReportIdForTesting(
 }
 
 base::Time AttributionReport::OriginalReportTime() const {
-  return absl::visit(base::Overloaded{
-                         [this](const EventLevelData&) {
-                           return ComputeReportTime(
-                               this->attribution_info_.source.common_info(),
-                               this->attribution_info_.time);
-                         },
-                         [](const AggregatableAttributionData& data) {
-                           return data.initial_report_time;
-                         },
-                     },
-                     data_);
+  return absl::visit(
+      base::Overloaded{
+          [this](const EventLevelData&) {
+            return ComputeReportTime(
+                this->attribution_info_.source.common_info(),
+                this->attribution_info_.source.event_report_window_time(),
+                this->attribution_info_.time);
+          },
+          [](const AggregatableAttributionData& data) {
+            return data.initial_report_time;
+          },
+      },
+      data_);
 }
 
 // static

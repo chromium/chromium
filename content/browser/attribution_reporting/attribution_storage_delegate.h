@@ -25,6 +25,7 @@ namespace content {
 
 class AttributionReport;
 class CommonSourceInfo;
+class StoredSource;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports.
@@ -55,7 +56,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   // Returns the time an event-level report should be sent for a given trigger
   // time and its corresponding source.
-  virtual base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
+  virtual base::Time GetEventLevelReportTime(const StoredSource& source,
                                              base::Time trigger_time) const = 0;
 
   // Returns the time an aggregatable report should be sent for a given trigger
@@ -130,7 +131,17 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // more fake reports. Returns `absl::nullopt` to indicate that the response
   // should not be randomized.
   virtual RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source) = 0;
+      const CommonSourceInfo& source,
+      base::Time event_report_window_time) = 0;
+
+  virtual base::Time GetExpiryTime(
+      absl::optional<base::TimeDelta> declared_expiry,
+      base::Time source_time,
+      attribution_reporting::mojom::SourceType) = 0;
+
+  virtual absl::optional<base::Time> GetReportWindowTime(
+      absl::optional<base::TimeDelta> declared_window,
+      base::Time source_time) = 0;
 
   // Returns the maximum sum of the contributions (values) across all buckets
   // per source.

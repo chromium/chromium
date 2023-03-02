@@ -145,7 +145,7 @@ bool RateLimitTable::AddRateLimit(
     source_expiry_or_attribution_time = *trigger_time;
   } else {
     scope = Scope::kSource;
-    source_expiry_or_attribution_time = common_info.expiry_time();
+    source_expiry_or_attribution_time = source.expiry_time();
   }
 
   static constexpr char kStoreRateLimitSql[] =

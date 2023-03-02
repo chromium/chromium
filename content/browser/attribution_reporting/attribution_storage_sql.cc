@@ -47,6 +47,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
@@ -409,14 +410,11 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
 
   return StoredSourceData{
       .source = StoredSource(
-          CommonSourceInfo(
-              std::move(*source_origin), std::move(*reporting_origin),
-              source_time,
-              /*expiry_time=*/expiry_time,
-              /*event_report_window_time=*/event_report_window_time,
-              /*aggregatable_report_window_time=*/
-              aggregatable_report_window_time, *source_type),
-          source_event_id, std::move(*destination_set), priority,
+          CommonSourceInfo(std::move(*source_origin),
+                           std::move(*reporting_origin), source_time,
+                           *source_type),
+          source_event_id, std::move(*destination_set), expiry_time,
+          event_report_window_time, aggregatable_report_window_time, priority,
           std::move(*filter_data), debug_key, std::move(*aggregation_keys),
           *attribution_logic, *active_state, source_id,
           aggregatable_budget_consumed),
@@ -551,8 +549,21 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
+  const attribution_reporting::SourceRegistration& reg = source.registration();
+
+  const base::Time expiry_time = delegate_->GetExpiryTime(
+      reg.expiry, common_info.source_time(), common_info.source_type());
+  const base::Time event_report_window_time = ComputeReportWindowTime(
+      delegate_->GetReportWindowTime(reg.event_report_window,
+                                     common_info.source_time()),
+      expiry_time);
+  const base::Time aggregatable_report_window_time = ComputeReportWindowTime(
+      delegate_->GetReportWindowTime(reg.aggregatable_report_window,
+                                     common_info.source_time()),
+      expiry_time);
+
   AttributionStorageDelegate::RandomizedResponse randomized_response =
-      delegate_->GetRandomizedResponse(common_info);
+      delegate_->GetRandomizedResponse(common_info, event_report_window_time);
 
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
@@ -566,8 +577,6 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   }
   // Aggregatable reports are not subject to `attribution_logic`.
   const bool aggregatable_active = true;
-
-  const attribution_reporting::SourceRegistration& reg = source.registration();
 
   static constexpr char kInsertImpressionSql[] =
       "INSERT INTO sources"
@@ -584,9 +593,9 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindString(1, serialized_source_origin);
   statement.BindString(2, common_info.reporting_origin().Serialize());
   statement.BindTime(3, common_info.source_time());
-  statement.BindTime(4, common_info.expiry_time());
-  statement.BindTime(5, common_info.event_report_window_time());
-  statement.BindTime(6, common_info.aggregatable_report_window_time());
+  statement.BindTime(4, expiry_time);
+  statement.BindTime(5, event_report_window_time);
+  statement.BindTime(6, aggregatable_report_window_time);
   statement.BindInt(7, SerializeSourceType(common_info.source_type()));
   statement.BindInt(8, SerializeAttributionLogic(attribution_logic));
   statement.BindInt64(9, reg.priority);
@@ -626,6 +635,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
 
   const StoredSource stored_source(
       source.common_info(), reg.source_event_id, reg.destination_set,
+      expiry_time, event_report_window_time, aggregatable_report_window_time,
       reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
       attribution_logic, *active_state, source_id,
       /*aggregatable_budget_consumed=*/0);
@@ -1118,7 +1128,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
 
   const CommonSourceInfo& common_info = attribution_info.source.common_info();
 
-  if (attribution_info.time > common_info.event_report_window_time()) {
+  if (attribution_info.time >
+      attribution_info.source.event_report_window_time()) {
     return EventLevelResult::kReportWindowPassed;
   }
 
@@ -1159,8 +1170,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kInternalError;
   }
 
-  const base::Time report_time =
-      delegate_->GetEventLevelReportTime(common_info, attribution_info.time);
+  const base::Time report_time = delegate_->GetEventLevelReportTime(
+      attribution_info.source, attribution_info.time);
 
   // TODO(apaseltiner): When the real values returned by
   // `GetRandomizedResponseRate()` are changed for the first time, we must
@@ -2733,7 +2744,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
 
   const CommonSourceInfo& common_info = attribution_info.source.common_info();
 
-  if (attribution_info.time > common_info.aggregatable_report_window_time()) {
+  if (attribution_info.time >
+      attribution_info.source.aggregatable_report_window_time()) {
     return AggregatableResult::kReportWindowPassed;
   }
 

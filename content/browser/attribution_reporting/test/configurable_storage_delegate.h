@@ -22,7 +22,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   ~ConfigurableStorageDelegate() override;
 
   // AttributionStorageDelegate:
-  base::Time GetEventLevelReportTime(const CommonSourceInfo&,
+  base::Time GetEventLevelReportTime(const StoredSource&,
                                      base::Time trigger_time) const override;
   base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
@@ -31,7 +31,15 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>&) override;
-  RandomizedResponse GetRandomizedResponse(const CommonSourceInfo&) override;
+  RandomizedResponse GetRandomizedResponse(
+      const CommonSourceInfo&,
+      base::Time event_report_window_time) override;
+  base::Time GetExpiryTime(absl::optional<base::TimeDelta> declared_expiry,
+                           base::Time source_time,
+                           attribution_reporting::mojom::SourceType) override;
+  absl::optional<base::Time> GetReportWindowTime(
+      absl::optional<base::TimeDelta> declared_window,
+      base::Time source_time) override;
 
   void set_max_attributions_per_source(int max);
 

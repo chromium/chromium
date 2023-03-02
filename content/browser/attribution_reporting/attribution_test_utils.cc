@@ -29,6 +29,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/net_errors.h"
@@ -61,6 +62,20 @@ const int64_t kExpiryTime = 30;
 
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
+}
+
+base::Time GetExpiryTimeForTesting(base::TimeDelta declared_expiry,
+                                   base::Time source_time) {
+  return source_time + declared_expiry;
+}
+
+absl::optional<base::Time> GetReportWindowTimeForTesting(
+    absl::optional<base::TimeDelta> declared_window,
+    base::Time source_time) {
+  if (!declared_window) {
+    return absl::nullopt;
+  }
+  return source_time + *declared_window;
 }
 
 // Builds an impression with default values. This is done as a builder because
@@ -199,18 +214,8 @@ SourceBuilder& SourceBuilder::SetDebugReporting(bool debug_reporting) {
 }
 
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
-  return CommonSourceInfo(
-      source_origin_, reporting_origin_, source_time_,
-      /*expiry_time=*/source_time_ + expiry_,
-      /*event_report_window_time=*/
-      event_report_window_
-          ? absl::make_optional(source_time_ + *event_report_window_)
-          : absl::nullopt,
-      /*aggregatable_report_window_time=*/
-      aggregatable_report_window_
-          ? absl::make_optional(source_time_ + *aggregatable_report_window_)
-          : absl::nullopt,
-      source_type_);
+  return CommonSourceInfo(source_origin_, reporting_origin_, source_time_,
+                          source_type_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -224,15 +229,24 @@ StorableSource SourceBuilder::Build() const {
   registration.debug_key = debug_key_;
   registration.aggregation_keys = aggregation_keys_;
   registration.debug_reporting = debug_reporting_;
-  return StorableSource(std::move(registration), BuildCommonInfo(),
+  return StorableSource(reporting_origin_, std::move(registration),
+                        source_time_, source_origin_, source_type_,
                         is_within_fenced_frame_);
 }
 
 StoredSource SourceBuilder::BuildStored() const {
-  StoredSource source(BuildCommonInfo(), source_event_id_, destination_sites_,
-                      priority_, filter_data_, debug_key_, aggregation_keys_,
-                      attribution_logic_, active_state_, source_id_,
-                      aggregatable_budget_consumed_);
+  base::Time expiry_time = GetExpiryTimeForTesting(expiry_, source_time_);
+  StoredSource source(
+      BuildCommonInfo(), source_event_id_, destination_sites_, expiry_time,
+      ComputeReportWindowTime(
+          GetReportWindowTimeForTesting(event_report_window_, source_time_),
+          expiry_time),
+      ComputeReportWindowTime(GetReportWindowTimeForTesting(
+                                  aggregatable_report_window_, source_time_),
+                              expiry_time),
+      priority_, filter_data_, debug_key_, aggregation_keys_,
+      attribution_logic_, active_state_, source_id_,
+      aggregatable_budget_consumed_);
   source.SetDedupKeys(dedup_keys_);
   source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
   return source;
@@ -480,10 +494,8 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
-    return std::make_tuple(
-        source.source_origin(), source.reporting_origin(), source.source_time(),
-        source.expiry_time(), source.event_report_window_time(),
-        source.aggregatable_report_window_time(), source.source_type());
+    return std::make_tuple(source.source_origin(), source.reporting_origin(),
+                           source.source_time(), source.source_type());
   };
   return tie(a) == tie(b);
 }
@@ -527,8 +539,10 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
   const auto tie = [](const StoredSource& source) {
     return std::make_tuple(
         source.common_info(), source.source_event_id(),
-        source.destination_sites(), source.priority(), source.filter_data(),
-        source.debug_key(), source.aggregation_keys(),
+        source.destination_sites(), source.expiry_time(),
+        source.event_report_window_time(),
+        source.aggregatable_report_window_time(), source.priority(),
+        source.filter_data(), source.debug_key(), source.aggregation_keys(),
         source.attribution_logic(), source.active_state(), source.dedup_keys(),
         source.aggregatable_budget_consumed(),
         source.aggregatable_dedup_keys());
@@ -716,11 +730,6 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
   return out << "{source_origin=" << source.source_origin()
              << "reporting_origin=" << source.reporting_origin()
              << ",source_time=" << source.source_time()
-             << ",expiry_time=" << source.expiry_time()
-             << ",event_report_window_time="
-             << source.event_report_window_time()
-             << ",aggregatable_report_window_time="
-             << source.aggregatable_report_window_time()
              << ",source_type=" << source.source_type() << "}";
 }
 
@@ -752,6 +761,10 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
   out << "{common_info=" << source.common_info()
       << ",source_event_id=" << source.source_event_id()
       << "destination_sites=" << source.destination_sites()
+      << ",expiry_time=" << source.expiry_time()
+      << ",event_report_window_time=" << source.event_report_window_time()
+      << ",aggregatable_report_window_time="
+      << source.aggregatable_report_window_time()
       << ",priority=" << source.priority()
       << ",filter_data=" << source.filter_data() << ",debug_key="
       << (source.debug_key() ? base::NumberToString(*source.debug_key())
