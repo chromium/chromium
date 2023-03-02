@@ -1373,7 +1373,7 @@
   {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 130
   },
   {
     "name": "devtools-tab-target",
