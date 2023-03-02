@@ -932,4 +932,22 @@ void AddMultipartFinalDelimiterForUpload(const std::string& mime_boundary,
   post_data->append("--" + mime_boundary + "--\r\n");
 }
 
+// TODO(toyoshim): We may prefer to implement a strict RFC2616 media-type
+// (https://tools.ietf.org/html/rfc2616#section-3.7) parser.
+absl::optional<std::string> ExtractMimeTypeFromMediaType(
+    const std::string& type_string,
+    bool accept_comma_separated) {
+  std::string::size_type end = type_string.find(';');
+  if (accept_comma_separated) {
+    end = std::min(end, type_string.find(','));
+  }
+  std::string top_level_type;
+  std::string subtype;
+  if (ParseMimeTypeWithoutParameter(type_string.substr(0, end), &top_level_type,
+                                    &subtype)) {
+    return top_level_type + "/" + subtype;
+  }
+  return absl::nullopt;
+}
+
 }  // namespace net

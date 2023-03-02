@@ -216,10 +216,11 @@ class CORE_EXPORT XMLHttpRequest final
   // spec but doesn't convert the result to ASCII lowercase as specified in
   // the spec. Must be lowered later or compared using case insensitive
   // comparison functions if required.
-  AtomicString FinalResponseMIMEType() const;
+  AtomicString FinalResponseMIMETypeInternal() const;
   // The same as finalResponseMIMEType() but fallbacks to "text/xml" if
   // finalResponseMIMEType() returns an empty string.
-  AtomicString FinalResponseMIMETypeWithFallback() const;
+  // https://xhr.spec.whatwg.org/#response-body
+  AtomicString GetResponseMIMEType() const;
   // Returns the "final charset" defined in
   // https://xhr.spec.whatwg.org/#final-charset.
   WTF::TextEncoding FinalResponseCharset() const;

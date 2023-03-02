@@ -191,4 +191,7 @@ specific_include_rules = {
     "media_values.h": [
         "+ui/base/pointer/pointer_device.h",
     ],
+    "xml_http_request.cc": [
+        "+net/base/mime_util.h",
+    ],
 }

@@ -1,14 +1,14 @@
 This is a testharness.js-based test.
 PASS XMLHttpRequest: responseXML MIME type tests ('', should  parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('text/html', should not parse)
-FAIL XMLHttpRequest: responseXML MIME type tests ('bogus', should  parse) Cannot read properties of null (reading 'documentElement')
+PASS XMLHttpRequest: responseXML MIME type tests ('bogus', should  parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('bogus+xml', should  parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('text/plain;+xml', should not parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('text/plainxml', should not parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('video/x-awesome+xml', should  parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('video/x-awesome', should not parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('text/xml', should  parse)
-FAIL XMLHttpRequest: responseXML MIME type tests ('application', should  parse) Cannot read properties of null (reading 'documentElement')
+PASS XMLHttpRequest: responseXML MIME type tests ('application', should  parse)
 FAIL XMLHttpRequest: responseXML MIME type tests ('text/xsl', should not parse) assert_equals: expected null but got Document node with 1 child
 PASS XMLHttpRequest: responseXML MIME type tests ('text/plain', should not parse)
 PASS XMLHttpRequest: responseXML MIME type tests ('application/rdf', should not parse)

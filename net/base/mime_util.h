@@ -26,6 +26,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -86,6 +87,24 @@ NET_EXPORT bool ParseMimeType(const std::string& type_str,
 NET_EXPORT bool ParseMimeTypeWithoutParameter(base::StringPiece type_string,
                                               std::string* top_level_type,
                                               std::string* subtype);
+
+// Returns `absl::optional` with value containing the extracted `type/sub_type`
+// if `type_string` is a correctly-formed mime type specifier. Returns optional
+// with empty otherwise.
+// Set `accept_comma_separated` to accept a type_string like "text/html,
+// text/xml". This behavior was inherited from Blink's
+// platform/network/http_parsers. A string such as "text/html, text/xml" is
+// possible when the response has multiple Content-Type headers. For instance:
+// Content-Type: text/html
+// Content-Type: text/xml
+// becomes: text/html, text/xml
+//
+// While RFC 2616 does not allow it, other browsers allow multiple values in
+// the HTTP media type header field, Content-Type. In such cases, the media
+// type passed here may contain the multiple values separated by commas.
+NET_EXPORT absl::optional<std::string> ExtractMimeTypeFromMediaType(
+    const std::string& type_string,
+    bool accept_comma_separated);
 
 // Returns true if the |type_string| is a top-level type of any media type
 // registered with IANA media types registry at

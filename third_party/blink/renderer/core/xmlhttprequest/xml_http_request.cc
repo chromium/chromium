@@ -30,6 +30,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "net/base/mime_util.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
@@ -356,7 +357,7 @@ void XMLHttpRequest::InitResponseDocument() {
 
   // FIXME: Set Last-Modified.
   response_document_->SetContextFeatures(document->GetContextFeatures());
-  response_document_->SetMimeType(FinalResponseMIMETypeWithFallback());
+  response_document_->SetMimeType(GetResponseMIMEType());
 }
 
 Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
@@ -401,7 +402,7 @@ Blob* XMLHttpRequest::ResponseBlob() {
 
   if (!response_blob_) {
     auto blob_data = std::make_unique<BlobData>();
-    blob_data->SetContentType(FinalResponseMIMETypeWithFallback().LowerASCII());
+    blob_data->SetContentType(GetResponseMIMEType().LowerASCII());
     size_t size = 0;
     if (binary_response_builder_ && binary_response_builder_->size()) {
       for (const auto& span : *binary_response_builder_)
@@ -1365,8 +1366,17 @@ void XMLHttpRequest::overrideMimeType(const AtomicString& mime_type,
   }
 
   mime_type_override_ = "application/octet-stream";
-  if (ParsedContentType(mime_type).IsValid())
-    mime_type_override_ = mime_type;
+  if (!ParsedContentType(mime_type).IsValid()) {
+    return;
+  }
+
+  if (!net::ExtractMimeTypeFromMediaType(mime_type.Utf8(),
+                                         /*accept_comma_separated=*/false)
+           .has_value()) {
+    return;
+  }
+
+  mime_type_override_ = mime_type;
 }
 
 // https://xhr.spec.whatwg.org/#the-setrequestheader()-method
@@ -1553,22 +1563,32 @@ const AtomicString& XMLHttpRequest::getResponseHeader(
   return response_.HttpHeaderField(name);
 }
 
-AtomicString XMLHttpRequest::FinalResponseMIMEType() const {
-  AtomicString overridden_type =
-      ExtractMIMETypeFromMediaType(mime_type_override_);
-  if (!overridden_type.empty())
-    return overridden_type;
+AtomicString XMLHttpRequest::FinalResponseMIMETypeInternal() const {
+  absl::optional<std::string> overridden_type =
+      net::ExtractMimeTypeFromMediaType(mime_type_override_.Utf8(),
+                                        /*accept_comma_separated=*/false);
+  if (overridden_type.has_value()) {
+    return AtomicString::FromUTF8(overridden_type->c_str());
+  }
 
   if (response_.IsHTTP()) {
-    return ExtractMIMETypeFromMediaType(
-        response_.HttpHeaderField(http_names::kContentType));
+    AtomicString header = response_.HttpHeaderField(http_names::kContentType);
+    absl::optional<std::string> extracted_type =
+        net::ExtractMimeTypeFromMediaType(header.Utf8(),
+                                          /*accept_comma_separated=*/true);
+    if (extracted_type.has_value()) {
+      return AtomicString::FromUTF8(extracted_type->c_str());
+    }
+
+    return g_empty_atom;
   }
 
   return response_.MimeType();
 }
 
-AtomicString XMLHttpRequest::FinalResponseMIMETypeWithFallback() const {
-  AtomicString final_type = FinalResponseMIMEType();
+// https://xhr.spec.whatwg.org/#response-body
+AtomicString XMLHttpRequest::GetResponseMIMEType() const {
+  AtomicString final_type = FinalResponseMIMETypeInternal();
   if (!final_type.empty())
     return final_type;
 
@@ -1628,11 +1648,11 @@ void XMLHttpRequest::UpdateContentTypeAndCharset(
 }
 
 bool XMLHttpRequest::ResponseIsXML() const {
-  return MIMETypeRegistry::IsXMLMIMEType(FinalResponseMIMETypeWithFallback());
+  return MIMETypeRegistry::IsXMLMIMEType(GetResponseMIMEType());
 }
 
 bool XMLHttpRequest::ResponseIsHTML() const {
-  return EqualIgnoringASCIICase(FinalResponseMIMEType(), "text/html");
+  return EqualIgnoringASCIICase(FinalResponseMIMETypeInternal(), "text/html");
 }
 
 int XMLHttpRequest::status() const {
@@ -1985,7 +2005,7 @@ void XMLHttpRequest::DidDownloadToBlob(scoped_refptr<BlobDataHandle> blob) {
     // HandleNetworkError();
   } else {
     // Fix content type if overrides or fallbacks are in effect.
-    String mime_type = FinalResponseMIMETypeWithFallback().LowerASCII();
+    String mime_type = GetResponseMIMEType().LowerASCII();
     if (blob->GetType() != mime_type) {
       auto blob_size = blob->size();
       auto blob_data = std::make_unique<BlobData>();

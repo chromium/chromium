@@ -18,8 +18,8 @@ testXMLType("123/BAR+xml", true);
 testXMLType("text/html", false);
 testXMLType("image/png", false);
 
-// invalid types
-testXMLType("invalid", false);
+// invalid types, default to text/xml https://xhr.spec.whatwg.org/#response-body
+testXMLType("invalid", true);
 
 runNextTest();
 </script>
