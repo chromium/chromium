@@ -36,6 +36,7 @@ const GesturePage = {
 const UserAction = {
   SKIP: 'skip',
   EXIT: 'exit',
+  PAGE_CHANGE: 'gesture-page-change',
 };
 
 
@@ -143,7 +144,7 @@ class GestureNavigation extends GestureScreenElementBase {
   setCurrentPage_(newPage) {
     this.setPlayCurrentScreenAnimation(false);
     this.setUIStep(newPage);
-    this.userActed(['gesture-page-change', newPage]);
+    this.userActed([UserAction.PAGE_CHANGE, newPage]);
     this.setPlayCurrentScreenAnimation(true);
   }
 
