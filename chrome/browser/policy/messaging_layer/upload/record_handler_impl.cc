@@ -77,98 +77,6 @@ absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
   return priority;
 }
 
-// Called once the FileUploadJob is located/created and processed by RunJob.
-// Calling `done_cb` with OK will allow the uploader to include the current
-// event, so before that if we intend to proceed with the job, the new event
-// needs to be posted.
-// Calling `done_cb` with any other status stops the upload before the current
-// event, so no new event should be posted in this case.
-void RepostLogUploadEvent(base::WeakPtr<FileUploadJob> job,
-                          Priority priority,
-                          Record record_copy,
-                          ::ash::reporting::LogUploadEvent log_upload_event,
-                          base::OnceCallback<void(Status)> done_cb) {
-  // Post a new event reflecting its state to track later.
-  // If job is not available, do not allow to upload the current event.
-  if (!job) {
-    std::move(done_cb).Run(
-        Status(error::DATA_LOSS, "Upload Job has been removed"));
-    return;
-  }
-  // Job is still around. Update the new event with its status.
-  if (job->tracker().access_parameters().empty() &&
-      !job->tracker().has_status()) {
-    // The job is in progress (not succeeded and not failed),
-    // flag the new tracking event to be processed when reaching uploader.
-    record_copy.set_needs_local_unencrypted_copy(true);
-  }
-  // Copy it tracking state to the new event.
-  *log_upload_event.mutable_upload_settings() = job->settings();
-  *log_upload_event.mutable_upload_tracker() = job->tracker();
-  // Patch the copy event.
-  if (!log_upload_event.SerializeToString(record_copy.mutable_data())) {
-    std::move(done_cb).Run(
-        Status(error::INVALID_ARGUMENT,
-               base::StrCat({"Updated event ",
-                             Destination_Name(record_copy.destination()),
-                             " failed to serialize"})));
-    return;
-  }
-  // Repost the copy event, and if succeeded, `done_cb` will allow the current
-  // event to be uploaded.
-  RecordHandlerImpl::AddRecordToStorage(priority, std::move(record_copy),
-                                        std::move(done_cb));
-}
-
-// FileUploadJob progresses based on the last recorded state.
-// Called back once the job is located or created.
-// `done_cb` is going to post update as the next tracking event.
-void RunJob(FileUploadJob* job,
-            const ::ash::reporting::LogUploadEvent log_upload_event,
-            base::OnceClosure done_cb) {
-  base::ScopedClosureRunner done(std::move(done_cb));
-  // Check the job's state, schedule the action.
-  if (job->tracker().has_status()) {
-    // The job already failed before.
-    return;
-  }
-  if (!job->tracker().access_parameters().empty()) {
-    // Job complete, nothing left to do.
-    return;
-  }
-  if (job->tracker().session_token().empty()) {
-    // Job not initiated yet, do it now.
-    job->Initiate(done.Release());
-    return;
-  }
-  if (log_upload_event.upload_tracker().session_token().empty()) {
-    // Event refers to the job before it was initiated. Nothing to do.
-    return;
-  }
-  // Job in progress check what was uploaded.
-  if (job->tracker().uploaded() >
-      log_upload_event.upload_tracker().uploaded()) {
-    // The job is more advanced than the event implies.
-    return;
-  }
-  if (job->tracker().uploaded() <
-      log_upload_event.upload_tracker().uploaded()) {
-    // The job is less advanced than the event implies, it should not be
-    // possible unless the job is corrupt.
-    LOG(WARNING) << "Corrupt FileUploadJob";
-    return;
-  }
-  // Exact match, resume the job-> Note that if the job is already active,
-  // this will be a no-op.
-  if (job->tracker().uploaded() < job->tracker().total()) {
-    // Job in progress, perform next step.
-    job->NextStep(done.Release());
-    return;
-  }
-  // Upload complete, finalize the job.
-  job->Finalize(done.Release());
-}
-
 // Processes LOG_UPLOAD event.
 void ProcessFileUpload(FileUploadJob::Delegate* delegate,
                        Priority priority,
@@ -204,11 +112,10 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
       const auto settings = log_upload_event.upload_settings();
       const auto tracker = log_upload_event.upload_tracker();
       FileUploadJob::Manager::GetInstance()->Register(
-          settings, tracker, delegate,
+          priority, std::move(record_copy), std::move(log_upload_event),
+          delegate,
           base::BindOnce(
-              [](Priority priority, Record record,
-                 ::ash::reporting::LogUploadEvent log_upload_event,
-                 base::OnceCallback<void(Status)> done_cb,
+              [](base::OnceCallback<void(Status)> done_cb,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.ok()) {
                   LOG(WARNING) << "Failed to locate/create upload job, status="
@@ -218,46 +125,9 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
                   return;
                 }
                 // Job has been located or created.
-                auto* const job = job_or_error.ValueOrDie();
-                if (job->in_action()) {
-                  // The job already executes, the event we are dealing with
-                  // is likely the one that caused this, do not upload it
-                  // (otherwise we would lose track of the job if the device
-                  // restarts).
-                  std::move(done_cb).Run(
-                      Status(error::ALREADY_EXISTS, "Duplicate event"));
-                  return;
-                }
-                if (job->tracker().has_status()) {
-                  // The job already failed before.
-                  // Upload the event as is.
-                  std::move(done_cb).Run(Status::StatusOK());
-                  return;
-                }
-                if (!job->tracker().access_parameters().empty()) {
-                  // Job complete, nothing left to do.
-                  // Upload the event as is.
-                  std::move(done_cb).Run(Status::StatusOK());
-                  return;
-                }
-
-                // Prepare a callback that will either
-                // 1) repost event with updates based on the job status,
-                //    if the job is still available, and allow the current event
-                //    to proceed,
-                // or
-                // 2) stop uploading before the current event.
-                // The callback will be invoked on the sequenced_task_runner of
-                // the job manager, so we can use weak pointer there.
-                auto processed_cb = base::BindOnce(
-                    &RepostLogUploadEvent, job->GetWeakPtr(), priority,
-                    std::move(record), log_upload_event,  // Copy, not move!
+                job_or_error.ValueOrDie()->event_helper()->Run(
                     std::move(done_cb));
-                // Run the next step.
-                RunJob(job_or_error.ValueOrDie(), std::move(log_upload_event),
-                       std::move(processed_cb));
               },
-              priority, std::move(record_copy), std::move(log_upload_event),
               std::move(done_cb)));
       break;
     }

@@ -41,6 +41,7 @@ class ReportingClient : public ReportQueueProvider {
 
   friend class ReportQueueProvider;
   friend class RecordHandlerImpl;
+  friend class FileUploadJob;
   friend struct base::DefaultSingletonTraits<ReportingClient>;
 
   // Constructor to be used by singleton only.

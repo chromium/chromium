@@ -528,8 +528,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::IMMEDIATE), _, _))
-      .Times(kNumTestRecords)
-      .WillRepeatedly(
+      .WillOnce(
           Invoke([](Priority priority, Record record,
                     StorageModuleInterface::EnqueueCallback callback) {
             EXPECT_TRUE(record.needs_local_unencrypted_copy());
@@ -590,8 +589,7 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
 
   EXPECT_CALL(*test_storage_, AddRecord(Eq(Priority::IMMEDIATE), _, _))
-      .Times(kNumTestRecords)
-      .WillRepeatedly(
+      .WillOnce(
           Invoke([](Priority priority, Record record,
                     StorageModuleInterface::EnqueueCallback callback) {
             EXPECT_TRUE(record.needs_local_unencrypted_copy());

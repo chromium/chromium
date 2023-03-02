@@ -22,6 +22,9 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -94,8 +97,9 @@ class FileUploadJob {
     // there. Hands over to the callback (if it is indeed new, the first action
     // needs to be initiation, otherwise processing based on the current state).
     // The returned job is owned by the `Manager`.
-    void Register(const UploadSettings& settings,
-                  const UploadTracker& tracker,
+    void Register(Priority priority,
+                  Record record_copy,
+                  ::ash::reporting::LogUploadEvent log_upload_event,
                   Delegate* delegate,  // not owned, must outlive the Job!
                   base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb);
 
@@ -122,6 +126,41 @@ class FileUploadJob {
     // Task runner is not declared `const` for testing: to be able to reset it.
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
     SEQUENCE_CHECKER(manager_sequence_checker_);
+  };
+
+  // Helper class associating the job to the event currently being processed.
+  class EventHelper {
+   public:
+    EventHelper(base::WeakPtr<FileUploadJob> job,
+                Priority priority,
+                Record record_copy,
+                ::ash::reporting::LogUploadEvent log_upload_event);
+    EventHelper(const EventHelper& other) = delete;
+    EventHelper& operator=(const EventHelper& other) = delete;
+    ~EventHelper();
+
+    // FileUploadJob progresses based on the last recorded state.
+    // Called back once the job is located or created.
+    // `done_cb_` is going to post update as the next tracking event.
+    void Run(base::OnceCallback<void(Status)> done_cb);
+
+   private:
+    // Complete and call `done_cb_` (with OK, if the event is accepted for
+    // upload, error status if not).
+    void Complete(Status status = Status::StatusOK());
+
+    // Repost new event if successful, then complete.
+    void RepostAndComplete();
+
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    const base::WeakPtr<FileUploadJob> job_;
+    Priority priority_;
+    Record record_copy_;
+    ::ash::reporting::LogUploadEvent log_upload_event_;
+    base::OnceCallback<void(Status)> done_cb_;
+
+    base::WeakPtrFactory<EventHelper> weak_ptr_factory_{this};
   };
 
   // Constructor populates both `settings` and `tracker`, based on `LOG_UPLOAD`
@@ -153,8 +192,11 @@ class FileUploadJob {
   void NextStep(base::OnceClosure done_cb = base::DoNothing());
   void Finalize(base::OnceClosure done_cb = base::DoNothing());
 
+  // Test-only explicit setter of the event helper.
+  void SetEventHelperForTest(std::unique_ptr<EventHelper> event_helper);
+
   // Accessors.
-  bool in_action() const;
+  EventHelper* event_helper() const;
   const UploadSettings& settings() const;
   const UploadTracker& tracker() const;
   base::WeakPtr<FileUploadJob> GetWeakPtr();
@@ -174,6 +216,11 @@ class FileUploadJob {
   void DoneFinalize(base::ScopedClosureRunner done,
                     StatusOr<std::string /*access_parameters*/> result);
 
+  // Post event.
+  static void AddRecordToStorage(Priority priority,
+                                 Record record_copy,
+                                 base::OnceCallback<void(Status)> done_cb);
+
   // Unowned delegate that performs actual actions.
   // It must outlive the job (the same delegate may be used by multiple jobs).
   const base::raw_ptr<Delegate> delegate_;
@@ -185,9 +232,10 @@ class FileUploadJob {
 
   UploadTracker tracker_ GUARDED_BY_CONTEXT(job_sequence_checker_);
 
-  // Flag indicating that the job is performing an action.
-  // Any other action is rejected while the flag is set.
-  bool in_action_ GUARDED_BY_CONTEXT(job_sequence_checker_) = false;
+  // Event helper instance for event currently being processed by the job
+  // (null when no event is processed).
+  std::unique_ptr<EventHelper> event_helper_
+      GUARDED_BY_CONTEXT(job_sequence_checker_);
 
   // Expiration timer of the job. Once the timer fires, the job is unregistered
   // and destructed. The timer is reset every time the job is accessed.
