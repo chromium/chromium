@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 
 #include "ash/public/cpp/keyboard/keyboard_config.h"
@@ -983,8 +982,8 @@ ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  std::unique_ptr<ClearComposition::Params> parent_params(
-      ClearComposition::Params::CreateDeprecated(args()));
+  absl::optional<ClearComposition::Params> parent_params =
+      ClearComposition::Params::Create(args());
   const ClearComposition::Params::Parameters& params =
       parent_params->parameters;
 
@@ -1016,8 +1015,8 @@ InputImeSetAssistiveWindowPropertiesFunction::Run() {
   if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  std::unique_ptr<SetAssistiveWindowProperties::Params> parent_params(
-      SetAssistiveWindowProperties::Params::CreateDeprecated(args()));
+  absl::optional<SetAssistiveWindowProperties::Params> parent_params =
+      SetAssistiveWindowProperties::Params::Create(args());
   const SetAssistiveWindowProperties::Params::Parameters& params =
       parent_params->parameters;
   const input_ime::AssistiveWindowProperties& window = params.properties;
@@ -1044,8 +1043,8 @@ InputImeSetAssistiveWindowButtonHighlightedFunction::Run() {
   if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
-  std::unique_ptr<SetAssistiveWindowButtonHighlighted::Params> parent_params(
-      SetAssistiveWindowButtonHighlighted::Params::CreateDeprecated(args()));
+  absl::optional<SetAssistiveWindowButtonHighlighted::Params> parent_params =
+      SetAssistiveWindowButtonHighlighted::Params::Create(args());
   const SetAssistiveWindowButtonHighlighted::Params::Parameters& params =
       parent_params->parameters;
   ui::ime::AssistiveWindowButton button;
@@ -1065,8 +1064,8 @@ InputImeSetAssistiveWindowButtonHighlightedFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputImeSetCandidateWindowPropertiesFunction::Run() {
-  std::unique_ptr<SetCandidateWindowProperties::Params> parent_params(
-      SetCandidateWindowProperties::Params::CreateDeprecated(args()));
+  absl::optional<SetCandidateWindowProperties::Params> parent_params =
+      SetCandidateWindowProperties::Params::Create(args());
   const SetCandidateWindowProperties::Params::Parameters& params =
       parent_params->parameters;
 
@@ -1152,8 +1151,8 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  std::unique_ptr<SetCandidates::Params> parent_params(
-      SetCandidates::Params::CreateDeprecated(args()));
+  absl::optional<SetCandidates::Params> parent_params =
+      SetCandidates::Params::Create(args());
   const SetCandidates::Params::Parameters& params = parent_params->parameters;
 
   std::vector<InputMethodEngine::Candidate> candidates_out;
@@ -1190,8 +1189,8 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
 
-  std::unique_ptr<SetCursorPosition::Params> parent_params(
-      SetCursorPosition::Params::CreateDeprecated(args()));
+  absl::optional<SetCursorPosition::Params> parent_params =
+      SetCursorPosition::Params::Create(args());
   const SetCursorPosition::Params::Parameters& params =
       parent_params->parameters;
 
@@ -1207,8 +1206,8 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
-  std::unique_ptr<SetMenuItems::Params> parent_params(
-      SetMenuItems::Params::CreateDeprecated(args()));
+  absl::optional<SetMenuItems::Params> parent_params =
+      SetMenuItems::Params::Create(args());
   const input_ime::MenuParameters& params = parent_params->parameters;
 
   std::string error;
@@ -1233,8 +1232,8 @@ ExtensionFunction::ResponseAction InputImeSetMenuItemsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputImeUpdateMenuItemsFunction::Run() {
-  std::unique_ptr<UpdateMenuItems::Params> parent_params(
-      UpdateMenuItems::Params::CreateDeprecated(args()));
+  absl::optional<UpdateMenuItems::Params> parent_params =
+      UpdateMenuItems::Params::Create(args());
   const input_ime::MenuParameters& params = parent_params->parameters;
 
   std::string error;
@@ -1259,8 +1258,8 @@ ExtensionFunction::ResponseAction InputImeUpdateMenuItemsFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction InputImeDeleteSurroundingTextFunction::Run() {
-  std::unique_ptr<DeleteSurroundingText::Params> parent_params(
-      DeleteSurroundingText::Params::CreateDeprecated(args()));
+  absl::optional<DeleteSurroundingText::Params> parent_params =
+      DeleteSurroundingText::Params::Create(args());
   const DeleteSurroundingText::Params::Parameters& params =
       parent_params->parameters;
 
@@ -1285,8 +1284,8 @@ InputMethodPrivateFinishComposingTextFunction::Run() {
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
-  std::unique_ptr<FinishComposingText::Params> parent_params(
-      FinishComposingText::Params::CreateDeprecated(args()));
+  absl::optional<FinishComposingText::Params> parent_params =
+      FinishComposingText::Params::Create(args());
   const FinishComposingText::Params::Parameters& params =
       parent_params->parameters;
   engine->FinishComposingText(params.context_id, &error);
