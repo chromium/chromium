@@ -48,7 +48,7 @@ constexpr char kUndoWindowShowSettingCount[] = "undo_window.show_setting_count";
 
 bool IsVkAutocorrect() {
   return ChromeKeyboardControllerClient::HasInstance() &&
-         ChromeKeyboardControllerClient::Get()->is_keyboard_visible();
+         ChromeKeyboardControllerClient::Get()->is_keyboard_enabled();
 }
 
 bool IsCurrentInputMethodExperimentalMultilingual() {

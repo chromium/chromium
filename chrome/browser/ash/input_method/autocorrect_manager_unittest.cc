@@ -481,7 +481,7 @@ class AutocorrectManagerTest : public testing::Test {
     feature_list_.InitWithFeatures({}, DisabledFeatures());
     IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler_);
     keyboard_client_ = ChromeKeyboardControllerClient::CreateForTest();
-    keyboard_client_->set_keyboard_visible_for_test(false);
+    keyboard_client_->set_keyboard_enabled_for_test(false);
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -2004,7 +2004,7 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(AutocorrectManagerTest,
        RecordMetricsForVkWhenVkWasVisibleAtUnderlineTime) {
   // VK is visible at the time of suggesting an autocorrect.
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // To suppress strict mock.
@@ -2012,7 +2012,7 @@ TEST_F(AutocorrectManagerTest,
 
   // VK is made hidden, but still the metrics need to be recorded for VK
   // given VK was visible at underline time.
-  keyboard_client_->set_keyboard_visible_for_test(false);
+  keyboard_client_->set_keyboard_enabled_for_test(false);
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
 
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
@@ -2024,7 +2024,7 @@ TEST_F(AutocorrectManagerTest,
 TEST_F(AutocorrectManagerTest,
        DoesNotRecordMetricsForVkWhenVkWasNotVisibleAtUnderlineTime) {
   // VK is not visible at the time of suggesting an autocorrect.
-  keyboard_client_->set_keyboard_visible_for_test(false);
+  keyboard_client_->set_keyboard_enabled_for_test(false);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // To suppress strict mock.
@@ -2032,7 +2032,7 @@ TEST_F(AutocorrectManagerTest,
 
   // VK is made visible, but still metrics must not be recorded for VK
   // as it was not visible at the time of underline.
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
 
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
@@ -2073,7 +2073,7 @@ TEST_F(AutocorrectManagerTest, UndoRecordsMetricsAfterRevertEnableByDefault) {
 }
 
 TEST_F(AutocorrectManagerTest, HandleAutocorrectRecordsMetricsWhenVkIsVisible) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
                               /*window_shown=*/0, /*underlined=*/1,
@@ -2082,7 +2082,7 @@ TEST_F(AutocorrectManagerTest, HandleAutocorrectRecordsMetricsWhenVkIsVisible) {
 }
 
 TEST_F(AutocorrectManagerTest, ExitingTextFieldRecordsMetricsWhenVkIsVisible) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnBlur();
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
@@ -2094,7 +2094,7 @@ TEST_F(AutocorrectManagerTest, ExitingTextFieldRecordsMetricsWhenVkIsVisible) {
 
 TEST_F(AutocorrectManagerTest,
        AcceptingAutocorrectRecordsMetricsWhenVkIsVisible) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2163,7 +2163,7 @@ TEST_F(AutocorrectManagerTest,
 }
 
 TEST_F(AutocorrectManagerTest, UndoRecordsMetricsWhenVkIsVisible) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2177,7 +2177,7 @@ TEST_F(AutocorrectManagerTest, UndoRecordsMetricsWhenVkIsVisible) {
 
 TEST_F(AutocorrectManagerTest,
        ClearingAutocorrectRecordsMetricsWhenVkIsVisible) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2304,7 +2304,7 @@ TEST_F(AutocorrectManagerTest, RangeAndSuggestionMismatchDoesNotRecordMetrics) {
 }
 
 TEST_F(AutocorrectManagerTest, ShowingUndoWindowRecordsMetricsWhenVkIsVisible) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // This suppresses strict mock.
@@ -2459,7 +2459,7 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForDefaultPkAccepted) {
 }
 
 TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForVkAccepted) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 8), u"françaisss", u"français");
 
   // Accept autocorrect implicitly.
@@ -2477,7 +2477,7 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForVkAccepted) {
 }
 
 TEST_F(AutocorrectManagerTest, RecordQualityBreakdownForVkRejected) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 8), u"françaisss", u"français");
 
   // Accept autocorrect implicitly.
@@ -2546,7 +2546,7 @@ TEST_F(AutocorrectManagerTest, RecordQualityBreakdownDefaultForPkRejected) {
 }
 
 TEST_F(AutocorrectManagerTest, RecordDistanceMetricForVkAccepted) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 4), u"cafe", u"cafè");
   // (|cafe|-1) * MAX_LENGTH + (|{'e'->'è'}| - 1)
   int expected_value = (4 - 1) * 30 + (1 - 1);
@@ -2585,7 +2585,7 @@ TEST_F(AutocorrectManagerTest, RecordDistanceMetricForPkAccepted) {
 }
 
 TEST_F(AutocorrectManagerTest, RecordDistanceMetricForVkRejected) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 12), u"ecauserthy", u"because they");
   //  (|ecauserthy|-1) * MAX_LENGTH + (|{''->'b'}, {'r'->' '}, {''->'e'}| - 1)
   int expected_value = (10 - 1) * 30 + (3 - 1);
@@ -2781,7 +2781,7 @@ TEST_F(AutocorrectManagerTest, RecordRejectionForPkControlBackspace) {
 
 struct RejectCase {
   std::string test_name;
-  bool vk_visible;
+  bool vk_enabled;
   std::string histogram_name;
 };
 
@@ -2790,7 +2790,7 @@ class RejectMetric : public AutocorrectManagerTest,
 
 TEST_P(RejectMetric, RecordRejectionForMetricOther) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // Accept autocorrect implicitly.
@@ -2811,7 +2811,7 @@ TEST_P(RejectMetric, RecordRejectionForMetricOther) {
 
 TEST_P(RejectMetric, RecordRejectionForVkUndo) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2828,11 +2828,11 @@ TEST_P(RejectMetric, RecordRejectionForVkUndo) {
 
 TEST_P(RejectMetric, RecordRejectionForBackspace) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
-  if (!test_case.vk_visible) {
+  if (!test_case.vk_enabled) {
     manager_.OnKeyEvent(
         CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::BACKSPACE));
   }
@@ -2843,7 +2843,7 @@ TEST_P(RejectMetric, RecordRejectionForBackspace) {
   histogram_tester_.ExpectBucketCount(
       test_case.histogram_name,
       AutocorrectRejectionBreakdown::kRejectedBackspace,
-      test_case.vk_visible ? 0 : 1);
+      test_case.vk_enabled ? 0 : 1);
   histogram_tester_.ExpectBucketCount(
       test_case.histogram_name, AutocorrectRejectionBreakdown::kRemovedLetters,
       1);
@@ -2851,12 +2851,12 @@ TEST_P(RejectMetric, RecordRejectionForBackspace) {
       test_case.histogram_name,
       AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
   histogram_tester_.ExpectTotalCount(test_case.histogram_name,
-                                     test_case.vk_visible ? 2 : 3);
+                                     test_case.vk_enabled ? 2 : 3);
 }
 
 TEST_P(RejectMetric, RecordRejectionForFullSelectionTyping) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2876,7 +2876,7 @@ TEST_P(RejectMetric, RecordRejectionForFullSelectionTyping) {
 
 TEST_P(RejectMetric, RecordRejectionForPartialSelectionTyping) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2896,7 +2896,7 @@ TEST_P(RejectMetric, RecordRejectionForPartialSelectionTyping) {
 
 TEST_P(RejectMetric, RecordRejectionForFullWithExternalSelectionTyping) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2916,7 +2916,7 @@ TEST_P(RejectMetric, RecordRejectionForFullWithExternalSelectionTyping) {
 
 TEST_P(RejectMetric, RecordRejectionForPartialWithExternalSelectionTyping) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2936,7 +2936,7 @@ TEST_P(RejectMetric, RecordRejectionForPartialWithExternalSelectionTyping) {
 
 TEST_P(RejectMetric, RecordRejectionForTypingNoSelection) {
   const RejectCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(test_case.vk_visible);
+  keyboard_client_->set_keyboard_enabled_for_test(test_case.vk_enabled);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
 
@@ -2974,10 +2974,10 @@ INSTANTIATE_TEST_SUITE_P(
     RejectMetric,
     testing::ValuesIn<RejectCase>({
         {"VkEnabled",
-         /*vk_visible=*/true,
+         /*vk_enabled=*/true,
          /*histogram_name=*/kAutocorrectV2VkRejectionHistName},
         {"VkDisabled",
-         /*vk_visible=*/false,
+         /*vk_enabled=*/false,
          /*histogram_name=*/kAutocorrectV2PkRejectionHistName},
     }),
     [](const testing::TestParamInfo<RejectCase> info) {
@@ -3034,7 +3034,7 @@ TEST_P(PkEnglishUserPreferenceMetric, IsNotRecordedWhenKeyEventNotEncountered) {
 
 TEST_P(PkEnglishUserPreferenceMetric, IsNotRecordedWhenKeyEventCameFromTheVk) {
   const PkUserPrefCase& test_case = GetParam();
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   if (test_case.autocorrect_level) {
     SetAutocorrectPreferenceTo(
         /*profile=*/*profile_,
@@ -3384,7 +3384,7 @@ TEST_F(AutocorrectManagerUkmMetricsTest,
 
 TEST_F(AutocorrectManagerUkmMetricsTest,
        RecordsAppCompatUkmForVKUnderlinedSuggestion) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
+  keyboard_client_->set_keyboard_enabled_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   auto ukm_entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
