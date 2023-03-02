@@ -8,6 +8,8 @@ source_set("common") {
     "metafile_utils.h",
   ]
 
+  configs += [ "//printing/:strict" ]
+
   deps = [
     "//base",
     "//printing/buildflags",
