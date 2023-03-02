@@ -84,42 +84,7 @@ public class AboutChromeSettings
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        if (mDeveloperHitCountdown > 0) {
-            mDeveloperHitCountdown--;
-
-            if (mDeveloperHitCountdown == 0) {
-                DeveloperSettings.setDeveloperSettingsEnabled();
-
-                // Show a toast that the developer settings were enabled.
-                if (mToast != null) {
-                    mToast.cancel();
-                }
-                mToast = Toast.makeText(getActivity(), MSG_DEVELOPER_ENABLED, Toast.LENGTH_LONG);
-                mToast.show();
-            } else if (mDeveloperHitCountdown > 0
-                    && mDeveloperHitCountdown < (TAPS_FOR_DEVELOPER_SETTINGS - 2)) {
-                // Show a countdown toast.
-                if (mToast != null) {
-                    mToast.cancel();
-                }
-                String title;
-                if (mDeveloperHitCountdown == 1) {
-                    title = MSG_DEVELOPER_ENABLE_COUNTDOWN_LAST_TAP;
-                } else {
-                    title = String.format(MSG_DEVELOPER_ENABLE_COUNTDOWN, mDeveloperHitCountdown);
-                }
-                mToast = Toast.makeText(getActivity(), title, Toast.LENGTH_SHORT);
-                mToast.show();
-            }
-        } else if (mDeveloperHitCountdown < 0) {
-            // Show a toast that the developer settings are already enabled.
-            if (mToast != null) {
-                mToast.cancel();
-            }
-            mToast =
-                    Toast.makeText(getActivity(), MSG_DEVELOPER_ALREADY_ENABLED, Toast.LENGTH_LONG);
-            mToast.show();
-        }
+        // 去掉进入developer模式代码
         return true;
     }
 }

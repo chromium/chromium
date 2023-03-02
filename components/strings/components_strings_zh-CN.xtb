@@ -350,7 +350,7 @@
 <translation id="1757773103848038814">等宽字体</translation>
 <translation id="1763864636252898013">此服务器无法证明它是<ph name="DOMAIN" />；您设备的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
-<translation id="1774592222195216949"><ph name="BEGIN_LINK" />详细了解 Chromium 中的无痕模式<ph name="END_LINK" /></translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />详细了解 浏览器 中的无痕模式<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">您打开的标签页会显示在此处</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -1426,7 +1426,7 @@
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">已关联返现</translation>
 <translation id="4636930964841734540">信息</translation>
-<translation id="4638670630777875591">Chromium 中的无痕模式</translation>
+<translation id="4638670630777875591">浏览器中的无痕模式</translation>
 <translation id="464342062220857295">搜索功能</translation>
 <translation id="4644670975240021822">逆转顺序，正面朝下</translation>
 <translation id="4646534391647090355">立即前往</translation>
@@ -1553,7 +1553,7 @@
 <translation id="4934780484581617878">窗口管理</translation>
 <translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
 <translation id="4936675324097895694">金融</translation>
-<translation id="4940163644868678279">Chrome 中的无痕模式</translation>
+<translation id="4940163644868678279">浏览器中的无痕模式</translation>
 <translation id="4943872375798546930">找不到结果</translation>
 <translation id="4943933359574417591">短信与即时通讯</translation>
 <translation id="4950898438188848926">标签页切换按钮，按 Enter 键可切换到打开的标签页，<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
@@ -2016,7 +2016,7 @@
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6126565365696310362">中式 #2 信封</translation>
 <translation id="6127379762771434464">该项已移除</translation>
-<translation id="6132161237766805930"><ph name="BEGIN_LINK" />详细了解 Chrome 中的无痕模式<ph name="END_LINK" /></translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />详细了解 浏览器 中的无痕模式<ph name="END_LINK" /></translation>
 <translation id="6133984428121856852">文件扩展名为空或格式错误。</translation>
 <translation id="6139975341602920272">17 x 22 英寸</translation>
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
