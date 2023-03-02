@@ -274,6 +274,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::
               kHTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode,
           WebFeature::kGetDisplayMediaWithPreferCurrentTabTrue,
+          WebFeature::kV8Database_ChangeVersion_Method,
+          WebFeature::kV8Database_Transaction_Method,
+          WebFeature::kV8Database_ReadTransaction_Method,
+          WebFeature::kV8SQLTransaction_ExecuteSql_Method,
       }));
   return *opt_in_features;
 }
