@@ -103,6 +103,7 @@ class FlatlandSurfaceCanvas : public SurfaceOzoneCanvas {
 
   // Pending buffer collection for the buffers.
   fuchsia::sysmem::BufferCollectionSyncPtr buffer_collection_;
+  fuchsia::ui::composition::BufferCollectionImportToken import_token_;
 
   base::WeakPtr<VSyncProviderImpl> vsync_provider_;
 

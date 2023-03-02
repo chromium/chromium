@@ -52,7 +52,6 @@ class FlatlandSurfaceCanvas::VSyncProviderImpl : public gfx::VSyncProvider {
   // gfx::VSyncProvider implementation.
   void GetVSyncParameters(UpdateVSyncCallback callback) override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK(!get_params_callback_);
     if (timebase_.is_null()) {
       get_params_callback_ = std::move(callback);
       return;
@@ -191,9 +190,8 @@ void FlatlandSurfaceCanvas::ResizeCanvas(const gfx::Size& viewport_size,
   collection_token->Sync();
 
   fuchsia::ui::composition::BufferCollectionExportToken export_token;
-  fuchsia::ui::composition::BufferCollectionImportToken import_token;
   zx_status_t status =
-      zx::eventpair::create(0, &export_token.value, &import_token.value);
+      zx::eventpair::create(0, &export_token.value, &import_token_.value);
   ZX_DCHECK(status == ZX_OK, status);
 
   fuchsia::ui::composition::RegisterBufferCollectionArgs args;
@@ -238,26 +236,6 @@ void FlatlandSurfaceCanvas::ResizeCanvas(const gfx::Size& viewport_size,
 
   buffer_collection_->SetConstraints(/*has_constraints=*/true,
                                      std::move(constraints));
-
-  for (size_t i = 0; i < kNumBuffers; ++i) {
-    fuchsia::ui::composition::ImageProperties image_properties;
-    image_properties.set_size(
-        fuchsia::math::SizeU{static_cast<uint32_t>(viewport_size_.width()),
-                             static_cast<uint32_t>(viewport_size_.height())});
-    frames_[i].image_id = flatland_.NextContentId();
-
-    fuchsia::ui::composition::BufferCollectionImportToken token;
-    status = import_token.Clone(&token);
-    ZX_DCHECK(status == ZX_OK, status);
-
-    flatland_.flatland()->CreateImage(frames_[i].image_id, std::move(token), i,
-                                      std::move(image_properties));
-
-    // TODO(crbug.com/1330950): We should set SRC blend mode when Chrome has a
-    // reliable signal for opaque background.
-    flatland_.flatland()->SetImageBlendingFunction(
-        frames_[i].image_id, fuchsia::ui::composition::BlendMode::SRC_OVER);
-  }
 }
 
 void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
@@ -276,6 +254,28 @@ void FlatlandSurfaceCanvas::FinalizeBufferAllocation() {
   buffer_collection_.Unbind();
 
   CHECK_GE(buffer_info.buffer_count, kNumBuffers);
+  DCHECK(import_token_.value.is_valid());
+
+  for (size_t i = 0; i < kNumBuffers; ++i) {
+    fuchsia::ui::composition::ImageProperties image_properties;
+    image_properties.set_size(
+        fuchsia::math::SizeU{static_cast<uint32_t>(viewport_size_.width()),
+                             static_cast<uint32_t>(viewport_size_.height())});
+    frames_[i].image_id = flatland_.NextContentId();
+
+    fuchsia::ui::composition::BufferCollectionImportToken token;
+    status = import_token_.Clone(&token);
+    ZX_DCHECK(status == ZX_OK, status);
+
+    flatland_.flatland()->CreateImage(frames_[i].image_id, std::move(token), i,
+                                      std::move(image_properties));
+
+    // TODO(crbug.com/1330950): We should set SRC blend mode when Chrome has a
+    // reliable signal for opaque background.
+    flatland_.flatland()->SetImageBlendingFunction(
+        frames_[i].image_id, fuchsia::ui::composition::BlendMode::SRC_OVER);
+  }
+  import_token_.value.reset();
 
   const fuchsia::sysmem::ImageFormatConstraints& format =
       buffer_info.settings.image_format_constraints;
