@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -85,8 +84,8 @@ EchoPrivateGetRegistrationCodeFunction::
 
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
-  std::unique_ptr<echo_api::GetRegistrationCode::Params> params =
-      echo_api::GetRegistrationCode::Params::CreateDeprecated(args());
+  absl::optional<echo_api::GetRegistrationCode::Params> params =
+      echo_api::GetRegistrationCode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Possible ECHO code type and corresponding key name in StatisticsProvider.
@@ -136,8 +135,8 @@ EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() {}
 EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
-  std::unique_ptr<echo_api::SetOfferInfo::Params> params =
-      echo_api::SetOfferInfo::Params::CreateDeprecated(args());
+  absl::optional<echo_api::SetOfferInfo::Params> params =
+      echo_api::SetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -155,8 +154,8 @@ EchoPrivateGetOfferInfoFunction::EchoPrivateGetOfferInfoFunction() {}
 EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
-  std::unique_ptr<echo_api::GetOfferInfo::Params> params =
-      echo_api::GetOfferInfo::Params::CreateDeprecated(args());
+  absl::optional<echo_api::GetOfferInfo::Params> params =
+      echo_api::GetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
@@ -216,8 +215,8 @@ EchoPrivateGetUserConsentFunction::~EchoPrivateGetUserConsentFunction() =
     default;
 
 ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
-  std::unique_ptr<echo_api::GetUserConsent::Params> params =
-      echo_api::GetUserConsent::Params::CreateDeprecated(args());
+  absl::optional<echo_api::GetUserConsent::Params> params =
+      echo_api::GetUserConsent::Params::Create(args());
 
   // Verify that the passed origin URL is valid.
   GURL service_origin = GURL(params->consent_requester.origin);
