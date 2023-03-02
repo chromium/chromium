@@ -113,10 +113,10 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     return nullptr;
   }
 
-  void ClickOnNotificationButton() const {
+  void ClickOnNotificationButton(int button_index = 0) const {
     message_center::MessageCenter::Get()->ClickOnNotificationButton(
         PrivacyHubNotificationController::kCombinedNotificationId,
-        /*button_index=*/0);
+        button_index);
   }
 
   void ClickOnNotificationBody() const {
@@ -259,19 +259,8 @@ TEST_F(PrivacyHubNotificationControllerTest,
   EXPECT_FALSE(
       GetNotification(MicrophonePrivacySwitchController::kNotificationId));
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            0);
-
   ClickOnNotificationBody();
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            1);
   ExpectNoNotificationActive();
 
   // Go to (quick)settings and enable microphone.
@@ -330,12 +319,35 @@ TEST_F(PrivacyHubNotificationControllerTest, ClickOnNotificationButton) {
             1);
 }
 
+TEST_F(PrivacyHubNotificationControllerTest, ClickOnSecondNotificationButton) {
+  ExpectNoNotificationActive();
+  ShowCombinedNotification();
+  EXPECT_TRUE(GetNotification());
+
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            0);
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
+
+  ClickOnNotificationButton(1);
+
+  WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
+
+  ExpectNoNotificationActive();
+
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
+                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
+            1);
+}
+
 TEST_F(PrivacyHubNotificationControllerTest, ClickOnNotificationBody) {
   ExpectNoNotificationActive();
   ShowCombinedNotification();
   EXPECT_TRUE(GetNotification());
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
   EXPECT_EQ(histogram_tester().GetBucketCount(
                 privacy_hub_metrics::kPrivacyHubOpenedHistogram,
                 privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
@@ -346,11 +358,6 @@ TEST_F(PrivacyHubNotificationControllerTest, ClickOnNotificationBody) {
   WaitUntilNotificationRemoved(kPrivacyHubCameraOffNotificationId);
 
   ExpectNoNotificationActive();
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            1);
 }
 
 TEST_F(PrivacyHubNotificationControllerTest, OpenPrivacyHubSettingsPage) {

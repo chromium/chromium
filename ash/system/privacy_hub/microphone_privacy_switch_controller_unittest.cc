@@ -13,7 +13,6 @@
 #include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
-#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -357,11 +356,6 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionButton) {
   ASSERT_TRUE(notification);
   EXPECT_EQ(1u, notification->buttons().size());
 
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                privacy_hub_metrics::
-                    kPrivacyHubMicrophoneEnabledFromNotificationHistogram,
-                true),
-            0);
   // Clicking the action button should unmute device.
   ClickOnNotificationButton();
   EXPECT_FALSE(CrasAudioHandler::Get()->IsInputMuted());
@@ -383,20 +377,9 @@ TEST_F(PrivacyHubMicrophoneControllerTest, SwMuteNotificationActionBody) {
   ASSERT_TRUE(notification);
   EXPECT_EQ(1u, notification->buttons().size());
 
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            0);
-
   // Clicking the action button should unmute device.
   ClickOnNotificationBody();
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   EXPECT_TRUE(CrasAudioHandler::Get()->IsInputMuted());
-
-  EXPECT_EQ(histogram_tester().GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            1);
 
   EXPECT_FALSE(GetNotification());
 }
