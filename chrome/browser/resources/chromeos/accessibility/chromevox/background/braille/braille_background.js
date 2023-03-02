@@ -24,9 +24,6 @@ export class BrailleBackground {
     /** @private {boolean} */
     this.frozen_ = false;
 
-    /** @private {BrailleKeyEventRewriter} */
-    this.keyEventRewriter_ = new BrailleKeyEventRewriter();
-
     /** @private {NavBraille} */
     this.lastContent_ = null;
     /** @private {?string} */
@@ -46,6 +43,7 @@ export class BrailleBackground {
     // Must be called before creating BrailleBackground.
     BrailleDisplayManager.init();
     BrailleInputHandler.init();
+    BrailleKeyEventRewriter.init();
 
     BrailleBackground.instance = new BrailleBackground();
   }
@@ -136,7 +134,7 @@ export class BrailleBackground {
    * @private
    */
   onBrailleKeyEvent_(brailleEvt, content) {
-    if (this.keyEventRewriter_.onBrailleKeyEvent(brailleEvt)) {
+    if (BrailleKeyEventRewriter.instance.onBrailleKeyEvent(brailleEvt)) {
       return;
     }
 

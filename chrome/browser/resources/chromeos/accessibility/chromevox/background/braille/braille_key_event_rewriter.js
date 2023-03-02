@@ -19,6 +19,13 @@ export class BrailleKeyEventRewriter {
     this.incrementalKey_ = null;
   }
 
+  static init() {
+    if (BrailleKeyEventRewriter.instance) {
+      throw new Error('Cannot create two BrailleKeyEventRewriter instances');
+    }
+    BrailleKeyEventRewriter.instance = new BrailleKeyEventRewriter();
+  }
+
   /**
    * Accumulates and optionally modifies in-coming braille key events.
    * @param {BrailleKeyEvent} evt
@@ -75,3 +82,6 @@ export class BrailleKeyEventRewriter {
     return false;
   }
 }
+
+/** @type {BrailleKeyEventRewriter} */
+BrailleKeyEventRewriter.instance;
