@@ -4,7 +4,6 @@
 
 #[macro_use]
 mod macros;
-mod util;
 
 pub mod decoding;
 pub mod encoding;

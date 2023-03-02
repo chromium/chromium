@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 use crate::bindings::encoding::{
-    Bits, Context, DataHeader, DataHeaderValue, MojomNumeric, DATA_HEADER_SIZE,
+    Bits, Context, DataHeader, DataHeaderValue, MojomPrimitive, DATA_HEADER_SIZE,
 };
 use crate::bindings::mojom::{MojomEncodable, MOJOM_NULL_POINTER, UNION_SIZE};
-use crate::bindings::util;
 
 use std::mem;
 use std::ptr;
@@ -94,28 +93,26 @@ impl<'slice> DecodingState<'slice> {
 
     /// Align the decoding state to the next 'bytes' boundary.
     pub fn align_to_bytes(&mut self, bytes: usize) {
-        if self.offset != 0 {
-            self.offset = util::align_bytes(self.offset, bytes);
-        }
+        debug_assert!(bytes.is_power_of_two());
+        self.offset = self.offset.next_multiple_of(bytes);
     }
 
     /// Read a primitive from the buffer without incrementing the offset.
-    fn read_in_place<T: MojomNumeric>(&mut self) -> T {
-        let mut value: T = Default::default();
-        debug_assert!(mem::size_of::<T>() + self.offset <= self.data.len());
-        let ptr = (&self.data[self.offset..]).as_ptr();
-        unsafe {
-            ptr::copy_nonoverlapping(
-                mem::transmute::<*const u8, *const T>(ptr),
-                &mut value as *mut T,
-                1,
-            );
-        }
-        value
+    fn read_in_place<T: MojomPrimitive>(&mut self) -> T {
+        assert!(mem::size_of::<T::Repr>() + self.offset <= self.data.len());
+        let ptr = self.data[self.offset..].as_ptr() as *const T::Repr;
+
+        // SAFETY:
+        // * `T::Repr: Copy` meaning we can safely read in-place without worring about
+        //   doing it only once.
+        // * We asserted that the offset + size of T::Repr is in-bounds, so the pointer
+        //   is valid.
+        let repr: T::Repr = unsafe { *ptr };
+        <T as MojomPrimitive>::from_repr(repr)
     }
 
     /// Read a primitive from the buffer and increment the offset.
-    fn read<T: MojomNumeric>(&mut self) -> T {
+    fn read<T: MojomPrimitive>(&mut self) -> T {
         let value = self.read_in_place::<T>();
         self.bit_offset = Bits(0);
         self.offset += mem::size_of::<T>();
@@ -123,7 +120,7 @@ impl<'slice> DecodingState<'slice> {
     }
 
     /// Decode a primitive from the buffer, naturally aligning before we read.
-    pub fn decode<T: MojomNumeric>(&mut self) -> T {
+    pub fn decode<T: MojomPrimitive>(&mut self) -> T {
         self.align_to_byte();
         self.align_to_bytes(mem::size_of::<T>());
         self.read::<T>()

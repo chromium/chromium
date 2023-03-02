@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#![feature(int_roundings)]
 #![feature(maybe_uninit_slice)]
 #![feature(new_uninit)]
 // Require unsafe blocks for unsafe operations even in an unsafe fn.

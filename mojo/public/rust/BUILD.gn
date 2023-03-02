@@ -64,7 +64,6 @@ rust_static_library("mojo_rust") {
     "bindings/mod.rs",
     "bindings/mojom.rs",
     "bindings/run_loop.rs",
-    "bindings/util.rs",
     "lib.rs",
     "system/core.rs",
     "system/data_pipe.rs",
