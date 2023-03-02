@@ -68,20 +68,16 @@ source_set("core") {
     "bookmark_path_cache.mm",
     "bookmark_utils_ios.h",
     "bookmark_utils_ios.mm",
-    "undo_manager_bridge_observer.h",
-    "undo_manager_bridge_observer.mm",
-    "undo_manager_wrapper.h",
-    "undo_manager_wrapper.mm",
   ]
   deps = [
     ":constants",
+    ":undo_manager",
     "//base",
     "//components/bookmarks/browser",
     "//components/pref_registry",
     "//components/prefs",
     "//components/query_parser",
     "//components/strings",
-    "//components/undo",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
@@ -94,12 +90,27 @@ source_set("core") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:url_with_title",
-    "//ios/chrome/browser/undo",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("undo_manager") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "undo_manager_bridge_observer.h",
+    "undo_manager_bridge_observer.mm",
+    "undo_manager_wrapper.h",
+    "undo_manager_wrapper.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/undo",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/undo",
+  ]
 }
 
 source_set("constants") {
