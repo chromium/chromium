@@ -1,10 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/services/shared_storage_worklet/module_script_downloader.h"
+#include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 
-#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,20 +14,17 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "url/gurl.h"
 
-namespace shared_storage_worklet {
+namespace blink {
 
 namespace {
 
-// TODO(crbug.com/1241927): This can eventually be disabled via Privacy Sandbox
-// Settings. Need to update this comment when the settings becomes available.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
         "shared_storage_worklet_module_script_downloader",
@@ -42,12 +38,24 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "invoked. This is an API that any website can call."
           data: "URL of the script."
           destination: WEBSITE
+          internal {
+            contacts {
+              email: "yaoxia@google.com"
+            }
+            contacts {
+              email: "cammie@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-03-01"
         }
         policy {
           cookies_allowed: YES
           cookies_store: "user"
           setting:
-            "These requests cannot be disabled."
+            "These requests can be disabled in chrome://settings/privacySandbox."
           policy_exception_justification:
             "These requests are triggered by a website."
         })");
@@ -167,4 +175,4 @@ void ModuleScriptDownloader::OnRedirect(
                                                 source_url_.spec().c_str()));
 }
 
-}  // namespace shared_storage_worklet
+}  // namespace blink

@@ -18,6 +18,10 @@ class IsolateHolder;
 class Arguments;
 }  // namespace gin
 
+namespace blink {
+class ModuleScriptDownloader;
+}  // namespace blink
+
 namespace shared_storage_worklet {
 
 class UrlSelectionOperationHandler;
@@ -25,7 +29,6 @@ class UnnamedOperationHandler;
 class Console;
 class PrivateAggregation;
 class SharedStorage;
-class ModuleScriptDownloader;
 
 // The global JS execution context for shared storage worklet. It holds a
 // v8::Isolate and a v8::Context to execute all worklet operations. Members are
@@ -75,7 +78,7 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
 
   bool private_aggregation_permissions_policy_allowed_;
 
-  std::unique_ptr<ModuleScriptDownloader> module_script_downloader_;
+  std::unique_ptr<blink::ModuleScriptDownloader> module_script_downloader_;
 
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   v8::Global<v8::Context> global_context_;

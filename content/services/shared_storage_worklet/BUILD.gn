@@ -8,8 +8,6 @@ source_set("shared_storage_worklet") {
   sources = [
     "console.cc",
     "console.h",
-    "module_script_downloader.cc",
-    "module_script_downloader.h",
     "private_aggregation.cc",
     "private_aggregation.h",
     "shared_storage.cc",

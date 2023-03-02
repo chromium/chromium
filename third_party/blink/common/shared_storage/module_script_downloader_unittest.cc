@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/services/shared_storage_worklet/module_script_downloader.h"
+#include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 
 #include <string>
 #include <utility>
@@ -21,7 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace shared_storage_worklet {
+namespace blink {
 
 namespace {
 
@@ -47,10 +47,12 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
   // Don't bother adding these as headers, since the script grabs headers from
   // URLResponseHead fields instead of the corresponding
   // net::HttpResponseHeaders fields.
-  if (mime_type)
+  if (mime_type) {
     head->mime_type = *mime_type;
-  if (charset)
+  }
+  if (charset) {
     head->charset = *charset;
+  }
   if (http_status != net::HTTP_OK) {
     std::string full_headers = base::StringPrintf(
         "HTTP/1.1 %d %s\r\n\r\n", static_cast<int>(http_status),
@@ -303,4 +305,4 @@ TEST_F(ModuleScriptDownloaderTest, Charset) {
       error_);
 }
 
-}  // namespace shared_storage_worklet
+}  // namespace blink

@@ -1,29 +1,25 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_MODULE_SCRIPT_DOWNLOADER_H_
-#define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_MODULE_SCRIPT_DOWNLOADER_H_
-
-#include <string>
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SHARED_STORAGE_MODULE_SCRIPT_DOWNLOADER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SHARED_STORAGE_MODULE_SCRIPT_DOWNLOADER_H_
 
 #include "base/functional/callback.h"
-#include "content/common/content_export.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/blink/public/common/common_export.h"
 
 namespace network {
 class SimpleURLLoader;
-}
+}  // namespace network
 
-namespace shared_storage_worklet {
+namespace blink {
 
 // Download utility for worklet module script. Creates requests and blocks
 // responses.
-class CONTENT_EXPORT ModuleScriptDownloader {
+class BLINK_COMMON_EXPORT ModuleScriptDownloader {
  public:
   // Passes in nullptr on failure. Always invoked asynchronously.
   using ModuleScriptDownloaderCallback =
@@ -56,6 +52,6 @@ class CONTENT_EXPORT ModuleScriptDownloader {
   ModuleScriptDownloaderCallback module_script_downloader_callback_;
 };
 
-}  // namespace shared_storage_worklet
+}  // namespace blink
 
-#endif  // CONTENT_SERVICES_SHARED_STORAGE_WORKLET_MODULE_SCRIPT_DOWNLOADER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SHARED_STORAGE_MODULE_SCRIPT_DOWNLOADER_H_

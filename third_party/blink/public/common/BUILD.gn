@@ -296,6 +296,7 @@ source_set("headers") {
     "service_worker/service_worker_status_code.h",
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_types.h",
+    "shared_storage/module_script_downloader.h",
     "shared_storage/shared_storage_mojom_traits.h",
     "shared_storage/shared_storage_utils.h",
     "sms/webotp_constants.h",

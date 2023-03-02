@@ -10,7 +10,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "content/services/shared_storage_worklet/console.h"
-#include "content/services/shared_storage_worklet/module_script_downloader.h"
 #include "content/services/shared_storage_worklet/private_aggregation.h"
 #include "content/services/shared_storage_worklet/shared_storage.h"
 #include "content/services/shared_storage_worklet/unnamed_operation_handler.h"
@@ -21,6 +20,7 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
@@ -60,7 +60,7 @@ void SharedStorageWorkletGlobalScope::AddModule(
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
       std::move(pending_url_loader_factory));
 
-  module_script_downloader_ = std::make_unique<ModuleScriptDownloader>(
+  module_script_downloader_ = std::make_unique<blink::ModuleScriptDownloader>(
       url_loader_factory.get(), script_source_url,
       base::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), client,
