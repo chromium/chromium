@@ -589,3 +589,21 @@ testcase.showsEducationNudge = async () => {
   // Check that the nudge and its text is visible.
   await remoteCall.waitNudge(appId, 'New search features available');
 };
+
+/**
+ * Checks that search works correctly when starting in My Files.
+ */
+testcase.searchFromMyFiles = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  await navigateWithDirectoryTree(appId, '/My files');
+  const beforeSearchPath =
+      await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
+  chrome.test.assertEq('/My files', beforeSearchPath);
+
+  // Make sure the search returns a matching file even when originating in My
+  // Files rather than My Files/Downloads directory.
+  await remoteCall.typeSearchText(appId, 'hello');
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.hello,
+  ]));
+};

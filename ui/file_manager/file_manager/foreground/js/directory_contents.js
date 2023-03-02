@@ -350,8 +350,9 @@ export class SearchV2ContentScanner extends ContentScanner {
     const category = this.getDesiredCategory_();
     if (this.isSearchingLocal_()) {
       searchPromises.push(new Promise((resolve, reject) => {
-        const rootDir =
-            this.isSearchingRoot_() ? this.entry_.filesystem.root : this.entry_;
+        const rootDir = this.isSearchingRoot_() ?
+            this.entry_.filesystem.root :
+            /** @type {DirectoryEntry} */ (util.unwrapEntry(this.entry_));
         const timestamp = this.getEarliestTimestamp_();
         chrome.fileManagerPrivate.searchFiles(
             {
