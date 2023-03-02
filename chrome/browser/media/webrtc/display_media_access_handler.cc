@@ -178,6 +178,20 @@ void DisplayMediaAccessHandler::HandleRequest(
           /*ui=*/nullptr);
       return;
     }
+
+    // Renderer process should already check for transient user activation
+    // before sending IPC, but just to be sure double check here as well. This
+    // is not treated as a BadMessage because it is possible for the transient
+    // user activation to expire between the renderer side check and this check.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kGetDisplayMediaRequiresUserActivation) &&
+        !rfh->HasTransientUserActivation()) {
+      std::move(callback).Run(
+          blink::mojom::StreamDevicesSet(),
+          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+          /*ui=*/nullptr);
+      return;
+    }
   }
 
   std::unique_ptr<DesktopMediaPicker> picker = picker_factory_->CreatePicker();

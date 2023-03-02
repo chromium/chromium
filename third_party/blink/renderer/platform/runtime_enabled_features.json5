@@ -1739,7 +1739,6 @@
       name: "GetDisplayMediaRequiresUserActivation",
       depends_on: ["GetDisplayMedia"],
       status: "experimental",
-      base_feature: "none",
     },
     {
       // Enables the getDisplayMediaSet API for multi surface capture.
