@@ -221461,7 +221461,7 @@
     },
     "css-view-transitions": {
      "3d-transform-incoming.html": [
-      "cdf1b32ab73013e19be759cbf1b233c654d67131",
+      "1a0719eaa9e0027e752ce2c24609ec18c44427c0",
       [
        null,
        [
@@ -221494,7 +221494,7 @@
       ]
      ],
      "3d-transform-outgoing.html": [
-      "746b93afd40c1c1e33f8ca3b4a8e0fa2970e635c",
+      "1796284c06d0de95538a7b8b923b505fb9218571",
       [
        null,
        [
@@ -221573,7 +221573,7 @@
       ]
      ],
      "content-visibility-auto-shared-element.html": [
-      "11b4957fbcca7d1ceb8b151741eba1b86cb5708e",
+      "d76eab2fcd67372c3df2558748035929b3a5ed4f",
       [
        null,
        [
@@ -221747,7 +221747,7 @@
       ]
      ],
      "css-tags-paint-order-with-entry.html": [
-      "703b64f5c68c732d42d5ffeb1bb590f3c8ebf543",
+      "efd1aff5df79b2e8ee6a775bd987876483f3464c",
       [
        null,
        [
@@ -221780,7 +221780,7 @@
       ]
      ],
      "css-tags-paint-order.html": [
-      "c0e8769b473052d3adc8f192d454f5bb59c10647",
+      "28a955bad66c21adfd8f7ec938cb9fc2ff9a62b9",
       [
        null,
        [
@@ -221793,7 +221793,7 @@
       ]
      ],
      "css-tags-shared-element.html": [
-      "33bbae70fc6b918d12a17c856a3c75c1c0071ff7",
+      "9046b915b4f03fba81c58e44ad3d61c4236d468a",
       [
        null,
        [
@@ -221878,7 +221878,7 @@
       ]
      ],
      "far-away-capture.html": [
-      "bfe0b9fb9484f5984fbea9460d40818a40ab6ddd",
+      "7b003cbb76961d9747448949eaf9001cc218b4f3",
       [
        null,
        [
@@ -222092,7 +222092,7 @@
       ]
      ],
      "japanese-tag.html": [
-      "976dcab4fca8f8cf17fbdedbf7af0a162036eb37",
+      "67115a6fae6a8b63db7a7264efe921e056f5c7cb",
       [
        null,
        [
@@ -222131,7 +222131,7 @@
       ]
      ],
      "new-and-old-sizes-match.html": [
-      "78efa9d82fa7591f62d855b2fe8ab80c4140f0fe",
+      "1549a402af0cfb1fb18e8e8e7d76a71035577ad9",
       [
        null,
        [
@@ -222164,7 +222164,7 @@
       ]
      ],
      "new-content-captures-clip-path.html": [
-      "4a2dfc78c2746c02ca7aae34685292fbc76aed47",
+      "0d4c94e47d61790b77be1805a128ae93cae1ceb8",
       [
        null,
        [
@@ -222197,7 +222197,7 @@
       ]
      ],
      "new-content-captures-different-size.html": [
-      "a891dec55532d6a740a459772f65acb39136cd9b",
+      "a3ecddaf26c6d4be142525da40caaf947827684d",
       [
        null,
        [
@@ -222231,7 +222231,7 @@
       ]
      ],
      "new-content-captures-opacity.html": [
-      "ab4efd1f42478c2fb1c78b224a564623b3197046",
+      "7f23f9110a915dff94ce768a6e69c73ceb6df5d4",
       [
        null,
        [
@@ -222244,7 +222244,7 @@
       ]
      ],
      "new-content-captures-positioned-spans.html": [
-      "b88654cd379c92316e6eee6ed6e27ba0c80038fb",
+      "39bbfbfb123f70f3282a8ce09a69fb4892e87dc8",
       [
        null,
        [
@@ -222270,7 +222270,7 @@
       ]
      ],
      "new-content-captures-spans.html": [
-      "843f6752d76740550f8348ed3cd3c9134700aa77",
+      "661d7c8a01ad9f0c655ba48db7a893ead5da1b4c",
       [
        null,
        [
@@ -222283,7 +222283,7 @@
       ]
      ],
      "new-content-container-writing-modes.html": [
-      "e7ac768e17d6104d0f70cab29a891c8b08b03c8c",
+      "7b55a0f012fb772fc26c85ea5568553511a82855",
       [
        null,
        [
@@ -222296,7 +222296,7 @@
       ]
      ],
      "new-content-element-writing-modes.html": [
-      "d7740d78f54f52766c58adfcd618d1e260bdba42",
+      "78ce545b74ad5df5c8cdb3b4d44e1b77808e9b81",
       [
        null,
        [
@@ -222356,7 +222356,7 @@
       ]
      ],
      "new-content-intrinsic-aspect-ratio.html": [
-      "53ec94122f06998a01c3b69b47d5c312e15e21d0",
+      "69e8f82e9f1b2c3e0b9fc710260585863e081b9a",
       [
        null,
        [
@@ -222369,7 +222369,7 @@
       ]
      ],
      "new-content-is-empty-div.html": [
-      "bacc63f1945835678628f59c229540e990e6e30e",
+      "53f3e23b686f90fff4582c05b113e713010b6a21",
       [
        null,
        [
@@ -222382,7 +222382,7 @@
       ]
      ],
      "new-content-is-inline.html": [
-      "c341444f3425de43a7bc47f2a718a36337398141",
+      "d971ec4eaa618cd4313a9e9ce4b269a1dad6ee13",
       [
        null,
        [
@@ -222415,7 +222415,7 @@
       ]
      ],
      "new-content-object-fit-fill.html": [
-      "b891eee16d5e93258f8bf8df0ce80b5bdb9b2d6e",
+      "2a34348c12a6f0df60672f003d5a77fa36fc9564",
       [
        null,
        [
@@ -222448,7 +222448,7 @@
       ]
      ],
      "new-content-object-fit-none.html": [
-      "d4b81b1a0eeadb38f13b7ae00a4d694d90e43568",
+      "0ec9d0bc8a4f77ec8e9e08f02b0dffc1f1a279e9",
       [
        null,
        [
@@ -222461,7 +222461,7 @@
       ]
      ],
      "new-content-object-view-box-clip-path-reference.html": [
-      "01a3ed3204fb418947a1d89f237ef918327a394e",
+      "a8507f5f33e98dcb45c2670c88b918682bb3c23b",
       [
        null,
        [
@@ -222474,7 +222474,7 @@
       ]
      ],
      "new-content-object-view-box-clip-path.html": [
-      "dcd5fec70a1c539c65dbd665d13442f0a4725966",
+      "d6a3f925cbf55d600aecd087b8b8bd460a1ef3b3",
       [
        null,
        [
@@ -222487,7 +222487,7 @@
       ]
      ],
      "new-content-object-view-box-overflow-clipped.html": [
-      "593901529f43b2daa0b02e1e1eb9c9ff0e05d2fd",
+      "247a33d15bc7fb14a74f41027a8b93531f24e64e",
       [
        null,
        [
@@ -222500,7 +222500,7 @@
       ]
      ],
      "new-content-object-view-box-overflow.html": [
-      "2bbea1e1c4c54d5e5e6281de8f14ccc4bae8aad1",
+      "d0c129a1abfe6410d3a1481b4afcf85828721602",
       [
        null,
        [
@@ -222513,7 +222513,7 @@
       ]
      ],
      "new-content-scaling.html": [
-      "4ea3c2e04a486b74c8c92b2ca473ad9f2a2bfe44",
+      "5ce6d5ba693b4c493d2481b07ba3d34851389570",
       [
        null,
        [
@@ -222546,7 +222546,7 @@
       ]
      ],
      "new-content-with-overflow-zoomed.html": [
-      "59170ebf00349710d34c8f5fd2966352b1d23594",
+      "fef9b26b2c2611ecd873e2315174791362d1d665",
       [
        null,
        [
@@ -222559,7 +222559,7 @@
       ]
      ],
      "new-content-with-overflow.html": [
-      "e2dc045089b024fce27e8a1ce1facacbab5ef2aa",
+      "d2c802dbf53f0769963098f7ae9ddd0c3d971aa9",
       [
        null,
        [
@@ -222572,7 +222572,7 @@
       ]
      ],
      "new-element-on-start.html": [
-      "e3ec5463bfd3797b18831063253324fdc8fd52c7",
+      "f0a8c144a98e92071f4da0435bbe61f16f9f5e6f",
       [
        null,
        [
@@ -222671,7 +222671,7 @@
       ]
      ],
      "old-content-captures-clip-path.html": [
-      "a2faa7f1575af4c6ac3f65b3fb303f6dbab875d3",
+      "0734edd56fd19f49ac720da21652043174a0cfa5",
       [
        null,
        [
@@ -222684,7 +222684,7 @@
       ]
      ],
      "old-content-captures-different-size.html": [
-      "a8d375f06463eef00ea8bf0d509e0137658c2a88",
+      "547cc4d7ba2eda41c9a3436206c4dbb580c65a04",
       [
        null,
        [
@@ -222718,7 +222718,7 @@
       ]
      ],
      "old-content-captures-opacity.html": [
-      "ee3e3e4cde132895f9e1b4f2a1ca5dcd02710d3d",
+      "0b727f7972fa813f5e560a7805434e7693db34e9",
       [
        null,
        [
@@ -222784,7 +222784,7 @@
       ]
      ],
      "old-content-container-writing-modes.html": [
-      "9896c27152746f9598666455d1ffa133026ec1b0",
+      "383585335d65bf0312625362c65d8bf41fe6e5e7",
       [
        null,
        [
@@ -222797,7 +222797,7 @@
       ]
      ],
      "old-content-element-writing-modes.html": [
-      "5029c6aaaa362e47033389005ba050993100cfeb",
+      "b6903d10e61c16e981a0bad5e322d182bdc2cdb2",
       [
        null,
        [
@@ -222844,7 +222844,7 @@
       ]
      ],
      "old-content-intrinsic-aspect-ratio.html": [
-      "b46a77821781f857a5fc4742056b296092b1f113",
+      "d166f438f4dae41757bd3f23e269b9fc3c1b411a",
       [
        null,
        [
@@ -222857,7 +222857,7 @@
       ]
      ],
      "old-content-is-empty-div.html": [
-      "137060c1ddb7ad88da61593238b1b4178f158966",
+      "54c56994d8cdafc2d8ee7612af16f1938b3f2ec6",
       [
        null,
        [
@@ -222870,7 +222870,7 @@
       ]
      ],
      "old-content-is-inline.html": [
-      "9f350237adcb1ea234c98f9374c8e357a14e6e78",
+      "9da15266bae3e2a07cd456814024127d7e94053e",
       [
        null,
        [
@@ -222903,7 +222903,7 @@
       ]
      ],
      "old-content-object-fit-fill.html": [
-      "9ad8b14843fbb059229234fb8970f87e5a83ee48",
+      "fb7549cc4088fbc83e79eefbc8d6971f40014512",
       [
        null,
        [
@@ -222936,7 +222936,7 @@
       ]
      ],
      "old-content-object-fit-none.html": [
-      "1275aece7cae48d02e6fc403af743337d8d20d94",
+      "06472302b9e6369303d6c742577fd8770dc2520c",
       [
        null,
        [
@@ -222949,7 +222949,7 @@
       ]
      ],
      "old-content-object-view-box-clip-path-reference.html": [
-      "14a1ee83d9271555f3d85b5e4a73feeb2cf532b2",
+      "ac566029a0feca1b5b5149ec14139a4785d1f09d",
       [
        null,
        [
@@ -222982,7 +222982,7 @@
       ]
      ],
      "old-content-object-view-box-clip-path.html": [
-      "dff57c68f6b5f5f6cfa807df9d280d499605fc45",
+      "73100d052814a1f935610cd14952ab27fe527d26",
       [
        null,
        [
@@ -223015,7 +223015,7 @@
       ]
      ],
      "old-content-object-view-box-overflow.html": [
-      "ff9bb4e7d2be4eb7194b3bbe9730210e105fd089",
+      "7a1ef2d0052192f151aa5163f382d3ae1c6b93ea",
       [
        null,
        [
@@ -223028,7 +223028,7 @@
       ]
      ],
      "old-content-with-overflow-zoomed.html": [
-      "10257b761fa639410849e8982e317b38baa0161c",
+      "887bf7c64823d644603f3e319e046259c4b7e21b",
       [
        null,
        [
@@ -223041,7 +223041,7 @@
       ]
      ],
      "old-content-with-overflow.html": [
-      "6ed31d375c6f83f90253e7d4b324d81cb56f87f2",
+      "7a40c8e386aea92c3129568c109f23be3c15d007",
       [
        null,
        [
@@ -223113,7 +223113,7 @@
       ]
      ],
      "root-style-change-during-animation.html": [
-      "d1d291124bd6dfa57b36e24072a1be830940753f",
+      "1453e5019d7de6176a7967056e14703e01f292e3",
       [
        null,
        [
@@ -223323,7 +223323,7 @@
       ]
      ],
      "set-universal-specificity.html": [
-      "ec50b1e4078589752dcc9f887a39f877cd443a40",
+      "1e8b7d0eb868b2aa6e9226d4073130a9c565f62c",
       [
        null,
        [
@@ -265416,6 +265416,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "ecf2567496693b492829897e4d5b0091fdee4d4a",
+     []
+    ],
+    "mtime.json": [
+     "613b15aeb4902ff500495838c9001cf8af2b8ccc",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -300412,11 +300422,11 @@
      ],
      "image-set": {
       "image-set-computed.sub-expected.txt": [
-       "dfc5f32b1eb39996c178765b273c0c6a496dc9c7",
+       "d882224ad3277fb53b727eed9b2d53447a8884fb",
        []
       ],
       "image-set-computed.sub.html.ini": [
-       "23ede860048d370cb1fbea598cd698a45adb5517",
+       "eccf4239c9d8cbaedffe602ea8a3edad05b1f2eb",
        []
       ],
       "image-set-parsing-expected.txt": [
@@ -303251,6 +303261,10 @@
       ],
       "clip-path-fixed-scroll-ref.html": [
        "86aad95935b2da0de4fc8c18149200f8fdf2aa15",
+       []
+      ],
+      "clip-path-fixed-scroll.html.ini": [
+       "7addfba3787701b2cb78ca1d08b57ba6340f2be5",
        []
       ],
       "clip-path-geometryBox-1-ref.html": [
@@ -318140,6 +318154,10 @@
       "54940566cd107ba443d3183dccecb505a811d14e",
       []
      ],
+     "css-scale-nested-001.html.ini": [
+      "81618bd0e9bac65c9230dd9a617de46084953180",
+      []
+     ],
      "css-skew-001-ref.html": [
       "70c256ebec653128a2d91555e817b54880666a35",
       []
@@ -321043,8 +321061,16 @@
        "bf85076c27628a5885b91254e618404c279873a7",
        []
       ],
+      "kind-of-widget-fallback-input-search-text-border-top-color-001.html.ini": [
+       "1b6035bf619946ac7293be42e2d5f3c2c0f37091",
+       []
+      ],
       "kind-of-widget-fallback-input-submit-background-clip-001.html.ini": [
        "6583c45e05f102d5160f222fe5be6681d93d24da",
+       []
+      ],
+      "kind-of-widget-fallback-input-submit-background-image-001.html.ini": [
+       "232a7afe975a43d9d3ffbfa74f907ba3a9a2d3ae",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-block-end-color-001.html.ini": [
@@ -321079,6 +321105,10 @@
        "1e55e271c6c6f134ac658bcefa5369580ea553da",
        []
       ],
+      "kind-of-widget-fallback-input-submit-border-top-color-001.html.ini": [
+       "8f6cdb84c0bbeceff6df85dfaca7729445b74cf4",
+       []
+      ],
       "kind-of-widget-fallback-input-submit-border-top-left-radius-001.html.ini": [
        "3c0a4536d792ebcd543ab708a30b850998a25a60",
        []
@@ -321093,6 +321123,10 @@
       ],
       "kind-of-widget-fallback-input-text-background-origin-001.html.ini": [
        "b5b8f0ea2c69a7494b89e5b208bfcc303baf20a1",
+       []
+      ],
+      "kind-of-widget-fallback-input-text-border-block-end-style-001.html.ini": [
+       "af04a2e06e78da321643d64f9ec775a1bd28bcc8",
        []
       ],
       "kind-of-widget-fallback-input-text-border-bottom-right-radius-001.html.ini": [
@@ -323861,7 +323895,7 @@
       []
      ],
      "new-and-old-sizes-match-ref.html": [
-      "b8c3b34c03a693c9f1e71a040a2176dd8dc5413d",
+      "ca597dfbb84be1a473c3d31747a97c7273d5d5b1",
       []
      ],
      "new-and-old-sizes-match.html.ini": [
@@ -328170,6 +328204,10 @@
       "389802b5778edaadaee90da30bbbd65d7624b717",
       []
      ],
+     "backdrop-filter-containing-block.html.ini": [
+      "8a185a72283445df4aa82127f92faa34287b2675",
+      []
+     ],
      "backdrop-filter-edge-behavior-ref.html": [
       "b605e3251c5b91f50a8b001655884b28937e9bef",
       []
@@ -328252,6 +328290,10 @@
      ],
      "backdrop-filters-contrast-ref.html": [
       "01b38f7b33762fba831c9d5b92a448a8991218e0",
+      []
+     ],
+     "backdrop-filters-grayscale-003.html.ini": [
+      "7e2330ecc855ac7e6b03f56fe92a2f802d8b25a8",
       []
      ],
      "backdrop-filters-hue-rotate-ref.html": [
@@ -347039,7 +347081,7 @@
       []
      ],
      "popup-redirect-cache.https.html.ini": [
-      "305435e6670f83650c473609de9e00d2c860b759",
+      "248901bd430b02c923b24ae3bfad553a0e7c067b",
       []
      ],
      "popup-same-origin-allow-popups-with-cross-origin.https.html.headers": [
@@ -347185,7 +347227,7 @@
         []
        ],
        "property-opener-get.https.html.ini": [
-        "9f55b4b24e1ba80dd6f40992de31a40bd97bb264",
+        "c39cb33b2d879bf999dcbafb84d3c1f1e4b943c7",
         []
        ],
        "property-opener-set.https.html.ini": [
@@ -355561,7 +355603,7 @@
         []
        ],
        "select-event.html.ini": [
-        "ecd25576f12afc9814efc5b58187aeff4779dc5e",
+        "31af53c3bdd495177b0df7c3e658c23b52ee995c",
         []
        ]
       },
@@ -365835,10 +365877,6 @@
     ],
     "OWNERS": [
      "b64cd975108aceafff61dbfed27c598748513004",
-     []
-    ],
-    "cross-origin-expected.txt": [
-     "48fb703c5a8f5d1a4cca78267a103c6bf2f37330",
      []
     ],
     "cross-origin.html.ini": [
@@ -377556,6 +377594,10 @@
       "1e4b580e8e221506ee500c4f7029033daca692c6",
       []
      ],
+     "csp-script-src-self.html.ini": [
+      "c9fac4acb5bbcf2e2028f5ac535dc7c58db70845",
+      []
+     ],
      "csp-script-src-unsafe-inline.html.ini": [
       "191ed7f745ff643f911ba24b76cda823a9fdace0",
       []
@@ -381054,8 +381096,12 @@
       "a4331a212effab5d3e84c494025b4183a814d03a",
       []
      ],
+     "requestStorageAccessForOrigin.sub.https.window-expected.txt": [
+      "6b4a0c2f07a8c2d4c5bf599bd1695ce92250d725",
+      []
+     ],
      "requestStorageAccessForOrigin.sub.https.window.js.ini": [
-      "53871037418fd9c5c51bf81c7a76efc2e5cb17fd",
+      "22f4716bdd35c002173016932f868d20f877e936",
       []
      ],
      "resources": {
@@ -384050,7 +384096,7 @@
      []
     ],
     "OWNERS": [
-     "abb8a85d6af43159970b189529b24f47c8f81567",
+     "a7db251a2d396b1de2de484e6fe2888e2f927068",
      []
     ],
     "README.md": [
@@ -439199,7 +439245,7 @@
      },
      "image-set": {
       "image-set-computed.sub.html": [
-       "3fd04ac92c54ff9c5aeb0b0662b1c4d134e466ca",
+       "a25ca17835b5dcf5a85d6216b6f3fe8d33b60042",
        [
         null,
         {}
@@ -603878,7 +603924,7 @@
       ]
      ],
      "requestStorageAccessForOrigin.sub.https.window.js": [
-      "060501d1b007377a8d9975102ffe67be131a792c",
+      "76e5bf83b1eed2fb19f6c2ae5547b422dea6d764",
       [
        "top-level-storage-access-api/tentative/requestStorageAccessForOrigin.sub.https.window.html",
        {
