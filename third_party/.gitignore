@@ -28,6 +28,7 @@
 /androidx_javascriptengine/src/
 /angle
 /angle_dx11
+/aosp_dalvik/lib/*
 /apache-linux/LICENSE
 /apache-linux/bin/*
 /apache-linux/lib/*

@@ -11,4 +11,7 @@ PREFIX="$1"
 DEPS_PREFIX="$2"
 
 mkdir "$PREFIX/lib/"
-$DEPS_PREFIX/current/bin/jar cvf "$PREFIX/lib/dx.jar" ./lib/dx/src
+# Will be autocleaned by 3pp.
+mkdir ./out
+find ./lib/dx/src -name *.java | xargs $DEPS_PREFIX/current/bin/javac -d ./out
+$DEPS_PREFIX/current/bin/jar cvf "$PREFIX/lib/dx.jar" -C ./out .
