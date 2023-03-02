@@ -145,16 +145,14 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   // Check that nothing happened yet.
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 0);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 0);
-  // `device_scheduled_reboot_handler` the device closes notifications when
-  // created.
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 0);
 
   // B. Fastforward to the point when the policy shows reboot notification.
   task_environment_.FastForwardBy(delay_till_policy_reboot -
                                   kScheduledRebootNotificationDelay);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 1);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 0);
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
 
   // C. Fastforward closer to the scheduled reboot. Leave some time for the
   // command.
@@ -170,7 +168,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 2);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 1);
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 3);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
 
   // D. Fastforward till the user session timeout expires.
   task_environment_.FastForwardBy(kUserSessionRebootDelay);
@@ -179,7 +177,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
   EXPECT_TRUE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 4);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 3);
 }
 
 // Tests that the reboot command issued before scheduled reboot resets both
@@ -221,16 +219,14 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   // Check that nothing happened yet.
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 0);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 0);
-  // `device_scheduled_reboot_handler` the device closes notifications when
-  // created.
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 0);
 
   // C. Fastforward to the point when the policy shows reboot dialog.
   task_environment_.FastForwardBy(delay_till_policy_reboot -
                                   kScheduledRebootDialogDelay);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 1);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 1);
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
 
   // D. Issue the command. Check it takes over the notification and the dialog.
   auto command = CreateAndInitializeCommand();
@@ -242,7 +238,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 2);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 2);
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 3);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
 
   // E. Fastforward till the user session timeout expires.
   task_environment_.FastForwardBy(kSmallUserSessionTimeout);
@@ -251,7 +247,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
   EXPECT_TRUE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 4);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 3);
 }
 
 // Tests that the command issued close to the DeviceScheduledReboot policy
@@ -286,16 +282,14 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   // Check that nothing happened yet.
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 0);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 0);
-  // `device_scheduled_reboot_handler` the device closes notifications when
-  // created.
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 0);
 
   // B. Fastforward to the point when the policy shows reboot notification.
   task_environment_.FastForwardBy(delay_till_policy_reboot -
                                   kScheduledRebootNotificationDelay);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 1);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 0);
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
 
   // C. Fastforward until reboot dialog is shown and a bit more so that the
   // command delay expires after the policy.
@@ -305,7 +299,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   // Check that the policy triggered the notification and the dialog.
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 1);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 1);
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
 
   auto command = CreateAndInitializeCommand();
   base::test::TestFuture<void> future;
@@ -316,7 +310,7 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 1);
   EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 1);
-  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
 
   // D. Fastforward until the policy triggers reboot.
   task_environment_.FastForwardBy(kUserSessionRebootDelay - base::Minutes(1));
@@ -380,6 +374,93 @@ TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
   EXPECT_TRUE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
+}
+
+// Tests that the reboot command triggers reboot when ScheduledReboot policy
+// scheduled before command timeout is being rescheduled after the timeout.
+TEST_F(DeviceCommandRebootJobWithScheduledRebootPolicyTest,
+       RebootsWhenScheduledRebootPolicyIsRescheduledAfterTimeoutInSession) {
+  // A      B        C                D               E
+  // 0min   2h       2h4min           2h5min          2h6min
+  // ---------------------------------------------------------
+  // ^      ^        ^                ^               ^
+  // |      |        |                |               |
+  // boot   command  |                command reboot  |
+  //                 first scheduled reboot           second scheduled reboot
+
+  // A. Boot time and setup.
+  task_environment_.FastForwardBy(base::Hours(2));
+
+  // B. Issue the reboot command. In session timeout starts.
+  auto command = CreateAndInitializeCommand();
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  // Check that the command showed notification. Fast forward without an actual
+  // time so that the timer task is triggered.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 1);
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 1);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 1);
+
+  // Schedule reboot via policy within timeout.
+  auto fake_task_executor = std::make_unique<FakeScheduledTaskExecutor>(
+      task_environment_.GetMockClock());
+  auto* fake_task_executor_ptr = fake_task_executor.get();
+  const base::TimeDelta delay_till_policy_reboot_before_command =
+      kUserSessionRebootDelay - base::Minutes(1);
+  auto [policy_value_before_command, reboot_time_before_command] =
+      scheduled_task_test_util::CreatePolicy(
+          fake_task_executor_ptr->GetTimeZone(), Now(),
+          delay_till_policy_reboot_before_command,
+          ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
+  std::unique_ptr<DeviceScheduledRebootHandler>
+      device_scheduled_reboot_handler =
+          CreateScheduledRebootHandler(std::move(fake_task_executor));
+  scoped_cros_settings_.device_settings()->Set(
+      ash::kDeviceScheduledReboot, std::move(policy_value_before_command));
+
+  // Check that the policy reset notification. Fast forward without an actual
+  // time so that the timer task is triggered.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 2);
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 2);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
+
+  // Reschedule the policy after the command timeout.
+  const base::TimeDelta delay_till_policy_reboot_after_command =
+      kUserSessionRebootDelay + base::Minutes(1);
+  auto [policy_value_after_command, reboot_time_after_command] =
+      scheduled_task_test_util::CreatePolicy(
+          fake_task_executor_ptr->GetTimeZone(), Now(),
+          delay_till_policy_reboot_after_command,
+          ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
+  scoped_cros_settings_.device_settings()->Set(
+      ash::kDeviceScheduledReboot, std::move(policy_value_after_command));
+
+  // Check that the command shows notification again. Fast forward without an
+  // actual time so that the timer task is triggered.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowNotificationCalls(), 3);
+  EXPECT_EQ(fake_notifications_scheduler_->GetShowDialogCalls(), 3);
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 3);
+
+  // C. Fastforward until the initial scheduled reboot. Check that reboot does
+  // not happen.
+  task_environment_.FastForwardBy(delay_till_policy_reboot_before_command);
+  EXPECT_EQ(command->status(), RemoteCommandJob::RUNNING);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  // D. Fastforward until the command timeout. Check that reboot happens.
+  task_environment_.FastForwardBy(kUserSessionRebootDelay -
+                                  delay_till_policy_reboot_before_command);
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+  EXPECT_TRUE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
+  EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 4);
 }
 
 }  // namespace policy

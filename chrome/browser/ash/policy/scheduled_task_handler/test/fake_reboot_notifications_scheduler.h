@@ -33,6 +33,9 @@ class FakeRebootNotificationsScheduler : public RebootNotificationsScheduler {
   void SimulateRebootButtonClick();
   void SetWaitFullRestoreInit(bool should_wait);
 
+  using RebootNotificationsScheduler::GetCurrentRequesterForTesting;
+  using RebootNotificationsScheduler::GetRequestersForTesting;
+
  private:
   void MaybeShowPendingRebootNotification() override;
 

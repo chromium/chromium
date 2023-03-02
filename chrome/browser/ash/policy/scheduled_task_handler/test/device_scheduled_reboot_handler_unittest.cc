@@ -736,8 +736,6 @@ TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
   // Simulate timer creation failure.
   auto scoped_timer_failure =
       chromeos::NativeTimer::ScopedFailureSimulatorForTesting();
-  int expected_close_notification_calls =
-      notifications_scheduler_.GetCloseNotificationCalls() + 1;
 
   // Verify timer start failure once the policy is set. Notification scheduler
   // should close all pending notifications and reset state.
@@ -747,9 +745,10 @@ TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
       ash::kDeviceScheduledReboot,
       std::move(policy_and_next_reboot_time.first));
 
-  // Verify that the notifications are closed.
-  EXPECT_EQ(notifications_scheduler_.GetCloseNotificationCalls(),
-            expected_close_notification_calls);
+  // Verify that the notifications were not shown.
+  EXPECT_EQ(notifications_scheduler_.GetShowNotificationCalls(), 0);
+  EXPECT_EQ(notifications_scheduler_.GetShowDialogCalls(), 0);
+  EXPECT_EQ(notifications_scheduler_.GetCloseNotificationCalls(), 0);
   // Verify that the state is reset.
   EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
             absl::nullopt);
