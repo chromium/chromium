@@ -171,7 +171,9 @@ class DownloadBubbleUIControllerTest : public testing::Test {
       bool may_show_animation = true,
       download::DownloadItem::TargetDisposition target_disposition =
           download::DownloadItem::TARGET_DISPOSITION_PROMPT,
-      const std::string& mime_type = "") {
+      const std::string& mime_type = "",
+      download::DownloadItem::DownloadCreationType creation_type =
+          download::DownloadItem::DownloadCreationType::TYPE_ACTIVE_DOWNLOAD) {
     size_t index = items_.size();
     items_.push_back(std::make_unique<StrictMockDownloadItem>());
     EXPECT_CALL(item(index), GetId())
@@ -196,8 +198,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     EXPECT_CALL(item(index), IsTransient())
         .WillRepeatedly(Return(is_transient));
     EXPECT_CALL(item(index), GetDownloadCreationType())
-        .WillRepeatedly(Return(download::DownloadItem::DownloadCreationType::
-                                   TYPE_ACTIVE_DOWNLOAD));
+        .WillRepeatedly(Return(creation_type));
     EXPECT_CALL(item(index), IsPaused()).WillRepeatedly(Return(false));
     EXPECT_CALL(item(index), IsDangerous()).WillRepeatedly(Return(false));
     // Functions called when checking ShouldShowDownloadStartedAnimation().
@@ -337,6 +338,34 @@ TEST_F(DownloadBubbleUIControllerTest, TransientDownloadShouldNotShow) {
   std::vector<DownloadUIModelPtr> models = controller().GetMainView();
   EXPECT_EQ(models.size(), 1ul);
   EXPECT_EQ(models[0]->GetContentId().id, ids[1]);
+}
+
+TEST_F(DownloadBubbleUIControllerTest,
+       CompleteHistoryImportShouldNotShowInPartialView) {
+  std::vector<std::string> ids = {"history_import1", "history_import2"};
+  // Complete history import item.
+  InitDownloadItem(
+      FILE_PATH_LITERAL("/foo/bar.pdf"), download::DownloadItem::COMPLETE,
+      ids[0],
+      /*is_transient=*/false, /*start_time=*/base::Time::Now(),
+      /*may_show_animation=*/true,
+      download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+      /*mime_type=*/"",
+      download::DownloadItem::DownloadCreationType::TYPE_HISTORY_IMPORT);
+  // In-progress history import item.
+  InitDownloadItem(
+      FILE_PATH_LITERAL("/foo/bar2.pdf"), download::DownloadItem::IN_PROGRESS,
+      ids[1],
+      /*is_transient=*/false, /*start_time=*/base::Time::Now(),
+      /*may_show_animation=*/true,
+      download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+      /*mime_type=*/"",
+      download::DownloadItem::DownloadCreationType::TYPE_HISTORY_IMPORT);
+  std::vector<DownloadUIModelPtr> partial_view = controller().GetPartialView();
+  ASSERT_EQ(partial_view.size(), 1u);
+  EXPECT_EQ(partial_view[0]->GetContentId().id, ids[1]);
+  std::vector<DownloadUIModelPtr> main_view = controller().GetMainView();
+  EXPECT_EQ(main_view.size(), 2u);
 }
 
 TEST_F(DownloadBubbleUIControllerTest, FastCrxDownloadShowsNoUI) {

@@ -248,6 +248,9 @@ class DownloadDisplayControllerTest : public testing::Test {
     }
     EXPECT_CALL(manager(), InProgressCount())
         .WillRepeatedly(Return(in_progress_count_));
+    // Set actioned_on to false (it defaults to true) because the controller
+    // will generally set this to false in OnNewItem().
+    DownloadItemModel(&item(index)).SetActionedOn(false);
 
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
