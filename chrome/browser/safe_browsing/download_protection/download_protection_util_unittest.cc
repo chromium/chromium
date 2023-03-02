@@ -145,4 +145,136 @@ TEST(DownloadProtectionUtilTest, HigherWeightArchivesSelectedFirst) {
   EXPECT_EQ(selected_binaries[0].file_basename(), "a.msi");
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+TEST(DownloadProtectionUtilTest, HiddenFileSelectedFirst) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous;
+  {
+    // Setup fake file-type config so that this test is not dependent on the
+    // actual policy values.
+    auto fake_config = std::make_unique<DownloadFileTypeConfig>();
+    fake_config->mutable_default_file_type()->add_platform_settings();
+    fake_config->set_max_archived_binaries_to_report(1);
+    scoped_dangerous.SwapConfig(fake_config);
+  }
+
+  ClientDownloadRequest::ArchivedBinary zip;
+  zip.set_file_basename("a.zip");
+  zip.set_is_archive(true);
+
+  ClientDownloadRequest::ArchivedBinary hidden;
+  hidden.set_file_basename(".hidden.dangerous");
+  hidden.set_is_executable(true);
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      binaries;
+  *binaries.Add() = zip;
+  *binaries.Add() = hidden;
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected_binaries = SelectArchiveEntries(binaries);
+
+  ASSERT_EQ(selected_binaries.size(), 1);
+  EXPECT_EQ(selected_binaries[0].file_basename(), ".hidden.dangerous");
+}
+
+TEST(DownloadProtectionUtilTest, OnlyOneHiddenFileSelected) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous;
+  {
+    // Setup fake file-type config so that this test is not dependent on the
+    // actual policy values.
+    auto fake_config = std::make_unique<DownloadFileTypeConfig>();
+    fake_config->mutable_default_file_type()->add_platform_settings();
+    fake_config->set_max_archived_binaries_to_report(2);
+    scoped_dangerous.SwapConfig(fake_config);
+  }
+
+  ClientDownloadRequest::ArchivedBinary zip;
+  zip.set_file_basename("a.zip");
+  zip.set_is_archive(true);
+
+  ClientDownloadRequest::ArchivedBinary hidden;
+  hidden.set_file_basename(".hidden.dangerous");
+  hidden.set_is_executable(true);
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      binaries;
+  *binaries.Add() = zip;
+  *binaries.Add() = hidden;
+  *binaries.Add() = hidden;
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected_binaries = SelectArchiveEntries(binaries);
+
+  ASSERT_EQ(selected_binaries.size(), 2);
+  EXPECT_EQ(selected_binaries[0].file_basename(), ".hidden.dangerous");
+  EXPECT_EQ(selected_binaries[1].file_basename(), "a.zip");
+}
+#endif
+
+TEST(DownloadProtectionUtilTest, EncryptedFileSelected) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous;
+  {
+    // Setup fake file-type config so that this test is not dependent on the
+    // actual policy values.
+    auto fake_config = std::make_unique<DownloadFileTypeConfig>();
+    fake_config->mutable_default_file_type()->add_platform_settings();
+    fake_config->set_max_archived_binaries_to_report(1);
+    scoped_dangerous.SwapConfig(fake_config);
+  }
+
+  ClientDownloadRequest::ArchivedBinary zip;
+  zip.set_file_basename("a.zip");
+  zip.set_is_archive(true);
+
+  ClientDownloadRequest::ArchivedBinary encrypted;
+  encrypted.set_file_basename("encrypted.dll");
+  encrypted.set_is_executable(true);
+  encrypted.set_is_encrypted(true);
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      binaries;
+  *binaries.Add() = zip;
+  *binaries.Add() = encrypted;
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected_binaries = SelectArchiveEntries(binaries);
+
+  ASSERT_EQ(selected_binaries.size(), 1);
+  EXPECT_EQ(selected_binaries[0].file_basename(), "encrypted.dll");
+}
+
+TEST(DownloadProtectionUtilTest, OnlyOneEncryptedFileSelected) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous;
+  {
+    // Setup fake file-type config so that this test is not dependent on the
+    // actual policy values.
+    auto fake_config = std::make_unique<DownloadFileTypeConfig>();
+    fake_config->mutable_default_file_type()->add_platform_settings();
+    fake_config->set_max_archived_binaries_to_report(2);
+    scoped_dangerous.SwapConfig(fake_config);
+  }
+
+  ClientDownloadRequest::ArchivedBinary zip;
+  zip.set_file_basename("a.zip");
+  zip.set_is_archive(true);
+
+  ClientDownloadRequest::ArchivedBinary encrypted;
+  encrypted.set_file_basename("encrypted.dll");
+  encrypted.set_is_executable(true);
+  encrypted.set_is_encrypted(true);
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      binaries;
+  *binaries.Add() = zip;
+  *binaries.Add() = encrypted;
+  *binaries.Add() = encrypted;
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected_binaries = SelectArchiveEntries(binaries);
+
+  ASSERT_EQ(selected_binaries.size(), 2);
+  EXPECT_EQ(selected_binaries[0].file_basename(), "encrypted.dll");
+  EXPECT_EQ(selected_binaries[1].file_basename(), "a.zip");
+}
+
 }  // namespace safe_browsing

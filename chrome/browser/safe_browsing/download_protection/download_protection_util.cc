@@ -39,6 +39,19 @@ int ArchiveEntryWeight(const ClientDownloadRequest::ArchivedBinary& entry) {
       .file_weight();
 }
 
+bool IsHidden(const ClientDownloadRequest::ArchivedBinary& entry) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  for (const base::FilePath::StringType& component :
+       base::FilePath::FromUTF8Unsafe(entry.file_basename()).GetComponents()) {
+    if (component.size() >= 1 && component[0] == '.') {
+      return true;
+    }
+  }
+#endif
+
+  return false;
+}
+
 }  // namespace
 
 void GetCertificateAllowlistStrings(
@@ -110,9 +123,22 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
                      ClientDownloadRequest::ArchivedBinary>& src_binaries) {
   google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
       selected;
-  std::vector<ClientDownloadRequest::ArchivedBinary> binaries(
-      src_binaries.begin(), src_binaries.end());
-  std::sort(binaries.begin(), binaries.end(),
+
+  std::vector<ClientDownloadRequest::ArchivedBinary> considering;
+  bool has_encrypted = false, has_hidden = false;
+  for (const ClientDownloadRequest::ArchivedBinary& binary : src_binaries) {
+    if (!has_encrypted && binary.is_encrypted()) {
+      has_encrypted = true;
+      *selected.Add() = binary;
+    } else if (!has_hidden && IsHidden(binary)) {
+      has_hidden = true;
+      *selected.Add() = binary;
+    } else {
+      considering.push_back(binary);
+    }
+  }
+
+  std::sort(considering.begin(), considering.end(),
             [](const ClientDownloadRequest::ArchivedBinary& lhs,
                const ClientDownloadRequest::ArchivedBinary& rhs) {
               // The comparator should return true if `lhs` should come before
@@ -122,13 +148,14 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
 
   // Limit the number of entries so we don't clog the backend.
   // We can expand this limit by pushing a new download_file_types update.
-  size_t limit =
-      FileTypePolicies::GetInstance()->GetMaxArchivedBinariesToReport();
-  for (size_t i = 0;
-       static_cast<size_t>(selected.size()) < limit && i < binaries.size();
-       i++) {
-    if (binaries[i].is_executable() || binaries[i].is_archive()) {
-      *selected.Add() = binaries[i];
+  int limit = FileTypePolicies::GetInstance()->GetMaxArchivedBinariesToReport();
+  for (const ClientDownloadRequest::ArchivedBinary& binary : considering) {
+    if (selected.size() >= limit) {
+      break;
+    }
+
+    if (binary.is_executable() || binary.is_archive()) {
+      *selected.Add() = binary;
     }
   }
 
