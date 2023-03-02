@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -53,6 +55,7 @@ namespace {
 constexpr char kHostA[] = "a.test";
 constexpr char kHostASubdomain[] = "subdomain.a.test";
 constexpr char kHostB[] = "b.test";
+constexpr char kHostBSubdomain[] = "subdomain.b.test";
 constexpr char kHostC[] = "c.test";
 constexpr char kHostD[] = "d.test";
 
@@ -235,6 +238,19 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
 
   GURL EchoCookiesURL(const std::string& host) {
     return https_server().GetURL(host, "/echoheader?cookie");
+  }
+
+  GURL RedirectViaHosts(const std::vector<std::string>& hosts,
+                        const GURL& destination) {
+    GURL url = destination;
+
+    for (const auto& host : base::Reversed(hosts)) {
+      url = https_server().GetURL(
+          host, base::StrCat(
+                    {"/server-redirect?", base::EscapeQueryParamValue(
+                                              url.spec(), /*use_plus=*/true)}));
+    }
+    return url;
   }
 
   std::string CookiesFromFetch(content::RenderFrameHost* render_frame_host,
@@ -658,6 +674,131 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest, ThirdPartyGrantsExpiry) {
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
   EXPECT_EQ(ReadCookiesAndContent(GetNestedFrame(), kHostC),
             NoCookiesWithContent());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIBrowserTest,
+    SelfInitiatedSameOriginNavigationPreservesStorageAccess) {
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      GetFrame(), https_server().GetURL(kHostB, "/empty.html")));
+
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       NonSelfInitiatedSameOriginNavigationLosesStorageAccess) {
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       SelfInitiatedCrossOriginNavigationLosesStorageAccess) {
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      GetFrame(), https_server().GetURL(kHostBSubdomain, "/empty.html")));
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       SelfInitiatedCrossSiteNavigationLosesStorageAccess) {
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+  SetCrossSiteCookieOnHost(kHostC);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      GetFrame(), https_server().GetURL(kHostC, "/empty.html")));
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostC), NoCookies());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIBrowserTest,
+    SelfInitiatedSameOriginNavigationWithCrossOriginRedirectLosesStorageAccess) {
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+
+  GURL dest = https_server().GetURL(kHostB, "/empty.html");
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      GetFrame(),
+      /*url=*/
+      RedirectViaHosts({kHostBSubdomain}, dest),
+      /*expected_commit_url=*/dest));
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), NoCookies());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    StorageAccessAPIBrowserTest,
+    SelfInitiatedSameOriginNavigationWithCrossOriginRedirectsLosesStorageAccess) {
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+
+  GURL dest = https_server().GetURL(kHostB, "/empty.html");
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      GetFrame(),
+      /*url=*/
+      RedirectViaHosts({kHostBSubdomain, kHostB}, dest),
+      /*expected_commit_url=*/dest));
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookies(GetFrame(), kHostBSubdomain), NoCookies());
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
