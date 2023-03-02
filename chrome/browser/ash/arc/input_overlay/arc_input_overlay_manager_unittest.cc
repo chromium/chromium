@@ -63,8 +63,9 @@ class TestArcInputOverlayManager : public ArcInputOverlayManager {
   void AddDisplayOverlayController(TouchInjector* touch_injector) override {
     DCHECK(registered_top_level_window_);
     DCHECK(touch_injector);
-    if (!registered_top_level_window_ || !touch_injector)
+    if (!registered_top_level_window_ || !touch_injector) {
       return;
+    }
     DCHECK(!display_overlay_controller_);
     display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
         touch_injector, /*first_launch=*/false);

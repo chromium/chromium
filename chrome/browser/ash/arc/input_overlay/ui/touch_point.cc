@@ -602,8 +602,9 @@ bool TouchPoint::ApplyMousePressed(const ui::MouseEvent& event) {
 bool TouchPoint::ApplyMouseDragged(const ui::MouseEvent& event) {
   auto* widget = GetWidget();
   // widget is null for test.
-  if (widget)
+  if (widget) {
     widget->SetCursor(ui::mojom::CursorType::kGrabbing);
+  }
   SetToDrag();
   return static_cast<ActionView*>(parent())->ApplyMouseDragged(event);
 }
@@ -611,8 +612,9 @@ bool TouchPoint::ApplyMouseDragged(const ui::MouseEvent& event) {
 void TouchPoint::ApplyMouseReleased(const ui::MouseEvent& event) {
   auto* widget = GetWidget();
   // widget is null for test.
-  if (widget)
+  if (widget) {
     widget->SetCursor(ui::mojom::CursorType::kGrab);
+  }
   SetToHover();
   static_cast<ActionView*>(parent())->ApplyMouseReleased(event);
 }

@@ -98,8 +98,9 @@ MenuEntryView::MenuEntryView(
 MenuEntryView::~MenuEntryView() = default;
 
 void MenuEntryView::ChangeHoverState(bool is_hovered) {
-  if (!allow_reposition_ || is_hovered == hover_state_)
+  if (!allow_reposition_ || is_hovered == hover_state_) {
     return;
+  }
 
   SetBackground(views::CreateRoundedRectBackground(
       is_hovered
@@ -110,8 +111,9 @@ void MenuEntryView::ChangeHoverState(bool is_hovered) {
 }
 
 bool MenuEntryView::OnMousePressed(const ui::MouseEvent& event) {
-  if (allow_reposition_)
+  if (allow_reposition_) {
     OnDragStart(event);
+  }
   return views::Button::OnMousePressed(event);
 }
 
@@ -175,8 +177,9 @@ bool MenuEntryView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
-  if (!allow_reposition_ || !ash::IsArrowKeyEvent(event))
+  if (!allow_reposition_ || !ash::IsArrowKeyEvent(event)) {
     return views::ImageButton::OnKeyReleased(event);
+  }
 
   on_position_changed_callback_.Run(/*leave_focus=*/false,
                                     absl::make_optional(origin()));
@@ -241,8 +244,9 @@ void MenuEntryView::ChangeMenuEntryOnDrag(bool is_dragging) {
 void MenuEntryView::SetCursor(ui::mojom::CursorType cursor_type) {
   auto* widget = GetWidget();
   // widget is null for test.
-  if (widget)
+  if (widget) {
     widget->SetCursor(cursor_type);
+  }
 }
 
 }  // namespace arc::input_overlay

@@ -22,8 +22,9 @@ KeyEventSourceRewriter::~KeyEventSourceRewriter() = default;
 ui::EventDispatchDetails KeyEventSourceRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
-  if (!event.IsKeyEvent())
+  if (!event.IsKeyEvent()) {
     return SendEvent(continuation, &event);
+  }
   auto* root_window = top_level_window_->GetRootWindow();
   return root_window->GetHost()->GetEventSource()->SendEventToSink(&event);
 }

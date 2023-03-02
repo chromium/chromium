@@ -132,14 +132,15 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
   int modifiers = 0;
   if (modifier_list) {
     for (const base::Value& val : modifier_list->GetList()) {
-      if (base::ToLowerASCII(val.GetString()) == kCtrl)
+      if (base::ToLowerASCII(val.GetString()) == kCtrl) {
         modifiers |= ui::EF_CONTROL_DOWN;
-      else if (base::ToLowerASCII(val.GetString()) == kShift)
+      } else if (base::ToLowerASCII(val.GetString()) == kShift) {
         modifiers |= ui::EF_SHIFT_DOWN;
-      else if (base::ToLowerASCII(val.GetString()) == kAlt)
+      } else if (base::ToLowerASCII(val.GetString()) == kAlt) {
         modifiers |= ui::EF_ALT_DOWN;
-      else
+      } else {
         LOG(WARNING) << "Modifier {" << val.GetString() << "} not considered.";
+      }
     }
   }
   return absl::make_optional<std::pair<ui::DomCode, int>>(code, modifiers);
@@ -160,8 +161,9 @@ bool Action::ParseFromJson(const base::Value& value) {
 
   // Name can be empty.
   auto* name = value.GetDict().FindString(kName);
-  if (name)
+  if (name) {
     name_ = *name;
+  }
 
   // Unique ID is required.
   auto id = value.GetDict().FindInt(kID);
@@ -202,8 +204,9 @@ bool Action::ParseFromJson(const base::Value& value) {
       original_positions_ = parsed_pos;
       on_left_or_middle_side_ =
           (original_positions_.front().anchor().x() <= kHalf);
-      if (allow_reposition_)
+      if (allow_reposition_) {
         current_positions_ = std::move(parsed_pos);
+      }
     }
   }
   // Parse action radius.
@@ -222,8 +225,9 @@ bool Action::ParseFromJson(const base::Value& value) {
 
 bool Action::ParseFromProto(const ActionProto& proto) {
   id_ = proto.id();
-  if (!proto.has_input_element())
+  if (!proto.has_input_element()) {
     return false;
+  }
 
   original_input_ = InputElement::ConvertFromProto(proto.input_element());
   current_input_ = std::make_unique<InputElement>(*original_input_);
@@ -232,8 +236,9 @@ bool Action::ParseFromProto(const ActionProto& proto) {
     std::vector<Position> positions;
     for (const auto& pos_proto : proto.positions()) {
       auto position = Position::ConvertFromProto(pos_proto);
-      if (!position)
+      if (!position) {
         return false;
+      }
       positions.emplace_back(*position);
     }
     original_positions_ = positions;
@@ -246,23 +251,27 @@ void Action::OverwriteFromProto(const ActionProto& proto) {
   if (proto.has_input_element()) {
     auto input_element = InputElement::ConvertFromProto(proto.input_element());
     DCHECK(input_element);
-    if (input_element)
+    if (input_element) {
       current_input_ = std::move(input_element);
+    }
   }
   if (allow_reposition_ && !proto.positions().empty()) {
     auto position = Position::ConvertFromProto(proto.positions()[0]);
     DCHECK(position);
-    if (position)
+    if (position) {
       current_positions_[0] = *position;
+    }
     position.reset();
   }
-  if (beta_ && proto.has_deleted())
+  if (beta_ && proto.has_deleted()) {
     deleted_ = proto.deleted();
+  }
 }
 
 bool Action::InitFromEditor() {
-  if (!touch_injector_)
+  if (!touch_injector_) {
     return false;
+  }
   id_ = touch_injector_->GetNextActionID();
 
   InitPositions(original_positions_);
@@ -284,12 +293,14 @@ bool IsMouseBound(const InputElement& input_element) {
 }
 
 void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
-  if (pending_input_)
+  if (pending_input_) {
     pending_input_.reset();
+  }
   pending_input_ = std::move(input_element);
 
-  if (!action_view_)
+  if (!action_view_) {
     return;
+  }
   action_view_->SetViewContent(BindingOption::kPending);
 }
 
@@ -302,8 +313,9 @@ void Action::BindPending() {
   }
 
   // Check whether input is changed.
-  if (!pending_input_)
+  if (!pending_input_) {
     return;
+  }
 
   current_input_.reset();
   current_input_ = std::move(pending_input_);
@@ -324,22 +336,25 @@ void Action::CancelPendingBind() {
   }
 
   // For unit test, |action_view_| could be nullptr.
-  if (!action_view_ || !canceled)
+  if (!action_view_ || !canceled) {
     return;
+  }
   action_view_->SetViewContent(BindingOption::kCurrent);
 }
 
 void Action::ResetPendingBind() {
-  if (allow_reposition_)
+  if (allow_reposition_) {
     pending_position_.reset();
+  }
   pending_input_.reset();
 }
 
 void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
   DCHECK(!current_positions().empty());
 
-  if (pending_position_)
+  if (pending_position_) {
     pending_position_.reset();
+  }
 
   // Keep the customized position to default type.
   pending_position_ = std::make_unique<Position>(PositionType::kDefault);
@@ -348,8 +363,9 @@ void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
 }
 
 void Action::PrepareToBindPosition(std::unique_ptr<Position> position) {
-  if (pending_position_)
+  if (pending_position_) {
     pending_position_.reset();
+  }
   // Now it only supports changing the first touch position.
   pending_position_ = std::move(position);
 }
@@ -373,8 +389,9 @@ void Action::RestoreToDefault() {
   }
 
   // For unit test, |action_view_| could be nullptr.
-  if (!action_view_ || !restored)
+  if (!action_view_ || !restored) {
     return;
+  }
 
   action_view_->SetViewContent(BindingOption::kPending);
   // Set to |DisplayMode::kRestore| to clear the focus even the current
@@ -389,8 +406,9 @@ const InputElement& Action::GetCurrentDisplayedInput() {
 
 bool Action::IsOverlapped(const InputElement& input_element) {
   DCHECK(current_input_);
-  if (!current_input_)
+  if (!current_input_) {
     return false;
+  }
   auto& input_binding = GetCurrentDisplayedInput();
   return input_binding.IsOverlapped(input_element);
 }
@@ -408,8 +426,9 @@ const Position& Action::GetCurrentDisplayedPosition() {
 }
 
 absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
-  if (!touch_id_)
+  if (!touch_id_) {
     return absl::nullopt;
+  }
   auto touch_event = absl::make_optional<ui::TouchEvent>(
       ui::EventType::ET_TOUCH_CANCELLED, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
@@ -421,8 +440,9 @@ absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
 }
 
 absl::optional<ui::TouchEvent> Action::GetTouchReleasedEvent() {
-  if (!touch_id_)
+  if (!touch_id_) {
     return absl::nullopt;
+  }
   auto touch_event = absl::make_optional<ui::TouchEvent>(
       ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
@@ -434,8 +454,9 @@ absl::optional<ui::TouchEvent> Action::GetTouchReleasedEvent() {
 }
 
 int Action::GetUIRadius() {
-  if (!radius_)
+  if (!radius_) {
     return kMinRadius;
+  }
 
   const auto& content_bounds = touch_injector_->content_bounds();
   int min = std::min(content_bounds.width(), content_bounds.height());
@@ -498,15 +519,17 @@ bool Action::VerifyOnKeyRelease(ui::DomCode code) {
   }
 
   DCHECK_NE(keys_pressed_.size(), 0u);
-  if (keys_pressed_.size() == 0 || !keys_pressed_.contains(code))
+  if (keys_pressed_.size() == 0 || !keys_pressed_.contains(code)) {
     return false;
+  }
 
   return true;
 }
 
 void Action::PostUnbindInputProcess() {
-  if (!action_view_)
+  if (!action_view_) {
     return;
+  }
   action_view_->SetViewContent(BindingOption::kPending);
   const int label_index = action_view_->unbind_label_index();
   action_view_->SetDisplayMode(DisplayMode::kEditedUnbound,
@@ -542,8 +565,9 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
       customized = true;
     }
 
-    if (!customized)
+    if (!customized) {
       return nullptr;
+    }
   } else if (beta_) {
     // Save everything for user-added action.
     proto->set_allocated_input_element(
@@ -560,8 +584,9 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
 }
 
 void Action::UpdateTouchDownPositions() {
-  if (original_positions_.empty())
+  if (original_positions_.empty()) {
     return;
+  }
 
   touch_down_positions_.clear();
   const auto& content_bounds = touch_injector_->content_bounds();
@@ -575,8 +600,9 @@ void Action::UpdateTouchDownPositions() {
     float scale = touch_injector_->window()->GetHost()->device_scale_factor();
     point.Scale(scale);
     const auto root_point_pixel = point.ToString();
-    if (touch_injector_->rotation_transform())
+    if (touch_injector_->rotation_transform()) {
       point = touch_injector_->rotation_transform()->MapPoint(point);
+    }
     touch_down_positions_.emplace_back(point);
 
     VLOG(1) << "Calculate touch position for location at index " << i
@@ -594,8 +620,9 @@ void Action::OnTouchReleased() {
   TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
   touch_id_ = absl::nullopt;
   keys_pressed_.clear();
-  if (original_positions_.empty())
+  if (original_positions_.empty()) {
     return;
+  }
   current_position_idx_ =
       (current_position_idx_ + 1) % original_positions_.size();
 }

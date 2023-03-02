@@ -53,8 +53,9 @@ MessageView::MessageView(DisplayOverlayController* controller,
                          MessageType message_type)
     : views::LabelButton(), display_overlay_controller_(controller) {
   DCHECK(display_overlay_controller_);
-  if (display_overlay_controller_)
+  if (display_overlay_controller_) {
     display_overlay_controller_->RemoveEditMessage();
+  }
   SetBackground(views::CreateRoundedRectBackground(
       color_utils::GetResultingPaintColor(kForegroundColor, kBackgroundColor),
       kCornerRadius));

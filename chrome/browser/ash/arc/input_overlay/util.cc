@@ -85,8 +85,9 @@ absl::optional<std::string> GetCurrentSystemVersion() {
 void ResetFocusTo(views::View* view) {
   DCHECK(view);
   auto* focus_manager = view->GetFocusManager();
-  if (!focus_manager)
+  if (!focus_manager) {
     return;
+  }
   focus_manager->SetFocusedView(view);
 }
 
