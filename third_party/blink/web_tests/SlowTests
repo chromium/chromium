@@ -675,7 +675,6 @@ crbug.com/874695 [ Linux Release ] media/media-controls-tap-show-controls-withou
 crbug.com/874695 [ Debug Mac12 ] media/media-controls-tap-show-controls-without-activating.html [ Slow ]
 crbug.com/874695 [ Mac Release ] media/media-controls-tap-show-controls-without-activating.html [ Slow ]
 crbug.com/874695 [ Release Win ] media/media-controls-tap-show-controls-without-activating.html [ Slow ]
-crbug.com/874695 [ Debug Mac12 ] media/media-ended.html [ Slow ]
 crbug.com/874695 [ Release ] media/media-ended.html [ Slow ]
 crbug.com/874695 media/remoteplayback/prompt-twice-throws.html [ Slow ]
 crbug.com/874695 [ Debug Mac12 ] media/track/track-cue-gc-wrapper.html [ Slow ]
