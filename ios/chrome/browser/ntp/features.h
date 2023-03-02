@@ -72,6 +72,18 @@ extern const char kEnableFeedRefreshPostFeedSession[];
 // backgrounding.
 extern const char kEnableFeedRefreshOnAppBackgrounding[];
 
+// Feature param under `kEnableFeedForegroundRefresh` for the time interval used
+// to set the session end timer.
+extern const char kFeedSessionEndTimerTimeoutInSeconds[];
+
+// Feature param under `kEnableFeedForegroundRefresh` for the refresh threshold
+// when the last refresh was seen.
+extern const char kFeedSeenRefreshThresholdInSeconds[];
+
+// Feature param under `kEnableFeedForegroundRefresh` for the refresh threshold
+// when the last refresh was unseen.
+extern const char kFeedUnseenRefreshThresholdInSeconds[];
+
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
@@ -134,6 +146,16 @@ bool IsFeedRefreshPostFeedSessionEnabled();
 // Whether feed is refreshed at the moment the app is backgrounding. This is
 // different from background refresh.
 bool IsFeedRefreshOnAppBackgroundingEnabled();
+
+// Returns the time interval used to set the session end timer.
+double GetFeedSessionEndTimerTimeoutInSeconds();
+
+// Returns the refresh threshold (aka feed expiration) for a feed that has been
+// seen.
+double GetFeedSeenRefreshThresholdInSeconds();
+
+// Returns the refresh threshold (aka feed expiration) for an unseen feed.
+double GetFeedUnseenRefreshThresholdInSeconds();
 
 // YES if enabled Feed bottom sign-in promo.
 bool IsFeedBottomSignInPromoEnabled();

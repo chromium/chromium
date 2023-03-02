@@ -78,6 +78,12 @@ const char kEnableFeedRefreshPostFeedSession[] =
     "EnableFeedRefreshPostFeedSession";
 const char kEnableFeedRefreshOnAppBackgrounding[] =
     "EnableFeedRefreshOnAppBackgrounding";
+const char kFeedSessionEndTimerTimeoutInSeconds[] =
+    "FeedSessionEndTimerTimeoutInSeconds";
+const char kFeedSeenRefreshThresholdInSeconds[] =
+    "FeedSeenRefreshThresholdInSeconds";
+const char kFeedUnseenRefreshThresholdInSeconds[] =
+    "FeedUnseenRefreshThresholdInSeconds";
 
 bool IsWebChannelsEnabled() {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
@@ -202,6 +208,39 @@ bool IsFeedRefreshOnAppBackgroundingEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedForegroundRefresh, kEnableFeedRefreshOnAppBackgrounding,
       /*default=*/false);
+}
+
+double GetFeedSessionEndTimerTimeoutInSeconds() {
+  double override_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:@"FeedSessionEndTimerTimeoutInSeconds"];
+  if (override_value > 0.0) {
+    return override_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedForegroundRefresh, kFeedSessionEndTimerTimeoutInSeconds,
+      /*default=*/base::Minutes(5).InSecondsF());
+}
+
+double GetFeedSeenRefreshThresholdInSeconds() {
+  double override_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:@"FeedSeenRefreshThresholdInSeconds"];
+  if (override_value > 0.0) {
+    return override_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedForegroundRefresh, kFeedSeenRefreshThresholdInSeconds,
+      /*default=*/base::Hours(1).InSecondsF());
+}
+
+double GetFeedUnseenRefreshThresholdInSeconds() {
+  double override_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:@"FeedUnseenRefreshThresholdInSeconds"];
+  if (override_value > 0.0) {
+    return override_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedForegroundRefresh, kFeedUnseenRefreshThresholdInSeconds,
+      /*default=*/base::Hours(6).InSecondsF());
 }
 
 bool IsFeedBottomSignInPromoEnabled() {

@@ -71,7 +71,7 @@ using feed::FeedUserActionType;
 @property(nonatomic, assign) NSTimeInterval discoverPreviousTimeInFeedGV;
 @property(nonatomic, assign) NSTimeInterval followingPreviousTimeInFeedGV;
 
-// Timer to signal end of session. Set for `kMinutesBetweenSessions`.
+// Timer to signal end of session.
 @property(nonatomic, strong) NSTimer* sessionEndTimer;
 
 @end
@@ -1191,18 +1191,17 @@ using feed::FeedUserActionType;
   }
 }
 
-// Sets or extends the session end timer by `kMinutesBetweenSessions`.
+// Sets or extends the session end timer.
 - (void)setOrExtendSessionEndTimer {
   [self.sessionEndTimer invalidate];
   __weak FeedMetricsRecorder* weakSelf = self;
-  self.sessionEndTimer =
-      [NSTimer scheduledTimerWithTimeInterval:kMinutesBetweenSessions *
-                                              60 /*seconds per minute*/
-                                       target:weakSelf
-                                     selector:@selector
-                                     (refreshFeedIfSessionConditionsAreMet)
-                                     userInfo:nil
-                                      repeats:NO];
+  self.sessionEndTimer = [NSTimer
+      scheduledTimerWithTimeInterval:GetFeedSessionEndTimerTimeoutInSeconds()
+                              target:weakSelf
+                            selector:@selector
+                            (refreshFeedIfSessionConditionsAreMet)
+                            userInfo:nil
+                             repeats:NO];
 }
 
 // Refresh the feed if session conditions are met. See implementation for which
