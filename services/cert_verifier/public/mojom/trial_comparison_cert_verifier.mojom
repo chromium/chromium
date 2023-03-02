@@ -50,6 +50,21 @@ struct WinPlatformVerifierDebugInfo {
   array<uint8> authroot_sequence_number;
 };
 
+[EnableIf=use_nss_certs]
+struct TrustStoreNSSDebugInfo {
+  // Whether the TrustStoreNSS instance is ignoring the NSS builtin trust
+  // records or not.
+  bool ignore_system_trust_settings;
+
+  // Which user slots are allowed by the TrustStoreNSS instance.
+  enum SlotFilterType {
+    kDontFilter = 0,
+    kDoNotAllowUserSlots = 1,
+    kAllowSpecifiedUserSlot = 2,
+  };
+  SlotFilterType slot_filter_type;
+};
+
 [EnableIf=is_chrome_root_store_supported]
 struct ChromeRootStoreDebugInfo {
   int64 chrome_root_store_version;
@@ -82,6 +97,15 @@ struct CertVerifierDebugInfo {
 
   [EnableIf=is_win]
   WinPlatformVerifierDebugInfo? win_platform_debug_info;
+
+  [EnableIf=use_nss_certs]
+  string nss_version;
+
+  [EnableIf=use_nss_certs]
+  TrustStoreNSSDebugInfo? primary_nss_debug_info;
+
+  [EnableIf=use_nss_certs]
+  TrustStoreNSSDebugInfo? trial_nss_debug_info;
 
   [EnableIf=is_chrome_root_store_supported]
   ChromeRootStoreDebugInfo? chrome_root_store_debug_info;

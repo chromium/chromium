@@ -14,6 +14,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/supports_user_data.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -451,11 +452,12 @@ class TrustStoreNSSTestBase : public ::testing::Test {
 
 // Specifies which kind of per-slot filtering the TrustStoreNSS is supposed to
 // perform in the parametrized TrustStoreNSSTestWithSlotFilterType.
-enum class SlotFilterType {
-  kDontFilter,
-  kDoNotAllowUserSlots,
-  kAllowSpecifiedUserSlot
-};
+// TODO(https://crbug.com/1412591): The SlotFilterType enum is shared with
+// TrustStoreNSS::ResultDebugData::SlotFilterType for convenience. Once the old
+// code path and trial code is cleaned up, the type definition can be moved
+// back to here.
+using SlotFilterType = TrustStoreNSS::ResultDebugData::SlotFilterType;
+
 std::string SlotFilterTypeToString(SlotFilterType slot_filter_type) {
   switch (slot_filter_type) {
     case SlotFilterType::kDontFilter:
@@ -499,6 +501,23 @@ class TrustStoreNSSTestWithSlotFilterType
     }
   }
 };
+
+class DebugData : public base::SupportsUserData {
+ public:
+  ~DebugData() override = default;
+};
+
+TEST_P(TrustStoreNSSTestWithSlotFilterType, DebugData) {
+  DebugData debug_data;
+  trust_store_nss_->GetTrust(target_.get(), &debug_data);
+  const TrustStoreNSS::ResultDebugData* trust_debug_data =
+      TrustStoreNSS::ResultDebugData::Get(&debug_data);
+  ASSERT_TRUE(trust_debug_data);
+  EXPECT_EQ(system_trust_setting() ==
+                TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust,
+            trust_debug_data->ignore_system_trust_settings());
+  EXPECT_EQ(slot_filter_type(), trust_debug_data->slot_filter_type());
+}
 
 // Without adding any certs to the NSS DB, should get no anchor results for
 // any of the test certs.

@@ -24,6 +24,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "net/cert/cert_verify_proc_win.h"
 #endif
+#if BUILDFLAG(USE_NSS_CERTS)
+#include <nss.h>
+#include "net/cert/internal/trust_store_nss.h"
+#endif
 
 struct ReceivedReport {
   std::string hostname;
@@ -143,6 +147,16 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   net::CertVerifyProcWin::ResultDebugData::Create(time, authroot_sequence,
                                                   &primary_result);
 #endif
+#if BUILDFLAG(USE_NSS_CERTS)
+  net::TrustStoreNSS::ResultDebugData::Create(
+      false, net::TrustStoreNSS::ResultDebugData::SlotFilterType::kDontFilter,
+      &primary_result);
+  net::TrustStoreNSS::ResultDebugData::Create(
+      true,
+      net::TrustStoreNSS::ResultDebugData::SlotFilterType::
+          kAllowSpecifiedUserSlot,
+      &trial_result);
+#endif
   absl::optional<int64_t> chrome_root_store_version = absl::nullopt;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   chrome_root_store_version = 42;
@@ -217,6 +231,25 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   EXPECT_EQ(
       authroot_sequence,
       report.debug_info->win_platform_debug_info->authroot_sequence_number);
+#endif
+#if BUILDFLAG(USE_NSS_CERTS)
+  EXPECT_EQ(NSS_GetVersion(), report.debug_info->nss_version);
+
+  ASSERT_TRUE(report.debug_info->primary_nss_debug_info);
+  EXPECT_EQ(
+      false,
+      report.debug_info->primary_nss_debug_info->ignore_system_trust_settings);
+  EXPECT_EQ(
+      cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::kDontFilter,
+      report.debug_info->primary_nss_debug_info->slot_filter_type);
+
+  ASSERT_TRUE(report.debug_info->trial_nss_debug_info);
+  EXPECT_EQ(
+      true,
+      report.debug_info->trial_nss_debug_info->ignore_system_trust_settings);
+  EXPECT_EQ(cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::
+                kAllowSpecifiedUserSlot,
+            report.debug_info->trial_nss_debug_info->slot_filter_type);
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   ASSERT_TRUE(report.debug_info->chrome_root_store_debug_info);

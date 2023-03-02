@@ -404,6 +404,21 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->win_platform_debug_info->authroot_sequence_number = {
       'J', 'E', 'N', 'N', 'Y'};
 #endif
+#if BUILDFLAG(USE_NSS_CERTS)
+  debug_info->nss_version = "aoeu";
+
+  debug_info->primary_nss_debug_info =
+      cert_verifier::mojom::TrustStoreNSSDebugInfo::New();
+  debug_info->primary_nss_debug_info->ignore_system_trust_settings = false;
+  debug_info->primary_nss_debug_info->slot_filter_type =
+      cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::kDontFilter,
+
+  debug_info->trial_nss_debug_info =
+      cert_verifier::mojom::TrustStoreNSSDebugInfo::New();
+  debug_info->trial_nss_debug_info->ignore_system_trust_settings = true;
+  debug_info->trial_nss_debug_info->slot_filter_type = cert_verifier::mojom::
+      TrustStoreNSSDebugInfo::SlotFilterType::kAllowSpecifiedUserSlot;
+#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   debug_info->chrome_root_store_debug_info =
       cert_verifier::mojom::ChromeRootStoreDebugInfo::New();
@@ -489,6 +504,28 @@ TEST(ErrorReportTest, TrialDebugInfo) {
             trial_info.win_platform_debug_info().authroot_sequence_number());
 #else
   EXPECT_FALSE(trial_info.has_win_platform_debug_info());
+#endif
+
+#if BUILDFLAG(USE_NSS_CERTS)
+  ASSERT_TRUE(trial_info.has_nss_version());
+  EXPECT_EQ("aoeu", trial_info.nss_version());
+
+  ASSERT_TRUE(trial_info.has_primary_nss_debug_info());
+  EXPECT_EQ(false,
+            trial_info.primary_nss_debug_info().ignore_system_trust_settings());
+  EXPECT_EQ(chrome_browser_ssl::TrustStoreNSSDebugInfo::DONT_FILTER,
+            trial_info.primary_nss_debug_info().slot_filter_type());
+
+  ASSERT_TRUE(trial_info.has_trial_nss_debug_info());
+  EXPECT_EQ(true,
+            trial_info.trial_nss_debug_info().ignore_system_trust_settings());
+  EXPECT_EQ(
+      chrome_browser_ssl::TrustStoreNSSDebugInfo::ALLOW_SPECIFIED_USER_SLOT,
+      trial_info.trial_nss_debug_info().slot_filter_type());
+#else
+  EXPECT_FALSE(trial_info.has_nss_version());
+  EXPECT_FALSE(trial_info.has_primary_nss_debug_info());
+  EXPECT_FALSE(trial_info.has_trial_nss_debug_info());
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

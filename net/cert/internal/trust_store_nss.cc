@@ -35,6 +35,21 @@ namespace net {
 
 namespace {
 
+const void* kResultDebugDataKey = &kResultDebugDataKey;
+
+TrustStoreNSS::ResultDebugData::SlotFilterType GetSlotFilterType(
+    const TrustStoreNSS::UserSlotTrustSetting& user_slot_trust_setting) {
+  if (absl::holds_alternative<TrustStoreNSS::UseTrustFromAllUserSlots>(
+          user_slot_trust_setting)) {
+    return TrustStoreNSS::ResultDebugData::SlotFilterType::kDontFilter;
+  }
+  if (absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting) == nullptr) {
+    return TrustStoreNSS::ResultDebugData::SlotFilterType::kDoNotAllowUserSlots;
+  }
+  return TrustStoreNSS::ResultDebugData::SlotFilterType::
+      kAllowSpecifiedUserSlot;
+}
+
 struct FreePK11GenericObjects {
   void operator()(PK11GenericObject* x) const {
     if (x) {
@@ -71,6 +86,34 @@ GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert) {
 }
 
 }  // namespace
+
+TrustStoreNSS::ResultDebugData::ResultDebugData(
+    bool ignore_system_trust_settings,
+    SlotFilterType slot_filter_type)
+    : ignore_system_trust_settings_(ignore_system_trust_settings),
+      slot_filter_type_(slot_filter_type) {}
+
+// static
+const TrustStoreNSS::ResultDebugData* TrustStoreNSS::ResultDebugData::Get(
+    const base::SupportsUserData* debug_data) {
+  return static_cast<ResultDebugData*>(
+      debug_data->GetUserData(kResultDebugDataKey));
+}
+
+// static
+void TrustStoreNSS::ResultDebugData::Create(
+    bool ignore_system_trust_settings,
+    SlotFilterType slot_filter_type,
+    base::SupportsUserData* debug_data) {
+  debug_data->SetUserData(kResultDebugDataKey,
+                          std::make_unique<ResultDebugData>(
+                              ignore_system_trust_settings, slot_filter_type));
+}
+
+std::unique_ptr<base::SupportsUserData::Data>
+TrustStoreNSS::ResultDebugData::Clone() {
+  return std::make_unique<ResultDebugData>(*this);
+}
 
 TrustStoreNSS::TrustStoreNSS(SystemTrustSetting system_trust_setting,
                              UserSlotTrustSetting user_slot_trust_setting)
@@ -121,6 +164,11 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
 CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
                                          base::SupportsUserData* debug_data) {
   crypto::EnsureNSSInit();
+  if (debug_data) {
+    ResultDebugData::Create(ignore_system_trust_settings_,
+                            GetSlotFilterType(user_slot_trust_setting_),
+                            debug_data);
+  }
   // In theory we could also do better multi-profile slot filtering using a
   // similar approach as GetTrustIgnoringSystemTrust, however it makes the
   // logic more complicated and isn't really worth doing since we'll be

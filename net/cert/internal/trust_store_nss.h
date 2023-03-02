@@ -28,6 +28,36 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   using UserSlotTrustSetting =
       absl::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
 
+  class ResultDebugData : public base::SupportsUserData::Data {
+   public:
+    enum class SlotFilterType {
+      kDontFilter,
+      kDoNotAllowUserSlots,
+      kAllowSpecifiedUserSlot
+    };
+
+    explicit ResultDebugData(bool ignore_system_trust_settings,
+                             SlotFilterType slot_filter_type);
+
+    static const ResultDebugData* Get(const base::SupportsUserData* debug_data);
+    static void Create(bool ignore_system_trust_settings,
+                       SlotFilterType slot_filter_type,
+                       base::SupportsUserData* debug_data);
+
+    // base::SupportsUserData::Data implementation:
+    std::unique_ptr<Data> Clone() override;
+
+    bool ignore_system_trust_settings() const {
+      return ignore_system_trust_settings_;
+    }
+
+    SlotFilterType slot_filter_type() const { return slot_filter_type_; }
+
+   private:
+    const bool ignore_system_trust_settings_;
+    const SlotFilterType slot_filter_type_;
+  };
+
   // Creates a TrustStoreNSS which will find anchors that are trusted for
   // SSL server auth.
   //

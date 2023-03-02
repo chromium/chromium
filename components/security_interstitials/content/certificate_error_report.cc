@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/network_time/network_time_tracker.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_info.h"
@@ -185,6 +186,37 @@ void AddWinPlatformDebugInfoToReport(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(USE_NSS_CERTS)
+chrome_browser_ssl::TrustStoreNSSDebugInfo::SlotFilterType
+SlotFilterTypeFromMojom(
+    cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType input) {
+  switch (input) {
+    case cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::
+        kDontFilter:
+      return chrome_browser_ssl::TrustStoreNSSDebugInfo::DONT_FILTER;
+    case cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::
+        kDoNotAllowUserSlots:
+      return chrome_browser_ssl::TrustStoreNSSDebugInfo::
+          DO_NOT_ALLOW_USER_SLOTS;
+    case cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::
+        kAllowSpecifiedUserSlot:
+      return chrome_browser_ssl::TrustStoreNSSDebugInfo::
+          ALLOW_SPECIFIED_USER_SLOT;
+  }
+}
+void AddNSSDebugInfoToReport(
+    const cert_verifier::mojom::TrustStoreNSSDebugInfoPtr& nss_debug_info,
+    chrome_browser_ssl::TrustStoreNSSDebugInfo* report_info) {
+  if (!nss_debug_info) {
+    return;
+  }
+  report_info->set_ignore_system_trust_settings(
+      nss_debug_info->ignore_system_trust_settings);
+  report_info->set_slot_filter_type(
+      SlotFilterTypeFromMojom(nss_debug_info->slot_filter_type));
+}
+#endif  // BUILDFLAG(USE_NSS_CERTS)
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void AddChromeRootStoreDebugInfoToReport(
     const cert_verifier::mojom::ChromeRootStoreDebugInfoPtr&
@@ -281,6 +313,13 @@ CertificateErrorReport::CertificateErrorReport(
 #if BUILDFLAG(IS_WIN)
   AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
                                   trial_report);
+#endif
+#if BUILDFLAG(USE_NSS_CERTS)
+  trial_report->set_nss_version(debug_info->nss_version);
+  AddNSSDebugInfoToReport(debug_info->primary_nss_debug_info,
+                          trial_report->mutable_primary_nss_debug_info());
+  AddNSSDebugInfoToReport(debug_info->trial_nss_debug_info,
+                          trial_report->mutable_trial_nss_debug_info());
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   AddChromeRootStoreDebugInfoToReport(debug_info->chrome_root_store_debug_info,
