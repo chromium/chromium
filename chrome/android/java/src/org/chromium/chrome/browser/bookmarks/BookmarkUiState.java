@@ -14,7 +14,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
  * A class representing the UI state of the {@link BookmarkManager}. All
  * states can be uniquely identified by a URL.
  */
-public class BookmarkUIState {
+public class BookmarkUiState {
     // TODO(crbug.com/1419494): Use an intdef here instead.
     public static final int STATE_LOADING = 1;
     public static final int STATE_FOLDER = 2;
@@ -30,30 +30,29 @@ public class BookmarkUIState {
     String mUrl;
     BookmarkId mFolder;
 
-    static BookmarkUIState createLoadingState() {
-        BookmarkUIState state = new BookmarkUIState();
+    static BookmarkUiState createLoadingState() {
+        BookmarkUiState state = new BookmarkUiState();
         state.mState = STATE_LOADING;
         state.mUrl = "";
         return state;
     }
 
-    static BookmarkUIState createSearchState() {
-        BookmarkUIState state = new BookmarkUIState();
+    static BookmarkUiState createSearchState() {
+        BookmarkUiState state = new BookmarkUiState();
         state.mState = STATE_SEARCHING;
         state.mUrl = "";
         return state;
     }
 
-    static BookmarkUIState createShoppingFilterState() {
-        BookmarkUIState state = new BookmarkUIState();
+    static BookmarkUiState createShoppingFilterState() {
+        BookmarkUiState state = new BookmarkUiState();
         state.mState = STATE_FOLDER;
         state.mUrl = SHOPPING_FILTER_URL;
         state.mFolder = BookmarkId.SHOPPING_FOLDER;
         return state;
     }
 
-    static BookmarkUIState createFolderState(BookmarkId folder,
-            BookmarkModel bookmarkModel) {
+    static BookmarkUiState createFolderState(BookmarkId folder, BookmarkModel bookmarkModel) {
         if (BookmarkId.SHOPPING_FOLDER.equals(folder)) return createShoppingFilterState();
         return createStateFromUrl(createFolderUrl(folder), bookmarkModel);
     }
@@ -61,7 +60,7 @@ public class BookmarkUIState {
     /**
      * @see #createStateFromUrl(Uri, BookmarkModel)
      */
-    static BookmarkUIState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
+    static BookmarkUiState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
         if (SHOPPING_FILTER_URL.equals(url)) return createShoppingFilterState();
         return createStateFromUrl(Uri.parse(url), bookmarkModel);
     }
@@ -70,8 +69,8 @@ public class BookmarkUIState {
      * @return A state corresponding to the URI object. If the URI is not valid,
      *         return all_bookmarks.
      */
-    static BookmarkUIState createStateFromUrl(Uri uri, BookmarkModel bookmarkModel) {
-        BookmarkUIState state = new BookmarkUIState();
+    static BookmarkUiState createStateFromUrl(Uri uri, BookmarkModel bookmarkModel) {
+        BookmarkUiState state = new BookmarkUiState();
         state.mState = STATE_INVALID;
         state.mUrl = uri.toString();
 
@@ -100,7 +99,7 @@ public class BookmarkUIState {
         return builder.build();
     }
 
-    private BookmarkUIState() {}
+    private BookmarkUiState() {}
 
     @Override
     public int hashCode() {
@@ -109,8 +108,8 @@ public class BookmarkUIState {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof BookmarkUIState)) return false;
-        BookmarkUIState other = (BookmarkUIState) obj;
+        if (!(obj instanceof BookmarkUiState)) return false;
+        BookmarkUiState other = (BookmarkUiState) obj;
         return mState == other.mState && TextUtils.equals(mUrl, other.mUrl);
     }
 

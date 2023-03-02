@@ -29,7 +29,7 @@ class BookmarkToolbarCoordinator {
 
         mModel = new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS).build();
         mModel.set(BookmarkToolbarProperties.DRAG_REORDERABLE_LIST_ADAPTER, bookmarkItemsAdapter);
-        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_STATE, BookmarkUIState.STATE_LOADING);
+        mModel.set(BookmarkToolbarProperties.BOOKMARK_UI_STATE, BookmarkUiState.STATE_LOADING);
         mMediator = new BookmarkToolbarMediator(mModel);
     }
 

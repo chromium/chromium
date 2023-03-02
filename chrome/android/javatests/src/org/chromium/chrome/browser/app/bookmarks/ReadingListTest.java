@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
-import org.chromium.chrome.browser.bookmarks.BookmarkUIState;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -216,7 +216,7 @@ public class ReadingListTest {
         BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
 
         // We should default to the root bookmark.
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
         Assert.assertEquals("chrome-native://bookmarks/folder/0",
                 BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
         Assert.assertEquals("Bookmarks", toolbar.getTitle());
@@ -235,7 +235,7 @@ public class ReadingListTest {
         ApplicationTestUtils.waitForActivityState(mBookmarkActivity, Stage.DESTROYED);
 
         // Reopen and make sure we're back in "Mobile bookmarks".
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
         Assert.assertEquals("chrome-native://bookmarks/folder/3",
                 BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
     }
@@ -306,8 +306,8 @@ public class ReadingListTest {
         openReadingList();
 
         // Enter search UI, but don't enter any search key word.
-        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
                 getBookmarkDelegate().getCurrentState());
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
 
@@ -497,7 +497,7 @@ public class ReadingListTest {
         openRootFolder();
         openReadingList();
 
-        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
+        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
 
         BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
         Assert.assertFalse("Menu items shouldn't be visible in search.",

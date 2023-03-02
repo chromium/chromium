@@ -451,7 +451,7 @@ public class BookmarkUtils {
             url = getLastUsedUrl(context);
         } else {
             // Load a specific folder.
-            url = BookmarkUIState.createFolderUrl(folderId).toString();
+            url = BookmarkUiState.createFolderUrl(folderId).toString();
         }
 
         return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_URL : url;

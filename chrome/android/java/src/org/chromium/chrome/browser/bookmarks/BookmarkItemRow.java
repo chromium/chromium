@@ -57,10 +57,10 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     @Override
     public void onClick() {
         switch (mDelegate.getCurrentState()) {
-            case BookmarkUIState.STATE_FOLDER:
-            case BookmarkUIState.STATE_SEARCHING:
+            case BookmarkUiState.STATE_FOLDER:
+            case BookmarkUiState.STATE_SEARCHING:
                 break;
-            case BookmarkUIState.STATE_LOADING:
+            case BookmarkUiState.STATE_LOADING:
                 assert false :
                         "The main content shouldn't be inflated if it's still loading";
                 break;

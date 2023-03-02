@@ -72,7 +72,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
-import org.chromium.chrome.browser.bookmarks.BookmarkUIState;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkShoppingItemRow;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -369,11 +369,11 @@ public class BookmarkTest {
             BookmarkId bookmarkBarId = mBookmarkModel.getDesktopFolderId();
             BookmarkId otherId = mBookmarkModel.getOtherFolderId();
             Assert.assertEquals("chrome-native://bookmarks/folder/" + mobileId,
-                    BookmarkUIState.createFolderUrl(mobileId).toString());
+                    BookmarkUiState.createFolderUrl(mobileId).toString());
             Assert.assertEquals("chrome-native://bookmarks/folder/" + bookmarkBarId,
-                    BookmarkUIState.createFolderUrl(bookmarkBarId).toString());
+                    BookmarkUiState.createFolderUrl(bookmarkBarId).toString());
             Assert.assertEquals("chrome-native://bookmarks/folder/" + otherId,
-                    BookmarkUIState.createFolderUrl(otherId).toString());
+                    BookmarkUiState.createFolderUrl(otherId).toString());
         });
     }
 
@@ -424,7 +424,7 @@ public class BookmarkTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         BookmarkDelegate delegate = getBookmarkDelegate();
 
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
         Assert.assertEquals("chrome-native://bookmarks/folder/3",
                 BookmarkUtils.getLastUsedUrl(mActivityTestRule.getActivity()));
     }
@@ -500,13 +500,13 @@ public class BookmarkTest {
         // Open the new folder where these bookmarks were created.
         openFolder(folder);
 
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
         Assert.assertEquals(
                 "Wrong number of items before starting search.", 3, adapter.getItemCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUI);
+        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUi);
 
-        Assert.assertEquals(BookmarkUIState.STATE_SEARCHING, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_SEARCHING, delegate.getCurrentState());
         Assert.assertEquals(
                 "Wrong number of items after showing search UI. The promo should be hidden.", 2,
                 adapter.getItemCount());
@@ -531,7 +531,7 @@ public class BookmarkTest {
                 () -> mBookmarkManagerCoordinator.getToolbarForTesting().hideSearchView());
         Assert.assertEquals("Wrong number of items after closing search UI.", 3,
                 mItemsContainer.getAdapter().getItemCount());
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
     }
 
     @Test
@@ -553,9 +553,9 @@ public class BookmarkTest {
         Assert.assertEquals(Boolean.TRUE,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
 
-        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUI);
+        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUi);
 
-        Assert.assertEquals(BookmarkUIState.STATE_SEARCHING, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_SEARCHING, delegate.getCurrentState());
         Assert.assertEquals(
                 "Wrong number of items after showing search UI. The promo should be hidden.", 2,
                 adapter.getItemCount());
@@ -566,10 +566,10 @@ public class BookmarkTest {
         // Exit search UI.
         TestThreadUtils.runOnUiThreadBlocking(
                 mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
-        Assert.assertNotEquals(BookmarkUIState.STATE_SEARCHING, delegate.getCurrentState());
+        Assert.assertNotEquals(BookmarkUiState.STATE_SEARCHING, delegate.getCurrentState());
 
         // Enter search UI again.
-        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUI);
+        TestThreadUtils.runOnUiThreadBlocking(delegate::openSearchUi);
 
         searchBookmarks("Google");
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
@@ -591,21 +591,21 @@ public class BookmarkTest {
         // Clear selection but still in search UI.
         CriteriaHelper.pollUiThread(
                 () -> !itemView.isChecked(), "Expected item \"test\" to become not selected");
-        Assert.assertEquals(BookmarkUIState.STATE_SEARCHING, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_SEARCHING, delegate.getCurrentState());
         Assert.assertEquals(Boolean.TRUE,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
 
         // Exit search UI.
         TestThreadUtils.runOnUiThreadBlocking(
                 mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
 
         // Exit folder.
         Assert.assertEquals(Boolean.TRUE,
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
         TestThreadUtils.runOnUiThreadBlocking(
                 mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, delegate.getCurrentState());
 
         // Exit bookmark activity.
         Assert.assertEquals(Boolean.FALSE,
@@ -630,15 +630,15 @@ public class BookmarkTest {
         // Open the new folder where these bookmarks were created.
         openFolder(testFolder);
 
-        Assert.assertEquals("Wrong state, should be in folder", BookmarkUIState.STATE_FOLDER,
+        Assert.assertEquals("Wrong state, should be in folder", BookmarkUiState.STATE_FOLDER,
                 getBookmarkDelegate().getCurrentState());
         Assert.assertEquals(
                 "Wrong number of items before starting search.", 3, adapter.getItemCount());
 
         // Start searching without entering a query.
-        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
+        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
                 getBookmarkDelegate().getCurrentState());
 
         // Select testFolder2 and delete it.
@@ -664,7 +664,7 @@ public class BookmarkTest {
         removeBookmark(testBookmark);
 
         // The user should still be searching, and the bookmark should be gone.
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
                 getBookmarkDelegate().getCurrentState());
         Assert.assertEquals("Wrong number of items after searching.", 0,
                 mItemsContainer.getAdapter().getItemCount());
@@ -674,7 +674,7 @@ public class BookmarkTest {
                 () -> mBookmarkManagerCoordinator.getUndoControllerForTesting().onAction(null));
 
         // The user should still be searching, and the bookmark should reappear.
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
                 getBookmarkDelegate().getCurrentState());
         Assert.assertEquals("Wrong number of items after searching.", 1,
                 mItemsContainer.getAdapter().getItemCount());
@@ -692,8 +692,8 @@ public class BookmarkTest {
         RecyclerView.Adapter adapter = getAdapter();
 
         // Start searching, enter a query.
-        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
                 getBookmarkDelegate().getCurrentState());
         searchBookmarks("test");
         Assert.assertEquals("Wrong number of items after searching.", 2,
@@ -703,7 +703,7 @@ public class BookmarkTest {
         removeBookmark(testFolder);
 
         // The user should still be searching, and the bookmark should be gone.
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
                 getBookmarkDelegate().getCurrentState());
         Assert.assertEquals("Wrong number of items after searching.", 0,
                 mItemsContainer.getAdapter().getItemCount());
@@ -713,7 +713,7 @@ public class BookmarkTest {
                 () -> mBookmarkManagerCoordinator.getUndoControllerForTesting().onAction(null));
 
         // The user should still be searching, and the bookmark should reappear.
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
+        Assert.assertEquals("Wrong state, should be searching", BookmarkUiState.STATE_SEARCHING,
                 getBookmarkDelegate().getCurrentState());
         Assert.assertEquals("Wrong number of items after searching.", 2,
                 mItemsContainer.getAdapter().getItemCount());

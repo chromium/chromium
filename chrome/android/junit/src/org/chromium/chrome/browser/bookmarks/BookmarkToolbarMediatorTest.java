@@ -41,7 +41,7 @@ public class BookmarkToolbarMediatorTest {
                          .with(BookmarkToolbarProperties.DRAG_REORDERABLE_LIST_ADAPTER,
                                  mBookmarkItemsAdapter)
                          .with(BookmarkToolbarProperties.BOOKMARK_UI_STATE,
-                                 BookmarkUIState.STATE_LOADING)
+                                 BookmarkUiState.STATE_LOADING)
                          .build();
 
         mMediator = new BookmarkToolbarMediator(mModel);
@@ -51,30 +51,30 @@ public class BookmarkToolbarMediatorTest {
     public void initSetsUpObservation() {
         mMediator.initialize(mBookmarkDelegate);
 
-        Mockito.verify(mBookmarkDelegate).addUIObserver(mMediator);
+        Mockito.verify(mBookmarkDelegate).addUiObserver(mMediator);
     }
 
     @Test
     public void onStateChangedUpdatesModel() {
-        mMediator.onStateChanged(BookmarkUIState.STATE_LOADING);
-        Assert.assertEquals(BookmarkUIState.STATE_LOADING,
+        mMediator.onStateChanged(BookmarkUiState.STATE_LOADING);
+        Assert.assertEquals(BookmarkUiState.STATE_LOADING,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
 
-        mMediator.onStateChanged(BookmarkUIState.STATE_SEARCHING);
-        Assert.assertEquals(BookmarkUIState.STATE_SEARCHING,
+        mMediator.onStateChanged(BookmarkUiState.STATE_SEARCHING);
+        Assert.assertEquals(BookmarkUiState.STATE_SEARCHING,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
 
-        mMediator.onStateChanged(BookmarkUIState.STATE_FOLDER);
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER,
+        mMediator.onStateChanged(BookmarkUiState.STATE_FOLDER);
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
     }
 
     @Test
     public void destroyUnregistersObserver() {
         mMediator.initialize(mBookmarkDelegate);
-        Mockito.verify(mBookmarkDelegate).addUIObserver(mMediator);
+        Mockito.verify(mBookmarkDelegate).addUiObserver(mMediator);
 
         mMediator.onDestroy();
-        Mockito.verify(mBookmarkDelegate).removeUIObserver(mMediator);
+        Mockito.verify(mBookmarkDelegate).removeUiObserver(mMediator);
     }
 }

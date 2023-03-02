@@ -46,7 +46,7 @@ import java.util.List;
  * BaseAdapter for {@link RecyclerView}. It manages bookmarks to list there.
  */
 public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
-        implements BookmarkUIObserver, SyncService.SyncStateChangedListener {
+        implements BookmarkUiObserver, SyncService.SyncStateChangedListener {
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
 
@@ -92,7 +92,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
             assert mDelegate != null;
             clearHighlight();
 
-            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
+            if (mDelegate.getCurrentState() == BookmarkUiState.STATE_SEARCHING) {
                 // We cannot rely on removing the specific list item that corresponds to the
                 // removed node because the node might be a parent with children also shown
                 // in the list.
@@ -116,11 +116,11 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
             clearHighlight();
             mDelegate.notifyStateChange(BookmarkItemsAdapter.this);
 
-            if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
+            if (mDelegate.getCurrentState() == BookmarkUiState.STATE_SEARCHING) {
                 if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
                     search(mSearchText);
                 } else {
-                    mDelegate.closeSearchUI();
+                    mDelegate.closeSearchUi();
                 }
             }
         }
@@ -187,7 +187,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         }
 
         if (mCurrentFolder.getType() == BookmarkType.READING_LIST
-                && mDelegate.getCurrentState() != BookmarkUIState.STATE_SEARCHING) {
+                && mDelegate.getCurrentState() != BookmarkUiState.STATE_SEARCHING) {
             ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(mElements, mContext);
         }
 
@@ -286,7 +286,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
      */
     void onBookmarkDelegateInitialized(BookmarkDelegate delegate, ViewFactory viewFactory) {
         mDelegate = delegate;
-        mDelegate.addUIObserver(this);
+        mDelegate.addUiObserver(this);
         mDelegate.getModel().addObserver(mBookmarkModelObserver);
         mDelegate.getSelectionDelegate().addObserver(this);
 
@@ -299,10 +299,10 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         notifyDataSetChanged();
     }
 
-    // BookmarkUIObserver implementations.
+    // BookmarkUiObserver implementations.
     @Override
     public void onDestroy() {
-        mDelegate.removeUIObserver(this);
+        mDelegate.removeUiObserver(this);
         mDelegate.getModel().removeObserver(mBookmarkModelObserver);
         mDelegate.getSelectionDelegate().removeObserver(this);
         mDelegate = null;
@@ -431,10 +431,10 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
 
         boolean wasShowingPromo = hasPromoHeader();
 
-        int currentUIState = mDelegate.getCurrentState();
-        if (currentUIState == BookmarkUIState.STATE_LOADING) {
+        int currentUiState = mDelegate.getCurrentState();
+        if (currentUiState == BookmarkUiState.STATE_LOADING) {
             return;
-        } else if (currentUIState == BookmarkUIState.STATE_SEARCHING) {
+        } else if (currentUiState == BookmarkUiState.STATE_SEARCHING) {
             mPromoHeaderType = ViewType.INVALID;
         } else {
             switch (mPromoHeaderManager.getPromoState()) {
@@ -493,7 +493,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         assert mCurrentFolder.getType()
                 != BookmarkType.PARTNER : "Cannot reorder partner bookmarks!";
         assert mDelegate.getCurrentState()
-                == BookmarkUIState.STATE_FOLDER : "Can only reorder items from folder mode!";
+                == BookmarkUiState.STATE_FOLDER : "Can only reorder items from folder mode!";
 
         int startIndex = getBookmarkItemStartIndex();
         int endIndex = getBookmarkItemEndIndex();

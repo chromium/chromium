@@ -251,7 +251,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         initializeNormal();
         Assert.assertTrue(mBookmarkToolbar.onMenuItemClick(
                 mBookmarkToolbar.getMenu().findItem(R.id.search_menu_id)));
-        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).openSearchUI();
+        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).openSearchUi();
     }
 
     @Test
@@ -330,7 +330,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     public void testOnDestroy() {
         mBookmarkToolbar.setBookmarkDelegate(mBookmarkDelegate);
         mBookmarkToolbar.onDestroy();
-        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).removeUIObserver(mBookmarkToolbar);
+        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).removeUiObserver(mBookmarkToolbar);
     }
 
     @Test
@@ -338,7 +338,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void testOnDestroy_nullDelegate() {
         mBookmarkToolbar.onDestroy();
-        Mockito.verify(mBookmarkDelegate, Mockito.never()).removeUIObserver(mBookmarkToolbar);
+        Mockito.verify(mBookmarkDelegate, Mockito.never()).removeUiObserver(mBookmarkToolbar);
     }
 
     @Test

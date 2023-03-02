@@ -64,7 +64,7 @@ class BookmarkManagerMediator
         @Override
         public boolean getDragEnabled() {
             return !mA11yEnabled
-                    && mBookmarkDelegate.getCurrentState() == BookmarkUIState.STATE_FOLDER;
+                    && mBookmarkDelegate.getCurrentState() == BookmarkUiState.STATE_FOLDER;
         }
 
         @Override
@@ -96,7 +96,7 @@ class BookmarkManagerMediator
                 boolean isDoingExtensiveChanges) {
             // If the folder is removed in folder mode, show the parent folder or falls back to all
             // bookmarks mode.
-            if (getCurrentState() == BookmarkUIState.STATE_FOLDER
+            if (getCurrentState() == BookmarkUiState.STATE_FOLDER
                     && node.getId().equals(mStateStack.peek().mFolder)) {
                 if (mBookmarkModel.getTopLevelFolderIDs(true, true).contains(node.getId())) {
                     openFolder(mBookmarkModel.getDefaultFolderViewLocation());
@@ -114,9 +114,9 @@ class BookmarkManagerMediator
 
         @Override
         public void bookmarkNodeChanged(BookmarkItem node) {
-            if (getCurrentState() == BookmarkUIState.STATE_FOLDER && !mStateStack.isEmpty()
+            if (getCurrentState() == BookmarkUiState.STATE_FOLDER && !mStateStack.isEmpty()
                     && node.getId().equals(mStateStack.peek().mFolder)) {
-                notifyUI(mStateStack.peek());
+                notifyUi(mStateStack.peek());
                 return;
             }
             super.bookmarkNodeChanged(node);
@@ -126,15 +126,15 @@ class BookmarkManagerMediator
         public void bookmarkModelChanged() {
             // If the folder no longer exists in folder mode, we need to fall back. Relying on the
             // default behavior by setting the folder mode again.
-            if (getCurrentState() == BookmarkUIState.STATE_FOLDER) {
+            if (getCurrentState() == BookmarkUiState.STATE_FOLDER) {
                 setState(mStateStack.peek());
             }
         }
     };
 
-    private final Stack<BookmarkUIState> mStateStack = new Stack<>() {
+    private final Stack<BookmarkUiState> mStateStack = new Stack<>() {
         @Override
-        public BookmarkUIState push(BookmarkUIState item) {
+        public BookmarkUiState push(BookmarkUiState item) {
             // The back press state depends on the size of stack. So push/pop item first in order
             // to keep the size update-to-date.
             var state = super.push(item);
@@ -144,7 +144,7 @@ class BookmarkManagerMediator
 
         @Override
         // TODO(crbug.com/1419493): Investigate use of synchronized.
-        public synchronized BookmarkUIState pop() {
+        public synchronized BookmarkUiState pop() {
             var state = super.pop();
             onBackPressStateChanged();
             return state;
@@ -164,7 +164,7 @@ class BookmarkManagerMediator
                 }
             };
 
-    private final ObserverList<BookmarkUIObserver> mUIObservers = new ObserverList<>();
+    private final ObserverList<BookmarkUiObserver> mUiObservers = new ObserverList<>();
     private final BookmarkDragStateDelegate mDragStateDelegate = new BookmarkDragStateDelegate();
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
@@ -228,7 +228,7 @@ class BookmarkManagerMediator
         mBookmarkItemsAdapter.onBookmarkDelegateInitialized(this, mViewFactory);
 
         if (!TextUtils.isEmpty(mInitialUrl)) {
-            setState(BookmarkUIState.createStateFromUrl(mInitialUrl, mBookmarkModel));
+            setState(BookmarkUiState.createStateFromUrl(mInitialUrl, mBookmarkModel));
         }
     }
 
@@ -240,10 +240,10 @@ class BookmarkManagerMediator
         mLargeIconBridge.destroy();
         PartnerBookmarksReader.removeFaviconUpdateObserver(this);
 
-        for (BookmarkUIObserver observer : mUIObservers) {
+        for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();
         }
-        assert mUIObservers.size() == 0;
+        assert mUiObservers.size() == 0;
     }
 
     /** See BookmarkManager(Coordinator)#onBackPressed. */
@@ -276,13 +276,13 @@ class BookmarkManagerMediator
         if (mBookmarkModel == null) return;
 
         if (mBookmarkModel.isBookmarkModelLoaded()) {
-            BookmarkUIState searchState = null;
+            BookmarkUiState searchState = null;
             if (!mStateStack.isEmpty()
-                    && mStateStack.peek().mState == BookmarkUIState.STATE_SEARCHING) {
+                    && mStateStack.peek().mState == BookmarkUiState.STATE_SEARCHING) {
                 searchState = mStateStack.pop();
             }
 
-            setState(BookmarkUIState.createStateFromUrl(url, mBookmarkModel));
+            setState(BookmarkUiState.createStateFromUrl(url, mBookmarkModel));
 
             if (searchState != null) setState(searchState);
         } else {
@@ -302,7 +302,7 @@ class BookmarkManagerMediator
      */
     private void initializeToLoadingState() {
         assert mStateStack.isEmpty();
-        setState(BookmarkUIState.createLoadingState());
+        setState(BookmarkUiState.createLoadingState());
     }
 
     /**
@@ -318,9 +318,9 @@ class BookmarkManagerMediator
      * navigation and back button are not controlled by the manager: the tab handles back key and
      * backstack navigation.
      */
-    private void setState(BookmarkUIState state) {
+    private void setState(BookmarkUiState state) {
         if (!state.isValid(mBookmarkModel)) {
-            state = BookmarkUIState.createFolderState(
+            state = BookmarkUiState.createFolderState(
                     mBookmarkModel.getDefaultFolderViewLocation(), mBookmarkModel);
         }
 
@@ -328,15 +328,15 @@ class BookmarkManagerMediator
 
         // The loading state is not persisted in history stack and once we have a valid state it
         // shall be removed.
-        if (!mStateStack.isEmpty() && mStateStack.peek().mState == BookmarkUIState.STATE_LOADING) {
+        if (!mStateStack.isEmpty() && mStateStack.peek().mState == BookmarkUiState.STATE_LOADING) {
             mStateStack.pop();
         }
         mStateStack.push(state);
-        notifyUI(state);
+        notifyUi(state);
     }
 
-    private void notifyUI(BookmarkUIState state) {
-        if (state.mState == BookmarkUIState.STATE_FOLDER) {
+    private void notifyUi(BookmarkUiState state) {
+        if (state.mState == BookmarkUiState.STATE_FOLDER) {
             // Loading and searching states may be pushed to the stack but should never be stored in
             // preferences.
             BookmarkUtils.setLastUsedUrl(mContext, state.mUrl);
@@ -346,7 +346,7 @@ class BookmarkManagerMediator
             }
         }
 
-        for (BookmarkUIObserver observer : mUIObservers) {
+        for (BookmarkUiObserver observer : mUiObservers) {
             notifyStateChange(observer);
         }
     }
@@ -388,7 +388,7 @@ class BookmarkManagerMediator
     @Override
     public void openFolder(BookmarkId folder) {
         RecordUserAction.record("MobileBookmarkManagerOpenFolder");
-        setState(BookmarkUIState.createFolderState(folder, mBookmarkModel));
+        setState(BookmarkUiState.createFolderState(folder, mBookmarkModel));
         mRecyclerView.scrollToPosition(0);
     }
 
@@ -403,19 +403,19 @@ class BookmarkManagerMediator
     }
 
     @Override
-    public void notifyStateChange(BookmarkUIObserver observer) {
+    public void notifyStateChange(BookmarkUiObserver observer) {
         int state = getCurrentState();
         observer.onStateChanged(state);
         switch (state) {
-            case BookmarkUIState.STATE_FOLDER:
+            case BookmarkUiState.STATE_FOLDER:
                 observer.onFolderStateSet(mStateStack.peek().mFolder);
                 break;
-            case BookmarkUIState.STATE_LOADING:
+            case BookmarkUiState.STATE_LOADING:
                 // In loading state, onBookmarkDelegateInitialized() is not called for all
-                // UIObservers, which means that there will be no observers at the time. Do nothing.
-                assert mUIObservers.isEmpty();
+                // UiObservers, which means that there will be no observers at the time. Do nothing.
+                assert mUiObservers.isEmpty();
                 break;
-            case BookmarkUIState.STATE_SEARCHING:
+            case BookmarkUiState.STATE_SEARCHING:
                 observer.onSearchStateSet();
                 break;
             default:
@@ -442,24 +442,24 @@ class BookmarkManagerMediator
     }
 
     @Override
-    public void openSearchUI() {
-        setState(BookmarkUIState.createSearchState());
+    public void openSearchUi() {
+        setState(BookmarkUiState.createSearchState());
         mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
     }
 
     @Override
-    public void closeSearchUI() {
+    public void closeSearchUi() {
         setState(mStateStack.pop());
     }
 
     @Override
-    public void addUIObserver(BookmarkUIObserver observer) {
-        mUIObservers.addObserver(observer);
+    public void addUiObserver(BookmarkUiObserver observer) {
+        mUiObservers.addObserver(observer);
     }
 
     @Override
-    public void removeUIObserver(BookmarkUIObserver observer) {
-        mUIObservers.removeObserver(observer);
+    public void removeUiObserver(BookmarkUiObserver observer) {
+        mUiObservers.removeObserver(observer);
     }
 
     @Override
@@ -469,7 +469,7 @@ class BookmarkManagerMediator
 
     @Override
     public int getCurrentState() {
-        if (mStateStack.isEmpty()) return BookmarkUIState.STATE_LOADING;
+        if (mStateStack.isEmpty()) return BookmarkUiState.STATE_LOADING;
         return mStateStack.peek().mState;
     }
 

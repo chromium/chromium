@@ -63,7 +63,7 @@ public class BookmarkManagerMediatorTest {
     @Mock
     AccessibilityManager mAccessibilityManager;
     @Mock
-    BookmarkUIObserver mBookmarkUIObserver;
+    BookmarkUiObserver mBookmarkUiObserver;
 
     final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<Boolean>();
@@ -93,17 +93,17 @@ public class BookmarkManagerMediatorTest {
 
         // Setup BookmarkUIObserver
         Mockito.doAnswer((invocation) -> {
-                   mMediator.removeUIObserver(mBookmarkUIObserver);
+                   mMediator.removeUiObserver(mBookmarkUiObserver);
                    return null;
                })
-                .when(mBookmarkUIObserver)
+                .when(mBookmarkUiObserver)
                 .onDestroy();
 
         mMediator = new BookmarkManagerMediator(mContext, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, mSelectionDelegate, mRecyclerView, mBookmarkItemsAdapter,
                 mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
                 mBackPressStateSupplier, mViewFactory);
-        mMediator.addUIObserver(mBookmarkUIObserver);
+        mMediator.addUiObserver(mBookmarkUiObserver);
     }
 
     void finishLoading() {
@@ -113,7 +113,7 @@ public class BookmarkManagerMediatorTest {
     @Test
     public void initAndLoadBookmarkModel() {
         finishLoading();
-        Assert.assertEquals(BookmarkUIState.STATE_LOADING, mMediator.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_LOADING, mMediator.getCurrentState());
     }
 
     @Test
@@ -122,7 +122,7 @@ public class BookmarkManagerMediatorTest {
         mMediator.updateForUrl("chrome-native://bookmarks/folder/" + mFolderId.getId());
 
         finishLoading();
-        Assert.assertEquals(BookmarkUIState.STATE_FOLDER, mMediator.getCurrentState());
+        Assert.assertEquals(BookmarkUiState.STATE_FOLDER, mMediator.getCurrentState());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
 
         mMediator.onDestroy();
-        Mockito.verify(mBookmarkUIObserver).onDestroy();
+        Mockito.verify(mBookmarkUiObserver).onDestroy();
     }
 
     @Test

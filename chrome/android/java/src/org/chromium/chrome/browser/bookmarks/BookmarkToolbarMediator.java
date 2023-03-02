@@ -10,7 +10,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 // TODO(crbug.com/1413463): Write unittests for this class.
-class BookmarkToolbarMediator implements BookmarkUIObserver {
+class BookmarkToolbarMediator implements BookmarkUiObserver {
     private final PropertyModel mModel;
 
     // TODO(crbug.com/1413463): Remove reference to BookmarkDelegate if possible.
@@ -22,15 +22,15 @@ class BookmarkToolbarMediator implements BookmarkUIObserver {
 
     void initialize(BookmarkDelegate bookmarkDelegate) {
         mBookmarkDelegate = bookmarkDelegate;
-        mBookmarkDelegate.addUIObserver(this);
+        mBookmarkDelegate.addUiObserver(this);
     }
 
-    // BookmarkUIObserver implementation.
+    // BookmarkUiObserver implementation.
 
     @Override
     public void onDestroy() {
         if (mBookmarkDelegate != null) {
-            mBookmarkDelegate.removeUIObserver(this);
+            mBookmarkDelegate.removeUiObserver(this);
         }
     }
 

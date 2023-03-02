@@ -14,14 +14,14 @@ import java.util.List;
  * event that affects UI. All bookmark UI components are expected to implement this and
  * update themselves correctly on each event.
  */
-interface BookmarkUIObserver extends SelectionObserver<BookmarkId> {
+interface BookmarkUiObserver extends SelectionObserver<BookmarkId> {
     /** Called when the entire UI is being destroyed and will be no longer in use. */
     default void onDestroy() {}
 
     /** @see BookmarkDelegate#openFolder(BookmarkId) */
     default void onFolderStateSet(BookmarkId folder) {}
 
-    /** Called when the UI state is set to {@link BookmarkUIState#STATE_SEARCHING}. */
+    /** Called when the UI state is set to {@link BookmarkUiState#STATE_SEARCHING}. */
     default void onSearchStateSet() {}
 
     /** Called when a bookmark menu item is opened. */

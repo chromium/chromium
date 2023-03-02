@@ -108,7 +108,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testSetBookmarkId() {
-        doReturn(BookmarkUIState.STATE_FOLDER).when(mDelegate).getCurrentState();
+        doReturn(BookmarkUiState.STATE_FOLDER).when(mDelegate).getCurrentState();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false); });
 
@@ -126,7 +126,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testSetBookmarkId_LoadingWhileClicked() {
-        doReturn(BookmarkUIState.STATE_LOADING).when(mDelegate).getCurrentState();
+        doReturn(BookmarkUiState.STATE_LOADING).when(mDelegate).getCurrentState();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false); });
 
