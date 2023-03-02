@@ -1530,6 +1530,12 @@ BASE_FEATURE(kOsSettingsAppNotificationsPage,
              "OsSettingsAppNotificationsPage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, OsSyncConsent Revamp will be shown.
+// enabling this without enabling Lacros flag will have no effect
+BASE_FEATURE(kOsSyncConsentRevamp,
+             "OsSyncConsentRevamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables app badging toggle to be displayed in app notification page in
 // ChromeOS Settings.
 BASE_FEATURE(kOsSettingsAppBadgingToggle,
@@ -2939,6 +2945,10 @@ bool IsOsSettingsAppBadgingToggleEnabled() {
 
 bool IsOsSettingsSearchFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsSearchFeedback);
+}
+
+bool IsOsSyncConsentRevampEnabled() {
+  return base::FeatureList::IsEnabled(kOsSyncConsentRevamp);
 }
 
 bool IsOverviewDeskNavigationEnabled() {
