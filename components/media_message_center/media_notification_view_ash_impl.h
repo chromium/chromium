@@ -6,7 +6,6 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
@@ -15,6 +14,7 @@
 
 namespace views {
 class Button;
+class ImageView;
 class Label;
 }  // namespace views
 
@@ -22,7 +22,6 @@ namespace media_message_center {
 
 class MediaNotificationContainer;
 class MediaNotificationItem;
-class MediaArtworkView;
 class MediaControlsProgressView;
 
 namespace {
@@ -98,7 +97,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 
-  raw_ptr<MediaArtworkView> artwork_view_ = nullptr;
+  raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::Label> source_label_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Label> artist_label_ = nullptr;

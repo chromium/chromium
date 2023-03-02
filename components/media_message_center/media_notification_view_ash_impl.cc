@@ -4,17 +4,18 @@
 
 #include "components/media_message_center/media_notification_view_ash_impl.h"
 
-#include "components/media_message_center/media_artwork_view.h"
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -38,7 +39,7 @@ constexpr int kMediaInfoSeparator = 4;
 constexpr int kPlayPauseContainerSeperator = 8;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
-constexpr int kArtworkCornerRadius = 12;
+constexpr int kArtworkCornerRadius = 10;
 constexpr int kSourceLineHeight = 18;
 constexpr int kTitleArtistLineHeight = 20;
 
@@ -98,6 +99,16 @@ class MediaButton : public views::ImageButton {
   int icon_size_;
 };
 
+// If the image does not fit the square view, scale the image to fill the view
+// even if part of the image is cropped.
+gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
+                                  const gfx::Size& view_size) {
+  const float scale =
+      std::max(view_size.width() / static_cast<float>(image_size.width()),
+               view_size.height() / static_cast<float>(image_size.height()));
+  return gfx::ScaleToFlooredSize(image_size, scale);
+}
+
 }  // namespace
 
 MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
@@ -113,9 +124,6 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   // We should always have a theme passing from CrOS.
   DCHECK(theme_.has_value());
 
-  // TODO(jazzhsu): Replace this with actual background color from |theme_|
-  SkColor background_color = SK_ColorTRANSPARENT;
-
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -129,13 +137,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
           views::BoxLayout::Orientation::kHorizontal, kMainRowInsets,
           kMainRowSeparator));
 
-  // TODO(crbug.com/1406718): This is a temporary placeholder for artwork
-  // until we figure out the correct way for displaying artwork.
-  artwork_view_ = main_row->AddChildView(std::make_unique<MediaArtworkView>(
-      kArtworkCornerRadius, kArtworkSize, gfx::Size()));
+  artwork_view_ = main_row->AddChildView(std::make_unique<views::ImageView>());
   artwork_view_->SetPreferredSize(kArtworkSize);
-  artwork_view_->SetVignetteColor(background_color);
-  artwork_view_->SetBackgroundColor(theme_->disabled_icon_color);
 
   // |media_info_column| holds the source, title, and artist.
   auto* media_info_column =
@@ -207,7 +210,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       controls_row, MediaSessionAction::kEnterPictureInPicture);
 
   container_->OnColorsChanged(theme_->enabled_icon_color,
-                              theme_->disabled_icon_color, background_color);
+                              theme_->disabled_icon_color,
+                              theme_->background_color);
   item_->SetView(this);
 }
 
@@ -281,7 +285,21 @@ void MediaNotificationViewAshImpl::UpdateWithMediaPosition(
 
 void MediaNotificationViewAshImpl::UpdateWithMediaArtwork(
     const gfx::ImageSkia& image) {
-  artwork_view_->SetImage(image);
+  if (image.isNull()) {
+    // Hide the image so the other contents will adjust to fill the container.
+    artwork_view_->SetVisible(false);
+  } else {
+    artwork_view_->SetVisible(true);
+    artwork_view_->SetImageSize(
+        ScaleImageSizeToFitView(image.size(), kArtworkSize));
+    artwork_view_->SetImage(image);
+
+    // Draw the image with rounded corners.
+    auto path = SkPath().addRoundRect(
+        RectToSkRect(gfx::Rect(kArtworkSize.width(), kArtworkSize.height())),
+        kArtworkCornerRadius, kArtworkCornerRadius);
+    artwork_view_->SetClipPath(path);
+  }
   SchedulePaint();
 }
 
