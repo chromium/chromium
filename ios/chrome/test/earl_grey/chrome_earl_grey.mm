@@ -190,6 +190,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface removeBrowsingCache]);
 }
 
+- (void)saveSessionImmediately {
+  [ChromeEarlGreyAppInterface saveSessionImmediately];
+}
+
 #pragma mark - Navigation Utilities (EG2)
 
 - (void)goBack {

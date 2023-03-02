@@ -99,6 +99,8 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/policy:eg_app_support+eg2",
     "//ios/chrome/browser/search_engines:search_engines_util",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/sessions:restoration_agent",
+    "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate:eg_app_support+eg2",
