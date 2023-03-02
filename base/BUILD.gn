@@ -1960,8 +1960,6 @@ component("base") {
       "mac/authorization_util.h",
       "mac/authorization_util.mm",
       "mac/close_nocancel.cc",
-      "mac/dispatch_source_mach.cc",
-      "mac/dispatch_source_mach.h",
       "mac/launch_application.h",
       "mac/launch_application.mm",
       "mac/launchd.cc",
@@ -2042,6 +2040,8 @@ component("base") {
       "mac/call_with_eh_frame.cc",
       "mac/call_with_eh_frame.h",
       "mac/call_with_eh_frame_asm.S",
+      "mac/dispatch_source_mach.cc",
+      "mac/dispatch_source_mach.h",
       "mac/foundation_util.h",
       "mac/foundation_util.mm",
       "mac/mac_logging.h",
@@ -2140,11 +2140,15 @@ component("base") {
         "files/file_path_watcher_kqueue.cc",
         "files/file_path_watcher_kqueue.h",
         "files/file_path_watcher_mac.cc",
+        "ios/bsm_headers.h",
+        "mac/mach_port_rendezvous.cc",
+        "mac/mach_port_rendezvous.h",
         "process/memory_mac.mm",
         "process/process_iterator_ios.mm",
         "sync_socket_posix.cc",
         "synchronization/waitable_event_watcher_mac.cc",
       ]
+      libs += [ "bsm" ]
     } else {
       sources += [ "process/memory_stubs.cc" ]
     }

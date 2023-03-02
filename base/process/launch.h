@@ -22,6 +22,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -35,11 +36,12 @@
 #include "base/posix/file_descriptor_shuffle.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mach_port_rendezvous.h"
-#endif
-
 namespace base {
+
+#if BUILDFLAG(IS_APPLE)
+class MachRendezvousPort;
+using MachPortsForRendezvous = std::map<uint32_t, MachRendezvousPort>;
+#endif
 
 #if BUILDFLAG(IS_WIN)
 typedef std::vector<HANDLE> HandlesToInheritVector;
@@ -213,7 +215,7 @@ struct BASE_EXPORT LaunchOptions {
   bool kill_on_parent_death = false;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
   // Mach ports that will be accessible to the child process. These are not
   // directly inherited across process creation, but they are stored by a Mach
   // IPC server that a child process can communicate with to retrieve them.
@@ -235,7 +237,7 @@ struct BASE_EXPORT LaunchOptions {
   // Apply a process scheduler policy to enable mitigations against CPU side-
   // channel attacks.
   bool enable_cpu_security_mitigations = false;
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 
 #if BUILDFLAG(IS_FUCHSIA)
   // If valid, launches the application in that job object.

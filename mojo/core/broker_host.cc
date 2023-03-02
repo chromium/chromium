@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/platform_handle_utils.h"
 
@@ -125,7 +126,8 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
     ExtractPlatformHandlesFromSharedMemoryRegionHandle(
         region.PassPlatformHandle(), &h[0], &h[1]);
     handles.emplace_back(std::move(h[0]));
-#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
     // Non-POSIX systems, as well as Android and Mac, only use a single handle
     // to represent a writable region.
     DCHECK(!h[1].is_valid());

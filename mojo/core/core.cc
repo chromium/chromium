@@ -24,6 +24,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/data_pipe_consumer_dispatcher.h"
@@ -1031,7 +1032,8 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
     MojoHandle* mojo_handle) {
   DCHECK(size);
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   if (access_mode == MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_WRITABLE) {
     if (num_platform_handles != 2)
       return MOJO_RESULT_INVALID_ARGUMENT;
@@ -1154,7 +1156,8 @@ MojoResult Core::UnwrapPlatformSharedMemoryRegion(
   if (available_handle_storage_slots < 1)
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   *num_platform_handles = 1;
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   if (region.GetMode() ==
       base::subtle::PlatformSharedMemoryRegion::Mode::kWritable) {
     if (available_handle_storage_slots < 2)

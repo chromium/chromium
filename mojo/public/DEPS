@@ -1,12 +1,12 @@
 include_rules = [
   "+base",
   "+build",
-  "+mojo/public",
   "+testing",
   "+third_party/ipcz/include",
 
   "-mojo",
   "+mojo/public",
+  "+mojo/buildflags.h",
 
   # Temporary until mojom [Native] is gone.
   "+ipc/ipc_param_traits.h",

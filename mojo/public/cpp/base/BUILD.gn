@@ -69,6 +69,7 @@ component("typemap_traits") {
   public_deps = [
     ":shared_typemap_traits",
     "//base",
+    "//mojo:buildflags",
     "//mojo/public/cpp/base",
     "//mojo/public/mojom/base:base_shared",
   ]
