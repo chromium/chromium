@@ -74,9 +74,19 @@ struct RawPtrAsanUnownedImpl {
       typename T,
       typename Z,
       typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
+  }
+
+  // Retreat the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  static PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    return wrapped_ptr - delta_elems;
   }
 
   template <typename T>

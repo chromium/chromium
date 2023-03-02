@@ -24,6 +24,7 @@
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/pkey.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -46,9 +47,9 @@
 #include <pthread.h>
 #endif
 
-#if BUILDFLAG(RECORD_ALLOC_INFO)
 namespace partition_alloc::internal {
 
+#if BUILDFLAG(RECORD_ALLOC_INFO)
 // Even if this is not hidden behind a BUILDFLAG, it should not use any memory
 // when recording is disabled, since it ends up in the .bss section.
 AllocInfo g_allocs = {};
@@ -57,9 +58,47 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
   g_allocs.allocs[g_allocs.index.fetch_add(1, std::memory_order_relaxed) %
                   kAllocInfoSize] = {addr, size};
 }
+#endif  // BUILDFLAG(RECORD_ALLOC_INFO)
+
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
+                                       uintptr_t test_address,
+                                       size_t type_size) {
+  // Required for pointers right past an allocation. See
+  // |PartitionAllocGetSlotStartInBRPPool()|.
+  uintptr_t adjusted_address =
+      orig_address - kPartitionPastAllocationAdjustment;
+  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(adjusted_address));
+  DCheckIfManagedByPartitionAllocBRPPool(adjusted_address);
+
+  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(adjusted_address);
+  // Don't use |adjusted_address| beyond this point at all. It was needed to
+  // pick the right slot, but now we're dealing with very concrete addresses.
+  // Zero it just in case, to catch errors.
+  adjusted_address = 0;
+
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStart(slot_start);
+  auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
+  // Double check that ref-count is indeed present.
+  PA_DCHECK(root->brp_enabled());
+
+  uintptr_t object_addr = root->SlotStartToObjectAddr(slot_start);
+  uintptr_t object_end = object_addr + slot_span->GetUsableSize(root);
+  if (test_address < object_addr || object_end < test_address) {
+    return PtrPosWithinAlloc::kFarOOB;
+#if PA_CONFIG(USE_OOB_POISON)
+  } else if (object_end - type_size < test_address) {
+    // Not even a single element of the type referenced by the pointer can fit
+    // between the pointer and the end of the object.
+    return PtrPosWithinAlloc::kAllocEnd;
+#endif
+  } else {
+    return PtrPosWithinAlloc::kInBounds;
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 }  // namespace partition_alloc::internal
-#endif  // BUILDFLAG(RECORD_ALLOC_INFO)
 
 namespace partition_alloc {
 
@@ -1636,4 +1675,5 @@ static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, sentinel_bucket) ==
 static_assert(
     offsetof(PartitionRoot<internal::ThreadSafe>, lock_) >= 64,
     "The lock should not be on the same cacheline as the read-mostly flags");
+
 }  // namespace partition_alloc

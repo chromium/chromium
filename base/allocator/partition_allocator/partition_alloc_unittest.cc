@@ -1409,7 +1409,7 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-TEST_P(PartitionAllocTest, IsValidPtrDelta) {
+TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
   if (!UseBRPPool()) {
     return;
   }
@@ -1461,100 +1461,88 @@ TEST_P(PartitionAllocTest, IsValidPtrDelta) {
       }
 
       uintptr_t address = UntagPtr(ptr);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
-                                              PtrDelta(-kFarFarAwayDelta, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address - kFarFarAwayDelta, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(
-          PartitionAllocIsValidPtrDelta(address, PtrDelta(-kSuperPageSize, 0)),
-          PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, PtrDelta(-1, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address - kSuperPageSize, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address, PtrDelta(0, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address - 1, 0u),
+                PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address, 0u),
                 PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
-                                              PtrDelta(requested_size / 2, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size / 2, 0u),
                 PtrPosWithinAlloc::kInBounds);
 #if PA_CONFIG(USE_OOB_POISON)
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
-                                              PtrDelta(requested_size - 1, 1)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size - 1, 1u),
                 PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(
-          PartitionAllocIsValidPtrDelta(address, PtrDelta(requested_size, 1)),
-          PtrPosWithinAlloc::kAllocEnd);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
-                                              PtrDelta(requested_size - 4, 4)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size, 1u),
+                PtrPosWithinAlloc::kAllocEnd);
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size - 4, 4u),
                 PtrPosWithinAlloc::kInBounds);
       for (size_t subtrahend = 0; subtrahend < 4; subtrahend++) {
-        EXPECT_EQ(PartitionAllocIsValidPtrDelta(
-                      address, PtrDelta(requested_size - subtrahend, 4)),
+        EXPECT_EQ(IsPtrWithinSameAlloc(
+                      address, address + requested_size - subtrahend, 4u),
                   PtrPosWithinAlloc::kAllocEnd);
       }
 #else
-      EXPECT_EQ(
-          PartitionAllocIsValidPtrDelta(address, PtrDelta(requested_size, 0)),
-          PtrPosWithinAlloc::kInBounds);
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size, 0u),
+                PtrPosWithinAlloc::kInBounds);
 #endif
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address,
-                                              PtrDelta(requested_size + 1, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size + 1, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
-                    address, PtrDelta(requested_size + kSuperPageSize, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(
+                    address, address + requested_size + kSuperPageSize, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
-                    address, PtrDelta(requested_size + kFarFarAwayDelta, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(
+                    address, address + requested_size + kFarFarAwayDelta, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              PtrDelta(kFarFarAwayDelta, 0)),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              PtrDelta(kSuperPageSize, 0)),
-                PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              PtrDelta(1, 0)),
+      EXPECT_EQ(
+          IsPtrWithinSameAlloc(address + requested_size,
+                               address + requested_size + kFarFarAwayDelta, 0u),
+          PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(
+          IsPtrWithinSameAlloc(address + requested_size,
+                               address + requested_size + kSuperPageSize, 0u),
+          PtrPosWithinAlloc::kFarOOB);
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size,
+                                     address + requested_size + 1, 0u),
                 PtrPosWithinAlloc::kFarOOB);
 #if PA_CONFIG(USE_OOB_POISON)
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 1,
-                                              PtrDelta(0, 1)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size - 1,
+                                     address + requested_size - 1, 1u),
                 PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 1,
-                                              PtrDelta(1, 1)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size - 1,
+                                     address + requested_size, 1u),
                 PtrPosWithinAlloc::kAllocEnd);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              PtrDelta(0, 1)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size,
+                                     address + requested_size, 1u),
                 PtrPosWithinAlloc::kAllocEnd);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 1,
-                                              PtrDelta(1, 1)),
-                PtrPosWithinAlloc::kAllocEnd);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 4,
-                                              PtrDelta(0, 4)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size - 4,
+                                     address + requested_size - 4, 4u),
                 PtrPosWithinAlloc::kInBounds);
       for (size_t addend = 1; addend < 4; addend++) {
-        EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size - 4,
-                                                PtrDelta(addend, 4)),
-                  PtrPosWithinAlloc::kAllocEnd);
+        EXPECT_EQ(
+            IsPtrWithinSameAlloc(address + requested_size - 4,
+                                 address + requested_size - 4 + addend, 4u),
+            PtrPosWithinAlloc::kAllocEnd);
       }
 #else
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              PtrDelta(0, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size,
+                                     address + requested_size, 0u),
                 PtrPosWithinAlloc::kInBounds);
 #endif
-      EXPECT_EQ(
-          PartitionAllocIsValidPtrDelta(address + requested_size,
-                                        PtrDelta(-(requested_size / 2), 0)),
-          PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              PtrDelta(-requested_size, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(
+                    address + requested_size,
+                    address + requested_size - (requested_size / 2), 0u),
                 PtrPosWithinAlloc::kInBounds);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(address + requested_size,
-                                              PtrDelta(-requested_size - 1, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size, address, 0u),
+                PtrPosWithinAlloc::kInBounds);
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size, address - 1, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
-                    address + requested_size,
-                    PtrDelta(-requested_size - kSuperPageSize, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size,
+                                     address - kSuperPageSize, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-      EXPECT_EQ(PartitionAllocIsValidPtrDelta(
-                    address + requested_size,
-                    PtrDelta(-requested_size - kFarFarAwayDelta, 0)),
+      EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size,
+                                     address - kFarFarAwayDelta, 0u),
                 PtrPosWithinAlloc::kFarOOB);
     }
 

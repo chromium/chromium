@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -234,53 +235,12 @@ struct RawPtrBackupRefImpl {
     return wrapped_ptr;
   }
 
-  // Advance the wrapped pointer by `delta_elems`.
-  template <
-      typename T,
-      typename Z,
-      typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
-    T* new_ptr = unpoisoned_ptr + delta_elems;
-    // First check if the new address didn't migrate in/out the BRP pool, and
-    // that it lands within the same allocation. An end-of-allocation address is
-    // ok, too, and that may lead to the pointer being poisoned if the relevant
-    // feature is enabled. These checks add a non-trivial cost, but they're
-    // cheaper and more secure than the previous implementation that rewrapped
-    // the pointer (wrapped the new pointer and unwrapped the old one).
-    //
-    // Note, the value of these checks goes beyond OOB protection. They're
-    // important for integrity of the BRP algorithm. Without these, an attacker
-    // could make the pointer point to another allocation, and cause its
-    // ref-count to go to 0 upon this pointer's destruction, even though there
-    // may be another pointer still pointing to it, thus making it lose the BRP
-    // protection prematurely.
-    uintptr_t address = partition_alloc::UntagPtr(unpoisoned_ptr);
-    // TODO(bartekn): Consider adding support for non-BRP pools too (without
-    // removing the cross-pool migration check).
-    if (IsSupportedAndNotNull(address)) {
-      auto ptr_pos_within_alloc = IsValidDelta(
-          address, delta_elems * static_cast<Z>(sizeof(T)), sizeof(T));
-      // No need to check that |new_ptr| is in the same pool, as IsValidDeta()
-      // checks that it's within the same allocation, so must be the same pool.
-      PA_BASE_CHECK(ptr_pos_within_alloc !=
-                    partition_alloc::PtrPosWithinAlloc::kFarOOB);
-#if PA_CONFIG(USE_OOB_POISON)
-      if (ptr_pos_within_alloc ==
-          partition_alloc::PtrPosWithinAlloc::kAllocEnd) {
-        new_ptr = PoisonOOBPtr(new_ptr);
-      }
-#endif
-    } else {
-      // Check that the new address didn't migrate into the BRP pool, as it
-      // would result in more pointers pointing to an allocation than its
-      // ref-count reflects.
-      PA_BASE_CHECK(!IsSupportedAndNotNull(partition_alloc::UntagPtr(new_ptr)));
-    }
-    return new_ptr;
-#else   // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+  // Verify the pointer stayed in the same slot, and return the poisoned version
+  // of `new_ptr` if OOB poisoning is enabled.
+  template <typename T>
+  static PA_ALWAYS_INLINE T* VerifyAndPoisonPointerAfterAdvanceOrRetreat(
+      T* unpoisoned_ptr,
+      T* new_ptr) {
     // In the "before allocation" mode, on 32-bit, we can run into a problem
     // that the end-of-allocation address could fall outside of
     // PartitionAlloc's pools, if this is the last slot of the super page,
@@ -305,8 +265,71 @@ struct RawPtrBackupRefImpl {
     // This problem doesn't exist in the "previous slot" mode, or any mode that
     // involves putting extras after the allocation, because the
     // end-of-allocation address belongs to the same slot.
-    static_assert(false);
-#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+    static_assert(BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT));
+
+    // First check if the new address didn't migrate in/out the BRP pool, and
+    // that it lands within the same allocation. An end-of-allocation address is
+    // ok, too, and that may lead to the pointer being poisoned if the relevant
+    // feature is enabled. These checks add a non-trivial cost, but they're
+    // cheaper and more secure than the previous implementation that rewrapped
+    // the pointer (wrapped the new pointer and unwrapped the old one).
+    //
+    // Note, the value of these checks goes beyond OOB protection. They're
+    // important for integrity of the BRP algorithm. Without these, an attacker
+    // could make the pointer point to another allocation, and cause its
+    // ref-count to go to 0 upon this pointer's destruction, even though there
+    // may be another pointer still pointing to it, thus making it lose the BRP
+    // protection prematurely.
+    const uintptr_t before_addr = partition_alloc::UntagPtr(unpoisoned_ptr);
+    const uintptr_t after_addr = partition_alloc::UntagPtr(new_ptr);
+    // TODO(bartekn): Consider adding support for non-BRP pools too (without
+    // removing the cross-pool migration check).
+    if (IsSupportedAndNotNull(before_addr)) {
+      partition_alloc::internal::PtrPosWithinAlloc ptr_pos_within_alloc =
+          partition_alloc::internal::IsPtrWithinSameAlloc(
+              before_addr, after_addr, sizeof(T));
+      // No need to check that |new_ptr| is in the same pool, as
+      // IsPtrWithinSameAlloc() checks that it's within the same allocation, so
+      // must be the same pool.
+      PA_BASE_CHECK(ptr_pos_within_alloc !=
+                    partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
+#if PA_CONFIG(USE_OOB_POISON)
+      if (ptr_pos_within_alloc ==
+          partition_alloc::internal::PtrPosWithinAlloc::kAllocEnd) {
+        new_ptr = PoisonOOBPtr(new_ptr);
+      }
+#endif
+    } else {
+      // Check that the new address didn't migrate into the BRP pool, as it
+      // would result in more pointers pointing to an allocation than its
+      // ref-count reflects.
+      PA_BASE_CHECK(!IsSupportedAndNotNull(after_addr));
+    }
+    return new_ptr;
+  }
+
+  // Advance the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+    T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
+    return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
+        unpoisoned_ptr, unpoisoned_ptr + delta_elems);
+  }
+
+  // Retreat the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  static PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
+    return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
+        unpoisoned_ptr, unpoisoned_ptr - delta_elems);
   }
 
   template <typename T>
@@ -320,8 +343,9 @@ struct RawPtrBackupRefImpl {
     // TODO(bartekn): Consider adding support for non-BRP pool too.
     if (IsSupportedAndNotNull(address1)) {
       PA_BASE_CHECK(IsSupportedAndNotNull(address2));
-      PA_BASE_CHECK(IsValidDelta(address2, address1 - address2, sizeof(T)) !=
-                    partition_alloc::PtrPosWithinAlloc::kFarOOB);
+      PA_BASE_CHECK(partition_alloc::internal::IsPtrWithinSameAlloc(
+                        address2, address1, sizeof(T)) !=
+                    partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
     } else {
       PA_BASE_CHECK(!IsSupportedAndNotNull(address2));
     }
@@ -374,23 +398,6 @@ struct RawPtrBackupRefImpl {
       bool IsPointeeAlive(uintptr_t address);
   static PA_COMPONENT_EXPORT(RAW_PTR) PA_NOINLINE
       void ReportIfDanglingInternal(uintptr_t address);
-  template <
-      typename Z,
-      typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE partition_alloc::PtrPosWithinAlloc
-  IsValidDelta(uintptr_t address, Z delta_in_bytes, size_t type_size) {
-    using delta_t = std::conditional_t<std::is_signed_v<Z>, ptrdiff_t, size_t>;
-    partition_alloc::internal::PtrDelta<delta_t> ptr_delta(delta_in_bytes,
-                                                           type_size);
-
-    return IsValidDelta(address, ptr_delta);
-  }
-  template <typename Z>
-  static PA_COMPONENT_EXPORT(RAW_PTR)
-      PA_NOINLINE partition_alloc::PtrPosWithinAlloc
-      IsValidDelta(uintptr_t address,
-                   partition_alloc::internal::PtrDelta<Z> delta);
 };
 
 }  // namespace base::internal

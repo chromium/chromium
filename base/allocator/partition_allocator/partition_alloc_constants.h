@@ -503,18 +503,6 @@ using ::partition_alloc::internal::kSuperPageSize;
 using ::partition_alloc::internal::MaxDirectMapped;
 using ::partition_alloc::internal::PartitionPageSize;
 
-// Return values to indicate where a pointer is pointing relative to the bounds
-// of an allocation.
-enum class PtrPosWithinAlloc {
-  // When PA_USE_OOB_POISON is disabled, end-of-allocation pointers are also
-  // considered in-bounds.
-  kInBounds,
-#if PA_CONFIG(USE_OOB_POISON)
-  kAllocEnd,
-#endif
-  kFarOOB
-};
-
 }  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONSTANTS_H_

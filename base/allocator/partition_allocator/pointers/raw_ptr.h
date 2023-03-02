@@ -229,9 +229,19 @@ struct RawPtrNoOpImpl {
       typename T,
       typename Z,
       typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
+  }
+
+  // Retreat the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  static PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    return wrapped_ptr - delta_elems;
   }
 
   template <typename T>
@@ -429,9 +439,19 @@ struct MTECheckedPtrImpl {
       typename T,
       typename Z,
       typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
+  }
+
+  // Retreat the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  static PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    return wrapped_ptr - delta_elems;
   }
 
   template <typename T>
@@ -992,7 +1012,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this;
   }
   PA_ALWAYS_INLINE raw_ptr& operator--() {
-    wrapped_ptr_ = Impl::Advance(wrapped_ptr_, -1);
+    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, 1);
     return *this;
   }
   PA_ALWAYS_INLINE raw_ptr operator++(int /* post_increment */) {
@@ -1007,16 +1027,17 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
   template <
       typename Z,
-      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
+      typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
   PA_ALWAYS_INLINE raw_ptr& operator+=(Z delta_elems) {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
   template <
       typename Z,
-      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
+      typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
   PA_ALWAYS_INLINE raw_ptr& operator-=(Z delta_elems) {
-    return *this += -delta_elems;
+    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, delta_elems);
+    return *this;
   }
 
   // Do not disable operator+() and operator-().
