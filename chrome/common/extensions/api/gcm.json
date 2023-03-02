@@ -74,7 +74,7 @@
               "messageId": {
                 "type": "string",
                 "minLength": 1,
-                "description": "The ID of the message. It must be unique for each message in scope of the applications. See the <a href='cloudMessaging#send_messages'>Cloud Messaging documentation</a> for advice for picking and handling an ID."
+                "description": "The ID of the message. It must be unique for each message in scope of the applications. See the <a href='https://firebase.google.com/docs/cloud-messaging/js/client'>Cloud Messaging documentation</a> for advice for picking and handling an ID."
               },
               "timeToLive": {
                 "type": "integer",
