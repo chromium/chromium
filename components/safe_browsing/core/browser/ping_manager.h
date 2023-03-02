@@ -80,13 +80,14 @@ class PingManager : public KeyedService {
 
   // Report to Google when a SafeBrowsing warning is shown to the user.
   // |hit_report.threat_type| should be one of the types known by
-  // SafeBrowsingtHitUrl.
+  // SafeBrowsingtHitUrl. This method will also sanitize the URLs in the report
+  // before sending it.
   void ReportSafeBrowsingHit(
       std::unique_ptr<safe_browsing::HitReport> hit_report);
 
-  // Sends a detailed threat report after performing validation and adding extra
-  // details to the report. The returned object provides details on whether the
-  // report was successful.
+  // Sends a detailed threat report after performing validation, sanitizing
+  // contained URLs, and adding extra details to the report. The returned object
+  // provides details on whether the report was successful.
   ReportThreatDetailsResult ReportThreatDetails(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
@@ -115,6 +116,8 @@ class PingManager : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestThreatDetailsUrl);
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestReportThreatDetails);
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestReportSafeBrowsingHit);
+  FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSanitizeHitReport);
+  FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSanitizeThreatDetailsReport);
 
   const V4ProtocolConfig config_;
 
@@ -126,6 +129,13 @@ class PingManager : public KeyedService {
 
   // Generates URL for reporting threat details for users who opt-in.
   GURL ThreatDetailsUrl() const;
+
+  // Sanitizes the URLs in the client safe browsing report.
+  void SanitizeThreatDetailsReport(
+      safe_browsing::ClientSafeBrowsingReportRequest* report);
+
+  // Sanitizes the URLs in the hit report.
+  void SanitizeHitReport(HitReport* hit_report);
 
   // Once the user's access_token has been fetched by ReportThreatDetails (or
   // intentionally not fetched), attaches the token and sends the report.

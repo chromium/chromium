@@ -29,6 +29,17 @@
 
 namespace {
 
+GURL GetSanitizedUrl(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  return url.ReplaceComponents(replacements);
+}
+std::string GetSanitizedUrl(const std::string& url_spec) {
+  GURL url = GURL(url_spec);
+  return GetSanitizedUrl(url).spec();
+}
+
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_extended_reporting",
                                         R"(
@@ -140,6 +151,7 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
 void PingManager::ReportSafeBrowsingHit(
     std::unique_ptr<safe_browsing::HitReport> hit_report) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
+  SanitizeHitReport(hit_report.get());
   GURL report_url = SafeBrowsingHitUrl(hit_report.get());
   resource_request->url = report_url;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
@@ -173,6 +185,7 @@ void PingManager::ReportSafeBrowsingHit(
 // Sends threat details for users who opt-in.
 PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  SanitizeThreatDetailsReport(report.get());
   if (!get_user_population_callback_.is_null()) {
     *report->mutable_population() = get_user_population_callback_.Run();
   }
@@ -336,6 +349,30 @@ GURL PingManager::SafeBrowsingHitUrl(
 GURL PingManager::ThreatDetailsUrl() const {
   std::string url = GetReportUrl(config_, "clientreport/malware");
   return GURL(url);
+}
+
+void PingManager::SanitizeThreatDetailsReport(
+    ClientSafeBrowsingReportRequest* report) {
+  if (report->has_url()) {
+    report->set_url(GetSanitizedUrl(report->url()));
+  }
+  if (report->has_page_url()) {
+    report->set_page_url(GetSanitizedUrl(report->page_url()));
+  }
+  if (report->has_referrer_url()) {
+    report->set_referrer_url(GetSanitizedUrl(report->referrer_url()));
+  }
+  for (auto& resource : *report->mutable_resources()) {
+    if (resource.has_url()) {
+      resource.set_url(GetSanitizedUrl(resource.url()));
+    }
+  }
+}
+
+void PingManager::SanitizeHitReport(HitReport* hit_report) {
+  hit_report->malicious_url = GetSanitizedUrl(hit_report->malicious_url);
+  hit_report->page_url = GetSanitizedUrl(hit_report->page_url);
+  hit_report->referrer_url = GetSanitizedUrl(hit_report->referrer_url);
 }
 
 void PingManager::SetURLLoaderFactoryForTesting(

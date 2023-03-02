@@ -223,4 +223,79 @@ TEST_F(PingManagerTest, TestReportThreatDetails_EmptyReport) {
   EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::EMPTY_REPORT);
 }
 
+TEST_F(PingManagerTest, TestSanitizeThreatDetailsReport) {
+  // Blank report.
+  {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+        std::make_unique<ClientSafeBrowsingReportRequest>();
+    ping_manager()->SanitizeThreatDetailsReport(report.get());
+    EXPECT_EQ(report->url(), "");
+  }
+  // One field needs sanitizing.
+  {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+        std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_url("http://user1:pass2@some.url.com/");
+    report->set_page_url("http://some.page.url.com/");
+    ping_manager()->SanitizeThreatDetailsReport(report.get());
+    EXPECT_EQ(report->url(), "http://some.url.com/");
+    EXPECT_EQ(report->page_url(), "http://some.page.url.com/");
+  }
+  // Multiple fields need sanitizing.
+  {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+        std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_url("http://user1:pass2@some.url.com/");
+    report->set_page_url("http://u1:p2@some.page.url.com/");
+    report->set_referrer_url("http://a:b@some.referrer.url.com/");
+    report->add_resources()->set_url("http://c:d@first.resource.com/");
+    report->add_resources();  // second resource has blank URL
+    report->add_resources()->set_url("http://e:f@third.resource.com/");
+    ping_manager()->SanitizeThreatDetailsReport(report.get());
+    EXPECT_EQ(report->url(), "http://some.url.com/");
+    EXPECT_EQ(report->page_url(), "http://some.page.url.com/");
+    EXPECT_EQ(report->referrer_url(), "http://some.referrer.url.com/");
+    EXPECT_EQ(report->resources(0).url(), "http://first.resource.com/");
+    EXPECT_EQ(report->resources(1).url(), "");
+    EXPECT_EQ(report->resources(2).url(), "http://third.resource.com/");
+  }
+}
+
+TEST_F(PingManagerTest, TestSanitizeHitReport) {
+  // Blank report.
+  {
+    std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+    ping_manager()->SanitizeHitReport(hit_report.get());
+    EXPECT_EQ(hit_report->malicious_url.spec(), "");
+    EXPECT_EQ(hit_report->page_url.spec(), "");
+    EXPECT_EQ(hit_report->referrer_url.spec(), "");
+  }
+  // One field needs sanitizing.
+  {
+    std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+    hit_report->malicious_url = GURL("http://user1:pass2@malicious.url.com/");
+    hit_report->page_url = GURL("http://page.url.com/");
+    // Sanity check it is indeed the SanitizeHitReport method responsible for
+    // the user1:pass2 being removed and not something about the URL being
+    // invalid.
+    EXPECT_EQ(hit_report->malicious_url.spec(),
+              "http://user1:pass2@malicious.url.com/");
+    ping_manager()->SanitizeHitReport(hit_report.get());
+    EXPECT_EQ(hit_report->malicious_url.spec(), "http://malicious.url.com/");
+    EXPECT_EQ(hit_report->page_url.spec(), "http://page.url.com/");
+    EXPECT_EQ(hit_report->referrer_url.spec(), "");
+  }
+  // Multiple fields need sanitizing.
+  {
+    std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+    hit_report->malicious_url = GURL("http://user1:pass2@malicious.url.com/");
+    hit_report->page_url = GURL("http://u1:p2@page.url.com/");
+    hit_report->referrer_url = GURL("http://a:b@referrer.url.com/");
+    ping_manager()->SanitizeHitReport(hit_report.get());
+    EXPECT_EQ(hit_report->malicious_url.spec(), "http://malicious.url.com/");
+    EXPECT_EQ(hit_report->page_url.spec(), "http://page.url.com/");
+    EXPECT_EQ(hit_report->referrer_url.spec(), "http://referrer.url.com/");
+  }
+}
+
 }  // namespace safe_browsing
