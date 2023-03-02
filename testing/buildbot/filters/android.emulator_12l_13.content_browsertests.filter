@@ -14,3 +14,10 @@
 -WebRtcBrowserTest.GetSettingsReportsValuesForRemoteTracks
 -WebRtcBrowserTest.NoCrashWhenConnectChromiumSinkToRemoteTrack
 -WebRtcDataBrowserTest.CallWithSctpDataAndMedia
+
+# crbug.com/1270151
+-FontUniqueNameBrowserTest.ContentLocalFontsMatching
+
+# crbug.com/1420817
+-WebRtcMediaRecorderTest.PausePreventsDataavailableFromBeingFired
+-WebRtcMediaRecorderTest.Start
