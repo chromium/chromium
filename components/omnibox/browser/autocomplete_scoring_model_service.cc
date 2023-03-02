@@ -40,7 +40,7 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
     base::OnceCallback<void(
         const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&)>
         scoring_callback) {
-  if (!UrlScoringModelAvailable()) {
+  if (!url_scoring_model_handler_) {
     return;
   }
 
@@ -52,8 +52,4 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
 
   url_scoring_model_handler_->ExecuteModelWithInput(std::move(scoring_callback),
                                                     *input_signals);
-}
-
-bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
-  return url_scoring_model_handler_ != nullptr;
 }
