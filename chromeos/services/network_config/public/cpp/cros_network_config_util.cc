@@ -4,6 +4,7 @@
 
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
+#include "components/device_event_log/device_event_log.h"
 #include "components/onc/onc_constants.h"
 
 namespace chromeos::network_config {
@@ -82,6 +83,178 @@ mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
 }
 
 }  // namespace
+
+bool GetBoolean(const base::Value::Dict* dict,
+                const char* key,
+                bool value_if_key_missing_from_dict) {
+  const base::Value* v = dict->Find(key);
+  if (v && !v->is_bool()) {
+    NET_LOG(ERROR) << "Expected bool, found: " << *v;
+    return false;
+  }
+  return v ? v->GetBool() : value_if_key_missing_from_dict;
+}
+
+absl::optional<std::string> GetString(const base::Value::Dict* dict,
+                                      const char* key) {
+  const base::Value* v = dict->Find(key);
+  if (v && !v->is_string()) {
+    NET_LOG(ERROR) << "Expected string, found: " << *v;
+    return absl::nullopt;
+  }
+  return v ? absl::make_optional(v->GetString()) : absl::nullopt;
+}
+
+const base::Value::Dict* GetDictionary(const base::Value::Dict* dict,
+                                       const char* key) {
+  const base::Value* v = dict->Find(key);
+  if (!v) {
+    return nullptr;
+  }
+  if (!v->is_dict()) {
+    NET_LOG(ERROR) << "Expected dictionary, found: " << *v;
+    return nullptr;
+  }
+  return &v->GetDict();
+}
+
+ManagedDictionary GetManagedDictionary(const base::Value::Dict* onc_dict) {
+  ManagedDictionary result;
+
+  // When available, the active value (i.e. the value from Shill) is used.
+  if (onc_dict->contains(::onc::kAugmentationActiveSetting)) {
+    result.active_value =
+        onc_dict->Find(::onc::kAugmentationActiveSetting)->Clone();
+  }
+
+  absl::optional<std::string> effective =
+      GetString(onc_dict, ::onc::kAugmentationEffectiveSetting);
+  if (!effective) {
+    return result;
+  }
+
+  // If no active value is set (e.g. the network is not visible), use the
+  // effective value.
+  if (result.active_value.is_none() && onc_dict->contains(effective.value())) {
+    result.active_value = onc_dict->Find(effective.value())->Clone();
+  }
+  if (result.active_value.is_none()) {
+    // No active or effective value, return a default dictionary.
+    return result;
+  }
+
+  // If the effective value is set by an extension, use kActiveExtension.
+  if (effective == ::onc::kAugmentationActiveExtension) {
+    result.policy_source = mojom::PolicySource::kActiveExtension;
+    result.policy_value = result.active_value.Clone();
+    return result;
+  }
+
+  // Set policy properties based on the effective source and policies.
+  // NOTE: This does not enforce valid ONC. See onc_merger.cc for details.
+  const base::Value* user_policy =
+      onc_dict->Find(::onc::kAugmentationUserPolicy);
+  const base::Value* device_policy =
+      onc_dict->Find(::onc::kAugmentationDevicePolicy);
+  bool user_enforced = !GetBoolean(onc_dict, ::onc::kAugmentationUserEditable);
+  bool device_enforced =
+      !GetBoolean(onc_dict, ::onc::kAugmentationDeviceEditable);
+  if (effective == ::onc::kAugmentationUserPolicy ||
+      (user_policy && effective != ::onc::kAugmentationDevicePolicy)) {
+    // Set the policy source to "User" when:
+    // * The effective value is set to "UserPolicy" OR
+    // * A User policy exists and the effective value is not "DevicePolicy",
+    //   i.e. no enforced device policy is overriding a recommended user policy.
+    result.policy_source = user_enforced
+                               ? mojom::PolicySource::kUserPolicyEnforced
+                               : mojom::PolicySource::kUserPolicyRecommended;
+    if (user_policy) {
+      result.policy_value = user_policy->Clone();
+    }
+  } else if (effective == ::onc::kAugmentationDevicePolicy || device_policy) {
+    // Set the policy source to "Device" when:
+    // * The effective value is set to "DevicePolicy" OR
+    // * A Device policy exists (since we checked for a user policy first).
+    result.policy_source = device_enforced
+                               ? mojom::PolicySource::kDevicePolicyEnforced
+                               : mojom::PolicySource::kDevicePolicyRecommended;
+    if (device_policy) {
+      result.policy_value = device_policy->Clone();
+    }
+  } else if (effective == ::onc::kAugmentationUserSetting ||
+             effective == ::onc::kAugmentationSharedSetting) {
+    // User or shared setting, no policy source.
+  } else {
+    // Unexpected ONC. No policy source or value will be set.
+    NET_LOG(ERROR) << "Unexpected ONC property: " << *onc_dict;
+  }
+
+  DCHECK(result.policy_value.is_none() ||
+         result.policy_value.type() == result.active_value.type());
+  return result;
+}
+
+mojom::ManagedStringPtr GetManagedString(const base::Value::Dict* dict,
+                                         const char* key) {
+  const base::Value* v = dict->Find(key);
+  if (!v) {
+    return nullptr;
+  }
+  if (v->is_string()) {
+    auto result = mojom::ManagedString::New();
+    result->active_value = v->GetString();
+    return result;
+  }
+  if (v->is_dict()) {
+    ManagedDictionary managed_dict = GetManagedDictionary(&v->GetDict());
+    if (!managed_dict.active_value.is_string()) {
+      NET_LOG(ERROR) << "No active or effective value for: " << key;
+      return nullptr;
+    }
+    auto result = mojom::ManagedString::New();
+    result->active_value = managed_dict.active_value.GetString();
+    result->policy_source = managed_dict.policy_source;
+    if (!managed_dict.policy_value.is_none()) {
+      result->policy_value = managed_dict.policy_value.GetString();
+    }
+    return result;
+  }
+  NET_LOG(ERROR) << "Expected string or dictionary, found: " << *v;
+  return nullptr;
+}
+
+mojom::ManagedStringPtr GetRequiredManagedString(const base::Value::Dict* dict,
+                                                 const char* key) {
+  mojom::ManagedStringPtr result = GetManagedString(dict, key);
+  if (!result) {
+    // Return an empty string with no policy source.
+    result = mojom::ManagedString::New();
+  }
+  return result;
+}
+
+mojom::ManagedApnPropertiesPtr GetManagedApnProperties(
+    const base::Value::Dict* cellular_dict,
+    const char* key) {
+  const base::Value::Dict* apn_dict = cellular_dict->FindDict(key);
+  if (!apn_dict) {
+    return nullptr;
+  }
+  auto apn = mojom::ManagedApnProperties::New();
+  apn->access_point_name =
+      GetRequiredManagedString(apn_dict, ::onc::cellular_apn::kAccessPointName);
+  CHECK(apn->access_point_name);
+  apn->authentication =
+      GetManagedString(apn_dict, ::onc::cellular_apn::kAuthentication);
+  apn->language = GetManagedString(apn_dict, ::onc::cellular_apn::kLanguage);
+  apn->localized_name =
+      GetManagedString(apn_dict, ::onc::cellular_apn::kLocalizedName);
+  apn->name = GetManagedString(apn_dict, ::onc::cellular_apn::kName);
+  apn->password = GetManagedString(apn_dict, ::onc::cellular_apn::kPassword);
+  apn->username = GetManagedString(apn_dict, ::onc::cellular_apn::kUsername);
+  apn->attach = GetManagedString(apn_dict, ::onc::cellular_apn::kAttach);
+  return apn;
+}
 
 // This matches logic in NetworkTypePattern and should be kept in sync.
 bool NetworkTypeMatchesType(mojom::NetworkType network_type,
