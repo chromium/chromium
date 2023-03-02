@@ -12463,11 +12463,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Certificate present"/>
 </enum>
 
-<enum name="BooleanHasCollapseKey">
-  <int value="0" label="No collapse_key"/>
-  <int value="1" label="Has collapse_key"/>
-</enum>
-
 <enum name="BooleanHasConflict">
   <int value="0" label="No conflict"/>
   <int value="1" label="Has conflict"/>

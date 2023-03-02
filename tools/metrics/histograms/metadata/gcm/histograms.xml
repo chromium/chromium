@@ -128,39 +128,6 @@ chromium-metrics-reviews@google.com.
   <summary>The result of a database open attempt by the GCM store.</summary>
 </histogram>
 
-<histogram name="GCM.DataMessageReceived" enum="BooleanReceived"
-    expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Number of DATA_MESSAGE messages received from Google Cloud Messaging for
-    which a matching registration exists. Recorded when processing the received
-    message. Prior to M56 this also counted received DELETED_MESSAGES messages
-    (whether or not a registration existed).
-  </summary>
-</histogram>
-
-<histogram name="GCM.DataMessageReceivedHasCollapseKey"
-    enum="BooleanHasCollapseKey" expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether a non-empty collapse_key token is set for each received
-    DATA_MESSAGE message from Google Cloud Messaging for which a matching
-    registration exists. Recorded while processing the received message.
-  </summary>
-</histogram>
-
-<histogram name="GCM.DeletedMessagesReceived" units="messages"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    For every DELETED_MESSAGES message received from Google Cloud Messaging
-    (whether or not a matching registration exists), this records the provided
-    count of how many messages were simultaneously deleted, or zero if the count
-    is unknown.
-  </summary>
-</histogram>
-
 <histogram name="GCM.DeliveredToAppHandler{AppHandler}" enum="BooleanDelivered"
     expires_after="2023-10-19">
   <owner>peter@chromium.org</owner>

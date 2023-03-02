@@ -30,20 +30,12 @@ public class GcmUma {
         int NUM_ENTRIES = 4;
     }
 
-    public static void recordDataMessageReceived(Context context, final boolean hasCollapseKey) {
+    public static void recordDataMessageReceived(Context context) {
         // There is no equivalent of the GCM Store on Android in which we can fail to find a
         // registered app. It's not clear whether Google Play Services doesn't check for
         // registrations, or only gives us messages that have one, but in either case we
         // should log true here.
         RecordHistogram.recordBooleanHistogram("GCM.DataMessageReceivedHasRegisteredApp", true);
-        RecordHistogram.recordCount1MHistogram("GCM.DataMessageReceived", 1);
-        RecordHistogram.recordBooleanHistogram(
-                "GCM.DataMessageReceivedHasCollapseKey", hasCollapseKey);
-    }
-
-    public static void recordDeletedMessages(Context context) {
-        RecordHistogram.recordCount1000Histogram(
-                "GCM.DeletedMessagesReceived", 0 /* unknown deleted count */);
     }
 
     public static void recordWebPushReceivedDeviceState(@WebPushDeviceState int state) {

@@ -1415,13 +1415,6 @@ void GCMClientImpl::HandleIncomingDataMessage(
     bool was_subtype,
     const mcs_proto::DataMessageStanza& data_message_stanza,
     MessageData& message_data) {
-  UMA_HISTOGRAM_BOOLEAN("GCM.DataMessageReceived", true);
-
-  bool has_collapse_key =
-      data_message_stanza.has_token() && !data_message_stanza.token().empty();
-  UMA_HISTOGRAM_BOOLEAN("GCM.DataMessageReceivedHasCollapseKey",
-                        has_collapse_key);
-
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),
                                       data_message_stanza.ByteSize(),
                                       GCMStatsRecorder::DATA_MESSAGE);
@@ -1447,7 +1440,6 @@ void GCMClientImpl::HandleIncomingDeletedMessages(
     if (!base::StringToInt(count_iter->second, &deleted_count))
       deleted_count = 0;
   }
-  UMA_HISTOGRAM_COUNTS_1000("GCM.DeletedMessagesReceived", deleted_count);
 
   recorder_.RecordDataMessageReceived(app_id, data_message_stanza.from(),
                                       data_message_stanza.ByteSize(),
