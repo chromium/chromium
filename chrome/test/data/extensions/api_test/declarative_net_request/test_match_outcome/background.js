@@ -40,7 +40,7 @@ chrome.test.runTests([
         chrome.test.callbackFail('Invalid test request initiator.'));
   },
 
-  function testInvalidInitiator() {
+  function testInvalidTabID() {
     chrome.declarativeNetRequest.testMatchOutcome(
         {url: 'http://example.example', type: 'sub_frame', tabId: -2},
         chrome.test.callbackFail('Invalid test request tab ID.'));

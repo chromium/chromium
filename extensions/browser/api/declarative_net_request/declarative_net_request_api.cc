@@ -735,9 +735,9 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
     initiator = url::Origin::Create(std::move(initiator_url));
   }
 
-  int tabId = params->request.tab_id ? *params->request.tab_id
-                                     : extension_misc::kUnknownTabId;
-  if (tabId < extension_misc::kUnknownTabId) {
+  int tab_id = params->request.tab_id ? *params->request.tab_id
+                                      : extension_misc::kUnknownTabId;
+  if (tab_id < extension_misc::kUnknownTabId) {
     return RespondNow(Error(declarative_net_request::kInvalidTestTabIdError));
   }
 
@@ -746,7 +746,7 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
           ? dnr_api::RequestMethod::REQUEST_METHOD_GET
           : params->request.method;
   declarative_net_request::RequestParams request_params(
-      url, initiator, params->request.type, method, tabId);
+      url, initiator, params->request.type, method, tab_id);
 
   // Set up the rule matcher.
 
@@ -770,7 +770,7 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
       declarative_net_request::GetWebRequestResourceType(params->request.type);
   PermissionsData::PageAccess page_access =
       WebRequestPermissions::CanExtensionAccessURL(
-          PermissionHelper::Get(browser_context()), extension_id(), url, tabId,
+          PermissionHelper::Get(browser_context()), extension_id(), url, tab_id,
           /*crosses_incognito=*/false,
           WebRequestPermissions::HostPermissionsCheck::
               REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
