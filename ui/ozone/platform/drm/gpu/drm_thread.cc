@@ -255,7 +255,7 @@ void DrmThread::IsDeviceAtomic(gfx::AcceleratedWidget widget, bool* is_atomic) {
   scoped_refptr<ui::DrmDevice> drm_device =
       device_manager_->GetDrmDevice(widget);
 
-  *is_atomic = drm_device && drm_device->is_atomic();
+  *is_atomic = drm_device && IsAtomic(*drm_device);
 }
 
 void DrmThread::CreateWindow(gfx::AcceleratedWidget widget,

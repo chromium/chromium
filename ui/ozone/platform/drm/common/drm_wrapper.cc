@@ -93,10 +93,8 @@ bool DrmWrapper::Initialize() {
     return false;
   }
 
-  // Set atomic capabilities. Note: we cache the outcome since there is no way
-  // to retrieve this outcome later (i.e. it's impossible, and a common mistake,
-  // to try and get DRM_CLIENT_CAP_ATOMIC capability.)
-  is_atomic_ = SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
+  // Set atomic capabilities.
+  SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
 
   // Expose all planes (overlay, primary, and cursor) to userspace.
   SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);

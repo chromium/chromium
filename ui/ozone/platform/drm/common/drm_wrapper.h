@@ -271,7 +271,6 @@ class DrmWrapper {
   static base::ScopedFD ToScopedFD(std::unique_ptr<DrmWrapper> drm);
 
   base::FilePath device_path() const { return device_path_; }
-  bool is_atomic() const { return is_atomic_; }
   bool is_primary_device() const { return is_primary_device_; }
 
  protected:
@@ -293,10 +292,6 @@ class DrmWrapper {
 
   // DRM device FD.
   base::ScopedFD drm_fd_;
-
-  // Whether or not DRM was successfully set to atomic during the initialization
-  // of this DRM device.
-  bool is_atomic_ = false;
 
   const bool is_primary_device_;
 };
