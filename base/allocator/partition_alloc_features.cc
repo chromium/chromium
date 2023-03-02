@@ -32,7 +32,7 @@ const base::FeatureParam<UnretainedDanglingPtrMode>
 
 BASE_FEATURE(kPartitionAllocDanglingPtr,
              "PartitionAllocDanglingPtr",
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAGS_FOR_BOTS)
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
@@ -104,8 +104,8 @@ BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,
              "PartitionAllocBackupRefPtr",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||                \
-    BUILDFLAG(ENABLE_DANGLING_RAW_PTR_FEATURE_FLAGS_FOR_BOTS) || \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||    \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG) || \
     (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
              FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -124,7 +124,8 @@ constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
 const base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam {
   &kPartitionAllocBackupRefPtr, "enabled-processes",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||    \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG) || \
     (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
       BackupRefPtrEnabledProcesses::kNonRenderer,
 #else

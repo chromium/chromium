@@ -133,16 +133,24 @@ declare_args() {
   enable_backup_ref_ptr_slow_checks =
       enable_backup_ref_ptr_slow_checks_default && enable_backup_ref_ptr_support
 
+  # Enable the feature flag required to activate backup ref pointers. That is to
+  # say `PartitionAllocBackupRefPtr`.
+  #
+  # This is meant to be used primarily on bots. It is much easier to override
+  # the feature flags using a binary flag instead of updating multiple bots's
+  # scripts to pass command line arguments.
+  enable_backup_ref_ptr_feature_flag = false
+
   enable_dangling_raw_ptr_checks =
       enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
 
-  # Enable the feature flags required to check for dangling pointers. That is to
-  # say `PartitionAllocBackupRefPtr` and `PartitionAllocDanglingPtr`.
+  # Enable the feature flag required to check for dangling pointers. That is to
+  # say `PartitionAllocDanglingPtr`.
   #
-  # This is meant to be used on bots only. It is much easier to override the
-  # feature flags using a binary flag instead of updating multiple bots's
+  # This is meant to be used primarily on bots. It is much easier to override
+  # the feature flags using a binary flag instead of updating multiple bots's
   # scripts to pass command line arguments.
-  enable_dangling_raw_ptr_feature_flags_for_bots = false
+  enable_dangling_raw_ptr_feature_flag = false
 
   # Enables the dangling raw_ptr checks feature for the performance experiment.
   # Not every dangling pointers have been fixed or annotated yet. To avoid
