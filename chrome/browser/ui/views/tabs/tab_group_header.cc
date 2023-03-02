@@ -65,6 +65,7 @@
 
 namespace {
 
+// The amount of padding between the label and the sync icon.
 constexpr int kSyncIconPaddingFromLabel = 4;
 
 class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
@@ -94,9 +95,9 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
 
 }  // namespace
 
-TabGroupHeader::TabGroupHeader(TabSlotController &tab_slot_controller,
-                               const tab_groups::TabGroupId &group,
-                               const TabGroupStyle &style)
+TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
+                               const tab_groups::TabGroupId& group,
+                               const TabGroupStyle& style)
     : tab_slot_controller_(tab_slot_controller),
       title_chip_(AddChildView(std::make_unique<views::View>())),
       title_(title_chip_->AddChildView(std::make_unique<views::Label>())),
@@ -107,7 +108,8 @@ TabGroupHeader::TabGroupHeader(TabSlotController &tab_slot_controller,
               ? SavedTabGroupServiceFactory::GetForProfile(
                     tab_slot_controller_->GetBrowser()->profile())
               : nullptr),
-      style_(style), editor_bubble_tracker_(tab_slot_controller) {
+      style_(style),
+      editor_bubble_tracker_(tab_slot_controller) {
   set_group(group);
   set_context_menu_controller(this);
 
@@ -188,8 +190,9 @@ bool TabGroupHeader::OnMousePressed(const ui::MouseEvent& event) {
   // the actual widget destruction happens in a posted task. That task
   // gets run after we receive the mouse event. If this sounds brittle,
   // that's because it is!
-  if (editor_bubble_tracker_.is_open())
+  if (editor_bubble_tracker_.is_open()) {
     return false;
+  }
 
   // Allow a right click from touch to drag, which corresponds to a long click.
   if (event.IsOnlyLeftMouseButton() ||
@@ -344,8 +347,9 @@ void TabGroupHeader::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  if (editor_bubble_tracker_.is_open())
+  if (editor_bubble_tracker_.is_open()) {
     return;
+  }
 
   // When the context menu is triggered via keyboard, the keyboard event
   // propagates to the textfield inside the Editor Bubble. In those cases, we
@@ -395,8 +399,9 @@ int TabGroupHeader::GetDesiredWidth() const {
   // match the left margin. The left margin is always the group stroke inset.
   // Using these values also guarantees the chip aligns with the collapsed
   // stroke.
-  if (tab_slot_controller_->IsGroupCollapsed(group().value()))
+  if (tab_slot_controller_->IsGroupCollapsed(group().value())) {
     return title_chip_->width() + 2 * TabGroupUnderline::GetStrokeInset();
+  }
 
   // We don't want tabs to visually overlap group headers, so we add that space
   // to the width to compensate. We don't want to actually remove the overlap
@@ -509,17 +514,17 @@ void TabGroupHeader::VisualsChanged() {
     // Bounds and background of the `title_` and the `sync_icon` are set here.
     // Cannot use `title_chip_horizontal_inset` as x coordinate in the case
     // `title_chip_width` is the width of an empty title chip.
-    const int start_of_title = (title_chip_->width() - content_width) / 2;
-    title_->SetBounds(start_of_title, title_chip_vertical_inset, text_width,
-                      text_height);
-    sync_icon_->SetBounds(
-        start_of_title + text_width + padding_between_label_sync_icon,
-        title_chip_vertical_inset, sync_icon_size.width(),
-        sync_icon_size.height());
+    const int start_of_sync_icon = (title_chip_->width() - content_width) / 2;
+    sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
+                          sync_icon_size.width(), text_height);
+    title_->SetBounds(start_of_sync_icon + sync_icon_size.width() +
+                          padding_between_label_sync_icon,
+                      title_chip_vertical_inset, text_width, text_height);
   }
 
-  if (views::FocusRing::Get(this))
+  if (views::FocusRing::Get(this)) {
     views::FocusRing::Get(this)->Layout();
+  }
 
   const bool collapsed_state =
       tab_slot_controller_->IsGroupCollapsed(group().value());

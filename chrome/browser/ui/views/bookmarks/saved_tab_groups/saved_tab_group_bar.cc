@@ -228,6 +228,8 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
   if (button->GetVisible()) {
     PreferredSizeChanged();
   }
+
+  SchedulePaint();
 }
 
 void SavedTabGroupBar::AddAllButtons() {

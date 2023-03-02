@@ -25,6 +25,7 @@ constexpr int kHeaderChipVerticalInset = 1;
 constexpr int kTitleAdjustmentForEmptyHeader = 2;
 constexpr int kTitleAdjustmentForNonEmptyHeader = -2;
 constexpr int kEmptyChipSize = 14;
+constexpr int kSyncIconWidth = 12;
 
 constexpr int kChromeRefreshHeaderChipVerticalInset = 2;
 constexpr int kChromeRefreshEmptyChipSize = 20;
@@ -102,7 +103,7 @@ float TabGroupStyle::GetEmptyChipSize() const {
 }
 
 float TabGroupStyle::GetSyncIconWidth() const {
-  return GetEmptyChipSize();
+  return kSyncIconWidth;
 }
 
 // static

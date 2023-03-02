@@ -673,6 +673,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
     saved_tab_group_service->UnsaveGroup(group_);
   }
+
+  UpdateGroup();
 }
 
 void TabGroupEditorBubbleView::NewTabInGroupPressed() {
