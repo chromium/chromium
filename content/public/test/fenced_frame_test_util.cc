@@ -135,7 +135,16 @@ GURL CreateFencedFrameURLMapping(RenderFrameHost* rfh, const GURL& url) {
       static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
   FencedFrameURLMapping& url_mapping =
       target_node->current_frame_host()->GetPage().fenced_frame_urls_map();
-  absl::optional<GURL> urn_uuid = url_mapping.AddFencedFrameURLForTesting(url);
+  return AddAndVerifyFencedFrameURL(&url_mapping, url);
+}
+
+GURL AddAndVerifyFencedFrameURL(
+    FencedFrameURLMapping* fenced_frame_url_mapping,
+    const GURL& https_url,
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
+  absl::optional<GURL> urn_uuid =
+      fenced_frame_url_mapping->AddFencedFrameURLForTesting(
+          https_url, std::move(fenced_frame_reporter));
   EXPECT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(urn_uuid->is_valid());
   return urn_uuid.value();

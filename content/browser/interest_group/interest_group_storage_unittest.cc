@@ -135,7 +135,6 @@ class InterestGroupStorageTest : public testing::Test {
         /*size_groups=*/
         {{{"group_1", std::vector<std::string>{"size_1"}},
           {"group_2", std::vector<std::string>{"size_1", "size_2"}}}});
-
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
     storage->JoinInterestGroup(partial, partial_origin.GetURL());

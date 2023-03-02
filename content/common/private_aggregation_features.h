@@ -22,12 +22,6 @@ extern const base::FeatureParam<bool>
     kPrivateAggregationApiEnabledInSharedStorage;
 extern const base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge;
 
-// Allows the FLEDGE-specific extensions, e.g. `reportContributionForEvent()` to
-// be enabled. Also requires `kPrivateAggregationApiEnabledInFledge.Get()` to be
-// true for this param to have any effect.
-extern const base::FeatureParam<bool>
-    kPrivateAggregationApiFledgeExtensionsEnabled;
-
 }  // namespace content
 
 #endif  // CONTENT_COMMON_PRIVATE_AGGREGATION_FEATURES_H_

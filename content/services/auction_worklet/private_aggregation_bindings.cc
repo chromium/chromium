@@ -24,6 +24,7 @@
 #include "gin/dictionary.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -301,7 +302,8 @@ void PrivateAggregationBindings::FillInGlobalTemplate(
       v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
       send_histogram_report_template);
 
-  if (content::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFledgeExtensions)) {
     v8::Local<v8::FunctionTemplate> report_contribution_for_event_template =
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),

@@ -1161,8 +1161,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       if (should_enable_private_aggregation_fledge_extension) {
         // Only makes sense to enable fledge extension when
         // kPrivateAggregationApi is enabled.
-        enabled_features.push_back({content::kPrivateAggregationApi,
-                                    {{"fledge_extensions_enabled", "true"}}});
+        enabled_features.push_back({content::kPrivateAggregationApi, {}});
+        enabled_features.push_back(
+            {blink::features::kPrivateAggregationApiFledgeExtensions, {}});
       } else {
         enabled_features.push_back({content::kPrivateAggregationApi, {}});
       }

@@ -73,6 +73,9 @@ BLINK_COMMON_EXPORT void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
 inline constexpr char kFencedFrameTopNavigationBeaconType[] =
     "reserved.top_navigation";
 
+// Prefix of reserved event types for private aggregation API
+inline constexpr char kFencedFrameReservedPAEventPrefix[] = "reserved.";
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_FENCED_FRAME_UTILS_H_

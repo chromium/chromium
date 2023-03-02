@@ -93,9 +93,10 @@ class InterestGroupAuctionReporterTest
       public AuctionWorkletManager::Delegate {
  public:
   InterestGroupAuctionReporterTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        content::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    feature_list_.InitWithFeatures(
+        {content::kPrivateAggregationApi,
+         blink::features::kPrivateAggregationApiFledgeExtensions},
+        {});
 
     mojo::SetDefaultProcessErrorHandler(
         base::BindRepeating(&InterestGroupAuctionReporterTest::OnBadMessage,
@@ -1802,9 +1803,9 @@ class InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest
     : public InterestGroupAuctionReporterTest {
  public:
   InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        content::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "false"}});
+    feature_list_.InitWithFeatures(
+        {content::kPrivateAggregationApi},
+        {blink::features::kPrivateAggregationApiFledgeExtensions});
   }
 
  protected:
@@ -1818,7 +1819,8 @@ TEST_F(
   // This is possible currently because we're not checking the feature flags
   // when collecting PA requests and sending to InterestGroupAuctionReporter,
   // and a compromised worklet can send PA requests to browser process when
-  // featrue parameter "fledge_extensions_enabled" is set to false.
+  // feature `blink::features::kPrivateAggregationApiFledgeExtensions` is
+  // disabled.
   private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
   private_aggregation_event_map_["event_type2"].push_back(
@@ -1843,8 +1845,8 @@ TEST_F(
 
   // The non-reserved aggregation requests from the bidder's reportWin() method
   // should not be passed along neither. reportWin() could only return PA
-  // requests if the worklet is compromised when feature parameter
-  // "fledge_extensions_enabled" is set to false.
+  // requests if the worklet is compromised when feature
+  // `blink::features::kPrivateAggregationApiFledgeExtensions` is disabled.
   WaitForReportWinAndRunCallback(
       /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
       MakeRequestPtrVector(

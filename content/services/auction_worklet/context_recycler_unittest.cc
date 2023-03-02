@@ -1777,9 +1777,10 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
     : public ContextRecyclerTest {
  public:
   ContextRecyclerPrivateAggregationExtensionsEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    scoped_feature_list_.InitWithFeatures(
+        {content::kPrivateAggregationApi,
+         blink::features::kPrivateAggregationApiFledgeExtensions},
+        {});
   }
 
   // Creates a PrivateAggregationRequest with ForEvent contribution.
@@ -2675,9 +2676,8 @@ class ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest
     : public ContextRecyclerTest {
  public:
   ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        content::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "false"}});
+    scoped_feature_list_.InitWithFeatures({content::kPrivateAggregationApi},
+                                          {});
   }
 
  private:
