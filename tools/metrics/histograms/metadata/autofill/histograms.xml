@@ -611,6 +611,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.Autocomplete.SingleEntryRemovalMethod"
+    enum="AutofillAutocompleteSingleEntryRemovalMethod"
+    expires_after="2024-01-31">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records how a user removed a single Autocomplete entry (i.e. via the
+    keyboard or via a delete button in the Autofill popup). Emitted on
+    Autocomplete entry deletion.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.AutocompleteAttributeForFieldsWith.{FieldType}.{PredictionType}.Prediction"
     enum="AutocompleteValueForStructuredAddressPredictedFields"

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -300,8 +301,25 @@ bool PopupViewViews::RemoveSelectedCell() {
   absl::optional<CellIndex> index = GetSelectedCell();
 
   // Only content cells can be removed.
-  return index && index->second == PopupRowView::CellType::kContent &&
-         controller_ && controller_->RemoveSuggestion(index->first);
+  if (!index || index->second != PopupRowView::CellType::kContent ||
+      !controller_) {
+    return false;
+  }
+
+  bool was_autocomplete =
+      controller_->GetSuggestionAt(index->first).frontend_id ==
+      POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
+  if (!controller_->RemoveSuggestion(index->first)) {
+    return false;
+  }
+
+  if (was_autocomplete) {
+    AutofillMetrics::OnAutocompleteSuggestionDeleted(
+        AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+            kKeyboardShiftDeletePressed);
+  }
+
+  return true;
 }
 
 void PopupViewViews::OnSuggestionsChanged() {

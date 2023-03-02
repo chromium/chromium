@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -27,6 +28,7 @@
 
 using ::testing::IsNull;
 using ::testing::NotNull;
+using ::testing::Return;
 
 namespace autofill {
 
@@ -160,11 +162,60 @@ TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonRemovesEntry) {
   std::unique_ptr<PopupCellView> cell = strategy->CreateControl();
   ASSERT_THAT(cell, NotNull());
 
-  // Clicking the cell (as opposed to the button) should not do anything.
   base::RepeatingClosure on_accept_callback = cell->GetOnAcceptedCallback();
   ASSERT_TRUE(on_accept_callback);
   EXPECT_CALL(controller(), RemoveSuggestion(1));
   on_accept_callback.Run();
+}
+
+TEST_F(PopupRowStrategyTest, AutocompleteDeleteRecordsMetricOnDeletion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillShowAutocompleteDeleteButton};
+  base::HistogramTester histogram_tester;
+  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  std::unique_ptr<PopupRowStrategy> strategy =
+      CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
+
+  std::unique_ptr<PopupCellView> cell = strategy->CreateControl();
+  ASSERT_THAT(cell, NotNull());
+
+  base::RepeatingClosure on_accept_callback = cell->GetOnAcceptedCallback();
+  ASSERT_TRUE(on_accept_callback);
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
+  on_accept_callback.Run();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod",
+      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+          kDeleteButtonClicked,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.Events",
+      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
+}
+
+TEST_F(PopupRowStrategyTest,
+       AutocompleteDeleteRecordsNoMetricOnFailedDeletion) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillShowAutocompleteDeleteButton};
+  base::HistogramTester histogram_tester;
+  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  std::unique_ptr<PopupRowStrategy> strategy =
+      CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
+
+  std::unique_ptr<PopupCellView> cell = strategy->CreateControl();
+  ASSERT_THAT(cell, NotNull());
+
+  base::RepeatingClosure on_accept_callback = cell->GetOnAcceptedCallback();
+  ASSERT_TRUE(on_accept_callback);
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(false));
+  on_accept_callback.Run();
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
+  histogram_tester.ExpectTotalCount("Autocomplete.Events", 0);
 }
 
 TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {

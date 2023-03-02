@@ -2134,11 +2134,18 @@ void AutofillMetrics::OnAutocompleteSuggestionsShown() {
 }
 
 // static
+void AutofillMetrics::OnAutocompleteSuggestionDeleted(
+    AutocompleteSingleEntryRemovalMethod removal_method) {
+  AutofillMetrics::Log(AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
+  base::UmaHistogramEnumeration(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod", removal_method);
+}
+
+// static
 void AutofillMetrics::Log(AutocompleteEvent event) {
   DCHECK_LT(event, AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
-  std::string name("Autocomplete.Events");
-
-  base::UmaHistogramEnumeration(name, event, NUM_AUTOCOMPLETE_EVENTS);
+  base::UmaHistogramEnumeration("Autocomplete.Events", event,
+                                NUM_AUTOCOMPLETE_EVENTS);
 }
 
 // static

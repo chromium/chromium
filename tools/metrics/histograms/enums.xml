@@ -6059,6 +6059,7 @@ others/histograms.xml -->
 <enum name="AutocompleteEvents">
   <int value="0" label="Suggestions Shown"/>
   <int value="1" label="Suggestion Selected"/>
+  <int value="2" label="Suggestion Deleted"/>
 </enum>
 
 <enum name="AutocompleteHtmlFieldMode">
@@ -6212,6 +6213,11 @@ others/histograms.xml -->
   <int value="22" label="UNLAUNCHED_VERTICAL_1"/>
   <int value="25" label="FIND_COUPONS"/>
   <int value="32" label="CHROME_FAST_CHECKOUT"/>
+</enum>
+
+<enum name="AutofillAutocompleteSingleEntryRemovalMethod">
+  <int value="0" label="Keyboard shift + delete pressed"/>
+  <int value="1" label="Delete button clicked"/>
 </enum>
 
 <enum name="AutofillAutocompleteState">

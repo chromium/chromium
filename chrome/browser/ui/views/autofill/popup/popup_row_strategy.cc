@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -687,7 +688,13 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
     view->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
     view->SetOnAcceptedCallback(base::BindRepeating(
-        base::IgnoreResult(&AutofillPopupController::RemoveSuggestion),
+        [](base::WeakPtr<AutofillPopupController> controller, int line_number) {
+          if (controller && controller->RemoveSuggestion(line_number)) {
+            AutofillMetrics::OnAutocompleteSuggestionDeleted(
+                AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+                    kDeleteButtonClicked);
+          }
+        },
         GetController(), GetLineNumber()));
 
     return view;

@@ -110,7 +110,21 @@ class AutofillMetrics {
     // An Autocomplete suggestion was selected.
     AUTOCOMPLETE_SUGGESTION_SELECTED,
 
+    // An Autocomplete suggestion was deleted. Added in M113.
+    AUTOCOMPLETE_SUGGESTION_DELETED,
+
     NUM_AUTOCOMPLETE_EVENTS
+  };
+
+  // The user action that triggered the deletion of an Autocomplete entry.
+  // These values are used in enums.xml; do not reorder or renumber entries!
+  enum class AutocompleteSingleEntryRemovalMethod {
+    // The user pressed shift delete while an Autofill popup menu entry was
+    // selected.
+    kKeyboardShiftDeletePressed = 0,
+    // The user clicked the delete button in the Autofill popup menu.
+    kDeleteButtonClicked = 1,
+    kMaxValue = kDeleteButtonClicked
   };
 
   // Represents card submitted state.
@@ -1055,6 +1069,11 @@ class AutofillMetrics {
 
   // Log the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
+
+  // Log that an autocomplete suggestion was deleted directly from the popup
+  // menu.
+  static void OnAutocompleteSuggestionDeleted(
+      AutocompleteSingleEntryRemovalMethod removal_method);
 
   // Log how many autofilled fields in a given form were edited before the
   // submission or when the user unfocused the form (depending on

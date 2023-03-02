@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -39,8 +41,9 @@ namespace autofill {
 
 namespace {
 
-using testing::Mock;
-using testing::NiceMock;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
 
@@ -528,6 +531,46 @@ TEST_F(PopupViewViewsTest, RemoveLine) {
 
   EXPECT_CALL(controller(), RemoveSuggestion(1));
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
+}
+
+TEST_F(PopupViewViewsTest, RemoveAutofillRecordsNoAutocompleteDeletionMetrics) {
+  base::HistogramTester histogram_tester;
+  CreateAndShowView({1, 1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
+
+  view().SetSelectedCell(CellIndex{1u, CellType::kContent});
+
+  // No metrics are recorded if the entry is not an Autocomplete entry.
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
+  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
+  histogram_tester.ExpectTotalCount("Autocomplete.Events", 0);
+}
+
+TEST_F(PopupViewViewsTest, RemoveAutocompleteSuggestionRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+  CreateAndShowView(
+      {POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+
+  view().SetSelectedCell(CellIndex{1u, CellType::kContent});
+
+  // If deletion fails, no metric is recorded.
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(false));
+  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
+  histogram_tester.ExpectTotalCount("Autocomplete.Events", 0);
+
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
+  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod",
+      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+          kKeyboardShiftDeletePressed,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.Events",
+      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
 }
 
 // Ensure that the voice_over value of suggestions is presented to the
