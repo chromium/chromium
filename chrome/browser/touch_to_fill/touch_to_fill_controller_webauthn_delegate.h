@@ -45,7 +45,8 @@ class TouchToFillControllerWebAuthnDelegate
   void OnPasskeyCredentialSelected(
       const password_manager::PasskeyCredential& credential,
       base::OnceClosure action_completed) override;
-  void OnManagePasswordsSelected(base::OnceClosure action_completed) override;
+  void OnManagePasswordsSelected(bool passkeys_shown,
+                                 base::OnceClosure action_completed) override;
   void OnDismiss(base::OnceClosure action_completed) override;
   const GURL& GetFrameUrl() override;
   bool ShouldTriggerSubmission() override;

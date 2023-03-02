@@ -310,7 +310,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
   if (selected_action == autofill::AccessoryAction::MANAGE_PASSWORDS) {
     password_manager_launcher::ShowPasswordSettings(
         &GetWebContents(),
-        password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
+        password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet,
+        /*manage_passkeys=*/false);
     return;
   }
   if (selected_action == autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL) {

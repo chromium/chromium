@@ -1053,12 +1053,21 @@ void ChromePasswordManagerClient::UpdateFormManagers() {
 void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
     password_manager::ManagePasswordsReferrer referrer) {
 #if BUILDFLAG(IS_ANDROID)
-  password_manager_launcher::ShowPasswordSettings(web_contents(), referrer);
+  password_manager_launcher::ShowPasswordSettings(web_contents(), referrer,
+                                                  /*manage_passkeys=*/false);
 #else
   ::NavigateToManagePasswordsPage(
       chrome::FindBrowserWithWebContents(web_contents()), referrer);
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::NavigateToManagePasskeysPage(
+    password_manager::ManagePasswordsReferrer referrer) {
+  password_manager_launcher::ShowPasswordSettings(web_contents(), referrer,
+                                                  /*manage_passkeys=*/true);
+}
+#endif
 
 bool ChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
   // TODO(crbug.com/862989): Move the following function (and the feature) to

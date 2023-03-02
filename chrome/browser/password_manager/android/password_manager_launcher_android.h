@@ -15,7 +15,19 @@ namespace password_manager_launcher {
 
 // Opens the password settings page.
 void ShowPasswordSettings(content::WebContents* web_contents,
-                          password_manager::ManagePasswordsReferrer referrer);
+                          password_manager::ManagePasswordsReferrer referrer,
+                          bool manage_passkeys);
+
+// Determines whether password management will be available if
+// ShowPasswordSettings() is called with |manage_passkeys| set to true.
+// This returns false if UPM isn't available for the current user, but the
+// Play Services password manager will be shown anyway when passkeys are
+// present.
+bool CanManagePasswordsWhenPasskeysPresent();
+
+// Test override to prevent CanManagePasswordsWhenPasskeysPresent from invoking
+// JNI.
+void OverrideManagePasswordWhenPasskeysPresentForTesting(bool can_manage);
 
 }  // namespace password_manager_launcher
 

@@ -476,6 +476,10 @@ class PasswordManagerClient {
   virtual void NavigateToManagePasswordsPage(ManagePasswordsReferrer referrer) {
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  virtual void NavigateToManagePasskeysPage(ManagePasswordsReferrer referrer) {}
+#endif
+
   virtual bool IsIsolationForPasswordSitesEnabled() const = 0;
 
   // Returns true if the current page is to the new tab page.

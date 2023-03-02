@@ -271,6 +271,12 @@ class ChromePasswordManagerClient
   void UpdateFormManagers() override;
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  void NavigateToManagePasskeysPage(
+      password_manager::ManagePasswordsReferrer referrer) override;
+#endif
+
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;

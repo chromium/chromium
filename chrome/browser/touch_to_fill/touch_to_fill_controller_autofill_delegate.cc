@@ -152,6 +152,7 @@ void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
 }
 
 void TouchToFillControllerAutofillDelegate::OnManagePasswordsSelected(
+    bool passkeys_shown,
     base::OnceClosure action_complete) {
   if (!driver_)
     return;
@@ -159,8 +160,16 @@ void TouchToFillControllerAutofillDelegate::OnManagePasswordsSelected(
   CleanUpDriverAndReportOutcome(TouchToFillOutcome::kManagePasswordsSelected,
                                 /*show_virtual_keyboard=*/false);
 
-  password_client_->NavigateToManagePasswordsPage(
-      password_manager::ManagePasswordsReferrer::kTouchToFill);
+  if (passkeys_shown) {
+    // On Android there is no passkey management available in Chrome settings
+    // password management. This will attempt to launch the GMS password
+    // manager where passkeys can be seen.
+    password_client_->NavigateToManagePasskeysPage(
+        password_manager::ManagePasswordsReferrer::kTouchToFill);
+  } else {
+    password_client_->NavigateToManagePasswordsPage(
+        password_manager::ManagePasswordsReferrer::kTouchToFill);
+  }
 
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedManagePasswords))

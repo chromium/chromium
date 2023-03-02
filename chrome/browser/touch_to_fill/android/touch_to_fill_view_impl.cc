@@ -79,7 +79,8 @@ void TouchToFillViewImpl::Show(
     IsOriginSecure is_origin_secure,
     base::span<const password_manager::UiCredential> credentials,
     base::span<const PasskeyCredential> passkey_credentials,
-    bool trigger_submission) {
+    bool trigger_submission,
+    bool can_manage_passwords_when_passkeys_present) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a waiting
@@ -120,7 +121,7 @@ void TouchToFillViewImpl::Show(
   Java_TouchToFillBridge_showCredentials(
       env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
       is_origin_secure.value(), passkey_array, credential_array,
-      trigger_submission);
+      trigger_submission, !can_manage_passwords_when_passkeys_present);
 }
 
 void TouchToFillViewImpl::OnCredentialSelected(const UiCredential& credential) {
@@ -144,8 +145,9 @@ void TouchToFillViewImpl::OnWebAuthnCredentialSelected(
       ConvertJavaWebAuthnCredential(env, credential));
 }
 
-void TouchToFillViewImpl::OnManagePasswordsSelected(JNIEnv* env) {
-  controller_->OnManagePasswordsSelected();
+void TouchToFillViewImpl::OnManagePasswordsSelected(JNIEnv* env,
+                                                    jboolean passkeys_shown) {
+  controller_->OnManagePasswordsSelected(passkeys_shown);
 }
 
 void TouchToFillViewImpl::OnDismiss(JNIEnv* env) {

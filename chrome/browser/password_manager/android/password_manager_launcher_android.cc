@@ -9,13 +9,34 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "content/public/browser/web_contents.h"
 
+namespace {
+
+static bool g_override_for_testing_set = false;
+static bool g_manage_password_when_passkeys_present_override = false;
+
+}  // namespace
+
 namespace password_manager_launcher {
 
 void ShowPasswordSettings(content::WebContents* web_contents,
-                          password_manager::ManagePasswordsReferrer referrer) {
+                          password_manager::ManagePasswordsReferrer referrer,
+                          bool manage_passkeys) {
   Java_PasswordManagerLauncher_showPasswordSettings(
       base::android::AttachCurrentThread(), web_contents->GetJavaWebContents(),
-      static_cast<int>(referrer));
+      static_cast<int>(referrer), manage_passkeys);
+}
+
+bool CanManagePasswordsWhenPasskeysPresent() {
+  if (g_override_for_testing_set) {
+    return g_manage_password_when_passkeys_present_override;
+  }
+  return Java_PasswordManagerLauncher_canManagePasswordsWhenPasskeysPresent(
+      base::android::AttachCurrentThread());
+}
+
+void OverrideManagePasswordWhenPasskeysPresentForTesting(bool can_manage) {
+  g_override_for_testing_set = true;
+  g_manage_password_when_passkeys_present_override = can_manage;
 }
 
 }  // namespace password_manager_launcher

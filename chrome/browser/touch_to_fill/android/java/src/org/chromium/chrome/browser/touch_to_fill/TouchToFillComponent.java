@@ -67,8 +67,9 @@ public interface TouchToFillComponent {
 
         /**
          * Called when the user selects the "Manage Passwords" option.
+         * @param passkeysShown True when the sheet contained passkey credentials.
          */
-        void onManagePasswordsSelected();
+        void onManagePasswordsSelected(boolean passkeysShown);
     }
 
     /**
@@ -87,8 +88,10 @@ public interface TouchToFillComponent {
      * @param credentials A list of {@link Credential}s that will be displayed.
      * @param triggerSubmission A {@link boolean} that indicates whether a form should be submitted
      *         after filling.
+     * @param managePasskeysHidesPasswords A {@link boolean} that indicates whether managing
+     *         passkeys will show a screen that does not provide password management.
      */
     void showCredentials(GURL url, boolean isOriginSecure,
             List<WebAuthnCredential> webauthnCredentials, List<Credential> credentials,
-            boolean triggerSubmission);
+            boolean triggerSubmission, boolean managePasskeysHidesPasswords);
 }

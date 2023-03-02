@@ -78,7 +78,8 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 break;
             case OmniboxPedalType.MANAGE_PASSWORDS:
                 PasswordManagerLauncher.showPasswordSettings(mActivity,
-                        ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier);
+                        ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier,
+                        /*managePasskeys=*/false);
                 break;
             case OmniboxPedalType.UPDATE_CREDIT_CARD:
                 settingsLauncher.launchSettingsActivity(

@@ -80,7 +80,8 @@ PasswordManagerNavigationThrottle::WillStartRequest() {
 #if BUILDFLAG(IS_ANDROID)
   password_manager_launcher::ShowPasswordSettings(
       web_contents,
-      password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite);
+      password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite,
+      /*manage_passkeys=*/false);
 #else
   ChromePasswordManagerClient::FromWebContents(web_contents)
       ->NavigateToManagePasswordsPage(

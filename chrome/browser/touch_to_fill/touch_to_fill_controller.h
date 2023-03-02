@@ -45,8 +45,10 @@ class TouchToFillController {
       const password_manager::PasskeyCredential& credential);
 
   // Informs the controller that the user has tapped the "Manage Passwords"
-  // button. This will open the password preferences.
-  void OnManagePasswordsSelected();
+  // button. This will open the password preferences. |passkeys_shown|
+  // indicates passkeys were displayed to the user, which can affect which
+  // password management screen is displayed.
+  void OnManagePasswordsSelected(bool passkeys_shown);
 
   // Informs the controller that the user has dismissed the sheet. No-op if
   // invoked repeatedly.

@@ -340,7 +340,8 @@ public class MainSettings extends PreferenceFragmentCompat
                 UserPrefs.get(mProfile).setBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED, true);
             }
             PasswordManagerLauncher.showPasswordSettings(getActivity(),
-                    ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier);
+                    ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier,
+                    /*managePasskeys=*/false);
             return true;
         });
     }
