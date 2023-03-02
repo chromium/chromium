@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 
 namespace content_relationship_verification {
 
@@ -105,8 +106,11 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(std::string url,
     delegate_->Resume();
     return;
   }
-  delegate_->CancelWithError(kNetErrorCodeForContentRelationshipVerification,
-                             kCustomCancelReasonForURLLoader);
+  delegate_->CancelWithExtendedError(
+      kNetErrorCodeForContentRelationshipVerification,
+      static_cast<int>(blink::ResourceRequestBlockedReason::
+                           kContentRelationshipVerification),
+      kCustomCancelReasonForURLLoader);
 }
 
 const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
