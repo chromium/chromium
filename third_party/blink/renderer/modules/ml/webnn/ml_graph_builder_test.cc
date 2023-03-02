@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -2769,12 +2770,10 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FakeMLGraphTest,
-    testing::Combine(::testing::Values(BackendType::kFake),
-                     ::testing::Values(ExecutionMode::kAsync,
-                                       ExecutionMode::kSync)),
-    TestVarietyToString);
+INSTANTIATE_TEST_SUITE_P(All,
+                         FakeMLGraphTest,
+                         ::testing::Values(ExecutionMode::kAsync,
+                                           ExecutionMode::kSync),
+                         ExecutionModeParamToString);
 
 }  // namespace blink

@@ -73,15 +73,7 @@ source_set("unit_tests") {
   ]
 
   if (build_webnn_with_xnnpack) {
-    sources += [
-      "webnn/ml_graph_test.cc",
-      "webnn/ml_graph_xnnpack_test.cc",
-    ]
+    sources += [ "webnn/ml_graph_xnnpack_test.cc" ]
     deps += [ "//third_party/xnnpack" ]
-  }
-
-  if (is_chromeos && current_cpu == "x64") {
-    sources += [ "webnn/ml_graph_test_tflite.cc" ]
-    deps += [ "//third_party/tflite" ]
   }
 }
