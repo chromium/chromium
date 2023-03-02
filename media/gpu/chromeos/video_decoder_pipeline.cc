@@ -1017,23 +1017,27 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // Note that fourcc is specified in ImageProcessor's factory method.
   auto fourcc = image_processor->input_config().fourcc;
   auto size = image_processor->input_config().size;
-  const size_t kMinImageProcessorOutputFramePoolSize = 10;
+  size_t num_buffers;
   // We need to instantiate an ImageProcessor with a pool large enough to serve
   // the Renderer pipeline, it should be enough to use
   // |estimated_num_buffers_for_renderer_|. Experimentally it is not enough for
-  // some devices that are using ImageProcessor (b/264212288), hence choose the
-  // max from |estimated_num_buffers_for_renderer_| and empirically choosen
+  // some ARM devices that are using ImageProcessor (b/264212288), hence set the
+  // max from |estimated_num_buffers_for_renderer_| and empirically chosen
   // kMinImageProcessorOutputFramePoolSize.
   // TODO(b/270990622): Add VD renderer buffer count parameter and plumb it back
   // to clients
-  //
+#if BUILDFLAG(USE_V4L2_CODEC)
+  const size_t kMinImageProcessorOutputFramePoolSize = 10;
+  num_buffers = std::max<size_t>(estimated_num_buffers_for_renderer_,
+                                 kMinImageProcessorOutputFramePoolSize);
+#else
+  num_buffers = estimated_num_buffers_for_renderer_;
+#endif
+
   // TODO(b/203240043): Verify that if we're using the image processor for tiled
   // to linear transformation, that the created frame pool is of linear format.
   // TODO(b/203240043): Add CHECKs to verify that the image processor is being
   // created for only valid use cases. Writing to a linear output buffer, e.g.
-  const size_t num_buffers =
-      std::max<size_t>(estimated_num_buffers_for_renderer_,
-                       kMinImageProcessorOutputFramePoolSize);
   VLOGF(1) << "Initializing Image Processor frame pool with up to "
            << num_buffers << " VideoFrames";
   auto status_or_image_processor = ImageProcessorWithPool::Create(
