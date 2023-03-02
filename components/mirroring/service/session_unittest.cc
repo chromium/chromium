@@ -257,7 +257,8 @@ class SessionTest : public mojom::ResourceProvider,
 
   // Create a mirroring session. Expect to send OFFER message.
   void CreateSession(SessionType session_type,
-                     bool is_remote_playback = false) {
+                     bool is_remote_playback = false,
+                     bool enable_rtcp_reporting = false) {
     session_type_ = session_type;
     is_remote_playback_ = is_remote_playback;
     mojom::SessionParametersPtr session_params =
@@ -487,6 +488,8 @@ class SessionTest : public mojom::ResourceProvider,
     answer_ = std::move(answer);
   }
 
+  base::Value::Dict GetStats() { return session_->GetMirroringStats(); }
+
  protected:
   std::unique_ptr<FakeVideoCaptureHost> video_host_;
 
@@ -649,6 +652,26 @@ TEST_F(SessionTest, StartRemotePlaybackTimeOut) {
   CreateSession(SessionType::AUDIO_AND_VIDEO, true);
   StartSession();
   RemotePlaybackSessionTimeOut();
+}
+
+TEST_F(SessionTest, GetMirroringStatsDisabled) {
+  SetTargetPlayoutDelay(150);
+  CreateSession(SessionType::AUDIO_AND_VIDEO, false,
+                false /* enable_rtcp_reporting */);
+  StartSession();
+
+  // By default, if there is no session logger we should return an empty dict.
+  EXPECT_EQ(GetStats(), base::Value::Dict());
+}
+
+TEST_F(SessionTest, GetMirroringStatsEnabled) {
+  SetTargetPlayoutDelay(150);
+  CreateSession(SessionType::AUDIO_AND_VIDEO, false,
+                true /* enable_rtcp_reporting */);
+  StartSession();
+  // Since no streaming data is mocked or sent in this test, an empty dict is
+  // still returned.
+  EXPECT_EQ(GetStats(), base::Value::Dict());
 }
 
 }  // namespace mirroring

@@ -89,6 +89,12 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
       mojo::PendingRemote<mojom::MediaStatusObserver> observer,
       CreateMediaRouteControllerCallback callback) override;
   void GetState(GetStateCallback callback) override;
+  void GetMirroringStats(const std::string& route_id,
+                         GetMirroringStatsCallback callback) override;
+
+  CastActivityManager* GetCastActivityManagerForTest() {
+    return activity_manager_.get();
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CastMediaRouteProviderTest,

@@ -503,6 +503,19 @@ CastActivityManager::FindActivityBySink(const MediaSinkInternal& sink) {
   });
 }
 
+MirroringActivity* CastActivityManager::FindMirroringActivityByRouteId(
+    const MediaRoute::Id& route_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = activities_.find(route_id);
+
+  // TODO(b/271322325): Add a better API for determining if a route is being
+  // used for Cast Streaming. Checking the MediaSource might not be sufficient.
+  return it != activities_.end() && it->second->route().controller_type() ==
+                                        RouteControllerType::kMirroring
+             ? static_cast<MirroringActivity*>(it->second.get())
+             : nullptr;
+}
+
 AppActivity* CastActivityManager::AddAppActivity(const MediaRoute& route,
                                                  const std::string& app_id) {
   std::unique_ptr<AppActivity> activity(
@@ -1101,6 +1114,12 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
       callback(std::move(callback)) {
   if (app_params)
     this->app_params = app_params->Clone();
+}
+
+void CastActivityManager::AddMirroringActivityForTest(
+    const MediaRoute::Id& route_id,
+    std::unique_ptr<MirroringActivity> mirroring_activity) {
+  activities_.emplace(route_id, std::move(mirroring_activity));
 }
 
 CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(

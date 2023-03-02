@@ -15,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_test_base.h"
+#include "chrome/browser/media/router/providers/cast/mock_mirroring_service_host.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
@@ -85,20 +86,6 @@ class MockMirroringServiceHostFactory
               (const GURL& presentation_url,
                const std::string& presentation_id,
                int32_t frame_tree_node_id));
-};
-
-class MockMirroringServiceHost : public mirroring::MirroringServiceHost {
- public:
-  MOCK_METHOD(void,
-              Start,
-              (mirroring::mojom::SessionParametersPtr params,
-               mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
-               mojo::PendingRemote<mirroring::mojom::CastMessageChannel>
-                   outbound_channel,
-               mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
-                   inbound_channel,
-               const std::string& sink_name));
-  MOCK_METHOD(absl::optional<int>, GetTabSourceId, (), (const));
 };
 
 class MockCastMessageChannel : public mirroring::mojom::CastMessageChannel {

@@ -18,6 +18,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
+#include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -347,6 +348,29 @@ void CastMediaRouteProvider::GetState(GetStateCallback callback) {
   }
   std::move(callback).Run(
       mojom::ProviderState::NewCastProviderState(std::move(cast_state)));
+}
+
+void CastMediaRouteProvider::GetMirroringStats(
+    const std::string& route_id,
+    GetMirroringStatsCallback callback) {
+  if (!activity_manager_) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  auto* mirroring_activity =
+      activity_manager_->FindMirroringActivityByRouteId(route_id);
+  if (!mirroring_activity) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  auto* mirroring_host = mirroring_activity->GetHost();
+  if (!mirroring_host) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+  mirroring_host->GetMirroringStats(std::move(callback));
 }
 
 void CastMediaRouteProvider::OnSinkQueryUpdated(

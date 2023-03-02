@@ -134,6 +134,13 @@ class CastActivityManager : public CastActivityManagerBase,
   void SendRouteMessage(const std::string& media_route_id,
                         const std::string& message);
 
+  MirroringActivity* FindMirroringActivityByRouteId(
+      const std::string& route_id);
+
+  void AddMirroringActivityForTest(
+      const MediaRoute::Id& route_id,
+      std::unique_ptr<MirroringActivity> mirroring_activity);
+
  private:
   friend class CastActivityManagerTest;
   FRIEND_TEST_ALL_PREFIXES(CastActivityManagerWithTerminatingTest,

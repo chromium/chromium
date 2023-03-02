@@ -117,6 +117,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
 
   void SwitchSourceTab();
 
+  base::Value::Dict GetMirroringStats() const;
+
  private:
   class AudioCapturingCallback;
   using SupportedProfiles = media::VideoEncodeAccelerator::SupportedProfiles;

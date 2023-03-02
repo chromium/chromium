@@ -67,6 +67,12 @@ void MirroringService::SwitchMirroringSourceTab() {
   }
 }
 
+void MirroringService::GetMirroringStats(GetMirroringStatsCallback callback) {
+  // Currently implementation only exists for legacy mirroring sessions.
+  session_ ? std::move(callback).Run(base::Value(session_->GetMirroringStats()))
+           : std::move(callback).Run(base::Value());
+}
+
 void MirroringService::OnDisconnect() {
   session_.reset();
   session_host_.reset();

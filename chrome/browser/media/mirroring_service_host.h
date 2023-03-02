@@ -35,6 +35,10 @@ class MirroringServiceHost {
   // session if exist. Doesn't need to be called on UI thread.
   virtual absl::optional<int> GetTabSourceId() const = 0;
 
+  // Fetches the statistics of the current mirroring sessions.
+  virtual void GetMirroringStats(
+      base::OnceCallback<void(const base::Value)> json_stats_cb) = 0;
+
   base::WeakPtr<MirroringServiceHost> GetWeakPtr();
 
  protected:

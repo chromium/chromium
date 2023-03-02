@@ -76,6 +76,12 @@ class MirroringActivity : public CastActivity,
   void OnAppMessage(const cast::channel::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
 
+  mirroring::MirroringServiceHost* GetHost() { return host_.get(); }
+  void SetMirroringServiceHostForTest(
+      std::unique_ptr<mirroring::MirroringServiceHost> host) {
+    host_ = std::move(host);
+  }
+
  protected:
   void OnSessionSet(const CastSession& session) override;
   void CreateMediaController(

@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -566,6 +565,15 @@ void CastMirroringServiceHost::OpenOffscreenTab(
   source_media_id_ = BuildMediaIdForWebContents(offscreen_tab_->web_contents());
   DCHECK_EQ(content::DesktopMediaID::TYPE_WEB_CONTENTS, source_media_id_.type);
   Observe(offscreen_tab_->web_contents());
+}
+
+void CastMirroringServiceHost::GetMirroringStats(
+    base::OnceCallback<void(const base::Value)> json_stats_cb) {
+  if (!mirroring_service_.is_bound()) {
+    std::move(json_stats_cb).Run(base::Value());
+    return;
+  }
+  mirroring_service_->GetMirroringStats(std::move(json_stats_cb));
 }
 
 }  // namespace mirroring

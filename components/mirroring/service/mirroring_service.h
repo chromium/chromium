@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -38,6 +39,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
              mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel)
       override;
   void SwitchMirroringSourceTab() override;
+
+  void GetMirroringStats(GetMirroringStatsCallback callback) override;
 
   void OnDisconnect();
 

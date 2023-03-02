@@ -12,9 +12,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
+#include "chrome/browser/media/router/providers/cast/mock_mirroring_activity.h"
+#include "chrome/browser/media/router/providers/cast/mock_mirroring_service_host.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/media_router/common/media_route.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -312,6 +316,43 @@ TEST_F(CastMediaRouteProviderTest, GetState) {
     EXPECT_EQ(session_state.session_id, "theSessionId");
     EXPECT_EQ(session_state.route_description, "App status");
   }));
+}
+
+TEST_F(CastMediaRouteProviderTest, GetMirroringStatsNoActiveMirroringActivity) {
+  provider_->GetMirroringStats(
+      "test_route_id",
+      base::BindOnce([](base::Value dict) { EXPECT_EQ(base::Value(), dict); }));
+}
+
+TEST_F(CastMediaRouteProviderTest, GetMirroringStatsNoMirroringHost) {
+  auto stub_route = MediaRoute("test_route_id",
+                               MediaSource("https://example.com/receiver.html"),
+                               "test_sink_id", "", false);
+  stub_route.set_controller_type(RouteControllerType::kMirroring);
+  auto activity = std::make_unique<NiceMock<MockMirroringActivity>>(
+      std::move(stub_route), "test_app_id", base::DoNothing());
+
+  provider_->GetCastActivityManagerForTest()->AddMirroringActivityForTest(
+      "test_route_id", std::move(activity));
+  provider_->GetMirroringStats(
+      "test_route_id",
+      base::BindOnce([](base::Value dict) { EXPECT_EQ(base::Value(), dict); }));
+}
+
+TEST_F(CastMediaRouteProviderTest, GetMirroringStats) {
+  auto stub_route = MediaRoute("test_route_id",
+                               MediaSource("https://example.com/receiver.html"),
+                               "test_sink_id", "", false);
+  stub_route.set_controller_type(RouteControllerType::kMirroring);
+  auto activity = std::make_unique<NiceMock<MockMirroringActivity>>(
+      std::move(stub_route), "test_app_id", base::DoNothing());
+  auto mirroring_service = std::make_unique<MockMirroringServiceHost>();
+  EXPECT_CALL(*mirroring_service, GetMirroringStats(_));
+  activity->SetMirroringServiceHostForTest(std::move(mirroring_service));
+
+  provider_->GetCastActivityManagerForTest()->AddMirroringActivityForTest(
+      "test_route_id", std::move(activity));
+  provider_->GetMirroringStats("test_route_id", base::DoNothing());
 }
 
 TEST_F(CastMediaRouteProviderTest, GetRemotePlaybackCompatibleSinks) {

@@ -25,6 +25,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
+#include "chrome/browser/media/router/providers/cast/mock_mirroring_activity.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/providers/common/buffered_message_sender.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
@@ -118,26 +119,6 @@ class MockLaunchSessionCallback {
                mojom::RoutePresentationConnectionPtr presentation_connections,
                const absl::optional<std::string>& error_message,
                media_router::mojom::RouteRequestResultCode result_code));
-};
-
-class MockMirroringActivity : public MirroringActivity {
- public:
-  MockMirroringActivity(const MediaRoute& route,
-                        const std::string& app_id,
-                        OnStopCallback on_stop)
-      : MirroringActivity(route,
-                          app_id,
-                          nullptr,
-                          nullptr,
-                          0,
-                          CastSinkExtraData(),
-                          std::move(on_stop)) {}
-
-  MOCK_METHOD(void, CreateMojoBindings, (mojom::MediaRouter * media_router));
-  MOCK_METHOD(void, OnSessionSet, (const CastSession& session));
-  MOCK_METHOD(void,
-              SendStopSessionMessageToClients,
-              (const std::string& hash_token));
 };
 
 using MockAppActivityCallback = base::RepeatingCallback<void(MockAppActivity*)>;
@@ -1006,6 +987,18 @@ TEST_F(CastActivityManagerWithTerminatingTest,
                             base::BindOnce(&MockLaunchSessionCallback::Run,
                                            base::Unretained(&callback)));
   }
+}
+
+TEST_F(CastActivityManagerTest, FindMirroringActivityByRouteIdNonMirroring) {
+  LaunchAppSession();
+  EXPECT_FALSE(
+      manager_->FindMirroringActivityByRouteId(route_->media_route_id()));
+}
+
+TEST_F(CastActivityManagerTest, FindMirroringActivityByRouteId) {
+  LaunchCastSdkMirroringSession();
+  EXPECT_TRUE(
+      manager_->FindMirroringActivityByRouteId(route_->media_route_id()));
 }
 
 }  // namespace media_router

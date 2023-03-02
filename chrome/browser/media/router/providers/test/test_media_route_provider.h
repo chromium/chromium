@@ -67,6 +67,8 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer,
       CreateMediaRouteControllerCallback callback) override;
   void GetState(GetStateCallback callback) override;
+  void GetMirroringStats(const std::string& route_id,
+                         GetMirroringStatsCallback callback) override;
 
   void set_close_route_error_on_send() {
     close_route_with_error_on_send_ = true;

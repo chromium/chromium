@@ -104,6 +104,8 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer,
       CreateMediaRouteControllerCallback callback) override;
   void GetState(GetStateCallback callback) override;
+  void GetMirroringStats(const std::string& route_id,
+                         GetMirroringStatsCallback callback) override;
 
   void SetActivityManagerForTest(
       std::unique_ptr<DialActivityManager> activity_manager);

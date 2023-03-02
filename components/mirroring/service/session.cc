@@ -1133,4 +1133,8 @@ void Session::OnRemotingStartTimeout() {
   RecordRemotePlaybackSessionStartsBeforeTimeout(false);
 }
 
+base::Value::Dict Session::GetMirroringStats() const {
+  return session_logger_ ? session_logger_->GetStats() : base::Value::Dict();
+}
+
 }  // namespace mirroring
