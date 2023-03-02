@@ -219,7 +219,8 @@ class RLZTracker::WrapperURLLoaderFactory
 
 // static
 RLZTracker* RLZTracker::GetInstance() {
-  return tracker_ ? tracker_ : base::Singleton<RLZTracker>::get();
+  static base::NoDestructor<RLZTracker> instance;
+  return tracker_ ? tracker_ : instance.get();
 }
 
 RLZTracker::RLZTracker()

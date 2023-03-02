@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -128,7 +128,7 @@ class RLZTracker {
   void PingNowImpl();
 
  private:
-  friend struct base::DefaultSingletonTraits<RLZTracker>;
+  friend class base::NoDestructor<RLZTracker>;
   friend class base::RefCountedThreadSafe<RLZTracker>;
 
   // Implementation called from SetRlzDelegate() static method.
