@@ -2680,10 +2680,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
-                    "params": {
-                        "launch_stage": "dogfood"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "CalendarJelly"
                     ]
