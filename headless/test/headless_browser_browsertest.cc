@@ -273,6 +273,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
 
   bool expected_support = true;
 #if BUILDFLAG(IS_APPLE)
+  LOG(INFO) << "CPU type: " << static_cast<int>(base::mac::GetCPUType());
   if (base::mac::GetCPUType() == base::mac::CPUType::kArm) {
     expected_support = false;
   }
