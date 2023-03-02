@@ -298,6 +298,8 @@ uint64_t RendererBlinkPlatformImpl::VisitedLinkHash(const char* canonical_url,
 }
 
 bool RendererBlinkPlatformImpl::IsLinkVisited(uint64_t link_hash) {
+  // Link status is something we want to record, to match playback.  See RUN-1442
+  // for details.
   return (bool)recordreplay::RecordReplayValue("RendererBlinkPlatformImpl::IsLinkVisited", 
     GetContentClient()->renderer()->IsLinkVisited(link_hash));
 }
