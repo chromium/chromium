@@ -40,27 +40,18 @@ UninstallDialog::~UninstallDialog() = default;
 
 void UninstallDialog::PrepareToShow(IconKey icon_key,
                                     apps::IconLoader* icon_loader) {
-  switch (app_type_) {
-    case apps::AppType::kArc:
-    case apps::AppType::kBorealis:
-    case apps::AppType::kPluginVm:
-      break;
-    case apps::AppType::kCrostini:
-      // Crostini icons might be a big image, and not fit the size, so add the
-      // resize icon effect, to resize the image.
-      icon_key.icon_effects = static_cast<apps::IconEffects>(
-          icon_key.icon_effects | apps::IconEffects::kMdIconStyle);
-      break;
-    case apps::AppType::kChromeApp:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kWeb:
-      UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallSource",
-                                extensions::UNINSTALL_SOURCE_APP_LIST,
-                                extensions::NUM_UNINSTALL_SOURCES);
-      break;
-    default:
-      NOTREACHED();
-      return;
+  if (app_type_ == AppType::kCrostini) {
+    // Crostini icons might be a big image, and not fit the size, so add the
+    // resize icon effect, to resize the image.
+    icon_key.icon_effects = static_cast<apps::IconEffects>(
+        icon_key.icon_effects | apps::IconEffects::kMdIconStyle);
+  }
+
+  if (app_type_ == AppType::kChromeApp ||
+      app_type_ == AppType::kStandaloneBrowserChromeApp) {
+    UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallSource",
+                              extensions::UNINSTALL_SOURCE_APP_LIST,
+                              extensions::NUM_UNINSTALL_SOURCES);
   }
 
   // Currently ARC apps only support 48*48 native icon.

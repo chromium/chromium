@@ -4216,7 +4216,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The source for the extension uninstall. This is only recorded if an
     uninstall dialog is shown to the user (i.e., it is not recorded for internal
-    &quot;cleanups&quot;).
+    &quot;cleanups&quot;). Note: this is no longer emitted for web app
+    uninstalls as of M113.
   </summary>
 </histogram>
 
