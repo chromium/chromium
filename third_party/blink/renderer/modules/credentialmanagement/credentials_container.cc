@@ -103,6 +103,8 @@ using mojom::blink::GetAssertionAuthenticatorResponsePtr;
 using mojom::blink::RequestTokenStatus;
 using payments::mojom::blink::PaymentCredentialStorageStatus;
 
+constexpr size_t kMaxLargeBlobSize = 2048;  // 2kb.
+
 // RequiredOriginType enumerates the requirements on the environment to perform
 // an operation.
 enum class RequiredOriginType {
@@ -1222,6 +1224,23 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
               "The 'largeBlob' extension's 'support' parameter is only valid "
               "when creating a credential"));
           return promise;
+        }
+        if (options->publicKey()->extensions()->largeBlob()->hasWrite()) {
+          V8UnionArrayBufferOrArrayBufferView* blob =
+              options->publicKey()->extensions()->largeBlob()->write();
+          size_t write_size;
+          if (blob->IsArrayBufferView()) {
+            write_size = blob->GetAsArrayBufferView()->byteLength();
+          } else {
+            write_size = blob->GetAsArrayBuffer()->ByteLength();
+          }
+          if (write_size > kMaxLargeBlobSize) {
+            resolver->Reject(MakeGarbageCollected<DOMException>(
+                DOMExceptionCode::kNotSupportedError,
+                "The 'largeBlob' extension's 'write' parameter exceeds the "
+                "maximum allowed size (2kb)"));
+            return promise;
+          }
         }
       }
       if (options->publicKey()->extensions()->hasPrf()) {
