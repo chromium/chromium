@@ -151,7 +151,6 @@ export class BrowsingContextProcessor {
         null,
         targetSessionCdpClient,
         sessionId,
-        params.targetInfo.browserContextId ?? null,
         this.#eventManager,
         this.#browsingContextStorage,
         this.#logger
@@ -209,9 +208,6 @@ export class BrowsingContextProcessor {
     const result = await browserCdpClient.sendCommand('Target.createTarget', {
       url: 'about:blank',
       newWindow: params.type === 'window',
-      ...(referenceContext?.cdpBrowserContextId
-        ? {browserContextId: referenceContext.cdpBrowserContextId}
-        : {}),
     });
 
     // Wait for the new tab to be loaded to avoid race conditions in the

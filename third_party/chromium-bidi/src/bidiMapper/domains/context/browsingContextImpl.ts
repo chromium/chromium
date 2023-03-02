@@ -42,7 +42,6 @@ export class BrowsingContextImpl {
 
   readonly #contextId: string;
   readonly #parentId: string | null;
-  readonly #cdpBrowserContextId: string | null;
   readonly #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
   readonly #realmStorage: RealmStorage;
@@ -70,7 +69,6 @@ export class BrowsingContextImpl {
     parentId: string | null,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    cdpBrowserContextId: string | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
@@ -79,7 +77,6 @@ export class BrowsingContextImpl {
     this.#contextId = contextId;
     this.#parentId = parentId;
     this.#cdpClient = cdpClient;
-    this.#cdpBrowserContextId = cdpBrowserContextId;
     this.#eventManager = eventManager;
     this.#cdpSessionId = cdpSessionId;
     this.#browsingContextStorage = browsingContextStorage;
@@ -106,7 +103,6 @@ export class BrowsingContextImpl {
       parentId,
       cdpClient,
       cdpSessionId,
-      null,
       eventManager,
       browsingContextStorage,
       logger
@@ -128,7 +124,6 @@ export class BrowsingContextImpl {
     parentId: string | null,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    cdpBrowserContextId: string | null,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
     logger?: LoggerFn
@@ -139,7 +134,6 @@ export class BrowsingContextImpl {
       parentId,
       cdpClient,
       cdpSessionId,
-      cdpBrowserContextId,
       eventManager,
       browsingContextStorage,
       logger
@@ -156,10 +150,6 @@ export class BrowsingContextImpl {
       },
       context.contextId
     );
-  }
-
-  get cdpBrowserContextId(): string | null {
-    return this.#cdpBrowserContextId;
   }
 
   // https://html.spec.whatwg.org/multipage/document-sequences.html#navigable

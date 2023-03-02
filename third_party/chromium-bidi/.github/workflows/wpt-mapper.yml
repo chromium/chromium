@@ -12,6 +12,9 @@ jobs:
   wpt:
     runs-on: ubuntu-latest
     strategy:
+      # Don't cancel workflow in case of one of the actions failed and let all the
+      # workflows produce artefacts.
+      fail-fast: false
       matrix:
         include:
           - head: headful
