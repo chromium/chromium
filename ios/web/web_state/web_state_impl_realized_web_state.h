@@ -5,12 +5,16 @@
 #ifndef IOS_WEB_WEB_STATE_WEB_STATE_IMPL_REALIZED_WEB_STATE_H_
 #define IOS_WEB_WEB_STATE_WEB_STATE_IMPL_REALIZED_WEB_STATE_H_
 
+#include <map>
+
 #import "ios/web/web_state/web_state_impl.h"
 
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
 
+class WebFramesManagerImpl;
 class WebUIIOS;
 
 // Internal implementation of a realized WebStateImpl.
@@ -55,9 +59,13 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   const NavigationManagerImpl& GetNavigationManager() const;
   NavigationManagerImpl& GetNavigationManager();
 
-  // Returns the WebFrameManagerImpl associated with the owning WebStateImpl.
-  const WebFramesManagerImpl& GetPageWorldWebFramesManager() const;
+  // Returns the WebFrameManagerImpl associated with the owning WebStateImpl for
+  // the page content world.
   WebFramesManagerImpl& GetPageWorldWebFramesManager();
+
+  // Returns the WebFrameManagerImpl associated with the owning WebStateImpl for
+  // the given `world`.
+  WebFramesManagerImpl& GetWebFramesManager(ContentWorld world);
 
   // Returns the SessionCertificationPolicyCacheImpl associated with the owning
   // WebStateImpl.
@@ -304,6 +312,9 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The fake CRWWebViewNavigationProxy used for testing. Nil in production.
   __strong id<CRWWebViewNavigationProxy> web_view_for_testing_;
+
+  // A map which stores the web frame manager for each content world.
+  std::map<ContentWorld, std::unique_ptr<WebFramesManagerImpl>> managers_;
 };
 
 }  // namespace web

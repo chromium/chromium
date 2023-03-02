@@ -150,16 +150,19 @@ NavigationManagerImpl& WebStateImpl::RealizedWebState::GetNavigationManager() {
   return *navigation_manager_;
 }
 
-const WebFramesManagerImpl&
-WebStateImpl::RealizedWebState::GetPageWorldWebFramesManager() const {
-  return WebFramesManagerImpl::FromWebState(owner_,
-                                            ContentWorld::kPageContentWorld);
-}
-
 WebFramesManagerImpl&
 WebStateImpl::RealizedWebState::GetPageWorldWebFramesManager() {
-  return WebFramesManagerImpl::FromWebState(owner_,
-                                            ContentWorld::kPageContentWorld);
+  return GetWebFramesManager(ContentWorld::kPageContentWorld);
+}
+
+WebFramesManagerImpl& WebStateImpl::RealizedWebState::GetWebFramesManager(
+    ContentWorld world) {
+  DCHECK_NE(world, ContentWorld::kAllContentWorlds);
+
+  if (!managers_[world]) {
+    managers_[world] = base::WrapUnique(new WebFramesManagerImpl());
+  }
+  return *managers_[world].get();
 }
 
 const SessionCertificatePolicyCacheImpl&
