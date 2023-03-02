@@ -4925,6 +4925,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Shelf.Palette.InAssistantMode" units="ms"
     expires_after="2021-12-12">
+  <obsolete>
+    Kept to view historical data.
+  </obsolete>
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
@@ -4936,6 +4939,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Shelf.Palette.InLaserPointerMode" units="ms"
     expires_after="2021-12-12">
+  <obsolete>
+    Kept to view historical data.
+  </obsolete>
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
@@ -4947,6 +4953,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Shelf.Palette.InMagnifyMode" units="ms"
     expires_after="2021-12-12">
+  <obsolete>
+    Kept to view historical data.
+  </obsolete>
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>

@@ -13,26 +13,12 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
-namespace {
-
-void AddHistogramTimes(PaletteToolId id, base::TimeDelta duration) {
-  if (id == PaletteToolId::LASER_POINTER) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Shelf.Palette.InLaserPointerMode", duration,
-                               base::Milliseconds(100), base::Hours(1), 50);
-  } else if (id == PaletteToolId::MAGNIFY) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Shelf.Palette.InMagnifyMode", duration,
-                               base::Milliseconds(100), base::Hours(1), 50);
-  }
-}
-
-}  // namespace
 
 CommonPaletteTool::CommonPaletteTool(Delegate* delegate)
     : PaletteTool(delegate) {}
@@ -45,12 +31,6 @@ void CommonPaletteTool::OnViewDestroyed() {
 
 void CommonPaletteTool::OnEnable() {
   PaletteTool::OnEnable();
-  start_time_ = base::TimeTicks::Now();
-}
-
-void CommonPaletteTool::OnDisable() {
-  PaletteTool::OnDisable();
-  AddHistogramTimes(GetToolId(), base::TimeTicks::Now() - start_time_);
 }
 
 void CommonPaletteTool::OnViewClicked(views::View* sender) {
