@@ -54,6 +54,18 @@ interface FS {
 }
 
 /**
+ * Handle ExitStatus from emscripten_force_exit when stop recording.
+ * TODO(b/199980849): Find build options or function to handle FFMpeg to not
+ * throw ExitStatus on normal stopping.
+ */
+function exitNormally(err: unknown) {
+  if (err instanceof Object && 'name' in err && 'status' in err) {
+    return err.name === 'ExitStatus' && err.status === 0;
+  }
+  return false;
+}
+
+/**
  * An emulated input device backed by Int8Array.
  */
 class InputDevice {
@@ -112,7 +124,13 @@ class InputDevice {
    */
   endPush(): void {
     this.ended = true;
-    this.consumeReadableCallback();
+    try {
+      this.consumeReadableCallback();
+    } catch (e) {
+      if (!exitNormally(e)) {
+        throw e;
+      }
+    }
   }
 
   /**

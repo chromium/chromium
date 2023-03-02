@@ -36,7 +36,7 @@ index 0000000000..00d42701af
 +});
 \ No newline at end of file
 diff --git a/libavformat/file.c b/libavformat/file.c
-index 8303436be0..8d6bff43c5 100644
+index 6103c37b34..39d49422b6 100644
 --- a/libavformat/file.c
 +++ b/libavformat/file.c
 @@ -19,6 +19,8 @@
@@ -45,10 +45,10 @@ index 8303436be0..8d6bff43c5 100644
  
 +#include <emscripten.h>
 +
+ #include "config_components.h"
+ 
  #include "libavutil/avstring.h"
- #include "libavutil/internal.h"
- #include "libavutil/opt.h"
-@@ -106,11 +108,17 @@ static const AVClass pipe_class = {
+@@ -109,11 +111,17 @@ static const AVClass pipe_class = {
      .version    = LIBAVUTIL_VERSION_INT,
  };
  

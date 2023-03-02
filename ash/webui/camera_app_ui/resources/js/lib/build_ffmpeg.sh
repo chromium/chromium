@@ -14,11 +14,43 @@ die() {
   exit 1
 }
 
+do_copy_ffmpeg() {
+  # locate ffmpeg directory in chromium source tree
+  local ffmpeg_dir
+  ffmpeg_dir=$(realpath ../../../../../../third_party/ffmpeg)
+  [[ -d "$ffmpeg_dir" ]] || die "ffmpeg not found"
+
+  # checkout specific commit to keep code base consistent to the patch
+  # TODO(b/199980849): Fix pthread issue to be able to use latest FFMpeg update.
+  local build_commit=90810bb
+  (
+    cd $ffmpeg_dir;
+    git archive --format=tar "$build_commit" | (cd "$1" && tar xf -)
+  )
+}
+
 do_patch() {
   git apply -- "$1"
 }
 
 do_configure() {
+  local WASM_LDFLAGS=(
+    -s ASYNCIFY_IMPORTS='["wait_readable"]'
+    -s EXTRA_EXPORTED_RUNTIME_METHODS='["FS"]'
+    -s ALLOW_MEMORY_GROWTH=1
+    -s ASYNCIFY
+    -s EXIT_RUNTIME=1
+    -s ENVIRONMENT=web
+    -s EXPORT_ES6=1
+    -s MODULARIZE=1
+    -s TOTAL_MEMORY=33554432
+    -s USE_ES6_IMPORT_META=0
+    -s WASM=1
+    -v
+    -Os
+    --llvm-lto 3
+    --js-library ./lib.js
+  )
   local args=(
     # emscripten toolchain
     --ar=emar
@@ -28,6 +60,7 @@ do_configure() {
     # generic architecture
     --arch=c
     --cpu=generic
+    --extra-ldflags="$LDFLAGS"
     --disable-asm
     --disable-stripping
     --enable-cross-compile
@@ -67,35 +100,17 @@ do_configure() {
     --enable-bsf=extract_extradata
   )
 
-  emconfigure ./configure "${args[@]}"
+  LDFLAGS="${WASM_LDFLAGS[@]}" emconfigure ./configure "${args[@]}"
 }
 
 do_make() {
   emmake make -j "$(nproc)"
 }
 
-do_emcc() {
-  cp ffmpeg ffmpeg.bc
-  local args=(
-    -s 'ASYNCIFY_IMPORTS=["wait_readable"]'
-    -s 'EXTRA_EXPORTED_RUNTIME_METHODS=["FS"]'
-    -s ALLOW_MEMORY_GROWTH=1
-    -s ASYNCIFY
-    -s EXIT_RUNTIME=1
-    -s EXPORT_ES6=1
-    -s MODULARIZE=1
-    -s TOTAL_MEMORY=33554432
-    -s USE_ES6_IMPORT_META=0
-    -s WASM=1
-    -v
-    -Os
-    --llvm-lto 3
-    --js-library ./lib.js
-    ffmpeg.bc
-    -o
-    ffmpeg.js
-  )
-  emcc "${args[@]}"
+do_cleanup_name() {
+  mv ffmpeg_g.wasm ffmpeg.wasm
+  mv ffmpeg_g ffmpeg.js
+  sed -i -e 's/ffmpeg_g.wasm/ffmpeg.wasm/g' ffmpeg.js
 }
 
 do_add_header() {
@@ -123,22 +138,17 @@ main() {
   patch_file=$(realpath ffmpeg.patch)
   [[ -f "$patch_file" ]] || die "patch not found"
 
-  # locate ffmpeg directory in chromium source tree
-  local ffmpeg_dir
-  ffmpeg_dir=$(realpath ../../../../../../third_party/ffmpeg)
-  [[ -d "$ffmpeg_dir" ]] || die "ffmpeg not found"
-
   # copy ffmpeg/ into a temporary directory to patch and build
   local build_dir
   build_dir=$(mktemp -d -t ffmpeg_build_XXXXXX)
-  cp --recursive --no-target-directory -- "$ffmpeg_dir" "$build_dir"
-
+  do_copy_ffmpeg "$build_dir"
   pushd -- "$build_dir" > /dev/null
-
   do_patch "$patch_file"
+
+  # configure + build
   do_configure
   do_make
-  do_emcc
+  do_cleanup_name
   do_add_header
 
   popd
