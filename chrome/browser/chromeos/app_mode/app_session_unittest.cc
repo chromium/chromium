@@ -768,6 +768,21 @@ TEST_P(AppSessionTroubleshootingTest,
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
+TEST_P(AppSessionTroubleshootingTest,
+       MainBrowserShutdownAfterKioskTroubleshootingToolsDisabled) {
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
+
+  SetUpKioskSession();
+
+  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
+
+  EXPECT_TRUE(IsSessionShuttingDown());
+
+  CloseMainBrowser();
+
+  EXPECT_TRUE(IsSessionShuttingDown());
+}
+
 TEST_P(AppSessionTroubleshootingTest, OpenDevToolsEnabledTroubleshootingTools) {
   SetUpKioskSession();
 

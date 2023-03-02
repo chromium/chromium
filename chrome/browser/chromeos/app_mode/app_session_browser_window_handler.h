@@ -48,9 +48,7 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
       const absl::optional<std::string>& web_app_name,
       base::RepeatingCallback<void(bool is_closing)>
           on_browser_window_added_callback,
-      base::OnceClosure on_last_browser_window_closed_callback,
-      std::unique_ptr<KioskTroubleshootingController>
-          kiosk_troubleshooting_controller);
+      base::OnceClosure shutdown_app_session_callback);
   AppSessionBrowserWindowHandler(const AppSessionBrowserWindowHandler&) =
       delete;
   AppSessionBrowserWindowHandler& operator=(
@@ -80,6 +78,9 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   // open.
   bool IsOnlySettingsBrowserRemainOpen() const;
 
+  // Calls `shutdown_app_session_callback_` once.
+  void ShutdownAppSession();
+
   // Owned by `ProfileManager`.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   // `web_app_name_` is set only when we have the initial browser in the web
@@ -87,7 +88,7 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   const absl::optional<std::string> web_app_name_;
   base::RepeatingCallback<void(bool is_closing)>
       on_browser_window_added_callback_;
-  base::OnceClosure on_last_browser_window_closed_callback_;
+  base::OnceClosure shutdown_app_session_callback_;
 
   std::unique_ptr<KioskTroubleshootingController>
       kiosk_troubleshooting_controller_;
