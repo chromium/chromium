@@ -51,10 +51,15 @@ absl::optional<base::win::RegKey> ClientStateAppKeyCreate(
   return key;
 }
 
-bool RenameValue(base::win::RegKey& key,
-                 const std::wstring& old_value_name,
-                 const std::wstring& new_value_name) {
-  DWORD size = 512;
+bool RegRenameValue(base::win::RegKey& key,
+                    const std::wstring& old_value_name,
+                    const std::wstring& new_value_name) {
+  DWORD size = 0;
+  if (key.ReadValue(old_value_name.c_str(), nullptr, &size, nullptr) !=
+      ERROR_SUCCESS) {
+    return false;
+  }
+
   std::vector<char> raw_value(size);
   DWORD dtype = 0;
   if (key.ReadValue(old_value_name.c_str(), raw_value.data(), &size, &dtype) !=
@@ -81,16 +86,16 @@ void PersistLastInstallerResultValues(UpdaterScope updater_scope,
   }
 
   // Rename InstallerResultXXX values to LastXXX.
-  RenameValue(key.value(), kRegValueInstallerResult,
-              kRegValueLastInstallerResult);
-  RenameValue(key.value(), kRegValueInstallerError,
-              kRegValueLastInstallerError);
-  RenameValue(key.value(), kRegValueInstallerExtraCode1,
-              kRegValueLastInstallerExtraCode1);
-  RenameValue(key.value(), kRegValueInstallerResultUIString,
-              kRegValueLastInstallerResultUIString);
-  RenameValue(key.value(), kRegValueInstallerSuccessLaunchCmdLine,
-              kRegValueLastInstallerSuccessLaunchCmdLine);
+  RegRenameValue(key.value(), kRegValueInstallerResult,
+                 kRegValueLastInstallerResult);
+  RegRenameValue(key.value(), kRegValueInstallerError,
+                 kRegValueLastInstallerError);
+  RegRenameValue(key.value(), kRegValueInstallerExtraCode1,
+                 kRegValueLastInstallerExtraCode1);
+  RegRenameValue(key.value(), kRegValueInstallerResultUIString,
+                 kRegValueLastInstallerResultUIString);
+  RegRenameValue(key.value(), kRegValueInstallerSuccessLaunchCmdLine,
+                 kRegValueLastInstallerSuccessLaunchCmdLine);
 }
 
 }  // namespace
