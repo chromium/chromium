@@ -14,12 +14,15 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.os.BuildCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
@@ -39,6 +42,10 @@ import java.util.List;
  * A helper class that provides additional Chrome-specific share functionality.
  */
 public class ShareHelper extends org.chromium.components.browser_ui.share.ShareHelper {
+    // TODO(https://crbug.com/1420388): Remove when Android OS provides this string.
+    private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
+            "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
+
     private ShareHelper() {}
 
     /**
@@ -50,10 +57,29 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public static void shareWithSystemShareSheetUi(
             ShareParams params, @Nullable Profile profile, boolean saveLastUsed) {
+        shareWithSystemShareSheetUi(params, profile, saveLastUsed, null);
+    }
+
+    /**
+     * Shares the params using the system share sheet with custom actinos.
+     * @param params The share parameters.
+     * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
+     * @param saveLastUsed True if the chosen share component should be saved for future reuse.
+     * @param customActions List of custom actions for Android share sheet.
+     */
+    @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
+    public static void shareWithSystemShareSheetUi(ShareParams params, @Nullable Profile profile,
+            boolean saveLastUsed, @Nullable List<Parcelable> customActions) {
+        assert (customActions == null || customActions.isEmpty() || BuildCompat.isAtLeastU())
+            : "Custom action is not supported on below U.";
+
+        recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
         if (saveLastUsed) {
             params.setCallback(new SaveComponentCallback(profile, params.getCallback()));
         }
-        ShareHelper.shareWithSystemShareSheetUi(params);
+        Intent intent = getShareIntent(params);
+
+        sendChooserIntent(params.getWindow(), intent, params.getCallback(), customActions);
     }
 
     /**
@@ -89,9 +115,26 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     public static void shareImage(final WindowAndroid window, final Profile profile,
             final ComponentName name, Uri imageUri, @Nullable String contentUrl) {
+        shareImage(window, profile, name, imageUri, contentUrl, null);
+    }
+
+    /**
+     * Share an image URI with an activity identified by the provided Component Name.
+     * @param window The current window.
+     * @param name The component name of the activity to share the image with.
+     * @param imageUri The uri generated from the content provider of the image to share with the
+     *         external activity.
+     * @param contentUrl The web url shared along with the image as a text if set.
+     * @param customActions List of custom action for Android share sheet.
+     */
+    public static void shareImage(final WindowAndroid window, final Profile profile,
+            final ComponentName name, Uri imageUri, @Nullable String contentUrl,
+            @Nullable List<Parcelable> customActions) {
         Intent shareIntent = getShareImageIntent(imageUri, contentUrl);
         if (name == null) {
-            sendChooserIntent(window, shareIntent, new SaveComponentCallback(profile, null));
+            recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
+            sendChooserIntent(
+                    window, shareIntent, new SaveComponentCallback(profile, null), customActions);
         } else {
             shareIntent.setComponent(name);
             fireIntent(window, shareIntent, null);
@@ -211,6 +254,43 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
                 component.flattenToString());
         if (profile != null) {
             ShareHistoryBridge.addShareEntry(profile, component.flattenToString());
+        }
+    }
+
+    private static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
+            @Nullable TargetChosenCallback callback, List<Parcelable> chooserActions) {
+        new CustomActionChosenReceiver(callback, chooserActions)
+                .sendChooserIntent(window, sharingIntent);
+    }
+
+    /**
+     * Helper class for injecting extras into the sharing intents.
+     */
+    private static class CustomActionChosenReceiver extends TargetChosenReceiver {
+        private final List<Parcelable> mChooserActions;
+
+        protected CustomActionChosenReceiver(@Nullable TargetChosenCallback callback,
+                @Nullable List<Parcelable> chooserActions) {
+            super(callback);
+            mChooserActions = chooserActions;
+        }
+
+        // Override so this file can have access to call this protected method.
+        @Override
+        protected void sendChooserIntent(WindowAndroid windowAndroid, Intent sharingIntent) {
+            super.sendChooserIntent(windowAndroid, sharingIntent);
+        }
+
+        @Override
+        protected Intent getChooserIntent(
+                WindowAndroid window, Intent sharingIntent, String targetChosenAction) {
+            Intent chooserIntent =
+                    super.getChooserIntent(window, sharingIntent, targetChosenAction);
+            if (mChooserActions != null) {
+                Parcelable[] customActions = mChooserActions.toArray(new Parcelable[0]);
+                chooserIntent.putExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions);
+            }
+            return chooserIntent;
         }
     }
 
