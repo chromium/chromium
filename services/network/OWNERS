@@ -24,7 +24,8 @@ per-file cert_verifier_with_trust_anchors*=file://chromeos/ash/components/policy
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
 
-per-file network_sandbox_hook_linux.*.cc=file://sandbox/OWNERS
+per-file network_sandbox_hook_linux.*=set noparent
+per-file network_sandbox_hook_linux.*=file://sandbox/linux/OWNERS
 
 per-file network_quality*=file://net/nqe/OWNERS
 
