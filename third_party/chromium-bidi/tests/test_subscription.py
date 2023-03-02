@@ -16,7 +16,7 @@
 from unittest.mock import ANY
 
 import pytest
-from anys import ANY_DICT, ANY_STR
+from anys import ANY_DICT, ANY_STR, AnyContains, AnyWithEntries
 from test_helpers import (ANY_TIMESTAMP, execute_command, get_next_command_id,
                           read_JSON_message, send_JSON_command, subscribe)
 
@@ -499,3 +499,48 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
     # Assert no more events were buffered.
     resp = await read_JSON_message(websocket)
     assert {'id': command_id, 'result': ANY} == resp
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="#482")
+async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
+    await subscribe(websocket, "log.entryAdded", iframe_id)
+
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket,
+            {
+                "method": "session.unsubscribe",
+                "params": {
+                    "events": [
+                        "log.entryAdded",
+                        "cdp.eventReceived",  # This event is not subscribed.
+                    ],
+                    "contexts": [context_id]
+                }
+            })
+
+    assert {
+        "error": "invalid argument",
+        "message": AnyContains("Cannot unsubscribe from cdp.eventReceived")
+                   & AnyContains("No subscription found")
+    } == exception_info.value.args[0]
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script ended with an event before, as log.entryAdded was not unsubscribed.
+    resp = await read_JSON_message(websocket)
+    assert AnyWithEntries({
+        'method': 'log.entryAdded',
+        'params': AnyWithEntries({'text': 'SOME_MESSAGE'})
+    }) == resp
