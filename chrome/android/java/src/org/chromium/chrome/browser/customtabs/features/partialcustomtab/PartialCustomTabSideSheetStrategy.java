@@ -135,35 +135,40 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
         int start;
         int end;
-        AnimatorUpdateListener updateListener;
+        int restWidth = mVersionCompat.getDisplayWidth() - mUnclampedInitialWidth;
         Window window = mActivity.getWindow();
+        configureLayoutBeyondScreen(true);
+        // For smooth animation, make the window full-width first and then translate it
+        // rather than resizing the window itself during the animation.
         if (mSheetOnRight) {
-            // For smooth animation, make the window full-width first and then translate it
-            // rather than resizing the window itself during the animation.
-            configureLayoutBeyondScreen(true);
             setWindowWidth(mVersionCompat.getDisplayWidth());
             start = window.getAttributes().x;
-            end = mIsMaximized ? 0 : mVersionCompat.getDisplayWidth() - mUnclampedInitialWidth;
-            updateListener = (animator) -> setWindowX((int) animator.getAnimatedValue());
+            end = mIsMaximized ? 0 : restWidth;
         } else {
-            // When the sheet is positioned on left side, making full-width window first causes
-            // a visual glitch. Resizing the window while animating may be the best we can do.
-            start = window.getAttributes().width;
-            end = mIsMaximized ? mVersionCompat.getDisplayWidth() : mUnclampedInitialWidth;
-            updateListener = (animator) -> setWindowWidth((int) animator.getAnimatedValue());
+            if (mIsMaximized) {
+                // For the left-side sheet, adjust the start x (out of the screen) before
+                // animating the full-width tab back into screen.
+                var attrs = mActivity.getWindow().getAttributes();
+                attrs.x = -restWidth;
+                attrs.width = mVersionCompat.getDisplayWidth();
+                mActivity.getWindow().setAttributes(attrs);
+            }
+            start = window.getAttributes().x;
+            end = mIsMaximized ? 0 : -restWidth;
         }
+        AnimatorUpdateListener updateListener = (anim) -> setWindowX((int) anim.getAnimatedValue());
         startAnimation(start, end, updateListener, () -> onMaximizeEnd(animate), animate);
         return mIsMaximized;
     }
 
     private void onMaximizeEnd(boolean animate) {
         if (isMaximized()) {
-            if (mSheetOnRight) configureLayoutBeyondScreen(false);
+            configureLayoutBeyondScreen(false);
             maybeInvokeResizeCallback();
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
-                if (mSheetOnRight) configureLayoutBeyondScreen(false);
+                configureLayoutBeyondScreen(false);
                 initializeSize();
                 maybeInvokeResizeCallback();
             });
