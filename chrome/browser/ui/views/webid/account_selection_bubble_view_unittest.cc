@@ -41,6 +41,7 @@
 namespace {
 
 const std::u16string kTopFrameETLDPlusOne = u"top-frame-example.com";
+const std::u16string kIframeETLDPlusOne = u"iframe-example.com";
 const std::u16string kIdpETLDPlusOne = u"idp-example.com";
 const std::u16string kTitleSignIn =
     u"Sign in to top-frame-example.com with idp-example.com";
@@ -112,6 +113,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
  protected:
   void CreateAccountSelectionBubble(bool exclude_title,
+                                    bool exclude_iframe,
                                     bool show_auto_reauthn_checkbox) {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
@@ -124,10 +126,14 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     absl::optional<std::u16string> title =
         exclude_title ? absl::nullopt
                       : absl::make_optional<std::u16string>(kIdpETLDPlusOne);
+    absl::optional<std::u16string> iframe_etld_plus_one =
+        exclude_iframe
+            ? absl::nullopt
+            : absl::make_optional<std::u16string>(kIframeETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
-        kTopFrameETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
-        show_auto_reauthn_checkbox, anchor_widget_->GetContentsView(),
-        shared_url_loader_factory(),
+        kTopFrameETLDPlusOne, iframe_etld_plus_one, title,
+        blink::mojom::RpContext::kSignIn, show_auto_reauthn_checkbox,
+        anchor_widget_->GetContentsView(), shared_url_loader_factory(),
         /*observer=*/nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
@@ -137,17 +143,21 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                                  const std::string& terms_of_service_url,
                                  bool show_auto_reauthn_checkbox = false) {
     CreateAccountSelectionBubble(/*exclude_title=*/false,
+                                 /*exclude_iframe=*/true,
                                  show_auto_reauthn_checkbox);
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, content::IdentityProviderMetadata(),
         CreateTestClientMetadata(terms_of_service_url), {account});
-    dialog_->ShowSingleAccountConfirmDialog(kTopFrameETLDPlusOne, account,
-                                            idp_data, show_back_button);
+    dialog_->ShowSingleAccountConfirmDialog(
+        kTopFrameETLDPlusOne,
+        absl::make_optional<std::u16string>(kIframeETLDPlusOne), account,
+        idp_data, show_back_button);
   }
 
   void CreateMultiIdpAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true,
+                                 /*exclude_iframe=*/true,
                                  /*show_auto_reauthn_checkbox=*/false);
     dialog_->ShowMultiAccountPicker(idp_data_list);
   }
@@ -277,6 +287,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
               content::IdentityRequestAccount::LoginState::kSignUp);
 
       CreateAccountSelectionBubble(/*exclude_title=*/false,
+                                   /*exclude_iframe=*/true,
                                    /*show_auto_reauthn_checkbox=*/false);
       std::vector<IdentityProviderDisplayData> idp_data;
       idp_data.emplace_back(
@@ -473,7 +484,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       content::ClientMetadata(GURL(), GURL()), {account});
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false,
+  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
                                /*show_auto_reauthn_checkbox=*/false);
   dialog_->ShowVerifyingSheet(
       account, idp_data, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
@@ -496,7 +507,7 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       content::ClientMetadata(GURL(), GURL()), {account});
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false,
+  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
                                /*show_auto_reauthn_checkbox=*/false);
   const auto title =
       l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN);

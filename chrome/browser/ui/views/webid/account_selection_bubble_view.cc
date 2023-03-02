@@ -377,6 +377,7 @@ int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context) {
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::u16string& top_frame_for_display,
+    const absl::optional<std::u16string>& iframe_for_display,
     const absl::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox,
@@ -489,6 +490,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const std::u16string& top_frame_for_display,
+    const absl::optional<std::u16string>& iframe_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {

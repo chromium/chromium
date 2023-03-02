@@ -65,6 +65,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
       const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox,
@@ -82,6 +83,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   void ShowSingleAccountConfirmDialog(
       const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool show_back_button) override;

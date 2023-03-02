@@ -902,8 +902,16 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   fetch_data_ = FetchData();
 
+  // TODO(crbug.com/1418719): Replace exclude_iframe based on client metadata
+  // response.
+  bool exclude_iframe = true;
+  absl::optional<std::string> iframe_url_for_display = absl::nullopt;
   std::string top_frame_url_for_display =
       FormatOriginForDisplay(GetEmbeddingOrigin());
+
+  if (!exclude_iframe && GetEmbeddingOrigin() != origin()) {
+    iframe_url_for_display = FormatOriginForDisplay(origin());
+  }
 
   // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
   bool idp_enabled_auto_reauthn = true;
@@ -974,7 +982,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
       WebContents::FromRenderFrameHost(&render_frame_host()),
-      top_frame_url_for_display, idp_data_for_display,
+      top_frame_url_for_display, iframe_url_for_display, idp_data_for_display,
       auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,

@@ -504,6 +504,7 @@ class TestDialogController
   void ShowAccountsDialog(
       WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_url_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -2277,6 +2278,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
   void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
       const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_url_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -2289,7 +2291,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
     // Call parent class method in order to store callback parameters.
     TestDialogController::ShowAccountsDialog(
-        rp_web_contents, top_frame_for_display,
+        rp_web_contents, top_frame_for_display, iframe_url_for_display,
         std::move(identity_provider_data), sign_in_mode,
         show_auto_reauthn_checkbox, std::move(on_selected),
         std::move(dismiss_callback));

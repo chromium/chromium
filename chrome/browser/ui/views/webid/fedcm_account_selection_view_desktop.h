@@ -49,6 +49,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionView:
   void Show(
       const std::string& top_frame_etld_plus_one,
+      const absl::optional<std::string>& iframe_etld_plus_one,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) override;
@@ -75,6 +76,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // observers.
   virtual views::Widget* CreateBubbleWithAccessibleTitle(
       const std::u16string& top_frame_etld_plus_one,
+      const absl::optional<std::u16string>& iframe_etld_plus_one,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox);
@@ -135,6 +137,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   std::vector<IdentityProviderDisplayData> idp_display_data_list_;
 
   std::u16string top_frame_for_display_;
+
+  absl::optional<std::u16string> iframe_for_display_;
 
   State state_{State::ACCOUNT_PICKER};
 

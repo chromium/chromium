@@ -33,6 +33,7 @@ class AccountSelectionBubbleViewInterface {
   // account confirmation dialog after the user picks one of multiple accounts.
   virtual void ShowSingleAccountConfirmDialog(
       const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) = 0;

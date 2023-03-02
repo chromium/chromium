@@ -25,6 +25,7 @@ using SignInMode = content::IdentityRequestAccount::SignInMode;
 namespace {
 
 constexpr char kTopFrameEtldPlusOne[] = "top-frame-example.com";
+constexpr char kIframeEtldPlusOne[] = "iframe-example.com";
 constexpr char kIdpEtldPlusOne[] = "idp-example.com";
 
 // Mock AccountSelectionBubbleViewInterface which tracks state.
@@ -63,6 +64,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 
   void ShowSingleAccountConfirmDialog(
       const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) override {
@@ -106,7 +108,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
 
  protected:
   views::Widget* CreateBubbleWithAccessibleTitle(
-      const std::u16string& top_frame_etld_plus_one,
+      const std::u16string& rp_etld_plus_one,
+      const absl::optional<std::u16string>& iframe_etld_plus_one,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox) override {
@@ -191,6 +194,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
             bool show_auto_reauthn_checkbox = false) {
     controller.Show(
         kTopFrameEtldPlusOne,
+        absl::make_optional<std::string>(kIframeEtldPlusOne),
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn}},
