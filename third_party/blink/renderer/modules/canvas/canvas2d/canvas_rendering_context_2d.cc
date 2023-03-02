@@ -200,7 +200,16 @@ bool CanvasRenderingContext2D::IsOriginTopLeft() const {
 }
 
 bool CanvasRenderingContext2D::IsComposited() const {
-  return IsAccelerated();
+  // The following case is necessary for handling the special case of canvases
+  // in the dev tools overlay.
+  auto* settings = canvas()->GetDocument().GetSettings();
+  if (settings && !settings->GetAcceleratedCompositingEnabled()) {
+    return false;
+  }
+  if (Canvas2DLayerBridge* layer_bridge = canvas()->GetCanvas2DLayerBridge()) {
+    return layer_bridge->IsComposited();
+  }
+  return false;
 }
 
 void CanvasRenderingContext2D::Stop() {

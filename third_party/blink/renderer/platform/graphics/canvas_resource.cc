@@ -707,7 +707,10 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   auto surface = SkSurface::MakeRasterDirect(CreateSkImageInfo(),
                                              gpu_memory_buffer_->memory(0),
                                              gpu_memory_buffer_->stride(0));
-  surface->getCanvas()->drawImage(image, 0, 0);
+
+  SkPixmap pixmap;
+  image->peekPixels(&pixmap);
+  surface->writePixels(pixmap, 0, 0);
   auto* sii =
       ContextProviderWrapper()->ContextProvider()->SharedImageInterface();
   gpu_memory_buffer_->Unmap();

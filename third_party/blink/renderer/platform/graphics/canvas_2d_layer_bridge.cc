@@ -391,6 +391,25 @@ bool Canvas2DLayerBridge::IsAccelerated() const {
   return ShouldAccelerate();
 }
 
+bool Canvas2DLayerBridge::IsComposited() const {
+  if (IsHibernating()) {
+    return false;
+  }
+
+  if (UNLIKELY(!resource_host_)) {
+    return false;
+  }
+
+  CanvasResourceProvider* resource_provider =
+      resource_host_->ResourceProvider();
+  if (UNLIKELY(!resource_provider)) {
+    return false;
+  }
+
+  return resource_provider->SupportsDirectCompositing() &&
+         !resource_host_->LowLatencyEnabled();
+}
+
 static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
                              base::TimeTicks /*idleDeadline*/) {
   if (bridge) {
@@ -514,14 +533,13 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
 
   if (resource_provider && resource_provider->IsValid()) {
 #if DCHECK_IS_ON()
-    // If resource provider is accelerated, a layer should already exist.
+    // If resource provider is composited, a layer should already exist.
     // unless this is a canvas in low latency mode.
     // If this DCHECK fails, it probably means that
     // CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() was
     // called on a 2D context before this function.
-    if (IsAccelerated()) {
-      DCHECK(!!layer_ ||
-             (resource_host_ && resource_host_->LowLatencyEnabled()));
+    if (IsComposited()) {
+      DCHECK(!!layer_);
     }
 #endif
     return resource_provider;
@@ -556,7 +574,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   // TODO crbug/1090081: Check possibility to move DidDraw inside Clear.
   DidDraw();
 
-  if (IsAccelerated() && !layer_) {
+  if (IsComposited() && !layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
@@ -566,6 +584,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
                                cc::PaintFlags::FilterQuality::kNone);
     layer_->SetHDRConfiguration(resource_host_->GetHDRMode(),
                                 resource_host_->GetHDRMetadata());
+    layer_->SetFlipped(!resource_provider->IsOriginTopLeft());
   }
   // After the page becomes visible and successfully restored the canvas
   // resource provider, set |lose_context_in_background_| to false.
@@ -1011,7 +1030,7 @@ void Canvas2DLayerBridge::FinalizeFrame(
     constexpr unsigned kMaxCanvasAnimationBacklog = 2;
     if (frames_since_last_commit_ >=
         static_cast<int>(kMaxCanvasAnimationBacklog)) {
-      if (IsAccelerated() && !rate_limiter_) {
+      if (IsComposited() && !rate_limiter_) {
         rate_limiter_ = std::make_unique<SharedContextRateLimiter>(
             kMaxCanvasAnimationBacklog);
       }
@@ -1023,7 +1042,7 @@ void Canvas2DLayerBridge::FinalizeFrame(
 }
 
 void Canvas2DLayerBridge::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
-  if (layer_ && raster_mode_ == RasterMode::kGPU) {
+  if (layer_ && IsComposited()) {
     layer_->SetNeedsDisplayRect(dirty_rect);
   }
 }
