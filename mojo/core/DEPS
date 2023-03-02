@@ -1,6 +1,7 @@
 include_rules = [
   # This code is checked into the chromium repo so it's fine to depend on this.
   "+base",
+  "+components/crash/core/common/crash_key.h",
   "+crypto",
   "+build",
   "+native_client/src/public",

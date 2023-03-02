@@ -1,6 +1,7 @@
 include_rules = [
   "+base",
   "+build",
+  "+components/crash/core/common/crash_key.h",
   "+mojo/public",
   "+testing",
   "+third_party/ipcz/include",

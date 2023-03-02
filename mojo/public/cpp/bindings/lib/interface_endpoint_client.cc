@@ -11,16 +11,17 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -34,6 +35,12 @@
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
+
+#if !BUILDFLAG(IS_NACL)
+#include <string.h>
+#include "base/threading/platform_thread.h"
+#include "components/crash/core/common/crash_key.h"
+#endif  // !BUILDFLAG(IS_NACL)
 
 namespace mojo {
 
@@ -709,6 +716,23 @@ void InterfaceEndpointClient::NotifyError(
               });
 
   CHECK(sequence_checker_.CalledOnValidSequence());
+
+#if !BUILDFLAG(IS_NACL)
+  // TODO(dcheng): interface_name_ *should* never be null, but for the purposes
+  // of not introducing a new crash in code intended to help debug crashes, do a
+  // null check for safety.
+  thread_local crash_reporter::CrashKeyString<256> crash_key([] {
+    char* name =
+        strdup(base::StringPrintf(
+                   "mojo-message-endpoint-closed-%zu",
+                   static_cast<size_t>(base::PlatformThread::CurrentId()))
+                   .data());
+    ANNOTATE_LEAKING_OBJECT_PTR(name);
+    return name;
+  }());
+  crash_reporter::ScopedCrashKeyString auto_clear(
+      &crash_key, interface_name_ ? interface_name_ : "no interface name");
+#endif  // !BUILDFLAG(IS_NACL)
 
   if (encountered_error_)
     return;

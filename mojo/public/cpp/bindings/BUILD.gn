@@ -247,6 +247,9 @@ component("bindings") {
   ]
 
   deps = [ "//ipc:native_handle_type_converters" ]
+  if (!is_nacl) {
+    deps += [ "//components/crash/core/common" ]
+  }
 
   defines = [ "IS_MOJO_CPP_BINDINGS_IMPL" ]
 }
