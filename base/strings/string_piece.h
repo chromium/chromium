@@ -34,7 +34,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/cxx20_is_constant_evaluated.h"
-#include "base/numerics/safe_math.h"
 #include "base/strings/string_piece_forward.h"  // IWYU pragma: export
 #include "build/build_config.h"
 
@@ -118,8 +117,14 @@ class GSL_POINTER BasicStringPiece {
   constexpr BasicStringPiece(const BasicStringPiece& other) noexcept = default;
   constexpr BasicStringPiece& operator=(const BasicStringPiece& view) noexcept =
       default;
-  constexpr BasicStringPiece(const CharT* s, CheckedNumeric<size_t> count)
-      : ptr_(s), length_(count.ValueOrDie()) {}
+  constexpr BasicStringPiece(const CharT* s, size_t count)
+      : ptr_(s), length_(count) {
+    // Intentional STL deviation: Check the string length fits in
+    // `difference_type`. No valid buffer can exceed this type, otherwise
+    // pointer arithmetic would not be defined. This helps avoid bugs where
+    // `count` was computed from an underflow or negative sentinel value.
+    CHECK(length_ <= size_t{PTRDIFF_MAX});
+  }
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr BasicStringPiece(const CharT* s)
       : ptr_(s), length_(s ? traits_type::length(s) : 0) {
