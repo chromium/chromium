@@ -58009,6 +58009,8 @@ from previous Chrome versions.
   <int value="-2119530966" label="enable-webrtc-dtls12"/>
   <int value="-2119493239" label="enable-app-info-dialog-mac"/>
   <int value="-2118893353" label="WebRtcRemoteEventLog:enabled"/>
+  <int value="-2118731119"
+      label="AutofillEnableMerchantOptOutClientSideUrlFiltering:disabled"/>
   <int value="-2118093548" label="UrlLoaderSyncClient:enabled"/>
   <int value="-2118062187" label="WebUIBrandingUpdate:enabled"/>
   <int value="-2117621241" label="ExperimentalProductivityFeatures:enabled"/>
@@ -61674,6 +61676,8 @@ from previous Chrome versions.
   <int value="-91370149" label="UseSerialBusEnumerator:enabled"/>
   <int value="-90521375" label="PDFTwoUpView:enabled"/>
   <int value="-90032223" label="BuiltInModuleInfra:disabled"/>
+  <int value="-89812525"
+      label="AutofillEnableMerchantOptOutClientSideUrlFiltering:enabled"/>
   <int value="-89690053" label="MaterialDesignUserManager:enabled"/>
   <int value="-89567017" label="ChromeColorsCustomColorPicker:enabled"/>
   <int value="-89434839" label="SystemTrayMicGainSetting:enabled"/>

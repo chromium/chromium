@@ -379,6 +379,13 @@ const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
     "When enabled, manual fallback will be enabled for virtual cards on "
     "Android.";
 
+const char kAutofillEnableMerchantOptOutClientSideUrlFilteringName[] =
+    "Enable Autofill merchant opt-out client side URL filtering";
+const char kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription[] =
+    "When enabled, client side URL filtering will be triggered for the "
+    "merchant opt-out use-case, so that virtual card suggestions are not shown "
+    "on websites that are opted-out of virtual cards.";
+
 const char kAutofillEnableCardArtImageName[] = "Enable showing card art images";
 const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "

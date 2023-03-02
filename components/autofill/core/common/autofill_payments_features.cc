@@ -92,6 +92,13 @@ BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
              "AutofillEnableManualFallbackForVirtualCards",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, client side URL filtering will be triggered for the merchant
+// opt-out use-case, so that virtual card suggestions are not shown on websites
+// that are opted-out of virtual cards.
+BASE_FEATURE(kAutofillEnableMerchantOptOutClientSideUrlFiltering,
+             "AutofillEnableMerchantOptOutClientSideUrlFiltering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the user will see a new banner logo and text in the bubble
 // offering to Upstream their cards onto Google Pay.
 BASE_FEATURE(kAutofillEnableNewSaveCardBubbleUi,

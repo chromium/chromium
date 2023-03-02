@@ -222,6 +222,10 @@ extern const char kAutofillEnableIbanClientSideUrlFilteringDescription[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsName[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 
+extern const char kAutofillEnableMerchantOptOutClientSideUrlFilteringName[];
+extern const char
+    kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription[];
+
 extern const char kAutofillEnableCardArtImageName[];
 extern const char kAutofillEnableCardArtImageDescription[];
 

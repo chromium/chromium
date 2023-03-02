@@ -9431,6 +9431,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(user_notes::kUserNotes)},
 #endif
 
+    {"autofill-enable-merchant-opt-out-client-side-url-filtering",
+     flag_descriptions::kAutofillEnableMerchantOptOutClientSideUrlFilteringName,
+     flag_descriptions::
+         kAutofillEnableMerchantOptOutClientSideUrlFilteringDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableMerchantOptOutClientSideUrlFiltering)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
