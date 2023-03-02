@@ -120,8 +120,10 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     this.methodCalled('cutBookmark', id);
   }
 
-  editBookmarks(ids: string[], newParentId: string|undefined) {
-    this.methodCalled('editBookmarks', ids, newParentId);
+  editBookmarks(
+      ids: string[], newTitle: string|undefined, newUrl: string|undefined,
+      newParentId: string|undefined) {
+    this.methodCalled('editBookmarks', ids, newTitle, newUrl, newParentId);
   }
 
   deleteBookmarks(ids: string[]) {

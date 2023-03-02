@@ -28,12 +28,13 @@ export enum MenuItemId {
   OPEN_NEW_TAB = 0,
   OPEN_NEW_WINDOW = 1,
   OPEN_INCOGNITO = 2,
-  ADD_TO_BOOKMARKS_BAR = 3,
-  REMOVE_FROM_BOOKMARKS_BAR = 4,
-  TRACK_PRICE = 5,
-  RENAME = 6,
-  DELETE = 7,
-  DIVIDER = 8,
+  EDIT = 3,
+  ADD_TO_BOOKMARKS_BAR = 4,
+  REMOVE_FROM_BOOKMARKS_BAR = 5,
+  TRACK_PRICE = 6,
+  RENAME = 7,
+  DELETE = 8,
+  DIVIDER = 9,
 }
 
 export interface MenuItem {
@@ -115,6 +116,13 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       return menuItems;
     }
 
+    if (this.bookmarks_[0]!.url) {
+      menuItems.push({
+        id: MenuItemId.EDIT,
+        label: loadTimeData.getString('menuEdit'),
+      });
+    }
+
     if (this.bookmarks_[0]!.parentId ===
         loadTimeData.getString('bookmarksBarId')) {
       menuItems.push({id: MenuItemId.DIVIDER}, {
@@ -144,12 +152,18 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       );
     }
 
+    menuItems.push({id: MenuItemId.DIVIDER});
+
+    if (!this.bookmarks_[0]!.url) {
+      menuItems.push(
+          {
+            id: MenuItemId.RENAME,
+            label: loadTimeData.getString('menuRename'),
+          },
+      );
+    }
+
     menuItems.push(
-        {id: MenuItemId.DIVIDER},
-        {
-          id: MenuItemId.RENAME,
-          label: loadTimeData.getString('menuRename'),
-        },
         {
           id: MenuItemId.DELETE,
           label: loadTimeData.getString('tooltipDelete'),
@@ -220,6 +234,15 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
                 'Commerce.PriceTracking.SidePanel.Track.ContextMenu');
           }
         }
+        break;
+      case MenuItemId.EDIT:
+        this.dispatchEvent(new CustomEvent('edit-clicked', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            id: this.bookmarks_[0]!.id,
+          },
+        }));
         break;
       case MenuItemId.RENAME:
         if (editingDisabledByPolicy(this.bookmarks_)) {

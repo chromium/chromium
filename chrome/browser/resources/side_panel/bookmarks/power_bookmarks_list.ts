@@ -490,6 +490,9 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private async onBookmarksEdited_(event: CustomEvent<{
+    bookmarks: chrome.bookmarks.BookmarkTreeNode[],
+    name: string|undefined,
+    url: string|undefined,
     folderId: string,
     newFolders: chrome.bookmarks.BookmarkTreeNode[],
   }>) {
@@ -505,7 +508,8 @@ export class PowerBookmarksListElement extends PolymerElement {
       }
     }
     this.bookmarksApi_.editBookmarks(
-        this.selectedBookmarks_.map(bookmark => bookmark.id), parentId);
+        event.detail.bookmarks.map(bookmark => bookmark.id), event.detail.name,
+        event.detail.url, parentId);
     this.selectedBookmarks_ = [];
     this.editing_ = false;
   }
@@ -631,6 +635,18 @@ export class PowerBookmarksListElement extends PolymerElement {
         });
   }
 
+  private onContextMenuEditClicked_(event: CustomEvent<{id: string}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    const bookmark =
+        this.bookmarksService_.findBookmarkWithId(event.detail.id)!;
+    if (editingDisabledByPolicy([bookmark])) {
+      this.showDisabledFeatureDialog_();
+      return;
+    }
+    this.showEditDialog_([bookmark], false);
+  }
+
   private onContextMenuDeleteClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -667,9 +683,14 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.showDisabledFeatureDialog_();
       return;
     }
+    this.showEditDialog_(this.selectedBookmarks_, true);
+  }
+
+  private showEditDialog_(
+      bookmarks: chrome.bookmarks.BookmarkTreeNode[], moveOnly: boolean) {
     this.$.editDialog.showDialog(
         this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
-        this.selectedBookmarks_);
+        bookmarks, moveOnly);
   }
 
   private onEditMenuClicked_(event: MouseEvent) {
