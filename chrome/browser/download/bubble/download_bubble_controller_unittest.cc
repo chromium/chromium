@@ -25,6 +25,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_item.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
@@ -161,12 +162,16 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     return *content_provider_;
   }
 
-  void InitDownloadItem(const base::FilePath::CharType* path,
-                        DownloadState state,
-                        const std::string& id,
-                        bool is_transient = false,
-                        base::Time start_time = base::Time::Now(),
-                        bool may_show_animation = true) {
+  void InitDownloadItem(
+      const base::FilePath::CharType* path,
+      DownloadState state,
+      const std::string& id,
+      bool is_transient = false,
+      base::Time start_time = base::Time::Now(),
+      bool may_show_animation = true,
+      download::DownloadItem::TargetDisposition target_disposition =
+          download::DownloadItem::TARGET_DISPOSITION_PROMPT,
+      const std::string& mime_type = "") {
     size_t index = items_.size();
     items_.push_back(std::make_unique<StrictMockDownloadItem>());
     EXPECT_CALL(item(index), GetId())
@@ -199,10 +204,11 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     EXPECT_CALL(item(index), IsSavePackageDownload())
         .WillRepeatedly(Return(false));
     EXPECT_CALL(item(index), GetTargetDisposition())
-        .WillRepeatedly(
-            Return(download::DownloadItem::TARGET_DISPOSITION_PROMPT));
-    EXPECT_CALL(item(index), GetMimeType()).WillRepeatedly(Return(""));
+        .WillRepeatedly(Return(target_disposition));
+    EXPECT_CALL(item(index), GetMimeType()).WillRepeatedly(Return(mime_type));
     EXPECT_CALL(item(index), GetURL())
+        .WillRepeatedly(ReturnRef(GURL::EmptyGURL()));
+    EXPECT_CALL(item(index), GetReferrerUrl())
         .WillRepeatedly(ReturnRef(GURL::EmptyGURL()));
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
@@ -259,7 +265,6 @@ class DownloadBubbleUIControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
- private:
   std::unique_ptr<DownloadBubbleUIController> controller_;
   std::unique_ptr<DownloadBubbleUIController> second_controller_;
   std::unique_ptr<NiceMock<MockDownloadDisplayController>> display_controller_;
@@ -332,6 +337,42 @@ TEST_F(DownloadBubbleUIControllerTest, TransientDownloadShouldNotShow) {
   std::vector<DownloadUIModelPtr> models = controller().GetMainView();
   EXPECT_EQ(models.size(), 1ul);
   EXPECT_EQ(models[0]->GetContentId().id, ids[1]);
+}
+
+TEST_F(DownloadBubbleUIControllerTest, FastCrxDownloadShowsNoUI) {
+  std::string id = "fast_crx";
+  EXPECT_CALL(display_controller(), OnNewItem(_)).Times(0);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(_, _, _)).Times(0);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
+                   download::DownloadItem::IN_PROGRESS, id,
+                   /*is_transient=*/false, /*start_time=*/base::Time::Now(),
+                   /*may_show_animation=*/true,
+                   download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+                   "application/x-chrome-extension");
+  EXPECT_CALL(*manager_, GetDownloadByGuid(id))
+      .WillRepeatedly(Return(items_[0].get()));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+}
+
+TEST_F(DownloadBubbleUIControllerTest, SlowCrxDownloadShowsDelayedUI) {
+  std::string id = "slow_crx";
+  EXPECT_CALL(display_controller(), OnNewItem(_)).Times(0);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(_, _, _)).Times(0);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
+                   download::DownloadItem::IN_PROGRESS, id,
+                   /*is_transient=*/false, /*start_time=*/base::Time::Now(),
+                   /*may_show_animation=*/true,
+                   download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+                   "application/x-chrome-extension");
+  EXPECT_CALL(*manager_, GetDownloadByGuid(id))
+      .WillRepeatedly(Return(items_[0].get()));
+  EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(false, false, true)).Times(1);
+  task_environment_.FastForwardBy(base::Seconds(2));
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS);
+  EXPECT_CALL(display_controller(), OnUpdatedItem(true, false, true)).Times(1);
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
 }
 
 TEST_F(DownloadBubbleUIControllerTest, ListIsSorted) {

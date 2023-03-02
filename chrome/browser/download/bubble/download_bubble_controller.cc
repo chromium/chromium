@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
@@ -42,6 +44,16 @@ constexpr int kMaxDownloadsToShow = 100;
 // automatically and may be annoying to the user. The time is reset when the
 // user clicks on the button to open the main view.
 constexpr base::TimeDelta kShowPartialViewMinInterval = base::Seconds(15);
+// Don't show the "download started" animation/UI for an extension or theme
+// (crx) download until 2 seconds after it has begun. If it is a small download
+// that finishes in under 2 seconds, the download UI does not show at all. If it
+// is a large download that takes longer than 2 seconds, show the UI so that the
+// user knows Chrome is working on it.
+constexpr base::TimeDelta kCrxShowNewItemDelay = base::Seconds(2);
+// Limit the size of the |delayed_crx_guids_| set so it doesn't grow
+// unboundedly. It is unlikely that the user would have 20 active crx downloads
+// simultaneously.
+constexpr int kMaxDelayedCrxGuids = 20;
 
 bool FindOfflineItemByContentId(const ContentId& to_find,
                                 const OfflineItem& candidate) {
@@ -205,10 +217,40 @@ void DownloadBubbleUIController::OnItemsAdded(
 
 void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
                                            bool may_show_animation) {
+  if (download_crx_util::IsExtensionDownload(*item) &&
+      delayed_crx_guids_.size() < kMaxDelayedCrxGuids) {
+    const std::string& guid = item->GetGuid();
+    DCHECK(!delayed_crx_guids_.contains(guid));
+    delayed_crx_guids_.insert(guid);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DownloadBubbleUIController::OnDelayedNewItemByGuid,
+                       weak_factory_.GetWeakPtr(), guid, may_show_animation),
+        kCrxShowNewItemDelay);
+    return;
+  }
+  DoOnNewItem(item, may_show_animation);
+}
+
+void DownloadBubbleUIController::DoOnNewItem(download::DownloadItem* item,
+                                             bool may_show_animation) {
   auto model = std::make_unique<DownloadItemModel>(item);
   model->SetActionedOn(false);
   display_controller_->OnNewItem(may_show_animation &&
                                  model->ShouldShowDownloadStartedAnimation());
+}
+
+void DownloadBubbleUIController::OnDelayedNewItemByGuid(
+    const std::string& guid,
+    bool may_show_animation) {
+  // This assumes that for extension/theme downloads, the DownloadItem is
+  // removed from the DownloadManager upon completion.
+  download::DownloadItem* item = download_manager_->GetDownloadByGuid(guid);
+  if (item && !item->IsDone()) {
+    DoOnNewItem(item, may_show_animation);
+  }
+  size_t erased = delayed_crx_guids_.erase(guid);
+  DCHECK_EQ(erased, 1u);
 }
 
 bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
@@ -259,6 +301,11 @@ void DownloadBubbleUIController::OnItemUpdated(
 void DownloadBubbleUIController::OnDownloadUpdated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
+  // If the item is an extension or theme download waiting out its 2-second
+  // delay, don't show a UI update for it.
+  if (delayed_crx_guids_.contains(item->GetGuid())) {
+    return;
+  }
   // manager can be different from download_notifier_ when the current profile
   // is off the record.
   DownloadItemModel model(item);
