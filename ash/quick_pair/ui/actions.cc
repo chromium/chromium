@@ -31,7 +31,7 @@ std::ostream& operator<<(std::ostream& stream, DiscoveryAction action) {
 
 std::ostream& operator<<(std::ostream& stream, AssociateAccountAction action) {
   switch (action) {
-    case AssociateAccountAction::kAssoicateAccount:
+    case AssociateAccountAction::kAssociateAccount:
       stream << "[Associate account]";
       break;
     case AssociateAccountAction::kLearnMore:

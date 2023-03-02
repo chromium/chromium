@@ -19,7 +19,7 @@ enum class DiscoveryAction {
 };
 
 enum class AssociateAccountAction {
-  kAssoicateAccount = 0,
+  kAssociateAccount = 0,
   kLearnMore = 1,
   kDismissedByUser = 2,
   kDismissedByOs = 3,

@@ -68,8 +68,9 @@ FastPairPresenterImpl::Factory*
 // static
 std::unique_ptr<FastPairPresenter> FastPairPresenterImpl::Factory::Create(
     message_center::MessageCenter* message_center) {
-  if (g_test_factory_)
+  if (g_test_factory_) {
     return g_test_factory_->CreateInstance(message_center);
+  }
 
   return base::WrapUnique(new FastPairPresenterImpl(message_center));
 }
@@ -104,8 +105,9 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
     DiscoveryCallback callback,
     DeviceMetadata* device_metadata,
     bool has_retryable_error) {
-  if (!device_metadata)
+  if (!device_metadata) {
     return;
+  }
 
   device->set_version(device_metadata->InferFastPairVersion());
 
@@ -172,8 +174,9 @@ void FastPairPresenterImpl::ShowSubsequentDiscoveryNotification(
     scoped_refptr<Device> device,
     DiscoveryCallback callback,
     DeviceMetadata* device_metadata) {
-  if (!device_metadata)
+  if (!device_metadata) {
     return;
+  }
 
   // Since Subsequent Pairing scenario can only happen for a signed in user
   // when a device has already been saved to their account, this should never
@@ -409,7 +412,7 @@ void FastPairPresenterImpl::OnAssociateAccountMetadataRetrieved(
 
 void FastPairPresenterImpl::OnAssociateAccountActionClicked(
     AssociateAccountCallback callback) {
-  callback.Run(AssociateAccountAction::kAssoicateAccount);
+  callback.Run(AssociateAccountAction::kAssociateAccount);
 }
 
 void FastPairPresenterImpl::OnAssociateAccountLearnMoreClicked(

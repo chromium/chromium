@@ -81,8 +81,9 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
   void RemoveNotification(const std::string& id, bool by_user) override {
     notification_.reset();
-    for (auto& observer : observer_list())
+    for (auto& observer : observer_list()) {
       observer.OnNotificationRemoved(id, by_user);
+    }
   }
 
   message_center::Notification* FindVisibleNotificationById(
@@ -104,16 +105,18 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
   }
 
   void Close(const std::string& id, bool by_user) {
-    if (notification_)
+    if (notification_) {
       notification_->delegate()->Close(by_user);
+    }
   }
 
   void CloseNotificationsWhenRemoved() { close_ = true; }
 
   void RemoveNotificationsForNotifierId(
       const message_center::NotifierId& notifier_id) override {
-    if (notification_ && close_)
+    if (notification_ && close_) {
       notification_->delegate()->Close(/*by_user=*/false);
+    }
 
     remove_notifications_for_notifier_id_ = true;
     notification_.reset();
@@ -1162,7 +1165,7 @@ TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_SaveClicked) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(associate_account_action_,
-            AssociateAccountAction::kAssoicateAccount);
+            AssociateAccountAction::kAssociateAccount);
 }
 
 TEST_F(FastPairPresenterImplTest, ShowAssociateAccount_NoDeviceMetadata) {

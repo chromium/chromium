@@ -121,8 +121,9 @@ class FakeMetricBluetoothAdapter
  public:
   device::BluetoothDevice* GetDevice(const std::string& address) override {
     for (const auto& it : mock_devices_) {
-      if (it->GetAddress() == address)
+      if (it->GetAddress() == address) {
         return it.get();
+      }
     }
 
     return nullptr;
@@ -372,7 +373,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
         fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
             retroactive_device_);
         mock_ui_broker_->NotifyAssociateAccountAction(
-            retroactive_device_, AssociateAccountAction::kAssoicateAccount);
+            retroactive_device_, AssociateAccountAction::kAssociateAccount);
         mock_pairer_broker_->NotifyPairingStart(retroactive_device_);
         mock_pairer_broker_->NotifyHandshakeComplete(retroactive_device_);
         mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
@@ -448,7 +449,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
 
   void SimulateAssociateAccountUiSavePressed() {
     mock_ui_broker_->NotifyAssociateAccountAction(
-        retroactive_device_, AssociateAccountAction::kAssoicateAccount);
+        retroactive_device_, AssociateAccountAction::kAssociateAccount);
   }
 
   void SimulateAssociateAccountUiLearnMorePressed() {
