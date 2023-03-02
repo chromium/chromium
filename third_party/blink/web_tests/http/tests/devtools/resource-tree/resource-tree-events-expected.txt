@@ -5,7 +5,7 @@ Navigating root frame
     MainSecurityOriginChanged :  null
     SecurityOriginRemoved : http://127.0.0.1:8000
     FrameNavigated : root1 : loader-root1
-    MainFrameNavigated : root1 : loader-root1
+    PrimaryPageChanged : root1 : loader-root1
     MainSecurityOriginChanged : http://frame/root1.html null
     SecurityOriginAdded : http://frame/root1.html
 Navigating child frame 1
@@ -38,7 +38,7 @@ Navigating root frame
     FrameAdded : root2
     MainSecurityOriginChanged :  null
     FrameNavigated : root2 : loader-root2
-    MainFrameNavigated : root2 : loader-root2
+    PrimaryPageChanged : root2 : loader-root2
     MainSecurityOriginChanged : http://frame/root2.html null
     SecurityOriginAdded : http://frame/root2.html
 Navigating root frame, unreachable
@@ -48,7 +48,7 @@ Navigating root frame, unreachable
     FrameAdded : rootUnreachable
     MainSecurityOriginChanged :  null
     FrameNavigated : rootUnreachable : loader-rootUnreachable
-    MainFrameNavigated : rootUnreachable : loader-rootUnreachable
+    PrimaryPageChanged : rootUnreachable : loader-rootUnreachable
     MainSecurityOriginChanged : :// http://frame
     SecurityOriginAdded : ://
 

@@ -5281,11 +5281,6 @@ crbug.com/1249176 [ Mac13-arm64 ] virtual/gpu-rasterization/images/ycbcr-with-cm
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 
-# Temporarily disable tests to land DevTools changes
-crbug.com/1418045 http/tests/devtools/resource-tree/resource-tree-events.js [ Failure Pass ]
-crbug.com/1418045 http/tests/devtools/security/main-origin-assigned-despite-request-missing.js [ Failure Pass ]
-crbug.com/1418045 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure Pass ]
-
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-018.html [ Failure Pass ]

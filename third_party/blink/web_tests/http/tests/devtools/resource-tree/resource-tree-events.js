@@ -28,7 +28,7 @@
         TestRunner.addResult(`    ${eventName} : ${frame.id}`);
         break;
       case 'FrameNavigated':
-      case 'MainFrameNavigated':
+      case 'PrimaryPageChanged':
         var frame = event.data;
         TestRunner.addResult(`    ${eventName} : ${frame.id} : ${frame.loaderId}`);
         break;
