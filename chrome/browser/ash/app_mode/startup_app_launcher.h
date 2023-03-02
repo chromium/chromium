@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -60,6 +61,7 @@ class StartupAppLauncher : public KioskAppLauncher,
   void LaunchApp() override;
 
   void BeginInstall();
+  void LaunchLacros(base::OnceClosure);
   void InstallAppInAsh();
   void InstallAppInLacros();
   void OnInstallComplete(ChromeKioskAppInstaller::InstallResult result);

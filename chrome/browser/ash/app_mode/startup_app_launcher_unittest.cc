@@ -1811,4 +1811,12 @@ TEST_F(StartupAppLauncherUsingLacrosTest,
             KioskAppLaunchError::Error::kUnableToLaunch);
 }
 
+TEST_F(StartupAppLauncherUsingLacrosTest, SkippingInstallShouldLaunchLacros) {
+  CreateStartupAppLauncher(/*should_skip_install=*/true);
+  launcher().Initialize();
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
+
+  EXPECT_TRUE(fake_browser_manager().IsRunning());
+}
 }  // namespace ash

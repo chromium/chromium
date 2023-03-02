@@ -122,6 +122,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for testing.
   virtual bool IsRunningOrWillRun() const;
 
+  bool IsInitialized() const;
+
   // Returns true if Lacros is terminated.
   bool IsTerminated() const { return is_terminated_; }
 

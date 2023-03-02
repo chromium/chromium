@@ -635,6 +635,10 @@ bool BrowserManager::IsRunningOrWillRun() const {
          state_ == State::CREATING_LOG_FILE || state_ == State::TERMINATING;
 }
 
+bool BrowserManager::IsInitialized() const {
+  return state_ != State::NOT_INITIALIZED;
+}
+
 void BrowserManager::NewWindow(bool incognito,
                                bool should_trigger_session_restore) {
   int64_t target_display_id =
