@@ -7681,28 +7681,6 @@
             ]
         }
     ],
-    "MetricsClearLogsOnClonedInstall": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MetricsClearLogsOnClonedInstall"
-                    ]
-                }
-            ]
-        }
-    ],
     "MetricsServiceAsyncCollection": [
         {
             "platforms": [
@@ -10362,23 +10340,6 @@
                     ],
                     "disable_features": [
                         "SkipCommitsIfNotSynchronizingCompositorState"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ReportingServiceFlushPrefsOnUploadInBackground": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReportingServiceFlushPrefsOnUploadInBackground"
                     ]
                 }
             ]
