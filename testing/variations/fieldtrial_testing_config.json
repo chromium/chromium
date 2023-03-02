@@ -9365,9 +9365,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "XRequestedWithDeprecation_20230302",
                     "enable_features": [
-                        "PersistentOriginTrials"
+                        "PersistentOriginTrials",
+                        "WebViewXRequestedWithDeprecation"
                     ]
                 }
             ]
