@@ -61,7 +61,8 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
     uint32_t index() const { return sync - bucket->syncs.get(); }
 
     raw_ptr<Bucket, DanglingUntriaged> bucket = nullptr;
-    raw_ptr<QuerySync, DanglingUntriaged> sync = nullptr;
+    // AllowPtrArithmetic because it is assigned an AllowPtrArithmetic pointer.
+    raw_ptr<QuerySync, DanglingUntriaged | AllowPtrArithmetic> sync = nullptr;
     int32_t submit_count = 0;
   };
 

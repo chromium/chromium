@@ -110,7 +110,9 @@ class WebAppMetrics : public KeyedService,
   int num_user_installed_apps_ = kNumUserInstalledAppsNotCounted;
 
   base::flat_map<web_app::AppId, base::Time> app_last_interacted_time_{};
-  raw_ptr<content::WebContents> foreground_web_contents_ = nullptr;
+  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
+  raw_ptr<content::WebContents, DanglingUntriaged> foreground_web_contents_ =
+      nullptr;
   GURL last_recorded_web_app_start_url_;
 
   const raw_ptr<Profile> profile_;
