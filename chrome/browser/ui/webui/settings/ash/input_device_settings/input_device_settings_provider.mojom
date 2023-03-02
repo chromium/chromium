@@ -6,8 +6,20 @@ module ash.settings.mojom;
 
 import "ash/public/mojom/input_device_settings.mojom";
 
+// Interface for observing keyboard settings changes in OSSettings SWA.
+interface KeyboardSettingsObserver {
+  // Notifies KeyboardSettingsObserver when the list of connected keyboards
+  // and their settings are updated.
+  OnKeyboardListUpdated(array<ash.mojom.Keyboard> keyboards);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Returns the list of currently connected keyboards.
   GetConnectedKeyboards() => (array<ash.mojom.Keyboard> keyboards);
+  // Registers an observer which will be notified every time
+  // a keyboard connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its OnKeyboardListUpdated function.
+  ObserveKeyboardSettings(pending_remote<KeyboardSettingsObserver> observer);
 };

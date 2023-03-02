@@ -7,29 +7,41 @@
 
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash::settings {
 
-class InputDeviceSettingsProvider : public mojom::InputDeviceSettingsProvider {
+class InputDeviceSettingsProvider
+    : public mojom::InputDeviceSettingsProvider,
+      public InputDeviceSettingsController::Observer {
  public:
-  explicit InputDeviceSettingsProvider(
-      InputDeviceSettingsController* controller);
-
-  ~InputDeviceSettingsProvider() override;
+  InputDeviceSettingsProvider();
   InputDeviceSettingsProvider(const InputDeviceSettingsProvider& other) =
       delete;
   InputDeviceSettingsProvider& operator=(
       const InputDeviceSettingsProvider& other) = delete;
+
+  ~InputDeviceSettingsProvider() override;
 
   void BindInterface(
       mojo::PendingReceiver<mojom::InputDeviceSettingsProvider> receiver);
 
   // mojom::InputDeviceSettingsProvider:
   void GetConnectedKeyboards(GetConnectedKeyboardsCallback callback) override;
+  void ObserveKeyboardSettings(
+      mojo::PendingRemote<mojom::KeyboardSettingsObserver> observer) override;
+
+  // InputDeviceSettingsController::Observer:
+  void OnKeyboardConnected(const ::ash::mojom::Keyboard& keyboard) override;
+  void OnKeyboardDisconnected(const ::ash::mojom::Keyboard& keyboard) override;
 
  private:
-  InputDeviceSettingsController* controller_;
+  void NotifyKeyboardsUpdated();
+
+  mojo::RemoteSet<mojom::KeyboardSettingsObserver> keyboard_settings_observers_;
+
   mojo::Receiver<mojom::InputDeviceSettingsProvider> receiver_{this};
 };
 

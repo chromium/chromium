@@ -60,8 +60,7 @@ OsSettingsManager::OsSettingsManager(
       app_notification_handler_(
           std::make_unique<AppNotificationHandler>(app_service_proxy)),
       input_device_settings_provider_(
-          std::make_unique<InputDeviceSettingsProvider>(
-              InputDeviceSettingsController::Get())) {}
+          std::make_unique<InputDeviceSettingsProvider>()) {}
 
 OsSettingsManager::~OsSettingsManager() = default;
 
