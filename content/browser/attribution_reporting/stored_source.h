@@ -43,6 +43,10 @@ class CONTENT_EXPORT StoredSource {
     kMaxValue = kReachedEventLevelAttributionLimit,
   };
 
+  static bool IsExpiryOrReportWindowTimeValid(
+      base::Time expiry_or_report_window_time,
+      base::Time source_time);
+
   StoredSource(CommonSourceInfo common_info,
                uint64_t source_event_id,
                attribution_reporting::DestinationSet,

@@ -362,11 +362,15 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   absl::optional<attribution_reporting::AggregationKeys> aggregation_keys =
       DeserializeAggregationKeys(statement, col++);
 
-  // TODO: Enforce remaining expiry/report_window/time invariants from
-  // CommonSource.
   if (!source_origin || !reporting_origin || !source_type.has_value() ||
       !attribution_logic.has_value() || num_conversions < 0 ||
-      aggregatable_budget_consumed < 0 || !aggregation_keys.has_value()) {
+      aggregatable_budget_consumed < 0 || !aggregation_keys.has_value() ||
+      !StoredSource::IsExpiryOrReportWindowTimeValid(expiry_time,
+                                                     source_time) ||
+      !StoredSource::IsExpiryOrReportWindowTimeValid(event_report_window_time,
+                                                     source_time) ||
+      !StoredSource::IsExpiryOrReportWindowTimeValid(
+          aggregatable_report_window_time, source_time)) {
     return absl::nullopt;
   }
 

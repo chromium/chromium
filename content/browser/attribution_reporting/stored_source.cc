@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -18,6 +19,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+// static
+bool StoredSource::IsExpiryOrReportWindowTimeValid(
+    base::Time expiry_or_report_window_time,
+    base::Time source_time) {
+  // The source must expire strictly after it occurred.
+  return expiry_or_report_window_time > source_time &&
+         expiry_or_report_window_time - source_time <=
+             kDefaultAttributionSourceExpiry;
+}
 
 StoredSource::StoredSource(
     CommonSourceInfo common_info,
@@ -51,16 +62,11 @@ StoredSource::StoredSource(
   DCHECK_GE(aggregatable_budget_consumed_, 0);
 
   base::Time source_time = common_info_.source_time();
-  DCHECK_GE(kDefaultAttributionSourceExpiry, expiry_time_ - source_time);
-  DCHECK_GE(kDefaultAttributionSourceExpiry,
-            event_report_window_time_ - source_time);
-  DCHECK_GE(kDefaultAttributionSourceExpiry,
-            aggregatable_report_window_time_ - source_time);
-
-  // The impression must expire strictly after it occurred.
-  DCHECK_GT(expiry_time_, source_time);
-  DCHECK_GT(event_report_window_time_, source_time);
-  DCHECK_GT(aggregatable_report_window_time_, source_time);
+  DCHECK(IsExpiryOrReportWindowTimeValid(expiry_time_, source_time));
+  DCHECK(
+      IsExpiryOrReportWindowTimeValid(event_report_window_time_, source_time));
+  DCHECK(IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time_,
+                                         source_time));
 }
 
 StoredSource::~StoredSource() = default;

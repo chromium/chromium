@@ -31,6 +31,7 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -1417,6 +1418,69 @@ TEST_F(AttributionStorageSqlTest, ReportTimes) {
   }
 
   CloseDatabase();
+}
+
+TEST_F(AttributionStorageSqlTest,
+       InvalidExpiryOrReportTime_FailsDeserialization) {
+  static constexpr const char* kUpdateSqls[] = {
+      "UPDATE sources SET expiry_time=?",
+      "UPDATE sources SET event_report_window_time=?",
+      "UPDATE sources SET aggregatable_report_window_time=?",
+  };
+
+  const struct {
+    base::TimeDelta time_from_source;
+    bool valid;
+  } kTestCases[] = {
+      {
+          base::TimeDelta(),
+          false,
+      },
+      {
+          base::Milliseconds(1),
+          true,
+      },
+      {
+          kDefaultAttributionSourceExpiry,
+          true,
+      },
+      {
+          kDefaultAttributionSourceExpiry + base::Milliseconds(1),
+          false,
+      },
+  };
+
+  for (const char* update_sql : kUpdateSqls) {
+    for (const auto& test_case : kTestCases) {
+      OpenDatabase();
+
+      base::Time now = base::Time::Now();
+      storage()->StoreSource(SourceBuilder(now).Build());
+      ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1))
+          << update_sql << "," << test_case.time_from_source;
+
+      CloseDatabase();
+
+      {
+        sql::Database raw_db;
+        ASSERT_TRUE(raw_db.Open(db_path()))
+            << update_sql << "," << test_case.time_from_source;
+
+        sql::Statement statement(raw_db.GetUniqueStatement(update_sql));
+        statement.BindTime(0, now + test_case.time_from_source);
+        ASSERT_TRUE(statement.Run())
+            << update_sql << "," << test_case.time_from_source;
+      }
+
+      OpenDatabase();
+      ASSERT_THAT(storage()->GetActiveSources(), SizeIs(test_case.valid))
+          << update_sql << "," << test_case.time_from_source;
+      storage()->ClearData(/*delete_begin=*/base::Time::Min(),
+                           /*delete_end=*/base::Time::Max(),
+                           /*filter=*/base::NullCallback());
+      CloseDatabase();
+    }
+  }
 }
 
 }  // namespace
