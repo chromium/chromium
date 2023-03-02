@@ -67,6 +67,9 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void CreateVmDisk();
   void OnCreateVmDisk(
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> result);
+  void InstallPflash();
+  void OnInstallPflash(
+      absl::optional<vm_tools::concierge::InstallPflashResponse> result);
   void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
                  absl::optional<vm_tools::concierge::StartVmResponse> result);

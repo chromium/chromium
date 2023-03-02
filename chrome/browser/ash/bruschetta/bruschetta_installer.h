@@ -25,7 +25,8 @@ enum class BruschettaInstallResult {
   kUnableToOpenImages = 8,
   kCreateDiskError = 9,
   kStartVmFailed = 10,
-  kMaxValue = kStartVmFailed,
+  kInstallPflashError = 11,
+  kMaxValue = kInstallPflashError,
 };
 
 // Returns the string name of the BruschettaResult.
@@ -42,6 +43,7 @@ class BruschettaInstaller {
     kPflashDownload,
     kOpenFiles,
     kCreateVmDisk,
+    kInstallPflash,
     kStartVm,
     kLaunchTerminal,
   };

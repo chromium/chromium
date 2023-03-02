@@ -81,7 +81,6 @@ class BruschettaLauncherTest : public testing::Test,
 
   bool CreateTestFiles() {
     bios_path_ = profile_.GetPath().Append(kBiosPath);
-    pflash_path_ = profile_.GetPath().Append(kPflashPath);
     base::File::Error error;
     bool result =
         base::CreateDirectoryAndGetError(bios_path_.DirName(), &error);
@@ -89,7 +88,7 @@ class BruschettaLauncherTest : public testing::Test,
       LOG(ERROR) << "Error creating downloads folder: " << error;
       return false;
     }
-    return base::WriteFile(bios_path_, "") && base::WriteFile(pflash_path_, "");
+    return base::WriteFile(bios_path_, "");
   }
 
   void SetupPrefs() {
@@ -129,7 +128,6 @@ class BruschettaLauncherTest : public testing::Test,
   base::RunLoop run_loop_;
   TestingProfile profile_;
   base::FilePath bios_path_;
-  base::FilePath pflash_path_;
   std::unique_ptr<BruschettaLauncher> launcher_;
   base::HistogramTester histogram_tester_{};
 };

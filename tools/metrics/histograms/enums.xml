@@ -13787,6 +13787,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="8" label="kUnableToOpenImages"/>
   <int value="9" label="kCreateDiskError"/>
   <int value="10" label="kStartVmFailed"/>
+  <int value="11" label="kInstallPflashError"/>
 </enum>
 
 <enum name="BruschettaResult">

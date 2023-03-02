@@ -24,6 +24,7 @@ const char16_t* BruschettaInstallResultString(
     ENTRY(kUnableToOpenImages);
     ENTRY(kCreateDiskError);
     ENTRY(kStartVmFailed);
+    ENTRY(kInstallPflashError);
   }
 #undef ENTRY
 #undef USTR

@@ -45,7 +45,7 @@ using testing::InvokeWithoutArgs;
 using testing::Sequence;
 
 // Total number of stopping points in ::ExpectStopOnStepN
-constexpr int kMaxSteps = 23;
+constexpr int kMaxSteps = 26;
 
 const char kVmName[] = "vm-name";
 const char kVmConfigId[] = "test-config-id";
@@ -203,6 +203,18 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
             std::move(response));
       } else {
         FakeConciergeClient()->set_create_disk_image_response(absl::nullopt);
+      }
+    };
+  }
+
+  auto InstallPflashCallback(absl::optional<bool> success) {
+    return [this, success]() {
+      if (success.has_value()) {
+        vm_tools::concierge::InstallPflashResponse response;
+        response.set_success(*success);
+        FakeConciergeClient()->set_install_pflash_response(std::move(response));
+      } else {
+        FakeConciergeClient()->set_install_pflash_response(absl::nullopt);
       }
     };
   }
@@ -445,6 +457,33 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
       expectation.WillOnce(InvokeWithoutArgs(DiskImageCallback(
           vm_tools::concierge::DiskImageStatus::DISK_STATUS_CREATED)));
+    }
+
+    // Install pflash file step
+    {
+      if (out_result) {
+        *out_result = BruschettaInstallResult::kInstallPflashError;
+      }
+      auto& expectation =
+          EXPECT_CALL(observer_,
+                      StateChanged(BruschettaInstaller::State::kInstallPflash))
+              .Times(1)
+              .InSequence(seq);
+
+      if (!n--) {
+        expectation.WillOnce(CancelCallback());
+        return false;
+      }
+      if (!n--) {
+        MakeErrorPoint(expectation, seq, InstallPflashCallback(absl::nullopt));
+        return true;
+      }
+      if (!n--) {
+        MakeErrorPoint(expectation, seq, InstallPflashCallback(false));
+        return true;
+      }
+
+      expectation.WillOnce(InvokeWithoutArgs(InstallPflashCallback(true)));
     }
 
     // Start VM step

@@ -415,6 +415,15 @@ void FakeConciergeClient::SwapVm(
       FROM_HERE, base::BindOnce(std::move(callback), swap_vm_response_));
 }
 
+void FakeConciergeClient::InstallPflash(
+    base::ScopedFD fd,
+    const vm_tools::concierge::InstallPflashRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+        callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), install_pflash_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   // Now GetVmInfo can return success.
@@ -496,6 +505,9 @@ void FakeConciergeClient::InitializeProtoResponses() {
 
   detach_usb_device_response_.emplace();
   detach_usb_device_response_->set_success(true);
+
+  install_pflash_response_.emplace();
+  install_pflash_response_->set_success(true);
 }
 
 }  // namespace ash

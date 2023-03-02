@@ -297,6 +297,12 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
           callback) = 0;
 
+  virtual void InstallPflash(
+      base::ScopedFD fd,
+      const vm_tools::concierge::InstallPflashRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+          callback) = 0;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
