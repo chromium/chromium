@@ -11,6 +11,7 @@ import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
+import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -295,37 +296,6 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
-   * Computes the timestamp based on options. If the options ask for today's
-   * results, it uses the time in ms from midnight. For yesterday, it goes back
-   * by one day from midnight. For week, it goes back by 6 days from midnight.
-   * For a month, it goes back by 30 days since midnight, regardless of how
-   * many days are in the current month. For a year, it goes back by 365 days
-   * since midnight, regardless if the current year is a leap year or not.
-   * @private
-   */
-  getEarliestTimestamp_() {
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const midnightMs = midnight.getTime();
-    const dayMs = 24 * 60 * 60 * 1000;
-
-    switch (this.options_.recency) {
-      case SearchRecency.TODAY:
-        return midnightMs;
-      case SearchRecency.YESTERDAY:
-        return midnightMs - 1 * dayMs;
-      case SearchRecency.LAST_WEEK:
-        return midnightMs - 6 * dayMs;
-      case SearchRecency.LAST_MONTH:
-        return midnightMs - 30 * dayMs;
-      case SearchRecency.LAST_YEAR:
-        return midnightMs - 365 * dayMs;
-      default:
-        return 0;
-    }
-  }
-
-  /**
    * @returns Whether or not the Google Drive search should be performed.
    * @private
    */
@@ -348,12 +318,13 @@ export class SearchV2ContentScanner extends ContentScanner {
       invalidateCache = false) {
     const searchPromises = [];
     const category = this.getDesiredCategory_();
+    const now = new Date();
     if (this.isSearchingLocal_()) {
       searchPromises.push(new Promise((resolve, reject) => {
         const rootDir = this.isSearchingRoot_() ?
             this.entry_.filesystem.root :
             /** @type {DirectoryEntry} */ (util.unwrapEntry(this.entry_));
-        const timestamp = this.getEarliestTimestamp_();
+        const timestamp = getEarliestTimestamp(this.options_.recency, now);
         chrome.fileManagerPrivate.searchFiles(
             {
               rootDir: rootDir,

@@ -5,7 +5,9 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {getRecentDateBucket} from './recent_date_bucket.js';
+import {SearchRecency} from '../../externs/ts/state.js';
+
+import {getEarliestTimestamp, getRecentDateBucket} from './recent_date_bucket.js';
 
 export function setUp() {
   loadTimeData.overrideValues({
@@ -137,5 +139,35 @@ export function testGetRecentDateBucket() {
       assertEquals(
           getRecentDateBucket(test.date, testSample.today), test.bucket);
     }
+  }
+}
+
+export function testGetEarliestTimestamp() {
+  const testNow = new Date(2023, 1, 27, 15, 40);  // ms = 1677472800000
+  const testData = [
+    {
+      recency: SearchRecency.TODAY,
+      want: new Date(2023, 1, 27, 0, 0).getTime(),
+    },
+    {
+      recency: SearchRecency.YESTERDAY,
+      want: new Date(2023, 1, 26, 0, 0).getTime(),
+    },
+    {
+      recency: SearchRecency.LAST_WEEK,
+      want: new Date(2023, 1, 21, 0, 0).getTime(),
+    },
+    {
+      recency: SearchRecency.LAST_MONTH,
+      want: new Date(2023, 0, 28, 0, 0).getTime(),
+    },
+    {
+      recency: SearchRecency.LAST_YEAR,
+      want: new Date(2022, 1, 27, 0, 0).getTime(),
+    },
+  ];
+  for (const datum of testData) {
+    const got = getEarliestTimestamp(datum.recency, testNow);
+    assertEquals(datum.want, got);
   }
 }

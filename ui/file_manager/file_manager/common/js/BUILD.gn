@@ -269,6 +269,7 @@ js_library("recent_date_bucket") {
   deps = [
     ":util",
     "//ui/file_manager/file_manager/externs:file_manager_private",
+    "//ui/file_manager/file_manager/externs/ts:state",
   ]
 }
 
@@ -281,6 +282,7 @@ js_unittest("recent_date_bucket_unittest") {
     ":recent_date_bucket",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:load_time_data.m",
+    "//ui/file_manager/file_manager/externs/ts:state",
   ]
 }
 
