@@ -84,10 +84,12 @@ void ReadAnythingContainerView::OnCoordinatorDestroyed() {
 void ReadAnythingContainerView::LogTextStyle() {
   read_anything::mojom::LineSpacing line_spacing =
       coordinator_->GetModel()->line_spacing();
-  base::UmaHistogramEnumeration(kLineSpacingHistogramName, line_spacing);
+  base::UmaHistogramEnumeration(string_constants::kLineSpacingHistogramName,
+                                line_spacing);
   read_anything::mojom::LetterSpacing letter_spacing =
       coordinator_->GetModel()->letter_spacing();
-  base::UmaHistogramEnumeration(kLetterSpacingHistogramName, letter_spacing);
+  base::UmaHistogramEnumeration(string_constants::kLetterSpacingHistogramName,
+                                letter_spacing);
 }
 
 BEGIN_METADATA(ReadAnythingContainerView, views::View)

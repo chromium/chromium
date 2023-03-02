@@ -5,10 +5,18 @@
 #ifndef CHROME_COMMON_ACCESSIBILITY_READ_ANYTHING_CONSTANTS_H_
 #define CHROME_COMMON_ACCESSIBILITY_READ_ANYTHING_CONSTANTS_H_
 
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
 
 // Various constants used throughout the Read Anything feature.
+namespace string_constants {
+
+extern const char kReadAnythingDefaultFontName[];
+extern const char kReadAnythingDefaultFontSyle[];
+extern const char kLetterSpacingHistogramName[];
+extern const char kLineSpacingHistogramName[];
+
+}  // namespace string_constants
+
 namespace {
 
 // |ui::AXMode::kHTML| is needed for URL information.
@@ -26,19 +34,11 @@ const int kIconSize = 16;
 const int kColorsIconSize = 24;
 const int kSpacingIconSize = 20;
 
-const char kReadAnythingDefaultFontName[] = "Standard font";
-const char kReadAnythingDefaultFontSyle[] = ", Sans-serif, 15px";
-
 // Font size in em
 const double kReadAnythingDefaultFontScale = 1;
 const double kReadAnythingMinimumFontScale = 0.5;
 const double kReadAnythingMaximumFontScale = 4.5;
 const double kReadAnythingFontScaleIncrement = 0.25;
-
-const char kLetterSpacingHistogramName[] =
-    "Accessibility.ReadAnything.LetterSpacing";
-const char kLineSpacingHistogramName[] =
-    "Accessibility.ReadAnything.LineSpacing";
 
 }  // namespace
 

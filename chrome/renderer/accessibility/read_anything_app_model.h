@@ -93,7 +93,7 @@ class ReadAnythingAppModel {
 #endif
 
   // Theme information.
-  std::string font_name_ = kReadAnythingDefaultFontName;
+  std::string font_name_ = string_constants::kReadAnythingDefaultFontName;
   float font_size_ = kReadAnythingDefaultFontScale;
   float letter_spacing_ =
       (int)read_anything::mojom::LetterSpacing::kDefaultValue;
