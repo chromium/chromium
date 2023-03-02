@@ -147,66 +147,101 @@ class DCLayerTree {
     return ink_renderer_.get();
   }
 
-  // Owns a subtree of DComp visual that apply clip, offset, etc. and contains
-  // some content at its leaf.
-  // This class keeps track about what properties are currently set on the
-  // visuals.
-  class VisualSubtree {
+  // Owns a list of |VisualSubtree|s that represent visual layers.
+  class VisualTree {
    public:
-    VisualSubtree();
-    ~VisualSubtree();
-    VisualSubtree(VisualSubtree&& other) = delete;
-    VisualSubtree& operator=(VisualSubtree&& other) = delete;
-    VisualSubtree(const VisualSubtree&) = delete;
-    VisualSubtree& operator=(VisualSubtree& other) = delete;
+    VisualTree(DCLayerTree* tree);
 
-    // Returns true if something was changed.
-    bool Update(IDCompositionDevice2* dcomp_device,
-                Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
-                uint64_t dcomp_surface_serial,
-                const gfx::Vector2d& quad_rect_offset,
-                const gfx::Transform& quad_to_root_transform,
-                const absl::optional<gfx::Rect>& clip_rect_in_root);
+    VisualTree(VisualTree&&) = delete;
+    VisualTree(const VisualTree&) = delete;
+    VisualTree& operator=(const VisualTree&) = delete;
 
-    IDCompositionVisual2* container_visual() const {
-      return clip_visual_.Get();
-    }
-    IDCompositionVisual2* content_visual() const {
-      return content_visual_.Get();
-    }
-
-    void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
+    ~VisualTree();
+    // Given pending overlays, builds or updates this visual tree.
+    // Returns true if commit succeeded.
+    bool UpdateTree(
+        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
+        // True if the tree must rebuild.
+        bool needs_rebuild_visual_tree);
+    void GetSwapChainVisualInfoForTesting(size_t index,
+                                          gfx::Transform* transform,
                                           gfx::Point* offset,
                                           gfx::Rect* clip_rect) const;
+    // Returns true if the tree is optimized.
+    // TODO(http://crbug.com/1380822): Implement tree optimization where the
+    // tree is built incrementally and does not require full rebuild.
+    bool tree_optimized() const { return tree_optimized_; }
 
-    int z_order() const { return z_order_; }
-    void set_z_order(int z_order) { z_order_ = z_order; }
+    // Owns a subtree of DComp visual that apply clip, offset, etc. and contains
+    // some content at its leaf.
+    // This class keeps track about what properties are currently set on the
+    // visuals.
+    class VisualSubtree {
+     public:
+      VisualSubtree();
+      ~VisualSubtree();
+      VisualSubtree(VisualSubtree&& other) = delete;
+      VisualSubtree& operator=(VisualSubtree&& other) = delete;
+      VisualSubtree(const VisualSubtree&) = delete;
+      VisualSubtree& operator=(VisualSubtree& other) = delete;
+
+      // Returns true if something was changed.
+      bool Update(IDCompositionDevice2* dcomp_device,
+                  Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
+                  uint64_t dcomp_surface_serial,
+                  const gfx::Vector2d& quad_rect_offset,
+                  const gfx::Transform& quad_to_root_transform,
+                  const absl::optional<gfx::Rect>& clip_rect_in_root);
+
+      IDCompositionVisual2* container_visual() const {
+        return clip_visual_.Get();
+      }
+      IDCompositionVisual2* content_visual() const {
+        return content_visual_.Get();
+      }
+
+      void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
+                                            gfx::Point* offset,
+                                            gfx::Rect* clip_rect) const;
+
+      int z_order() const { return z_order_; }
+      void set_z_order(int z_order) { z_order_ = z_order; }
+
+     private:
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual_;
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual_;
+
+      // The content to be placed at the leaf of the visual subtree. Either an
+      // IDCompositionSurface or an IDXGISwapChain.
+      Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content_;
+      // |dcomp_surface_serial_| is associated with |dcomp_visual_content_| of
+      // IDCompositionSurface type. New value indicates that dcomp surface data
+      // is updated.
+      uint64_t dcomp_surface_serial_ = 0;
+
+      // Offset of the top left of the visual in quad space
+      gfx::Vector2d offset_;
+
+      // Transform from quad space to root space
+      gfx::Transform transform_;
+
+      // Clip rect in root space
+      absl::optional<gfx::Rect> clip_rect_;
+
+      // The order relative to the root surface. Positive values means the
+      // visual appears in front of the root surface (i.e. overlay) and negative
+      // values means the visual appears below the root surface (i.e. underlay)
+      int z_order_ = 0;
+    };
 
    private:
-    Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual_;
-    Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual_;
-
-    // The content to be placed at the leaf of the visual subtree. Either an
-    // IDCompositionSurface or an IDXGISwapChain.
-    Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content_;
-    // |dcomp_surface_serial_| is associated with |dcomp_visual_content_| of
-    // IDCompositionSurface type. New value indicates that dcomp surface data is
-    // updated.
-    uint64_t dcomp_surface_serial_ = 0;
-
-    // Offset of the top left of the visual in quad space
-    gfx::Vector2d offset_;
-
-    // Transform from quad space to root space
-    gfx::Transform transform_;
-
-    // Clip rect in root space
-    absl::optional<gfx::Rect> clip_rect_;
-
-    // The order relative to the root surface. Positive values means the visual
-    // appears in front of the root surface (i.e. overlay) and negative values
-    // means the visual appears below the root surface (i.e. underlay)
-    int z_order_ = 0;
+    // Tree that owns `this`.
+    const raw_ptr<DCLayerTree> dc_layer_tree_ = nullptr;
+    // List of DCOMP visual subtrees for previous frame.
+    std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees_;
+    // TODO(http://crbug.com/1380822): Implement tree optimization where the
+    // tree is built incrementally and does not require full rebuild.
+    const bool tree_optimized_ = false;
   };
 
  private:
@@ -221,7 +256,8 @@ class DCLayerTree {
   // trails. This will initially always be called directly before an OS
   // delegated ink API is used. After that, it can also be added anytime the
   // visual tree is rebuilt.
-  void AddDelegatedInkVisualToTree();
+  void AddDelegatedInkVisualToTreeIfNeeded(
+      IDCompositionVisual2* root_surface_visual);
 
   // The ink renderer must be initialized before an OS API is used in order to
   // set up the delegated ink visual and delegated ink trail object.
@@ -257,9 +293,6 @@ class DCLayerTree {
   // Set if root surface is using a direct composition surface currently.
   Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface_;
 
-  // Direct composition visual for root surface.
-  Microsoft::WRL::ComPtr<IDCompositionVisual2> root_surface_visual_;
-
   // Root direct composition visual for window dcomp target.
   Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
 
@@ -269,8 +302,9 @@ class DCLayerTree {
   // List of swap chain presenters for previous frame.
   std::vector<std::unique_ptr<SwapChainPresenter>> video_swap_chains_;
 
-  // List of DCOMP visual subtrees for previous frame.
-  std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees_;
+  // A tree that owns all DCOMP visuals for overlays along with attributes
+  // required to build DCOMP tree. It's updated for each frame.
+  std::unique_ptr<VisualTree> visual_tree_;
 
   // Number of frames per second.
   float frame_rate_ = 0.f;
