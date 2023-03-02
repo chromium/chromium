@@ -160,19 +160,18 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   self.contentSuggestionsMediator.webState = self.webState;
-  [self configureStartSurfaceIfNeeded];
 
-    self.contentSuggestionsViewController =
-        [[ContentSuggestionsViewController alloc] init];
-    self.contentSuggestionsViewController.suggestionCommandHandler =
-        self.contentSuggestionsMediator;
-    self.contentSuggestionsViewController.audience = self;
-    self.contentSuggestionsViewController.menuProvider = self;
-    self.contentSuggestionsViewController.urlLoadingBrowserAgent =
-        UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  self.contentSuggestionsViewController =
+      [[ContentSuggestionsViewController alloc] init];
+  self.contentSuggestionsViewController.suggestionCommandHandler =
+      self.contentSuggestionsMediator;
+  self.contentSuggestionsViewController.audience = self;
+  self.contentSuggestionsViewController.menuProvider = self;
+  self.contentSuggestionsViewController.urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
 
-    self.contentSuggestionsMediator.consumer =
-        self.contentSuggestionsViewController;
+  self.contentSuggestionsMediator.consumer =
+      self.contentSuggestionsViewController;
 }
 
 - (void)stop {
@@ -334,11 +333,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     return;
   }
 
-  if (self.contentSuggestionsMediator.showingStartSurface) {
-    // Start has already been configured. Don't try again or else another Return
-    // To Recent Tab tile will be added.
-    return;
-  }
+  // Shouldn't be calling this if start has already been configured.
+  DCHECK(!self.contentSuggestionsMediator.showingStartSurface);
 
   // Update Mediator property to signal the NTP is currently showing Start.
   self.contentSuggestionsMediator.showingStartSurface = YES;
