@@ -52,6 +52,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_observer.h"
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"

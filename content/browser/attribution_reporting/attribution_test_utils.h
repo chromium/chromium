@@ -15,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
-#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -27,7 +26,6 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
-#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -64,80 +62,6 @@ constexpr auto kSourceTypes =
                   attribution_reporting::mojom::SourceType::kMaxValue>::All();
 
 base::GUID DefaultExternalReportID();
-
-class ConfigurableStorageDelegate : public AttributionStorageDelegate {
- public:
-  ConfigurableStorageDelegate();
-  ~ConfigurableStorageDelegate() override;
-
-  // AttributionStorageDelegate
-  base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
-                                     base::Time trigger_time) const override;
-  base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
-  base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
-  base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
-  base::GUID NewReportID() const override;
-  absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
-      const override;
-  void ShuffleReports(std::vector<AttributionReport>& reports) override;
-  RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source) override;
-
-  void set_max_attributions_per_source(int max);
-
-  void set_max_sources_per_origin(int max);
-
-  void set_max_reports_per_destination(AttributionReport::Type report_type,
-                                       int max);
-
-  void set_max_destinations_per_source_site_reporting_origin(int max);
-
-  void set_aggregatable_budget_per_source(int64_t max);
-
-  void set_rate_limits(AttributionConfig::RateLimitConfig c);
-
-  void set_delete_expired_sources_frequency(base::TimeDelta frequency);
-
-  void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency);
-
-  void set_report_delay(base::TimeDelta report_delay);
-
-  void set_offline_report_delay_config(
-      absl::optional<OfflineReportDelayConfig> config);
-
-  void set_reverse_reports_on_shuffle(bool reverse);
-
-  // Note that these rates are *not* used to produce a randomized response; that
-  // is controlled deterministically by `set_randomized_response()`.
-  void set_randomized_response_rates(double navigation, double event);
-
-  void set_randomized_response(RandomizedResponse randomized_response);
-
-  void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
-
-  // Detaches the delegate from its current sequence in preparation for being
-  // moved to storage, which runs on its own sequence.
-  void DetachFromSequence();
-
- private:
-  base::TimeDelta delete_expired_sources_frequency_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  base::TimeDelta delete_expired_rate_limits_frequency_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  base::TimeDelta report_delay_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  absl::optional<OfflineReportDelayConfig> offline_report_delay_config_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // If true, `ShuffleReports()` reverses the reports to allow testing the
-  // proper call from `AttributionStorage::GetAttributionReports()`.
-  bool reverse_reports_on_shuffle_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      false;
-
-  RandomizedResponse randomized_response_
-      GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
-};
 
 // WebContentsObserver that waits until a source is available on a
 // navigation handle for a finished navigation.

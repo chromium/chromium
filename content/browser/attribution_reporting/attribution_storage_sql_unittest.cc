@@ -32,6 +32,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "sql/database.h"
