@@ -178,6 +178,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         if (webFeedId != null) {
             getWebFeedMetadata();
         }
+        initBottomSheet();
 
         mCreatorProfileModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mCreatorModel, (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
