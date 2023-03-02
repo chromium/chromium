@@ -183,6 +183,9 @@ enum OptimizationType {
   // This optimization provides information about a sampling rate of Autofill
   // UKM metrics per origin based on origin popularity.
   AUTOFILL_SAMPLING_RATE = 27;
+  // This optimization provides information about whether a merchant is
+  // opted-out of Visa virtual cards for a URL.
+  VCN_MERCHANT_OPT_OUT_VISA = 28;
 }
 
 // Presents semantics for how page load URLs should be matched.

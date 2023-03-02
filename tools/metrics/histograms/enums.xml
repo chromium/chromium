@@ -76820,6 +76820,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="25" label="IBAN_AUTOFILL_BLOCKED"/>
   <int value="26" label="SALIENT_IMAGE"/>
   <int value="27" label="AUTOFILL_SAMPLING_RATE"/>
+  <int value="28" label="VCN_MERCHANT_OPT_OUT_VISA"/>
 </enum>
 
 <enum name="OptOutBlacklistReason">
