@@ -186,17 +186,17 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
         error_code);
     return nullptr;
   }
-  if (!beacon_file_contents->is_dict() || beacon_file_contents->DictEmpty()) {
+  if (!beacon_file_contents->is_dict() ||
+      beacon_file_contents->GetDict().empty()) {
     RecordBeaconFileState(BeaconFileState::kMissingDictionary);
     return nullptr;
   }
-  if (!beacon_file_contents->FindKeyOfType(kVariationsCrashStreak,
-                                           base::Value::Type::INTEGER)) {
+  const base::Value::Dict& beacon_dict = beacon_file_contents->GetDict();
+  if (!beacon_dict.FindInt(kVariationsCrashStreak)) {
     RecordBeaconFileState(BeaconFileState::kMissingCrashStreak);
     return nullptr;
   }
-  if (!beacon_file_contents->FindKeyOfType(prefs::kStabilityExitedCleanly,
-                                           base::Value::Type::BOOLEAN)) {
+  if (!beacon_dict.FindBool(prefs::kStabilityExitedCleanly)) {
     RecordBeaconFileState(BeaconFileState::kMissingBeacon);
     return nullptr;
   }
@@ -424,10 +424,10 @@ bool CleanExitBeacon::IsBeaconFileSupported() const {
 }
 
 void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetBoolKey(prefs::kStabilityExitedCleanly, exited_cleanly);
-  dict.SetIntKey(kVariationsCrashStreak,
-                 local_state_->GetInteger(kVariationsCrashStreak));
+  base::Value::Dict dict;
+  dict.Set(prefs::kStabilityExitedCleanly, exited_cleanly);
+  dict.Set(kVariationsCrashStreak,
+           local_state_->GetInteger(kVariationsCrashStreak));
 
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);
