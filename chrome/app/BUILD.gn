@@ -8,6 +8,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
+import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//crypto/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -191,7 +192,8 @@ static_library("test_support") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/about_ui",
-    "//components/memory_system",
+    "//components/gwp_asan/buildflags",
+    "//components/heap_profiling/in_process",
     "//components/nacl/common:buildflags",
     "//components/startup_metric_utils/browser",
     "//content/public/app",
@@ -264,6 +266,10 @@ static_library("test_support") {
       "//components/nacl/browser",
       "//components/nacl/renderer/plugin:nacl_trusted_plugin",
     ]
+  }
+
+  if (enable_gwp_asan) {
+    deps += [ "//components/gwp_asan/client" ]
   }
 }
 

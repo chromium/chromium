@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/common/chrome_content_client.h"
-#include "components/memory_system/memory_system.h"
 #include "content/public/app/content_main_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,6 +22,10 @@ class CommandLine;
 
 namespace chromeos {
 class LacrosService;
+}
+
+namespace heap_profiling {
+class HeapProfilerController;
 }
 
 namespace tracing {
@@ -96,7 +99,10 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
 
   ChromeContentClient chrome_content_client_;
 
-  memory_system::MemorySystem memory_system_;
+  // The controller schedules UMA heap profiles collections and forwarding down
+  // the reporting pipeline.
+  std::unique_ptr<heap_profiling::HeapProfilerController>
+      heap_profiler_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::LacrosService> lacros_service_;

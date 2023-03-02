@@ -86,7 +86,6 @@ static_library("content_shell_app") {
   deps = [
     ":content_shell_lib",
     "//components/crash/core/common:crash_key",
-    "//components/memory_system",
     "//content/public/app",
     "//v8",
   ]
