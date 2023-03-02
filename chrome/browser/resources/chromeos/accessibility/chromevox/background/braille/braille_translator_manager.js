@@ -7,6 +7,7 @@
  */
 import {BrailleTable} from '../../common/braille/braille_table.js';
 import {SettingsManager} from '../../common/settings_manager.js';
+import {Output} from '../output/output.js';
 
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {LibLouis} from './liblouis.js';
@@ -172,6 +173,29 @@ export class BrailleTranslatorManager {
    */
   getUncontractedTranslator() {
     return this.uncontractedTranslator_;
+  }
+
+  /** Toggles the braille table type. */
+  toggleBrailleTable() {
+    let brailleTableType = SettingsManager.getString('brailleTableType');
+    let output = '';
+    if (brailleTableType === 'brailleTable6') {
+      brailleTableType = 'brailleTable8';
+
+      // This label reads "switch to 8 dot braille".
+      output = '@OPTIONS_BRAILLE_TABLE_TYPE_6';
+    } else {
+      brailleTableType = 'brailleTable6';
+
+      // This label reads "switch to 6 dot braille".
+      output = '@OPTIONS_BRAILLE_TABLE_TYPE_8';
+    }
+
+    const brailleTable = SettingsManager.getString(brailleTableType);
+    SettingsManager.set('brailleTable', brailleTable);
+    SettingsManager.set('brailleTableType', brailleTableType);
+    this.refresh(brailleTable);
+    new Output().format(output).go();
   }
 
   /**

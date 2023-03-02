@@ -157,7 +157,7 @@ export class CommandHandler extends CommandHandlerInterface {
             !BrailleCaptionsBackground.isEnabled());
         return false;
       case Command.TOGGLE_BRAILLE_TABLE:
-        this.toggleBrailleTable_();
+        BrailleTranslatorManager.instance.toggleBrailleTable();
         return false;
       case Command.HELP:
         (new PanelCommand(PanelCommandType.TUTORIAL)).send();
@@ -1646,29 +1646,6 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
     }
     ChromeVox.tts.speak(announce, QueueMode.FLUSH);
-  }
-
-  /** @private */
-  toggleBrailleTable_() {
-    let brailleTableType = SettingsManager.getString('brailleTableType');
-    let output = '';
-    if (brailleTableType === 'brailleTable6') {
-      brailleTableType = 'brailleTable8';
-
-      // This label reads "switch to 8 dot braille".
-      output = '@OPTIONS_BRAILLE_TABLE_TYPE_6';
-    } else {
-      brailleTableType = 'brailleTable6';
-
-      // This label reads "switch to 6 dot braille".
-      output = '@OPTIONS_BRAILLE_TABLE_TYPE_8';
-    }
-
-    SettingsManager.set('brailleTable', SettingsManager.get(brailleTableType));
-    SettingsManager.set('brailleTableType', brailleTableType);
-    BrailleTranslatorManager.instance.refresh(
-        SettingsManager.getString(brailleTableType));
-    new Output().format(output).go();
   }
 
   /** @private */
