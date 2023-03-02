@@ -72,7 +72,7 @@ class AudioDeviceListenerMacTest : public testing::Test {
     const AudioObjectPropertyAddress addresses[] = {
         address,
         {kAudioHardwarePropertySleepingIsAllowed,
-         kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster}};
+         kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain}};
 
     for (void* context : contexts) {
       OSStatus status = AudioDeviceListenerMac::SimulateEventForTesting(

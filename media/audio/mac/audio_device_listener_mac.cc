@@ -23,32 +23,32 @@ namespace media {
 const AudioObjectPropertyAddress
     AudioDeviceListenerMac::kDefaultOutputDeviceChangePropertyAddress = {
         kAudioHardwarePropertyDefaultOutputDevice,
-        kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster};
+        kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
 
 const AudioObjectPropertyAddress
     AudioDeviceListenerMac::kDefaultInputDeviceChangePropertyAddress = {
         kAudioHardwarePropertyDefaultInputDevice,
-        kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster};
+        kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
 
 const AudioObjectPropertyAddress
     AudioDeviceListenerMac::kDevicesPropertyAddress = {
         kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal,
-        kAudioObjectPropertyElementMaster};
+        kAudioObjectPropertyElementMain};
 
 const AudioObjectPropertyAddress
     AudioDeviceListenerMac::kPropertyOutputSampleRateChanged = {
         kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
-        kAudioObjectPropertyElementMaster};
+        kAudioObjectPropertyElementMain};
 
 const AudioObjectPropertyAddress
     AudioDeviceListenerMac::kPropertyOutputSourceChanged = {
         kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeOutput,
-        kAudioObjectPropertyElementMaster};
+        kAudioObjectPropertyElementMain};
 
 const AudioObjectPropertyAddress
     AudioDeviceListenerMac::kPropertyInputSourceChanged = {
         kAudioDevicePropertyDataSource, kAudioDevicePropertyScopeInput,
-        kAudioObjectPropertyElementMaster};
+        kAudioObjectPropertyElementMain};
 
 class AudioDeviceListenerMac::PropertyListener {
  public:

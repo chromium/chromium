@@ -37,7 +37,7 @@ absl::optional<std::string> GetDeviceStringProperty(
   UInt32 size = sizeof(property_value);
   AudioObjectPropertyAddress property_address = {
       property_selector, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMaster};
+      kAudioObjectPropertyElementMain};
 
   OSStatus result = AudioObjectGetPropertyData(
       device_id, &property_address, 0 /* inQualifierDataSize */,
@@ -63,7 +63,7 @@ absl::optional<uint32_t> GetDeviceUint32Property(
     AudioObjectPropertySelector property_selector,
     AudioObjectPropertyScope property_scope) {
   AudioObjectPropertyAddress property_address = {
-      property_selector, property_scope, kAudioObjectPropertyElementMaster};
+      property_selector, property_scope, kAudioObjectPropertyElementMain};
   UInt32 property_value;
   UInt32 size = sizeof(property_value);
   OSStatus result = AudioObjectGetPropertyData(
@@ -79,7 +79,7 @@ uint32_t GetDevicePropertySize(AudioObjectID device_id,
                                AudioObjectPropertySelector property_selector,
                                AudioObjectPropertyScope property_scope) {
   AudioObjectPropertyAddress property_address = {
-      property_selector, property_scope, kAudioObjectPropertyElementMaster};
+      property_selector, property_scope, kAudioObjectPropertyElementMain};
   UInt32 size = 0;
   OSStatus result = AudioObjectGetPropertyDataSize(
       device_id, &property_address, 0 /* inQualifierDataSize */,
@@ -98,7 +98,7 @@ std::vector<AudioObjectID> GetAudioObjectIDs(
     AudioObjectPropertySelector property_selector) {
   AudioObjectPropertyAddress property_address = {
       property_selector, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMaster};
+      kAudioObjectPropertyElementMain};
   UInt32 size = 0;
   OSStatus result = AudioObjectGetPropertyDataSize(
       audio_object_id, &property_address, 0 /* inQualifierDataSize */,
@@ -198,7 +198,7 @@ absl::optional<std::string> TranslateDeviceSource(AudioObjectID device_id,
   UInt32 translation_size = sizeof(AudioValueTranslation);
   AudioObjectPropertyAddress property_address = {
       kAudioDevicePropertyDataSourceNameForIDCFString,
-      InputOutputScope(is_input), kAudioObjectPropertyElementMaster};
+      InputOutputScope(is_input), kAudioObjectPropertyElementMain};
 
   OSStatus result = AudioObjectGetPropertyData(
       device_id, &property_address, 0 /* inQualifierDataSize */,
@@ -285,7 +285,7 @@ bool IsPrivateAggregateDevice(AudioObjectID device_id) {
 
   const AudioObjectPropertyAddress property_address = {
       kAudioAggregateDevicePropertyComposition, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMaster};
+      kAudioObjectPropertyElementMain};
   CFDictionaryRef dictionary = nullptr;
   UInt32 size = sizeof(dictionary);
   OSStatus result = AudioObjectGetPropertyData(
@@ -385,7 +385,7 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
 
   // Get audio device latency.
   AudioObjectPropertyAddress property_address = {
-      kAudioDevicePropertyLatency, scope, kAudioObjectPropertyElementMaster};
+      kAudioDevicePropertyLatency, scope, kAudioObjectPropertyElementMain};
   UInt32 device_latency_frames = 0;
   size = sizeof(device_latency_frames);
   result = AudioObjectGetPropertyData(device_id, &property_address, 0, nullptr,
