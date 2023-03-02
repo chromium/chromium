@@ -95,14 +95,17 @@ suite('LocalProfileCustomizationTest', function() {
       const avatarGrid = customizeProfileElement.shadowRoot!
                              .querySelector('cr-profile-avatar-selector')!
                              .shadowRoot!.querySelector('#avatar-grid')!;
-      assertEquals(avatarGrid.querySelectorAll('.iron-selected').length, 1);
-      assertTrue(item.classList.contains('iron-selected'));
+      assertEquals(
+          avatarGrid.querySelectorAll('.avatar-container.iron-selected').length,
+          1);
+      assertTrue(item.parentElement!.classList.contains('iron-selected'));
       const displayedAvatarUrl =
           (customizeProfileElement.shadowRoot!.querySelector('img')!.src)
               .split('/')
               .pop();
       assertEquals(getProfileAvatarSelectorIconUrl(item), displayedAvatarUrl);
     }
+
     await browserProxy.whenCalled('getAvailableIcons');
     assertTrue(
         isChildVisible(customizeProfileElement, '#customizeAvatarIcon')!,
@@ -116,7 +119,7 @@ suite('LocalProfileCustomizationTest', function() {
         customizeProfileElement.shadowRoot!
             .querySelector('cr-profile-avatar-selector')!.shadowRoot!
             .querySelector('#avatar-grid')!.querySelectorAll<HTMLElement>(
-                '.avatar');
+                '.avatar-container > .avatar');
     assertEquals(items.length, 4);
     assertEquals(
         getProfileAvatarSelectorIconUrl(items[0]!),

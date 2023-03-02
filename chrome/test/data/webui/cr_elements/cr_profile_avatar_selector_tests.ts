@@ -82,7 +82,7 @@ suite('cr-profile-avatar-selector', function() {
   test('No avatar is initially selected', function() {
     assertFalse(!!avatarSelector.selectedAvatar);
     getGridItems().forEach(function(item) {
-      assertFalse(item.classList.contains('iron-selected'));
+      assertFalse(item.parentElement!.classList.contains('iron-selected'));
     });
   });
 
@@ -101,7 +101,7 @@ suite('cr-profile-avatar-selector', function() {
     assertEquals(getDeepActiveElement(), items[1]);
 
     items[1]!.click();
-    assertTrue(items[1]!.classList.contains('iron-selected'));
+    assertTrue(items[1]!.parentElement!.classList.contains('iron-selected'));
     verifyTabIndex(items, [-1, 0, -1]);
   });
 
@@ -126,11 +126,11 @@ suite('cr-profile-avatar-selector', function() {
     ];
     flush();
     items = getGridItems();
-    assertTrue(items[1]!.classList.contains('iron-selected'));
+    assertTrue(items[1]!.parentElement!.classList.contains('iron-selected'));
     verifyTabIndex(items, [-1, 0]);
 
     items[0]!.click();
-    assertTrue(items[0]!.classList.contains('iron-selected'));
+    assertTrue(items[0]!.parentElement!.classList.contains('iron-selected'));
     verifyTabIndex(items, [0, -1]);
   });
 
@@ -142,7 +142,7 @@ suite('cr-profile-avatar-selector', function() {
     verifyTabIndex(getGridItems(), [-1, 0, -1]);
 
     items[0]!.click();
-    assertTrue(items[0]!.classList.contains('iron-selected'));
+    assertTrue(items[0]!.parentElement!.classList.contains('iron-selected'));
     verifyTabIndex(items, [0, -1, -1]);
   });
 
@@ -152,9 +152,9 @@ suite('cr-profile-avatar-selector', function() {
     // Simulate tapping the third avatar.
     items[2]!.click();
     assertEquals('chrome://avatar3.png', avatarSelector.selectedAvatar!.url);
-    assertFalse(items[0]!.classList.contains('iron-selected'));
-    assertFalse(items[1]!.classList.contains('iron-selected'));
-    assertTrue(items[2]!.classList.contains('iron-selected'));
+    assertFalse(items[0]!.parentElement!.classList.contains('iron-selected'));
+    assertFalse(items[1]!.parentElement!.classList.contains('iron-selected'));
+    assertTrue(items[2]!.parentElement!.classList.contains('iron-selected'));
   });
 
   test('ignores modified key events', function() {
