@@ -734,9 +734,9 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChange) {
 
   auto matrix_with_tiny_change = [](const gfx::Transform matrix) {
     gfx::Transform m = matrix;
-    m.Translate(0.0000001, -0.0000001);
-    m.Scale(1.0000001);
-    m.Rotate(0.0000001);
+    m.Translate(0.0001, -0.0001);
+    m.Scale(1.000001);
+    m.Rotate(0.000001);
     return m;
   };
 

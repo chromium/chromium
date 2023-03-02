@@ -70,10 +70,11 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // transform nodes when no raster invalidation is needed. For example, when
   // a composited layer previously not transformed now gets transformed.
   // Check for real accumulated transform change instead.
-  static constexpr double kTolerance = 1e-5f;
+  static constexpr double kAbsTranslationTolerance = 1e-2f;
+  static constexpr double kOtherTolerance = 1e-4f;
   if (!new_chunk_info.chunk_to_layer_transform.ApproximatelyEqual(
-          old_chunk_info.chunk_to_layer_transform, kTolerance, kTolerance,
-          kTolerance)) {
+          old_chunk_info.chunk_to_layer_transform, kAbsTranslationTolerance,
+          kOtherTolerance, kOtherTolerance)) {
     return PaintInvalidationReason::kPaintProperty;
   }
 
