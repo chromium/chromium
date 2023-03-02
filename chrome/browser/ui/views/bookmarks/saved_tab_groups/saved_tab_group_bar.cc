@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/guid.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,6 +22,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
@@ -63,8 +67,9 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
           GetLayoutConstant(TOOLBAR_ELEMENT_PADDING));
   SetLayoutManager(std::move(layout_manager));
 
-  if (!saved_tab_group_model_)
+  if (!saved_tab_group_model_) {
     return;
+  }
 
   saved_tab_group_model_->AddObserver(this);
 
@@ -88,14 +93,119 @@ SavedTabGroupBar::~SavedTabGroupBar() {
   // Remove all buttons from the hierarchy
   RemoveAllButtons();
 
-  if (saved_tab_group_model_)
+  if (saved_tab_group_model_) {
     saved_tab_group_model_->RemoveObserver(this);
+  }
 }
 
 void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetNameChecked(
       l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS));
+}
+
+void SavedTabGroupBar::UpdateDropIndex() {
+  // TODO(tbergquist): Test this in RTL.
+
+  const gfx::Point cursor_location = drag_data_->location().value();
+  const base::GUID dragged_group_guid = drag_data_->guid();
+
+  int i = 0;
+  // The current index of the dragged group in the bar.
+  absl::optional<int> current_index = absl::nullopt;
+  // The index we want the dragged group to be dropped at in the bar.
+  absl::optional<int> drop_index = absl::nullopt;
+  for (views::View* child : children()) {
+    SavedTabGroupButton* button =
+        views::AsViewClass<SavedTabGroupButton>(child);
+    if (!button) {
+      continue;
+    }
+
+    if (button->guid() == dragged_group_guid) {
+      current_index = i;
+    }
+
+    // We want to drop in front of the first button that's positioned after
+    // `cursor_location`.
+    if (!drop_index.has_value() &&
+        button->bounds().CenterPoint().x() > cursor_location.x()) {
+      drop_index = i;
+    }
+    i++;
+  }
+  // If no buttons were after `cursor_location`, drop at the end.
+  drop_index = drop_index.value_or(i);
+
+  // If the dragged group is going from left to right within this bar (i.e. if
+  // `desired_index` > `current_index`), we must account for all of the groups
+  // between the two indices shifting by 1 when the group is moved from
+  // `current_index`.
+  if (current_index.has_value() && current_index < drop_index) {
+    drop_index = drop_index.value() - 1;
+  }
+
+  drag_data_->SetInsertionIndex(drop_index);
+}
+
+void SavedTabGroupBar::HandleDrop() {
+  // TODO(tbergquist): go through the controller/service
+  // TODO(tbergquist): maybe related to the above - this method doesn't always
+  // work as expected.
+  saved_tab_group_model_->Reorder(drag_data_->guid(),
+                                  drag_data_->insertion_index().value());
+}
+
+bool SavedTabGroupBar::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  format_types->insert(SavedTabGroupDragData::GetFormatType());
+  return true;
+}
+
+bool SavedTabGroupBar::AreDropTypesRequired() {
+  return true;
+}
+
+bool SavedTabGroupBar::CanDrop(const OSExchangeData& data) {
+  // TODO(tbergquist): prevent cross-profile drops.
+  return data.HasCustomFormat(SavedTabGroupDragData::GetFormatType());
+}
+
+void SavedTabGroupBar::OnDragEntered(const ui::DropTargetEvent& event) {
+  absl::optional<SavedTabGroupDragData> drag_data =
+      SavedTabGroupDragData::ReadFromOSExchangeData(&(event.data()));
+  CHECK(drag_data.has_value());
+
+  drag_data_ = std::make_unique<SavedTabGroupDragData>(drag_data.value());
+
+  drag_data_->SetLocation(event.location());
+  UpdateDropIndex();
+}
+
+int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
+  drag_data_->SetLocation(event.location());
+  UpdateDropIndex();
+  return ui::DragDropTypes::DRAG_MOVE;
+}
+
+void SavedTabGroupBar::OnDragExited() {
+  drag_data_.release();
+}
+
+void SavedTabGroupBar::OnDragDone() {
+  drag_data_.release();
+}
+
+views::View::DropCallback SavedTabGroupBar::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  return base::BindOnce(
+      [](SavedTabGroupBar* bar, const ui::DropTargetEvent& event,
+         ui::mojom::DragOperation& drag) {
+        bar->HandleDrop();
+        drag = ui::mojom::DragOperation::kMove;
+      },
+      base::Unretained(this));
 }
 
 void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::GUID& guid) {
@@ -114,6 +224,7 @@ void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
 }
 
 void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
+  // TODO(tbergquist): this might be concurrent modifying while iterating?
   for (views::View* child : children()) {
     if (child == overflow_button_) {
       continue;
@@ -153,8 +264,9 @@ int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
     int next_x =
         current_x +
         (button->GetVisible() ? preferred_size.width() + button_padding : 0);
-    if (next_x > max_x)
+    if (next_x > max_x) {
       return current_x;
+    }
     current_x = next_x;
   }
   return current_x;
@@ -194,8 +306,9 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
 
 void SavedTabGroupBar::SavedTabGroupAdded(const base::GUID& guid) {
   absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
-  if (!index.has_value())
+  if (!index.has_value()) {
     return;
+  }
   AddTabGroupButton(*saved_tab_group_model_->Get(guid), index.value());
   PreferredSizeChanged();
 }
@@ -207,8 +320,9 @@ void SavedTabGroupBar::SavedTabGroupRemoved(const base::GUID& guid) {
 
 void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
   absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
-  if (!index.has_value())
+  if (!index.has_value()) {
     return;
+  }
   const SavedTabGroup* group = saved_tab_group_model_->Get(guid);
   SavedTabGroupButton* button =
       views::AsViewClass<SavedTabGroupButton>(GetButton(group->saved_guid()));
@@ -288,8 +402,9 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
   // TODO: Handle click if group has already been opened (crbug.com/1238539)
   // left click on a saved tab group opens all links in new group
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
-    if (group->saved_tabs().empty())
+    if (group->saved_tabs().empty()) {
       return;
+    }
     SavedTabGroupKeyedService* keyed_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
 
