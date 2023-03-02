@@ -48,7 +48,6 @@ found in the LICENSE file.
     <dimen name="dropdown_item_divider_height">1px</dimen>
     <dimen name="dropdown_item_label_margin">10dp</dimen>
     <dimen name="dropdown_icon_margin">8dp</dimen>
-    <dimen name="dropdown_vertical_margin">4dp</dimen>
     <dimen name="dropdown_elevation">2dp</dimen>
 
     <!-- Use arbitrary high number so that if the button text spans multiple
