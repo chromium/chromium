@@ -142,13 +142,15 @@ export class GalleryButton implements ResultSaver {
     this.coverPhoto.src = cover?.url ?? '';
 
     if (file !== null) {
-      ChromeHelper.getInstance().monitorFileDeletion(file.name, async () => {
-        try {
-          await this.checkCover();
-        } catch (e) {
-          reportError(ErrorType.CHECK_COVER_FAILURE, ErrorLevel.ERROR, e);
-        }
-      });
+      // The promise is only resolved after the file is deleted.
+      void ChromeHelper.getInstance().monitorFileDeletion(
+          file.name, async () => {
+            try {
+              await this.checkCover();
+            } catch (e) {
+              reportError(ErrorType.CHECK_COVER_FAILURE, ErrorLevel.ERROR, e);
+            }
+          });
     }
   }
 
