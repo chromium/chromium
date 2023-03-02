@@ -39,6 +39,10 @@ class AutocompleteScoringModelService : public KeyedService {
           const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&)>
           scoring_callback);
 
+  // Returns whether the scoring model is loaded and the pointer to the
+  // handler is non-null.
+  bool UrlScoringModelAvailable();
+
  private:
   scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
 
