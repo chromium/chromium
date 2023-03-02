@@ -562,7 +562,8 @@ id<GREYMatcher> EditDoneButton() {
   if ([self isRunningTest:@selector(testLayoutWithNotesEnabled)] ||
       [self isRunningTest:@selector(testAddPasswordLayoutWithLongNotes)] ||
       [self isRunningTest:@selector
-            (testAddPasswordSaveButtonStateOnFieldChanges)]) {
+            (testAddPasswordSaveButtonStateOnFieldChanges)] ||
+      [self isRunningTest:@selector(testLayoutWithLongNotes)]) {
     config.features_enabled.push_back(syncer::kPasswordNotesWithBackup);
   }
 
@@ -1379,6 +1380,60 @@ id<GREYMatcher> EditDoneButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// Checks that entering too long note while editing a password blocks the save
+// button and displays a footer explanation.
+- (void)testLayoutWithLongNotes {
+  SaveExamplePasswordFormWithNote();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"
+                                            username:@"concrete username"]
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  TapEdit();
+  [[EarlGrey selectElementWithMatcher:TooLongNoteFooter()]
+      assertWithMatcher:grey_nil()];
+
+  // Entering too long note results in "Done" button being disabled and footer
+  // displayed.
+  NSString* note = [@"" stringByPaddingToLength:1001
+                                     withString:@"a"
+                                startingAtIndex:0];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_replaceText(note)];
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsViewControllerId)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  [[EarlGrey selectElementWithMatcher:TooLongNoteFooter()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Entering note with length close to the limit should result in displaying
+  // footer only ("Done" button should be enabled).
+  note = [@"" stringByPaddingToLength:1000 withString:@"a" startingAtIndex:0];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_replaceText(note)];
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:TooLongNoteFooter()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // For shorter notes there should be no footer and "Done" button enabled.
+  note = [@"" stringByPaddingToLength:100 withString:@"a" startingAtIndex:0];
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      performAction:grey_replaceText(note)];
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      assertWithMatcher:grey_enabled()];
+  [[EarlGrey selectElementWithMatcher:TooLongNoteFooter()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Checks the order of the elements in the detail view layout for a blocked
