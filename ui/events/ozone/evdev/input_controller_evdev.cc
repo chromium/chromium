@@ -451,4 +451,9 @@ void InputControllerEvdev::SetHapticTouchpadEffectForNextButtonRelease(
                                                                      strength);
 }
 
+void InputControllerEvdev::OnInputDeviceRemoved(int device_id) {
+  input_device_settings_.RemoveDeviceFromSettings(device_id);
+  ScheduleUpdateDeviceSettings();
+}
+
 }  // namespace ui

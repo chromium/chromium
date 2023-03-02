@@ -546,7 +546,8 @@ void EventFactoryEvdev::StartThread() {
                                      weak_ptr_factory_.GetWeakPtr()));
   thread_.Start(std::move(proxy_dispatcher), cursor_,
                 base::BindOnce(&EventFactoryEvdev::OnThreadStarted,
-                               weak_ptr_factory_.GetWeakPtr()));
+                               weak_ptr_factory_.GetWeakPtr()),
+                &input_controller_);
 }
 
 void EventFactoryEvdev::OnThreadStarted(

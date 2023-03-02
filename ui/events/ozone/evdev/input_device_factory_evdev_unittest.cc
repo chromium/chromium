@@ -16,6 +16,7 @@
 #include "ui/events/ozone/evdev/event_converter_test_util.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/event_device_test_util.h"
+#include "ui/events/ozone/evdev/input_controller_evdev.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev_metrics.h"
 #include "ui/events/ozone/evdev/input_device_opener.h"
 #include "ui/events/ozone/features.h"
@@ -166,6 +167,7 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ui::DeviceEventDispatcherEvdev> dispatcher_;
+  InputControllerEvdev input_controller_{nullptr, nullptr, nullptr};
   base::HistogramTester histogram_tester_;
 
   void SetUp() override {
@@ -195,7 +197,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
 
@@ -219,7 +222,8 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachSingularMouse) {
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -251,7 +255,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
@@ -285,7 +290,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
@@ -313,7 +319,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -339,7 +346,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
 
@@ -373,7 +381,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
@@ -407,7 +416,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
@@ -435,7 +445,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -468,7 +479,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
@@ -496,7 +508,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -520,7 +533,8 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachUSBKeyboardTriggersMetricLogging) {
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -544,7 +558,8 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachBluetoothMouseTriggersMetricLogging) {
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
-          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)));
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
   input_device_factory_->OnStartupScanComplete();
   input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

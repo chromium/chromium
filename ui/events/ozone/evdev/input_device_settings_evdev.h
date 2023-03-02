@@ -56,6 +56,8 @@ struct COMPONENT_EXPORT(EVDEV) InputDeviceSettingsEvdev {
   InputDeviceSettingsEvdev(const InputDeviceSettingsEvdev&);
   ~InputDeviceSettingsEvdev();
 
+  void RemoveDeviceFromSettings(int device_id);
+
   TouchpadSettingsEvdev& GetTouchpadSettings();
   TouchpadSettingsEvdev& GetTouchpadSettings(int device_id);
   const TouchpadSettingsEvdev& GetTouchpadSettings() const;

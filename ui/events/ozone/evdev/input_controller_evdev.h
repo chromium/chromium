@@ -127,6 +127,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength) override;
 
+  // Notifies the controller to delete any data for the given `device_id`.
+  void OnInputDeviceRemoved(int device_id);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(InputControllerEvdevTest, AccelerationSuspension);
   FRIEND_TEST_ALL_PREFIXES(InputControllerEvdevTest,

@@ -22,6 +22,12 @@ InputDeviceSettingsEvdev::InputDeviceSettingsEvdev(
     const InputDeviceSettingsEvdev& input_device_settings) = default;
 InputDeviceSettingsEvdev::~InputDeviceSettingsEvdev() = default;
 
+void InputDeviceSettingsEvdev::RemoveDeviceFromSettings(int device_id) {
+  touchpad_settings_.erase(device_id);
+  pointing_stick_settings_.erase(device_id);
+  mouse_settings_.erase(device_id);
+}
+
 TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings() {
   return touchpad_settings_[kSharedSettingsDeviceId];
 }

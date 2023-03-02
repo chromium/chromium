@@ -26,6 +26,7 @@
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/input_controller_evdev.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 #include "ui/events/ozone/evdev/keyboard_imposter_checker_evdev.h"
 #include "ui/events/ozone/evdev/microphone_mute_switch_event_converter_evdev.h"
@@ -91,7 +92,8 @@ bool IsUncategorizedDevice(const EventConverterEvdev& converter) {
 InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
     std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
     CursorDelegateEvdev* cursor,
-    std::unique_ptr<InputDeviceOpener> input_device_opener)
+    std::unique_ptr<InputDeviceOpener> input_device_opener,
+    InputControllerEvdev* input_controller)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       cursor_(cursor),
       shared_palm_state_(new SharedPalmDetectionFilterState),
@@ -100,7 +102,8 @@ InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
 #endif
       dispatcher_(std::move(dispatcher)),
       keyboard_imposter_checker_(new KeyboardImposterCheckerEvdev),
-      input_device_opener_(std::move(input_device_opener)) {
+      input_device_opener_(std::move(input_device_opener)),
+      input_controller_(input_controller) {
 }
 
 InputDeviceFactoryEvdev::~InputDeviceFactoryEvdev() = default;
@@ -222,6 +225,9 @@ void InputDeviceFactoryEvdev::DetachInputDevice(const base::FilePath& path) {
 
     // Cancel libevent notifications from this converter.
     converter->Stop();
+
+    // Notify the controller that the input device was removed.
+    input_controller_->OnInputDeviceRemoved(converter->id());
 
     // Decrement device count on physical port. Get ids of devices on the same
     // physical port.
