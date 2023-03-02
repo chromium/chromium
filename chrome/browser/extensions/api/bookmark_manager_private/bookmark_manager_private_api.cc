@@ -368,12 +368,12 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
   if (cut && HasPermanentNodes(nodes))
     return Error(bookmark_keys::kModifySpecialError);
   bookmarks::CopyToClipboard(model, nodes, cut);
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateCopyFunction::RunOnReady() {
-  std::unique_ptr<Copy::Params> params(Copy::Params::CreateDeprecated(args()));
+  absl::optional<Copy::Params> params = Copy::Params::Create(args());
   if (!params)
     return BadMessage();
   return CopyOrCut(false, params->id_list);
@@ -384,7 +384,7 @@ BookmarkManagerPrivateCutFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<Cut::Params> params(Cut::Params::CreateDeprecated(args()));
+  absl::optional<Cut::Params> params = Cut::Params::Create(args());
   if (!params)
     return BadMessage();
   return CopyOrCut(true, params->id_list);
@@ -395,8 +395,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<Paste::Params> params(
-      Paste::Params::CreateDeprecated(args()));
+  absl::optional<Paste::Params> params = Paste::Params::Create(args());
   if (!params)
     return BadMessage();
   BookmarkModel* model =
@@ -424,13 +423,12 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
     highest_index = parent_node->children().size();
 
   bookmarks::PasteFromClipboard(model, parent_node, highest_index);
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
-  std::unique_ptr<CanPaste::Params> params(
-      CanPaste::Params::CreateDeprecated(args()));
+  absl::optional<CanPaste::Params> params = CanPaste::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -452,8 +450,8 @@ BookmarkManagerPrivateSortChildrenFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<SortChildren::Params> params(
-      SortChildren::Params::CreateDeprecated(args()));
+  absl::optional<SortChildren::Params> params =
+      SortChildren::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -464,7 +462,7 @@ BookmarkManagerPrivateSortChildrenFunction::RunOnReady() {
   if (!CanBeModified(parent_node, &error))
     return Error(error);
   model->SortChildren(parent_node);
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -473,8 +471,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
   content::WebContents* web_contents = GetSenderWebContents();
-  std::unique_ptr<StartDrag::Params> params(
-      StartDrag::Params::CreateDeprecated(args()));
+  absl::optional<StartDrag::Params> params = StartDrag::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -494,7 +491,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
       GetProfile(), {std::move(nodes), params->drag_node_index, web_contents,
                      source, gfx::Point(params->x, params->y)});
 
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -502,7 +499,7 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<Drop::Params> params(Drop::Params::CreateDeprecated(args()));
+  absl::optional<Drop::Params> params = Drop::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -533,13 +530,13 @@ BookmarkManagerPrivateDropFunction::RunOnReady() {
       GetProfile(), *drag_data, drop_parent, drop_index, copy);
 
   router->ClearBookmarkNodeData();
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateGetSubtreeFunction::RunOnReady() {
-  std::unique_ptr<GetSubtree::Params> params(
-      GetSubtree::Params::CreateDeprecated(args()));
+  absl::optional<GetSubtree::Params> params =
+      GetSubtree::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -570,8 +567,8 @@ BookmarkManagerPrivateRemoveTreesFunction::RunOnReady() {
   if (!EditBookmarksEnabled())
     return Error(bookmark_keys::kEditBookmarksDisabled);
 
-  std::unique_ptr<RemoveTrees::Params> params(
-      RemoveTrees::Params::CreateDeprecated(args()));
+  absl::optional<RemoveTrees::Params> params =
+      RemoveTrees::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -587,7 +584,7 @@ BookmarkManagerPrivateRemoveTreesFunction::RunOnReady() {
       return Error(error);
   }
 
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -597,7 +594,7 @@ BookmarkManagerPrivateUndoFunction::RunOnReady() {
 
   BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager()->
       Undo();
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
@@ -607,13 +604,13 @@ BookmarkManagerPrivateRedoFunction::RunOnReady() {
 
   BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager()->
       Redo();
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
-  std::unique_ptr<OpenInNewTab::Params> params(
-      OpenInNewTab::Params::CreateDeprecated(args()));
+  absl::optional<OpenInNewTab::Params> params =
+      OpenInNewTab::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -634,13 +631,13 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
   if (!result.has_value())
     return Error(result.error());
 
-  return WithArguments();
+  return NoArguments();
 }
 
 ExtensionFunction::ResponseValue
 BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
-  std::unique_ptr<OpenInNewWindow::Params> params(
-      OpenInNewWindow::Params::CreateDeprecated(args()));
+  absl::optional<OpenInNewWindow::Params> params =
+      OpenInNewWindow::Params::Create(args());
   if (!params)
     return BadMessage();
 
@@ -708,7 +705,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
     first_tab = false;
   }
 
-  return WithArguments();
+  return NoArguments();
 }
 
 BookmarkManagerPrivateIOFunction::BookmarkManagerPrivateIOFunction() {}
