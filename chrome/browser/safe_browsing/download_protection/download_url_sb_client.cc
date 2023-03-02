@@ -115,21 +115,21 @@ void DownloadUrlSBClient::ReportMalware(SBThreatType threat_type) {
     post_data += url_chain_[i].spec() + "\n";
   }
 
-  safe_browsing::HitReport hit_report;
-  hit_report.malicious_url = url_chain_.back();
-  hit_report.page_url = url_chain_.front();
-  hit_report.referrer_url = referrer_url_;
-  hit_report.is_subresource = true;
-  hit_report.threat_type = threat_type;
-  hit_report.threat_source = database_manager_->GetThreatSource();
-  hit_report.post_data = post_data;
-  hit_report.extended_reporting_level = extended_reporting_level_;
-  hit_report.is_enhanced_protection = is_enhanced_protection_;
-  hit_report.is_metrics_reporting_active =
+  std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+  hit_report->malicious_url = url_chain_.back();
+  hit_report->page_url = url_chain_.front();
+  hit_report->referrer_url = referrer_url_;
+  hit_report->is_subresource = true;
+  hit_report->threat_type = threat_type;
+  hit_report->threat_source = database_manager_->GetThreatSource();
+  hit_report->post_data = post_data;
+  hit_report->extended_reporting_level = extended_reporting_level_;
+  hit_report->is_enhanced_protection = is_enhanced_protection_;
+  hit_report->is_metrics_reporting_active =
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 
   ui_manager_->MaybeReportSafeBrowsingHit(
-      hit_report, content::DownloadItemUtils::GetWebContents(item_));
+      std::move(hit_report), content::DownloadItemUtils::GetWebContents(item_));
 }
 
 void DownloadUrlSBClient::IdentifyReferrerChain() {

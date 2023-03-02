@@ -392,7 +392,7 @@ BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
 // or after the warning dialog for download urls, only for extended_reporting
 // users who are not in incognito mode.
 void BaseUIManager::MaybeReportSafeBrowsingHit(
-    const HitReport& hit_report,
+    std::unique_ptr<HitReport> hit_report,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return;

@@ -138,25 +138,36 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
 
 // Sends a SafeBrowsing "hit" report.
 void PingManager::ReportSafeBrowsingHit(
-    const safe_browsing::HitReport& hit_report) {
+    std::unique_ptr<safe_browsing::HitReport> hit_report) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  GURL report_url = SafeBrowsingHitUrl(hit_report);
+  GURL report_url = SafeBrowsingHitUrl(hit_report.get());
   resource_request->url = report_url;
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  if (!hit_report.post_data.empty())
+  if (!hit_report->post_data.empty()) {
     resource_request->method = "POST";
+  }
 
   auto report_ptr = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
 
-  if (!hit_report.post_data.empty())
-    report_ptr->AttachStringForUpload(hit_report.post_data, "text/plain");
+  if (!hit_report->post_data.empty()) {
+    report_ptr->AttachStringForUpload(hit_report->post_data, "text/plain");
+  }
 
   report_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&PingManager::OnURLLoaderComplete, base::Unretained(this),
                      report_ptr.get()));
   safebrowsing_reports_.insert(std::move(report_ptr));
+
+  // The following is to log this HitReport on any open chrome://safe-browsing
+  // pages.
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebUIDelegate::AddToHitReportsSent,
+                     // Unretained is okay because in practice, webui_delegate_
+                     // is a singleton.
+                     base::Unretained(webui_delegate_), std::move(hit_report)));
 }
 
 // Sends threat details for users who opt-in.
@@ -243,18 +254,18 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
 }
 
 GURL PingManager::SafeBrowsingHitUrl(
-    const safe_browsing::HitReport& hit_report) const {
-  DCHECK(hit_report.threat_type == SB_THREAT_TYPE_URL_MALWARE ||
-         hit_report.threat_type == SB_THREAT_TYPE_URL_PHISHING ||
-         hit_report.threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
-         hit_report.threat_type == SB_THREAT_TYPE_URL_BINARY_MALWARE ||
-         hit_report.threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
-         hit_report.threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE);
+    safe_browsing::HitReport* hit_report) const {
+  DCHECK(hit_report->threat_type == SB_THREAT_TYPE_URL_MALWARE ||
+         hit_report->threat_type == SB_THREAT_TYPE_URL_PHISHING ||
+         hit_report->threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
+         hit_report->threat_type == SB_THREAT_TYPE_URL_BINARY_MALWARE ||
+         hit_report->threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
+         hit_report->threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE);
   std::string url =
-      GetReportUrl(config_, "report", &hit_report.extended_reporting_level,
-                   hit_report.is_enhanced_protection);
+      GetReportUrl(config_, "report", &hit_report->extended_reporting_level,
+                   hit_report->is_enhanced_protection);
   std::string threat_list = "none";
-  switch (hit_report.threat_type) {
+  switch (hit_report->threat_type) {
     case SB_THREAT_TYPE_URL_MALWARE:
       threat_list = "malblhit";
       break;
@@ -278,7 +289,7 @@ GURL PingManager::SafeBrowsingHitUrl(
   }
 
   std::string threat_source = "none";
-  switch (hit_report.threat_source) {
+  switch (hit_report->threat_source) {
     case safe_browsing::ThreatSource::REMOTE:
       threat_source = "rem";
       break;
@@ -297,11 +308,11 @@ GURL PingManager::SafeBrowsingHitUrl(
 
   // Add user_population component only if it's not empty.
   std::string user_population_comp;
-  if (!hit_report.population_id.empty()) {
+  if (!hit_report->population_id.empty()) {
     // Population_id should be URL-safe, but escape it and size-limit it
     // anyway since it came from outside Chrome.
     std::string up_str =
-        base::EscapeQueryParamValue(hit_report.population_id, true);
+        base::EscapeQueryParamValue(hit_report->population_id, true);
     if (up_str.size() > 512) {
       DCHECK(false) << "population_id is too long: " << up_str;
       up_str = "UP_STRING_TOO_LONG";
@@ -313,12 +324,13 @@ GURL PingManager::SafeBrowsingHitUrl(
   return GURL(base::StringPrintf(
       "%s&evts=%s&evtd=%s&evtr=%s&evhr=%s&evtb=%d&src=%s&m=%d%s", url.c_str(),
       threat_list.c_str(),
-      base::EscapeQueryParamValue(hit_report.malicious_url.spec(), true)
+      base::EscapeQueryParamValue(hit_report->malicious_url.spec(), true)
           .c_str(),
-      base::EscapeQueryParamValue(hit_report.page_url.spec(), true).c_str(),
-      base::EscapeQueryParamValue(hit_report.referrer_url.spec(), true).c_str(),
-      hit_report.is_subresource, threat_source.c_str(),
-      hit_report.is_metrics_reporting_active, user_population_comp.c_str()));
+      base::EscapeQueryParamValue(hit_report->page_url.spec(), true).c_str(),
+      base::EscapeQueryParamValue(hit_report->referrer_url.spec(), true)
+          .c_str(),
+      hit_report->is_subresource, threat_source.c_str(),
+      hit_report->is_metrics_reporting_active, user_population_comp.c_str()));
 }
 
 GURL PingManager::ThreatDetailsUrl() const {

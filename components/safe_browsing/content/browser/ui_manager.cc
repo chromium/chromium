@@ -14,7 +14,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -63,17 +62,17 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
   WebContents* web_contents =
       security_interstitials::GetWebContentsForResource(resource);
   DCHECK(web_contents);
-  HitReport hit_report;
-  hit_report.malicious_url = resource.url;
-  hit_report.is_subresource = resource.is_subresource;
-  hit_report.threat_type = resource.threat_type;
-  hit_report.threat_source = resource.threat_source;
-  hit_report.population_id = resource.threat_metadata.population_id;
+  std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+  hit_report->malicious_url = resource.url;
+  hit_report->is_subresource = resource.is_subresource;
+  hit_report->threat_type = resource.threat_type;
+  hit_report->threat_source = resource.threat_source;
+  hit_report->population_id = resource.threat_metadata.population_id;
 
   NavigationEntry* entry = GetNavigationEntryForResource(resource);
   if (entry) {
-    hit_report.page_url = entry->GetURL();
-    hit_report.referrer_url = entry->GetReferrer().url;
+    hit_report->page_url = entry->GetURL();
+    hit_report->referrer_url = entry->GetReferrer().url;
   }
 
   // When the malicious url is on the main frame, and resource.original_url
@@ -84,18 +83,18 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
   // with page_url.
   if (!resource.is_subresource && !resource.original_url.is_empty() &&
       resource.original_url != resource.url) {
-    hit_report.referrer_url = hit_report.page_url;
-    hit_report.page_url = resource.original_url;
+    hit_report->referrer_url = hit_report->page_url;
+    hit_report->page_url = resource.original_url;
   }
 
   const auto& prefs = *delegate_->GetPrefs(web_contents->GetBrowserContext());
 
-  hit_report.extended_reporting_level = GetExtendedReportingLevel(prefs);
-  hit_report.is_enhanced_protection = IsEnhancedProtectionEnabled(prefs);
-  hit_report.is_metrics_reporting_active =
+  hit_report->extended_reporting_level = GetExtendedReportingLevel(prefs);
+  hit_report->is_enhanced_protection = IsEnhancedProtectionEnabled(prefs);
+  hit_report->is_metrics_reporting_active =
       delegate_->IsMetricsAndCrashReportingEnabled();
 
-  MaybeReportSafeBrowsingHit(hit_report, web_contents);
+  MaybeReportSafeBrowsingHit(std::move(hit_report), web_contents);
 
   for (Observer& observer : observer_list_)
     observer.OnSafeBrowsingHit(resource);
@@ -210,10 +209,10 @@ void SafeBrowsingUIManager::CheckExperimentEligibilityAndStartBlockingPage(
   StartDisplayingBlockingPage(resource);
 }
 
-bool SafeBrowsingUIManager::ShouldSendHitReport(const HitReport& hit_report,
+bool SafeBrowsingUIManager::ShouldSendHitReport(HitReport* hit_report,
                                                 WebContents* web_contents) {
   return web_contents &&
-         hit_report.extended_reporting_level != SBER_LEVEL_OFF &&
+         hit_report->extended_reporting_level != SBER_LEVEL_OFF &&
          !web_contents->GetBrowserContext()->IsOffTheRecord() &&
          delegate_->IsSendingOfHitReportsEnabled();
 }
@@ -222,32 +221,24 @@ bool SafeBrowsingUIManager::ShouldSendHitReport(const HitReport& hit_report,
 // or after the warning dialog for download urls, only for
 // extended-reporting users.
 void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
-    const HitReport& hit_report,
+    std::unique_ptr<HitReport> hit_report,
     WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Send report if user opted-in to extended reporting and is not in
   //  incognito mode.
-  if (!ShouldSendHitReport(hit_report, web_contents))
+  if (!ShouldSendHitReport(hit_report.get(), web_contents)) {
     return;
+  }
 
   if (shut_down_)
     return;
 
-  DVLOG(1) << "ReportSafeBrowsingHit: " << hit_report.malicious_url << " "
-           << hit_report.page_url << " " << hit_report.referrer_url << " "
-           << hit_report.is_subresource << " " << hit_report.threat_type;
+  DVLOG(1) << "ReportSafeBrowsingHit: " << hit_report->malicious_url << " "
+           << hit_report->page_url << " " << hit_report->referrer_url << " "
+           << hit_report->is_subresource << " " << hit_report->threat_type;
   delegate_->GetPingManager(web_contents->GetBrowserContext())
-      ->ReportSafeBrowsingHit(hit_report);
-
-  // The following is to log this HitReport on any open chrome://safe-browsing
-  // pages.
-  auto hit_report_copy = std::make_unique<HitReport>(hit_report);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebUIInfoSingleton::AddToHitReportsSent,
-                     base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     std::move(hit_report_copy)));
+      ->ReportSafeBrowsingHit(std::move(hit_report));
 }
 
 // Static.

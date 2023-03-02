@@ -294,9 +294,10 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
     threat_details_done_ = true;
   }
 
-  void MaybeReportSafeBrowsingHit(const HitReport& hit_report,
+  void MaybeReportSafeBrowsingHit(std::unique_ptr<HitReport> hit_report,
                                   WebContents* web_contents) override {
-    if (SafeBrowsingUIManager::ShouldSendHitReport(hit_report, web_contents)) {
+    if (SafeBrowsingUIManager::ShouldSendHitReport(hit_report.get(),
+                                                   web_contents)) {
       hit_report_sent_ = true;
     }
   }

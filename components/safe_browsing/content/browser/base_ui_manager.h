@@ -69,7 +69,7 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // to the server. Can only be called on UI thread. Will only upload a hit
   // report if the user has enabled SBER and is not currently in incognito mode.
   virtual void MaybeReportSafeBrowsingHit(
-      const safe_browsing::HitReport& hit_report,
+      std::unique_ptr<safe_browsing::HitReport> hit_report,
       content::WebContents* web_contents);
 
   // A convenience wrapper method for IsUrlAllowlistedOrPendingForWebContents.

@@ -67,7 +67,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "&ext=1&enh=1&evts=malblhit&evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=1&src=l4&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -86,7 +86,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=l4&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -105,7 +105,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=l4&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -124,7 +124,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=rem&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -143,7 +143,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=l4&m=0",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -162,7 +162,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=1&src=l4&m=0",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   // Same as above, but add population_id
@@ -183,7 +183,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=1&src=l4&m=0&up=foo+bar",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   // Threat source is real time check.
@@ -203,7 +203,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=rt&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 }
 

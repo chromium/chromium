@@ -275,12 +275,14 @@ std::string JsRequestTestNavigateAndWaitForTitle(Browser* browser,
 
 class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
  public:
-  void MaybeReportSafeBrowsingHit(const safe_browsing::HitReport& hit_report,
-                                  content::WebContents* web_contents) override {
+  void MaybeReportSafeBrowsingHit(
+      std::unique_ptr<safe_browsing::HitReport> hit_report,
+      content::WebContents* web_contents) override {
     EXPECT_FALSE(got_hit_report_);
     got_hit_report_ = true;
-    hit_report_ = hit_report;
-    SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(hit_report, web_contents);
+    hit_report_ = *(hit_report.get());
+    SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(std::move(hit_report),
+                                                      web_contents);
   }
 
   bool got_hit_report_ = false;

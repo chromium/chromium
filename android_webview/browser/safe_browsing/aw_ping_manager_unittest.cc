@@ -117,17 +117,19 @@ TEST_F(AwPingManagerTest, ReportThreatDetails_RemoveCookiesFeatureDisabled) {
 }
 
 TEST_F(AwPingManagerTest, ReportSafeBrowsingHit) {
-  safe_browsing::HitReport hit_report;
-  hit_report.post_data = "testing_hit_report_post_data";
+  std::unique_ptr<safe_browsing::HitReport> hit_report =
+      std::make_unique<safe_browsing::HitReport>();
+  std::string post_data = "testing_hit_report_post_data";
+  hit_report->post_data = post_data;
   // Threat type and source are arbitrary but specified so that determining the
   // URL does not does throw an error due to input validation.
-  hit_report.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
-  hit_report.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
+  hit_report->threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  hit_report->threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        EXPECT_EQ(GetUploadData(request), hit_report.post_data);
+        EXPECT_EQ(GetUploadData(request), post_data);
       }));
   auto ref_counted_url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -137,7 +139,7 @@ TEST_F(AwPingManagerTest, ReportSafeBrowsingHit) {
 
   AwBrowserContext context;
   safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)
-      ->ReportSafeBrowsingHit(hit_report);
+      ->ReportSafeBrowsingHit(std::move(hit_report));
 }
 
 }  // namespace android_webview
