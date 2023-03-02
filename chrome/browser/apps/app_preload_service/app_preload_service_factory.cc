@@ -6,7 +6,7 @@
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -58,8 +58,8 @@ bool AppPreloadServiceFactory::IsAvailable(Profile* profile) {
 
   // App Preload Service is currently only available for unmanaged, unsupervised
   // accounts.
-  if (profile->IsGuestSession() || profile->IsChild() ||
-      profile->GetProfilePolicyConnector()->IsManaged()) {
+  std::string user_type = apps::DetermineUserType(profile);
+  if (user_type != apps::kUserTypeUnmanaged) {
     return false;
   }
 

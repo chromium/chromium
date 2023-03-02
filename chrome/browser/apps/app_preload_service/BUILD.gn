@@ -1,0 +1,43 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("app_preload_service") {
+  sources = [
+    "app_preload_server_connector.cc",
+    "app_preload_server_connector.h",
+    "app_preload_service.cc",
+    "app_preload_service.h",
+    "app_preload_service_factory.cc",
+    "app_preload_service_factory.h",
+    "preload_app_definition.cc",
+    "preload_app_definition.h",
+    "web_app_preload_installer.cc",
+    "web_app_preload_installer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps:user_type_filter",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_preload_service/proto",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chrome/common:channel_info",
+    "//chrome/common:chrome_features",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:types",
+    "//components/user_manager",
+    "//components/webapps/browser:constants",
+    "//google_apis",
+    "//services/network/public/cpp",
+  ]
+}

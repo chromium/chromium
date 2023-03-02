@@ -7,9 +7,9 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"  // nogncheck crbug.com/1420759
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/profiles/profiles_state.h"  // nogncheck crbug.com/1420759
 #include "content/public/browser/browser_thread.h"
 
 namespace apps {

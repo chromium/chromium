@@ -5411,6 +5411,7 @@ static_library("ui") {
     deps += [
       "side_search:side_search_tab_data_proto",
       "//base",
+      "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/ui/views",
       "//components/commerce/core:public",
       "//components/commerce/core:shopping_service",
@@ -5685,6 +5686,7 @@ static_library("ui") {
   if (enable_extensions) {
     deps += [
       "//apps",
+      "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/platform_apps",  # TODO(loyso): Remove this dep.
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",

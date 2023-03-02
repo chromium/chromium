@@ -59,6 +59,7 @@ source_set("app_service") {
   deps = [
     "//base",
     "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/extensions",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles",
