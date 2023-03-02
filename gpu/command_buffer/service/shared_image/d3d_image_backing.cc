@@ -618,6 +618,7 @@ bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
 }
 
 WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
+    WGPUDevice device,
     const WGPUTextureFormat wgpu_format) const {
   // TODO(crbug.com/2709243): Figure out other SI flags, if any.
   DCHECK(usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU);
@@ -625,10 +626,26 @@ WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
       WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
       WGPUTextureUsage_TextureBinding | WGPUTextureUsage_RenderAttachment;
   switch (wgpu_format) {
-    case WGPUTextureFormat_BGRA8Unorm:
     case WGPUTextureFormat_R8Unorm:
     case WGPUTextureFormat_RG8Unorm:
       return kBasicUsage;
+    case WGPUTextureFormat_BGRA8Unorm: {
+      if (usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
+        if (dawn::native::GetProcs().deviceHasFeature(
+                device, WGPUFeatureName_BGRA8UnormStorage)) {
+          return kBasicUsage | WGPUTextureUsage_StorageBinding;
+        } else {
+          // We cannot use BGRA8Unorm textures as storage textures when
+          // the feature BGRA8UnormStorage is not enabled.
+          LOG(ERROR) << "StorageBinding is not supported for "
+                     << WGPUTextureFormat_BGRA8Unorm << " when the feature "
+                     << WGPUFeatureName_BGRA8UnormStorage << " is not enabled";
+          return WGPUTextureUsage_None;
+        }
+      } else {
+        return kBasicUsage;
+      }
+    }
     case WGPUTextureFormat_RGBA8Unorm:
     case WGPUTextureFormat_RGBA16Float: {
       if (usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) {
@@ -673,7 +690,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     return nullptr;
   }
 
-  WGPUTextureUsageFlags allowed_usage = GetAllowedDawnUsages(wgpu_format);
+  WGPUTextureUsageFlags allowed_usage =
+      GetAllowedDawnUsages(device, wgpu_format);
   if (allowed_usage == WGPUTextureUsage_None) {
     LOG(ERROR) << "Allowed WGPUTextureUsage is unknown for WGPUTextureFormat: "
                << wgpu_format;

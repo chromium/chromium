@@ -140,9 +140,11 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage);
   bool UseMapOnDefaultTextures();
+  bool SupportsBGRA8UnormStorage();
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   absl::optional<bool> map_on_default_textures_;
+  absl::optional<bool> supports_bgra8unorm_storage_;
 
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
 };

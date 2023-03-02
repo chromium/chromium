@@ -210,6 +210,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
       bool is_back_buffer = false);
 
   WGPUTextureUsageFlags GetAllowedDawnUsages(
+      WGPUDevice device,
       const WGPUTextureFormat wgpu_format) const;
 
   gl::GLImage* GetGLImage() const;
