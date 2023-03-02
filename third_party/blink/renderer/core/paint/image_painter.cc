@@ -185,13 +185,15 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
   // https://crbug.com/1404998#c12), so we limit this optimization to SVG.
   if (layout_image_.CachedImage() &&
       layout_image_.CachedImage()->GetImage()->IsSVGImage()) {
-    PhysicalRect cull_rect(paint_info.GetCullRect().Rect());
+    const gfx::Rect& cull_rect(paint_info.GetCullRect().Rect());
     // Depending on the cull rect requires that we invalidate when the cull rect
     // changes (see call to `UpdatePaintedRect`), which could do additional
     // invalidations following scroll updates. To avoid this, we only consider
     // "sprite sheet" cull rects which are fully contained in the visual rect.
-    if (visual_rect.Contains(cull_rect)) {
-      visual_rect.Intersect(cull_rect);
+    // `ToEnclosingRect` is used to ensure `visual_rect` will contain even if
+    // `cull_rect` was rounded.
+    if (ToEnclosingRect(visual_rect).Contains(cull_rect)) {
+      visual_rect.Intersect(PhysicalRect(cull_rect));
     }
   }
   layout_image_.GetMutableForPainting().UpdatePaintedRect(visual_rect);

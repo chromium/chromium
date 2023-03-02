@@ -672,6 +672,14 @@ TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
+
+  // Adjust the div's position to be fractional and ensure only three blue
+  // circles are still recorded.
+  div_element->setAttribute(html_names::kStyleAttr,
+                            "margin-left: 0.5px; height: 200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
 }
 
 // Similar to `SpriteSheetCulling` but using a regular scrolling interest rect
