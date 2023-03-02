@@ -8,5 +8,6 @@
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPUExternalTexture {
+    readonly attribute boolean expired;
 };
 GPUExternalTexture includes GPUObjectBase;

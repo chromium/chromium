@@ -10,11 +10,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_set_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlvideoelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -167,8 +169,6 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
 
   if (descriptor->defaultQueue()->hasLabel())
     queue_->setLabel(descriptor->defaultQueue()->label());
-
-  external_texture_cache_ = MakeGarbageCollected<ExternalTextureCache>(this);
 }
 
 GPUDevice::~GPUDevice() {
@@ -418,13 +418,9 @@ GPUQueue* GPUDevice::queue() {
   return queue_;
 }
 
-bool GPUDevice::destroyed() const {
-  return destroyed_;
-}
-
 void GPUDevice::destroy(v8::Isolate* isolate) {
   destroyed_ = true;
-  external_texture_cache_->Destroy();
+  DestroyAllExternalTextures();
   // Dissociate mailboxes before destroying the device. This ensures that
   // mailbox operations which run during dissociation can succeed.
   DissociateMailboxes();
@@ -459,7 +455,12 @@ GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
 GPUExternalTexture* GPUDevice::importExternalTexture(
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  return external_texture_cache_->Import(descriptor, exception_state);
+  // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
+  // expired immediately.
+  if (destroyed_)
+    return GPUExternalTexture::CreateExpired(this, descriptor, exception_state);
+
+  return GPUExternalTexture::Create(this, descriptor, exception_state);
 }
 
 GPUBindGroup* GPUDevice::createBindGroup(
@@ -651,7 +652,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(limits_);
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
-  visitor->Trace(external_texture_cache_);
+  visitor->Trace(active_external_textures_);
   visitor->Trace(textures_with_mailbox_);
   visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
@@ -661,7 +662,14 @@ void GPUDevice::Trace(Visitor* visitor) const {
 void GPUDevice::Dispose() {
   // This call accesses other GC objects, so it cannot be called inside GC
   // objects destructors. Instead call it in the pre-finalizer.
-  external_texture_cache_->Destroy();
+  DestroyAllExternalTextures();
+}
+
+void GPUDevice::DestroyAllExternalTextures() {
+  for (auto& external_texture : active_external_textures_) {
+    external_texture->Destroy();
+  }
+  active_external_textures_.clear();
 }
 
 void GPUDevice::DissociateMailboxes() {
@@ -683,6 +691,17 @@ void GPUDevice::TrackMappableBuffer(GPUBuffer* buffer) {
 
 void GPUDevice::UntrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.erase(buffer);
+}
+
+void GPUDevice::AddActiveExternalTexture(GPUExternalTexture* external_texture) {
+  DCHECK(external_texture);
+  active_external_textures_.insert(external_texture);
+}
+
+void GPUDevice::RemoveActiveExternalTexture(
+    GPUExternalTexture* external_texture) {
+  DCHECK(external_texture);
+  active_external_textures_.erase(external_texture);
 }
 
 void GPUDevice::TrackTextureWithMailbox(GPUTexture* texture) {
