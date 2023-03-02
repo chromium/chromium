@@ -127,6 +127,7 @@ class MetricsTreeModel {
 
     const containerNames = uniquifyIterToString(
         joinIter(containerMap.keys(), beforeContainerMap.keys()));
+    const elfNodes = [];
     const dexNodes = [];
 
     const rootNode = this.makeDataNode('Metrics', [], 'metrics');
@@ -147,6 +148,7 @@ class MetricsTreeModel {
 
       for (const filename of filenames) {
         const isDex = filename.endsWith('.dex');
+        const isElf = !isDex;  // Heuristic assumption.
         const metrics = metricsByFile[filename] ?? EMPTY_OBJ;
         const beforeMetrics = beforeMetricsByFile[filename] ?? EMPTY_OBJ;
         const metricNames = uniquifyIterToString(
@@ -155,8 +157,11 @@ class MetricsTreeModel {
         const fileNode = this.makeDataNode(filename, [], 'file');
         const tableNode = this.makeDataNode('', null, null);  // Leaf.
         tableNode.items = [];
-        if (isDex)
+        if (isElf) {
+          elfNodes.push(tableNode);
+        } else if (isDex) {
           dexNodes.push(tableNode);
+        }
         for (const metricName of metricNames) {
           const item = /** @type {!MetricsItem} */ ({});
           item.name = metricName;
@@ -172,9 +177,12 @@ class MetricsTreeModel {
     }
 
     // Add special nodes to compute totals.
-    if (dexNodes.length > 0) {
-      const dexFileNode = this.makeDataNode('(DEX)', dexNodes, 'file');
-      rootNode.totals = [dexFileNode];
+    if (elfNodes.length > 0 || dexNodes.length > 0) {
+      rootNode.totals = [];
+      if (elfNodes.length > 0)
+        rootNode.totals.push(this.makeDataNode('(ELF)', elfNodes, 'file'));
+      if (dexNodes.length > 0)
+        rootNode.totals.push(this.makeDataNode('(DEX)', dexNodes, 'file'));
     }
     this.rootNode = rootNode;
   }
