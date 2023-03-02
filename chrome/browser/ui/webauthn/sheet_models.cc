@@ -1037,6 +1037,16 @@ AuthenticatorGenericErrorSheetModel::ForStorageFull(
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_STORAGE_FULL_DESC)));
 }
 
+std::unique_ptr<AuthenticatorGenericErrorSheetModel>
+AuthenticatorGenericErrorSheetModel::ForWindowsHelloNotEnabled(
+    AuthenticatorRequestDialogModel* dialog_model) {
+  return base::WrapUnique(new AuthenticatorGenericErrorSheetModel(
+      dialog_model,
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_WINDOWS_HELLO_NOT_ENABLED_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_WEBAUTHN_WINDOWS_HELLO_NOT_ENABLED_DESCRIPTION)));
+}
+
 AuthenticatorGenericErrorSheetModel::AuthenticatorGenericErrorSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
     std::u16string title,

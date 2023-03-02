@@ -624,6 +624,21 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     EXPECT_FALSE(model.OnWinUserCancelled());
   }
 }
+
+TEST_F(AuthenticatorRequestDialogModelTest, WinNoPlatformAuthenticator) {
+  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kMakeCredential;
+  tai.request_is_internal_only = true;
+  tai.win_is_uvpaa = false;
+  tai.has_win_native_api_authenticator = true;
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
+  model.StartFlow(std::move(tai), /*is_conditional_mediation=*/false,
+                  /*prefer_native_api=*/false);
+  EXPECT_EQ(
+      model.current_step(),
+      AuthenticatorRequestDialogModel::Step::kErrorWindowsHelloNotEnabled);
+  EXPECT_FALSE(model.offer_try_again_in_ui());
+}
 #endif
 
 TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {

@@ -947,6 +947,13 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi(
   DCHECK(transport_availability_.has_win_native_api_authenticator);
   current_mechanism_ = mechanism_index;
 
+  if (transport_availability_.request_is_internal_only &&
+      !transport_availability_.win_is_uvpaa) {
+    offer_try_again_in_ui_ = false;
+    SetCurrentStep(Step::kErrorWindowsHelloNotEnabled);
+    return;
+  }
+
   if (resident_key_requirement() !=
           device::ResidentKeyRequirement::kDiscouraged &&
       !transport_availability_.win_native_ui_shows_resident_credential_notice) {

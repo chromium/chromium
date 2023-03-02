@@ -13388,6 +13388,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_ERROR_INTERNAL_UNRECOGNIZED_DESCRIPTION" desc="Description in the dialog shown when the user's could not sign in to a web site using a hardware-based authentication mechanism built in to the computer (e.g. a fingerprint reader), because they never registered the device with this website before.">
         Your identity couldn't be verified
       </message>
+      <message name="IDS_WEBAUTHN_WINDOWS_HELLO_NOT_ENABLED_TITLE" desc="Title of the dialog shown when a website requires Windows Hello to sign in with a passkey, but Windows Hello is not enabled for the user's device.">
+        Turn on Windows Hello
+      </message>
+      <message name="IDS_WEBAUTHN_WINDOWS_HELLO_NOT_ENABLED_DESCRIPTION" desc="Description of the dialog shown when a website requires Windows Hello to sign in with a passkey, but Windows Hello is not enabled for the user's device.">
+        To sign into this site with a passkey, you need to turn on Windows Hello in settings. Then return to this site and try again.
+      </message>
       <message name="IDS_WEBAUTHN_ERROR_NO_TRANSPORTS_TITLE" desc="Title of the dialog shown when the user could not sign in to a web site, because their computer did not support any of the hardware-based authentication mechanisms desired by the web site.">
         Your identity couldn't be verified
       </message>

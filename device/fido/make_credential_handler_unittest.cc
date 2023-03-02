@@ -181,6 +181,35 @@ TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfoRk) {
   }
 }
 
+TEST_F(FidoMakeCredentialHandlerTest, TransportAvailabilityInfoIsInternalOnly) {
+  {
+    auto request_handler =
+        CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
+            AuthenticatorAttachment::kAny, ResidentKeyRequirement::kDiscouraged,
+            UserVerificationRequirement::kPreferred));
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .request_is_internal_only);
+  }
+  {
+    auto request_handler =
+        CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
+            AuthenticatorAttachment::kCrossPlatform,
+            ResidentKeyRequirement::kDiscouraged,
+            UserVerificationRequirement::kPreferred));
+    EXPECT_FALSE(request_handler->transport_availability_info()
+                     .request_is_internal_only);
+  }
+  {
+    auto request_handler =
+        CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
+            AuthenticatorAttachment::kPlatform,
+            ResidentKeyRequirement::kDiscouraged,
+            UserVerificationRequirement::kPreferred));
+    EXPECT_TRUE(request_handler->transport_availability_info()
+                    .request_is_internal_only);
+  }
+}
+
 TEST_F(FidoMakeCredentialHandlerTest, TestCtap2MakeCredential) {
   auto request_handler = CreateMakeCredentialHandler();
   discovery()->WaitForCallToStartAndSimulateSuccess();

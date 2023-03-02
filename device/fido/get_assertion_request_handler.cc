@@ -375,6 +375,13 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
                            base::Contains(cred.transports,
                                           FidoTransportProtocol::kInternal);
                   });
+  transport_availability_info().request_is_internal_only =
+      !request_.allow_list.empty() &&
+      base::ranges::all_of(
+          request_.allow_list, [](const PublicKeyCredentialDescriptor& cred) {
+            return cred.transports ==
+                   std::vector{FidoTransportProtocol::kInternal};
+          });
 
   FIDO_LOG(EVENT) << "Starting GetAssertion flow";
   Start();
