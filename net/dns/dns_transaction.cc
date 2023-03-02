@@ -343,7 +343,6 @@ class DnsUDPAttempt : public DnsAttempt {
       return rv;
     read_size_ = rv;
 
-    DCHECK(rv);
     bool parse_result = response_->InitParse(rv, *query_);
     if (response_->id())
       udp_tracker_->RecordResponseId(query_->id(), response_->id().value());

@@ -1228,6 +1228,30 @@ TEST_F(DnsTransactionTest, MismatchedResponseNxdomain) {
   helper0.RunUntilComplete();
 }
 
+// This is a regression test for https://crbug.com/1410442.
+TEST_F(DnsTransactionTest, ZeroSizeResponseAsync) {
+  config_.attempts = 2;
+  ConfigureFactory();
+
+  // First attempt receives zero size response asynchronously.
+  auto data0 = std::make_unique<DnsSocketData>(/*id=*/0, kT0HostName, kT0Qtype,
+                                               ASYNC, Transport::UDP);
+  data0->AddReadError(0, ASYNC);
+  AddSocketData(std::move(data0));
+
+  // Second attempt receives valid response asynchronously.
+  auto data1 = std::make_unique<DnsSocketData>(/*id=*/0, kT0HostName, kT0Qtype,
+                                               ASYNC, Transport::UDP);
+  data1->AddResponseData(kT0ResponseDatagram, std::size(kT0ResponseDatagram),
+                         ASYNC);
+  AddSocketData(std::move(data1));
+
+  TransactionHelper helper0(kT0RecordCount);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           /*secure=*/false, resolve_context_.get());
+  helper0.RunUntilComplete();
+}
+
 TEST_F(DnsTransactionTest, ServerFail) {
   AddAsyncQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL);
 
