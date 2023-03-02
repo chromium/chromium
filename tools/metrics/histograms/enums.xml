@@ -59117,6 +59117,7 @@ from previous Chrome versions.
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524323669" label="InstalledAppsInCbd:enabled"/>
+  <int value="-1522389453" label="AndroidWidgetFullscreenToast:enabled"/>
   <int value="-1521544926" label="OmniboxPreserveLongerShortcutsText:disabled"/>
   <int value="-1521339691" label="UseGles2ForOopR:disabled"/>
   <int value="-1521160841" label="DismissNtpPromos:enabled"/>
@@ -62871,6 +62872,7 @@ from previous Chrome versions.
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>
   <int value="583059655" label="TerminalAlternativeEmulator:enabled"/>
+  <int value="583648374" label="AndroidWidgetFullscreenToast:disabled"/>
   <int value="584509342" label="TerminalTmuxIntegration:enabled"/>
   <int value="584541349" label="ContextualSearchSingleActions:disabled"/>
   <int value="584661108"

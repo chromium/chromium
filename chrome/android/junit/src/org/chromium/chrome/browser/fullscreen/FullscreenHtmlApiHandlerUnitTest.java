@@ -35,11 +35,14 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributes;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
@@ -48,6 +51,7 @@ import org.chromium.content_public.browser.WebContents;
  * Unit tests for {@link FullscreenHtmlApiHandler}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.ANDROID_WIDGET_FULLSCREEN_TOAST})
 public class FullscreenHtmlApiHandlerUnitTest {
     private static final int DEVICE_WIDTH = 900;
     private static final int DEVICE_HEIGHT = 1600;
@@ -254,7 +258,18 @@ public class FullscreenHtmlApiHandlerUnitTest {
     }
 
     @Test
-    public void testToastIsShownInFullscreenButNotPictureInPicture() {
+    @EnableFeatures({ChromeFeatureList.ANDROID_WIDGET_FULLSCREEN_TOAST})
+    public void testToastIsShownInFullscreenButNotPictureInPicture_AndroidWidgetToast() {
+        testToastIsShownInFullscreenButNotPictureInPicture();
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_WIDGET_FULLSCREEN_TOAST})
+    public void testToastIsShownInFullscreenButNotPictureInPicture_CustomViewToast() {
+        testToastIsShownInFullscreenButNotPictureInPicture();
+    }
+
+    private void testToastIsShownInFullscreenButNotPictureInPicture() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
@@ -306,7 +321,18 @@ public class FullscreenHtmlApiHandlerUnitTest {
     }
 
     @Test
-    public void testToastIsShownAtLayoutChangeWithRotation() {
+    @EnableFeatures({ChromeFeatureList.ANDROID_WIDGET_FULLSCREEN_TOAST})
+    public void testToastIsShownAtLayoutChangeWithRotation_AndroidWidgetToast() {
+        testToastIsShownAtLayoutChangeWithRotation();
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_WIDGET_FULLSCREEN_TOAST})
+    public void testToastIsShownAtLayoutChangeWithRotation_CustomViewToast() {
+        testToastIsShownAtLayoutChangeWithRotation();
+    }
+
+    private void testToastIsShownAtLayoutChangeWithRotation() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
@@ -333,6 +359,7 @@ public class FullscreenHtmlApiHandlerUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_WIDGET_FULLSCREEN_TOAST})
     public void testToastRepositionsUponWindowLayoutChange() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();

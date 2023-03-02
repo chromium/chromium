@@ -157,6 +157,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "android-widget-fullscreen-toast",
+    "owners": [ "jinsukkim", "twellington" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "animated-image-drag-shadow",
     "owners": [ "shuyng@google.com", "wenyufu", "clank-app-team@google.com" ],
     "expiry_milestone": 115

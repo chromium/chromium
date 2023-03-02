@@ -1999,6 +1999,9 @@ extern const char kAndroidMediaPickerSupportDescription[];
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 
+extern const char kAndroidWidgetFullscreenToastName[];
+extern const char kAndroidWidgetFullscreenToastDescription[];
+
 extern const char kAnimatedImageDragShadowName[];
 extern const char kAnimatedImageDragShadowDescription[];
 extern const char kAndroidImprovedBookmarksName[];
