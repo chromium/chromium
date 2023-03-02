@@ -2608,39 +2608,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HistoryPage.OtherDevicesMenu.OpenAll.TabsPerWindow"
-    units="units" expires_after="2020-07-01">
-  <owner>markchang@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The number of tabs created in each window when a user executes &quot;Open
-    all&quot; menu item from a session menu in the &quot;Tabs from other
-    devices&quot; section of the history page.
-  </summary>
-</histogram>
-
-<histogram name="HistoryPage.OtherDevicesMenu.OpenAll.TotalTabs" units="units"
-    expires_after="2020-07-01">
-  <owner>markchang@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Total number of tabs opened when a user executes &quot;Open all&quot; menu
-    item from a session menu in the &quot;Tabs from other devices&quot; section
-    of the history page.
-  </summary>
-</histogram>
-
-<histogram name="HistoryPage.OtherDevicesMenu.OpenAll.TotalWindows"
-    units="units" expires_after="2020-07-01">
-  <owner>markchang@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Total number of windows opened when a user executes &quot;Open all&quot;
-    menu item from a session menu in the &quot;Tabs from other devices&quot;
-    section of the history page.
-  </summary>
-</histogram>
-
 <histogram name="HistoryPage.RemoveEntryPosition" units="units"
     expires_after="M81">
   <owner>rpop@google.com</owner>
