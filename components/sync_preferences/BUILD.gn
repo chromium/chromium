@@ -9,6 +9,8 @@ static_library("sync_preferences") {
   sources = [
     "common_syncable_prefs_database.cc",
     "common_syncable_prefs_database.h",
+    "dual_layer_user_pref_store.cc",
+    "dual_layer_user_pref_store.h",
     "pref_model_associator.cc",
     "pref_model_associator.h",
     "pref_model_associator_client.cc",
@@ -57,6 +59,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "dual_layer_user_pref_store_unittest.cc",
     "pref_model_associator_unittest.cc",
     "pref_service_syncable_unittest.cc",
   ]
