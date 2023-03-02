@@ -179,6 +179,15 @@ InkDropHost::InkDropMode InkDropHost::GetMode() const {
   return ink_drop_mode_;
 }
 
+void InkDropHost::SetLayerRegion(LayerRegion region) {
+  layer_region_ = region;
+  ink_drop_.reset();
+}
+
+LayerRegion InkDropHost::GetLayerRegion() const {
+  return layer_region_;
+}
+
 void InkDropHost::SetVisibleOpacity(float visible_opacity) {
   if (visible_opacity == ink_drop_visible_opacity_) {
     return;
@@ -257,7 +266,7 @@ void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   if (!AddInkDropClip(ink_drop_layer)) {
     InstallInkDropMask(ink_drop_layer);
   }
-  host_view_->AddLayerToRegion(ink_drop_layer, LayerRegion::kBelow);
+  host_view_->AddLayerToRegion(ink_drop_layer, layer_region_);
 }
 
 void InkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {

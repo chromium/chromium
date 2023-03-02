@@ -53,24 +53,29 @@ class VIEWS_EXPORT InkDrop {
   static std::unique_ptr<InkDrop> CreateInkDropForSquareRipple(
       InkDropHost* host,
       bool highlight_on_hover = true,
-      bool highlight_on_focus = false);
+      bool highlight_on_focus = false,
+      bool show_highlight_on_ripple = false);
 
   // Configure `host` to use CreateInkDropForSquareRipple().
   static void UseInkDropForSquareRipple(InkDropHost* host,
                                         bool highlight_on_hover = true,
-                                        bool highlight_on_focus = false);
+                                        bool highlight_on_focus = false,
+                                        bool show_highlight_on_ripple = false);
 
   // Create an InkDrop appropriate for the "flood-fill" InkDropRipple effect.
   // This InkDrop shows as a response to the ripple effect.
   static std::unique_ptr<InkDrop> CreateInkDropForFloodFillRipple(
       InkDropHost* host,
       bool highlight_on_hover = true,
-      bool highlight_on_focus = false);
+      bool highlight_on_focus = false,
+      bool show_highlight_on_ripple = true);
 
   // Configure `host` to use CreateInkDropForFloodFillRipple().
-  static void UseInkDropForFloodFillRipple(InkDropHost* host,
-                                           bool highlight_on_hover = true,
-                                           bool highlight_on_focus = false);
+  static void UseInkDropForFloodFillRipple(
+      InkDropHost* host,
+      bool highlight_on_hover = true,
+      bool highlight_on_focus = false,
+      bool show_highlight_on_ripple = true);
 
   // Create an InkDrop whose highlight does not react to its ripple.
   static std::unique_ptr<InkDrop> CreateInkDropWithoutAutoHighlight(

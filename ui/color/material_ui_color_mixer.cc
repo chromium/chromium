@@ -12,6 +12,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
 
 namespace ui {
 
@@ -68,13 +69,14 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorTextfieldForegroundPlaceholder] = {kColorSysOnSurface};
   mixer[kColorTextfieldInvalidOutline] = {kColorTextfieldForegroundInvalid};
   mixer[kColorTextfieldSelectionBackground] = {kColorSysTonalContainer};
+  mixer[kColorToggleButtonHover] = {kColorSysStateHover};
+  mixer[kColorToggleButtonPressed] = {kColorSysStatePressed};
   mixer[kColorToggleButtonShadow] = {kColorSysOutline};
   mixer[kColorToggleButtonThumbOff] = {kColorSysOutline};
   mixer[kColorToggleButtonThumbOffDisabled] = {kColorSysStateDisabled};
   mixer[kColorToggleButtonThumbOn] = {kColorSysOnPrimary};
   mixer[kColorToggleButtonThumbOnDisabled] = {kColorSysSurface};
-  mixer[kColorToggleButtonThumbOnHoverPressed] = {kColorSysPrimaryContainer};
-  mixer[kColorToggleButtonThumbOnIcon] = {kColorSysOnPrimaryContainer};
+  mixer[kColorToggleButtonThumbOnHover] = {kColorSysPrimaryContainer};
   mixer[kColorToggleButtonTrackOff] = {kColorSysSurfaceVariant};
   mixer[kColorToggleButtonTrackOn] = {kColorSysPrimary};
   mixer[kColorToggleButtonTrackOnDisabled] = {kColorSysStateDisabledContainer};

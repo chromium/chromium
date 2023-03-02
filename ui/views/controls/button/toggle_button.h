@@ -80,6 +80,9 @@ class VIEWS_EXPORT ToggleButton : public Button {
 
   SkColor GetTrackColor(bool is_on) const;
 
+  SkColor GetHoverColor() const;
+  SkColor GetPressedColor() const;
+
   // views::View:
   bool CanAcceptEvent(const ui::Event& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -91,9 +94,11 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // gfx::AnimationDelegate:
+  void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   gfx::SlideAnimation slide_animation_{this};
+  gfx::SlideAnimation hover_animation_{this};
   raw_ptr<ThumbView> thumb_view_;
   absl::optional<SkColor> track_on_color_;
   absl::optional<SkColor> track_off_color_;

@@ -364,13 +364,14 @@
   E_CPONLY(kColorTextfieldInvalidOutline) \
   E_CPONLY(kColorThrobber) \
   E_CPONLY(kColorThrobberPreconnect) \
+  E_CPONLY(kColorToggleButtonHover) \
+  E_CPONLY(kColorToggleButtonPressed) \
   E_CPONLY(kColorToggleButtonShadow) \
   E_CPONLY(kColorToggleButtonThumbOff) \
   E_CPONLY(kColorToggleButtonThumbOffDisabled) \
   E_CPONLY(kColorToggleButtonThumbOn) \
   E_CPONLY(kColorToggleButtonThumbOnDisabled) \
-  E_CPONLY(kColorToggleButtonThumbOnHoverPressed) \
-  E_CPONLY(kColorToggleButtonThumbOnIcon) \
+  E_CPONLY(kColorToggleButtonThumbOnHover) \
   E_CPONLY(kColorToggleButtonTrackOff) \
   E_CPONLY(kColorToggleButtonTrackOn) \
   E_CPONLY(kColorToggleButtonTrackOnDisabled) \

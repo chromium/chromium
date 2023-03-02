@@ -125,6 +125,11 @@ class VIEWS_EXPORT InkDropHost {
   void SetMode(InkDropMode ink_drop_mode);
   InkDropMode GetMode() const;
 
+  // Set whether the ink drop layers should be placed into the region above or
+  // below the view layer. The default is kBelow;
+  void SetLayerRegion(LayerRegion region);
+  LayerRegion GetLayerRegion() const;
+
   void SetVisibleOpacity(float visible_opacity);
   float GetVisibleOpacity() const;
 
@@ -231,6 +236,9 @@ class VIEWS_EXPORT InkDropHost {
 
   // Defines what type of |ink_drop_| to create.
   InkDropMode ink_drop_mode_ = views::InkDropHost::InkDropMode::OFF;
+
+  // Into which region should the ink drop layers be placed.
+  LayerRegion layer_region_ = LayerRegion::kBelow;
 
   // Used to observe View and inform the InkDrop of host-transform changes.
   ViewLayerTransformObserver host_view_transform_observer_;
