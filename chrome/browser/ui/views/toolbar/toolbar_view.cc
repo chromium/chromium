@@ -493,13 +493,13 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
   std::unique_ptr<BubbleSyncPromoDelegate> delegate;
+  Profile* profile = browser_->profile();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  delegate =
-      std::make_unique<BookmarkBubbleSignInDelegate>(browser_->profile());
+  delegate = std::make_unique<BookmarkBubbleSignInDelegate>(profile);
 #endif
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, std::move(delegate),
-                                 browser_, url, already_bookmarked);
+                                 profile, url, already_bookmarked);
 }
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {

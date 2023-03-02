@@ -35,7 +35,6 @@ BASE_DECLARE_FEATURE(kIPHLiveCaptionFeature);
 BASE_DECLARE_FEATURE(kIPHTabAudioMutingFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordsAccountStorageFeature);
 BASE_DECLARE_FEATURE(kIPHPerformanceNewBadgeFeature);
-BASE_DECLARE_FEATURE(kIPHPowerBookmarksSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHPriceTrackingPageActionIconLabelFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListDiscoveryFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListEntryPointFeature);

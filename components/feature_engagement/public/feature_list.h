@@ -249,8 +249,6 @@ DEFINE_VARIATION_PARAM(kIPHPasswordsAccountStorageFeature,
                        "IPH_PasswordsAccountStorage");
 DEFINE_VARIATION_PARAM(kIPHPerformanceNewBadgeFeature,
                        "IPH_PerformanceNewBadge");
-DEFINE_VARIATION_PARAM(kIPHPowerBookmarksSidePanelFeature,
-                       "IPH_PowerBookmarksSidePanel");
 DEFINE_VARIATION_PARAM(kIPHPriceTrackingPageActionIconLabelFeature,
                        "IPH_PriceTrackingPageActionIconLabelFeature");
 DEFINE_VARIATION_PARAM(kIPHReadingListDiscoveryFeature,
@@ -412,7 +410,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHLiveCaption),
         VARIATION_ENTRY(kIPHPasswordsAccountStorageFeature),
         VARIATION_ENTRY(kIPHPerformanceNewBadgeFeature),
-        VARIATION_ENTRY(kIPHPowerBookmarksSidePanelFeature),
         VARIATION_ENTRY(kIPHPriceTrackingPageActionIconLabelFeature),
         VARIATION_ENTRY(kIPHReadingListDiscoveryFeature),
         VARIATION_ENTRY(kIPHReadingListEntryPointFeature),

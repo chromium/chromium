@@ -273,12 +273,7 @@ void SidePanelCoordinator::Toggle() {
   if (IsSidePanelShowing()) {
     Close();
   } else {
-    absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt;
-    if (browser_view_->browser()->window()->IsFeaturePromoActive(
-            feature_engagement::kIPHPowerBookmarksSidePanelFeature)) {
-      entry_id = absl::make_optional(SidePanelEntry::Id::kBookmarks);
-    }
-    Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
+    Show(absl::nullopt, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
   }
 }
 
@@ -343,8 +338,6 @@ void SidePanelCoordinator::Show(
     // Close IPH for side panel if shown.
     browser_view_->browser()->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
-    browser_view_->browser()->window()->CloseFeaturePromo(
-        feature_engagement::kIPHPowerBookmarksSidePanelFeature);
   }
 
   SidePanelContentSwappingContainer* content_wrapper =
