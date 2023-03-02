@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
-<body>
+<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script type="module">
-import {MockBatteryMonitor} from './resources/mock-battery-monitor.js';
-
-const mock = new MockBatteryMonitor();
-
-promise_test(async _ => {
-  mock.setBatteryStatus(false, 10, 20, 0.5);
+<script src="/resources/test-only-api.js"></script>
+<script src="resources/battery-status-helpers.js"></script>
+</head>
+<body>
+<script>
+battery_status_test(async (t, mockBatteryMonitor) => {
+  mockBatteryMonitor.setBatteryStatus(false, 10, 20, 0.5);
   const battery = await navigator.getBattery();
 
   assert_not_equals(battery, undefined);
@@ -18,7 +18,7 @@ promise_test(async _ => {
   assert_equals(typeof battery.dischargingTime, 'number');
   assert_equals(typeof battery.level, 'number');
 
-  mock.verifyBatteryStatus(battery);
+  mockBatteryMonitor.verifyBatteryStatus(battery);
 
   assert_equals(typeof battery.onchargingchange, 'object');
   assert_equals(typeof battery.onchargingtimechange, 'object');

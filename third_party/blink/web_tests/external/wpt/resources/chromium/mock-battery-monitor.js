@@ -1,16 +1,27 @@
 import {BatteryMonitor, BatteryMonitorReceiver} from '/gen/services/device/public/mojom/battery_monitor.mojom.m.js';
 
-export class MockBatteryMonitor {
+class MockBatteryMonitor {
   constructor() {
+    this.receiver_ = new BatteryMonitorReceiver(this);
+    this.interceptor_ =
+        new MojoInterfaceInterceptor(BatteryMonitor.$interfaceName);
+    this.interceptor_.oninterfacerequest = e =>
+        this.receiver_.$.bindHandle(e.handle);
+    this.reset();
+  }
+
+  start() {
+    this.interceptor_.start();
+  }
+
+  stop() {
+    this.interceptor_.stop();
+  }
+
+  reset() {
     this.pendingRequests_ = [];
     this.status_ = null;
     this.lastKnownStatus_ = null;
-    this.receiver_ = new BatteryMonitorReceiver(this);
-    this.interceptor_ = new MojoInterfaceInterceptor(
-        BatteryMonitor.$interfaceName);
-    this.interceptor_.oninterfacerequest =
-        e => this.receiver_.$.bindHandle(e.handle);
-    this.interceptor_.start();
   }
 
   queryNextStatus() {
@@ -46,3 +57,5 @@ export class MockBatteryMonitor {
     this.status_ = null;
   }
 }
+
+export const mockBatteryMonitor = new MockBatteryMonitor();
