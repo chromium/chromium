@@ -138,9 +138,9 @@ gfx::CALayerResult FromTextureQuad(DisplayResourceProvider* resource_provider,
     // transformation that flips the contents of the layer without changing its
     // frame is the composition of a vertical flip about the anchor point, and a
     // translation by the height of the layer.
-    ca_layer_overlay->shared_state->transform.Translate(
+    ca_layer_overlay->transform.Translate(
         0, ca_layer_overlay->bounds_rect.height());
-    ca_layer_overlay->shared_state->transform.Scale(1, -1);
+    ca_layer_overlay->transform.Scale(1, -1);
   }
   ca_layer_overlay->contents_resource_id = resource_id;
   ca_layer_overlay->contents_rect =
@@ -283,23 +283,16 @@ class CALayerOverlayProcessorInternal {
     if (quad->IsTopEdge())
       ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeTop;
 
-    if (most_recent_shared_quad_state_ != quad->shared_quad_state) {
-      most_recent_shared_quad_state_ = quad->shared_quad_state;
-      most_recent_overlay_shared_state_ = new CALayerOverlaySharedState;
-      // Set rect clipping and sorting context ID.
-      most_recent_overlay_shared_state_->sorting_context_id =
-          quad->shared_quad_state->sorting_context_id;
-      most_recent_overlay_shared_state_->is_clipped =
-          quad->shared_quad_state->clip_rect.has_value();
-      most_recent_overlay_shared_state_->clip_rect =
-          gfx::RectF(quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
-      most_recent_overlay_shared_state_->rounded_corner_bounds =
-          quad->shared_quad_state->mask_filter_info.rounded_corner_bounds();
-
-      most_recent_overlay_shared_state_->transform =
-          quad->shared_quad_state->quad_to_target_transform;
-    }
-    ca_layer_overlay->shared_state = most_recent_overlay_shared_state_;
+    ca_layer_overlay->sorting_context_id =
+        quad->shared_quad_state->sorting_context_id;
+    ca_layer_overlay->is_clipped =
+        quad->shared_quad_state->clip_rect.has_value();
+    ca_layer_overlay->clip_rect =
+        gfx::RectF(quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
+    ca_layer_overlay->rounded_corner_bounds =
+        quad->shared_quad_state->mask_filter_info.rounded_corner_bounds();
+    ca_layer_overlay->transform =
+        quad->shared_quad_state->quad_to_target_transform;
 
     ca_layer_overlay->bounds_rect = gfx::RectF(quad->rect);
     ca_layer_overlay->opacity = quad->shared_quad_state->opacity;
@@ -352,8 +345,6 @@ class CALayerOverlayProcessorInternal {
   bool video_with_odd_y() { return video_with_odd_y_; }
 
  private:
-  const SharedQuadState* most_recent_shared_quad_state_ = nullptr;
-  scoped_refptr<CALayerOverlaySharedState> most_recent_overlay_shared_state_;
   bool video_with_odd_width_ = false;
   bool video_with_odd_height_ = false;
   bool video_with_odd_x_ = false;
@@ -411,13 +402,11 @@ bool CALayerOverlayProcessor::AreClipSettingsValid(
   // settings within one sorting context.
   if (!ca_layer_overlay_list->empty()) {
     const CALayerOverlay& previous_ca_layer = ca_layer_overlay_list->back();
-    if (ca_layer_overlay.shared_state->sorting_context_id &&
-        previous_ca_layer.shared_state->sorting_context_id ==
-            ca_layer_overlay.shared_state->sorting_context_id) {
-      if (previous_ca_layer.shared_state->is_clipped !=
-              ca_layer_overlay.shared_state->is_clipped ||
-          previous_ca_layer.shared_state->clip_rect !=
-              ca_layer_overlay.shared_state->clip_rect) {
+    if (ca_layer_overlay.sorting_context_id &&
+        previous_ca_layer.sorting_context_id ==
+            ca_layer_overlay.sorting_context_id) {
+      if (previous_ca_layer.is_clipped != ca_layer_overlay.is_clipped ||
+          previous_ca_layer.clip_rect != ca_layer_overlay.clip_rect) {
         return false;
       }
     }

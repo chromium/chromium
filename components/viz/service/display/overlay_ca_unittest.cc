@@ -261,7 +261,7 @@ TEST_F(CALayerOverlayTest, ThreeDTransform) {
   EXPECT_EQ(kRenderPassOutputRect, overlay_damage);
   gfx::Transform expected_transform;
   expected_transform.RotateAboutXAxis(45.f);
-  gfx::Transform actual_transform(ca_layer_list.back().shared_state->transform);
+  gfx::Transform actual_transform(ca_layer_list.back().transform);
   EXPECT_EQ(expected_transform.ToString(), actual_transform.ToString());
 }
 
@@ -309,8 +309,7 @@ TEST_F(CALayerOverlayTest, NontrivialClip) {
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect_);
   EXPECT_EQ(1U, ca_layer_list.size());
-  EXPECT_EQ(gfx::RectF(64, 64, 128, 128),
-            ca_layer_list.back().shared_state->clip_rect);
+  EXPECT_EQ(gfx::RectF(64, 64, 128, 128), ca_layer_list.back().clip_rect);
 }
 
 TEST_F(CALayerOverlayTest, SkipTransparent) {

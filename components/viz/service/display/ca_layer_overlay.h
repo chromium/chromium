@@ -28,12 +28,14 @@ class AggregatedRenderPassDrawQuad;
 class DisplayResourceProvider;
 class DrawQuad;
 
-// Holds information that is frequently shared between consecutive
-// CALayerOverlays.
-class VIZ_SERVICE_EXPORT CALayerOverlaySharedState
-    : public base::RefCountedThreadSafe<CALayerOverlaySharedState> {
+// Holds all information necessary to construct a CALayer from a DrawQuad.
+class VIZ_SERVICE_EXPORT CALayerOverlay {
  public:
-  CALayerOverlaySharedState() {}
+  CALayerOverlay();
+  CALayerOverlay(const CALayerOverlay& other);
+  ~CALayerOverlay();
+  CALayerOverlay& operator=(const CALayerOverlay& other);
+
   // Layers in a non-zero sorting context exist in the same 3D space and should
   // intersect.
   unsigned sorting_context_id = 0;
@@ -44,22 +46,6 @@ class VIZ_SERVICE_EXPORT CALayerOverlaySharedState
   gfx::RRectF rounded_corner_bounds;
   // The transform to apply to the CALayer.
   gfx::Transform transform;
-
- private:
-  friend class base::RefCountedThreadSafe<CALayerOverlaySharedState>;
-  ~CALayerOverlaySharedState() {}
-};
-
-// Holds all information necessary to construct a CALayer from a DrawQuad.
-class VIZ_SERVICE_EXPORT CALayerOverlay {
- public:
-  CALayerOverlay();
-  CALayerOverlay(const CALayerOverlay& other);
-  ~CALayerOverlay();
-  CALayerOverlay& operator=(const CALayerOverlay& other);
-
-  // State that is frequently shared between consecutive CALayerOverlays.
-  scoped_refptr<CALayerOverlaySharedState> shared_state;
 
   // Texture that corresponds to an IOSurface to set as the content of the
   // CALayer. If this is 0 then the CALayer is a solid color.

@@ -894,9 +894,6 @@ SkiaOutputSurface::OverlayList MakeOverlayList(
   for (auto& mailbox : mailboxes) {
     OutputPresenter::OverlayPlaneCandidate overlay;
     overlay.mailbox = mailbox;
-#if BUILDFLAG(IS_APPLE)
-    overlay.shared_state = base::MakeRefCounted<CALayerOverlaySharedState>();
-#endif  // BUILDFLAG(IS_APPLE)
     overlay_list.push_back(overlay);
   }
   return overlay_list;

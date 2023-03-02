@@ -375,11 +375,11 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   }
 #elif BUILDFLAG(IS_APPLE)
   presenter_->ScheduleCALayer(ui::CARendererLayerParams(
-      overlay_plane_candidate.shared_state->is_clipped,
-      gfx::ToEnclosingRect(overlay_plane_candidate.shared_state->clip_rect),
-      overlay_plane_candidate.shared_state->rounded_corner_bounds,
-      overlay_plane_candidate.shared_state->sorting_context_id,
-      gfx::Transform(overlay_plane_candidate.shared_state->transform),
+      overlay_plane_candidate.is_clipped,
+      gfx::ToEnclosingRect(overlay_plane_candidate.clip_rect),
+      overlay_plane_candidate.rounded_corner_bounds,
+      overlay_plane_candidate.sorting_context_id,
+      gfx::Transform(overlay_plane_candidate.transform),
       access ? access->GetIOSurface() : gfx::ScopedIOSurface(),
       access ? access->representation()->color_space() : gfx::ColorSpace(),
       overlay_plane_candidate.contents_rect,
