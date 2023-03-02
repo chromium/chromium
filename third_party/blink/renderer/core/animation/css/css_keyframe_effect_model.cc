@@ -96,6 +96,43 @@ void ResolveComputedValues(Element* element, StringKeyframe* keyframe) {
   }
 }
 
+StringKeyframe* CreateKeyframe(double offset,
+                               scoped_refptr<TimingFunction> easing) {
+  StringKeyframe* keyframe = MakeGarbageCollected<StringKeyframe>();
+  keyframe->SetOffset(offset);
+  keyframe->SetEasing(easing);
+  keyframe->SetComposite(EffectModel::kCompositeReplace);
+  return keyframe;
+}
+
+StringKeyframe* FindOrInsertKeyframe(
+    KeyframeEffectModelBase::KeyframeVector& keyframes,
+    double target_offset,
+    scoped_refptr<TimingFunction> default_easing) {
+  for (wtf_size_t i = 0; i < keyframes.size(); i++) {
+    StringKeyframe* keyframe = DynamicTo<StringKeyframe>(keyframes[i].Get());
+    if (!keyframe->Offset()) {
+      continue;
+    }
+    double offset = keyframe->CheckedOffset();
+    if (offset == target_offset && (keyframe->Easing() == *default_easing) &&
+        (!keyframe->Composite() ||
+         keyframe->Composite() == EffectModel::kCompositeReplace)) {
+      return keyframe;
+    }
+    if (offset > target_offset) {
+      StringKeyframe* missing_keyframe =
+          CreateKeyframe(target_offset, default_easing);
+      keyframes.insert(i, missing_keyframe);
+      return missing_keyframe;
+    }
+  }
+  StringKeyframe* missing_keyframe =
+      CreateKeyframe(target_offset, default_easing);
+  keyframes.push_back(missing_keyframe);
+  return missing_keyframe;
+}
+
 }  // namespace
 
 KeyframeEffectModelBase::KeyframeVector
@@ -116,17 +153,22 @@ CssKeyframeEffectModel::GetComputedKeyframes(Element* element) {
   computed_keyframes.ReserveInitialCapacity(keyframes.size());
   for (wtf_size_t i = 0; i < keyframes.size(); i++) {
     Keyframe* keyframe = keyframes[i];
+    // Prune keyframes with timeline offsets if not using a view timeline.
+    if (keyframe->GetTimelineOffset() && !keyframe->Offset()) {
+      continue;
+    }
+
     // TODO(crbug.com/1070627): Use computed values, prune variable references,
     // and convert logical properties to physical properties.
     StringKeyframe* computed_keyframe = To<StringKeyframe>(keyframe->Clone());
     ResolveComputedValues(element, computed_keyframe);
     computed_keyframes.push_back(computed_keyframe);
     double offset = computed_offsets[i];
-    if (offset == 0) {
+    if (offset <= 0) {
       for (const auto& property : computed_keyframe->Properties()) {
         from_properties.insert(property);
       }
-    } else if (offset == 1) {
+    } else if (offset >= 1) {
       for (const auto& property : computed_keyframe->Properties()) {
         to_properties.insert(property);
       }
@@ -140,19 +182,54 @@ CssKeyframeEffectModel::GetComputedKeyframes(Element* element) {
     ResolveUnderlyingPropertyValues(*element, all_properties,
                                     missing_property_value_map);
   }
+  // The algorithm for constructing string keyframes for a CSS animation is
+  // covered in the following spec:
+  // https://drafts.csswg.org/css-animations-2/#keyframes
+  // The following steps have been modified to accommodate interpolation at the
+  // boundaries.
+  // See: https://github.com/w3c/csswg-drafts/issues/8491
+
+  // Steps 7 & 8 are deferred from creation time to more readily accommodate
+  // ordering issues when timeline-offsets appear in keyframes.
+  // Neutral keyframes do not need to be explicitly added when creating the
+  // keyframes since the procedure for injecting synthetic keyframes into the
+  // list of property specific keyframes suffices. Nonetheless, these kefyrames
+  // do need to appear in the set of keyframes returned by a getKeyframes call.
+
+  // Step 7:
+  // If there is no keyframe in keyframes with offset 0, or if amongst the
+  // keyframes in keyframes with offset <= 0 not all of the properties in
+  // animated properties are present,
+  //   1. Let "initial" keyframe be the keyframe in keyframes with offset 0,
+  //      timing function default timing function and composite default
+  //      composite.
+  //
+  //      If there is no such keyframe, let "initial" keyframe be a new empty
+  //      keyframe with offset 0, timing function default timing function,
+  //      composite default composite, and add it to keyframes after the last
+  //      keyframe with offset 0.
+  //   2. For each property in animated properties that is not present in some
+  //      other keyframe with offset <= 0, add the computed value of that
+  //      property for element to the keyframe.
+
+  // Step 8 is similar to step 7, but applies to the "final" keyframe. A
+  // keyframe is required at offset 1, if not all properties are accounted for
+  // in a keyframe with offset >= 1.
   if (from_properties.size() < all_properties.size() &&
       !computed_keyframes.empty()) {
-    AddMissingProperties(
-        missing_property_value_map, all_properties, from_properties,
-        DynamicTo<StringKeyframe>(computed_keyframes[0].Get()));
+    StringKeyframe* keyframe =
+        FindOrInsertKeyframe(computed_keyframes, 0, default_keyframe_easing_);
+    AddMissingProperties(missing_property_value_map, all_properties,
+                         from_properties, keyframe);
   }
   if (to_properties.size() < all_properties.size() &&
       !computed_keyframes.empty()) {
-    wtf_size_t index = keyframes.size() - 1;
-    AddMissingProperties(
-        missing_property_value_map, all_properties, to_properties,
-        DynamicTo<StringKeyframe>(computed_keyframes[index].Get()));
+    StringKeyframe* keyframe =
+        FindOrInsertKeyframe(computed_keyframes, 1, default_keyframe_easing_);
+    AddMissingProperties(missing_property_value_map, all_properties,
+                         to_properties, keyframe);
   }
+
   return computed_keyframes;
 }
 

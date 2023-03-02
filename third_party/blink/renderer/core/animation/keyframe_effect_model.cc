@@ -234,15 +234,13 @@ Vector<double> KeyframeEffectModelBase::GetComputedOffsets(
   // To avoid having to create two vectors when converting from the nullable
   // offsets to the non-nullable computed offsets, we keep the convention in
   // this function that std::numeric_limits::quiet_NaN() represents null.
-  double last_offset = 0;
+  double last_offset = -std::numeric_limits<double>::max();
   Vector<double> result;
   result.reserve(keyframes.size());
 
   for (const auto& keyframe : keyframes) {
     absl::optional<double> offset = keyframe->Offset();
     if (offset) {
-      DCHECK_GE(offset.value(), 0);
-      DCHECK_LE(offset.value(), 1);
       DCHECK_GE(offset.value(), last_offset);
       last_offset = offset.value();
     }
@@ -306,16 +304,42 @@ bool KeyframeEffectModelBase::SetLogicalPropertyResolutionContext(
   return changed;
 }
 
+void KeyframeEffectModelBase::SetViewTimeline(const ViewTimeline* timeline) {
+  if (view_timeline_ == timeline) {
+    return;
+  }
+
+  if (view_timeline_ && !timeline) {
+    // Clear offsets that are resolved from timeline offsets.
+    bool needs_update = false;
+    for (const auto& keyframe : keyframes_) {
+      needs_update |= keyframe->ResetOffsetResolvedFromTimeline();
+    }
+
+    if (needs_update) {
+      std::stable_sort(keyframes_.begin(), keyframes_.end(),
+                       &Keyframe::LessThan);
+      ClearCachedData();
+    }
+  }
+  view_timeline_ = timeline;
+  if (timeline) {
+    timeline->ResolveTimelineOffsets(false);
+  }
+}
+
 void KeyframeEffectModelBase::Trace(Visitor* visitor) const {
   visitor->Trace(keyframes_);
   visitor->Trace(keyframe_groups_);
   visitor->Trace(interpolation_effect_);
+  visitor->Trace(view_timeline_);
   EffectModel::Trace(visitor);
 }
 
 void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
-  if (keyframe_groups_)
+  if (keyframe_groups_) {
     return;
+  }
 
   keyframe_groups_ = MakeGarbageCollected<KeyframeGroupMap>();
   scoped_refptr<TimingFunction> zero_offset_easing = default_keyframe_easing_;
@@ -383,7 +407,6 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
 
       if (i == 0) {
         apply_from = -std::numeric_limits<double>::infinity();
-        DCHECK_EQ(start_offset, 0.0);
         if (end_offset == 0.0) {
           DCHECK_NE(keyframes[end_index + 1]->Offset(), 0.0);
           end_index = start_index;
@@ -391,7 +414,6 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
       }
       if (i == keyframes.size() - 2) {
         apply_to = std::numeric_limits<double>::infinity();
-        DCHECK_EQ(end_offset, 1.0);
         if (start_offset == 1.0) {
           DCHECK_NE(keyframes[start_index - 1]->Offset(), 1.0);
           start_index = end_index;
@@ -408,6 +430,25 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
   }
 
   interpolation_effect_->SetPopulated();
+}
+
+bool KeyframeEffectModelBase::ResolveTimelineOffsets(double range_start,
+                                                     double range_end) {
+  if (!view_timeline_) {
+    return false;
+  }
+
+  bool needs_update = false;
+  for (const auto& keyframe : keyframes_) {
+    needs_update |=
+        keyframe->ResolveTimelineOffset(view_timeline_, range_start, range_end);
+  }
+
+  if (needs_update) {
+    std::stable_sort(keyframes_.begin(), keyframes_.end(), Keyframe::LessThan);
+    ClearCachedData();
+  }
+  return needs_update;
 }
 
 void KeyframeEffectModelBase::ClearCachedData() {
@@ -438,7 +479,7 @@ void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::AppendKeyframe(
 void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
     RemoveRedundantKeyframes() {
   // As an optimization, removes interior keyframes that have the same offset
-  // as both their neighbours, as they will never be used by sample().
+  // as both their neighbors, as they will never be used by sample().
   // Note that synthetic keyframes must be added before this method is
   // called.
   DCHECK_GE(keyframes_.size(), 2U);
@@ -462,12 +503,12 @@ bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
 
   bool added_synthetic_keyframe = false;
 
-  if (keyframes_.front()->Offset() != 0.0) {
+  if (keyframes_.front()->Offset() > 0.0) {
     keyframes_.insert(0, keyframes_.front()->NeutralKeyframe(
                              0, std::move(zero_offset_easing)));
     added_synthetic_keyframe = true;
   }
-  if (keyframes_.back()->Offset() != 1.0) {
+  if (keyframes_.back()->Offset() < 1.0) {
     AppendKeyframe(keyframes_.back()->NeutralKeyframe(1, nullptr));
     added_synthetic_keyframe = true;
   }

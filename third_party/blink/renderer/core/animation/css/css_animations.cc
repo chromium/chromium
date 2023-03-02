@@ -95,6 +95,32 @@ using PropertySet = HashSet<CSSPropertyName>;
 
 namespace {
 
+// A keyframe can have an offset as a fixed percent or as a
+// <timeline-range percent>. In the later case, we resolve as a fixed
+// percent, though this value can change as layout changes. Setting the
+// resolved offset is best effort and will be fixed or ignored later if it
+// still cannot be resolved.
+bool SetOffsets(Keyframe& keyframe,
+                const KeyframeOffset& offset,
+                const AnimationTimeline* timeline) {
+  if (offset.name == TimelineOffset::NamedRange::kNone) {
+    keyframe.SetOffset(offset.percent);
+    return false;
+  }
+
+  TimelineOffset timeline_offset(offset.name,
+                                 Length::Percent(100 * offset.percent));
+  if (timeline && timeline->IsViewTimeline() && timeline->IsResolved()) {
+    double fractional_offset =
+        To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
+    keyframe.SetOffset(fractional_offset);
+  } else {
+    keyframe.SetOffset(absl::nullopt);
+  }
+  keyframe.SetTimelineOffset(timeline_offset);
+  return true;
+}
+
 // Processes keyframe rules, extracting the timing function and properties being
 // animated for each keyframe. The extraction process is doing more work that
 // strictly required for the setup to step 6 in the spec
@@ -114,36 +140,13 @@ StringKeyframeVector ProcessKeyframesRule(
   StringKeyframeVector keyframes;
   const HeapVector<Member<StyleRuleKeyframe>>& style_keyframes =
       keyframes_rule->Keyframes();
-
   for (wtf_size_t i = 0; i < style_keyframes.size(); ++i) {
     const StyleRuleKeyframe* style_keyframe = style_keyframes[i].Get();
     auto* keyframe = MakeGarbageCollected<StringKeyframe>(tree_scope);
     const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
-    bool drop_keyframe = false;
-    // If keyframe doesn't have a named range offset, act as before, we don't
-    // care if we have a timeline at this point or not in this case.
-    if (offsets[0].name == TimelineOffset::NamedRange::kNone) {
-      keyframe->SetOffset(offsets[0].percent);
-    } else {
-      // No matter what the timeline is, we have named range keyframes.
-      has_named_range_keyframes = true;
 
-      if (timeline && timeline->IsViewTimeline()) {
-        TimelineOffset timeline_offset(
-            offsets[0].name, Length::Percent(100 * offsets[0].percent));
-        double fractional_offset =
-            To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
-        keyframe->SetOffset(fractional_offset);
-      } else {
-        // This happens when you have a DocumentTimeline/ScrollTimeline with
-        // Named Range keyframes, and also sometimes when you have a
-        // ViewTimeline, the first time ProcessKeyframesRule is called, timeline
-        // does not exist yet.
-        drop_keyframe = true;
-      }
-    }
-
+    has_named_range_keyframes |= SetOffsets(*keyframe, offsets[0], timeline);
     keyframe->SetEasing(default_timing_function);
     const CSSPropertyValueSet& properties = style_keyframe->Properties();
     for (unsigned j = 0; j < properties.PropertyCount(); j++) {
@@ -184,32 +187,19 @@ StringKeyframeVector ProcessKeyframesRule(
         keyframe->SetCSSPropertyValue(name, property_reference.Value());
       }
     }
-    if (!drop_keyframe) {
-      keyframes.push_back(keyframe);
-    }
+    keyframes.push_back(keyframe);
+
     // The last keyframe specified at a given offset is used.
     for (wtf_size_t j = 1; j < offsets.size(); ++j) {
-      if (offsets[j].name == TimelineOffset::NamedRange::kNone) {
-        keyframes.push_back(
-            To<StringKeyframe>(keyframe->CloneWithOffset(offsets[j].percent)));
-      } else {
-        has_named_range_keyframes = true;
-        if (timeline && timeline->IsViewTimeline()) {
-          TimelineOffset timeline_offset(
-              offsets[j].name, Length::Percent(100 * offsets[j].percent));
-          double fractional_offset =
-              To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
-          keyframes.push_back(
-              To<StringKeyframe>(keyframe->CloneWithOffset(fractional_offset)));
-        }
-      }
+      StringKeyframe* clone = To<StringKeyframe>(keyframe->Clone());
+      has_named_range_keyframes |= SetOffsets(*clone, offsets[j], timeline);
+      keyframes.push_back(clone);
     }
   }
-
-  std::stable_sort(keyframes.begin(), keyframes.end(),
-                   [](const Member<Keyframe>& a, const Member<Keyframe>& b) {
-                     return a->CheckedOffset() < b->CheckedOffset();
-                   });
+  for (wtf_size_t i = 0; i < keyframes.size(); i++) {
+    keyframes[i]->SetIndex(i);
+  }
+  std::stable_sort(keyframes.begin(), keyframes.end(), &Keyframe::LessThan);
   return keyframes;
 }
 
@@ -217,7 +207,8 @@ StringKeyframeVector ProcessKeyframesRule(
 absl::optional<int> FindIndexOfMatchingKeyframe(
     const StringKeyframeVector& keyframes,
     wtf_size_t start_index,
-    double offset,
+    absl::optional<double> offset,
+    absl::optional<TimelineOffset> timeline_offset,
     const TimingFunction& easing,
     const absl::optional<EffectModel::CompositeOperation>& composite) {
   for (wtf_size_t i = start_index; i < keyframes.size(); i++) {
@@ -225,8 +216,13 @@ absl::optional<int> FindIndexOfMatchingKeyframe(
 
     // Keyframes are sorted by offset. Search can stop once we hit and offset
     // that exceeds the target value.
-    if (offset < keyframe->CheckedOffset())
+    if (offset < keyframe->Offset()) {
       break;
+    }
+
+    if (timeline_offset != keyframe->GetTimelineOffset()) {
+      break;
+    }
 
     if (easing.ToString() != keyframe->Easing().ToString()) {
       continue;
@@ -237,35 +233,6 @@ absl::optional<int> FindIndexOfMatchingKeyframe(
     }
   }
   return absl::nullopt;
-}
-
-// Tests conditions for inserting a bounding keyframe, which are outlined in
-// steps 7 and 8 of the spec for keyframe construction.
-// https://drafts.csswg.org/css-animations-2/#keyframes
-bool NeedsBoundaryKeyframe(StringKeyframe* candidate,
-                           double offset,
-                           const PropertySet& animated_properties,
-                           const PropertySet& bounding_properties,
-                           TimingFunction* default_timing_function,
-                           const EffectModel::CompositeOperation composite) {
-  if (!candidate)
-    return true;
-
-  if (candidate->CheckedOffset() != offset)
-    return true;
-
-  if (bounding_properties.size() == animated_properties.size())
-    return false;
-
-  // consider no keyframe composite (auto) +
-  // target's animation_composite = replace to be equal to keyframe's composite
-  // to be replace.
-  if (candidate->Composite().value_or(composite) !=
-      EffectModel::kCompositeReplace) {
-    return true;
-  }
-
-  return candidate->Easing().ToString() != default_timing_function->ToString();
 }
 
 StringKeyframeEffectModel* CreateKeyframeEffectModel(
@@ -328,14 +295,17 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
       parent_style, default_timing_function, writing_direction.GetWritingMode(),
       writing_direction.Direction(), timeline, has_named_range_keyframes);
 
-  double last_offset = 1;
+  absl::optional<double> last_offset;
+  absl::optional<TimelineOffset> last_timeline_offset;
   wtf_size_t merged_frame_count = 0;
   for (wtf_size_t i = keyframes.size(); i > 0; --i) {
     // 6.1 Let keyframe offset be the value of the keyframe selector converted
     //     to a value in the range 0 ≤ keyframe offset ≤ 1.
     int source_index = i - 1;
     StringKeyframe* rule_keyframe = keyframes[source_index];
-    double keyframe_offset = rule_keyframe->CheckedOffset();
+    absl::optional<double> keyframe_offset = rule_keyframe->Offset();
+    absl::optional<TimelineOffset> timeline_offset =
+        rule_keyframe->GetTimelineOffset();
 
     // 6.2 Let keyframe timing function be the value of the last valid
     //     declaration of animation-timing-function specified on the keyframe
@@ -359,9 +329,11 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
 
     // Prevent stomping a rule override by tracking properties applied at
     // the current offset.
-    if (last_offset != keyframe_offset) {
+    if (last_offset != keyframe_offset ||
+        last_timeline_offset != timeline_offset) {
       current_offset_properties.clear();
       last_offset = keyframe_offset;
+      last_timeline_offset = timeline_offset;
     }
 
     // TODO(crbug.com/1408702): we should merge keyframes to the most left one,
@@ -370,7 +342,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     // existing keyframes.
     absl::optional<int> existing_keyframe_index = FindIndexOfMatchingKeyframe(
         keyframes, source_index + merged_frame_count + 1, keyframe_offset,
-        easing, keyframe_composite);
+        timeline_offset, easing, keyframe_composite);
     int target_index;
     if (existing_keyframe_index) {
       // Merge keyframe propoerties.
@@ -429,63 +401,29 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   // Compact the vector of keyframes if any keyframes have been merged.
   keyframes.EraseAt(0, merged_frame_count);
 
-  // 7.  If there is no keyframe in keyframes with offset 0, or if amongst the
-  //     keyframes in keyframes with offset 0 not all of the properties in
-  //     animated properties are present,
-  //
-  // 7.1 Let initial keyframe be the keyframe in keyframes with offset 0 and
-  //     timing function default timing function.
-  // 7.2 If there is no such keyframe, let initial keyframe be a new empty
-  //     keyframe with offset 0, and timing function default timing function,
-  //     and add it to keyframes after the last keyframe with offset 0.
-  // 7.3 For each property in animated properties that is not present in some
-  //     other keyframe with offset 0, add the computed value of that property
-  //     for element to the keyframe.
-  StringKeyframe* start_keyframe = keyframes.empty() ? nullptr : keyframes[0];
-  if (NeedsBoundaryKeyframe(start_keyframe, 0, animated_properties,
-                            start_properties, default_timing_function,
-                            composite)) {
-    start_keyframe = MakeGarbageCollected<StringKeyframe>();
-    start_keyframe->SetOffset(0);
-    start_keyframe->SetEasing(default_timing_function);
-    start_keyframe->SetComposite(EffectModel::kCompositeReplace);
-    keyframes.push_front(start_keyframe);
-  }
-
-  // 8.  Similarly, if there is no keyframe in keyframes with offset 1, or if
-  //     amongst the keyframes in keyframes with offset 1 not all of the
-  //     properties in animated properties are present,
-  //
-  // 8.1 Let final keyframe be the keyframe in keyframes with offset 1 and
-  //     timing function default timing function.
-  // 8.2 If there is no such keyframe, let final keyframe be a new empty
-  //     keyframe with offset 1, and timing function default timing function,
-  //     and add it to keyframes after the last keyframe with offset 1.
-  // 8.3 For each property in animated properties that is not present in some
-  //     other keyframe with offset 1, add the computed value of that property
-  //     for element to the keyframe.
-  StringKeyframe* end_keyframe = keyframes[keyframes.size() - 1];
-  if (NeedsBoundaryKeyframe(end_keyframe, 1, animated_properties,
-                            end_properties, default_timing_function,
-                            composite)) {
-    end_keyframe = MakeGarbageCollected<StringKeyframe>();
-    end_keyframe->SetOffset(1);
-    end_keyframe->SetEasing(default_timing_function);
-    end_keyframe->SetComposite(EffectModel::kCompositeReplace);
-    keyframes.push_back(end_keyframe);
-  }
-
-  DCHECK_GE(keyframes.size(), 2U);
-  DCHECK_EQ(keyframes.front()->CheckedOffset(), 0);
-  DCHECK_EQ(keyframes.back()->CheckedOffset(), 1);
+  // Steps 7 and 8 are for adding boundary (neutral) keyframes if needed.
+  // These steps are deferred and handled in
+  // KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
+  // AddSyntheticKeyframeIfRequired
+  // The rationale for not adding here is as follows:
+  //   1. Neutral keyframes are also needed for CSS transitions and
+  //      programmatic animations. Avoid duplicating work.
+  //   2. Keyframe ordering can change due to timeline offsets within keyframes.
+  //      This reordering makes it cumbersome to have to remove and re-inject
+  //      neutral keyframes if explicitly added.
+  // NOTE: By not adding here, we need to explicitly inject into the set
+  // generated in effect.getKeyframes().
 
   auto* model = MakeGarbageCollected<CssKeyframeEffectModel>(
-      keyframes, composite, &start_keyframe->Easing(),
-      has_named_range_keyframes);
+      keyframes, composite, default_timing_function, has_named_range_keyframes);
   if (animation_index > 0 && model->HasSyntheticKeyframes()) {
     UseCounter::Count(element.GetDocument(),
                       WebFeature::kCSSAnimationsStackedNeutralKeyframe);
   }
+  if (has_named_range_keyframes) {
+    model->SetViewTimeline(DynamicTo<ViewTimeline>(timeline));
+  }
+
   return model;
 }
 
@@ -1284,32 +1222,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                                      existing_animation->Timeline());
         }
 
-        // If there are no named range keyframes, when scroll_offsets change,
-        // 'from' is still 'from', '10%' is still '10%',no need to recalc model.
-        bool has_named_range_keyframes = false;
-        if (animation->effect() && animation->effect()->IsKeyframeEffect()) {
-          if (auto* model = To<KeyframeEffect>(animation->effect())->Model())
-            has_named_range_keyframes = model->HasNamedRangeKeyframes();
-        }
-        bool scroll_offsets_changed = false;
-        if (timeline && timeline->IsViewTimeline()) {
-          scroll_offsets_changed =
-              existing_animation->scroll_offsets !=
-              To<ViewTimeline>(timeline)->GetResolvedScrollOffsets();
-        }
-        bool composite_changed = false;
-        if (animation->effect()) {
-          if (const auto* model =
-                  To<KeyframeEffect>(animation->effect())->Model()) {
-            composite_changed = model->Composite() != composite;
-          }
-        }
-        bool needs_keyframe_model_recalc =
-            (has_named_range_keyframes && scroll_offsets_changed) ||
-            composite_changed;
-
-        if (needs_keyframe_model_recalc ||
-            keyframes_rule != existing_animation->style_rule ||
+        if (keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
                 existing_animation->style_rule_version ||
             existing_animation->specified_timing != specified_timing ||
@@ -1338,10 +1251,6 @@ void CSSAnimations::CalculateAnimationUpdate(
                 if (previous_timeline &&
                     previous_timeline->IsScrollTimeline() &&
                     previous_timeline->CurrentTime()) {
-                  // For now, CSS Animations do not support duration 'auto'.
-                  // Issue: https://github.com/w3c/csswg-drafts/issues/6530
-                  DCHECK(specified_timing.iteration_duration);
-
                   // We need to maintain current progress in the animation when
                   // switching from scroll timeline to document timeline.
                   double progress = previous_timeline->CurrentTime().value() /
@@ -1350,7 +1259,8 @@ void CSSAnimations::CalculateAnimationUpdate(
                   AnimationTimeDelta end_time = std::max(
                       specified_timing.start_delay.AsTimeValue() +
                           MultiplyZeroAlwaysGivesZero(
-                              specified_timing.iteration_duration.value(),
+                              specified_timing.iteration_duration.value_or(
+                                  AnimationTimeDelta()),
                               specified_timing.iteration_count) +
                           specified_timing.end_delay.AsTimeValue(),
                       AnimationTimeDelta());

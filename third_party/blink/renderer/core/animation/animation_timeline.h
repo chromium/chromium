@@ -58,6 +58,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsViewTimeline() const { return false; }
 
   virtual bool IsActive() const = 0;
+  virtual bool IsResolved() const { return true; }
   virtual AnimationTimeDelta ZeroTime() = 0;
   // https://w3.org/TR/web-animations-1/#monotonically-increasing-timeline
   // A timeline is monotonically increasing if its reported current time is

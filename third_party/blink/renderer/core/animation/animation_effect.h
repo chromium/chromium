@@ -113,7 +113,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
     EnsureNormalizedTiming();
     return normalized_.value();
   }
-  void InvalidateNormalizedTiming() { normalized_.reset(); }
+  void InvalidateNormalizedTiming() const { normalized_.reset(); }
 
   void UpdateSpecifiedTiming(const Timing&);
   void SetIgnoreCssTimingProperties();

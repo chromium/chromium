@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
+#include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -24,6 +25,7 @@ class Element;
 class ComputedStyle;
 class CompositorKeyframeValue;
 class V8ObjectBuilder;
+class ViewTimeline;
 
 // A base class representing an animation keyframe.
 //
@@ -69,7 +71,14 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   // TODO(smcgruer): The keyframe offset should be immutable.
   void SetOffset(absl::optional<double> offset) { offset_ = offset; }
   absl::optional<double> Offset() const { return offset_; }
-  double CheckedOffset() const { return offset_.value(); }
+  double CheckedOffset() const { return offset_.value_or(-1); }
+
+  void SetTimelineOffset(absl::optional<TimelineOffset> timeline_offset) {
+    timeline_offset_ = timeline_offset;
+  }
+  const absl::optional<TimelineOffset>& GetTimelineOffset() const {
+    return timeline_offset_;
+  }
 
   // TODO(smcgruer): The keyframe composite operation should be immutable.
   void SetComposite(EffectModel::CompositeOperation composite) {
@@ -88,6 +97,10 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   TimingFunction& Easing() const { return *easing_; }
   void CopyEasing(const Keyframe& other) { SetEasing(other.easing_); }
 
+  // Track the original positioning in the list for tiebreaking during sort
+  // when two keyframes have the same offset.
+  void SetIndex(int index) { original_index_ = index; }
+
   // Returns a set of the properties represented in this keyframe.
   virtual PropertyHandleSet Properties() const = 0;
 
@@ -104,6 +117,20 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
     the_clone->SetOffset(offset);
     return the_clone;
   }
+
+  // Comparator for stable sorting keyframes by offset. In the event of a tie
+  // we sort by original index of the keyframe if specified.
+  static bool LessThan(const Member<Keyframe>& a, const Member<Keyframe>& b);
+
+  // Compute the offset if dependent on a view timeline.  Returns true if the
+  // offset changed.
+  bool ResolveTimelineOffset(const ViewTimeline* view_timeline,
+                             double range_start,
+                             double range_end);
+
+  // Resets the offset if it depends on a view timeline.  Returns true if the
+  // offset was reset.
+  bool ResetOffsetResolvedFromTimeline();
 
   // Add the properties represented by this keyframe to the given V8 object.
   //
@@ -189,8 +216,7 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
       double offset) const = 0;
 
  protected:
-  Keyframe()
-      : offset_(), composite_(), easing_(LinearTimingFunction::Shared()) {}
+  Keyframe() : easing_(LinearTimingFunction::Shared()) {}
   Keyframe(absl::optional<double> offset,
            absl::optional<EffectModel::CompositeOperation> composite,
            scoped_refptr<TimingFunction> easing)
@@ -200,6 +226,12 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   }
 
   absl::optional<double> offset_;
+  absl::optional<TimelineOffset> timeline_offset_;
+
+  // The original index in the keyframe list is used to resolved ties in the
+  // offset when sorting.
+  absl::optional<int> original_index_;
+
   // To avoid having multiple CompositeOperation enums internally (one with
   // 'auto' and one without), we use a absl::optional for composite_. A
   // absl::nullopt value represents 'auto'.

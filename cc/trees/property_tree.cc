@@ -1608,9 +1608,11 @@ const gfx::PointF ScrollTree::GetPixelSnappedScrollOffset(
 
   const TransformNode* transform_node =
       property_trees()->transform_tree().Node(scroll_node->transform_id);
-  DCHECK(offset == transform_node->scroll_offset)
-      << "Transform node scroll offset does not match the actual offset, this "
-         "means the snapped_amount calculation will be incorrect";
+
+  // TODO(crbug.com/1418689): current_scroll_offset can disagree with
+  // transform_node->scroll_offset if the delta on a main frame update is
+  // simply rounding of the scroll position and not using fractional scroll
+  // deltas (see needs_scroll_update in PushScrollUpdatesFromMainThread).
 
   if (transform_node->scrolls) {
     // If necessary perform a update for this node to ensure snap amount is

@@ -170,6 +170,13 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   virtual KeyframeEffectModelBase* Clone() = 0;
 
+  void SetViewTimeline(const ViewTimeline* timeline);
+
+  // Ensure timeline offsets are properly resolved. If any of the offsets
+  // changed, the keyframes are resorted and cached data is cleared. Returns
+  // true if one or more offsets were affected.
+  bool ResolveTimelineOffsets(double range_start, double range_end);
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -225,6 +232,8 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   mutable bool needs_compositor_keyframes_snapshot_ = true;
   mutable bool has_revert_ = false;
   mutable bool has_named_range_keyframes_ = false;
+
+  Member<const ViewTimeline> view_timeline_;
 
   friend class KeyframeEffectModelTest;
 };

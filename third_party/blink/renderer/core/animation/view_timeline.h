@@ -66,6 +66,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   CSSNumericValue* startOffset() const;
   CSSNumericValue* endOffset() const;
 
+  bool ResolveTimelineOffsets(bool invalidate_effect) const;
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -74,6 +76,12 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   absl::optional<ScrollOffsets> CalculateOffsets(
       PaintLayerScrollableArea* scrollable_area,
       ScrollOrientation physical_orientation) const override;
+
+  // ScrollSnapshotClient:
+  void UpdateSnapshot() override;
+  bool ValidateSnapshot() override;
+
+  void FlushStyleUpdate() override;
 
  private:
   // Cache values to make timeline phase conversions more efficient.
