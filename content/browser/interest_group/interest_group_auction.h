@@ -241,6 +241,11 @@ class CONTENT_EXPORT InterestGroupAuction
     // callback is invoked immediately.
     base::OnceClosure resume_generate_bid_callback;
 
+    // This is true if after this bid would be a good time to combine pending
+    // trusted signals requests on its worklet and flush them. Currently set
+    // when this is the last bid requested of the worklet.
+    bool send_pending_trusted_signals_after_generate_bid = false;
+
     // Used to avoid sending direct-from-seller signals twice if they are
     // available by time of GenerateBid(). This can be true even if no signals
     // are actually available, just so long as that's known.
@@ -812,13 +817,8 @@ class CONTENT_EXPORT InterestGroupAuction
   auction_worklet::mojom::ComponentAuctionOtherSellerPtr GetOtherSellerParam(
       const Bid& bid) const;
 
-  // Requests a WorkletHandle for the interest group identified by
-  // `bid_state`, using the provided callbacks. Returns true if a worklet was
-  // received synchronously.
-  [[nodiscard]] bool RequestBidderWorklet(
-      BidState& bid_state,
-      base::OnceClosure worklet_available_callback,
-      AuctionWorkletManager::FatalErrorCallback fatal_error_callback);
+  // Computes a key for a worklet associated with `bid_state`
+  AuctionWorkletManager::WorkletKey BidderWorkletKey(BidState& bid_state);
 
   // Replaces `${}` placeholders in a debug report URL's query string for post
   // auction signals if exist. Only replaces unescaped placeholder ${}, but

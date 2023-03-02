@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_WORKLET_MANAGER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_WORKLET_MANAGER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -111,6 +113,28 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // AuctionWorkletManager.
   class WorkletOwner;
 
+  // Enough information to uniquely ID a worklet. If these fields match for two
+  // worklets (and they're loaded in the same frame, as this class is
+  // frame-scoped), the worklets can use the same Mojo Worklet object.
+  struct CONTENT_EXPORT WorkletKey {
+    WorkletKey(WorkletType type,
+               const GURL& script_url,
+               const absl::optional<GURL>& wasm_url,
+               const absl::optional<GURL>& signals_url,
+               absl::optional<uint16_t> experiment_group_id);
+    WorkletKey(const WorkletKey&);
+    WorkletKey(WorkletKey&&);
+    ~WorkletKey();
+
+    WorkletType type;
+    GURL script_url;
+    absl::optional<GURL> wasm_url;
+    absl::optional<GURL> signals_url;
+    absl::optional<uint16_t> experiment_group_id;
+
+    bool operator<(const WorkletKey& other) const;
+  };
+
   // Class that tracks a request for a Worklet, and helps manage the lifetime of
   // the returned Worklet once the request receives one. Destroying the handle
   // will abort a pending request and potentially release any worklets or
@@ -189,6 +213,14 @@ class CONTENT_EXPORT AuctionWorkletManager {
   AuctionWorkletManager& operator=(const AuctionWorkletManager&) = delete;
   ~AuctionWorkletManager();
 
+  // Computes the key for bidder worklet with given params.
+  // RequestBidderWorklet(...) is RequestWorkletByKey(BidderWorkletKey(...))
+  static WorkletKey BidderWorkletKey(
+      const GURL& bidding_logic_url,
+      const absl::optional<GURL>& wasm_url,
+      const absl::optional<GURL>& trusted_bidding_signals_url,
+      absl::optional<uint16_t> experiment_group_id);
+
   // Requests a worklet with the specified properties. The top frame origin and
   // debugging information are obtained from the Delegate's RenderFrameHost.
   //
@@ -222,36 +254,13 @@ class CONTENT_EXPORT AuctionWorkletManager {
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
-
- private:
-  // Enough information to uniquely ID a worklet. If these fields match for two
-  // worklets (and they're loaded in the same frame, as this class is
-  // frame-scoped), the worklets can use the same Mojo Worklet object.
-  struct WorkletInfo {
-    WorkletInfo(WorkletType type,
-                const GURL& script_url,
-                const absl::optional<GURL>& wasm_url,
-                const absl::optional<GURL>& signals_url,
-                absl::optional<uint16_t> experiment_group_id);
-    WorkletInfo(const WorkletInfo&);
-    WorkletInfo(WorkletInfo&&);
-    ~WorkletInfo();
-
-    WorkletType type;
-    GURL script_url;
-    absl::optional<GURL> wasm_url;
-    absl::optional<GURL> signals_url;
-    absl::optional<uint16_t> experiment_group_id;
-
-    bool operator<(const WorkletInfo& other) const;
-  };
-
-  bool RequestWorkletInternal(
-      WorkletInfo worklet_info,
+  [[nodiscard]] bool RequestWorkletByKey(
+      WorkletKey worklet_info,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
 
+ private:
   void OnWorkletNoLongerUsable(WorkletOwner* worklet);
 
   mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
@@ -274,7 +283,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
   std::unique_ptr<AuctionSharedStorageHost> auction_shared_storage_host_;
 
-  std::map<WorkletInfo, WorkletOwner*> worklets_;
+  std::map<WorkletKey, WorkletOwner*> worklets_;
 };
 
 }  // namespace content

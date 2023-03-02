@@ -466,6 +466,16 @@ class InterestGroupAuction::BuyerHelper
       // Javscript context reuse.
       SortByPriorityAndGroupByJoinOrigin();
     }
+
+    // Figure out which BidState is last for each key, as it will be responsible
+    // for sending out the trusted bidder signals request.
+    std::set<AuctionWorkletManager::WorkletKey> seen_keys;
+    for (auto it = bid_states_.rbegin(); it != bid_states_.rend(); ++it) {
+      std::unique_ptr<BidState>& bid_state = *it;
+      auto [iter, success] =
+          seen_keys.insert(auction_->BidderWorkletKey(*bid_state));
+      bid_state->send_pending_trusted_signals_after_generate_bid = success;
+    }
   }
 
   ~BuyerHelper() override = default;
@@ -482,12 +492,13 @@ class InterestGroupAuction::BuyerHelper
 
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
-      if (auction_->RequestBidderWorklet(
-              *bid_state,
+      if (auction_->auction_worklet_manager_->RequestWorkletByKey(
+              auction_->BidderWorkletKey(*bid_state),
               base::BindOnce(&BuyerHelper::OnBidderWorkletReceived,
                              base::Unretained(this), bid_state.get()),
               base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
-                             base::Unretained(this), bid_state.get()))) {
+                             base::Unretained(this), bid_state.get()),
+              bid_state->worklet_handle)) {
         OnBidderWorkletReceived(bid_state.get());
       }
     }
@@ -889,18 +900,11 @@ class InterestGroupAuction::BuyerHelper
         std::move(pending_remote),
         bid_state->bid_finalizer.BindNewEndpointAndPassReceiver());
 
-    // Invoke SendPendingSignalsRequests() asynchronously, if necessary. Do this
-    // asynchronously so that all BeginGenerateBid() calls that share a
-    // BidderWorklet will have been invoked before the first
-    // SendPendingSignalsRequests() call.
-    //
-    // This relies on AuctionWorkletManager::Handle invoking all the callbacks
-    // listening for creation of the same BidderWorklet synchronously.
-    if (interest_group.trusted_bidding_signals_url) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BuyerHelper::SendPendingSignalsRequestsForBidder,
-                         weak_ptr_factory_.GetWeakPtr(), bid_state));
+    // TODO(morlovich): This should arguably be merged into BeginGenerateBid
+    // for footprint; check how testable that would be.
+    if (bid_state->send_pending_trusted_signals_after_generate_bid) {
+      bid_state->worklet_handle->GetBidderWorklet()
+          ->SendPendingSignalsRequests();
     }
 
     FinishGenerateBidIfReady(bid_state);
@@ -1269,21 +1273,6 @@ class InterestGroupAuction::BuyerHelper
               {pending_bid->bidder->interest_group.bidding_url->spec(),
                " perBuyerCumulativeTimeout exceeded during bid generation."})});
     }
-  }
-
-  // Calls SendPendingSignalsRequests() for the BidderWorklet of `bid_state`,
-  // if it hasn't been destroyed. This is done asynchronously, so that
-  // BidStates that share a BidderWorklet all call GenerateBid() before this
-  // is invoked for all of them.
-  //
-  // This does result in invoking SendPendingSignalsRequests() multiple times
-  // for BidStates that share BidderWorklets, though that should be fairly low
-  // overhead.
-  void SendPendingSignalsRequestsForBidder(BidState* bid_state) {
-    // Don't invoke callback if worklet was unloaded in the meantime.
-    if (bid_state->worklet_handle)
-      bid_state->worklet_handle->GetBidderWorklet()
-          ->SendPendingSignalsRequests();
   }
 
   // Validates that `mojo_bid` is valid and, if it is, creates a Bid
@@ -3025,10 +3014,8 @@ InterestGroupAuction::GetOtherSellerParam(const Bid& bid) const {
   return browser_signals_other_seller;
 }
 
-bool InterestGroupAuction::RequestBidderWorklet(
-    BidState& bid_state,
-    base::OnceClosure worklet_available_callback,
-    AuctionWorkletManager::FatalErrorCallback fatal_error_callback) {
+AuctionWorkletManager::WorkletKey InterestGroupAuction::BidderWorkletKey(
+    BidState& bid_state) {
   DCHECK(!bid_state.worklet_handle);
 
   const blink::InterestGroup& interest_group = bid_state.bidder->interest_group;
@@ -3036,12 +3023,10 @@ bool InterestGroupAuction::RequestBidderWorklet(
   absl::optional<uint16_t> experiment_group_id =
       GetBuyerExperimentId(*config_, interest_group.owner);
 
-  return auction_worklet_manager_->RequestBidderWorklet(
+  return AuctionWorkletManager::BidderWorkletKey(
       interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
-      interest_group.trusted_bidding_signals_url, experiment_group_id,
-      std::move(worklet_available_callback), std::move(fatal_error_callback),
-      bid_state.worklet_handle);
+      interest_group.trusted_bidding_signals_url, experiment_group_id);
 }
 
 }  // namespace content

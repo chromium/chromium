@@ -74,8 +74,7 @@ class AuctionWorkletManager::WorkletOwner
   // a worklet was synchronously created. Otherwise, the WorkletOwner will
   // immediately start waiting for a process to be available, and once one is,
   // create a worklet, informing all associated WorkletHandles.
-  WorkletOwner(AuctionWorkletManager* worklet_manager,
-               WorkletInfo worklet_info);
+  WorkletOwner(AuctionWorkletManager* worklet_manager, WorkletKey worklet_info);
 
   // Registers/unregisters a WorkletHandle for the worklet `this` owns.
   void RegisterHandle(WorkletHandle* handle) { handles_.AddObserver(handle); }
@@ -93,7 +92,7 @@ class AuctionWorkletManager::WorkletOwner
     return seller_worklet_.get();
   }
 
-  const WorkletInfo& worklet_info() const { return worklet_info_; }
+  const WorkletKey& worklet_info() const { return worklet_info_; }
 
   // Whether or not a worklet has been created. Once a worklet has been created,
   // always returns true, even after disconnect or error.
@@ -136,7 +135,7 @@ class AuctionWorkletManager::WorkletOwner
   // in creating a fresh Mojo worklet.
   raw_ptr<AuctionWorkletManager> worklet_manager_;
 
-  const WorkletInfo worklet_info_;
+  const WorkletKey worklet_info_;
 
   AuctionProcessManager::ProcessHandle process_handle_;
 
@@ -154,7 +153,7 @@ class AuctionWorkletManager::WorkletOwner
 
 AuctionWorkletManager::WorkletOwner::WorkletOwner(
     AuctionWorkletManager* worklet_manager,
-    WorkletInfo worklet_info)
+    WorkletKey worklet_info)
     : worklet_manager_(worklet_manager),
       worklet_info_(std::move(worklet_info)) {
   if (worklet_manager_->auction_process_manager()->RequestWorkletService(
@@ -279,6 +278,30 @@ void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
   for (auto& handle : handles_) {
     handle.OnFatalError(error_type, errors);
   }
+}
+
+AuctionWorkletManager::WorkletKey::WorkletKey(
+    WorkletType type,
+    const GURL& script_url,
+    const absl::optional<GURL>& wasm_url,
+    const absl::optional<GURL>& signals_url,
+    absl::optional<uint16_t> experiment_group_id)
+    : type(type),
+      script_url(script_url),
+      wasm_url(wasm_url),
+      signals_url(signals_url),
+      experiment_group_id(experiment_group_id) {}
+
+AuctionWorkletManager::WorkletKey::WorkletKey(const WorkletKey&) = default;
+AuctionWorkletManager::WorkletKey::WorkletKey(WorkletKey&&) = default;
+AuctionWorkletManager::WorkletKey::~WorkletKey() = default;
+
+bool AuctionWorkletManager::WorkletKey::WorkletKey::operator<(
+    const WorkletKey& other) const {
+  return std::tie(type, script_url, wasm_url, signals_url,
+                  experiment_group_id) <
+         std::tie(other.type, other.script_url, other.wasm_url,
+                  other.signals_url, other.experiment_group_id);
 }
 
 AuctionWorkletManager::WorkletHandle::~WorkletHandle() {
@@ -408,12 +431,18 @@ AuctionWorkletManager::AuctionWorkletManager(
 
 AuctionWorkletManager::~AuctionWorkletManager() = default;
 
-bool AuctionWorkletManager::WorkletInfo::WorkletInfo::operator<(
-    const WorkletInfo& other) const {
-  return std::tie(type, script_url, wasm_url, signals_url,
-                  experiment_group_id) <
-         std::tie(other.type, other.script_url, other.wasm_url,
-                  other.signals_url, other.experiment_group_id);
+// static
+AuctionWorkletManager::WorkletKey AuctionWorkletManager::BidderWorkletKey(
+    const GURL& bidding_logic_url,
+    const absl::optional<GURL>& wasm_url,
+    const absl::optional<GURL>& trusted_bidding_signals_url,
+    absl::optional<uint16_t> experiment_group_id) {
+  return WorkletKey(WorkletType::kBidder,
+                    /*script_url=*/bidding_logic_url, wasm_url,
+                    /*signals_url=*/trusted_bidding_signals_url,
+                    trusted_bidding_signals_url.has_value()
+                        ? experiment_group_id
+                        : absl::nullopt);
 }
 
 bool AuctionWorkletManager::RequestBidderWorklet(
@@ -424,17 +453,11 @@ bool AuctionWorkletManager::RequestBidderWorklet(
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle) {
-  DCHECK(!out_worklet_handle);
-
-  WorkletInfo worklet_info(WorkletType::kBidder,
-                           /*script_url=*/bidding_logic_url, wasm_url,
-                           /*signals_url=*/trusted_bidding_signals_url,
-                           trusted_bidding_signals_url.has_value()
-                               ? experiment_group_id
-                               : absl::nullopt);
-  return RequestWorkletInternal(
-      std::move(worklet_info), std::move(worklet_available_callback),
-      std::move(fatal_error_callback), out_worklet_handle);
+  return RequestWorkletByKey(
+      BidderWorkletKey(bidding_logic_url, wasm_url, trusted_bidding_signals_url,
+                       experiment_group_id),
+      std::move(worklet_available_callback), std::move(fatal_error_callback),
+      out_worklet_handle);
 }
 
 bool AuctionWorkletManager::RequestSellerWorklet(
@@ -444,39 +467,22 @@ bool AuctionWorkletManager::RequestSellerWorklet(
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle) {
-  DCHECK(!out_worklet_handle);
-
-  WorkletInfo worklet_info(WorkletType::kSeller,
-                           /*script_url=*/decision_logic_url,
-                           /*wasm_url=*/absl::nullopt,
-                           /*signals_url=*/trusted_scoring_signals_url,
-                           experiment_group_id);
-  return RequestWorkletInternal(
+  WorkletKey worklet_info(WorkletType::kSeller,
+                          /*script_url=*/decision_logic_url,
+                          /*wasm_url=*/absl::nullopt,
+                          /*signals_url=*/trusted_scoring_signals_url,
+                          experiment_group_id);
+  return RequestWorkletByKey(
       std::move(worklet_info), std::move(worklet_available_callback),
       std::move(fatal_error_callback), out_worklet_handle);
 }
 
-AuctionWorkletManager::WorkletInfo::WorkletInfo(
-    WorkletType type,
-    const GURL& script_url,
-    const absl::optional<GURL>& wasm_url,
-    const absl::optional<GURL>& signals_url,
-    absl::optional<uint16_t> experiment_group_id)
-    : type(type),
-      script_url(script_url),
-      wasm_url(wasm_url),
-      signals_url(signals_url),
-      experiment_group_id(experiment_group_id) {}
-
-AuctionWorkletManager::WorkletInfo::WorkletInfo(const WorkletInfo&) = default;
-AuctionWorkletManager::WorkletInfo::WorkletInfo(WorkletInfo&&) = default;
-AuctionWorkletManager::WorkletInfo::~WorkletInfo() = default;
-
-bool AuctionWorkletManager::RequestWorkletInternal(
-    WorkletInfo worklet_info,
+bool AuctionWorkletManager::RequestWorkletByKey(
+    WorkletKey worklet_info,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle) {
+  DCHECK(!out_worklet_handle);
   auto worklet_it = worklets_.find(worklet_info);
   scoped_refptr<WorkletOwner> worklet;
   if (worklet_it != worklets_.end()) {
