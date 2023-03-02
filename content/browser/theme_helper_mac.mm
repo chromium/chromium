@@ -237,9 +237,10 @@ SkColor NSColorToSkColor(NSColor* color) {
         content::mojom::UpdateScrollbarThemeParams::New();
     FillScrollbarThemeParams(params.get());
     params->redraw = redraw;
-    RenderProcessHostImpl* rphi =
+    RenderProcessHostImpl* process_host =
         static_cast<RenderProcessHostImpl*>(it.GetCurrentValue());
-    rphi->GetRendererInterface()->UpdateScrollbarTheme(std::move(params));
+    process_host->GetRendererInterface()->UpdateScrollbarTheme(
+        std::move(params));
   }
 
   std::unique_ptr<content::RenderWidgetHostIterator> all_widgets(
@@ -357,19 +358,17 @@ void ThemeHelperMac::LoadSystemColors() {
               static_cast<size_t>(blink::MacSystemColorID::kCount)));
         }];
   } else if (@available(macOS 10.14, *)) {
-    NSAppearance* savedAppearance = [NSAppearance currentAppearance];
-    [NSAppearance
-        setCurrentAppearance:[NSAppearance
-                                 appearanceNamed:NSAppearanceNameAqua]];
+    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
+    NSAppearance.currentAppearance =
+        [NSAppearance appearanceNamed:NSAppearanceNameAqua];
     LoadSystemColorsForCurrentAppearance(values.subspan(
         0, static_cast<size_t>(blink::MacSystemColorID::kCount)));
-    [NSAppearance
-        setCurrentAppearance:[NSAppearance
-                                 appearanceNamed:NSAppearanceNameDarkAqua]];
+    NSAppearance.currentAppearance =
+        [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
     LoadSystemColorsForCurrentAppearance(
         values.subspan(static_cast<size_t>(blink::MacSystemColorID::kCount),
                        static_cast<size_t>(blink::MacSystemColorID::kCount)));
-    [NSAppearance setCurrentAppearance:savedAppearance];
+    NSAppearance.currentAppearance = saved_appearance;
   } else {
     LoadSystemColorsForCurrentAppearance(values.subspan(
         0, static_cast<size_t>(blink::MacSystemColorID::kCount)));
@@ -388,9 +387,9 @@ void ThemeHelperMac::OnRenderProcessHostCreated(
   FillScrollbarThemeParams(params.get());
   params->redraw = false;
 
-  RenderProcessHostImpl* rphi =
+  RenderProcessHostImpl* process_host =
       static_cast<content::RenderProcessHostImpl*>(host);
-  content::mojom::Renderer* renderer = rphi->GetRendererInterface();
+  content::mojom::Renderer* renderer = process_host->GetRendererInterface();
   renderer->UpdateScrollbarTheme(std::move(params));
   SendSystemColorsChangedMessage(renderer);
 }

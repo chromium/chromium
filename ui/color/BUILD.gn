@@ -159,11 +159,7 @@ component("mixers") {
     sources += [ "chromeos/native_color_mixers_chromeos.cc" ]
   } else if (is_mac) {
     frameworks = [ "AppKit.framework" ]
-    sources += [
-      "mac/native_color_mixers_mac.mm",
-      "mac/scoped_current_nsappearance.h",
-      "mac/scoped_current_nsappearance.mm",
-    ]
+    sources += [ "mac/native_color_mixers_mac.mm" ]
   } else if (is_win) {
     sources += [ "win/native_color_mixers_win.cc" ]
     deps += [
