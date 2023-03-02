@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/focus_cycler.h"
-#include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_big_user_view.h"
 #include "ash/login/ui/login_test_base.h"
@@ -37,7 +37,7 @@ class LoginShelfViewPixelTestBase : public LoginTestBase {
 
     SetUserCount(1);
     primary_big_user_view_ =
-        LockContentsView::TestApi(
+        LockContentsViewTestApi(
             LockScreen::TestApi(LockScreen::Get()).contents_view())
             .primary_big_view();
   }

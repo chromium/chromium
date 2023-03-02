@@ -5,7 +5,7 @@
 #ifndef ASH_LOGIN_UI_LOGIN_TEST_UTILS_H_
 #define ASH_LOGIN_UI_LOGIN_TEST_UTILS_H_
 
-#include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/login_auth_user_view.h"
 #include "ash/login/ui/login_password_view.h"
 
@@ -23,7 +23,7 @@ enum class AuthTarget { kPrimary, kSecondary };
 const char* AuthTargetToString(AuthTarget target);
 
 // Helpers for constructing TestApi instances.
-LockContentsView::TestApi MakeLockContentsViewTestApi(LockContentsView* view);
+LockContentsViewTestApi MakeLockContentsViewTestApi(LockContentsView* view);
 LoginAuthUserView::TestApi MakeLoginAuthTestApi(LockContentsView* view,
                                                 AuthTarget auth);
 LoginPasswordView::TestApi MakeLoginPasswordTestApi(LockContentsView* view,
