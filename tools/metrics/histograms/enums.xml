@@ -15250,7 +15250,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="7" label="Ignored Multiple EV Policies and One Matches Root"/>
   <int value="8"
       label="Ignored Differing Path After Reverifying With Trial Chain"/>
-  <int value="9" label="Ignored Locally Trusted Leaf Cert"/>
+  <int value="9"
+      label="(Deprecated in M113) Ignored Locally Trusted Leaf Cert"/>
   <int value="10" label="Ignored Configuration Changed"/>
   <int value="11" label="Ignored SHA-1 Signature Present"/>
   <int value="12" label="Ignored Windows Rev Checking Enabled"/>

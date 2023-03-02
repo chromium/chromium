@@ -206,8 +206,6 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
       return "ignored_multiple_ev_policies_one_matches_root";
     case net::TrialComparisonResult::kIgnoredDifferentPathReVerifiesEquivalent:
       return "ignored_different_path_reverifies_equivalent";
-    case net::TrialComparisonResult::kIgnoredLocallyTrustedLeaf:
-      return "ignored_locally_trusted_leaf";
     case net::TrialComparisonResult::kIgnoredConfigurationChanged:
       return "ignored_configuration_changed";
     case net::TrialComparisonResult::kIgnoredSHA1SignaturePresent:

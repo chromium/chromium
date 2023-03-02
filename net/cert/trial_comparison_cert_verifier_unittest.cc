@@ -2015,8 +2015,8 @@ TEST_F(TrialComparisonCertVerifierTest, LocallyTrustedLeaf) {
   verify_proc2->WaitForVerifyCall();
   RunUntilIdle();
 
-  // Expect no report.
-  EXPECT_TRUE(reports.empty());
+  // Expect a report.
+  EXPECT_EQ(1U, reports.size());
 
   EXPECT_EQ(1, verify_proc1->num_verifications());
   EXPECT_EQ(1, verify_proc2->num_verifications());
@@ -2025,7 +2025,7 @@ TEST_F(TrialComparisonCertVerifierTest, LocallyTrustedLeaf) {
                                1);
   histograms_.ExpectUniqueSample(
       "Net.CertVerifier_TrialComparisonResult",
-      TrialComparisonResult::kIgnoredLocallyTrustedLeaf, 1);
+      TrialComparisonResult::kPrimaryValidSecondaryError, 1);
 }
 
 // Ignore results where both primary and trial verifier report SHA-1 signatures.
