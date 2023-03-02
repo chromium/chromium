@@ -2859,6 +2859,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PartnerBrowserCustomizationInitDuration" units="ms"
+    expires_after="2023-09-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the total duration of initializing PartnerBrowserCustomization in
+    the background. Noting that and the initialization has a 10-second timeout,
+    and this histogram does not count the duration for all associated callback.
+    Recorded when the initialization is completed or canceled.
+  </summary>
+</histogram>
+
+<histogram name="Android.PartnerBrowserCustomizationInitDuration.WithCallbacks"
+    units="ms" expires_after="2023-09-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the total duration of initializing PartnerBrowserCustomization in
+    the background and running all of the associated callbacks. Recorded when
+    the initialization is completed or canceled, and all the associated async
+    callbacks are run.
+  </summary>
+</histogram>
+
+<histogram name="Android.PartnerCustomizationInitializedBeforeInitialTab"
+    enum="Boolean" expires_after="2023-09-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records whether partner customization is initialized before the first tab is
+    created. A value of false means the first tab might be using a different
+    homepage than the one customized by the partner. Recorded during Chrome
+    start up when the very first tab is created.
+  </summary>
+</histogram>
+
 <histogram name="Android.PhotoPicker.BitmapScalerTask" units="ms"
     expires_after="2023-06-01">
   <owner>finnur@chromium.org</owner>

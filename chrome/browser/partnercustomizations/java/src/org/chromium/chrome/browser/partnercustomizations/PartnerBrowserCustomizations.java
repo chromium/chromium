@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.partnercustomizations;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -188,10 +190,12 @@ public class PartnerBrowserCustomizations {
         // Setup an initializing async task.
         final AsyncTask<Void> initializeAsyncTask = new AsyncTask<Void>() {
             private boolean mHomepageUriChanged;
+            private long mStartTime;
 
             @Override
             protected Void doInBackground() {
                 try {
+                    mStartTime = SystemClock.elapsedRealtime();
                     boolean systemOrPreStable =
                             (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1
                             || !VersionInfo.isStableBuild();
@@ -239,7 +243,13 @@ public class PartnerBrowserCustomizations {
             }
 
             private void onFinalized() {
+                boolean isFirstFinalized = !mIsInitialized;
                 mIsInitialized = true;
+                if (isFirstFinalized) {
+                    RecordHistogram.recordTimesHistogram(
+                            "Android.PartnerBrowserCustomizationInitDuration",
+                            SystemClock.elapsedRealtime() - mStartTime);
+                }
 
                 for (Runnable callback : mInitializeAsyncCallbacks) {
                     callback.run();
@@ -248,6 +258,11 @@ public class PartnerBrowserCustomizations {
 
                 if (mHomepageUriChanged && mListener != null) {
                     mListener.onHomepageUpdate();
+                }
+                if (isFirstFinalized) {
+                    RecordHistogram.recordTimesHistogram(
+                            "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks",
+                            SystemClock.elapsedRealtime() - mStartTime);
                 }
             }
         };

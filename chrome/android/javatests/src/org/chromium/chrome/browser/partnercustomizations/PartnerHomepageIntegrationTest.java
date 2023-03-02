@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -71,6 +72,21 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertEquals(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
                 Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab())));
+        Assert.assertEquals("<Android.PartnerBrowserCustomizationInitDuration> not recorded.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.PartnerBrowserCustomizationInitDuration"));
+        Assert.assertEquals(
+                "<Android.PartnerBrowserCustomizationInitDuration.WithCallbacks> not recorded.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks"));
+        Assert.assertEquals(
+                "<Android.PartnerCustomizationInitializedBeforeInitialTab> not recorded.", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.PartnerCustomizationInitializedBeforeInitialTab"));
+        Assert.assertEquals(
+                "<Android.PartnerCustomizationInitializedBeforeInitialTab> should record true.", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.PartnerCustomizationInitializedBeforeInitialTab", 1));
     }
 
     /**
