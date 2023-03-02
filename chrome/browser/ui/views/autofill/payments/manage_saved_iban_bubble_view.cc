@@ -34,7 +34,7 @@ ManageSavedIbanBubbleView::ManageSavedIbanBubbleView(
                 bubble->controller()->OnManageSavedIbanExtraButtonClicked();
               },
               base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENTS)))
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_SAVED_PAYMENT_METHODS)))
       ->SetID(autofill::DialogViewId::MANAGE_IBANS_BUTTON);
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
