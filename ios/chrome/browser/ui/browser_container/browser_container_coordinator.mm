@@ -88,6 +88,7 @@
 
   self.browserEditMenuHandler = [[BrowserEditMenuHandler alloc] init];
   self.viewController.browserEditMenuHandler = self.browserEditMenuHandler;
+  self.browserEditMenuHandler.rootView = self.viewController.view;
   self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
 
   if (base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {

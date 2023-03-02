@@ -174,7 +174,7 @@
   if (_firstResponder) {
     return _firstResponder;
   }
-  _firstResponder = GetFirstResponder();
+  _firstResponder = GetFirstResponderSubview(self.rootView);
   __weak BrowserEditMenuHandler* weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     weakSelf.firstResponder = nil;

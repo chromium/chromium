@@ -17,6 +17,9 @@
 // The delegate to handle link to text button selection.
 @property(nonatomic, weak) id<LinkToTextDelegate> linkToTextDelegate;
 
+// The root view this handler is handling the edit menu for.
+@property(nonatomic, weak) UIView* rootView;
+
 // The delegate to handle Partial Translate button selection.
 @property(nonatomic, weak) id<PartialTranslateDelegate>
     partialTranslateDelegate;
