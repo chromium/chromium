@@ -3057,6 +3057,17 @@ EVENT_TYPE(DNS_TRANSACTION_ATTEMPT)
 //   }
 EVENT_TYPE(DNS_TRANSACTION_TCP_ATTEMPT)
 
+// This event is created when DnsTransaction creates a new DoH request and
+// tries to resolve the fully-qualified name.
+//
+// It has a single parameter:
+//
+//   {
+//     "source_dependency": <Source id of the DoH request created for the
+//                           attempt>,
+//   }
+EVENT_TYPE(DNS_TRANSACTION_HTTPS_ATTEMPT)
+
 // This event is created when DnsTransaction receives a matching response.
 //
 // It has the following parameters:
@@ -3071,6 +3082,22 @@ EVENT_TYPE(DNS_TRANSACTION_TCP_ATTEMPT)
 //     "response_buffer": <Raw buffer of the received response>,
 //   }
 EVENT_TYPE(DNS_TRANSACTION_RESPONSE)
+
+// The start/end of a DoH request.
+//
+// The BEGIN phase contains the following parameters:
+//
+// {
+//   "hostname": <The hostname it is trying to resolve>,
+//   "query_type": <Type of the query>,
+// }
+//
+// The END phase contains the following parameters:
+//
+// {
+//   "net_error": <The net error code for the failure, if any>,
+// }
+EVENT_TYPE(DOH_URL_REQUEST)
 
 // ------------------------------------------------------------------------
 // CertVerifier

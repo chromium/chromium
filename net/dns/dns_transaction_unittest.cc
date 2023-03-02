@@ -2627,8 +2627,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.count(), 14);
-  EXPECT_EQ(observer.dict_count(), 6);
+  EXPECT_EQ(observer.count(), 18);
+  EXPECT_EQ(observer.dict_count(), 9);
 }
 
 // Test for when a slow DoH response is delayed until after the initial fallback
