@@ -162,6 +162,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableTouchpadThreeFingerClick[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnterpriseDisableArc[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnterpriseForceManualEnrollmentInTestBuilds[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableForcedReEnrollment[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableInitialEnrollment[];

@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/active_directory_migration_utils.h"
@@ -77,6 +78,12 @@ constexpr double kMultiplyFactor = 1.5;
 constexpr double kJitterFactor = 0.1;           // +/- 10% jitter
 constexpr int64_t kMaxDelayMS = 8 * 60 * 1000;  // 8 minutes
 
+constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
+constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
+
+// Max number of retries to check install attributes state.
+constexpr int kMaxInstallAttributesStateCheckRetries = 60;
+
 bool ShouldAttemptRestart() {
   // Restart browser to switch from DeviceCloudPolicyManagerAsh to
   // DeviceActiveDirectoryPolicyManager.
@@ -105,11 +112,16 @@ bool IsOnEnrollmentScreen() {
          EnrollmentScreenView::kScreenId;
 }
 
-constexpr char kUserActionCancelTPMCheck[] = "cancel-tpm-check";
-constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
-
-// Max number of retries to check install attributes state.
-constexpr int kMaxInstallAttributesStateCheckRetries = 60;
+bool TestForcesManualEnrollment() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kEnterpriseForceManualEnrollmentInTestBuilds)) {
+    // Forcing manual enrollment is only used in integration/manual tests. Crash
+    // if we're not on a test image.
+    base::SysInfo::CrashIfChromeOSNonTestImage();
+    return true;
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -185,6 +197,11 @@ void EnrollmentScreen::SetEnrollmentConfig(
       next_auth_ = AUTH_ATTESTATION;
       break;
     case EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE:
+      if (TestForcesManualEnrollment()) {
+        current_auth_ = AUTH_OAUTH;
+        next_auth_ = AUTH_OAUTH;
+        break;
+      }
       current_auth_ = AUTH_ATTESTATION;
       next_auth_ = enrollment_config_.should_enroll_interactively()
                        ? AUTH_OAUTH

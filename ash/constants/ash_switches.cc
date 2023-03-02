@@ -491,6 +491,11 @@ const char kEnableTouchpadThreeFingerClick[] =
 // Disables ARC for managed accounts.
 const char kEnterpriseDisableArc[] = "enterprise-disable-arc";
 
+// Whether to force manual enrollment instead of trying cert based enrollment.
+// Only works on test builds.
+const char kEnterpriseForceManualEnrollmentInTestBuilds[] =
+    "enterprise-force-manual-enrollment-in-test-builds";
+
 // Whether to enable forced enterprise re-enrollment.
 const char kEnterpriseEnableForcedReEnrollment[] =
     "enterprise-enable-forced-re-enrollment";
