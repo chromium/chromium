@@ -46,7 +46,7 @@ static const float kMinCancelButtonSize = 5;
 static const float kMaxCancelButtonSize = 21;
 
 Color LayoutThemeDefault::active_selection_background_color_ =
-    Color::FromRGBA32(0xFF1E90FF);
+    Color::FromRGBA32(0xFF1967D2);
 Color LayoutThemeDefault::active_selection_foreground_color_ =
     Color::FromRGBA32(0xFF000000);
 Color LayoutThemeDefault::inactive_selection_background_color_ =
