@@ -292,10 +292,10 @@ SkColor PickGoogleColor(SkColor color,
   return PickGoogleColorImpl(color, pick_color);
 }
 
-SkColor PickGoogleColor(SkColor color,
-                        SkColor background_color_a,
-                        SkColor background_color_b,
-                        float min_contrast) {
+SkColor PickGoogleColorTwoBackgrounds(SkColor color,
+                                      SkColor background_color_a,
+                                      SkColor background_color_b,
+                                      float min_contrast) {
   const auto pick_color = [&](const SkColor(&colors)[kNumGoogleColors]) {
     return PickGoogleColor(colors, color, background_color_a,
                            background_color_b, min_contrast);
