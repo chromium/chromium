@@ -235,6 +235,12 @@ void VideoConferenceTray::HandleLocaleChange() {
   // TODO(b/253646076): Finish this function.
 }
 
+void VideoConferenceTray::AnchorUpdated() {
+  if (bubble_) {
+    bubble_->bubble_view()->UpdateBubble();
+  }
+}
+
 void VideoConferenceTray::OnHasMediaAppStateChange() {
   SetVisiblePreferred(VideoConferenceTrayController::Get()->ShouldShowTray());
 }
@@ -301,7 +307,7 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
   init_params.delegate = GetWeakPtr();
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
+  init_params.anchor_rect = GetAnchorBoundsInScreen();
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;

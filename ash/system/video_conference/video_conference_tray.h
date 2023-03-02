@@ -100,6 +100,7 @@ class ASH_EXPORT VideoConferenceTray
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void HandleLocaleChange() override;
+  void AnchorUpdated() override;
 
   // VideoConferenceTrayController::Observer:
   void OnHasMediaAppStateChange() override;
