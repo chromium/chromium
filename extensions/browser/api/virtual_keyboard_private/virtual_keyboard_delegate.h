@@ -111,11 +111,8 @@ class VirtualKeyboardDelegate {
   virtual bool SetWindowBoundsInScreen(const gfx::Rect& bounds_in_screen) = 0;
 
   // Calls the |get_history_callback| function and passes a value containing the
-  // current cipboard history items. Only clipboard items which have an id in
-  // the |item_ids_filter| are included. If the filter is empty then all
-  // clipboard items are included.
+  // current cipboard history items.
   virtual void GetClipboardHistory(
-      const std::set<std::string>& item_ids_filter,
       OnGetClipboardHistoryCallback get_history_callback) = 0;
 
   // Paste a clipboard item from the clipboard history. Returns whether the

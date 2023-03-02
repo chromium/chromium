@@ -64,7 +64,6 @@ class ChromeVirtualKeyboardDelegate
   bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) override;
   bool SetWindowBoundsInScreen(const gfx::Rect& bounds_in_screen) override;
   void GetClipboardHistory(
-      const std::set<std::string>& item_ids_filter,
       OnGetClipboardHistoryCallback get_history_callback) override;
   bool PasteClipboardItem(const std::string& clipboard_item_id) override;
   bool DeleteClipboardItem(const std::string& clipboard_item_id) override;
@@ -74,11 +73,7 @@ class ChromeVirtualKeyboardDelegate
 
  private:
   // ash::ClipboardHistoryController::Observer:
-  void OnClipboardHistoryItemListAddedOrRemoved() override;
-  void OnClipboardHistoryItemsUpdated(
-      const std::vector<base::UnguessableToken>& menu_item_ids) override;
-
-  void OnGetHistoryValuesAfterItemsUpdated(base::Value updated_items);
+  void OnClipboardHistoryItemsUpdated() override;
 
   void OnHasInputDevices(OnKeyboardSettingsCallback on_settings_callback,
                          bool has_audio_input_devices);

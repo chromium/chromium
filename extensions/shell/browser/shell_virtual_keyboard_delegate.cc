@@ -100,7 +100,6 @@ bool ShellVirtualKeyboardDelegate::SetWindowBoundsInScreen(
 }
 
 void ShellVirtualKeyboardDelegate::GetClipboardHistory(
-    const std::set<std::string>& item_ids_filter,
     OnGetClipboardHistoryCallback get_history_callback) {
   NOTIMPLEMENTED();
 }

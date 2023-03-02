@@ -47,7 +47,7 @@ class ScopedClipboardHistoryListUpdateWaiter
   ~ScopedClipboardHistoryListUpdateWaiter() override;
 
   // ash::ClipboardHistoryController::Observer:
-  void OnClipboardHistoryItemListAddedOrRemoved() override;
+  void OnClipboardHistoryItemsUpdated() override;
 
  private:
   base::RunLoop run_loop_;

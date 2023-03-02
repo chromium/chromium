@@ -17,7 +17,6 @@
 
 namespace base {
 class Value;
-class UnguessableToken;
 }  // namespace base
 
 namespace gfx {
@@ -40,11 +39,9 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
         crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {}
     // Called when the user pastes from the clipboard history menu.
     virtual void OnClipboardHistoryPasted() {}
-    // Called when the clipboard history changes.
-    virtual void OnClipboardHistoryItemListAddedOrRemoved() {}
-    // Called when existing clipboard items in the history have changes.
-    virtual void OnClipboardHistoryItemsUpdated(
-        const std::vector<base::UnguessableToken>& menu_item_ids) {}
+    // Called when item(s) are added to, removed from, or updated in the
+    // clipboard history.
+    virtual void OnClipboardHistoryItemsUpdated() {}
   };
 
   // Returns the singleton instance.
@@ -71,13 +68,9 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   virtual std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() = 0;
 
   // Calls `callback` with the clipboard history list, which tracks what has
-  // been copied to the clipboard. Only the items listed in |item_id_filter| are
-  // returned. If |item_id_filter| is empty, then all items in the history are
-  // returned. If clipboard history is disabled in the current mode, `callback`
-  // will be called with an empty history list.
-  // TODO(crbug.com/1309666): Remove const ref from |item_id_filter| param type.
-  virtual void GetHistoryValues(const std::set<std::string>& item_id_filter,
-                                GetHistoryValuesCallback callback) const = 0;
+  // been copied to the clipboard. If clipboard history is disabled in the
+  // current mode, `callback` will be called with an empty history list.
+  virtual void GetHistoryValues(GetHistoryValuesCallback callback) const = 0;
 
   // Returns a list of item ids for items contained in the clipboard history.
   virtual std::vector<std::string> GetHistoryItemIds() const = 0;

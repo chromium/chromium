@@ -136,8 +136,7 @@ class ClipboardHistoryControllerTest : public AshTestBase {
 
   base::Value::List GetHistoryValues() {
     base::test::TestFuture<base::Value> future;
-    GetClipboardHistoryController()->GetHistoryValuesForTest(
-        future.GetCallback());
+    GetClipboardHistoryController()->GetHistoryValues(future.GetCallback());
     auto result = future.Take();
     EXPECT_TRUE(result.is_list());
     return std::move(result).TakeList();
@@ -148,8 +147,7 @@ class ClipboardHistoryControllerTest : public AshTestBase {
     // while the request is in progress.
     GetClipboardHistoryController()->BlockGetHistoryValuesForTest();
     base::test::TestFuture<base::Value> future;
-    GetClipboardHistoryController()->GetHistoryValuesForTest(
-        future.GetCallback());
+    GetClipboardHistoryController()->GetHistoryValues(future.GetCallback());
     EXPECT_FALSE(future.IsReady());
 
     auto* session_controller = Shell::Get()->session_controller();
@@ -446,8 +444,7 @@ TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
   // values are returned.
   GetClipboardHistoryController()->BlockGetHistoryValuesForTest();
   base::test::TestFuture<base::Value> future;
-  GetClipboardHistoryController()->GetHistoryValuesForTest(
-      future.GetCallback());
+  GetClipboardHistoryController()->GetHistoryValues(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   WaitForOperationConfirmed();
 

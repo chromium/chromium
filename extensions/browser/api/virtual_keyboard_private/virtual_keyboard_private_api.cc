@@ -258,11 +258,9 @@ VirtualKeyboardPrivateGetClipboardHistoryFunction::Run() {
     }
   }
 
-  delegate()->GetClipboardHistory(
-      item_id_filter,
-      base::BindOnce(&VirtualKeyboardPrivateGetClipboardHistoryFunction::
-                         OnGetClipboardHistory,
-                     this));
+  delegate()->GetClipboardHistory(base::BindOnce(
+      &VirtualKeyboardPrivateGetClipboardHistoryFunction::OnGetClipboardHistory,
+      this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
