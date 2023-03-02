@@ -5609,6 +5609,21 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     diff = set(new_handles) - set(old_handles)
     self.assertEqual(1, len(diff))
 
+  def testMapperIsNotDisplayedByGetWindowHandles(self):
+    """Regression test for crbug.com/chromedriver/4302.
+    The issue manifests in frequent flakes of this test.
+    """
+    script = 'for (let i=0; i<10; ++i){ window.open(); }'
+    self._driver.ExecuteScript(script)
+    handles = self._driver.GetWindowHandles()
+    self.assertEqual(11, len(handles))
+    titles = []
+    for handle in handles:
+      self._driver.SwitchToWindow(handle)
+      titles.append(self._driver.GetTitle())
+    expected_titles = ['' for _ in range(0, 11)]
+    self.assertListEqual(expected_titles, titles)
+
   def testBrowserQuitsWhenLastPageIsClosed(self):
     conn = self.createWebSocketConnection()
 

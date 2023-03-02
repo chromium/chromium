@@ -818,12 +818,8 @@ Status ExecuteGetWindowHandles(Session* session,
     return status;
 
   if (session->webSocketUrl) {
-    std::string mapper_view_id;
-    // TODO(chromedriver:4181): How do we know for sure that the first page is
-    // the mapper?
-    status = session->chrome->GetWebViewIdForFirstTab(&mapper_view_id,
-                                                      session->w3c_compliant);
-    auto it = base::ranges::find(web_view_ids, mapper_view_id);
+    auto it =
+        base::ranges::find(web_view_ids, session->bidi_mapper_web_view_id);
     if (it != web_view_ids.end()) {
       web_view_ids.erase(it);
     }
