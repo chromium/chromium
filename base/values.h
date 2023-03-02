@@ -670,15 +670,6 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // ===== DEPRECATED methods that require `type() == Type::DICT` =====
 
-  // `FindKeyOfType` is similar to `FindKey`, but it also requires the found
-  // value to have type `type`. If no type is found, or the found value is of a
-  // different type nullptr is returned.
-  //
-  // DEPRECATED: prefer `Value::Dict::FindBool()`, `Value::Dict::FindInt()`, et
-  // cetera.
-  Value* FindKeyOfType(StringPiece key, Type type);
-  const Value* FindKeyOfType(StringPiece key, Type type) const;
-
   // These are convenience forms of `FindKey`. They return `absl::nullopt` or
   // `nullptr` if the value is not found or doesn't have the type specified in
   // the function's name.
@@ -749,17 +740,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: Prefer `Value::Dict::FindByDottedPath()`.
   Value* FindPath(StringPiece path);
   const Value* FindPath(StringPiece path) const;
-
-  // Like FindPath() but will only return the value if the leaf Value type
-  // matches the given type. Will return nullptr otherwise.
-  // Note: Prefer `Find<Type>Path()` for simple values.
-  //
-  // Note: If there is only one component in the path, use `FindKeyOfType()`
-  // instead for slightly better performance.
-  //
-  // DEPRECATED: Use `Value::Dict::FindBoolByDottedPath()`,
-  // `Value::Dict::FindIntByDottedPath()`, et cetera.
-  const Value* FindPathOfType(StringPiece path, Type type) const;
 
   // Convenience accessors used when the expected type of a value is known.
   // Similar to Find<Type>Key() but accepts paths instead of keys.

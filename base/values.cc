@@ -1031,17 +1031,6 @@ bool operator>=(const Value::List& lhs, const Value::List& rhs) {
   return !(lhs < rhs);
 }
 
-Value* Value::FindKeyOfType(StringPiece key, Type type) {
-  return const_cast<Value*>(std::as_const(*this).FindKeyOfType(key, type));
-}
-
-const Value* Value::FindKeyOfType(StringPiece key, Type type) const {
-  const Value* result = GetDict().Find(key);
-  if (!result || result->type() != type)
-    return nullptr;
-  return result;
-}
-
 absl::optional<bool> Value::FindBoolKey(StringPiece key) const {
   return GetDict().FindBool(key);
 }
@@ -1063,19 +1052,27 @@ std::string* Value::FindStringKey(StringPiece key) {
 }
 
 const Value* Value::FindDictKey(StringPiece key) const {
-  return FindKeyOfType(key, Type::DICT);
+  const Value* result = GetDict().Find(key);
+  if (!result || result->type() != Type::DICT) {
+    return nullptr;
+  }
+  return result;
 }
 
 Value* Value::FindDictKey(StringPiece key) {
-  return FindKeyOfType(key, Type::DICT);
+  return const_cast<Value*>(std::as_const(*this).FindDictKey(key));
 }
 
 const Value* Value::FindListKey(StringPiece key) const {
-  return FindKeyOfType(key, Type::LIST);
+  const Value* result = GetDict().Find(key);
+  if (!result || result->type() != Type::LIST) {
+    return nullptr;
+  }
+  return result;
 }
 
 Value* Value::FindListKey(StringPiece key) {
-  return FindKeyOfType(key, Type::LIST);
+  return const_cast<Value*>(std::as_const(*this).FindListKey(key));
 }
 
 Value* Value::SetKey(StringPiece key, Value&& value) {
@@ -1122,13 +1119,6 @@ const Value* Value::FindPath(StringPiece path) const {
   return GetDict().FindByDottedPath(path);
 }
 
-const Value* Value::FindPathOfType(StringPiece path, Type type) const {
-  const Value* cur = FindPath(path);
-  if (!cur || cur->type() != type)
-    return nullptr;
-  return cur;
-}
-
 absl::optional<bool> Value::FindBoolPath(StringPiece path) const {
   return GetDict().FindBoolByDottedPath(path);
 }
@@ -1150,7 +1140,11 @@ std::string* Value::FindStringPath(StringPiece path) {
 }
 
 const Value* Value::FindDictPath(StringPiece path) const {
-  return FindPathOfType(path, Type::DICT);
+  const Value* cur = GetDict().FindByDottedPath(path);
+  if (!cur || cur->type() != Type::DICT) {
+    return nullptr;
+  }
+  return cur;
 }
 
 Value* Value::FindDictPath(StringPiece path) {
@@ -1158,7 +1152,11 @@ Value* Value::FindDictPath(StringPiece path) {
 }
 
 const Value* Value::FindListPath(StringPiece path) const {
-  return FindPathOfType(path, Type::LIST);
+  const Value* cur = GetDict().FindByDottedPath(path);
+  if (!cur || cur->type() != Type::LIST) {
+    return nullptr;
+  }
+  return cur;
 }
 
 Value* Value::FindListPath(StringPiece path) {
