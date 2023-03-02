@@ -1567,11 +1567,12 @@ void RenderThreadImpl::UpdateScrollbarTheme(
           : absl::nullopt,
       params->preferred_scroller_style, params->redraw,
       params->jump_on_track_click);
-
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   is_elastic_overscroll_enabled_ = params->scroll_view_rubber_banding;
 #else
   NOTREACHED();
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 void RenderThreadImpl::OnSystemColorsChanged(
