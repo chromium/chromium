@@ -70,8 +70,6 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   const gfx::CALayerParams* GetLastCALayerParams() const;
 
   void SetBackgroundColor(SkColor background_color);
-  void UpdateVSyncParameters(const base::TimeTicks& timebase,
-                             const base::TimeDelta& interval);
   void TakeFallbackContentFrom(BrowserCompositorMac* other);
 
   // Update the renderer's SurfaceId to reflect the current dimensions of the
