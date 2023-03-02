@@ -2730,6 +2730,7 @@ test("content_unittests") {
     bundle_deps = [
       ":content_unittests_bundle_data",
       ":content_unittests_pak_bundle_data",
+      "//media/test:media_bundle_data",
     ]
   }
 

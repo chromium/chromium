@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/ios/bundle_data_from_filelist.gni")
 import("//build/config/ios/swift_source_set.gni")
 import("//ios/build/chrome_build.gni")
 
@@ -92,8 +91,8 @@ source_set("terms_util") {
     "terms_util.mm",
   ]
   deps = [
-    ":terms_resources",
     "//base",
+    "//components/resources:terms_resources",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/url:constants",
@@ -138,14 +137,6 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-}
-
-bundle_data_from_filelist("terms_resources") {
-  # On iOS, the terms of service file need to be loaded from the application
-  # bundle, not from a datapack. As GetTermsOfServicePath() returns path to
-  # those files, they are added to //ios/chrome/browser/ui/util:terms_resources.
-  filelist_name = "terms_resources.filelist"
-  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
 source_set("eg_app_support+eg2") {

@@ -23,19 +23,6 @@ def _CheckChangeLintsClean(input_api, output_api):
   return input_api.canned_checks.CheckChangeLintsClean(
       input_api, output_api, source_filter, lint_filters=[], verbose_level=1)
 
-def _CheckChangeInBundle(input_api, output_api):
-    import sys
-    old_sys_path = sys.path[:]
-    results = []
-    try:
-        sys.path.append(input_api.change.RepositoryRoot())
-        from build.ios import presubmit_support
-        results += presubmit_support.CheckBundleData(input_api, output_api,
-                                                     'unit_tests_bundle_data')
-    finally:
-        sys.path = old_sys_path
-    return results
-
 def _CheckAsserts(input_api, output_api, allowlist=CC_SOURCE_FILES,
                  denylist=None):
   denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
@@ -302,7 +289,6 @@ def CheckChangeOnUpload(input_api, output_api):
   results += _CheckStdAbs(input_api, output_api)
   results += _CheckPassByValue(input_api, output_api)
   results += _CheckChangeLintsClean(input_api, output_api)
-  results += _CheckChangeInBundle(input_api, output_api)
   results += _CheckTodos(input_api, output_api)
   results += _CheckDoubleAngles(input_api, output_api)
   results += _CheckNamespace(input_api, output_api)

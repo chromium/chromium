@@ -11,10 +11,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-if (is_ios) {
-  import("//build/config/ios/bundle_data_from_filelist.gni")
-}
-
 config("password_reuse_detection_config") {
   defines = []
   if (!is_ios) {
@@ -595,14 +591,6 @@ static_library("test_support") {
   ]
 }
 
-if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
-    visibility = [ ":unit_tests" ]
-    testonly = true
-    filelist_name = "unit_tests_bundle_data.filelist"
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -798,8 +786,10 @@ source_set("unit_tests") {
       "//components/password_manager/core/browser/import:importer",
       "//components/password_manager/core/browser/import:importer_unit_tests",
     ]
-  } else {
-    deps += [ ":unit_tests_bundle_data" ]
+  }
+
+  if (is_ios) {
+    deps += [ "//components/test:password_manager_test_bundle_data" ]
   }
 
   if (is_android) {

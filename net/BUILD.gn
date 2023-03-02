@@ -1827,7 +1827,7 @@ if (is_ios) {
   bundle_data_from_filelist("test_support_bundle_data") {
     visibility = [ ":test_support" ]
     testonly = true
-    filelist_name = "test/test_support_bundle_data.filelist"
+    filelist_name = "data/test_support_bundle_data.filelist"
   }
 }
 
@@ -2448,9 +2448,9 @@ if (!is_ios) {
 }
 
 if (is_ios) {
-  bundle_data_from_filelist("net_unittests_bundle_data") {
+  bundle_data_from_filelist("net_test_bundle_data") {
     testonly = true
-    filelist_name = "test/net_unittests_bundle_data.filelist"
+    filelist_name = "data/test_bundle_data.filelist"
   }
 }
 
@@ -3077,7 +3077,10 @@ test("net_unittests") {
   }
 
   if (is_ios) {
-    bundle_deps = [ ":net_unittests_bundle_data" ]
+    bundle_deps = [
+      ":net_test_bundle_data",
+      "//net/third_party/nist-pkits:test_bundle_data",
+    ]
   }
 
   if (enable_unix_sockets) {

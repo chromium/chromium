@@ -1,7 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Presubmit checks for components/history/core/browser
+"""Presubmit checks for //components/resources
 
 See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
@@ -20,7 +20,7 @@ def CheckChange(input_api, output_api):
         sys.path.append(input_api.change.RepositoryRoot())
         from build.ios import presubmit_support
         results += presubmit_support.CheckBundleData(input_api, output_api,
-                                                     'unit_tests_bundle_data')
+                                                     'terms_resources')
     finally:
         sys.path = old_sys_path
     return results

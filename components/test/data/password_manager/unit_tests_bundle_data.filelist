@@ -9,6 +9,16 @@
 //components/test/data/password_manager/affiliation_db_v3.sql
 //components/test/data/password_manager/affiliation_db_v4.sql
 //components/test/data/password_manager/affiliation_db_v5.sql
+//components/test/data/password_manager/form_annotation_extension/README
+//components/test/data/password_manager/form_annotation_extension/background.js
+//components/test/data/password_manager/form_annotation_extension/content.js
+//components/test/data/password_manager/form_annotation_extension/manifest.json
+//components/test/data/password_manager/form_annotation_extension/sites_to_visit.js
+//components/test/data/password_manager/form_classification_tests/README
+//components/test/data/password_manager/form_classification_tests/__init__.py
+//components/test/data/password_manager/form_classification_tests/form_classification_test.py
+//components/test/data/password_manager/form_classification_tests/signin_forms_test.py
+//components/test/data/password_manager/form_classification_tests/signup_forms_test.py
 //components/test/data/password_manager/login_db_v1.sql
 //components/test/data/password_manager/login_db_v10.sql
 //components/test/data/password_manager/login_db_v11.sql

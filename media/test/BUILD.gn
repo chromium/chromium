@@ -5,6 +5,10 @@
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 source_set("run_all_unittests") {
   testonly = true
   sources = [ "run_all_unittests.cc" ]
@@ -182,5 +186,12 @@ foreach(variant, pipeline_integration_fuzzer_variants) {
     defines = [ "PIPELINE_FUZZER_VARIANT=${variant}" ]
 
     seed_corpus = "//media/test/data/"
+  }
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("media_bundle_data") {
+    testonly = true
+    filelist_name = "media_bundle_data.filelist"
   }
 }

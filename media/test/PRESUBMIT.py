@@ -7,6 +7,11 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
+
+import sys
+
+PRESUBMIT_VERSION = '2.0.0'
+
 # This line is 'magic' in that git-cl looks for it to decide whether to
 # use Python3 instead of Python2 when running the code in this file.
 USE_PYTHON3 = True
@@ -33,5 +38,25 @@ def _CheckTestDataReadmeUpdated(input_api, output_api):
         + readme_path + ':', test_files))
   return errors
 
+
+def _CheckFileList(input_api, output_api):
+    old_sys_path = sys.path[:]
+    results = []
+    try:
+        sys.path.append(input_api.change.RepositoryRoot())
+        # pylint: disable=no-name-in-module,import-outside-toplevel
+        from build.ios import presubmit_support
+        results += presubmit_support.CheckBundleData(
+            input_api, output_api, 'media_bundle_data', '.')
+    finally:
+        sys.path = old_sys_path
+    return results
+
+
 def CheckChangeOnUpload(input_api, output_api):
   return _CheckTestDataReadmeUpdated(input_api, output_api)
+
+
+def CheckChange(input_api, output_api):
+  return _CheckFileList(input_api, output_api)
+

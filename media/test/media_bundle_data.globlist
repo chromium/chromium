@@ -6,15 +6,4 @@
 # files are used to update their .filelist counterparts.
 
 data/**
--data/accessibility/**
--data/**/OWNERS
--data/**/DIR_METADATA
--data/**/README.md
--data/android/**
--data/file_chooser/dir_with*symlink/**
--data/gpu/gpu_reference/**
--data/gpu/mediapipe/**
--data/gpu/mediapipe_zip/**
--data/layout_tests/**
--data/plugin/**
--data/fuzzer_*/**
+

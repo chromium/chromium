@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_ios) {
-  import("//build/config/ios/bundle_data_from_filelist.gni")
-}
-
 component("common") {
   output_name = "webdata_common"
 
@@ -38,14 +34,6 @@ component("common") {
   ]
 }
 
-if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
-    visibility = [ ":unit_tests" ]
-    testonly = true
-    filelist_name = "unit_tests_bundle_data.filelist"
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [ "web_database_migration_unittest.cc" ]
@@ -62,6 +50,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   if (is_ios) {
-    deps += [ ":unit_tests_bundle_data" ]
+    deps += [ "//components/test:web_database_test_bundle_data" ]
   }
 }

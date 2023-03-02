@@ -5,6 +5,6 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 
-//cc/test/data/lottie/animation_with_2_text_nodes.json
-//components/viz/test/data/**
--//components/viz/test/data/render_pass_data/**
+//ui/gfx/test/data/compositor/**
+-//ui/gfx/test/data/compositor/**.filelist
+-//ui/gfx/test/data/compositor/**.globlist

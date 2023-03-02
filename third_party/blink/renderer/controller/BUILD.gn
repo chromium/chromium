@@ -149,6 +149,7 @@ test("blink_unittests") {
     bundle_deps = [
       ":blink_unittests_bundle_data",
       ":blink_unittests_pak_bundle_data",
+      "//media/test:media_bundle_data",
     ]
   } else {
     data_deps = [

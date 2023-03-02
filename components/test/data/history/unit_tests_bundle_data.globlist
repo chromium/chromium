@@ -6,6 +6,8 @@
 # files are used to update their .filelist counterparts.
 
 //components/test/data/history/**
--//components/test/data/history/OWNERS
--//components/test/data/history/README.md
--//components/test/data/history/thumbnail_wild/README
+-//components/test/data/history/*.globlist
+-//components/test/data/history/*.filelist
+-//components/test/data/history/**OWNERS
+-//components/test/data/history/**README.md
+-//components/test/data/history/**/README
