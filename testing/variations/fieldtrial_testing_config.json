@@ -5327,6 +5327,25 @@
             ]
         }
     ],
+    "GCMAccountTokenReporting": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "BothDisabled20230222",
+                    "disable_features": [
+                        "GCMIncludeAccountTokensInCheckinRequest",
+                        "GCMReportAccountTokenChanges"
+                    ]
+                }
+            ]
+        }
+    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
