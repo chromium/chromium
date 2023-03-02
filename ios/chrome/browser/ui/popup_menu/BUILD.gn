@@ -221,6 +221,7 @@ source_set("eg2_tests") {
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement:eg_test_support+eg2",
+    "//ios/chrome/browser/find_in_page:features",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
