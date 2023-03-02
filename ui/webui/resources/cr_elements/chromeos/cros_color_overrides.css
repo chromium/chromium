@@ -105,3 +105,13 @@ To get Chrome OS System Colors, an element must:
 :host-context(body.jelly-enabled) cr-expand-button::part(icon) {
   --cr-icon-button-fill-color: var(--cros-sys-secondary);
 }
+
+/* Radio button */
+:host-context(body.jelly-enabled),
+:host-context(body.jelly-enabled) cr-radio-button {
+  --cr-radio-button-checked-color: var(--cros-sys-primary);
+  --cr-radio-button-checked-ripple-color: var(--cros-sys-ripple_primary);
+  --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
+  --cr-radio-button-unchecked-ripple-color:
+      var(--cros-sys-ripple_neutral_on_subtle);
+}
