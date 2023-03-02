@@ -448,7 +448,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NetworkProxySection', 'network_proxy_section_test.js'],
  ['NetworkSummary', 'network_summary_test.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.js'],
- ['OfficeFilesPage', 'office_page_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.js'],
  ['OsBluetoothPairingDialog', 'os_bluetooth_pairing_dialog_tests.js'],
@@ -462,6 +461,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'OsClearPersonalizationDataPage',
    'os_clear_personalization_data_page_test.js'
  ],
+ ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  [

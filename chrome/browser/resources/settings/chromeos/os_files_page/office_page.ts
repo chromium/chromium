@@ -12,7 +12,7 @@ import {getTemplate} from './office_page.html.js';
 
 const SettingsOfficePageElementBase = PrefsMixin(PolymerElement);
 
-class SettingsOfficePageElement extends SettingsOfficePageElementBase {
+export class SettingsOfficePageElement extends SettingsOfficePageElementBase {
   static get is() {
     return 'settings-office-page' as const;
   }

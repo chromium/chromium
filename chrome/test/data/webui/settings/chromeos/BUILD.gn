@@ -98,7 +98,6 @@ test_files = [
   "network_proxy_section_test.js",
   "network_summary_item_test.js",
   "network_summary_test.js",
-  "office_page_test.js",
   "onc_mojo_test.js",
   "os_a11y_page_tests.js",
   "os_about_page_tests.js",
@@ -220,6 +219,8 @@ test_files = [
   "app_management/test_store.js",
   "app_management/test_util.js",
   "app_management/toggle_row_test.js",
+
+  "os_files_page/office_page_test.ts",
 
   "os_people_page/add_user_dialog_tests.ts",
 ]

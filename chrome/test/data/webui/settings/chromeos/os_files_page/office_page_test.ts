@@ -4,19 +4,19 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {SettingsOfficePageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CrSettingsPrefs, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-suite('OfficePageTests', function() {
-  /** @type {SettingsOfficePageElement} */
-  let page = null;
+
+suite('<settings-office-page>', function() {
+  let page: SettingsOfficePageElement;
+  let prefElement: SettingsPrefsElement;
 
   setup(async function() {
-    PolymerTest.clearBody();
-
-    const prefElement = document.createElement('settings-prefs');
+    prefElement = document.createElement('settings-prefs');
     document.body.appendChild(prefElement);
 
     await CrSettingsPrefs.initialized;
@@ -28,14 +28,17 @@ suite('OfficePageTests', function() {
 
   teardown(function() {
     page.remove();
-    page = null;
+    prefElement.remove();
   });
 
   test('Checked when pref is true', function() {
     page.setPrefValue('filebrowser.office.always_move', true);
     flush();
 
-    const alwaysMove = assert(page.shadowRoot.querySelector('#alwaysMove'));
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMove');
+    assert(alwaysMove);
     assertTrue(alwaysMove.checked);
   });
 
@@ -43,7 +46,10 @@ suite('OfficePageTests', function() {
     page.setPrefValue('filebrowser.office.always_move', false);
     flush();
 
-    const alwaysMove = assert(page.shadowRoot.querySelector('#alwaysMove'));
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMove');
+    assert(alwaysMove);
     assertFalse(alwaysMove.checked);
   });
 
@@ -51,7 +57,10 @@ suite('OfficePageTests', function() {
     page.setPrefValue('filebrowser.office.always_move', false);
     flush();
 
-    const alwaysMove = assert(page.shadowRoot.querySelector('#alwaysMove'));
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMove');
+    assert(alwaysMove);
     assertFalse(alwaysMove.checked);
 
     alwaysMove.click();
@@ -63,7 +72,10 @@ suite('OfficePageTests', function() {
     page.setPrefValue('filebrowser.office.always_move', true);
     flush();
 
-    const alwaysMove = assert(page.shadowRoot.querySelector('#alwaysMove'));
+    const alwaysMove =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#alwaysMove');
+    assert(alwaysMove);
     assertTrue(alwaysMove.checked);
 
     alwaysMove.click();
