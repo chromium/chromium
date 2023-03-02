@@ -140,7 +140,9 @@ class CORE_EXPORT SelectorChecker {
     bool has_selection_pseudo = false;
     bool treat_shadow_host_as_normal_scope = false;
     bool in_nested_complex_selector = false;
-    bool is_inside_visited_link = false;
+    // If true, elements that are links will match :visited. Otherwise,
+    // they will match :link.
+    bool match_visited = false;
     bool pseudo_has_in_rightmost_compound = true;
     bool is_inside_has_pseudo_class = false;
     // Set to true if :initial pseudo class should match.

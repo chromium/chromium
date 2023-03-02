@@ -356,7 +356,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
   if ((!context.is_sub_selector || context.in_nested_complex_selector) &&
       (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
                                      relation != CSSSelector::kChild))) {
-    next_context.is_inside_visited_link = false;
+    next_context.match_visited = false;
   }
 
   next_context.in_rightmost_compound = false;
@@ -388,7 +388,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
           return kSelectorFailsCompletely;
         }
         if (next_context.element->IsLink()) {
-          next_context.is_inside_visited_link = false;
+          next_context.match_visited = false;
         }
       }
       return kSelectorFailsCompletely;
@@ -1173,7 +1173,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   DCHECK(document.GetCheckPseudoHasCacheScope());
   SelectorCheckingContext sub_context(has_anchor_element);
   sub_context.scope = context.scope;
-  // sub_context.is_inside_visited_link is false (by default) to disable
+  // sub_context.match_visited is false (by default) to disable
   // :visited matching when it is in the :has argument
   sub_context.is_inside_has_pseudo_class = true;
   sub_context.pseudo_has_in_rightmost_compound = context.in_rightmost_compound;
@@ -1487,9 +1487,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoWebkitAnyLink:
       return element.IsLink();
     case CSSSelector::kPseudoLink:
-      return element.IsLink() && !context.is_inside_visited_link;
+      return element.IsLink() && !context.match_visited;
     case CSSSelector::kPseudoVisited:
-      return element.IsLink() && context.is_inside_visited_link;
+      return element.IsLink() && context.match_visited;
     case CSSSelector::kPseudoDrag:
       if (mode_ == kResolvingStyle) {
         if (!context.in_rightmost_compound) {

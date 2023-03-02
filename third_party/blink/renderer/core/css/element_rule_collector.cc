@@ -353,7 +353,7 @@ bool SlowMatchWithNoResultFlags(
     unsigned expected_proximity = std::numeric_limits<unsigned>::max()) {
   SelectorChecker::MatchResult result;
   context.selector = &selector;
-  context.is_inside_visited_link =
+  context.match_visited =
       rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
   bool match = checker.Match(context, result);
   DCHECK_EQ(0, result.flags);
@@ -476,9 +476,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
     } else {
       context.selector = &selector;
-      context.is_inside_visited_link =
+      context.match_visited =
           rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
-      DCHECK(!context.is_inside_visited_link ||
+      DCHECK(!context.match_visited ||
              inside_link_ != EInsideLink::kNotInsideLink);
       bool match = checker.Match(context, result);
       result_.AddFlags(result.flags);
