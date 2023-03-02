@@ -324,6 +324,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Kunne ikke lagre endringen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Autofyll passord</translation>
 <translation id="3268451620468152448">Åpne faner</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3277021493514034324">Nettstedsadressen er kopiert</translation>
@@ -430,6 +431,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="408404951701638773">Søkefeltet er nå enklere å finne</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4101942614374785540">Passord lagres nå i Google-kontoen din (<ph name="ACCOUNT" />). Du kan bruke over alt hvor du er logget på. Gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å slå av dette.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Slett adresse}other{Slett adresser}}</translation>
 <translation id="4108998448622696017">Oppdager og advarer deg om farlige hendelser idet de inntreffer.</translation>
 <translation id="411254640334432676">Nedlastingen mislyktes.</translation>
 <translation id="4112644173421521737">Søk</translation>
@@ -853,6 +855,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6914583639806229067">Søk etter bildet du kopierte</translation>
 <translation id="6914783257214138813">Passordene dine blir synlige for alle som kan se den eksporterte filen.</translation>
 <translation id="6930799952781667037">Trykk for å bytte til dette språket.</translation>
+<translation id="6939941780796374211">Passordalternativer</translation>
 <translation id="6944369514868857500">Velg en annen konto</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1008,6 +1011,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8084285576995584326">Kontroller Google-kontodataene dine</translation>
 <translation id="809543534949702122">Søkelogg</translation>
 <translation id="8101409298456377967">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Slå av</translation>
 <translation id="8114753159095730575">Filnedlasting er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="81313319706244542">2. Trykk på Passord</translation>
@@ -1158,7 +1162,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="953008885340860025">Chrome er logget av</translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Spor prisen på et produkt i flere nettbutikker. Du får varsler når prisen går ned.</translation>
-<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Organisasjonen din lar deg kun logge på med visse kontoer. Kontoer som ikke tillates, er skjult.</translation>
 <translation id="984509647832111802">Synkroniseringen fungerer ikke.</translation>
 <translation id="988141524645182168">Andre enheter</translation>

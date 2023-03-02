@@ -324,6 +324,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Промената не можеше да се зачува.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> од <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Автоматско пополнување лозинки</translation>
 <translation id="3268451620468152448">Отворени картички</translation>
 <translation id="3272527697863656322">Откажи</translation>
 <translation id="3277021493514034324">Адресата на сајтот е копирана</translation>
@@ -391,6 +392,7 @@
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понудувај да го преведеш сајтов</translation>
+<translation id="3803967590068704619">Адресава е зачувана во вашата сметка на Google (<ph name="USER_EMAIL" />). Може да ја користите на производите на Google на кој било уред.</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3818293389945649617">Најдете следно</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
@@ -429,6 +431,7 @@
 <translation id="408404951701638773">Сега е полесно да се дојде до лентата за пребарување</translation>
 <translation id="4092655288299341041">Прикажи помош</translation>
 <translation id="4101942614374785540">Лозинките сега се зачувуваат на вашата сметка на Google (<ph name="ACCOUNT" />). Може да ги користите каде и да сте најавени. За да го исклучите ова, одете до <ph name="BEGIN_LINK" />поставките<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Избриши ја адресата}one{Избриши ги адресите}other{Избриши ги адресите}}</translation>
 <translation id="4108998448622696017">Открива опасни настани и ве предупредува кога ќе се случат.</translation>
 <translation id="411254640334432676">Преземањето не успеа.</translation>
 <translation id="4112644173421521737">Пребарај</translation>
@@ -744,6 +747,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6342069812937806050">Пред малку</translation>
 <translation id="6344783595350022745">Исчисти текст</translation>
 <translation id="6346549652287021269">Дали да се започне ново преземање?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Адресава ќе се избрише од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}one{Адресиве ќе се избришат од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}other{Адресиве ќе се избришат од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}}</translation>
 <translation id="634878792104344809">Синхронизирајте ги вашите лозинки, историја и друго на сите ваши уреди</translation>
 <translation id="6361848730467328243">Следете го <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Нема инкогнито картички</translation>
@@ -851,6 +855,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6914583639806229067">Пребарувајте ја сликата што ја копиравте</translation>
 <translation id="6914783257214138813">Вашите лозинки ќе бидат видливи за секој што може да ја види извезената датотека.</translation>
 <translation id="6930799952781667037">Допрете за да се промени на овој јазик.</translation>
+<translation id="6939941780796374211">Опции за лозинки</translation>
 <translation id="6944369514868857500">Изберете друга сметка</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6965382102122355670">Во ред</translation>
@@ -1156,7 +1161,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="953008885340860025">Chrome е одјавен</translation>
 <translation id="959066944189734975">Го следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Следете ја цената на даден производи насекаде во онлајн продавниците. Ќе добивате известувања кога цената ќе се намали.</translation>
-<translation id="980712131080209571">Ново</translation>
 <translation id="981498610235328462">Вашата организација ви дозволува да се најавите само со одредени сметки. Сметките што не се дозволени се сокриени.</translation>
 <translation id="984509647832111802">Синхронизацијата не функционира.</translation>
 <translation id="988141524645182168">Други уреди</translation>

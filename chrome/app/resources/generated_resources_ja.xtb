@@ -3509,6 +3509,7 @@
 <translation id="4102469565336584882">コードが無効です。エントリは「LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;」という形式にする必要があります。</translation>
 <translation id="4102906002417106771">再起動して Powerwash を実行</translation>
 <translation id="4104163789986725820">エクスポート(&amp;X)</translation>
+<translation id="4104944259562794668">後で [設定] &gt; [セキュリティとプライバシー] &gt; [ロック画面とログイン] で有効にすることができます</translation>
 <translation id="4107048419833779140">ストレージ デバイスの認識と取り外し</translation>
 <translation id="4108314971463891922">フォロー</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）にウィンドウを移動</translation>
@@ -5532,6 +5533,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{今後もウェブ ブラウジングを続けられるように、管理者にこのアプリケーションの削除を依頼してください。}other{今後もウェブ ブラウジングを続けられるように、管理者にこれらのアプリケーションの削除を依頼してください。}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 件のサイトの確認が完了しました}other{{NUM_SITES} 件のサイトの確認が完了しました}}</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
+<translation id="5998458948782718639">自動入力の改善にご協力ください</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
 <translation id="6001839398155993679">開始する</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
@@ -5619,6 +5621,7 @@
 <translation id="6075907793831890935">デバイス <ph name="HOSTNAME" /> とのデータ交換</translation>
 <translation id="6076175485108489240">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがデバイスの位置情報を使用することを許可します。Google は位置情報を定期的に収集し、これを匿名のデータとして、位置情報の精度向上や位置情報に基づくサービスの改善に使用することがあります。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">寒色グレー</translation>
+<translation id="6076576896267434196">拡張機能「<ph name="EXTENSION_NAME" />」がアカウントにアクセスしようとしています</translation>
 <translation id="6077131872140550515">優先ネットワークから削除</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> のヒントや最新情報</translation>
 <translation id="6077476112742402730">音声入力</translation>
@@ -7767,6 +7770,7 @@
 <translation id="8033827949643255796">選択しました</translation>
 <translation id="8033958968890501070">タイムアウト</translation>
 <translation id="8035059678007243127">バックフォワード キャッシュのシークレット ページ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">自動入力の改善にご協力ください</translation>
 <translation id="8037117027592400564">合成音声で読み上げたすべてのテキストの読み取り</translation>
 <translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>
@@ -7963,6 +7967,7 @@
 <translation id="8206745257863499010">ブルース</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8207404892907560325">パスキーを選択する</translation>
+<translation id="8207794858944505786">VM「<ph name="DEFAULT_VM_NAME" />」は存在しますが、有効な <ph name="VM_TYPE" /> VM ではないようです。管理者にお問い合わせください。</translation>
 <translation id="8208188204689616705">これらのサイトは、<ph name="FPS_OWNER" /> により定義されたグループに属しています。グループ内のサイトは、グループでのアクティビティを確認できます。</translation>
 <translation id="8208216423136871611">保存しない</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新しい通知}other{# 件の新しい通知}}</translation>

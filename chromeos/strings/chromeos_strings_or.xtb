@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">ସ୍କାନରଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3246869037381808805">1ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="3268178239013324452">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟରର କଭର୍ ଖୋଲା ଅଛି</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" />କୁ ଡକ କରନ୍ତୁ</translation>
 <translation id="3275729367986477355">ଅବତାର ଇମେଜ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ଫାଇଲକୁ ଏଡିଟ୍ କରନ୍ତୁ}other{ଫାଇଲଗୁଡ଼ିକୁ ଏଡିଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="3435896845095436175">ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="345256797477978759">ସ୍କ୍ରିନର <ph name="DIRECTION" /> ବଡ଼ ଅଂଶରେ ୱିଣ୍ଡୋକୁ ଡକ କରନ୍ତୁ</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />ଟି ପୃଷ୍ଠା ମଧ୍ୟରୁ <ph name="PRINTED_PAGES" /> ନମ୍ବର ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="345898999683440380">ପୃଷ୍ଠା <ph name="PAGE_NUM" />କୁ ସ୍କାନ୍ କରାଯାଉଛି। <ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="3459509316159669723">ପ୍ରିଣ୍ଟିଂ</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ</translation>
 <translation id="3600339377155080675">ସ୍କ୍ରିନ ମିରର</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
+<translation id="360282891121575443">ସେୟାର କରାଯାଇଥିବା ଆଲବମରେ ଥିବା ଫଟୋଗୁଡ଼ିକ ଅନ୍ୟ ୟୁଜରମାନଙ୍କ ଦ୍ୱାରା ଅପଡେଟ କରାଯାଇପାରିବ। ଦୈନିକ ପରିବର୍ତ୍ତନ ବର୍ତ୍ତମାନ ଆଲବମରେ ନଥିବା ୱାଲପେପରଗୁଡ଼ିକୁ ଦେଖାଇପାରେ।</translation>
 <translation id="3603829704940252505">ଅବତାର</translation>
 <translation id="3604713164406837697">ୱାଲପେପର୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
 <translation id="3606583719724308068">HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
 <translation id="361575905210396100">ଆପଣଙ୍କ ମତାମତ ପାଇଁ ଧନ୍ୟବାଦ</translation>
 <translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
+<translation id="3639846061339007994">ଶୀର୍ଷ</translation>
 <translation id="3651050199673793219">ଏକ ତାପମାତ୍ରା ୟୁନିଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ଟେଷ୍ଟ</translation>
 <translation id="370665806235115550">ଲୋଡ୍ କରୁଛି...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">ସମ୍ପୂର୍ଣ୍ଣ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇଛି</translation>
 <translation id="435692326371619097">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">ଛୋଟ ପାର୍ଶ୍ୱକୁ ଡକ କରନ୍ତୁ</translation>
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
+<translation id="6698459586333070823">ସେୟାର କରାଯାଇଥିବା ଆଲବମ ଅନ୍ୟ ୟୁଜରମାନଙ୍କ ଦ୍ୱାରା ଅପଡେଟ କରାଯାଇପାରିବ</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="6723847290197874913">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">କ୍ୟାମେରା କିମ୍ବା ଫାଇଲ୍‍‍ରେ ବିଦ୍ୟମାନ ଥିବା ଫଟୋ</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
 <translation id="7170236477717446850">ପ୍ରୋଫାଇଲ୍ ଛବି</translation>
+<translation id="7171919371520438592">ସ୍କ୍ରିନର <ph name="DIRECTION" /> ଛୋଟ ଅଂଶରେ ୱିଣ୍ଡୋକୁ ଡକ କରନ୍ତୁ</translation>
 <translation id="7172721935181587524">1ଟି ଛବି</translation>
 <translation id="7177485034254901881">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
@@ -749,6 +756,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ପ୍ରଦାତା ପ୍ରକାର</translation>
 <translation id="7882501334836096755">ସାର୍ବଜନୀନ କୀ</translation>
+<translation id="78957024357676568">ବାମ</translation>
 <translation id="7915220255123750251">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ।</translation>
 <translation id="7936303884198020182">କୌଣସି ନେମ୍ ସର୍ଭର୍ ମିଳୁ ନାହିଁ</translation>
 <translation id="7942349550061667556">ନାଲି</translation>
@@ -777,6 +785,7 @@
 <translation id="8183974620058026102">ଆଟାଚ କରନ୍ତୁ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
+<translation id="8210733748736414123">ନିମ୍ନ</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
@@ -794,6 +803,7 @@
 <translation id="8352772353338965963">ଏକାଧିକ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ। ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ସମସ୍ତ ଆକାଉଣ୍ଟ ବିନା ପାସ୍‌ୱର୍ଡରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ, ତେଣୁ ଏହି ସୁବିଧା କେବଳ ବିଶ୍ୱସ୍ତ ଆକାଉଣ୍ଟ ସହ ବ୍ୟବହାର କରାଯିବା ଉଚିତ୍।</translation>
 <translation id="8364946094152050673">ନେମ୍ ସର୍ଭର୍ ଖାଲି ଅଛି</translation>
 <translation id="8372477600026034341">ଅତିରିକ୍ତ ହୋଷ୍ଟଗୁଡ଼ିକ</translation>
+<translation id="8380114448424469341">ସ୍କ୍ରିନର <ph name="DIRECTION" /> ଅଧା ଅଂଶରେ ୱିଣ୍ଡୋକୁ ଡକ କରନ୍ତୁ</translation>
 <translation id="8395584934117017006">ଏହି <ph name="DEVICE_TYPE" /> ଏଣ୍ଟରପ୍ରାଇଜ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8398927464629426868">ଡିଭାଇସଟି ବର୍ତ୍ତମାନ ଯେଉଁ ହାରରେ ଚାର୍ଜ କିମ୍ବା ଡିସଚାର୍ଜ ହେଉଛି</translation>
 <translation id="8410244574650205435">ସ୍ୱଚାଳିତ ଭାବେ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -858,6 +868,7 @@
 <translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>
 <translation id="8936793075252196307">କ୍ଲାଏଣ୍ଟର IP ଠିକଣା</translation>
 <translation id="894617464444543719">ଡିଭାଇସଟି ଏକ ଫୋନ ଅଟେ।</translation>
+<translation id="8957423540740801332">ଡାହାଣ</translation>
 <translation id="8968751544471797276">ଚାର୍ଜିଂ ରେଟ୍</translation>
 <translation id="8970109610781093811">ପୁଣି ଚଲାନ୍ତୁ</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -885,6 +896,7 @@
 <translation id="9137526406337347448">Google ସେବାଗୁଡ଼ିକ</translation>
 <translation id="9138630967333032450">ବାମପଟ Shift</translation>
 <translation id="9149391708638971077">ମେମୋରୀ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
+<translation id="9157515863513902090">ବଡ଼ ପାର୍ଶ୍ୱକୁ ଡକ କରନ୍ତୁ</translation>
 <translation id="9173638680043580060">ଗୋଟିଏ ମିନିଟରୁ କମ୍ ସମୟ ବାକି ଅଛି</translation>
 <translation id="917720651393141712">ପରୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="9188992814426075118">ଆପଣଙ୍କ କୀବୋର୍ଡ ସ୍ୱଚାଳିତ ଭାବେ ଆପଣଙ୍କର ୱାଲପେପର ସହ ମେଳ କରିପାରିବ</translation>

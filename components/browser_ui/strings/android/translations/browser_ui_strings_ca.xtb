@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Els llocs web poden desar dades al teu dispositiu</translation>
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5810805850857689118">Aquesta acció esborrarà totes les dades i galetes de <ph name="ORIGIN" /> i de tots els llocs web que conté</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5876056640971328065">Posa en pausa el vídeo</translation>
 <translation id="5884085660368669834">Preferència de lloc web</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">No permetis que els llocs web desin dades al teu dispositiu (opció no recomanada)</translation>
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
+<translation id="8528440122773422556">Aquesta acció esborrarà totes les dades i galetes emmagatzemades per tots els llocs web de <ph name="ORIGIN" /> o per la seva aplicació de la pantalla d'inici</translation>
 <translation id="8541410041357371550">Aquest lloc web obté de Chrome els teus temes d'anuncis per mostrar-te anuncis més rellevants</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> lloc web de <ph name="FPS_OWNER" />}other{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> llocs web de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="8990043154272859344">Se't tancarà la sessió de tots els llocs web</translation>
 <translation id="9019902583201351841">Gestionat pels pares</translation>
+<translation id="9039697262778250930">És possible que se't tanqui la sessió d'aquests llocs web</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Aquest lloc web forma part d'un grup que pot veure la teva activitat. <ph name="FPS_OWNER" /> defineix el grup.</translation>
 <translation id="9106233582039520022">Vols suprimir les galetes?</translation>

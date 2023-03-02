@@ -324,6 +324,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">No s'ha pogut desar el canvi.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Emplena automàticament les contrasenyes</translation>
 <translation id="3268451620468152448">Pestanyes obertes</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3277021493514034324">S'ha copiat l'adreça del lloc web</translation>
@@ -430,6 +431,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="408404951701638773">Ara és més fàcil accedir a la barra de cerca</translation>
 <translation id="4092655288299341041">Mostra l'ajuda</translation>
 <translation id="4101942614374785540">Ara les contrasenyes es desen al teu Compte de Google (<ph name="ACCOUNT" />). Podràs utilitzar-les a tot arreu on tinguis la sessió iniciada. Per desactivar aquesta opció, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Suprimeix l'adreça}other{Suprimeix les adreces}}</translation>
 <translation id="4108998448622696017">Detecta esdeveniments perillosos quan es produeixen i t'hi avisa.</translation>
 <translation id="411254640334432676">S'ha produït un error durant la baixada.</translation>
 <translation id="4112644173421521737">Cerca</translation>
@@ -853,6 +855,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6914583639806229067">Cerca la imatge que has copiat</translation>
 <translation id="6914783257214138813">Tothom que pugui veure el fitxer exportat podrà veure també les teves contrasenyes.</translation>
 <translation id="6930799952781667037">Toca per canviar a aquest idioma.</translation>
+<translation id="6939941780796374211">Opcions de contrasenya</translation>
 <translation id="6944369514868857500">Tria un altre compte</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6965382102122355670">D'acord</translation>
@@ -1158,7 +1161,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="953008885340860025">S'ha tancat la sessió de Chrome</translation>
 <translation id="959066944189734975">Segueixes <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Fes un seguiment del preu d'un producte en diferents botigues en línia. Rebràs alertes quan el preu baixi.</translation>
-<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos s'amaguen.</translation>
 <translation id="984509647832111802">La sincronització no funciona.</translation>
 <translation id="988141524645182168">Altres dispositius</translation>

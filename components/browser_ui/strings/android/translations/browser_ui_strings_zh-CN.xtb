@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">网站可将数据保存在您的设备上</translation>
 <translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
 <translation id="5804241973901381774">权限</translation>
+<translation id="5810805850857689118">此操作会清除 <ph name="ORIGIN" /> 及其下属所有网站的全部数据和 Cookie</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5876056640971328065">暂停视频</translation>
 <translation id="5884085660368669834">网站偏好设置</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
+<translation id="8528440122773422556">此操作会清除 <ph name="ORIGIN" /> 下属所有网站或其在主屏幕中安装的应用存储的全部数据和 Cookie</translation>
 <translation id="8541410041357371550">该网站会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{允许 <ph name="FPS_MEMBERS_COUNT" /> 个 <ph name="FPS_OWNER" /> 网站使用 Cookie}other{允许 <ph name="FPS_MEMBERS_COUNT" /> 个 <ph name="FPS_OWNER" /> 网站使用 Cookie}}</translation>
 <translation id="857943718398505171">允许（推荐）</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8990043154272859344">您将会从所有网站上自动退出帐号</translation>
 <translation id="9019902583201351841">由您父母管理</translation>
+<translation id="9039697262778250930">您可能会自动从这些网站上退出帐号</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9090268041676521955">此网站属于由 <ph name="FPS_OWNER" /> 定义的群组，因此能查看您的活动记录。</translation>
 <translation id="9106233582039520022">删除 Cookie？</translation>

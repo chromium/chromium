@@ -3521,6 +3521,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4102469565336584882">Kod i pavlefshëm. Hyrja jote duhet të jetë në formatin LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Rivendose për të kryer powerwash</translation>
 <translation id="4104163789986725820">E&amp;ksporto...</translation>
+<translation id="4104944259562794668">Mund ta aktivizosh atë më vonë te Cilësimet &gt; Siguria dhe privatësia &gt; Ekrani i kyçjes dhe identifikimi</translation>
 <translation id="4107048419833779140">Identifiko dhe nxirr pajisjet e hapësirës së ruajtjes</translation>
 <translation id="4108314971463891922">Ndiq</translation>
 <translation id="4109135793348361820">Lëvize dritaren te <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5548,6 +5549,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Për t'u siguruar që mund të vazhdosh të shfletosh në ueb, kërkoji administratorit ta heqë këtë aplikacion.}other{Për t'u siguruar që mund të vazhdosh të shfletosh në ueb, kërkoji administratorit t'i heqë këto aplikacione.}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Rishikimi përfundoi për 1 sajt}other{Rishikimi përfundoi për {NUM_SITES} sajte}}</translation>
 <translation id="5997337190805127100">Mëso më shumë për qasjen te sajti</translation>
+<translation id="5998458948782718639">Ndihmo në përmirësimin e plotësimit automatik</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">Fillojmë</translation>
 <translation id="6002122790816966947">Pajisjet e tua</translation>
@@ -5635,6 +5637,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6075907793831890935">Shkëmbe të dhëna me pajisjen me emrin <ph name="HOSTNAME" /></translation>
 <translation id="6076175485108489240">Përdor vendndodhjen. Lejo që aplikacionet dhe shërbimet me autorizim për vendndodhje të përdorin vendndodhjen e pajisjes sate. Google mund të mbledhë në mënyrë periodike të dhëna të vendndodhjes dhe t'i përdorë ato në mënyrë anonime për të përmirësuar saktësinë e vendndodhjes dhe shërbimet e bazuara te vendndodhja. <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">Gri e freskët</translation>
+<translation id="6076576896267434196">Shtesa "<ph name="EXTENSION_NAME" />" dëshiron të ketë qasje te llogaria jote</translation>
 <translation id="6077131872140550515">Hiq nga të preferuarat</translation>
 <translation id="6077189836672154517">Këshilla dhe përditësime për <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Fol për të shkruar</translation>
@@ -7791,6 +7794,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8033827949643255796">u zgjodh</translation>
 <translation id="8033958968890501070">Skadimi</translation>
 <translation id="8035059678007243127">Faqja e memories specifike të faqes së plotë "të fshehtë": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">Ndihmo në përmirësimin e "Plotësimit automatik"</translation>
 <translation id="8037117027592400564">Lexo të gjithë tekstin e folur duke përdorur ligjërimin e sintetizuar</translation>
 <translation id="8037357227543935929">Pyet (parazgjedhja)</translation>
 <translation id="803771048473350947">Skedar</translation>
@@ -7987,6 +7991,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8207404892907560325">Zgjidh një çelës kalimi</translation>
+<translation id="8207794858944505786">Pajisja virtuale "<ph name="DEFAULT_VM_NAME" />" ekziston, por me sa duket nuk është një pajisje virtuale e vlefshme <ph name="VM_TYPE" />. Kontakto me administratorin tënd.</translation>
 <translation id="8208188204689616705">Këto sajte janë në një grup të përcaktuar nga <ph name="FPS_OWNER" />. Sajtet në një grup mund ta shikojnë aktivitetin tënd te grupi.</translation>
 <translation id="8208216423136871611">Mos e ruaj</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Njoftim i ri}other{# ‏njoftime të reja}}</translation>

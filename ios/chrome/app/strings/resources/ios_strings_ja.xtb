@@ -391,6 +391,7 @@
 <translation id="3789841737615482174">インストール</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803696231112616155">このサイトを翻訳するか尋ねる</translation>
+<translation id="3803967590068704619">この住所は Google アカウント（<ph name="USER_EMAIL" />）に保存されました。住所はすべてのデバイスの各種 Google サービスで使用できます。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3818293389945649617">次を検索</translation>
 <translation id="3819183753496523827">オフラインです。インターネット接続を確認してもう一度お試しください。</translation>
@@ -744,6 +745,7 @@
 <translation id="6342069812937806050">たった今</translation>
 <translation id="6344783595350022745">テキストを消去</translation>
 <translation id="6346549652287021269">新たにダウンロードを開始しますか？</translation>
+<translation id="6347953390226388422">{count,plural, =1{この住所は Google アカウント（<ph name="USER_EMAIL" />）とこのデバイスから削除されます。}other{これらの住所は Google アカウント（<ph name="USER_EMAIL" />）とこのデバイスから削除されます。}}</translation>
 <translation id="634878792104344809">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="6361848730467328243">「<ph name="DOMAIN_NAME" />」をフォロー</translation>
 <translation id="6362362396625799311">シークレット タブはありません</translation>
@@ -1156,7 +1158,6 @@
 <translation id="953008885340860025">Chrome がログアウトされました</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> をフォローしています</translation>
 <translation id="973493300226275298">複数のオンライン ショップで商品の価格をトラッキングします。値下げされた場合は、アラートが表示されます。</translation>
-<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">組織が特定のアカウントでのログインしか許可していません。許可されていないアカウントは非表示になっています。</translation>
 <translation id="984509647832111802">同期が機能していません。</translation>
 <translation id="988141524645182168">他のデバイス</translation>

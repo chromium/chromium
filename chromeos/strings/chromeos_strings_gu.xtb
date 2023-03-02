@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
 <translation id="3268178239013324452">નિષ્ફળ રહ્યું - પ્રિન્ટરનું ઢાંકણ ખૂલ્લું છે</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" /> બાજુએ ડૉક કરો</translation>
 <translation id="3275729367986477355">અવતારની છબી</translation>
 <translation id="3283504360622356314">{0,plural, =1{ફાઇલમાં ફેરફાર કરો}one{ફાઇલમાં ફેરફાર કરો}other{ફાઇલમાં ફેરફાર કરો}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3435896845095436175">ચાલુ કરો</translation>
+<translation id="345256797477978759">વિન્ડોને સ્ક્રીનના <ph name="DIRECTION" /> વધુ મોટા ભાગ પર ડૉક કરો</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />માંથી <ph name="PRINTED_PAGES" /> પેજ પ્રિન્ટ કર્યા.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ. <ph name="PERCENTAGE_VALUE" />% પૂર્ણ થયું.</translation>
 <translation id="3459509316159669723">છાપવું</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">બૅટરી પૂર્ણ ચાર્જ</translation>
 <translation id="3600339377155080675">સ્ક્રીન મિરર કરો</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
+<translation id="360282891121575443">અન્ય વપરાશકર્તાઓ શેર કરેલા આલ્બમમાંના ફોટા અપડેટ કરી શકે છે. દરરોજ બદલવાથી આલ્બમમાં હાલમાં ન હોય તેવા વૉલપેપર કદાચ બતાવવામાં આવી શકે.</translation>
 <translation id="3603829704940252505">અવતાર</translation>
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
 <translation id="361575905210396100">તમારા પ્રતિસાદ બદલ આભાર</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
+<translation id="3639846061339007994">સૌથી ઉપર</translation>
 <translation id="3651050199673793219">તાપમાનનો એકમ પસંદ કરો</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> પરીક્ષણ</translation>
 <translation id="370665806235115550">લોડ કરી રહ્યું છે...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">પૂર્ણ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> કી દબાવી</translation>
 <translation id="435692326371619097">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">વધુ નાની બાજુએ ડૉક કરો</translation>
 <translation id="4378373042927530923">ચલાવ્યું નથી</translation>
 <translation id="4378551569595875038">કનેક્ટિંગ...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6659594942844771486">બ્રાઉઝર ટૅબ</translation>
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
+<translation id="6698459586333070823">અન્ય વપરાશકર્તાઓ શેર કરેલા આલ્બમ અપડેટ કરી શકે છે</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="6723847290197874913">કીબોર્ડ બૅકલાઇટ</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાંનો ફોટો</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">પ્રોફાઇલ ચિત્ર</translation>
+<translation id="7171919371520438592">વિન્ડોને સ્ક્રીનના <ph name="DIRECTION" /> વધુ નાના ભાગ પર ડૉક કરો</translation>
 <translation id="7172721935181587524">1 છબી</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે. વ્યવસ્થાપકો દ્વારા ડિવાઇસને રિમોટલી કન્ફિગર કરવામાં આવી શકે છે.</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">જોડો</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
+<translation id="8210733748736414123">સૌથી નીચે</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
 <translation id="8227119283605456246">ફાઇલ જોડો</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">એકથી વધુ સાઇન ઇન કરવા એક એકાઉન્ટ ઉમેરો. બધા સાઇન ઇન એકાઉન્ટ પાસવર્ડ વગર ઉપયોગ કરી શકાય છે, તેથી આ સુવિધા માત્ર વિશ્વસનીય એકાઉન્ટ સાથે ઉપયોગમાં આવવી જોઇએ.</translation>
 <translation id="8364946094152050673">સર્વરના કોઈ નામ આપવામાં આવ્યા નથી</translation>
 <translation id="8372477600026034341">અતિરિક્ત હોસ્ટ</translation>
+<translation id="8380114448424469341">વિન્ડોને સ્ક્રીનના <ph name="DIRECTION" /> અડધા ભાગ પર ડૉક કરો</translation>
 <translation id="8395584934117017006">આ <ph name="DEVICE_TYPE" /> એન્ટરપ્રાઇઝ દ્વારા મેનેજ થાય છે</translation>
 <translation id="8398927464629426868">ડિવાઇસ હાલમાં જે ઝડપથી ચાર્જ કે ડિસ્ચાર્જ થઈ રહ્યું છે તે ઝડપ</translation>
 <translation id="8410244574650205435">ઑટોમૅટિક રીતે શોધાયેલું</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google સેવાઓ</translation>
 <translation id="9138630967333032450">ડાબી Shift કી</translation>
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
+<translation id="9157515863513902090">વધુ મોટી બાજુએ ડૉક કરો</translation>
 <translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
 <translation id="9188992814426075118">તમારું કીબોર્ડ ઑટોમૅટિક રીતે તમારા વૉલપેપર સાથે મેળ કરી શકે છે</translation>

@@ -1276,6 +1276,15 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 <translation id="2168397434410358693">Délai d'inactivité (secteur)</translation>
 <translation id="217013996107840632">Paramètres de ligne de commande pour basculer vers Chrome à partir du navigateur secondaire.</translation>
 <translation id="2170233653554726857">Activer l'optimisation WPAD</translation>
+<translation id="2172528612637587749">Configure la liste des images que l'économiseur d'écran doit afficher pour l'écran de verrouillage.
+
+Chaque élément doit correspondre à une URL faisant référence à un fichier image. L'image doit être au format JPEG et elle ne doit pas dépasser 8 Mo. Les URL non valides et images non compatibles seront ignorées. L'appareil <ph name="PRODUCT_OS_NAME" /> téléchargera ces images et les conservera dans un cache local.
+
+Le nombre d'images que l'économiseur d'écran doit afficher est limité à 25. Seules les 25 premières entrées d'URL de la liste seront utilisées.
+
+Cette règle n'aura aucune incidence si la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> est définie sur "False".
+
+Si cette règle n'est pas configurée ou si la liste ne contient aucune référence d'image valide, l'économiseur d'écran ne s'affiche pas pour l'écran de verrouillage, quelle que soit la valeur définie dans la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2175353308236295184">Objet de configuration JSON propre à l'appli avec un ensemble de paires clé-valeur tel que : "managedConfiguration": { "key1": value1, "key2": value2 }. Les clés sont définies dans le fichier manifeste de l'appli.</translation>
 <translation id="2176115444876446233">Empêcher les utilisateurs de collecter une trace des performances au niveau du système.</translation>
 <translation id="2177696016354404697">Toujours désactiver l'écran de confidentialité</translation>
@@ -3473,6 +3482,15 @@ Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut ent
           Si elle n'est pas définie, le clic automatique est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4212181786686887763">URL depuis laquelle l'image de fond d'écran peut être téléchargée.</translation>
 <translation id="4224610387358583899">Délais de verrouillage de l'écran</translation>
+<translation id="4225083820650584375">Configure la liste des images que l'économiseur d'écran doit afficher pour l'écran de connexion.
+
+Chaque élément doit correspondre à une URL faisant référence à un fichier image. L'image doit être au format JPEG et elle ne doit pas dépasser 8 Mo. Les URL non valides et images non compatibles seront ignorées. L'appareil <ph name="PRODUCT_OS_NAME" /> téléchargera ces images et les conservera dans un cache local.
+
+Le nombre d'images que l'économiseur d'écran doit afficher est limité à 25. Seules les 25 premières entrées d'URL de la liste seront utilisées.
+
+Cette règle n'aura aucune incidence si la règle <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> est définie sur "False".
+
+Si cette règle n'est pas configurée ou si la liste ne contient aucune référence d'image valide, l'économiseur d'écran ne s'affiche pas pour l'écran de connexion, quelle que soit la valeur définie dans la règle <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="42267415200641481">Si cette règle est définie sur "True", la résolution DNS du système (getaddrinfo()) peut éventuellement s'exécuter en dehors du processus réseau, en fonction de la configuration système et des flags de fonctionnalité.
 
       Si elle est définie sur "False", la résolution DNS du système (getaddrinfo()) s'exécute dans le processus réseau plutôt que dans le processus du navigateur. Cela peut forcer la désactivation du bac à sable du service réseau, ce qui nuit à la sécurité de <ph name="PRODUCT_NAME" />.

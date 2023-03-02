@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Կայքերը կարող են տվյալները պահել ձեր սարքում</translation>
 <translation id="5771720122942595109">Արգելափակված է՝ «<ph name="PERMISSION_1" />»</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
+<translation id="5810805850857689118">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք պահվել են <ph name="ORIGIN" /> կայքերի խմբում և դրա ենթակայքերում</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5876056640971328065">Դադարեցնել</translation>
 <translation id="5884085660368669834">Թույլտվությունների փոփոխում</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Չթույլատրել կայքերին տվյալներ պահել ձեր սարքում (խորհուրդ չի տրվում)</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
+<translation id="8528440122773422556">Կջնջվեն բոլոր տվյալներն ու քուքիները, որոնք հիմնական էկրանին են պահվել <ph name="ORIGIN" /> կայքերի խմբի կամ դրա հավելվածի կողմից</translation>
 <translation id="8541410041357371550">Այս կայքը Chrome-ից ստանում է գովազդի թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}one{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}other{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}}</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="8990043154272859344">Դուք դուրս կգրվեք բոլոր կայքերից</translation>
 <translation id="9019902583201351841">Կառավարվում է ձեր ծնողների կողմից</translation>
+<translation id="9039697262778250930">Հնարավոր է, որ դուք դուրս գրվեք հաշվից այս կայքերում</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Այս կայքը խմբում է, որը կարող է տեսնել ձեր գործողությունները։ Խումբը սահմանված է <ph name="FPS_OWNER" /> տիրույթի կողմից։</translation>
 <translation id="9106233582039520022">Ջնջե՞լ քուքիները</translation>

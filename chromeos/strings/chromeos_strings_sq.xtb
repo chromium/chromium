@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
+<translation id="3275506277319227640">Stacioni <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imazhi i simbolit</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifiko skedarin}other{Modifiko skedarët}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3435896845095436175">Aktivizo</translation>
+<translation id="345256797477978759">Dritarja e stacionit në pjesën më të madhe <ph name="DIRECTION" /> të ekranit</translation>
 <translation id="3456078764689556234">U printua faqja <ph name="PRINTED_PAGES" /> nga <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Po skanon faqen <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% e përfunduar.</translation>
 <translation id="3459509316159669723">Po printon</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="3600339377155080675">Pasqyrimi i ekranit</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
+<translation id="360282891121575443">Fotografitë në albumet e ndara mund të përditësohen nga përdoruesit e tjerë. Ndryshimi i përditshëm mund të shfaqë imazhe sfondi që nuk janë aktualisht në album.</translation>
 <translation id="3603829704940252505">Simboli</translation>
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3606583719724308068">Vonesë e lartë në sajtet e uebit HTTPS</translation>
 <translation id="361575905210396100">Faleminderit për komentet e tua</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
+<translation id="3639846061339007994">në krye</translation>
 <translation id="3651050199673793219">Zgjidh një njësi temperature</translation>
 <translation id="3689839747745352263">Testi <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">I plotë</translation>
 <translation id="4333390807948134856">Tasti <ph name="KEY_NAME" /> është i shtypur</translation>
 <translation id="435692326371619097">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Stacioni në anën më të vogël</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6659594942844771486">Skeda</translation>
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
+<translation id="6698459586333070823">Albumet e ndara mund të përditësohen nga përdoruesit e tjerë</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="6723847290197874913">Drita e sfondit e tastierës</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Fotografi ekzistuese nga kamera ose skedari</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Fotografia e profilit</translation>
+<translation id="7171919371520438592">Dritarja e stacionit në pjesën më të vogël <ph name="DIRECTION" /> të ekranit</translation>
 <translation id="7172721935181587524">1 imazh</translation>
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7180611975245234373">Rifresko</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Bashkëngjit</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
+<translation id="8210733748736414123">në fund</translation>
 <translation id="8226628635270268143">Zgjidh fotografitë dhe albumet e tua të preferuara</translation>
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>
 <translation id="8364946094152050673">Serverët DNS janë bosh</translation>
 <translation id="8372477600026034341">Pritësit e tjerë</translation>
+<translation id="8380114448424469341">Dritarja e stacionit në gjysmën <ph name="DIRECTION" /> të ekranit</translation>
 <translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
 <translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
 <translation id="8410244574650205435">Zbuluar automatikisht</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9138630967333032450">Tasti i majtë "Shift"</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
+<translation id="9157515863513902090">Stacioni në anën më të madhe</translation>
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>
 <translation id="917720651393141712">Provë</translation>
 <translation id="9188992814426075118">Tastiera jote mund të përputhet automatikisht me imazhin e sfondit</translation>

@@ -324,6 +324,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Din ændring kunne ikke gemmes.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> af <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Autoudfyld adgangskoder</translation>
 <translation id="3268451620468152448">Åbne faner</translation>
 <translation id="3272527697863656322">Annuller</translation>
 <translation id="3277021493514034324">Webadressen er kopieret</translation>
@@ -391,6 +392,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilbyd at oversætte dette website</translation>
+<translation id="3803967590068704619">Denne adresse er gemt på din Google-konto (<ph name="USER_EMAIL" />). Du kan bruge adressen i Google-produkter på enhver enhed.</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3818293389945649617">Find næste</translation>
 <translation id="3819183753496523827">Du er offline. Tjek din internetforbindelse, og prøv igen.</translation>
@@ -429,6 +431,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="408404951701638773">Nu er det nemmere at bruge søgefeltet</translation>
 <translation id="4092655288299341041">Vis Hjælp</translation>
 <translation id="4101942614374785540">Adgangskoder gemmes nu på din Google-konto (<ph name="ACCOUNT" />). Du kan bruge dem, uanset hvor du er logget ind. Gå til <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" /> for at deaktivere denne funktion.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Slet adresse}one{Slet adresse}other{Slet adresser}}</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="411254640334432676">Download mislykkedes.</translation>
 <translation id="4112644173421521737">Søg</translation>
@@ -744,6 +747,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6342069812937806050">Lige nu</translation>
 <translation id="6344783595350022745">Ryd tekst</translation>
 <translation id="6346549652287021269">Vil du starte en ny download?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Adressen slettes fra din Google-konto (<ph name="USER_EMAIL" />) og fra denne enhed.}one{Adressen slettes fra din Google-konto (<ph name="USER_EMAIL" />) og fra denne enhed.}other{Adresserne slettes fra din Google-konto (<ph name="USER_EMAIL" />) og fra denne enhed.}}</translation>
 <translation id="634878792104344809">Synkroniser dine adgangskoder, din historik og meget mere på alle dine enheder</translation>
 <translation id="6361848730467328243">Følg <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Ingen inkognitofaner</translation>
@@ -851,6 +855,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6914583639806229067">Søg efter billede, du har kopieret</translation>
 <translation id="6914783257214138813">Dine adgangskoder vil være synlige for alle, der kan se den eksporterede fil.</translation>
 <translation id="6930799952781667037">Tryk for at skifte til dette sprog.</translation>
+<translation id="6939941780796374211">Indstillinger til adgangskode</translation>
 <translation id="6944369514868857500">Vælg en anden konto</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1156,7 +1161,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="953008885340860025">Chrome er logget ud</translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Hold øje med prisen på et produkt i netbutikker. Du får underretninger, når prisen falder.</translation>
-<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules.</translation>
 <translation id="984509647832111802">Synkronisering fungerer ikke.</translation>
 <translation id="988141524645182168">Andre enheder</translation>

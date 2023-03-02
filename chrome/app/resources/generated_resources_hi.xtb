@@ -218,6 +218,7 @@
 <translation id="1186771945450942097">नुकसान पहुंचाने वाला सॉफ़्टवेयर निकालें</translation>
 <translation id="1187722533808055681">इस्तेमाल नहीं किए जा रहे प्रोसेसर को जगाना</translation>
 <translation id="1188807932851744811">लॉग अपलोड नहीं किया गया.</translation>
+<translation id="1190086046506744802">लाइनों के बीच बहुत ज़्यादा जगह खाली है</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{अपने कंप्‍यूटर पर स्टोर की गई कोई फ़ाइल एक्सेस करें}one{अपने कंप्‍यूटर पर स्टोर की गई # फ़ाइलें एक्सेस करें}other{अपने कंप्‍यूटर पर स्टोर की गई # फ़ाइलें एक्सेस करें}}</translation>
 <translation id="119092896208640858">ब्राउजिंग डेटा को सिर्फ़ इस डिवाइस से साफ़ करने और अपने 'Google खाते' में रखने के लिए, <ph name="BEGIN_LINK" />साइन आउट करें<ph name="END_LINK" />.</translation>
 <translation id="1191353342579061195">अपनी ज़रूरतों के मुताबिक थीम चुनें. अपनी थीम, वॉलपेपर, स्क्रीन सेवर वगैरह बदलने के लिए, बस डेस्कटॉप पर दायां क्लिक करें.</translation>
@@ -491,6 +492,7 @@
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1431188203598586230">आखिरी साॅफ़्टवेयर अपडेट</translation>
 <translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
+<translation id="1433478348197382180">रीडिंग मोड</translation>
 <translation id="1434696352799406980">यह आपके शुरुआती पेज, नए टैब पेज, खोज इंजन और पिन किए गए टैब को रीसेट करेगा. यह सभी एक्सटेंशन को भी बंद करेगा और कुकी जैसे अस्थायी डेटा को मिटाएगा. आपके बुकमार्क, इतिहास और सेव किए गए पासवर्ड नहीं मिटाए जाएंगे.</translation>
 <translation id="1434886155212424586">मुख्यपेज, नया टैब पेज है</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> के लिए मान्य</translation>
@@ -595,6 +597,7 @@
 <translation id="1526560967942511387">शीर्षक रहित दस्तावेज़</translation>
 <translation id="1527336312600375509">मॉनिटर की रीफ़्रेश दर</translation>
 <translation id="152913213824448541">आस-पास शेयर करने की सुविधा और संपर्क</translation>
+<translation id="1529769834253316556">लाइन की लंबाई</translation>
 <translation id="1529891865407786369">पावर स्रोत</translation>
 <translation id="1531275250079031713">'नया वाई-फ़ाई जोड़ें' संवाद दिखाएं</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, और <ph name="THIRD_SWITCH" /></translation>
@@ -839,6 +842,7 @@
 <translation id="1725562816265788801">टैब स्क्रोलिंग</translation>
 <translation id="1726503915437308071">इटैलिक फ़ॉन्ट</translation>
 <translation id="1729533290416704613">इससे यह भी नियंत्रित होता है कि ऑम्निबॉक्‍स से खोजते समय आपको कौन सा पेज दिखाया जाए.</translation>
+<translation id="1730666151302379551">पुराना पासवर्ड याद नहीं है</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; Google Play Store &gt; Android प्राथमिकताएं प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन एडमिन पर जाएं. फिर उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर अनइंस्टॉल करें या बंद करें पर टैप करें.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">स्क्रोल करके आखिरी टैब की ओर जाएं</translation>
 <translation id="1731911755844941020">अनुरोध भेजा जा रहा है...</translation>
@@ -1611,6 +1615,7 @@
 <translation id="2364498172489649528">जांच में पास</translation>
 <translation id="2365507699358342471">यह साइट क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देख सकती है</translation>
 <translation id="2367972762794486313">ऐप्स  दिखाएं</translation>
+<translation id="2369058545741334020">रीडिंग मोड में खोलें</translation>
 <translation id="236939127352773362">जब आस-पास मौजूद डिवाइसों से फ़ाइलें शेयर की जा रही हों</translation>
 <translation id="2371076942591664043">&amp;पू्र्ण होने पर खोलें</translation>
 <translation id="2373666622366160481">जिस कागज़ पर प्रिंट किया जाना है उसके आकार के हिसाब से फ़िट करें</translation>
@@ -2663,6 +2668,7 @@
 <translation id="3341699307020049241">गलत पिन. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="3341703758641437857">फ़ाइल के यूआरएल तक एक्सेस दें</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" इस एक्सटेंशन को हटाना चाहता है.</translation>
+<translation id="3343046414300263892">फ़ॉन्ट का साइज़ बढ़ाएं</translation>
 <translation id="3343977377045378693">सेट अप पूरा किया जा रहा है</translation>
 <translation id="3345634917232014253">सुरक्षा जांच कुछ देर पहले की गई है</translation>
 <translation id="3345886924813989455">कोई समर्थित ब्राउज़र नहीं मिला</translation>
@@ -2691,6 +2697,7 @@
 <translation id="3370260763947406229">शब्दों में सुधार (ऑटो करेक्ट)</translation>
 <translation id="3371140690572404006">USB-C डिवाइस (दायां सामने वाला पोर्ट)</translation>
 <translation id="337286756654493126">  ऐप्लिकेशन में खोले गए फ़ोल्डर पढ़ें</translation>
+<translation id="3373059063088819384">रीडिंग मोड में खोलें</translation>
 <translation id="3373701465337594448">इस सेटिंग के चालू होने पर, यहां उन साइटों की सूची दिखती है जो आपकी पसंद का अनुमान लगाती हैं</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' को '<ph name="NEW_FOLDER_TITLE" />' में भेज दिया गया.</translation>
 <translation id="3378572629723696641">यह एक्‍सटेंशन दूषित हो सकता है.</translation>
@@ -5120,6 +5127,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ऐप्लिकेशन लोड हो रहे हैं...</translation>
 <translation id="5590418976913374224">डिवाइस चालू होने पर, आवाज़ होने की सुविधा चालू करें</translation>
+<translation id="5591465468509111843">अक्षरों के बीच बहुत ज़्यादा जगह खाली है</translation>
 <translation id="5592595402373377407">अभी काफ़ी डेटा उपलब्ध नहीं है.</translation>
 <translation id="5594899180331219722">फ़ाइल चुनें</translation>
 <translation id="5595307023264033512">साइटों ने कुल इतना स्टोरेज इस्तेमाल किया है: <ph name="TOTAL_USAGE" /></translation>
@@ -5818,6 +5826,7 @@
 <translation id="6234474535228214774">इंस्टॉल होना बाकी है</translation>
 <translation id="6235208551686043831">डिवाइस का कैमरा चालू है. अपने ई-सिम क्यूआर कोड को कैमरे के सामने लाएं.</translation>
 <translation id="6237474966939441970">स्टाइलस की मदद से नोट के लिए ऐप्लिकेशन</translation>
+<translation id="623755660902014047">रीडिंग मोड</translation>
 <translation id="6238767809035845642">अन्य डिवाइस से शेयर किया गया टेक्स्ट</translation>
 <translation id="6238923052227198598">सबसे नया नोट लॉक स्क्रीन पर रखें</translation>
 <translation id="6239558157302047471">फ़्रेम को फिर लोड करें</translation>
@@ -5955,6 +5964,7 @@
 <translation id="6368276408895187373">चालू किया गया – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="6370021412472292592">मेनिफ़ेस्‍ट लोड नहीं किया जा सका.</translation>
+<translation id="637135143619858508">ज़्यादा जगह</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">फिर से कोशिश करें</translation>
 <translation id="6374635887697228982">छूट चाहिए?</translation>
@@ -6170,6 +6180,7 @@
 <translation id="656293578423618167">फ़ाइल पाथ या नाम बहुत बड़ा है.  कृपया छोटे नाम के साथ या किसी दूसरी जगह पर सेव करें.</translation>
 <translation id="6568283005472142698">टैब सर्च</translation>
 <translation id="65711204837946324">डाउनलोड करने के लिए अनुमति चाहिए</translation>
+<translation id="6571533309669248172">टेक्स्ट का फ़ॉर्मैट</translation>
 <translation id="6571772921213691236">साइन इन करने के लिए डेटा में बदलाव करना</translation>
 <translation id="6572081226337824427">आपके विज़िट किए गए पेजों में से, कुछ पेज पहले से ही लोड किए गए होते हैं.</translation>
 <translation id="657229725818377235">नुकसान पहुंचाने वाली वेबसाइटों और डाउनलोड हुई फ़ाइलों से बचने के लिए, ज़्यादा सुरक्षा पाएं</translation>
@@ -6339,6 +6350,7 @@
 <translation id="6721744718589119342">हम ज़्यादा जानकारी या अपडेट के लिए, आपको ईमेल भेज सकते हैं</translation>
 <translation id="6721972322305477112">&amp;फ़ाइल</translation>
 <translation id="672208878794563299">यह साइट फिर से आपकी जगह की जानकारी मांगेगी.</translation>
+<translation id="6722744767592605627">आपको <ph name="EMAIL" /> का ऐक्सेस वापस मिल सकता है. हालांकि, लोकल डेटा मिटा दिया जाएगा.</translation>
 <translation id="6723661294526996303">बुकमार्क और सेटिंग इंपोर्ट करें...</translation>
 <translation id="6723839827191551955">आप जिस मीडिया को कास्ट कर रहे हैं उसे कंट्रोल करें</translation>
 <translation id="6723839937902243910">पावर</translation>
@@ -7171,6 +7183,7 @@
 <translation id="7476989672001283112"><ph name="PERMISSION" /> के साथ-साथ <ph name="COUNT" /> और सेटिंग को अपने-आप ब्लॉक किया गया</translation>
 <translation id="7477748600276493962">इस पेज के लिए क्यूआर कोड बनाएं</translation>
 <translation id="7477793887173910789">अपने संगीत और वीडियो के साथ दूसरी चीज़ें नियंत्रित करें</translation>
+<translation id="7478069565037869084">बहुत ज़्यादा जगह</translation>
 <translation id="7478485216301680444">कियोस्क ऐप्स  इंस्टॉल नहीं किया जा सका.</translation>
 <translation id="7478658909253570368">साइटों को सीरियल पोर्ट से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="7479221278376295180">मेमोरी के इस्तेमाल की खास जानकारी</translation>
@@ -7429,6 +7442,7 @@
 <translation id="7705524343798198388">वीपीएन</translation>
 <translation id="7707108266051544351">इस साइट को हलचल वाले सेंसर का इस्तेमाल करने से रोक दिया गया है.</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
+<translation id="770831926727930011">आपके पुराने पासवर्ड का इस्तेमाल करके, लोकल डेटा को सुरक्षित रखा गया है. लोकल डेटा वापस पाने के लिए, अपना पुराना पासवर्ड डालें.</translation>
 <translation id="7709152031285164251">विफल - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;कास्ट करें...</translation>
 <translation id="7711900714716399411">अपने फ़ोन को कंप्यूटर से कनेक्ट करने के लिए यूएसबी केबल का इस्तेमाल करें. अगर आपका फ़ोन पहले से कनेक्ट है, तो उसे हटा दें और फिर से कनेक्ट करें.</translation>
@@ -8522,11 +8536,13 @@
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" /> के लिए पीपीडी</translation>
 <translation id="8702278591052316269">सेव किए गए छिपे टैब ग्रुप वाला मेन्यू</translation>
 <translation id="8702825062053163569">आपका <ph name="DEVICE_TYPE" /> लॉक हो गया था.</translation>
+<translation id="8703166594516496633">फ़ॉन्ट का साइज़ घटाएं</translation>
 <translation id="8703346390800944767">विज्ञापन छोड़ें</translation>
 <translation id="8705331520020532516">क्रम संख्या</translation>
 <translation id="8705580154597116082">फ़ोन के ज़रिए वाई-फ़ाई उपलब्ध है</translation>
 <translation id="8705629851992224300">आपकी सुरक्षा कुंजी में कुछ गड़बड़ है</translation>
 <translation id="8706111173576263877">क्यूआर कोड स्कैन किया गया.</translation>
+<translation id="8707318721234217615">अक्षरों के बीच की खाली जगह</translation>
 <translation id="8708000541097332489">बाहर निकलने पर मिटाएं</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;अधिक जानकारी</translation>

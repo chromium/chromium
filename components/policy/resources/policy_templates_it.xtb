@@ -2169,6 +2169,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 
       Se nella versione 81 e nelle versioni successive di <ph name="PRODUCT_NAME" /> questo criterio non viene impostato, l'autenticazione ambientale sarà consentita soltanto nelle sessioni standard.</translation>
 <translation id="3021562480854470924">Numero di obiettivi consentiti per il rollback</translation>
+<translation id="3023172689742785487">Forza l'attivazione della Modalità solo HTTPS</translation>
 <translation id="3023572080620427845">URL di un file XML che contiene gli URL da caricare su un browser alternativo.</translation>
 <translation id="302528139996622624">Impostazioni immagini</translation>
 <translation id="3026740867910702435">Consente di attivare la funzione di accessibilità del puntatore grande nella schermata di accesso.
@@ -2952,6 +2953,7 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3749259744154402564">Opzione non supportata</translation>
 <translation id="3749511622128647337">Disattiva l'output audio</translation>
 <translation id="3750220015372671395">Blocca la generazione di chiavi su questi siti</translation>
+<translation id="3753267109888284695">Lista consentita HTTP</translation>
 <translation id="3753959315989102457">Disattiva la segnalazione della posizione del dispositivo</translation>
 <translation id="3755237588083934849">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei caricamenti dello stato del dispositivo. Il valore minimo consentito è 60 secondi.
 
@@ -3163,6 +3165,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3898795800259311780">Consenti o nega acquisizione schermo</translation>
 <translation id="3903313632842363082">Disattiva i report sugli utenti del dispositivo</translation>
 <translation id="3904304709151553598">Disattiva i report sulle informazioni relative alla ventola del dispositivo</translation>
+<translation id="3905883021371603181">Attiva la cancellazione dell'eco per l'audio di sistema</translation>
 <translation id="3907683835264956726">Consente l'accesso online degli utenti in una schermata di blocco. Se il criterio viene impostato su true, la riautenticazione online nella schermata di blocco viene attivata, ad esempio, tramite il criterio <ph name="POLICY" />.
       La riautenticazione viene applicata subito quando è visualizzata la schermata di blocco o la volta successiva che l'utente blocca lo schermo dopo che viene soddisfatta la condizione.
       Se il criterio viene impostato su false o non viene impostato, gli utenti possono sbloccare in qualsiasi momento lo schermo con le proprie credenziali locali.</translation>
@@ -3241,6 +3244,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
       Se il criterio è impostato su false, la compilazione automatica non fornisce mai suggerimenti, né compila i dati della carta di credito, né salva dati aggiuntivi della carta di credito che gli utenti potrebbero inviare durante la navigazione sul Web.</translation>
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
 <translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
+<translation id="3990834929384096140">Non forzare l'applicazione della cancellazione dell'eco per l'audio di sistema</translation>
 <translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="399433537808390819">Non rendere la modalità Desktop unificato disponibile per l'utente</translation>
 <translation id="3995880046827722248">Manifest v2 disabilitato</translation>
@@ -3421,6 +3425,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente la funzione di lettura vocale è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
+<translation id="4173974507809462880">Visualizza la schermata della direzione di scorrimento sul touchpad durante l'accesso</translation>
 <translation id="417956245902013347">Consente di attivare la funzione di accessibilità di evidenziazione del cursore di testo nella schermata di accesso.
 
           Se questo criterio è impostato su true, l'evidenziazione del cursore di testo sarà sempre attivata sulla schermata di accesso.
@@ -4020,6 +4025,12 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se le dimensioni della pagina non sono disponibili nella stampante scelta dall'utente, questo criterio viene ignorato.</translation>
 <translation id="4789450349513792856">Blocca popup su questi siti</translation>
 <translation id="4790588245699320140">Permetti all'Assistente Google di accedere al contesto dello schermo</translation>
+<translation id="4800438168909332958">Consente di attivare la funzionalità di cancellazione dell'eco per l'audio di sistema (AEC). La funzionalità AEC di sistema è un sistema di cancellazione dell'eco acustico, ovvero un modulo di elaborazione audio che rimuove la riproduzione dell'audio di sistema (eco) dal segnale del microfono.
+Questo criterio è temporaneo e verrà rimosso non appena verrà lanciata la funzionalità di cancellazione dell'eco per l'audio di sistema.
+
+  Se questo criterio viene impostato su true, la cancellazione dell'eco per l'audio di sistema sarà sempre attiva.
+
+  Se questo criterio viene impostato su false o se non viene configurato, la cancellazione dell'eco per l'audio di sistema potrebbe comunque essere attivata in base al relativo piano di lancio, ma non verrà applicata in modo forzato da questo criterio.</translation>
 <translation id="4801512016965057443">Consenti roaming dati mobile</translation>
 <translation id="4802744647065138872">Limita il numero di istantanee di dati utente conservate per essere utilizzate in caso di rollback di emergenza</translation>
 <translation id="4802905909524200151">Configura il comportamento di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
@@ -4241,6 +4252,11 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4996161752665479028">Attiva SSH in Terminal System App</translation>
 <translation id="4997074784107449343">L'opzione Stampa come immagine non viene impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando disponibile.</translation>
 <translation id="500149597848135831">Attiva tutte le varianti</translation>
+<translation id="5014511262203433035">Questo criterio consente di stabilire se gli utenti possono attivare o meno la Modalità solo HTTPS nelle Impostazioni. La Modalità solo HTTPS esegue l'upgrade di tutte le navigazioni alle estensioni HTTPS.
+      Se questa impostazione non viene configurata o se viene impostata su allowed, gli utenti potranno attivare la Modalità solo HTTPS.
+      Se viene impostata su disallowed, gli utenti non potranno attivare la Modalità solo HTTPS.
+      Se viene impostata su force_enabled, la Modalità solo HTTPS verrà attivata e gli utenti non potranno disattivarla.
+      L'attivazione forzata della Modalità solo HTTPS è supportata a partire dalla versione M112.</translation>
 <translation id="5017369989680827157">Se il criterio è impostato su True o se non viene configurato, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
 
       Se il criterio è impostato su False, la compilazione automatica non fornisce mai suggerimenti né compila le informazioni relative agli indirizzi, né salva le nuove informazioni inviate dagli utenti durante la navigazione sul Web.</translation>
@@ -4304,6 +4320,9 @@ Se questo criterio viene impostato su true o se non viene configurato, la segnal
 <translation id="5105313908130842249">Ritardo blocco schermo in caso di utilizzo della batteria</translation>
 <translation id="5108031557082757679">Stampanti aziendali associate ai dispositivi disattivate</translation>
 <translation id="5109383437323376357">Determina la disponibilità delle varianti</translation>
+<translation id="5109866581154565900">Questo criterio consente di stabilire se mostrare o meno all'utente la schermata della direzione di scorrimento sul touchpad durante il primo accesso.
+      Se viene impostato su false, la schermata della direzione di scorrimento sul touchpad non verrà visualizzata.
+      Se viene impostato su true, la schermata della direzione di scorrimento sul touchpad verrà visualizzata.</translation>
 <translation id="5118635822783657217">Disattiva gli aggiornamenti per i componenti non critici</translation>
 <translation id="5120168808610189805">Abilita l'importazione della home page alla prima esecuzione</translation>
 <translation id="5124368997194894978">Attiva avvio tramite CA (corrente alternata)</translation>
@@ -4532,6 +4551,13 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
 <translation id="5293619885162445352">Consenti a <ph name="PEPPER_NAME" /> di usare il nuovo decodificatore video.</translation>
 <translation id="529457411593078576">Attiva i TdS alla prima esecuzione di CCT</translation>
+<translation id="5297873769621042075">Questo criterio consente di specificare un elenco di nomi host o pattern di nomi host (ad esempio "[*.]example.com") che non verranno aggiornati a HTTPS e non mostreranno un interstitial di errore se viene attivata la modalità HTTPS-First. Le organizzazioni possono utilizzare questo criterio per mantenere l'accesso ai server che non supportano HTTPS, senza dover disattivare gli upgrade a HTTPS e/o la modalità HTTPS-First.
+
+I nomi host indicati devono essere canonicalizzati: ogni IDN deve essere convertito nel relativo formato A-label e tutte le lettere ASCII devono essere minuscole.
+
+I caratteri jolly nell'host globale (ad es. "*" o "[*]") non sono consentiti. La modalità HTTPS-First e gli upgrade a HTTPS devono essere disattivati esplicitamente tramite i relativi criteri specifici.
+
+Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 <translation id="5297948043665200363">Consenti all'utente di mantenere l'accesso dopo che il suo account non è più autenticato</translation>
 <translation id="5298949392804966105">Nessuna limitazione per gli account gestiti</translation>
 <translation id="530134925949808452">L'ora del giorno, in ora locale, in cui viene rinnovata la quota di utilizzo.</translation>
@@ -7836,6 +7862,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se viene impostato su Attivato o se non viene configurato, gli utenti possono terminare i processi nella funzionalità Task Manager.</translation>
 <translation id="8367209241899435947">Attiva Chrome Software Cleaner su Windows</translation>
+<translation id="8367446818896241968">Attiva la visualizzazione della schermata della direzione di scorrimento sul touchpad durante l'accesso</translation>
 <translation id="8367473200119029349">Reporting su cloud</translation>
 <translation id="8367488518695804749">Non consentire la visualizzazione di popup nei siti</translation>
 <translation id="8369359426872560378">Disattiva l'avvio tramite CA</translation>
@@ -8280,6 +8307,7 @@ Questo criterio è una mappatura degli ID di configurazione alle configurazioni 
 </translation>
 <translation id="8804685015028424497">Viene disattivata la modalità di navigazione in incognito</translation>
 <translation id="8806478127647484805">Impedisci agli utenti di terminare i processi con il Task Manager di Chrome</translation>
+<translation id="8807274441692477185">Non visualizzare la schermata della direzione di scorrimento sul touchpad durante l'accesso</translation>
 <translation id="8807313206348471682">Mostra la finestra di dialogo di conferma di disconnessione</translation>
 <translation id="8812091410765157924">Consenti ai popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha aperto il popup soltanto se la pagina di apertura attiva esplicitamente questa interazione</translation>
 <translation id="8816370949847593408">Potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.</translation>

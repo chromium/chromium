@@ -1285,6 +1285,15 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
 <translation id="2168397434410358693">Menunda waktu menganggur saat menggunakan daya AC</translation>
 <translation id="217013996107840632">Parameter command line untuk beralih dari browser alternatif.</translation>
 <translation id="2170233653554726857">Aktifkan pengoptimalan WPAD</translation>
+<translation id="2172528612637587749">Mengonfigurasi daftar gambar yang akan ditampilkan di screensaver untuk layar kunci.
+
+Setiap item harus berupa URL yang mereferensikan file gambar. Format gambar harus JPEG dan ukuran file tidak boleh lebih dari 8 MB. URL yang tidak valid dan gambar yang tidak didukung akan diabaikan. Perangkat <ph name="PRODUCT_OS_NAME" /> akan mendownload gambar ini, dan menyimpannya di cache lokal.
+
+Jumlah gambar yang akan ditampilkan di screensaver dibatasi hingga 25. Hanya 25 entri URL pertama dari daftar yang akan digunakan.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> disetel ke salah (false).
+
+Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang valid, screensaver untuk layar kunci tidak akan ditampilkan, terlepas dari nilai yang disetel dalam kebijakan <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2175353308236295184">Objek konfigurasi JSON khusus aplikasi dengan sekumpulan key-value pair, mis. '"managedConfiguration": { "key1": value1, "key2": value2}'. Kunci ditentukan dalam manifes aplikasi.</translation>
 <translation id="2176115444876446233">Cegah pengguna mengumpulkan jejak performa di seluruh sistem.</translation>
 <translation id="2177696016354404697">Selalu nonaktifkan layar privasi</translation>
@@ -3510,6 +3519,15 @@ Catatan: Jika diblokir, URL chrome://* dan chrome-untrusted://* internal dapat m
           Jika kebijakan ini tidak ditetapkan, klik otomatis mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4212181786686887763">URL tempat gambar wallpaper dapat didownload.</translation>
 <translation id="4224610387358583899">Penundaan kunci layar</translation>
+<translation id="4225083820650584375">Mengonfigurasi daftar gambar yang akan ditampilkan di screensaver untuk layar login.
+
+Setiap item harus berupa URL yang mereferensikan file gambar. Format gambar harus JPEG dan ukuran file tidak boleh lebih dari 8 MB. URL yang tidak valid dan gambar yang tidak didukung akan diabaikan. Perangkat <ph name="PRODUCT_OS_NAME" /> akan mendownload gambar ini, dan menyimpannya di cache lokal.
+
+Jumlah gambar yang akan ditampilkan di screensaver dibatasi hingga 25. Hanya 25 entri URL pertama dari daftar yang akan digunakan.
+
+Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> disetel ke salah (false).
+
+Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang valid, screensaver untuk layar login tidak akan ditampilkan, terlepas dari nilai yang disetel dalam kebijakan <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="42267415200641481">Menyetel kebijakan ini ke benar (true) akan menyebabkan resolusi DNS sistem (getaddrinfo()) dapat berjalan di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.
 
       Menyetel kebijakan ini ke salah (false) akan menyebabkan resolusi DNS sistem (getaddrinfo()) berjalan di proses jaringan, bukan proses browser. Hal ini dapat memaksa penonaktifan sandbox layanan jaringan, sehingga menurunkan keamanan <ph name="PRODUCT_NAME" />.

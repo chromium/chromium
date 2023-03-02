@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" /> бағытында бекіту</translation>
 <translation id="3275729367986477355">Аватар суреті</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды өзгерту}other{Файлдарды өзгерту}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3435896845095436175">Қосу</translation>
+<translation id="345256797477978759">Терезені экранның <ph name="DIRECTION" /> үлкенірек бөлігіне бекіту</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-бет сканерленуде. <ph name="PERCENTAGE_VALUE" />% орындалды.</translation>
 <translation id="3459509316159669723">Басып шығару</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Батарея толы</translation>
 <translation id="3600339377155080675">Экран көшірмесін көрсету</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
+<translation id="360282891121575443">Ортақ альбомдардағы фотосуреттерді басқа пайдаланушылар жаңарта алады. Күн сайын өзгерту қазіргі альбомда жоқ тұсқағаздарды көрсетуі мүмкін.</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Тұсқағазды өзгерту</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="361575905210396100">Пікіріңіз үшін рақмет!</translation>
 <translation id="3632579075709132555">Құпиялық экранын қосу/өшіру</translation>
+<translation id="3639846061339007994">жоғарғы жақ</translation>
 <translation id="3651050199673793219">Температураның өлшем бірлігін таңдау</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="370665806235115550">Жүктелуде…</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Толық</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> пернесі басылды.</translation>
 <translation id="435692326371619097">Желінің APN параметрлерін басқарыңыз. APN аттары ұялы желі мен интернет арасында байланысты орнатады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Кішірек жағына бекіту</translation>
 <translation id="4378373042927530923">Іске қосылмаған</translation>
 <translation id="4378551569595875038">Қосылуда…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659594942844771486">Қойынды</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
+<translation id="6698459586333070823">Ортақ альбомдарды басқа пайдаланушылар жаңарта алады</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6723847290197874913">Пернетақта жарығы</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Камерадан немесе файлдан алынған бар суреттер</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Профиль суреті</translation>
+<translation id="7171919371520438592">Терезені экранның <ph name="DIRECTION" /> кішірек бөлігіне бекіту</translation>
 <translation id="7172721935181587524">1 сурет</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Тіркеу</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
+<translation id="8210733748736414123">төменгі жақ</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
 <translation id="8227119283605456246">Файл тіркеу</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Бірнеше аккаунтға кіру үшін аккаунт қосыңыз. Барлық кірілген аккаунтларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді аккаунтлар пайдалануы тиіс.</translation>
 <translation id="8364946094152050673">Атау серверлері бос.</translation>
 <translation id="8372477600026034341">Қосымша хостар</translation>
+<translation id="8380114448424469341">Терезені экранның <ph name="DIRECTION" /> жартысына бекіту</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> құрылғысын кәсіпорын басқарады.</translation>
 <translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
 <translation id="8410244574650205435">Автоматты түрде анықталады</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google қызметтері</translation>
 <translation id="9138630967333032450">Сол жақтағы Shift пернесі</translation>
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
+<translation id="9157515863513902090">Үлкенірек жағына бекіту</translation>
 <translation id="9173638680043580060">Бір минутқа жетпейтін уақыт қалды.</translation>
 <translation id="917720651393141712">Тексеру</translation>
 <translation id="9188992814426075118">Пернетақта тұсқағазды автоматты түрде сәйкестендіре алады.</translation>

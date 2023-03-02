@@ -3533,6 +3533,7 @@
 <translation id="4102469565336584882">Код буруу байна. Таны оролт LPA форматтай байх ёстой:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Үйлдвэрийн тохиргоонд нь буцааж оруулахын тулд дахин эхлүүлэх</translation>
 <translation id="4104163789986725820">Экспортлох ...</translation>
+<translation id="4104944259562794668">Та үүнийг дараа нь Тохиргоо &gt; Аюулгүй байдал болон Нууцлал &gt; Түгжигдсэн дэлгэц, нэвтрэх хэсэгт идэвхжүүлэх боломжтой</translation>
 <translation id="4107048419833779140">Хадгалах төхөөрөмжийг таних, салгах</translation>
 <translation id="4108314971463891922">Дагах</translation>
 <translation id="4109135793348361820">Цонхыг  <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> ) руу зөөх</translation>
@@ -5561,6 +5562,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Та вебийг үргэлжлүүлэн үзэх боломжтой байхын тулд админаасаа энэ аппыг устгахыг хүснэ үү.}other{Та вебийг үргэлжлүүлэн үзэх боломжтой байхын тулд админаасаа эдгээр аппыг устгахыг хүснэ үү.}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 сайтыг шалгаж дууслаа}other{{NUM_SITES} сайтыг шалгаж дууслаа}}</translation>
 <translation id="5997337190805127100">Сайтын хандалтын талаар нэмэлт мэдээлэл авах</translation>
+<translation id="5998458948782718639">Автоматаар бөглөх хэсгийг сайжруулахад тусална уу</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-н <ph name="RESULT_COUNT" /> илэрц</translation>
 <translation id="6001839398155993679">Эхэлцгээе</translation>
 <translation id="6002122790816966947">Таны төхөөрөмжүүд</translation>
@@ -5648,6 +5650,7 @@
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> нэртэй төхөөрөмж ашиглан мэдээлэл солилцоорой</translation>
 <translation id="6076175485108489240">Байршлыг ашиглана уу. Байршлын зөвшөөрөлтэй аппууд болон үйлчилгээнүүдэд төхөөрөмжийнхөө байршлыг ашиглахыг зөвшөөрнө үү. Google байршлын нарийвчлал болон байршилд суурилсан үйлчилгээнүүдийг сайжруулах зорилгоор байршлын өгөгдлийг үе үе цуглуулж, энэ өгөгдлийг нэргүй байдлаар ашиглаж болзошгүй. <ph name="BEGIN_LINK1" />Нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">Хүйтэн саарал</translation>
+<translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" өргөтгөл таны бүртгэлд хандахыг хүсэж байна</translation>
 <translation id="6077131872140550515">Сонгосон жагсаалтаас хасах</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> дээрх зөвлөгөөнүүд болон шинэчлэлтүүд</translation>
 <translation id="6077476112742402730">Хэлж бичүүлэх</translation>
@@ -7803,6 +7806,7 @@
 <translation id="8033827949643255796">Сонгогдсон</translation>
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
 <translation id="8035059678007243127">Нууцлалтай Back/Forward Cache хийсэн хуудас: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">Автоматаар бөглөх хэсгийг сайжруулахад тусална уу</translation>
 <translation id="8037117027592400564">Нэгтгэсэн яриаг ашиглан яригдсан бүх текстийг унш</translation>
 <translation id="8037357227543935929">Асуух (өгөгдмөл)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -7999,6 +8003,7 @@
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8207404892907560325">Passkey сонгоно уу</translation>
+<translation id="8207794858944505786">"<ph name="DEFAULT_VM_NAME" />" VM байгаа хэдий ч хүчинтэй <ph name="VM_TYPE" /> VM биш бололтой. Администратортайгаа холбогдоно уу.</translation>
 <translation id="8208188204689616705">Эдгээр сайт нь <ph name="FPS_OWNER" />-н тодорхойлсон бүлэгт байна. Бүлгийн сайтууд бүлэг дэх таны үйл ажиллагааг харах боломжтой.</translation>
 <translation id="8208216423136871611">Бүү хадгал</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Шинэ мэдэгдэл}other{# шинэ мэдэгдэл}}</translation>

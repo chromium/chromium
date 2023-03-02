@@ -216,6 +216,7 @@
 <translation id="1186771945450942097">નુકસાનકારક સૉફ્ટવેર દૂર કરો</translation>
 <translation id="1187722533808055681">નિષ્ક્રિય વેકઅપ્સ</translation>
 <translation id="1188807932851744811">લૉગ અપલોડ કર્યો નથી.</translation>
+<translation id="1190086046506744802">લાઇન વચ્ચે વધુ સ્પેસ</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{તમારા કમ્પ્યુટરમાં સ્ટોર કરેલી એક ફાઇલ ઍક્સેસ કરો}one{તમારા કમ્પ્યુટરમાં સ્ટોર કરેલી # ફાઇલ ઍક્સેસ કરો}other{તમારા કમ્પ્યુટરમાં સ્ટોર કરેલી # ફાઇલ ઍક્સેસ કરો}}</translation>
 <translation id="119092896208640858">તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગનો ડેટા રાખીને તેને માત્ર આ ડિવાઇસમાંથી સાફ કરવા માટે, <ph name="BEGIN_LINK" />સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="1191353342579061195">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર રાઇટ ક્લિક કરો.</translation>
@@ -489,6 +490,7 @@
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1431188203598586230">ફાયનલ સૉફ્ટવેર અપડેટ</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
+<translation id="1433478348197382180">વાંચન મોડ</translation>
 <translation id="1434696352799406980">આ તમારા સ્ટાર્ટઅપ પેજ, નવું ટૅબ પેજ, શોધ એન્જિન અને પિન કરેલા ટૅબને રીસેટ કરશે. તે તમામ એક્સટેન્શનને પણ બંધ કરશે અને કુકી જેવો અસ્થાયી ડેટા પણ કાઢી નાખશે. તમારા બુકમાર્ક, ઇતિહાસ અને સાચવેલાં પાસવર્ડ કાઢી નાખવામાં આવશે નહીં.</translation>
 <translation id="1434886155212424586">હોમપેજ એ નવું ટૅબ પેજ છે</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> માટે માન્ય</translation>
@@ -589,6 +591,7 @@
 <translation id="1526560967942511387">નામ વિનાનો દસ્તાવેજ</translation>
 <translation id="1527336312600375509">રિફ્રેશ થવાના રેટને મૉનિટર કરો</translation>
 <translation id="152913213824448541">'નજીકના શેર' સંપર્કો</translation>
+<translation id="1529769834253316556">લાઇનની ઊંચાઈ</translation>
 <translation id="1529891865407786369">પાવર સ્રોત</translation>
 <translation id="1531275250079031713">'નવું વાઇ-ફાઇ કનેક્શન ઉમેરો' સંવાદ બતાવો</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
@@ -824,6 +827,7 @@
 <translation id="1725562816265788801">ટૅબ સ્ક્રોલિંગ</translation>
 <translation id="1726503915437308071">ઇટાલિક ફૉન્ટ</translation>
 <translation id="1729533290416704613">જ્યારે તમે ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
+<translation id="1730666151302379551">જૂનો પાસવર્ડ ભૂલી ગયા</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ઍપ કાઢી નાખવા માટે, સેટિંગ &gt; Google Play Store &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોઈ શકે છે). પછી 'અનઇન્સ્ટૉલ કરો' અથવા 'બંધ કરો' પર ટૅપ કરો.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">છેલ્લા ટૅબ તરફ સ્ક્રોલ કરો</translation>
 <translation id="1731911755844941020">વિનંતિ મોકલી રહ્યું છે...</translation>
@@ -1593,6 +1597,7 @@
 <translation id="2364498172489649528">તપાસ પાર કરી</translation>
 <translation id="2365507699358342471">આ સાઇટ ક્લિપબોર્ડ પર કૉપિ કરેલ ટેક્સ્ટ અને છબીઓ જોઈ શકે છે.</translation>
 <translation id="2367972762794486313">ઍપ્લિકેશનો બતાવો</translation>
+<translation id="2369058545741334020">વાંચન મોડમાં ખોલો</translation>
 <translation id="236939127352773362">જ્યારે નજીકના ડિવાઇસ શેર કરી રહ્યાં હોય</translation>
 <translation id="2371076942591664043">&amp;પૂર્ણ થાય ત્યારે ખોલો</translation>
 <translation id="2373666622366160481">પેપરના કદ મુજબ પ્રિન્ટ કરો</translation>
@@ -2645,6 +2650,7 @@
 <translation id="3341699307020049241">ખોટો પિન. તમારી પાસે હવે <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="3341703758641437857">URL ફાઇલ કરવા ઍક્સેસની મંજૂરી આપો</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" આ એક્સ્ટેંશનને કાઢી નાખવા માગે છે.</translation>
+<translation id="3343046414300263892">ફૉન્ટનું કદ વધારો</translation>
 <translation id="3343977377045378693">સેટઅપ કરી રહ્યાં છીએ</translation>
 <translation id="3345634917232014253">એક પળ પહેલાં સલામતી માટે તપાસ થઈ</translation>
 <translation id="3345886924813989455">સપોર્ટેડ બ્રાઉઝર મળ્યું નથી</translation>
@@ -2673,6 +2679,7 @@
 <translation id="3370260763947406229">ઑટો જોડણી સુધારણા</translation>
 <translation id="3371140690572404006">USB-C ઉપકરણ (જમણી બાજુનું આગળનું પોર્ટ)</translation>
 <translation id="337286756654493126">તમે એપ્લિકેશનમાં ખોલો છો તે ફોલ્ડર્સ વાંચો</translation>
+<translation id="3373059063088819384">વાંચન મોડમાં ખોલો</translation>
 <translation id="3373701465337594448">જ્યારે ચાલુ હોય, ત્યારે તમારી રુચિઓનું અનુમાન લગાવતી હોય તેવી તમે મુલાકાત લો છો તે સાઇટની સૂચિ અહીં દેખાય છે</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />'ને '<ph name="NEW_FOLDER_TITLE" />' ખસેડ્યું.</translation>
 <translation id="3378572629723696641">આ એક્સ્ટેન્શન દૂષિત થયેલ હોઈ શકે છે.</translation>
@@ -3514,6 +3521,7 @@
 <translation id="4102469565336584882">અમાન્ય કોડ. તમારી એન્ટ્રી આ ફૉર્મેટમાં હોવી જોઈએ LPA:1$&lt;smdp ઍડ્રેસ&gt;$&lt;સક્રિયકરણનો કોડ&gt;</translation>
 <translation id="4102906002417106771">પાવરવોશ માટે ફરી શરૂ કરો</translation>
 <translation id="4104163789986725820">નિ&amp;કાસ કરો...</translation>
+<translation id="4104944259562794668">તમે પછીથી સેટિંગ &gt; સુરક્ષા અને પ્રાઇવસી &gt; લૉક સ્ક્રીન પર જઈને સાઇ ઇન કરીને તેને ચાલુ કરી શકો છો</translation>
 <translation id="4107048419833779140">સ્ટોરેજ ઉપકરણોને ઓળખો અને તેને બહાર કાઢો</translation>
 <translation id="4108314971463891922">ફૉલો કરો</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) પર વિંડો ખસેડો</translation>
@@ -5102,6 +5110,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ઍપ્લિકેશનો લોડ કરી રહ્યું છે...</translation>
 <translation id="5590418976913374224">ડિવાઇસ શરૂ થવા પર સાઉન્ડ વગાડો</translation>
+<translation id="5591465468509111843">અક્ષરો વચ્ચે વધુ સ્પેસ</translation>
 <translation id="5592595402373377407">હજુ સુધી પર્યાપ્ત ડેટા ઉપલબ્ધ નથી.</translation>
 <translation id="5594899180331219722">ફાઇલ પસંદ કરો</translation>
 <translation id="5595307023264033512">સાઇટ દ્વારા કરવામાં આવેલો સ્ટોરેજનો કુલ વપરાશ: <ph name="TOTAL_USAGE" /></translation>
@@ -5542,6 +5551,7 @@ USB ડિવાઇસ</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશન કાઢી નાખવાનું કહો.}one{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશનો કાઢી નાખવાનું કહો.}other{તમે વેબ બ્રાઉઝ કરતા રહી શકો તેની ખાતરી કરવા માટે, તમારા વ્યવસ્થાપકને આ ઍપ્લિકેશનો કાઢી નાખવાનું કહો.}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 સાઇટ માટે રિવ્યૂ પૂર્ણ છે}one{{NUM_SITES} સાઇટ માટે રિવ્યૂ પૂર્ણ છે}other{{NUM_SITES} સાઇટ માટે રિવ્યૂ પૂર્ણ છે}}</translation>
 <translation id="5997337190805127100">સાઇટ ઍક્સેસ વિશે વધુ જાણો</translation>
+<translation id="5998458948782718639">ઑટોમૅટિક રીતે ભરવાની સુવિધા બહેતર બનાવવાની રીત</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' માટે <ph name="RESULT_COUNT" /> પરિણામ</translation>
 <translation id="6001839398155993679">ચાલો જઈએ</translation>
 <translation id="6002122790816966947">તમારા ડિવાઇસ</translation>
@@ -5629,6 +5639,7 @@ USB ડિવાઇસ</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> નામના ઉપકરણ સાથે ડેટા વિનિમય કરો</translation>
 <translation id="6076175485108489240">સ્થાનનો ઉપયોગ કરો. સ્થાનની પરવાનગી ધરાવતી ઍપ અને સેવાઓને તમારા ડિવાઇસના સ્થાનનો ઉપયોગ કરવાની મંજૂરી આપો. Google સમય-સમય પર સ્થાનનો ડેટા એકત્રિત કરી શકે છે અને આ ડેટાને સ્થાનની સચોટતા અને સ્થાન-આધારિત સેવાઓને બહેતર બનાવવા માટે અનામ રીતે ઉપયોગમાં લઈ શકે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">સૌમ્ય રાખોડી</translation>
+<translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન તમારું એકાઉન્ટ ઍક્સેસ કરવા માગે છે</translation>
 <translation id="6077131872140550515">પસંદગીમાંથી દૂર કરો</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> વિશે ટિપ અને અપડેટ</translation>
 <translation id="6077476112742402730">લખવા માટે બોલો</translation>
@@ -5802,6 +5813,7 @@ USB ડિવાઇસ</translation>
 <translation id="6234474535228214774">ઇન્સ્ટૉલ બાકી છે</translation>
 <translation id="6235208551686043831">ડિવાઇસનો કૅમેરા ચાલુ કરવામાં આવ્યો છે. કૃપા કરીને તમારો ઇ-સિમ QR કોડ કૅમેરાની સામે રાખો.</translation>
 <translation id="6237474966939441970">સ્ટાયલસ વડે નોંધ લેવાની ઍપના સેટિંગ</translation>
+<translation id="623755660902014047">વાંચન મોડ</translation>
 <translation id="6238767809035845642">બીજા ડિવાઇસ પરથી શેર કરવામાં આવેલી ટેક્સ્ટ</translation>
 <translation id="6238923052227198598">લૉક સ્ક્રીન પર એક એકદમ નવી નોંધ રાખો</translation>
 <translation id="6239558157302047471">&amp;ફ્રેમ ફરીથી લોડ કરો</translation>
@@ -5939,6 +5951,7 @@ USB ડિવાઇસ</translation>
 <translation id="6368276408895187373">ચાલુ કરેલું – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
 <translation id="6370021412472292592">મેનિફેસ્ટ લોડ કરી શકાયું નથી.</translation>
+<translation id="637135143619858508">લાઇન વચ્ચે સ્પેસ</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">ફરી પ્રયાસ કરો</translation>
 <translation id="6374635887697228982">છૂટ મેળવવી છે?</translation>
@@ -6154,6 +6167,7 @@ USB ડિવાઇસ</translation>
 <translation id="656293578423618167">ફાઇલ પાથ અથવા નામ ખૂબ લાંબા છે. કૃપા કરીને ટૂંકા નામથી બીજી જગ્યાએ સાચવો.</translation>
 <translation id="6568283005472142698">ટૅબની શોધ</translation>
 <translation id="65711204837946324">ડાઉનલોડ કરવા માટે પરવાનગીની જરૂર છે</translation>
+<translation id="6571533309669248172">ટેક્સ્ટ ફૉર્મેટિંગ</translation>
 <translation id="6571772921213691236">સાઇન-ઇન ડેટામાં ફેરફાર કરો</translation>
 <translation id="6572081226337824427">તમે મુલાકાત લો છો તેમાંથી કેટલાક પેજ પહેલેથી લોડ કરવામાં આવે છે.</translation>
 <translation id="657229725818377235">જોખમી વેબસાઇટ અને ડાઉનલોડ સામે વધુ સંરક્ષણ મેળવો</translation>
@@ -6323,6 +6337,7 @@ USB ડિવાઇસ</translation>
 <translation id="6721744718589119342">વધુ માહિતી અથવા અપડેટ માટે, અમે તમને ઇમેઇલ મોકલી શકીએ છીએ</translation>
 <translation id="6721972322305477112">&amp;File</translation>
 <translation id="672208878794563299">આગલી વખતે આ સાઇટ ફરીથી પૂછશે.</translation>
+<translation id="6722744767592605627">તમે <ph name="EMAIL" /> રિકવર કરી શકશો, પણ સ્થાનિક ડેટા ડિલીટ કરવામાં આવશે.</translation>
 <translation id="6723661294526996303">બુકમાર્ક અને સેટિંગ આયાત કરો...</translation>
 <translation id="6723839827191551955">તમે કાસ્ટ કરી રહ્યાં હો તે મીડિયા નિયંત્રિત કરો</translation>
 <translation id="6723839937902243910">પાવર</translation>
@@ -7155,6 +7170,7 @@ USB ડિવાઇસ</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> અને વધુ <ph name="COUNT" /> ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવી</translation>
 <translation id="7477748600276493962">આ પેજ માટે QR કોડ બનાવો</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
+<translation id="7478069565037869084">અક્ષરો વચ્ચે સ્પેસ</translation>
 <translation id="7478485216301680444">કિઓસ્ક ઍપ્લિકેશન ઇન્સ્ટોલ કરી શકાઈ નથી.</translation>
 <translation id="7478658909253570368">સાઇટને સીરિયલ પોર્ટ સાથે કનેક્ટ થવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7479221278376295180">સ્ટોરેજ વપરાશની ઝલક</translation>
@@ -7413,6 +7429,7 @@ USB ડિવાઇસ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">આ સાઇટને મોશન સેન્સરનો ઉપયોગ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="7707922173985738739">મોબાઇલ ડેટાનો ઉપયોગ કરો</translation>
+<translation id="770831926727930011">તમારો સ્થાનિક ડેટા તમારા જૂના પાસવર્ડ વડે સુરક્ષિત છે. સ્થાનિક ડેટા રિકવર કરવા માટે તમારો જૂનો પાસવર્ડ દાખલ કરો.</translation>
 <translation id="7709152031285164251">નિષ્ફળ થયું - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;કાસ્ટ કરો...</translation>
 <translation id="7711900714716399411">તમારા ફોનને તમારા કમ્પ્યુટર સાથે કનેક્ટ કરવા માટે, USB કેબલનો ઉપયોગ કરો. જો તમારો ફોન પહેલેથી જ કનેક્ટ કરેલો હોય, તો તેને અનપ્લગ કરીને ફરીથી પ્લગ-ઇન કરો.</translation>
@@ -7777,6 +7794,7 @@ USB ડિવાઇસ</translation>
 <translation id="8033827949643255796">પસંદ કરેલ</translation>
 <translation id="8033958968890501070">સમયસમાપ્તિ</translation>
 <translation id="8035059678007243127">બૅક/ફૉરવર્ડ કૅશ મેમરીમાં સ્ટોર કરેલું છૂપું પેજ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">ઑટોમૅટિક રીતે ભરવાની સુવિધા બહેતર બનાવવાની રીત</translation>
 <translation id="8037117027592400564">સિન્થેસાઇઝ કરેલ વાણીનો ઉપયોગ કરીને બધી બોલાયેલ ટેક્સ્ટને વાંચો</translation>
 <translation id="8037357227543935929">પૂછો (ડિફૉલ્ટ)</translation>
 <translation id="803771048473350947">ફાઇલ</translation>
@@ -7973,6 +7991,7 @@ USB ડિવાઇસ</translation>
 <translation id="8206745257863499010">બ્લુસી</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8207404892907560325">કોઈ પાસકી પસંદ કરો</translation>
+<translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" અસ્તિત્વમાં છે, પણ એવું નથી લાગતું કે તે કોઈ માન્ય <ph name="VM_TYPE" /> VM છે. કૃપા કરીને તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
 <translation id="8208188204689616705">આ સાઇટ <ph name="FPS_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે. ગ્રૂપમાં શામેલ સાઇટ, ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે.</translation>
 <translation id="8208216423136871611">સાચવશો નહીં</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{નવું નોટિફિકેશન}one{# નવું નોટિફિકેશન}other{# નવા નોટિફિકેશન}}</translation>
@@ -8501,11 +8520,13 @@ USB ડિવાઇસ</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" /> માટે PPD</translation>
 <translation id="8702278591052316269">મેનૂ જેમાં છુપાવેલા સાચવેલા ટૅબના ગ્રૂપ શામેલ છે</translation>
 <translation id="8702825062053163569">તમારું <ph name="DEVICE_TYPE" /> લૉક હતું.</translation>
+<translation id="8703166594516496633">ફૉન્ટનું કદ ઘટાડો</translation>
 <translation id="8703346390800944767">જાહેરાત છોડો</translation>
 <translation id="8705331520020532516">અનુક્રમ નંબર</translation>
 <translation id="8705580154597116082">ફોન દ્વારા વાઇ-ફાઇ ઉપલબ્ધ</translation>
 <translation id="8705629851992224300">તમારી સુરક્ષા કી વાંચી શકાઈ નથી</translation>
 <translation id="8706111173576263877">QR કોડ સ્કૅન કરવામાં આવ્યો છે.</translation>
+<translation id="8707318721234217615">અક્ષરો વચ્ચે સ્પેસ</translation>
 <translation id="8708000541097332489">બહાર નીકળવા પર સાફ કરો</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;વધુ માહિતી</translation>

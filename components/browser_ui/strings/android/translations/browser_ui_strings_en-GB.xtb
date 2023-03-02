@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Sites can save data on your device</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blocked</translation>
 <translation id="5804241973901381774">Permissions</translation>
+<translation id="5810805850857689118">This action will clear all data and cookies for <ph name="ORIGIN" /> and all sites under it</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5876056640971328065">Pause video</translation>
 <translation id="5884085660368669834">Site preference</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
 <translation id="851751545965956758">Block sites from connecting to devices</translation>
 <translation id="8525306231823319788">Full screen</translation>
+<translation id="8528440122773422556">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="8541410041357371550">This site gets your ad topics from Chrome to show you more relevant ads</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> site}other{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sites}}</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8990043154272859344">You'll be signed out of all sites</translation>
 <translation id="9019902583201351841">Managed by your parents</translation>
+<translation id="9039697262778250930">You may be signed out of these sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Delete cookies?</translation>

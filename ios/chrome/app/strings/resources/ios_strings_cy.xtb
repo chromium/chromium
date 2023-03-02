@@ -324,6 +324,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Ni fu modd cadw'ch newid.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> o <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Awtolenwi Cyfrineiriau</translation>
 <translation id="3268451620468152448">Tabiau sydd ar Agor</translation>
 <translation id="3272527697863656322">Canslo</translation>
 <translation id="3277021493514034324">Copïwyd cyfeiriad y wefan</translation>
@@ -430,6 +431,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="408404951701638773">Mae'n haws cyrraedd y bar chwilio bellach</translation>
 <translation id="4092655288299341041">Dangos Help</translation>
 <translation id="4101942614374785540">Mae cyfrineiriau bellach yn cael eu cadw i'ch Cyfrif Google (<ph name="ACCOUNT" />). Gallwch eu defnyddio ble bynnag rydych wedi mewngofnodi. I ddiffodd hyn, ewch i'r <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Dileu'r Cyfeiriad}zero{Dileu'r Cyfeiriadau}two{Dileu'r Cyfeiriadau}few{Dileu'r Cyfeiriadau}many{Dileu'r Cyfeiriadau}other{Dileu'r Cyfeiriadau}}</translation>
 <translation id="4108998448622696017">Yn canfod ac yn eich rhybuddio am ddigwyddiadau peryglus pan fyddant yn digwydd.</translation>
 <translation id="411254640334432676">Lawrlwytho wedi methu.</translation>
 <translation id="4112644173421521737">Chwilio</translation>
@@ -853,6 +855,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6914583639806229067">Chwilio am y Llun y Gwnaethoch ei Gopïo</translation>
 <translation id="6914783257214138813">Bydd eich cyfrineiriau yn weladwy i unrhyw un sy'n gallu gweld y ffeil a allforiwyd.</translation>
 <translation id="6930799952781667037">Tapiwch i newid i'r iaith hon.</translation>
+<translation id="6939941780796374211">Opsiynau Cyfrinair</translation>
 <translation id="6944369514868857500">Dewis cyfrif arall</translation>
 <translation id="6945221475159498467">Dewis</translation>
 <translation id="6965382102122355670">Iawn</translation>
@@ -1158,7 +1161,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="953008885340860025">Mae Chrome wedi'i Allgofnodi</translation>
 <translation id="959066944189734975">Rydych yn dilyn <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Olrhain pris cynnyrch ar draws siopau ar-lein. Byddwch yn cael rhybudd pan fydd y pris yn gostwng.</translation>
-<translation id="980712131080209571">G</translation>
 <translation id="981498610235328462">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig Mae cyfrifon na chaniateir yn cael eu cuddio.</translation>
 <translation id="984509647832111802">Nid yw Cysoni'n Gweithio.</translation>
 <translation id="988141524645182168">Dyfeisiau Eraill</translation>

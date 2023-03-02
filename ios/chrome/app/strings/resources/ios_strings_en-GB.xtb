@@ -324,6 +324,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> of <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Auto-fill passwords</translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3277021493514034324">Site address copied</translation>
@@ -430,6 +431,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
 <translation id="4092655288299341041">Show help</translation>
 <translation id="4101942614374785540">Passwords are now saved in your Google Account (<ph name="ACCOUNT" />). You can use them wherever you're signed in. To turn this off, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Delete address}other{Delete addresses}}</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="411254640334432676">Download failed.</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -853,6 +855,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6914583639806229067">Search for image that you copied</translation>
 <translation id="6914783257214138813">Your passwords will be visible to anyone who can see the exported file.</translation>
 <translation id="6930799952781667037">Tap to change to this language.</translation>
+<translation id="6939941780796374211">Password options</translation>
 <translation id="6944369514868857500">Choose Another Account</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1008,6 +1011,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8084285576995584326">Control your Google Account data</translation>
 <translation id="809543534949702122">Search history</translation>
 <translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="81313319706244542">2. Tap Passwords</translation>
@@ -1158,7 +1162,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="953008885340860025">Chrome is signed out</translation>
 <translation id="959066944189734975">You're following <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Track the price of a product across online shops. You’ll get alerts when the price drops.</translation>
-<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.</translation>
 <translation id="984509647832111802">Sync isn't working.</translation>
 <translation id="988141524645182168">Other devices</translation>

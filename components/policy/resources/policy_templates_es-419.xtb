@@ -1283,6 +1283,15 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="2168397434410358693">Demora de inactividad con alimentación de CA</translation>
 <translation id="217013996107840632">Parámetros de la línea de comandos para cambiar del navegador alternativo</translation>
 <translation id="2170233653554726857">Habilitar optimización de WPAD</translation>
+<translation id="2172528612637587749">Configura la lista de imágenes que se mostrarán en el protector de pantalla de la pantalla de bloqueo.
+
+Cada elemento debe ser una URL que haga referencia a un archivo de imagen. El formato de imagen debe ser JPEG, y el tamaño del archivo no debe superar los 8 MB. Se ignorarán las URL no válidas y las imágenes no admitidas. El dispositivo <ph name="PRODUCT_OS_NAME" /> descargará estas imágenes y las guardará en una caché local.
+
+La cantidad de imágenes que se muestra en el protector de pantalla se limita a 25. Solo se utilizarán las primeras 25 entradas de URL de la lista.
+
+Esta política no tendrá ningún efecto si estableces la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> como falsa.
+
+Si no estableces esta política, o la lista no contiene referencias de imagen válidas, no se mostrará el protector de pantalla para la pantalla de bloqueo, independientemente del valor establecido en la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2175353308236295184">Objeto de configuración JSON específico de la app con un conjunto de pares clave-valor, p. ej., '"managedConfiguration": { "key1": value1, "key2": value2 }'. Las claves se definen en el manifiesto de la app.</translation>
 <translation id="2176115444876446233">Impide que los usuarios registren el rendimiento de todo el sistema</translation>
 <translation id="2177696016354404697">Inhabilitar siempre la pantalla de privacidad</translation>
@@ -3502,6 +3511,15 @@ Nota: Si bloqueas las URLs internas chrome://* y chrome-untrusted://*, es posibl
           Si no la estableces, el clic automático estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4212181786686887763">La URL desde la cual se puede descargar la imagen de fondo de pantalla.</translation>
 <translation id="4224610387358583899">Demoras de bloqueo de pantalla</translation>
+<translation id="4225083820650584375">Configura la lista de imágenes que se mostrarán en el protector de pantalla de la pantalla de acceso.
+
+Cada elemento debe ser una URL que haga referencia a un archivo de imagen. El formato de imagen debe ser JPEG, y el tamaño del archivo no debe superar los 8 MB. Se ignorarán las URL no válidas y las imágenes no admitidas. El dispositivo <ph name="PRODUCT_OS_NAME" /> descargará estas imágenes y las guardará en una caché local.
+
+La cantidad de imágenes que se muestra en el protector de pantalla se limita a 25. Solo se utilizarán las primeras 25 entradas de URL de la lista.
+
+Esta política no tendrá ningún efecto si estableces la política <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> como falsa.
+
+Si no estableces esta política, o la lista no contiene referencias de imagen válidas, no se mostrará el protector de pantalla para la pantalla de acceso, independientemente del valor establecido en la política <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="42267415200641481">Si estableces esta política como verdadera, es posible que la resolución de DNS del sistema (getaddrinfo()) se ejecute fuera del proceso de red, según la configuración del sistema y las marcas de función.
 
       Si la estableces como falsa, se ejecutará la resolución de DNS del sistema (getaddrinfo()) en el proceso de red, en lugar de ejecutarse en el proceso del navegador. Esto puede forzar la inhabilitación de la zona de pruebas del servicio de red, lo que degrada la seguridad de <ph name="PRODUCT_NAME" />.

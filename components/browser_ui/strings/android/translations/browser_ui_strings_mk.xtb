@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Сајтовите може да зачуваат податоци на вашиот уред</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> е блокирана</translation>
 <translation id="5804241973901381774">Дозволи</translation>
+<translation id="5810805850857689118">Дејствово ќе ги избрише сите податоци и колачиња за сајтот <ph name="ORIGIN" /> и сите сајтови под него</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5876056640971328065">Паузирајте го видеото</translation>
 <translation id="5884085660368669834">Поставки за сајтот</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Не дозволувајте сајтовите да зачувуваат податоци на вашиот уред (не се препорачува)</translation>
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
+<translation id="8528440122773422556">Дејствово ќе ги избрише сите податоци и колачиња што ги складирале сите сајтови под сајтот <ph name="ORIGIN" /> или неговата апликација на вашиот почетен екран</translation>
 <translation id="8541410041357371550">Сајтов ги добива вашите теми за реклами од Chrome за да ви прикажува порелевантни реклами</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}one{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}other{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајтови на <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Заборави</translation>
 <translation id="8990043154272859344">Ќе ве одјавиме од сите сајтови</translation>
 <translation id="9019902583201351841">Управувано од вашите родители</translation>
+<translation id="9039697262778250930">Можно е да се одјавите од сајтовиве</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Сајтов е во група што може да ја гледа вашата активност. Групата ја дефинираше <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Да се избришат колачињата?</translation>

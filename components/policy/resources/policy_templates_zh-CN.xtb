@@ -1264,6 +1264,15 @@
 <translation id="2168397434410358693">使用交流电源供电时的闲置延迟时间</translation>
 <translation id="217013996107840632">用于从替代浏览器切换至 Chrome 的命令行参数。</translation>
 <translation id="2170233653554726857">启用WPAD优化</translation>
+<translation id="2172528612637587749">以列表形式配置锁屏状态时显示的屏保图片。
+
+每个列表项都必须是一个引用图片文件的网址。图片格式必须是 JPEG，且文件大小不得超过 8MB。系统会忽略无效网址和不受支持的图片。<ph name="PRODUCT_OS_NAME" /> 设备会下载这些图片，并将它们保存在本地缓存中。
+
+屏保中最多只能显示 25 张图片。系统只会使用列表中的前 25 个网址条目。
+
+如果 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。
+
+如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为锁定的屏幕显示屏保。</translation>
 <translation id="2175353308236295184">包含一系列键值对的应用专属 JSON 配置对象，例如“"managedConfiguration": { "key1": value1, "key2": value2 }”。这些键是在应用清单中定义的。</translation>
 <translation id="2176115444876446233">阻止用户收集系统级性能跟踪记录。</translation>
 <translation id="2177696016354404697">始终停用隐私保护屏幕</translation>
@@ -3453,6 +3462,15 @@
           如果未设置此政策，则“自动点击”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="4212181786686887763">可供下载相应壁纸图片的网址。</translation>
 <translation id="4224610387358583899">屏幕锁定延迟时间</translation>
+<translation id="4225083820650584375">以列表形式配置要在为登录界面设定的屏保中显示的图片。
+
+每个列表项都必须是一个引用图片文件的网址。图片格式必须是 JPEG，且文件大小不得超过 8MB。系统会忽略无效网址和不受支持的图片。<ph name="PRODUCT_OS_NAME" /> 设备会下载这些图片，并将它们保存在本地缓存中。
+
+屏保中最多只能显示 25 张图片。系统只会使用列表中的前 25 个网址条目。
+
+如果 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。
+
+如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为登录界面显示屏保。</translation>
 <translation id="42267415200641481">如果此政策设为 true，系统 DNS 解析（getaddrinfo()）可能在网络进程外运行，具体取决于系统配置和功能标志。
 
       如果此政策设为 false，系统 DNS 解析（getaddrinfo()）会在网络进程中而非浏览器进程中运行。这可能会强制停用网络服务沙盒，导致 <ph name="PRODUCT_NAME" /> 的安全性降低。

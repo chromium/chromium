@@ -324,6 +324,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Fyll i lösenord automatiskt</translation>
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3277021493514034324">Webbplatsens webbadress har kopierats</translation>
@@ -391,6 +392,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3789841737615482174">Installera</translation>
 <translation id="380329542618494757">Namn</translation>
 <translation id="3803696231112616155">Erbjud översättning av webbplatsen</translation>
+<translation id="3803967590068704619">Denna adress har sparats i Google-kontot (<ph name="USER_EMAIL" />). Du kan använda adressen i alla Googles produkter på alla enheter.</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3818293389945649617">Hitta nästa</translation>
 <translation id="3819183753496523827">Du är offline. Kontrollera internetanslutningen och försök igen.</translation>
@@ -429,6 +431,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="408404951701638773">Nu är det enklare att komma åt sökfältet</translation>
 <translation id="4092655288299341041">Visa hjälp</translation>
 <translation id="4101942614374785540">Nu har lösenorden sparats i Google-kontot (<ph name="ACCOUNT" />). Du kan använda dem överallt där du är inloggad. Om du vill inaktivera detta öppnar du <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Radera adressen}other{Radera adresser}}</translation>
 <translation id="4108998448622696017">Identifierar och varnar dig om farliga händelser som inträffar.</translation>
 <translation id="411254640334432676">Nedladdningen misslyckades.</translation>
 <translation id="4112644173421521737">Sök</translation>
@@ -744,6 +747,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6342069812937806050">Alldeles nyss</translation>
 <translation id="6344783595350022745">Rensa text</translation>
 <translation id="6346549652287021269">Starta ny nedladdning?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Denna adress raderas från Google-kontot (<ph name="USER_EMAIL" />) och från enheten.}other{Dessa adresser raderas från Google-kontot (<ph name="USER_EMAIL" />) och från enheten.}}</translation>
 <translation id="634878792104344809">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="6361848730467328243">Följ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Inga inkognitoflikar</translation>
@@ -851,6 +855,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6914583639806229067">Sök efter kopierad bild</translation>
 <translation id="6914783257214138813">Alla med tillgång till den exporterade filen kan läsa dina lösenord.</translation>
 <translation id="6930799952781667037">Tryck för att byta till det här språket.</translation>
+<translation id="6939941780796374211">Lösenordsalternativ</translation>
 <translation id="6944369514868857500">Välj ett annat konto</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1156,7 +1161,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="953008885340860025">Utloggad från Chrome</translation>
 <translation id="959066944189734975">Du följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">Bevaka en produkts pris i onlinebutiker. Du får aviseringar när priset sänks.</translation>
-<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Organisationen tillåter inloggning med endast vissa konton. Konton som inte tillåts är dolda.</translation>
 <translation id="984509647832111802">Synkroniseringen fungerar inte.</translation>
 <translation id="988141524645182168">Övriga enheter</translation>

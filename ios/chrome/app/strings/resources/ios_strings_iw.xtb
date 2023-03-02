@@ -324,6 +324,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">לא ניתן היה לשמור את השינוי.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> מתוך <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">מילוי אוטומטי של סיסמאות</translation>
 <translation id="3268451620468152448">כרטיסיות פתוחות</translation>
 <translation id="3272527697863656322">ביטול</translation>
 <translation id="3277021493514034324">כתובת האתר הועתקה</translation>
@@ -429,6 +430,7 @@
 <translation id="408404951701638773">עכשיו קל יותר להגיע אל סרגל החיפוש</translation>
 <translation id="4092655288299341041">הצגת העזרה</translation>
 <translation id="4101942614374785540">‏הסיסמאות נשמרות עכשיו בחשבון Google (<ph name="ACCOUNT" />). אפשר להשתמש בהן בכל מקום אחרי הכניסה לחשבון. כדי להשבית את ההגדרה הזו, עוברים אל <ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{מחיקת הכתובת}one{מחיקת הכתובות}two{מחיקת הכתובות}other{מחיקת הכתובות}}</translation>
 <translation id="4108998448622696017">המערכת מזהה אירועים מסוכנים כשהם מתרחשים ומזהירה אותך על כך.</translation>
 <translation id="411254640334432676">ההורדה נכשלה.</translation>
 <translation id="4112644173421521737">חיפוש</translation>
@@ -851,6 +853,7 @@
 <translation id="6914583639806229067">חיפוש תמונה שהעתקת</translation>
 <translation id="6914783257214138813">כל מי שיוכל לגשת אל הקובץ המיוצא יוכל לראות את הסיסמאות שלך.</translation>
 <translation id="6930799952781667037">יש להקיש כדי לעבור לשפה הזו.</translation>
+<translation id="6939941780796374211">אפשרויות של סיסמאות</translation>
 <translation id="6944369514868857500">בחירת חשבון אחר</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6965382102122355670">אישור</translation>
@@ -1156,7 +1159,6 @@
 <translation id="953008885340860025">‏יצאת מהחשבון ב-Chrome</translation>
 <translation id="959066944189734975">בחרת לעקוב אחר <ph name="CHANNEL_NAME" /></translation>
 <translation id="973493300226275298">ניתן לעקוב אחר מחיר של מוצר בחנויות וירטואליות. תתקבל התראה כשתהיה הנחה.</translation>
-<translation id="980712131080209571">חדש</translation>
 <translation id="981498610235328462">הארגון מאפשר לך להיכנס לדפדפן רק באמצעות חשבונות מסוימים. החשבונות שאינם מותרים מוסתרים.</translation>
 <translation id="984509647832111802">הסנכרון לא פועל.</translation>
 <translation id="988141524645182168">מכשירים אחרים</translation>

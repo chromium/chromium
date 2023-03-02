@@ -324,6 +324,7 @@
 <translation id="3244271242291266297">মাহ</translation>
 <translation id="3245744387817103524">আপুনি কৰা সালসলনি ছেভ কৰিব পৰা নগ’ল।</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />ৰ <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
+<translation id="3264775633254836593">পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="3268451620468152448">খুলি ৰখা টেব</translation>
 <translation id="3272527697863656322">বাতিল কৰক</translation>
 <translation id="3277021493514034324">ছাইটৰ ঠিকনা প্ৰতিলিপি কৰা হৈছে</translation>
@@ -391,6 +392,7 @@
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই ছাইটটো অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
+<translation id="3803967590068704619">এই ঠিকনাটো আপোনাৰ Google একাউণ্ট (<ph name="USER_EMAIL" />)ত ছেভ কৰা আছে। আপুনি যিকোনো ডিভাইচত Googleৰ বিভিন্ন প্ৰ’ডাক্টসমূহত এই ঠিকনাটো ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
 <translation id="3818293389945649617">পৰৱৰ্তী ষ্ট্ৰিং বিচাৰক</translation>
 <translation id="3819183753496523827">আপুনি অফলাইন হৈ আছে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
@@ -429,6 +431,7 @@
 <translation id="408404951701638773">সন্ধান বাৰডাল বিচাৰি পোৱাটো এতিয়া সহজ</translation>
 <translation id="4092655288299341041">সহায় দেখুৱাওক</translation>
 <translation id="4101942614374785540">এতিয়া পাছৱৰ্ডসমূহ আপোনাৰ Google একাউণ্ট (<ph name="ACCOUNT" />)ত ছেভ কৰা হয়। আপুনি য’তেই ছাইন ইন কৰে তাতে সেইবোৰ ব্যৱহাৰ কৰিব পাৰে। এই সুবিধাটো অফ কৰিবলৈ <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ যাওক।</translation>
+<translation id="4105841739161771091">{count,plural, =1{ঠিকনাটো মচক}one{ঠিকনাসমূহ মচক}other{ঠিকনাসমূহ মচক}}</translation>
 <translation id="4108998448622696017">বিপজ্জনক ঘটনাবোৰৰ চিনাক্ত কৰে আৰু সেইবোৰ ঘটাৰ সময়ত আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="411254640334432676">ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -744,6 +747,7 @@
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
 <translation id="6344783595350022745">পাঠ মচক</translation>
 <translation id="6346549652287021269">নতুন ডাউনল’ড আৰম্ভ কৰিবনে?</translation>
+<translation id="6347953390226388422">{count,plural, =1{এই ঠিকনাটো আপোনাৰ Google একাউণ্ট(<ph name="USER_EMAIL" />) আৰু এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}one{এই ঠিকনাসমূহ আপোনাৰ Google একাউণ্ট(<ph name="USER_EMAIL" />) আৰু এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}other{এই ঠিকনাসমূহ আপোনাৰ Google একাউণ্ট(<ph name="USER_EMAIL" />) আৰু এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}}</translation>
 <translation id="634878792104344809">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ পাছৱর্ড, ইতিহাস আৰু অধিক ছিংক কৰক</translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ফ’ল’ কৰক</translation>
 <translation id="6362362396625799311">কোনো ইনকগনিট’ টেব নাই</translation>
@@ -851,6 +855,7 @@
 <translation id="6914583639806229067">আপুনি প্রতিলিপি কৰা প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="6914783257214138813">ৰপ্তানি কৰা ফাইল দেখা পোৱা যিকোনো লোকে আপোনাৰ পাছৱৰ্ড দেখা পাব।</translation>
 <translation id="6930799952781667037">এই ভাষাটোলৈ সলনি কৰিবলৈ টিপক।</translation>
+<translation id="6939941780796374211">পাছৱৰ্ডৰ বিকল্পসমূহ</translation>
 <translation id="6944369514868857500">অন্য কোনো একাউণ্ট বাছনি কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
@@ -1156,7 +1161,6 @@
 <translation id="953008885340860025">Chrome ছাইন আউট হৈ আছে</translation>
 <translation id="959066944189734975">আপুনি <ph name="CHANNEL_NAME" />ক ফ’ল’ কৰি আছে</translation>
 <translation id="973493300226275298">বিভিন্ন অনলাইন ষ্ট’ৰত কোনো প্ৰ’ডাক্টৰ মূল্য ট্ৰেক কৰক। মূল্য কমিলে আপুনি সতৰ্কবাৰ্তা পাব।</translation>
-<translation id="980712131080209571">নতুন</translation>
 <translation id="981498610235328462">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে। অনুমতি নথকা একাউণ্টসমূহ লুকুৱাই ৰখা হয়।</translation>
 <translation id="984509647832111802">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰি থকা নাই।</translation>
 <translation id="988141524645182168">অন্য ডিভাইচ</translation>

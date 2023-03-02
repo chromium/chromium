@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" /> に固定</translation>
 <translation id="3275729367986477355">アバターの画像</translation>
 <translation id="3283504360622356314">{0,plural, =1{ファイルを編集}other{ファイルを編集}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3435896845095436175">有効にする</translation>
+<translation id="345256797477978759">ウィンドウを画面の <ph name="DIRECTION" /> の大きな部分に固定</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> ページを印刷しました。</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ページ目をスキャンしています。<ph name="PERCENTAGE_VALUE" />% 完了。</translation>
 <translation id="3459509316159669723">印刷</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
 <translation id="3600339377155080675">画面のミラーリング</translation>
 <translation id="3602290021589620013">プレビュー</translation>
+<translation id="360282891121575443">共有アルバム内の写真は、他のユーザーが更新できます。毎日変更を加えると、現在アルバムに含まれていない壁紙が表示されることがあります。</translation>
 <translation id="3603829704940252505">アバター</translation>
 <translation id="3604713164406837697">壁紙の変更</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
 <translation id="361575905210396100">ありがとうございました</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
+<translation id="3639846061339007994">上</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">100%</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="435692326371619097">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">小さい側に固定</translation>
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659594942844771486">タブ</translation>
 <translation id="6692996468359469499">選択した項目に関連する情報を取得する</translation>
+<translation id="6698459586333070823">共有アルバムは他のユーザーが更新できます</translation>
 <translation id="6704062477274546131">DNS の解決</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723847290197874913">キーボード バックライト</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">カメラやファイルに保存されている写真</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7170236477717446850">プロフィール写真</translation>
+<translation id="7171919371520438592">ウィンドウを画面の <ph name="DIRECTION" /> の小さい部分に固定</translation>
 <translation id="7172721935181587524">1 件の画像</translation>
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7180611975245234373">更新</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">添付</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
+<translation id="8210733748736414123">下</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">マルチログインにアカウントを追加します。ログインしているすべてのアカウントにパスワードなしでアクセスできるようになるため、この機能は信頼できるアカウントでのみ使用してください。</translation>
 <translation id="8364946094152050673">ネームサーバーが空です</translation>
 <translation id="8372477600026034341">その他のホスト</translation>
+<translation id="8380114448424469341">ウィンドウを画面の <ph name="DIRECTION" /> の半分に固定</translation>
 <translation id="8395584934117017006">この <ph name="DEVICE_TYPE" /> は企業の管理対象デバイスです</translation>
 <translation id="8398927464629426868">現在デバイスが充電または放電している速度</translation>
 <translation id="8410244574650205435">自動的に検出</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9138630967333032450">左シフト</translation>
 <translation id="9149391708638971077">メモリテストを実行</translation>
+<translation id="9157515863513902090">大きい側に固定</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="917720651393141712">テスト</translation>
 <translation id="9188992814426075118">キーボードのバックライトの色を壁紙に合わせて自動調整できます</translation>

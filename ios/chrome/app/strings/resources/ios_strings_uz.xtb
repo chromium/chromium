@@ -324,6 +324,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3244271242291266297">OO</translation>
 <translation id="3245744387817103524">Oʻzgarish saqlanmadi.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">Parollarni avtomatik kiritish</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
 <translation id="3272527697863656322">Bekor qilish</translation>
 <translation id="3277021493514034324">Sayt manzilidan nusxa olindi</translation>
@@ -430,6 +431,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="408404951701638773">Qidiruv paneli endi yanada qulay joyda</translation>
 <translation id="4092655288299341041">Yordamni ochish</translation>
 <translation id="4101942614374785540">Parollar Google hisobiga (<ph name="ACCOUNT" />) saqlanadi. Ulardan hisobga kirilgan istalgan joyda foydalanish mumkin. Buni <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali faolsizlantirish mumkin.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Manzilni oʻchirish}other{Manzillarni oʻchirish}}</translation>
 <translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="411254640334432676">Yuklab olishda xatolik yuz berdi.</translation>
 <translation id="4112644173421521737">Qidiruv</translation>
@@ -853,6 +855,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6914583639806229067">Nusxalangan rasmni qidirish</translation>
 <translation id="6914783257214138813">Siz eksport qilgan faylni ko‘radigan har qanday kishi parollaringizni ham ko‘ra oladi.</translation>
 <translation id="6930799952781667037">Tilni tanlash uchun bosing.</translation>
+<translation id="6939941780796374211">Parol sozlamalari</translation>
 <translation id="6944369514868857500">Boshqa hisobni tanlang</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -1158,7 +1161,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="953008885340860025">Chrome hisobidan chiqarildi</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> tasmasiga obuna boʻlgansiz</translation>
 <translation id="973493300226275298">Onlayn doʻkonlarda mahsulot narxini kuzating. Narx tushganda ogohlantirish olasiz.</translation>
-<translation id="980712131080209571">Y</translation>
 <translation id="981498610235328462">Tashkilotingiz faqat ayrim hisoblardan kirishga ruxsat beradi. Ruxsat etilmagan hisoblar yashirilgan.</translation>
 <translation id="984509647832111802">Sinxronizatsiya ishlamayapti.</translation>
 <translation id="988141524645182168">Boshqa qurilmalar</translation>
