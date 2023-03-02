@@ -4395,6 +4395,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
+      "//chrome/browser/ui/webui/side_panel/companion:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/search_companion:mojo_bindings",

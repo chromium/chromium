@@ -45,6 +45,7 @@ group("resources") {
       "profile_internals:resources",
       "settings:resources",
       "side_panel/bookmarks:resources",
+      "side_panel/companion:resources",
       "side_panel/customize_chrome:resources",
       "side_panel/history_clusters:resources",
       "side_panel/read_anything:resources",

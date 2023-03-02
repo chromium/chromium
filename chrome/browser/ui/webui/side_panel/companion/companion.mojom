@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module side_panel.mojom;
+
+// Factory method for creating a new WebUI page handler.
+interface CompanionPageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateCompanionPageHandler(
+      pending_receiver<CompanionPageHandler> handler,
+      pending_remote<CompanionPage> page);
+};
+
+// Browser-side handler for requests from WebUI page. (TypeScript -> C++)
+interface CompanionPageHandler {
+  // Notify the backend that the UI is ready to be shown.
+  ShowUI();
+};
+
+// WebUI page handler for request from Browser side. (C++ -> TypeScript)
+interface CompanionPage {
+  // Pass the current main content URL to frontend
+  OnURLChanged(string new_url);
+};

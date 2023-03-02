@@ -92,7 +92,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   }
 
   // Add Search Companion.
-  if (base::FeatureList::IsEnabled(features::kSidePanelSearchCompanion)) {
+  if (base::FeatureList::IsEnabled(features::kSidePanelSearchCompanion) ||
+      base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser)
         ->CreateAndRegisterEntry(global_registry);
   }

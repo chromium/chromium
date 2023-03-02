@@ -168,6 +168,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
@@ -1483,6 +1484,12 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_FEED_V2)
   registry.ForWebUI<feed::FeedUI>()
       .Add<feed::mojom::FeedSidePanelHandlerFactory>();
+#endif  // !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+    registry.ForWebUI<CompanionSidePanelUntrustedUI>()
+        .Add<side_panel::mojom::CompanionPageHandlerFactory>();
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
