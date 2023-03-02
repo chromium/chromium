@@ -6,27 +6,15 @@
 	<array>
 		<dict>
 			<key>Title</key>
-			<string>Debug Settings</string>
+			<string>Refresh Timestamps</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>This is not available in stable.</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Enable notifications when background refreshes are completed</string>
-			<key>Key</key>
-			<string>FeedBackgroundRefreshNotificationEnabled</string>
-			<key>DefaultValue</key>
-			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>FeedModel didBeginReload Timestamp</string>
+			<string>feedModel: didBeginReload:</string>
 			<key>Key</key>
 			<string>FeedModelDidBeginReloadTimestamp</string>
 			<key>DefaultValue</key>
@@ -38,7 +26,7 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>RefreshFeedModel Timestamp</string>
+			<string>refresh FeedModel:</string>
 			<key>Key</key>
 			<string>RefreshFeedModelTimestamp</string>
 			<key>DefaultValue</key>
@@ -50,9 +38,9 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>RefreshFeedForced Timestamp</string>
+			<string>Forced foreground</string>
 			<key>Key</key>
-			<string>RefreshFeedForcedTimestamp</string>
+			<string>FeedLastForcedForegroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>KeyboardType</key>
@@ -62,7 +50,43 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Last Background Refresh Timestamp</string>
+			<string>Non forced foreground</string>
+			<key>Key</key>
+			<string>FeedLastNonForcedForegroundRefreshTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Visible foreground</string>
+			<key>Key</key>
+			<string>FeedLastVisibleForegroundRefreshTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Non visible foreground</string>
+			<key>Key</key>
+			<string>FeedLastNonVisibleForegroundRefreshTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Background refresh</string>
 			<key>Key</key>
 			<string>FeedLastBackgroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
@@ -72,37 +96,41 @@
 		</dict>
 		<dict>
 			<key>Title</key>
-			<string>Override</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>When enabled, all the settings below override all defaults.</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Override defaults</string>
-			<key>Key</key>
-			<string>FeedOverrideDefaultsEnabled</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Title</key>
 			<string>Foreground Refresh</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>Foreground refreshes occur on cold starts, new NTPs, and switching tabs to an NTP. They do not occur on app foregrounding.</string>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Max Cache Age In Seconds</string>
+			<string>Session end timeout in seconds</string>
 			<key>Key</key>
-			<string>FeedMaxCacheAgeInSeconds</string>
+			<string>FeedSessionEndTimerTimeoutInSeconds</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Feed seen refresh threshold in seconds</string>
+			<key>Key</key>
+			<string>FeedSeenRefreshThresholdInSeconds</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Feed unseen refresh threshold in seconds</string>
+			<key>Key</key>
+			<string>FeedUnseenRefreshThresholdInSeconds</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>KeyboardType</key>
@@ -113,14 +141,44 @@
 			<string>Background Refresh</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>When server-driven schedule is enabled, background refreshes are scheduled for an absolute time provided by the server. Otherwise, background refreshes are scheduled for the specified interval after app backgrounding.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Notify on successful background refresh</string>
+			<key>Key</key>
+			<string>FeedBackgroundRefreshNotificationEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Use overrides below</string>
+			<key>Key</key>
+			<string>FeedOverrideDefaultsEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Refresh Interval In Seconds</string>
+			<string>Max cache age in seconds</string>
+			<key>Key</key>
+			<string>FeedMaxCacheAgeInSeconds</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Refresh interval in seconds</string>
 			<key>Key</key>
 			<string>FeedBackgroundRefreshIntervalInSeconds</string>
 			<key>DefaultValue</key>
@@ -132,7 +190,7 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Enable Following Feed Background Refresh</string>
+			<string>Enable Following Feed background refresh</string>
 			<key>Key</key>
 			<string>FollowingFeedBackgroundRefreshEnabled</string>
 			<key>DefaultValue</key>
