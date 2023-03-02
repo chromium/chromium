@@ -538,6 +538,7 @@ extern const char kWebRtcTextLogCollectionAllowed[];
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kFirstRunFinished[];
+extern const char kFirstRunStudyGroup[];
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

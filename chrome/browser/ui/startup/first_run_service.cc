@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -34,6 +35,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/synthetic_trials.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -233,7 +235,67 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
 // static
 void FirstRunService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFirstRunFinished, false);
+  registry->RegisterStringPref(prefs::kFirstRunStudyGroup, "");
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// static
+void FirstRunService::EnsureStickToFirstRunCohort() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return;  // Can be null in unit tests;
+  }
+
+  if (!IsFirstRunMarkedFinishedInPrefs()) {
+    // This user did not see the FRE. Their first run either happened before the
+    // feature was enabled, or it's happening right now. In the former case we
+    // don't enroll them, and in the latter, they will be enrolled right before
+    // starting the FRE.
+    return;
+  }
+
+  auto enrolled_study_group =
+      local_state->GetString(prefs::kFirstRunStudyGroup);
+  if (enrolled_study_group.empty()) {
+    // The user was not enrolled or exited the study at some point.
+    return;
+  }
+
+  RegisterSyntheticFieldTrial(enrolled_study_group);
+}
+
+// static
+void FirstRunService::JoinFirstRunCohort() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return;  // Can be null in unit tests;
+  }
+
+  // The First Run experience depends on experiment groups (see params
+  // associated with the `kForYouFre` feature). To measure the long terms impact
+  // of this one-shot experience, we save an associated group name to prefs so
+  // we can report it as a synthetic trial for understanding the effects for
+  // each specific configuration, disambiguating it from other clients who had
+  // a different experience (or did not see the FRE for some reason).
+  std::string active_study_group = kForYouFreStudyGroup.Get();
+  if (active_study_group.empty()) {
+    return;  // No active study, no need to sign up.
+  }
+
+  local_state->SetString(prefs::kFirstRunStudyGroup, active_study_group);
+  RegisterSyntheticFieldTrial(active_study_group);
+}
+
+// static
+void FirstRunService::RegisterSyntheticFieldTrial(
+    const std::string& group_name) {
+  DCHECK(!group_name.empty());
+
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "ForYouFreSynthetic", group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 FirstRunService::FirstRunService(Profile* profile) : profile_(profile) {}
 FirstRunService::~FirstRunService() = default;
@@ -391,6 +453,17 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (base::FeatureList::IsEnabled(kForYouFreStudy)) {
+    // We use this point to register for the study as it can give us a good
+    // counterfactual, before checking the state of the feature itself. The
+    // service is created on demand so we are in a code path that will require
+    // the FRE to be shown.
+    // Besides being suppressed by enterprise policy, if the FRE doesn't run, it
+    // would be related to handling some corner cases, and should not impact our
+    // metrics too much.
+    FirstRunService::JoinFirstRunCohort();
+  }
+
   if (!base::FeatureList::IsEnabled(kForYouFre)) {
     return nullptr;
   }
