@@ -17,6 +17,60 @@
   program: {
     binary: "cast_streaming_shell_exe",
   },
+  use: [
+    {
+      protocol: [
+        "fuchsia.feedback.ComponentDataRegister",
+        "fuchsia.feedback.CrashReportingProductRegister",
+        "fuchsia.sys.Environment",
+        "fuchsia.sys.Launcher",
+        "fuchsia.sys.Loader",
+      ],
+    },
+    {
+      storage: "data",
+      path: "/data",
+    },
+    {
+      storage: "tmp",
+      path: "/tmp",
+    },
+    {
+      protocol: [
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.buildinfo.Provider",
+        "fuchsia.device.NameProvider",
+        "fuchsia.fonts.Provider",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.kernel.VmexResource",
+        "fuchsia.logger.LogSink",
+        "fuchsia.media.Audio",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.media.SessionAudioConsumerFactory",
+        "fuchsia.mediacodec.CodecFactory",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        "fuchsia.ui.scenic.Scenic",
+      ],
+    },
+    {
+      protocol: [
+        "fuchsia.element.GraphicalPresenter",
+        "fuchsia.tracing.perfetto.ProducerConnector",
+
+        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
+        "fuchsia.ui.policy.Presenter",
+      ],
+      availability: "optional",
+    },
+  ],
   offer: [
     // The chromium test realm offers the system-wide config-data dir to test
     // components. Route the web_engine sub-directory of this as required by
