@@ -4,6 +4,10 @@
 
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
+#include "base/containers/contains.h"
+
+#include "ui/accessibility/ax_serializable_tree.h"
+
 ReadAnythingAppModel::ReadAnythingAppModel() = default;
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 
@@ -26,7 +30,9 @@ void ReadAnythingAppModel::Reset() {
   distillation_in_progress_ = false;
 }
 
-void ReadAnythingAppModel::ResetSelection(ui::AXSelection selection) {
+void ReadAnythingAppModel::ResetSelection() {
+  ui::AXSelection selection =
+      GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
   has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
                    selection.focus_object_id != ui::kInvalidAXNodeID;
 
@@ -51,6 +57,32 @@ void ReadAnythingAppModel::SetEnd(ui::AXNodeID end_node_id,
                                   int32_t end_offset) {
   end_node_id_ = end_node_id;
   end_offset_ = end_offset;
+}
+
+const std::unique_ptr<ui::AXSerializableTree>&
+ReadAnythingAppModel::GetTreeFromId(ui::AXTreeID tree_id) const {
+  DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
+  DCHECK(ContainsTree(tree_id));
+  return trees_.at(tree_id);
+}
+
+bool ReadAnythingAppModel::ContainsTree(ui::AXTreeID tree_id) const {
+  return base::Contains(trees_, tree_id);
+}
+
+void ReadAnythingAppModel::AddTree(
+    ui::AXTreeID tree_id,
+    std::unique_ptr<ui::AXSerializableTree> tree) {
+  DCHECK(!ContainsTree(tree_id));
+  trees_[tree_id] = std::move(tree);
+}
+
+void ReadAnythingAppModel::EraseTree(ui::AXTreeID tree_id) {
+  trees_.erase(tree_id);
+}
+
+size_t ReadAnythingAppModel::NumTreesForTesting() const {
+  return trees_.size();
 }
 
 double ReadAnythingAppModel::GetLetterSpacingValue(

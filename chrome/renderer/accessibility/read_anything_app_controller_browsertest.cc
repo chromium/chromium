@@ -12,6 +12,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_serializable_tree.h"
 
 class MockAXTreeDistiller : public AXTreeDistiller {
  public:
@@ -211,10 +212,19 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->IsNodeIgnoredForReadAnything(ax_node_id);
   }
 
-  size_t GetNumTrees() { return controller_->trees_.size(); }
+  size_t GetNumTrees() { return controller_->model_.NumTreesForTesting(); }
 
   bool HasTree(ui::AXTreeID tree_id) {
-    return base::Contains(controller_->trees_, tree_id);
+    return controller_->model_.ContainsTree(tree_id);
+  }
+
+  void EraseTree(ui::AXTreeID tree_id) {
+    controller_->model_.EraseTree(tree_id);
+  }
+
+  void AddTree(ui::AXTreeID tree_id,
+               std::unique_ptr<ui::AXSerializableTree> tree) {
+    controller_->model_.AddTree(tree_id, std::move(tree));
   }
 
   size_t GetNumPendingUpdates() { return controller_->pending_updates_.size(); }
@@ -669,6 +679,41 @@ TEST_F(ReadAnythingAppControllerTest,
   // tree is deleted.
   OnActiveAXTreeIDChanged(tree_id_);
   ASSERT_EQ(0u, GetNumTrees());
+}
+
+TEST_F(ReadAnythingAppControllerTest, ModelUpdatesTreeState) {
+  // Set up trees.
+  ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeID tree_id_3 = ui::AXTreeID::CreateNewAXTreeID();
+
+  AddTree(tree_id_2, std::make_unique<ui::AXSerializableTree>());
+  AddTree(tree_id_3, std::make_unique<ui::AXSerializableTree>());
+
+  ASSERT_EQ(3u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_2));
+  ASSERT_TRUE(HasTree(tree_id_3));
+  ASSERT_TRUE(HasTree(tree_id_));
+
+  // Remove one tree.
+  EraseTree(tree_id_2);
+  ASSERT_EQ(2u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_3));
+  ASSERT_FALSE(HasTree(tree_id_2));
+  ASSERT_TRUE(HasTree(tree_id_));
+
+  // Remove the second tree.
+  EraseTree(tree_id_);
+  ASSERT_EQ(1u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_3));
+  ASSERT_FALSE(HasTree(tree_id_2));
+  ASSERT_FALSE(HasTree(tree_id_));
+
+  // Remove the last tree.
+  EraseTree(tree_id_3);
+  ASSERT_EQ(0u, GetNumTrees());
+  ASSERT_FALSE(HasTree(tree_id_3));
+  ASSERT_FALSE(HasTree(tree_id_2));
+  ASSERT_FALSE(HasTree(tree_id_));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDUnknown) {

@@ -12,8 +12,10 @@
 
 namespace ui {
 class AXNode;
+class AXSerializableTree;
 }  // namespace ui
 
+class ReadAnythingAppControllerTest;
 // A class that holds state for the ReadAnythingAppController for the Read
 // Anything WebUI app.
 class ReadAnythingAppModel {
@@ -67,13 +69,28 @@ class ReadAnythingAppModel {
   void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
 
   void Reset();
-  void ResetSelection(ui::AXSelection selection);
+  void ResetSelection();
+
+  const std::unique_ptr<ui::AXSerializableTree>& GetTreeFromId(
+      ui::AXTreeID tree_id) const;
+  void AddTree(ui::AXTreeID tree_id,
+               std::unique_ptr<ui::AXSerializableTree> tree);
+
+  bool ContainsTree(ui::AXTreeID tree_id) const;
+
+  void EraseTree(ui::AXTreeID tree_id);
 
  private:
+  friend ReadAnythingAppControllerTest;
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
   double GetLineSpacingValue(
       read_anything::mojom::LineSpacing line_spacing) const;
+  size_t NumTreesForTesting() const;
+
+  // State.
+  // AXTrees of web contents in the browser’s tab strip.
+  std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>> trees_;
 
   // The AXTreeID of the currently active web contents.
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();

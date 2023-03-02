@@ -192,9 +192,6 @@ class ReadAnythingAppController
 
   // State:
 
-  // AXTrees of web contents in the browser’s tab strip.
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>> trees_;
-
   // A queue of pending updates on the active AXTree, which will be
   // unserialized once distillation completes.
   std::vector<ui::AXTreeUpdate> pending_updates_;
