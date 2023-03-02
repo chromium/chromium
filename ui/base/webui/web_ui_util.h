@@ -71,10 +71,6 @@ void SetLoadTimeDataDefaults(const std::string& app_locale,
 // Get a CSS declaration for common text styles for all of Web UI.
 COMPONENT_EXPORT(UI_BASE) std::string GetWebUiCssTextDefaults();
 
-// Get a CSS declaration for common text styles for Web UI using
-// Material Design.
-COMPONENT_EXPORT(UI_BASE) std::string GetWebUiCssTextDefaultsMd();
-
 // Appends the CSS declaration returned by GetWebUiCssTextDefaults() as an
 // inline stylesheet.
 COMPONENT_EXPORT(UI_BASE) void AppendWebUiCssTextDefaults(std::string* html);

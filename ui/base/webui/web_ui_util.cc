@@ -194,13 +194,6 @@ std::string GetWebUiCssTextDefaults() {
       resource_bundle.LoadDataResourceString(IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS));
 }
 
-std::string GetWebUiCssTextDefaultsMd() {
-  const ui::ResourceBundle& resource_bundle =
-      ui::ResourceBundle::GetSharedInstance();
-  return GetWebUiCssTextDefaults(resource_bundle.LoadDataResourceString(
-      IDR_WEBUI_CSS_TEXT_DEFAULTS_MD_CSS));
-}
-
 void AppendWebUiCssTextDefaults(std::string* html) {
   html->append("<style>");
   html->append(GetWebUiCssTextDefaults());
