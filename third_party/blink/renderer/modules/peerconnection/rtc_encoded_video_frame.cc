@@ -72,6 +72,8 @@ String RTCVideoCodecTypeFromVideoCodecType(
       return "vp9";
     case webrtc::VideoCodecType::kVideoCodecH264:
       return "h264";
+    case webrtc::VideoCodecType::kVideoCodecAV1:
+      return "av1";
     default:
       return "";
   }
@@ -85,6 +87,8 @@ webrtc::VideoCodecType VideoCodecTypeFromRTCVideoCodecType(
     return webrtc::VideoCodecType::kVideoCodecVP9;
   } else if (video_codec_type == "h264") {
     return webrtc::VideoCodecType::kVideoCodecH264;
+  } else if (video_codec_type == "av1") {
+    return webrtc::VideoCodecType::kVideoCodecAV1;
   } else {
     NOTREACHED();
     return webrtc::VideoCodecType::kVideoCodecGeneric;
@@ -300,6 +304,8 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
         metadata->setCodecSpecifics(vp8_specifics);
         break;
       }
+      case webrtc::VideoCodecType::kVideoCodecAV1:
+        break;
       default:
         // TODO(https://crbug.com/webrtc/14709): Support more codecs.
         LOG(ERROR) << "Unsupported RTCCodecSpecifics "
@@ -326,7 +332,10 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       !metadata->hasTemporalIndex() ||
       !metadata->hasDecodeTargetIndications() ||
       !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
-      !metadata->hasCodec() || !metadata->hasCodecSpecifics() ||
+      !metadata->hasCodec() ||
+      (!metadata->hasCodecSpecifics() &&
+       (metadata->codec() == "vp8" || metadata->codec() == "vp9" ||
+        metadata->codec() == "h264")) ||
       !metadata->hasSynchronizationSource()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
@@ -394,6 +403,8 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       }
       break;
     }
+    case webrtc::VideoCodecType::kVideoCodecAV1:
+      break;
     default:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,

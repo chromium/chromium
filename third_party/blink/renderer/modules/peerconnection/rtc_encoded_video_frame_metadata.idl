@@ -9,6 +9,7 @@ enum RTCVideoCodecType {
     "vp8",
     "vp9",
     "h264",
+    "av1",
 };
 
 enum RTCDecodeTargetIndication {
