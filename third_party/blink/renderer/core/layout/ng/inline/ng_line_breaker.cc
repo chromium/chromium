@@ -1435,6 +1435,7 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
   DCHECK_GE(start_offset, shape_result.StartIndex());
   shape_result.EnsurePositionData();
   const String& text = Text();
+  const bool should_break_spaces = item.Style()->ShouldBreakSpaces();
   float min_width = 0;
   unsigned last_end_offset = 0;
   unsigned end_offset = start_offset + 1;
@@ -1444,7 +1445,7 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
         break_iterator_.NextBreakOpportunity(end_offset, item.EndOffset());
 
     unsigned non_hangable_run_end = end_offset;
-    if (item.Style()->ShouldWrapLineTrailingSpaces()) {
+    if (!should_break_spaces) {
       while (non_hangable_run_end > start_offset &&
              IsBreakableSpace(text[non_hangable_run_end - 1])) {
         --non_hangable_run_end;
@@ -1665,7 +1666,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     NGInlineItemResults* item_results = line_info->MutableResults();
     DCHECK(!item_results->empty());
     item_results->back().can_break_after = true;
-  } else if (style.ShouldWrapLineTrailingSpaces()) {
+  } else if (!style.ShouldBreakSpaces()) {
     // Find the end of the run of space characters in this item.
     // Other white space characters (e.g., tab) are not included in this item.
     DCHECK(style.BreakOnlyAfterWhiteSpace() ||
@@ -2741,7 +2742,8 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
       if (item_result.shape_result ||  // kNoResultIfOverflow if 'break-word'
           (break_anywhere_if_overflow_ && !override_break_anywhere_)) {
         DCHECK(item.Style());
-        if (item.Style()->ShouldWrapLineTrailingSpaces() &&
+        const ComputedStyle& style = *item.Style();
+        if (style.ShouldWrapLine() && !style.ShouldBreakSpaces() &&
             IsBreakableSpace(text[item_result.StartOffset()])) {
           // If all characters are trailable spaces, check the next item.
           if (item_result.shape_result &&
@@ -2766,7 +2768,8 @@ void NGLineBreaker::RewindOverflow(unsigned new_end, NGLineInfo* line_info) {
       // controls are trailable.
       DCHECK_NE(text[item_result.StartOffset()], kNewlineCharacter);
       DCHECK(item.Style());
-      if (item.Style()->ShouldWrapLineTrailingSpaces()) {
+      const ComputedStyle& style = *item.Style();
+      if (style.ShouldWrapLine() && !style.ShouldBreakSpaces()) {
         continue;
       }
     } else if (item.Type() == NGInlineItem::kOpenTag) {
@@ -3004,7 +3007,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
     enable_soft_hyphen_ = style.GetHyphens() != Hyphens::kNone;
     hyphenation_ = style.GetHyphenationWithLimits();
 
-    if (style.ShouldWrapLineBreakingSpaces()) {
+    if (style.ShouldBreakSpaces()) {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterEverySpace);
     }
 

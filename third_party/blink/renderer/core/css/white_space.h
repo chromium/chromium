@@ -29,8 +29,10 @@ constexpr WhiteSpaceBehavior operator|(WhiteSpaceBehavior a,
                                          static_cast<unsigned>(b));
 }
 
+//
 // The `white-space` property.
 // https://w3c.github.io/csswg-drafts/css-text-4/#propdef-white-space
+//
 enum class EWhiteSpace : uint8_t {
   kNormal = 0,
   kNowrap = static_cast<uint8_t>(WhiteSpaceBehavior::kNoWrapLine),
@@ -55,14 +57,14 @@ static constexpr int kEWhiteSpaceBits = kWhiteSpaceBehaviorBits;
 // functions in `ComputedStyle`.
 // https://w3c.github.io/csswg-drafts/css-text-4/#propdef-white-space
 //
-
 inline bool IsWhiteSpaceAny(EWhiteSpace value, WhiteSpaceBehavior flags) {
   return static_cast<uint8_t>(value) & static_cast<uint8_t>(flags);
 }
 
-// `text-space-collapse`: Collapsing/preserving white-spaces.
-// https://w3c.github.io/csswg-drafts/css-text-4/#propdef-text-space-collapse
-// Naming TBD: https://github.com/w3c/csswg-drafts/issues/8273
+//
+// `white-space-collapse`: Collapsing/preserving white-spaces.
+// https://w3c.github.io/csswg-drafts/css-text-4/#propdef-white-space-collapse
+//
 inline bool ShouldPreserveBreaks(EWhiteSpace value) {
   return IsWhiteSpaceAny(value, WhiteSpaceBehavior::kPreserveBreaks);
 }
@@ -75,22 +77,16 @@ inline bool ShouldCollapseBreaks(EWhiteSpace value) {
 inline bool ShouldCollapseSpacesAndTabs(EWhiteSpace value) {
   return !ShouldPreserveSpacesAndTabs(value);
 }
-
-// `text-wrap` and `white-space`: Wrap/nowrap and trailing/braeking spaces.
-// https://w3c.github.io/csswg-drafts/css-text-4/#propdef-text-wrap
-// `break-spaces` TBD: https://github.com/w3c/csswg-drafts/issues/3794
-inline bool ShouldWrapLine(EWhiteSpace value) {
-  return !IsWhiteSpaceAny(value, WhiteSpaceBehavior::kNoWrapLine);
-}
-inline bool ShouldWrapLineBreakingSpaces(EWhiteSpace value) {
-  // `ShouldWrapLine` should be `true` if `break-spaces`.
-  DCHECK(!IsWhiteSpaceAny(value, WhiteSpaceBehavior::kBreakSpaces) ||
-         ShouldWrapLine(value));
+inline bool ShouldBreakSpaces(EWhiteSpace value) {
   return IsWhiteSpaceAny(value, WhiteSpaceBehavior::kBreakSpaces);
 }
-inline bool ShouldWrapLineTrailingSpaces(EWhiteSpace value) {
-  return ShouldWrapLine(value) &&
-         !IsWhiteSpaceAny(value, WhiteSpaceBehavior::kBreakSpaces);
+
+//
+// `text-wrap`: Text Wrapping.
+// https://w3c.github.io/csswg-drafts/css-text-4/#propdef-text-wrap
+//
+inline bool ShouldWrapLine(EWhiteSpace value) {
+  return !IsWhiteSpaceAny(value, WhiteSpaceBehavior::kNoWrapLine);
 }
 
 }  // namespace blink

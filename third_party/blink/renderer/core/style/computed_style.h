@@ -2243,14 +2243,6 @@ class ComputedStyle : public ComputedStyleBase,
     return blink::ShouldCollapseSpacesAndTabs(ws);
   }
 
-  bool ShouldWrapLine() const { return DeprecatedAutoWrap(WhiteSpace()); }
-  bool ShouldWrapLineBreakingSpaces() const {
-    return blink::ShouldWrapLineBreakingSpaces(WhiteSpace());
-  }
-  bool ShouldWrapLineTrailingSpaces() const {
-    return blink::ShouldWrapLineTrailingSpaces(WhiteSpace());
-  }
-
   bool ShouldPreserveSpacesAndTabs() const {
     return blink::ShouldPreserveSpacesAndTabs(WhiteSpace());
   }
@@ -2271,6 +2263,10 @@ class ComputedStyle : public ComputedStyleBase,
     return false;
   }
 
+  bool ShouldWrapLine() const { return DeprecatedAutoWrap(WhiteSpace()); }
+  bool ShouldBreakSpaces() const {
+    return blink::ShouldBreakSpaces(WhiteSpace());
+  }
   bool BreakOnlyAfterWhiteSpace() const {
     return (ShouldPreserveSpacesAndTabs() && ShouldWrapLine()) ||
            GetLineBreak() == LineBreak::kAfterWhiteSpace;
