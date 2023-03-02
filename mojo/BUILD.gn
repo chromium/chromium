@@ -26,11 +26,14 @@ group("tests") {
   deps = [
     ":mojo_perftests",
     ":mojo_unittests",
-    "//ipc:ipc_tests",
     "//mojo/public/tools:mojo_python_unittests",
     "//services/service_manager/tests",
     "//third_party/ipcz/src:ipcz_tests",
   ]
+
+  if (!is_ios) {
+    deps += [ "//ipc:ipc_tests" ]
+  }
 }
 
 test("mojo_unittests") {

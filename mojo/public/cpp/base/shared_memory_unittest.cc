@@ -22,6 +22,7 @@ TEST(SharedMemoryMojomTest, ReadOnly) {
   EXPECT_EQ(0, memcmp(mapping.memory(), kTestData.data(), kTestData.size()));
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST(SharedMemoryMojomTest, Writable) {
   auto region = base::WritableSharedMemoryRegion::Create(64);
   auto mapping = region.Map();
@@ -36,6 +37,7 @@ TEST(SharedMemoryMojomTest, Writable) {
   mapping = writable_out.Map();
   EXPECT_EQ(0, memcmp(mapping.memory(), kTestData.data(), kTestData.size()));
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST(SharedMemoryMojomTest, Unsafe) {
   auto region = base::UnsafeSharedMemoryRegion::Create(64);
