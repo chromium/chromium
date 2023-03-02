@@ -93,6 +93,8 @@ imageset("overflow_menu_destination_price_notifications") {
     "overflow_menu_destination_price_notifications.imageset/Contents.json",
     "overflow_menu_destination_price_notifications.imageset/overflow_menu_destination_price_notifications@2x.png",
     "overflow_menu_destination_price_notifications.imageset/overflow_menu_destination_price_notifications@3x.png",
+    "overflow_menu_destination_price_notifications.imageset/overflow_menu_destination_price_notifications_dark@2x.png",
+    "overflow_menu_destination_price_notifications.imageset/overflow_menu_destination_price_notifications_dark@3x.png",
   ]
 }
 
