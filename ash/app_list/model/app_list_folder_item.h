@@ -76,6 +76,7 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   FolderType folder_type() const { return folder_type_; }
 
   // AppListItem overrides:
+  AppListFolderItem* AsFolderItem() override;
   const char* GetItemType() const override;
   AppListItem* FindChildItem(const std::string& id) override;
   AppListItem* GetChildItemAt(size_t index) override;

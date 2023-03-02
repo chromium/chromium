@@ -22,6 +22,7 @@
 
 namespace ash {
 enum class AppListConfigType;
+class AppListFolderItem;
 class AppListItemList;
 class AppListItemListTest;
 class AppListItemObserver;
@@ -35,6 +36,10 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   AppListItem(const AppListItem&) = delete;
   AppListItem& operator=(const AppListItem&) = delete;
   virtual ~AppListItem();
+
+  // Overrides this function in the child AppListFolderItem class to return
+  // `this`.
+  virtual AppListFolderItem* AsFolderItem();
 
   void SetIcon(AppListConfigType config_type, const gfx::ImageSkia& icon);
   const gfx::ImageSkia& GetIcon(AppListConfigType config_type) const;

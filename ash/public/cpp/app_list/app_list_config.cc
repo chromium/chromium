@@ -100,6 +100,22 @@ gfx::FontList AppTitleFontForType(ash::AppListConfigType type) {
   return ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(details);
 }
 
+gfx::FontList ItemCounterFontInFolderIcon(ash::AppListConfigType type) {
+  ui::ResourceBundle::FontDetails details;
+  // TODO(https://crbug.com/1197600): Use Google Sans Text (medium weight) when
+  // the font is available.
+  switch (type) {
+    case ash::AppListConfigType::kRegular:
+      details.size_delta = 0;
+      break;
+    case ash::AppListConfigType::kDense:
+      details.size_delta = -1;
+      break;
+  }
+  details.weight = gfx::Font::Weight::MEDIUM;
+  return ui::ResourceBundle::GetSharedInstance().GetFontListForDetails(details);
+}
+
 // See "App drag over folder" in go/cros-launcher-spec.
 int UnclippedIconDimensionForType(ash::AppListConfigType type) {
   switch (type) {
@@ -183,6 +199,7 @@ AppListConfig::AppListConfig(AppListConfigType type)
       grid_focus_corner_radius_(8),
       app_title_max_line_height_(AppTitleMaxLineHeightForType(type)),
       app_title_font_(AppTitleFontForType(type)),
+      item_counter_in_folder_icon_font_(ItemCounterFontInFolderIcon(type)),
       folder_bubble_radius_(UnclippedIconDimensionForType(type) / 2),
       icon_visible_dimension_(IconVisibleDimensionForType(type)),
       unclipped_icon_dimension_(UnclippedIconDimensionForType(type)),
@@ -209,6 +226,8 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
           Scale(base_config.grid_focus_corner_radius_, scale_x)),
       app_title_max_line_height_(base_config.app_title_max_line_height_),
       app_title_font_(base_config.app_title_font_),
+      item_counter_in_folder_icon_font_(
+          base_config.item_counter_in_folder_icon_font_),
       folder_bubble_radius_(Scale(base_config.folder_bubble_radius_, scale_x)),
       icon_visible_dimension_(
           Scale(base_config.icon_visible_dimension_, scale_x)),

@@ -184,6 +184,9 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int grid_focus_corner_radius() const { return grid_focus_corner_radius_; }
   int app_title_max_line_height() const { return app_title_max_line_height_; }
   const gfx::FontList& app_title_font() const { return app_title_font_; }
+  const gfx::FontList& item_counter_in_folder_icon_font() const {
+    return item_counter_in_folder_icon_font_;
+  }
   int folder_bubble_radius() const { return folder_bubble_radius_; }
   int icon_visible_dimension() const { return icon_visible_dimension_; }
   int unclipped_icon_dimension() const { return unclipped_icon_dimension_; }
@@ -264,6 +267,10 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // The font for app title in app list.
   const gfx::FontList app_title_font_;
 
+  // The font used to the number of apps in a folder on the fonder icon. Only
+  // used if app collection folder icon refresh is enabled.
+  const gfx::FontList item_counter_in_folder_icon_font_;
+
   // The radius of the circle in a folder icon (i.e. the gray circle underneath
   // the mini app icons).
   const int folder_bubble_radius_;
@@ -286,7 +293,7 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   const int folder_icon_radius_;
 
   // The background corner radius of an item icon in extended state.
-  // Only used in app collection folder icon refresh.
+  // Only used if app collection folder icon refresh is enabled.
   const int icon_extended_background_radius_;
 
   // The dimension of the item icon in folder icon.

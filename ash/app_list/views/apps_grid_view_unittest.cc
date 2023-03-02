@@ -1861,6 +1861,33 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
   EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
 }
 
+TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconItemCounter) {
+  if (!folder_icon_refresh()) {
+    return;
+  }
+
+  model_->CreateAndPopulateFolderWithApps(2);
+  model_->CreateAndPopulateFolderWithApps(4);
+  model_->CreateAndPopulateFolderWithApps(10);
+  model_->CreateAndPopulateFolderWithApps(104);
+
+  // The number that will be shown on the folder icon follows the following
+  // rules:
+  // 1. The icon counter will not be showing if the number of items in a folder
+  // is less or equal to 4, where all items can be painted on the icon.
+  // 2. The counter shows how many items are not drawn on the icon, which is
+  // (the number of items - 3).
+  // 3. The maximum number that can be shown is 100.
+  std::vector<absl::optional<size_t>> expected_counts = {absl::nullopt,
+                                                         absl::nullopt, 7, 100};
+  UpdateLayout();
+
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_EQ(GetItemViewInTopLevelGrid(i)->item_counter_count_for_test(),
+              expected_counts[i]);
+  }
+}
+
 TEST_P(AppsGridViewDragTest, MouseDragItemIntoFolder) {
   size_t kTotalItems = 3;
   model_->PopulateApps(kTotalItems);

@@ -1089,6 +1089,7 @@ void AppListFolderView::ReparentItem(
   // Ensures the icon updates to reflect that the icon has been removed during
   // the drag
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
+  folder_item_view_->UpdateDraggedItem(original_drag_view->item());
   root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
       pointer, original_drag_view, to_root_level_grid,
       base::BindOnce(&AppListFolderView::CancelReparentDragFromRootGrid,
@@ -1121,6 +1122,7 @@ void AppListFolderView::DispatchEndDragEventForReparent(
   DCHECK(!app_list_features::IsDragAndDropRefactorEnabled());
 
   folder_item_->NotifyOfDraggedItem(nullptr);
+  folder_item_view_->UpdateDraggedItem(nullptr);
   folder_controller_->ReparentDragEnded();
 
   // Cache `folder_item_view_`, as it will get reset in `HideViewImmediately()`.

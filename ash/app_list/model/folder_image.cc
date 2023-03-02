@@ -52,7 +52,7 @@ class FolderImageSource : public gfx::CanvasImageSource {
  private:
   void DrawIcon(gfx::Canvas* canvas,
                 const gfx::ImageSkia& icon,
-                const gfx::Size icon_size,
+                const gfx::Size& icon_size,
                 int x,
                 int y);
 
@@ -78,7 +78,7 @@ FolderImageSource::~FolderImageSource() = default;
 
 void FolderImageSource::DrawIcon(gfx::Canvas* canvas,
                                  const gfx::ImageSkia& icon,
-                                 const gfx::Size icon_size,
+                                 const gfx::Size& icon_size,
                                  int x,
                                  int y) {
   if (icon.isNull())
