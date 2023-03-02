@@ -18,7 +18,7 @@ class BoundSessionRefreshCookieFetcher {
   // Returns the expected expiration date of the cookie. This is optional as
   // set cookie might fail.
   using RefreshCookieCompleteCallback =
-      base::OnceCallback<void(absl::optional<const base::Time>)>;
+      base::OnceCallback<void(absl::optional<base::Time>)>;
 
   BoundSessionRefreshCookieFetcher(SigninClient* client,
                                    const GURL& url,
@@ -34,10 +34,10 @@ class BoundSessionRefreshCookieFetcher {
 
  protected:
   std::unique_ptr<net::CanonicalCookie> CreateFakeCookie(
-      const base::Time& cookie_expiration);
+      base::Time cookie_expiration);
   void OnRefreshCookieCompleted(std::unique_ptr<net::CanonicalCookie> cookie);
   void InsertCookieInCookieJar(std::unique_ptr<net::CanonicalCookie> cookie);
-  void OnCookieSet(const base::Time& expiry_date,
+  void OnCookieSet(base::Time expiry_date,
                    net::CookieAccessResult access_result);
 
   const raw_ptr<SigninClient> client_;

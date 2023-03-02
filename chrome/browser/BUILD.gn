@@ -6744,6 +6744,8 @@ static_library("browser") {
       "signin/bound_session_credentials/bound_session_cookie_controller.h",
       "signin/bound_session_credentials/bound_session_cookie_controller_impl.cc",
       "signin/bound_session_credentials/bound_session_cookie_controller_impl.h",
+      "signin/bound_session_credentials/bound_session_cookie_observer.cc",
+      "signin/bound_session_credentials/bound_session_cookie_observer.h",
       "signin/bound_session_credentials/bound_session_cookie_refresh_service.cc",
       "signin/bound_session_credentials/bound_session_cookie_refresh_service.h",
       "signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.cc",

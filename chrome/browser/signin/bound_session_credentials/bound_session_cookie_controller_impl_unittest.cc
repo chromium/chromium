@@ -8,11 +8,13 @@
 
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/cookies/canonical_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -75,6 +77,10 @@ class BoundSessionCookieControllerImplTest
           CreateBoundSessionCookieControllerImpl();
     }
     return bound_session_cookie_controller_.get();
+  }
+
+  BoundSessionCookieObserver* cookie_observer() {
+    return bound_session_cookie_controller()->cookie_observer_.get();
   }
 
   ~BoundSessionCookieControllerImplTest() override = default;
@@ -151,4 +157,16 @@ TEST_F(BoundSessionCookieControllerImplTest,
   SetExpirationTimeAndNotify(base::Time());
   // The count remained the same
   EXPECT_EQ(on_cookie_expiration_date_changed_call_count(), 2u);
+}
+
+TEST_F(BoundSessionCookieControllerImplTest, CookieObserver) {
+  // Simulate cookie change.
+  net::CanonicalCookie cookie = BoundSessionTestCookieManager::CreateCookie(
+      bound_session_cookie_controller()->url(),
+      bound_session_cookie_controller()->cookie_name());
+  cookie_observer()->OnCookieChange(net::CookieChangeInfo(
+      cookie, net::CookieAccessResult(), net::CookieChangeCause::INSERTED));
+  EXPECT_EQ(on_cookie_expiration_date_changed_call_count(), 1u);
+  EXPECT_EQ(bound_session_cookie_controller()->cookie_expiration_time(),
+            cookie.ExpiryDate());
 }

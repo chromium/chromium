@@ -63,7 +63,7 @@ void BoundSessionRefreshCookieFetcher::InsertCookieInCookieJar(
 }
 
 void BoundSessionRefreshCookieFetcher::OnCookieSet(
-    const base::Time& expiry_date,
+    base::Time expiry_date,
     net::CookieAccessResult access_result) {
   bool success = access_result.status.IsInclude();
   if (!success) {
@@ -76,7 +76,7 @@ void BoundSessionRefreshCookieFetcher::OnCookieSet(
 
 std::unique_ptr<net::CanonicalCookie>
 BoundSessionRefreshCookieFetcher::CreateFakeCookie(
-    const base::Time& cookie_expiration) {
+    base::Time cookie_expiration) {
   constexpr char kFakeCookieValue[] = "FakeCookieValue";
 
   base::Time now = base::Time::Now();
