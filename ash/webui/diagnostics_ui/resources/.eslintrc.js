@@ -6,9 +6,6 @@
 // clang-format off
 module.exports = {
     'ignorePatterns': ['**/*.js'],
-    'parserOptions': {
-      'project': ['./tsconfig_base.json'],
-    },
     'rules': {
       '@typescript-eslint/explicit-function-return-type': ['error'],
     },
