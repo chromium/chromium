@@ -31,6 +31,7 @@
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -392,12 +393,15 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   while (destination_sites_statement.Step()) {
     auto destination_site = net::SchemefulSite::Deserialize(
         destination_sites_statement.ColumnString(0));
-    if (!attribution_reporting::IsSitePotentiallySuitable(destination_site)) {
-      return absl::nullopt;
-    }
     destination_sites.push_back(std::move(destination_site));
   }
-  if (!destination_sites_statement.Succeeded() || destination_sites.empty()) {
+  if (!destination_sites_statement.Succeeded()) {
+    return absl::nullopt;
+  }
+
+  auto destination_set = attribution_reporting::DestinationSet::Create(
+      std::move(destination_sites));
+  if (!destination_set.has_value()) {
     return absl::nullopt;
   }
 
@@ -405,7 +409,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
       .source = StoredSource(
           CommonSourceInfo(
               source_event_id, std::move(*source_origin),
-              std::move(destination_sites), std::move(*reporting_origin),
+              std::move(*destination_set), std::move(*reporting_origin),
               source_time,
               /*expiry_time=*/expiry_time,
               /*event_report_window_time=*/event_report_window_time,
@@ -610,7 +614,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   sql::Statement insert_destination_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertDestinationSql));
   insert_destination_statement.BindInt64(0, *source_id);
-  for (const auto& site : common_info.destination_sites()) {
+  for (const auto& site : common_info.destination_sites().destinations()) {
     insert_destination_statement.Reset(/*clear_bound_vars=*/false);
     insert_destination_statement.BindString(1, site.Serialize());
     if (!insert_destination_statement.Run()) {

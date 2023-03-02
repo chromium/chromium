@@ -26,6 +26,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -56,6 +57,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::DestinationSet;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SourceRegistration;
 using ::attribution_reporting::SuitableOrigin;
@@ -184,7 +186,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
-    SourceRegistration source_data(destination_site);
+    SourceRegistration source_data(*DestinationSet::Create({destination_site}));
     source_data.source_event_id = 10;
     source_data.priority = 20;
     source_data.debug_key = 789;
@@ -234,7 +236,7 @@ TEST_F(AttributionDataHostManagerImplTest,
         /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
         kFrameId);
 
-    SourceRegistration source_data(destination_site);
+    SourceRegistration source_data(*DestinationSet::Create({destination_site}));
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     source_data);
     data_host_remote.data_host.FlushForTesting();
@@ -247,8 +249,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     checkpoint.Call(2);
 
-    source_data.destination =
-        net::SchemefulSite::Deserialize("https://other-trigger.example");
+    source_data.destination_set = *DestinationSet::Create(
+        {net::SchemefulSite::Deserialize("https://other-trigger.example")});
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     source_data);
     data_host_remote.data_host.FlushForTesting();
@@ -387,7 +389,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     {
       mojo::test::BadMessageObserver bad_message_observer;
 
-      SourceRegistration source_data((net::SchemefulSite(destination_origin)));
+      SourceRegistration source_data(
+          *DestinationSet::Create({net::SchemefulSite(destination_origin)}));
 
       data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                       std::move(source_data));
@@ -445,7 +448,7 @@ TEST_F(AttributionDataHostManagerImplTest,
         /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
         kFrameId);
 
-    SourceRegistration source_data(destination_site);
+    SourceRegistration source_data(*DestinationSet::Create({destination_site}));
 
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     source_data);
@@ -536,7 +539,7 @@ TEST_F(AttributionDataHostManagerImplTest,
         AttributionNavigationType::kContextMenu,
         /*is_within_fenced_frame=*/false, kFrameId);
 
-    SourceRegistration source_data(destination_site);
+    SourceRegistration source_data(*DestinationSet::Create({destination_site}));
     source_data.source_event_id = 10;
     source_data.priority = 20;
     source_data.debug_key = 789;
@@ -550,8 +553,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     // This should succeed even though the destination site doesn't match the
     // final navigation site.
-    source_data.destination =
-        net::SchemefulSite::Deserialize("https://trigger2.example");
+    source_data.destination_set = *DestinationSet::Create(
+        {net::SchemefulSite::Deserialize("https://trigger2.example")});
     data_host_remote.data_host->SourceDataAvailable(reporting_origin,
                                                     std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
@@ -844,7 +847,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError",
+  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError2",
                                 SourceRegistrationError::kInvalidJson, 1);
 }
 
@@ -1315,8 +1318,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
       /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
       kFrameId);
 
-  SourceRegistration source_data(
-      net::SchemefulSite::Deserialize("https://dest.test"));
+  SourceRegistration source_data(*DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://dest.test")}));
   source_data_host_remote->SourceDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report1.test"),
       std::move(source_data));
@@ -1427,7 +1430,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  SourceRegistration source_data(destination_site);
+  SourceRegistration source_data(*DestinationSet::Create({destination_site}));
   source_data.source_event_id = 1;
   data_host_remote1->SourceDataAvailable(reporting_origin, source_data);
   data_host_remote1.FlushForTesting();
@@ -1463,7 +1466,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  SourceRegistration source_data(destination_site);
+  SourceRegistration source_data(*DestinationSet::Create({destination_site}));
   source_data.source_event_id = 10;
   data_host_remote->SourceDataAvailable(reporting_origin,
                                         std::move(source_data));
@@ -1514,9 +1517,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   data_host_remote->SourceDataAvailable(
       /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report.test"),
-      SourceRegistration(
-          /*destination=*/net::SchemefulSite::Deserialize(
-              "https://destination.test")));
+      SourceRegistration(*DestinationSet::Create(
+          {net::SchemefulSite::Deserialize("https://destination.test")})));
   data_host_remote.FlushForTesting();
 }
 

@@ -773,6 +773,8 @@ function sourceRegistrationErrorToText(error: SourceRegistrationError) {
       return 'destination missing';
     case SourceRegistrationError.kDestinationWrongType:
       return 'destination has wrong type (must be a string)';
+    case SourceRegistrationError.kDestinationListTooLong:
+      return 'number of destinations exceeds limit';
     case SourceRegistrationError.kDestinationUntrustworthy:
       return 'destination not potentially trustworthy';
     case SourceRegistrationError.kFilterDataWrongType:

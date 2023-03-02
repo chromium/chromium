@@ -12,6 +12,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -58,9 +59,18 @@ std::ostream& operator<<(std::ostream& out, const Filters& filters) {
   return out << filters.ToJson();
 }
 
+bool operator==(const DestinationSet& a, const DestinationSet& b) {
+  return a.destinations() == b.destinations();
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const DestinationSet& destination_set) {
+  return out << destination_set.ToJson();
+}
+
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
   auto tie = [](const SourceRegistration& s) {
-    return std::make_tuple(s.source_event_id, s.destination, s.expiry,
+    return std::make_tuple(s.source_event_id, s.destination_set, s.expiry,
                            s.event_report_window, s.aggregatable_report_window,
                            s.priority, s.filter_data, s.debug_key,
                            s.aggregation_keys, s.debug_reporting);

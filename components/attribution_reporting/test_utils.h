@@ -17,6 +17,7 @@ namespace attribution_reporting {
 class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
+class DestinationSet;
 class FilterData;
 class Filters;
 class SuitableOrigin;
@@ -42,6 +43,10 @@ std::ostream& operator<<(std::ostream&, const FilterPair&);
 bool operator==(const Filters&, const Filters&);
 
 std::ostream& operator<<(std::ostream&, const Filters&);
+
+bool operator==(const DestinationSet&, const DestinationSet&);
+
+std::ostream& operator<<(std::ostream&, const DestinationSet&);
 
 bool operator==(const SourceRegistration&, const SourceRegistration&);
 

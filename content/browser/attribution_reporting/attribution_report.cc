@@ -153,7 +153,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
                 this->attribution_info().source.common_info();
 
             dict.Set("attribution_destination",
-                     common_source_info.SerializeDestinationSites());
+                     common_source_info.destination_sites().ToJson());
 
             // The API denotes these values as strings; a `uint64_t` cannot be
             // put in a dict as an integer in order to be opaque to various API

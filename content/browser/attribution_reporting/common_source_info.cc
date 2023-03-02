@@ -6,12 +6,9 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
-#include "base/ranges/algorithm.h"
-#include "base/values.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
@@ -75,7 +72,7 @@ absl::optional<base::Time> CommonSourceInfo::GetReportWindowTime(
 CommonSourceInfo::CommonSourceInfo(
     uint64_t source_event_id,
     SuitableOrigin source_origin,
-    base::flat_set<net::SchemefulSite> destination_sites,
+    attribution_reporting::DestinationSet destination_sites,
     SuitableOrigin reporting_origin,
     base::Time source_time,
     base::Time expiry_time,
@@ -112,10 +109,6 @@ CommonSourceInfo::CommonSourceInfo(
   DCHECK_GT(expiry_time_, source_time);
   DCHECK_GT(event_report_window_time_, source_time);
   DCHECK_GT(aggregatable_report_window_time_, source_time);
-
-  DCHECK(!destination_sites_.empty());
-  DCHECK(base::ranges::all_of(
-      destination_sites_, &attribution_reporting::IsSitePotentiallySuitable));
 }
 
 CommonSourceInfo::~CommonSourceInfo() = default;
@@ -131,21 +124,6 @@ CommonSourceInfo& CommonSourceInfo::operator=(CommonSourceInfo&&) = default;
 
 net::SchemefulSite CommonSourceInfo::SourceSite() const {
   return net::SchemefulSite(source_origin_);
-}
-
-base::Value CommonSourceInfo::SerializeDestinationSites() const {
-  if (destination_sites_.size() == 1) {
-    return base::Value(destination_sites_.begin()->Serialize());
-  }
-
-  base::Value::List list;
-  list.reserve(destination_sites_.size());
-
-  for (const auto& site : destination_sites_) {
-    list.Append(site.Serialize());
-  }
-
-  return base::Value(std::move(list));
 }
 
 }  // namespace content

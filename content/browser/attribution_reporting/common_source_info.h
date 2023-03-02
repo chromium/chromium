@@ -7,19 +7,18 @@
 
 #include <stdint.h>
 
-#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/common/content_export.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class Value;
-}  // namespace base
+namespace net {
+class SchemefulSite;
+}  // namespace net
 
 namespace content {
 
@@ -39,7 +38,7 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   CommonSourceInfo(uint64_t source_event_id,
                    attribution_reporting::SuitableOrigin source_origin,
-                   base::flat_set<net::SchemefulSite> destination_sites,
+                   attribution_reporting::DestinationSet destination_sites,
                    attribution_reporting::SuitableOrigin reporting_origin,
                    base::Time source_time,
                    base::Time expiry_time,
@@ -65,7 +64,7 @@ class CONTENT_EXPORT CommonSourceInfo {
     return source_origin_;
   }
 
-  const base::flat_set<net::SchemefulSite>& destination_sites() const {
+  const attribution_reporting::DestinationSet& destination_sites() const {
     return destination_sites_;
   }
 
@@ -109,15 +108,10 @@ class CONTENT_EXPORT CommonSourceInfo {
   // that we avoid unnecessary copies of |source_origin_|.
   net::SchemefulSite SourceSite() const;
 
-  // Serializes the source's destination origins as a set of sites. If the set
-  // has a single element, returns the string directly. Otherwise, returns a
-  // list of strings.
-  base::Value SerializeDestinationSites() const;
-
  private:
   uint64_t source_event_id_;
   attribution_reporting::SuitableOrigin source_origin_;
-  base::flat_set<net::SchemefulSite> destination_sites_;
+  attribution_reporting::DestinationSet destination_sites_;
   attribution_reporting::SuitableOrigin reporting_origin_;
   base::Time source_time_;
   base::Time expiry_time_;

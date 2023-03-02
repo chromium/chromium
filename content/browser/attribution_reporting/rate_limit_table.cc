@@ -164,7 +164,7 @@ bool RateLimitTable::AddRateLimit(
   statement.BindTime(7, source_expiry_or_attribution_time);
 
   const base::flat_set<net::SchemefulSite>* destination_sites =
-      &common_info.destination_sites();
+      &common_info.destination_sites().destinations();
   base::flat_set<net::SchemefulSite> context_sites;
   if (source.attribution_logic() ==
           StoredSource::AttributionLogic::kTruthfully &&
@@ -229,7 +229,7 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginLimit(
   return AllowedForReportingOriginLimit(
       db, Scope::kSource, source.common_info(),
       source.common_info().source_time(),
-      source.common_info().destination_sites());
+      source.common_info().destination_sites().destinations());
 }
 
 RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
@@ -255,7 +255,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   DCHECK_GT(limit, 0);
 
   base::flat_set<net::SchemefulSite> destination_sites =
-      source.common_info().destination_sites();
+      source.common_info().destination_sites().destinations();
 
   while (statement.Step()) {
     destination_sites.insert(

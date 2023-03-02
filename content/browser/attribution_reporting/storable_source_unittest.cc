@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -20,7 +21,9 @@ namespace {
 using ::attribution_reporting::SuitableOrigin;
 
 TEST(StorableSourceTest, ReportWindows) {
-  const auto destination = net::SchemefulSite::Deserialize("https://dest.test");
+  const attribution_reporting::DestinationSet destinations =
+      *attribution_reporting::DestinationSet::Create(
+          {net::SchemefulSite::Deserialize("https://dest.test")});
 
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://report.test");
@@ -98,7 +101,7 @@ TEST(StorableSourceTest, ReportWindows) {
   };
 
   for (const auto& test_case : kTestCases) {
-    attribution_reporting::SourceRegistration reg(destination);
+    attribution_reporting::SourceRegistration reg(destinations);
     reg.expiry = test_case.expiry;
     reg.event_report_window = test_case.event_report_window;
     reg.aggregatable_report_window = test_case.aggregatable_report_window;
