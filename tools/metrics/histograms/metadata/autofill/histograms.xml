@@ -3839,7 +3839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ShadowPredictions.{SourcePair}"
-    enum="AutofillPredictionsComparisonResult" expires_after="2023-04-01">
+    enum="AutofillPredictionsComparisonResult" expires_after="2023-10-01">
   <owner>cfroussios@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
