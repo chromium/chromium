@@ -296,56 +296,99 @@ base::WeakPtr<InputDeviceFactoryEvdev> InputDeviceFactoryEvdev::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void InputDeviceFactoryEvdev::SetMousePropertiesPerDevice() {
+#if defined(USE_EVDEV_GESTURES)
+  std::vector<int> ids;
+  gesture_property_provider_->GetDeviceIdsByType(DT_MOUSE, &ids);
+  for (const int id : ids) {
+    const auto& mouse_settings = input_device_settings_.GetMouseSettings(id);
+    SetIntPropertyForOneDevice(id, "Pointer Sensitivity",
+                               mouse_settings.sensitivity);
+    SetBoolPropertyForOneDevice(id, "Pointer Acceleration",
+                                mouse_settings.acceleration_enabled);
+    SetIntPropertyForOneDevice(id, "Mouse Scroll Sensitivity",
+                               mouse_settings.scroll_sensitivity);
+    SetBoolPropertyForOneDevice(id, "Mouse Scroll Acceleration",
+                                mouse_settings.scroll_acceleration_enabled);
+    SetBoolPropertyForOneDevice(id, "Mouse Reverse Scrolling",
+                                mouse_settings.reverse_scroll_enabled);
+    // Both reverse scroll and australian scrolling need to be set to cover
+    // mice with mutlitouch surfaces as well as normal scrollwheel-type mice.
+    if (gesture_property_provider_->IsDeviceIdOfType(id, DT_MULTITOUCH)) {
+      // If settings are not enabled per-device, use old setting mapping which
+      // means mice with multitouch surfaces utilize the touchpad settings.
+      // TODO(dpad): Remove if/else once per-device settings launches.
+      if (input_device_settings_.enable_per_device_settings) {
+        SetBoolPropertyForOneDevice(id, "Australian Scrolling",
+                                    mouse_settings.reverse_scroll_enabled);
+      } else {
+        SetBoolPropertyForOneDevice(
+            id, "Australian Scrolling",
+            input_device_settings_.GetTouchpadSettings(id)
+                .natural_scroll_enabled);
+      }
+    }
+    SetBoolPropertyForOneDevice(id, "Mouse High Resolution Scrolling", true);
+    SetBoolPropertyForOneDevice(id, "Output Mouse Wheel Gestures", true);
+  }
+#endif
+}
+
+void InputDeviceFactoryEvdev::SetTouchpadPropertiesPerDevice() {
+#if defined(USE_EVDEV_GESTURES)
+  std::vector<int> ids;
+  gesture_property_provider_->GetDeviceIdsByType(DT_TOUCHPAD, &ids);
+  for (const int id : ids) {
+    const auto& touchpad_settings =
+        input_device_settings_.GetTouchpadSettings(id);
+    SetIntPropertyForOneDevice(id, "Haptic Button Sensitivity",
+                               touchpad_settings.haptic_click_sensitivity);
+    SetIntPropertyForOneDevice(id, "Pointer Sensitivity",
+                               touchpad_settings.sensitivity);
+    SetIntPropertyForOneDevice(id, "Scroll Sensitivity",
+                               touchpad_settings.scroll_sensitivity);
+    SetBoolPropertyForOneDevice(id, "Pointer Acceleration",
+                                touchpad_settings.acceleration_enabled);
+    SetBoolPropertyForOneDevice(id, "Scroll Acceleration",
+                                touchpad_settings.scroll_acceleration_enabled);
+    SetBoolPropertyForOneDevice(id, "Australian Scrolling",
+                                touchpad_settings.natural_scroll_enabled);
+    SetBoolPropertyForOneDevice(id, "Tap Enable",
+                                touchpad_settings.tap_to_click_enabled);
+    SetBoolPropertyForOneDevice(id, "Tap Drag Enable",
+                                touchpad_settings.tap_dragging_enabled);
+  }
+#endif
+}
+
+void InputDeviceFactoryEvdev::SetPointingStickPropertiesPerDevice() {
+#if defined(USE_EVDEV_GESTURES)
+  std::vector<int> ids;
+  gesture_property_provider_->GetDeviceIdsByType(DT_POINTING_STICK, &ids);
+  for (const int id : ids) {
+    const auto& pointing_stick_settings =
+        input_device_settings_.GetPointingStickSettings(id);
+    SetIntPropertyForOneDevice(id, "Pointer Sensitivity",
+                               pointing_stick_settings.sensitivity);
+    SetBoolPropertyForOneDevice(id, "Pointer Acceleration",
+                                pointing_stick_settings.acceleration_enabled);
+    SetBoolPropertyForOneDevice(id, "Mouse High Resolution Scrolling", true);
+    SetBoolPropertyForOneDevice(id, "Output Mouse Wheel Gestures", true);
+  }
+#endif
+}
+
 void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   TRACE_EVENT0("evdev", "ApplyInputDeviceSettings");
 
-  SetIntPropertyForOneType(
-      DT_TOUCHPAD, "Haptic Button Sensitivity",
-      input_device_settings_.GetTouchpadSettings().haptic_click_sensitivity);
-  SetIntPropertyForOneType(
-      DT_TOUCHPAD, "Pointer Sensitivity",
-      input_device_settings_.GetTouchpadSettings().sensitivity);
-  SetIntPropertyForOneType(
-      DT_TOUCHPAD, "Scroll Sensitivity",
-      input_device_settings_.GetTouchpadSettings().scroll_sensitivity);
-  SetBoolPropertyForOneType(
-      DT_TOUCHPAD, "Pointer Acceleration",
-      input_device_settings_.GetTouchpadSettings().acceleration_enabled);
-  SetBoolPropertyForOneType(
-      DT_TOUCHPAD, "Scroll Acceleration",
-      input_device_settings_.GetTouchpadSettings().scroll_acceleration_enabled);
-
-  SetBoolPropertyForOneType(
-      DT_TOUCHPAD, "Tap Enable",
-      input_device_settings_.GetTouchpadSettings().tap_to_click_enabled);
-  SetBoolPropertyForOneType(DT_TOUCHPAD, "T5R2 Three Finger Click Enable",
-                            input_device_settings_.three_finger_click_enabled);
-  SetBoolPropertyForOneType(
-      DT_TOUCHPAD, "Tap Drag Enable",
-      input_device_settings_.GetTouchpadSettings().tap_dragging_enabled);
-
-  SetBoolPropertyForOneType(
-      DT_MULTITOUCH, "Australian Scrolling",
-      input_device_settings_.GetTouchpadSettings().natural_scroll_enabled);
-
-  SetIntPropertyForOneType(
-      DT_MOUSE, "Pointer Sensitivity",
-      input_device_settings_.GetMouseSettings().sensitivity);
-  SetBoolPropertyForOneType(
-      DT_MOUSE, "Pointer Acceleration",
-      input_device_settings_.GetMouseSettings().acceleration_enabled);
-  ApplyRelativePointingDeviceSettings(DT_MOUSE);
-  SetIntPropertyForOneType(
-      DT_POINTING_STICK, "Pointer Sensitivity",
-      input_device_settings_.GetPointingStickSettings().sensitivity);
-  SetBoolPropertyForOneType(
-      DT_POINTING_STICK, "Pointer Acceleration",
-      input_device_settings_.GetPointingStickSettings().acceleration_enabled);
-  ApplyRelativePointingDeviceSettings(DT_POINTING_STICK);
+  SetMousePropertiesPerDevice();
+  SetTouchpadPropertiesPerDevice();
+  SetPointingStickPropertiesPerDevice();
 
   SetBoolPropertyForOneType(DT_TOUCHPAD, "Tap Paused",
                             input_device_settings_.tap_to_click_paused);
-
+  SetBoolPropertyForOneType(DT_TOUCHPAD, "T5R2 Three Finger Click Enable",
+                            input_device_settings_.three_finger_click_enabled);
   SetBoolPropertyForOneType(
       DT_ALL, "Event Logging Enable",
       base::FeatureList::IsEnabled(ui::kEnableInputEventLogging));
@@ -377,23 +420,6 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   }
 
   NotifyDevicesUpdated();
-}
-
-void InputDeviceFactoryEvdev::ApplyRelativePointingDeviceSettings(
-    EventDeviceType type) {
-  if (type == DT_MOUSE) {
-    SetIntPropertyForOneType(
-        type, "Mouse Scroll Sensitivity",
-        input_device_settings_.GetMouseSettings().scroll_sensitivity);
-    SetBoolPropertyForOneType(
-        type, "Mouse Scroll Acceleration",
-        input_device_settings_.GetMouseSettings().scroll_acceleration_enabled);
-    SetBoolPropertyForOneType(
-        type, "Mouse Reverse Scrolling",
-        input_device_settings_.GetMouseSettings().reverse_scroll_enabled);
-  }
-  SetBoolPropertyForOneType(type, "Mouse High Resolution Scrolling", true);
-  SetBoolPropertyForOneType(type, "Output Mouse Wheel Gestures", true);
 }
 
 void InputDeviceFactoryEvdev::ApplyCapsLockLed() {
@@ -629,6 +655,26 @@ void InputDeviceFactoryEvdev::UpdateKeyboardDevicesOnKeyPress(
     const EventConverterEvdev* converter) {
   UpdateDirtyFlags(converter);
   NotifyDevicesUpdated();
+}
+
+void InputDeviceFactoryEvdev::SetBoolPropertyForOneDevice(
+    int device_id,
+    const std::string& name,
+    bool value) {
+#if defined(USE_EVDEV_GESTURES)
+  SetGestureBoolProperty(gesture_property_provider_.get(), device_id, name,
+                         value);
+#endif
+}
+
+void InputDeviceFactoryEvdev::SetIntPropertyForOneDevice(
+    int device_id,
+    const std::string& name,
+    int value) {
+#if defined(USE_EVDEV_GESTURES)
+  SetGestureIntProperty(gesture_property_provider_.get(), device_id, name,
+                        value);
+#endif
 }
 
 void InputDeviceFactoryEvdev::SetIntPropertyForOneType(

@@ -107,7 +107,6 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Sync input_device_settings_ to attached devices.
   void ApplyInputDeviceSettings();
-  void ApplyRelativePointingDeviceSettings(EventDeviceType type);
   void ApplyCapsLockLed();
 
   // Policy for device enablement.
@@ -128,12 +127,22 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   // received.
   void UpdateKeyboardDevicesOnKeyPress(const EventConverterEvdev* converter);
 
+  void SetMousePropertiesPerDevice();
+  void SetTouchpadPropertiesPerDevice();
+  void SetPointingStickPropertiesPerDevice();
+
   void SetIntPropertyForOneType(const EventDeviceType type,
                                 const std::string& name,
                                 int value);
   void SetBoolPropertyForOneType(const EventDeviceType type,
                                  const std::string& name,
                                  bool value);
+  void SetIntPropertyForOneDevice(int device_id,
+                                  const std::string& name,
+                                  int value);
+  void SetBoolPropertyForOneDevice(int device_id,
+                                   const std::string& name,
+                                   bool value);
   void EnablePalmSuppression(bool enabled);
   void EnableDevices();
 

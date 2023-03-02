@@ -111,7 +111,7 @@ LibInputEventConverter::LibInputDevice::~LibInputDevice() {
 
 void LibInputEventConverter::LibInputDevice::ApplySettings(
     const InputDeviceSettingsEvdev& settings) const {
-  const auto& touchpad_settings = settings.GetTouchpadSettings();
+  const auto& touchpad_settings = settings.GetTouchpadSettings(id());
   SetNaturalScrollEnabled(touchpad_settings.natural_scroll_enabled);
   SetSensitivity(touchpad_settings.sensitivity);
   SetTapToClickEnabled(touchpad_settings.tap_to_click_enabled);

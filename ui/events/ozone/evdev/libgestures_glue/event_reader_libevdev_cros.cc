@@ -137,7 +137,7 @@ void EventReaderLibevdevCros::SetHapticTouchpadEffectForNextButtonRelease(
 
 void EventReaderLibevdevCros::ApplyDeviceSettings(
     const InputDeviceSettingsEvdev& settings) {
-  const auto& touchpad_settings = settings.GetTouchpadSettings();
+  const auto& touchpad_settings = settings.GetTouchpadSettings(id());
   if (haptic_touchpad_handler_) {
     haptic_touchpad_handler_->SetClickStrength(
         static_cast<HapticTouchpadEffectStrength>(
