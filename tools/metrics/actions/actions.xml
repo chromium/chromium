@@ -30326,6 +30326,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountPicker_Close">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes the account picker. Only on iOS.
+  </description>
+</action>
+
+<action name="Signin_AccountPicker_Open">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user opens the account picker. Only on iOS.
+  </description>
+</action>
+
 <action name="Signin_AccountSettings_GoogleActivityControlsClicked">
   <owner>mahmadi@chromium.org</owner>
   <description>

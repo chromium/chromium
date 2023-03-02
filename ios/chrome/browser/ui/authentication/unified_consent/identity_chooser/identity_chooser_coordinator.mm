@@ -7,6 +7,8 @@
 #import <ostream>
 
 #import "base/check_op.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -65,6 +67,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 
 - (void)start {
   [super start];
+  base::RecordAction(base::UserMetricsAction("Signin_AccountPicker_Open"));
   DCHECK_EQ(IdentityChooserCoordinatorStateNotStarted, self.state);
   self.state = IdentityChooserCoordinatorStateStarted;
   // Creates the controller.
@@ -98,6 +101,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 
 - (void)stop {
   [super stop];
+  base::RecordAction(base::UserMetricsAction("Signin_AccountPicker_Close"));
   [self.identityChooserMediator disconnect];
   self.identityChooserMediator = nil;
 }
