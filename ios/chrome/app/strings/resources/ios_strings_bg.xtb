@@ -212,6 +212,7 @@
 <translation id="2500374554657206846">Опции за запазване на паролата</translation>
 <translation id="2523363575747517183">Този уебсайт многократно се опитва да отвори друго приложение.</translation>
 <translation id="2529021024822217800">Отваряне на всички</translation>
+<translation id="2547458583188611426">Синхронизирането не работи. За да стартирате синхронизирането, въведете пропуска си.</translation>
 <translation id="2556092377360758201">Без защита (не се препоръчва)</translation>
 <translation id="2562041823070056534">Изпраща се до <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Използване и запазване на пароли в профила ви в Google</translation>
@@ -390,6 +391,7 @@
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Предлагане да се преведе този сайт</translation>
+<translation id="3803967590068704619">Този адрес е запазен в профила ви в Google (<ph name="USER_EMAIL" />). Можете да го използвате в продуктите ни на всяко устройство.</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3818293389945649617">Търсене на следващото</translation>
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
@@ -487,6 +489,7 @@
 <translation id="4536418791685807335">Опитайте да влезете отново.</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
 <translation id="457386861538956877">Още...</translation>
+<translation id="4587235830039045480">Запазване на паролата в профила ви в Google</translation>
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4588014171431912783">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. <ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавиатура</translation>
@@ -654,6 +657,7 @@
 <translation id="5755162682436943950">Не сте в профила си. Отваря диалоговия прозорец за вход в профила и включване на синхронизирането.</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
 <translation id="5765456154762864099">Меню → Настройки → Браузър по подразбиране</translation>
+<translation id="5777888488419460501">Запазване в профила</translation>
 <translation id="5782227691023083829">Превежда се...</translation>
 <translation id="5791632441210678828">Бутон за сортиране на емисията „Следено“.</translation>
 <translation id="5802829331520313983">Настройване…</translation>
@@ -745,6 +749,7 @@
 <translation id="6342069812937806050">Току-що</translation>
 <translation id="6344783595350022745">Изчистване на текста</translation>
 <translation id="6346549652287021269">Да се стартира ли ново изтегляне?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Този адрес ще бъде изтрит от профила ви в Google (<ph name="USER_EMAIL" />) и от това устройство.}other{Тези адреси ще бъдат изтрити от профила ви в Google (<ph name="USER_EMAIL" />) и от това устройство.}}</translation>
 <translation id="634878792104344809">Синхронизиране на вашите пароли, история и др. на всичките ви устройства</translation>
 <translation id="6361848730467328243">Следване на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Няма раздели в режим „инкогнито“</translation>
@@ -1038,6 +1043,7 @@
 <translation id="8343993175958086504">Създайте резервно копие на нещата си и ги използвайте на всяко устройство.</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8386068868580335421">Нулиране</translation>
+<translation id="838867811594159347">Въведете пропуск…</translation>
 <translation id="8393889347136007944">Разделите не са използвани от <ph name="THRESHOLD" /> дни</translation>
 <translation id="8407669440184693619">Няма намерени пароли за този сайт</translation>
 <translation id="842017693807136194">Влезли сте със:</translation>
@@ -1110,6 +1116,7 @@
 <translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Споделяне…</translation>
 <translation id="8911759861431145525">Докоснете „Добавяне“ и въведете информацията си.</translation>
+<translation id="891282356902782456">Паролата ще се запази само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Откройте текст в сайт.</translation>
 <translation id="8917490105272468696">Да, ще участвам</translation>
 <translation id="8928133177108699615">Настолна</translation>

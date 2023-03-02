@@ -279,6 +279,7 @@
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth төхөөрөмж нь холбогдох зөвшөөрөл хүсч байна. Хүлээж авахаасаа өмнө <ph name="PASSKEY" /> дамжуулах түлхүүр үг нь энэ төхөөрөмж дээр гарч ирсэн байгаа эсэхийг шалгана уу.</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="243878895369688216">Өчигдөр нээсэн</translation>
+<translation id="2440978926514840421">GIF бичлэгийг хийсэн</translation>
 <translation id="2441427462554639370">Хадгалах сангийн зай хэт бага байгаа тул бичлэгийг дуусгасан</translation>
 <translation id="24452542372838207">Мэдэгдлийг дэлгэх</translation>
 <translation id="2449089818483227734">Батарей бага байна</translation>
@@ -293,6 +294,7 @@
 <translation id="2509468283778169019">CAPS LOCK асаалттай байна</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Цонхнуудын түгжээг тайлах</translation>
+<translation id="2530896289327917474">Caret browsing-г асаах эсвэл унтраах</translation>
 <translation id="2542089167727451762">Профайл зургаа товшино уу</translation>
 <translation id="255671100581129685">Олон нийтийн харилцан үйлдэлд Google Туслах боломжгүй байна.</translation>
 <translation id="256712445991462162">суурилуулсан томруулагч</translation>
@@ -418,6 +420,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> цонхыг <ph name="ACTIVE_DESK" /> дэлгэцээс <ph name="TARGET_DESK" /> дэлгэц рүү зөөсөн</translation>
 <translation id="3252573918265662711">Тохиргоо хийх.</translation>
 <translation id="3255483164551725916">Та юу хийх боломжтой вэ?</translation>
+<translation id="3256109297135787951">Тавиур дээрх зүйлээсээ тодруулгыг устгах</translation>
 <translation id="3260969790895726815">Яриаг дотоодод боловсруулдаг ба дуу хоолойгоор бичих офлайн үед ажилладаг хэдий ч зарим дуут тушаал ажиллахгүй.</translation>
 <translation id="3269597722229482060">Баруун талыг товших</translation>
 <translation id="3289544412142055976">Linux аппуудыг одоогоор дэмждэггүй</translation>
@@ -610,6 +613,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Суулгасан апп, Түр зогсоосон</translation>
 <translation id="423685346499232137">Одоогоор контентыг хуулах эсвэл буулгах боломжгүй</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Тойм горим</translation>
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
 <translation id="4247123849143712100">Шинэчлээд, унтраах</translation>
 <translation id="4250229828105606438">Дэлгэцийн агшин</translation>
@@ -909,6 +913,7 @@
 <translation id="576453121877257266">Шөнийн гэрэл асаалттай байна.</translation>
 <translation id="5769373120130404283">Нууцлалын дэлгэц</translation>
 <translation id="5773950591113557721">Энэ нь <ph name="APP_NAME" />, болон камер ба микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад хандалтыг зөвшөөрнө</translation>
+<translation id="5774295353725270860">Файлууд аппликейшнийг нээх</translation>
 <translation id="5777841717266010279">Дэлгэц хуваалцахыг зогсоох уу?</translation>
 <translation id="5779721926447984944">Бэхэлсэн файлууд</translation>
 <translation id="5788127256798019331">Файлуудыг тоглуулах</translation>
@@ -962,6 +967,7 @@
 <translation id="6043212731627905357">Таны <ph name="DEVICE_TYPE" /> монитортой тохирохгүй байна (мониторыг дэмжээгүй).</translation>
 <translation id="6043994281159824495">Яг одоо гарах</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> апп ашигласан</translation>
+<translation id="6045998054441862242">Өндөр нарийвчлалтай горимыг асаах</translation>
 <translation id="6047696787498798094">Хэрэглэгчийг сольсноор дэлгэц хуваалцах сонголт зогсох болно. Та үргэлжлүүлэх үү?</translation>
 <translation id="6054305421211936131">Ухаалаг картаар нэвтрэх</translation>
 <translation id="6059276912018042191">Саяхны Chrome табууд</translation>
@@ -1073,6 +1079,7 @@
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" bluetooth төхөөрөмж нь хослуулах зөвшөөрөл хүсч байна. Энэ төхөөрөмж дээр нэвтрэх түлхүүрийг оруулна уу: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Нууц үг</translation>
+<translation id="666343722268997814">Тодруулсан зүйлд баруун товчлуурын цэсийг нээх</translation>
 <translation id="6665545700722362599">Веб сайтууд, аппууд болон өргөтгөлүүдэд байршлын үйлчилгээ, төхөөрөмжийн микрофон, камер болон бусад онцлогийг ашиглахыг зөвшөөрөх</translation>
 <translation id="6667908387435388584">Утасныхаа сүлжээний цэгт холбогдож, төхөөрөмжөө чимээгүй болгож, байршлыг нь тогтоож мөн утсан дээр тань нээлттэй байгаа Chrome-н саяхны табуудыг хараарай</translation>
 <translation id="6670153871843998651">Дэлгэц 3</translation>
@@ -1123,6 +1130,7 @@
 <translation id="6901883536534621389">Шилжихийн тулд зангаануудыг туршиж үзнэ үү</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="6931576957638141829">Дараахад хадгалах</translation>
+<translation id="6941333068993625698">Санал хүсэлт илгээх</translation>
 <translation id="6942518653766415536">Бичлэгийн форматын цэс</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6960565108681981554">Идэвхжүүлээгүй байна. Оператор компанитайгаа холбогдоно уу.</translation>
@@ -1244,6 +1252,7 @@
 <translation id="7607002721634913082">зогссон</translation>
 <translation id="7609951632080598826">Календарийн харагдах байдал, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камер дахин холбогдсон.</translation>
+<translation id="7611271430932669992">Попапс болон харилцах цонх руу сонголтыг зөөх</translation>
 <translation id="761736749114493194">Камерын хүрээлэх онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камерыг баруун доод булан руу зэрэгцүүлсэн</translation>
@@ -1473,6 +1482,7 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
 <translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>
+<translation id="8858369206579825206">Нууцлалын тохиргоо</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />-с <ph name="EVENT_POSITION" /> үйл явдал</translation>
@@ -1499,6 +1509,7 @@
 <translation id="8991617137207906966">Өнгө урвуулах горимыг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Search+H дээр дахин дарна уу.</translation>
 <translation id="899350903320462459">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг <ph name="LOGIN_ID" />-р тайлна уу</translation>
 <translation id="9000771174482730261">ХАДГАЛАХ САНГ УДИРДАХ</translation>
+<translation id="9005984960510803406">Crosh цонхыг нээх</translation>
 <translation id="9017320285115481645">Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу.</translation>
 <translation id="9024331582947483881">бүтэн дэлгэц</translation>
 <translation id="9029736946581028033">Төхөөрөмж удахгүй унтарна</translation>

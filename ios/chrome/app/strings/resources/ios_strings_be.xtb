@@ -389,6 +389,7 @@
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="380329542618494757">Імя</translation>
 <translation id="3803696231112616155">Прапаноўваць перакласці гэты сайт</translation>
+<translation id="3803967590068704619">Гэты адрас захоўваецца ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />). Вы можаце выкарыстоўваць гэты адрас у розных прадуктах Google на любой прыладзе.</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3818293389945649617">Знайсці наступнае супадзенне</translation>
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
@@ -742,6 +743,7 @@
 <translation id="6342069812937806050">Толькі што</translation>
 <translation id="6344783595350022745">Ачысціць тэкст</translation>
 <translation id="6346549652287021269">Пачаць новае спампоўванне?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Гэты адрас будзе выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}one{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}few{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}many{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}other{Гэтыя адрасы будуць выдалены з вашага Уліковага запісу Google (<ph name="USER_EMAIL" />) і з дадзенай прылады.}}</translation>
 <translation id="634878792104344809">Сінхранізацыя пароляў, гісторыі і іншых даных на ўсіх вашых прыладах</translation>
 <translation id="6361848730467328243">Падпісацца на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Няма ўкладак інкогніта</translation>

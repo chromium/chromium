@@ -615,6 +615,7 @@
 <translation id="5911887972742538906">Ett fel uppstod under installationen av Linux-programmet.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopieringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Det finns nya sökfunktioner</translation>
 <translation id="5926082595146149752">nederländska (Nederländerna) med internationellt PC-tangentbord för USA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Aktivera efter enhetskonfigurering</translation>

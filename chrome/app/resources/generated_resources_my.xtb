@@ -4481,6 +4481,7 @@
 <translation id="4975771730019223894">အက်ပ်သင်္ကေတ</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">အသုံးပြုရန် အတည်ပြုသည်</translation>
+<translation id="4979263087381759787">ဆော့ဖ်ဝဲအင်ဂျင်နီယာ ရွေးချယ်စရာများ</translation>
 <translation id="4980805016576257426">ဤနောက်ဆက်တွဲတွင် အန္တရာယ်ရှိသည့်ဆော့ဖ်ဝဲ ပါဝင်ပါသည်။</translation>
 <translation id="4981449534399733132">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာများကို သင်စင့်ခ်လုပ်ထားသော စက်အားလုံးနှင့် သင့် Google အကောင့်မှ ရှင်းထုတ်ရန် <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />။</translation>
 <translation id="4986706507552097681">စင့်ခ်လုပ်မည့်အရာကို ဆက်တင်များတွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။ Google က Search နှင့် အခြားဝန်ဆောင်မှုများကို သင့်မှတ်တမ်းပေါ်မူတည်၍ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။</translation>
@@ -5569,6 +5570,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{ဝဘ်ဆိုက် ၁ ခုအတွက် စိစစ်ပြီးပြီ}other{ဝဘ်ဆိုက် {NUM_SITES} ခုအတွက် စိစစ်ပြီးပြီ}}</translation>
 <translation id="5997337190805127100">ဝဘ်ဆိုက်အသုံးပြုခွင့်အကြောင်း ပိုမိုလေ့လာခြင်း</translation>
 <translation id="5998458948782718639">‘အော်တိုဖြည့်’ ပိုကောင်းလာအောင် ကူညီရန်</translation>
+<translation id="5999630716831179808">အသံများ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခု</translation>
 <translation id="6001839398155993679">စကြစို့</translation>
 <translation id="6002122790816966947">သင်၏စက်များ</translation>

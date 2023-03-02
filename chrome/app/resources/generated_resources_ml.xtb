@@ -3525,6 +3525,7 @@
 <translation id="4102469565336584882">കോഡ് അസാധുവാണ്. നിങ്ങളുടെ എൻട്രിയിൽ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; എന്ന ഫോർമാറ്റ് ഉണ്ടായിരിക്കണം</translation>
 <translation id="4102906002417106771">Powerwash ചെയ്യുന്നതിന് റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="4104163789986725820">കയ&amp;റ്റുമതി ചെയ്യുക...</translation>
+<translation id="4104944259562794668">ക്രമീകരണം &gt; സുരക്ഷയും സ്വകാര്യതയും &gt; ലോക്ക് സ്ക്രീനും സൈൻ ഇൻ ചെയ്യൽ എന്നതിൽ നിങ്ങൾക്കിത് പിന്നീട് പ്രവർത്തനക്ഷമമാക്കാം</translation>
 <translation id="4107048419833779140">സ്‌റ്റോറേജ് ​​ഉപകരണം തിരിച്ചറിഞ്ഞ് ഒഴിവാക്കുക</translation>
 <translation id="4108314971463891922">പിന്തുടരുക</translation>
 <translation id="4109135793348361820">വിൻഡോ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) എന്നതിലേക്ക് നീക്കുക</translation>
@@ -4465,6 +4466,7 @@
 <translation id="4975771730019223894">ആപ്പ് ബാഡ്‌ജ് ചെയ്യൽ</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">ആക്‌സസ് സ്ഥിരീകരിക്കുക</translation>
+<translation id="4979263087381759787">ഡെവലപ്പർ ഓ‌പ്ഷനുകൾ</translation>
 <translation id="4980805016576257426">ഈ വിപുലീകരണത്തിൽ മാൽവെയർ അടങ്ങിയിരിക്കുന്നു.</translation>
 <translation id="4981449534399733132">നിങ്ങളുടെ സമന്വയിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും Google അക്കൗണ്ടിൽ നിന്നും ബ്രൗസിംഗ് ഡാറ്റ മായ്ക്കാൻ<ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുക<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">എന്തൊക്കെ സമന്വയിപ്പിക്കണമെന്ന് നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും ക്രമീകരണത്തിൽ തിരഞ്ഞെടുക്കാം. നിങ്ങളുടെ ചരിത്രം അടിസ്ഥാനമാക്കി Search-ഉം മറ്റ് സേവനങ്ങളും Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
@@ -5554,6 +5556,8 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{നിങ്ങൾക്ക് വെബ് ബ്രൗസ് ചെയ്യുന്നത് തുടരാനാകുമെന്ന് ഉറപ്പാക്കാൻ, ഈ ആപ്പ് നീക്കം ചെയ്യാൻ അഡ്‌മിനോട് ആവശ്യപ്പെടുക.}other{നിങ്ങൾക്ക് വെബ് ബ്രൗസ് ചെയ്യുന്നത് തുടരാനാകുമെന്ന് ഉറപ്പാക്കാൻ, ഈ ആപ്പുകൾ നീക്കം ചെയ്യാൻ അഡ്‌മിനോട് ആവശ്യപ്പെടുക.}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 സൈറ്റിന്റെ അവലോകനം പൂർത്തിയായി}other{{NUM_SITES} സൈറ്റുകളുടെ അവലോകനം പൂർത്തിയായി}}</translation>
 <translation id="5997337190805127100">സൈറ്റ് ആക്‌സസിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
+<translation id="5998458948782718639">സ്വയമേവ പൂരിപ്പിക്കൽ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
+<translation id="5999630716831179808">വോയ്‌സുകൾ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' എന്നതിനായി <ph name="RESULT_COUNT" /> ഫലങ്ങള്‍</translation>
 <translation id="6001839398155993679">തുടങ്ങാം</translation>
 <translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
@@ -5641,6 +5645,7 @@
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> എന്ന പേരിലുള്ള ഉപകരണവുമായി ഡാറ്റ കൈമാറുക</translation>
 <translation id="6076175485108489240">ലൊക്കേഷൻ ഉപയോഗിക്കുക. ലൊക്കേഷൻ അനുമതിയുള്ള ആപ്പുകളെയും സേവനങ്ങളെയും നിങ്ങളുടെ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ അനുവദിക്കുക. Google, ഇടയ്ക്കിടെ ലൊക്കേഷൻ ഡാറ്റ ശേഖരിക്കുകയും, ലൊക്കേഷൻ കൃത്യതയും ലൊക്കേഷൻ അധിഷ്ഠിത സേവനങ്ങളും മെച്ചപ്പെടുത്താൻ, രഹസ്യസ്വഭാവത്തോടെ ഈ ഡാറ്റ ഉപയോഗിക്കുകയും ചെയ്തേക്കാം. <ph name="BEGIN_LINK1" />കൂടുതലറിയുക<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">കൂൾ ഗ്രേ</translation>
+<translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" വിപുലീകരണത്തിന് നിങ്ങളുടെ അക്കൗണ്ട് ആക്‌സസ് ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="6077131872140550515">തിരഞ്ഞെടുത്തവയിൽ നിന്ന് നീക്കംചെയ്യുക</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" />-നെക്കുറിച്ചുള്ള നുറുങ്ങുകളും അപ്‌ഡേറ്റുകളും</translation>
 <translation id="6077476112742402730">ടൈപ്പ് ചെയ്യാൻ പറഞ്ഞ് കൊടുക്കുക</translation>
@@ -7803,6 +7808,7 @@
 <translation id="8033827949643255796">തിരഞ്ഞെടുത്തു</translation>
 <translation id="8033958968890501070">കാലഹരണപ്പെട്ടു</translation>
 <translation id="8035059678007243127">അദൃശ്യ ബാക്ക്-ഫോർവേഡ് കാഷെ പേജ്: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">സ്വയമേവ പൂരിപ്പിക്കൽ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="8037117027592400564">സംശ്ലേഷിച്ച സംഭാഷണം ഉപയോഗിക്കുന്ന എല്ലാ ടെക്സ്റ്റ് സംഭാഷണവും റീഡുചെയ്യുക</translation>
 <translation id="8037357227543935929">ചോദിക്കുക (ഡിഫോൾട്ട്)</translation>
 <translation id="803771048473350947">ഫയല്‍</translation>
@@ -7999,6 +8005,7 @@
 <translation id="8206745257863499010">ബ്ലൂസി</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8207404892907560325">ഒരു പാസ്‌കീ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="8207794858944505786">"<ph name="DEFAULT_VM_NAME" />" എന്ന VM നിലനിൽക്കുന്നു, എന്നാൽ സാധുതയുള്ള <ph name="VM_TYPE" /> VM ആയി തോന്നുന്നില്ല. നിങ്ങളുടെ അഡ്മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="8208188204689616705"><ph name="FPS_OWNER" /> നിർവചിച്ചിരിക്കുന്ന ഗ്രൂപ്പിലാണ് ഈ സൈറ്റുകളുള്ളത്. ഗ്രൂപ്പിലെ സൈറ്റുകൾക്ക് ഗ്രൂപ്പിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റി കാണാം.</translation>
 <translation id="8208216423136871611">സംരക്ഷിക്കരുത്</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{പുതിയ അറിയിപ്പ്}other{# പുതിയ അറിയിപ്പുകൾ}}</translation>

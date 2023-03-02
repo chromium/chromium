@@ -294,6 +294,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2509468283778169019">Tasta CAPS LOCK este activată</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Deblochează ferestrele</translation>
+<translation id="2530896289327917474">Activează sau dezactivează navigarea cu tastatura</translation>
 <translation id="2542089167727451762">Atinge imaginea de profil</translation>
 <translation id="255671100581129685">Asistentul Google nu este disponibil într-o sesiune publică.</translation>
 <translation id="256712445991462162">lupa andocată</translation>
@@ -419,6 +420,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configurează</translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
+<translation id="3256109297135787951">Elimină evidențierea de pe un element de pe raft</translation>
 <translation id="3260969790895726815">Vorbirea este procesată local și dictarea funcționează offline, dar unele comenzi vocale nu vor funcționa.</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
 <translation id="3289544412142055976">Aplicațiile Linux nu sunt acceptate</translation>
@@ -610,6 +612,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicație instalată, în pauză</translation>
 <translation id="423685346499232137">Nu se poate copia sau insera conținut în acest moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Modul de prezentare generală</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4247123849143712100">Actualizează și închide</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
@@ -909,6 +912,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="576453121877257266">Lumina de noapte este activată.</translation>
 <translation id="5769373120130404283">Ecran de confidențialitate</translation>
 <translation id="5773950591113557721">Astfel, se permite accesul la <ph name="APP_NAME" /> și la toate aplicațiile și site-urile care au acces la camera foto și microfon</translation>
+<translation id="5774295353725270860">Deschideți aplicația Fișiere</translation>
 <translation id="5777841717266010279">Oprești permiterea accesului la ecran?</translation>
 <translation id="5779721926447984944">Fișiere fixate</translation>
 <translation id="5788127256798019331">Fișiere Play</translation>
@@ -962,6 +966,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6043212731627905357">Monitorul nu funcționează cu <ph name="DEVICE_TYPE" /> (monitorul nu este compatibil).</translation>
 <translation id="6043994281159824495">Deconectați-vă acum</translation>
 <translation id="6045629311476491587">Folosite de <ph name="APP_COUNT" /> aplicații</translation>
+<translation id="6045998054441862242">Activează modul de contrast ridicat</translation>
 <translation id="6047696787498798094">Permiterea accesului la ecran încetează când comuți la alt utilizator. Dorești să continui?</translation>
 <translation id="6054305421211936131">Conectează-te cu cardul inteligent</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
@@ -1073,6 +1078,7 @@ Instalare nouă</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="6650933572246256093">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Introduceți această parolă pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parolă</translation>
+<translation id="666343722268997814">Deschide meniul de clic dreapta pentru elementul evidențiat</translation>
 <translation id="6665545700722362599">să permită site-urilor, aplicațiilor și extensiilor să folosească serviciile de localizare, microfonul, camera foto sau alte funcții ale dispozitivului;</translation>
 <translation id="6667908387435388584">Conectează-te la hotspotul telefonului, localizează dispozitivul și dezactivează-i sunetul și vezi filele Chrome recente deschise pe telefon</translation>
 <translation id="6670153871843998651">Desktop 3</translation>
@@ -1123,6 +1129,7 @@ Instalare nouă</translation>
 <translation id="6901883536534621389">Încearcă gesturile pentru navigare</translation>
 <translation id="6919251195245069855">Nu s-a recunoscut cardul inteligent. Încearcă din nou.</translation>
 <translation id="6931576957638141829">Salvează în</translation>
+<translation id="6941333068993625698">Trimite feedback</translation>
 <translation id="6942518653766415536">Meniu cu formatul de înregistrare</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6960565108681981554">Neactivată. Contactează operatorul.</translation>
@@ -1244,6 +1251,7 @@ Instalare nouă</translation>
 <translation id="7607002721634913082">Întreruptă</translation>
 <translation id="7609951632080598826">Afișarea calendar, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera foto a fost reconectată.</translation>
+<translation id="7611271430932669992">Mută focalizarea pe ferestrele pop-up și pe dialoguri</translation>
 <translation id="761736749114493194">Comută încadrarea camerei. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Camera foto este aliniată cu colțul din dreapta jos</translation>
@@ -1472,6 +1480,7 @@ Instalare nouă</translation>
 <translation id="8850991929411075241">Tasta de căutare + Esc</translation>
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
+<translation id="8858369206579825206">Opțiuni de confidențialitate</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
 <translation id="8874184842967597500">Neconectat</translation>
 <translation id="8876148469852588625">Evenimentul <ph name="EVENT_POSITION" /> din <ph name="EVENT_TOTAL_COUNT" /></translation>
@@ -1498,6 +1507,7 @@ Instalare nouă</translation>
 <translation id="8991617137207906966">Modul de inversare a culorilor este activat. Apasă Ctrl + Căutare + H din nou pentru a-l dezactiva.</translation>
 <translation id="899350903320462459">Deblochează dispozitivul ca <ph name="LOGIN_ID" /> pentru efectuarea acțiunii de notificare</translation>
 <translation id="9000771174482730261">GESTIONEAZĂ SPAȚIUL DE STOCARE</translation>
+<translation id="9005984960510803406">Deschide fereastra Crosh</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>
 <translation id="9024331582947483881">ecran complet</translation>
 <translation id="9029736946581028033">Dispozitivul se va închide în curând</translation>

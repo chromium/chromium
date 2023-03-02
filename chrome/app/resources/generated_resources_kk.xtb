@@ -3524,6 +3524,7 @@
 <translation id="4102469565336584882">Жарамсыз код. LPA форматында жазуыңыз керек: 1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Powerwash функциясын іске қосу үшін қайта қосу</translation>
 <translation id="4104163789986725820">Э&amp;кспорттау…</translation>
+<translation id="4104944259562794668">Оны кейінірек "Параметрлер" &gt; "Қауіпсіздік және құпиялық" &gt; "Құлыптаулы экран және кіру" тармағында қосуға болады.</translation>
 <translation id="4107048419833779140">Жад құрылғыларын анықтау және шығару</translation>
 <translation id="4108314971463891922">Жазылу</translation>
 <translation id="4109135793348361820">Терезені <ph name="USER_NAME" /> пайдаланушысына (<ph name="USER_EMAIL" />) жылжыту</translation>
@@ -4464,6 +4465,7 @@
 <translation id="4975771730019223894">Қолданбаға танымбелгі қою</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Кіру рұқсатын растау</translation>
+<translation id="4979263087381759787">Developer Options</translation>
 <translation id="4980805016576257426">Бұл кеңейтімде зиянды бағдарлама бар.</translation>
 <translation id="4981449534399733132">Барлық синхрондалған құрылғылардан және Google аккаунтынан браузерді пайдалану деректерін өшіру үшін, <ph name="BEGIN_LINK" />жүйеге кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">Синхрондалатын контентті кез келген уақытта "Параметрлер" бөлімінде таңдай аласыз. Google жүйесі Search және басқа да қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
@@ -5549,6 +5551,8 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Браузерді әрі қарай пайдалана беру үшін әкімшіден осы қолданбаны өшіріп тастауын сұраңыз.}other{Браузерді пайдалана беру үшін әкімшіден осы қолданбаларды өшіріп тастауын сұраңыз.}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 сайт үшін тексеру аяқталды}other{{NUM_SITES} сайт үшін тексеру аяқталды}}</translation>
 <translation id="5997337190805127100">Сайтқа кіру рұқсаты туралы толығырақ мәлімет</translation>
+<translation id="5998458948782718639">Автотолтыруды жақсартуға көмектесіңіз</translation>
+<translation id="5999630716831179808">Дауыстар</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" сұрауы бойынша <ph name="RESULT_COUNT" /> нәтиже шықты</translation>
 <translation id="6001839398155993679">Бастау</translation>
 <translation id="6002122790816966947">Құрылғыларыңыз</translation>
@@ -5636,6 +5640,7 @@
 <translation id="6075907793831890935">Деректерді <ph name="HOSTNAME" /> атты құрылғы арқылы айырбастау</translation>
 <translation id="6076175485108489240">Орынды анықтау қызметін пайдалану. Орынды анықтау рұқсаттары бар қолданбалар мен қызметтердің құрылғыңыздың геодеректерін пайдалануына рұқсат беріңіз. Google қызметі локация дәлдігі мен орынға негізделген қызметтерді жақсарту үшін геодеректерді жүйелі түрде жинап, оларды анонимді түрде қолдана алады. <ph name="BEGIN_LINK1" />Толығырақ<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">Ақшыл сұр</translation>
+<translation id="6076576896267434196">"<ph name="EXTENSION_NAME" />" кеңейтімі аккаунтыңызды пайдаланғысы келеді</translation>
 <translation id="6077131872140550515">Таңдаулы желілерден өшіру</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> құрылғысына қатысты кеңестер мен жаңартулар</translation>
 <translation id="6077476112742402730">Дауыспен енгізу</translation>
@@ -7796,6 +7801,7 @@
 <translation id="8033827949643255796">таңдалды</translation>
 <translation id="8033958968890501070">Уақыт өтіп кетті</translation>
 <translation id="8035059678007243127">Алға-артқа өту кэшінде сақталған инкогнито беті: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">Автотолтыруды жақсартуға көмектесіңіз</translation>
 <translation id="8037117027592400564">Синтезделген сөйлеу арқылы айтылған барлық мәтінді оқу</translation>
 <translation id="8037357227543935929">Сұрау (әдепкі)</translation>
 <translation id="803771048473350947">Файл</translation>
@@ -7992,6 +7998,7 @@
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8207404892907560325">Кіру кілтін таңдаңыз</translation>
+<translation id="8207794858944505786">"<ph name="DEFAULT_VM_NAME" />" виртуалдық компьютері бар, бірақ жарамды <ph name="VM_TYPE" /> виртуалдық компьютері болып көрінбейді. Әкімшіге хабарласыңыз.</translation>
 <translation id="8208188204689616705">Бұл сайттар <ph name="FPS_OWNER" /> белгілеген топқа кіреді. Топқа кіретін сайттар топтағы әрекетіңізді көре алады.</translation>
 <translation id="8208216423136871611">Сақтамау</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңа хабарландыру}other{# жаңа хабарландыру}}</translation>

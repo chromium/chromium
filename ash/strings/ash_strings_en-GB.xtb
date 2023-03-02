@@ -279,6 +279,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="243878895369688216">Opened yesterday</translation>
+<translation id="2440978926514840421">GIF recording taken</translation>
 <translation id="2441427462554639370">Recording ended due to critically low storage space</translation>
 <translation id="24452542372838207">Expand notification</translation>
 <translation id="2449089818483227734">Low battery</translation>
@@ -293,6 +294,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2509468283778169019">CAPS LOCK is on</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Unlock the windows</translation>
+<translation id="2530896289327917474">Turn caret browsing on or off</translation>
 <translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
@@ -418,6 +420,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Set-up</translation>
 <translation id="3255483164551725916">What can you do?</translation>
+<translation id="3256109297135787951">Remove the highlight from an item on your shelf</translation>
 <translation id="3260969790895726815">Speech is processed locally and dictation works offline, but some voice commands won’t work.</translation>
 <translation id="3269597722229482060">Right-click</translation>
 <translation id="3289544412142055976">Linux apps aren’t currently supported</translation>
@@ -502,6 +505,11 @@ Here are some things that you can try to get started.</translation>
 <translation id="3633097874324966332">Open Bluetooth settings to pair your device</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update overdue</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> to
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Select for more details in Google Calendar.</translation>
 <translation id="3659444876902283058">(Day <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">About <ph name="TIME_LEFT" /> left (<ph name="PERCENTAGE" />%).
 Connect your device to power.</translation>
@@ -604,6 +612,7 @@ Connect your device to power.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installed app, paused</translation>
 <translation id="423685346499232137">Can't copy or paste content at this time</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Overview mode</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4247123849143712100">Update and shut down</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -903,6 +912,7 @@ Connect your device to power.</translation>
 <translation id="576453121877257266">Night Light is on.</translation>
 <translation id="5769373120130404283">Privacy screen</translation>
 <translation id="5773950591113557721">This allows access for <ph name="APP_NAME" /> and all apps and websites with the camera and microphone permissions</translation>
+<translation id="5774295353725270860">Open Files app</translation>
 <translation id="5777841717266010279">Stop screen sharing?</translation>
 <translation id="5779721926447984944">Pinned files</translation>
 <translation id="5788127256798019331">Play files</translation>
@@ -956,6 +966,7 @@ Connect your device to power.</translation>
 <translation id="6043212731627905357">This monitor isn't getting along with your <ph name="DEVICE_TYPE" /> (the monitor is not supported).</translation>
 <translation id="6043994281159824495">Sign out now</translation>
 <translation id="6045629311476491587">Used by <ph name="APP_COUNT" /> apps</translation>
+<translation id="6045998054441862242">Turn on high contrast mode</translation>
 <translation id="6047696787498798094">Screen sharing will stop when you switch to another user. Do you want to continue?</translation>
 <translation id="6054305421211936131">Sign in with smart card</translation>
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
@@ -1067,6 +1078,7 @@ New install</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="6650933572246256093">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this passkey on that device: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Password</translation>
+<translation id="666343722268997814">Open right-click menu for highlighted item</translation>
 <translation id="6665545700722362599">Grant websites, apps and extensions permission to use location services, the device’s microphone, camera or other features</translation>
 <translation id="6667908387435388584">Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone</translation>
 <translation id="6670153871843998651">Desk 3</translation>
@@ -1117,6 +1129,7 @@ New install</translation>
 <translation id="6901883536534621389">Try gestures to navigate</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6931576957638141829">Save to</translation>
+<translation id="6941333068993625698">Submit feedback</translation>
 <translation id="6942518653766415536">Recording format menu</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6960565108681981554">Not activated. Contact your operator.</translation>
@@ -1238,6 +1251,7 @@ New install</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7609951632080598826">Calendar view, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera reconnected.</translation>
+<translation id="7611271430932669992">Move focus to pop-ups and dialogues</translation>
 <translation id="761736749114493194">Toggle camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Camera snapped to the bottom-right corner</translation>
@@ -1466,8 +1480,10 @@ New install</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="8855885154700222542">Full-screen key</translation>
+<translation id="8858369206579825206">Privacy controls</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
 <translation id="8874184842967597500">Not connected</translation>
+<translation id="8876148469852588625">Event <ph name="EVENT_POSITION" /> of <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
@@ -1491,6 +1507,7 @@ New install</translation>
 <translation id="8991617137207906966">Colour inversion mode enabled. Press Ctrl+Search+H again to toggle it off.</translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
 <translation id="9000771174482730261">MANAGE STORAGE</translation>
+<translation id="9005984960510803406">Open Crosh window</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
 <translation id="9024331582947483881">full screen</translation>
 <translation id="9029736946581028033">Device will power down soon</translation>

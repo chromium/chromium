@@ -279,6 +279,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="243878895369688216">Öppnades i går</translation>
+<translation id="2440978926514840421">GIF-inspelningen har tagits</translation>
 <translation id="2441427462554639370">Inspelningen avslutades eftersom det är mycket ont om lagringsutrymme</translation>
 <translation id="24452542372838207">Utöka avisering</translation>
 <translation id="2449089818483227734">Låg batterinivå</translation>
@@ -293,6 +294,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2509468283778169019">CAPS LOCK är på</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Lås upp fönstren</translation>
+<translation id="2530896289327917474">Aktivera eller inaktivera textmarkörläge</translation>
 <translation id="2542089167727451762">Tryck på profilbilden</translation>
 <translation id="255671100581129685">Google-assistenten är inte tillgänglig i en offentlig session.</translation>
 <translation id="256712445991462162">den dockade skärmförstoraren</translation>
@@ -418,6 +420,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3249513730522716925">Fönstret <ph name="WINDOW_TITLE" /> flyttades från skrivbordet <ph name="ACTIVE_DESK" /> till skrivbordet <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfiguration</translation>
 <translation id="3255483164551725916">Vad kan du göra?</translation>
+<translation id="3256109297135787951">Ta bort markeringen från ett objekt på hyllan</translation>
 <translation id="3260969790895726815">Tal behandlas lokalt och diktering fungerar offline, men vissa röstkommandon fungerar inte.</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
 <translation id="3289544412142055976">Linux-appar stöds inte för närvarande</translation>
@@ -502,6 +505,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3633097874324966332">Öppna Bluetooth-inställningarna om du vill parkoppla enheten</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Uppdatering försenad</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> till
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Välj för att visa fler uppgifter i Google Kalender.</translation>
 <translation id="3659444876902283058">(Dag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Ungefär <ph name="TIME_LEFT" /> kvar (<ph name="PERCENTAGE" /> %).
 Anslut enheten till en strömkälla.</translation>
@@ -604,6 +612,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
 <translation id="423685346499232137">Det går inte att kopiera eller klistra in innehåll just nu</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Översiktsläge</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4247123849143712100">Uppdatera och stäng av</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
@@ -903,6 +912,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="576453121877257266">Nattljus är aktiverat.</translation>
 <translation id="5769373120130404283">Integritetsskärm</translation>
 <translation id="5773950591113557721">Detta ger åtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med kamera- och mikrofonbehörighet</translation>
+<translation id="5774295353725270860">Öppna appen Filer</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5779721926447984944">Filer som har fästs</translation>
 <translation id="5788127256798019331">Play-filer</translation>
@@ -956,6 +966,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6043212731627905357">Skärmen kan inte användas med <ph name="DEVICE_TYPE" /> (det finns inte stöd för skärmen).</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
 <translation id="6045629311476491587">Används av <ph name="APP_COUNT" /> appar</translation>
+<translation id="6045998054441862242">Aktivera högkontrastläge</translation>
 <translation id="6047696787498798094">Skärmdelningen avbryts när du byter till en annan användare. Vill du fortsätta?</translation>
 <translation id="6054305421211936131">Logga in med smartkort</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
@@ -1067,6 +1078,7 @@ Nyligen installerad</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="6650933572246256093">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange denna lösenordsnyckel på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Lösenord</translation>
+<translation id="666343722268997814">Öppna högerklicksmenyn för markerat objekt</translation>
 <translation id="6665545700722362599">Ge webbplatser, appar och tillägg behörighet att använda platstjänster, enhetens mikrofon, kamera eller andra funktioner</translation>
 <translation id="6667908387435388584">Anslut till telefonens surfzon, stäng av ljudet på och hitta din enhet, samt visa de senaste Chrome-flikarna som öppnats på telefonen</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
@@ -1117,6 +1129,7 @@ Nyligen installerad</translation>
 <translation id="6901883536534621389">Testa att navigera med rörelser</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6931576957638141829">Spara i</translation>
+<translation id="6941333068993625698">Skicka feedback</translation>
 <translation id="6942518653766415536">Meny för inspelningsformat</translation>
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
@@ -1238,6 +1251,7 @@ Nyligen installerad</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7609951632080598826">Kalendervy: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameran har återanslutits.</translation>
+<translation id="7611271430932669992">Flytta fokus till popupfönster och dialogrutor</translation>
 <translation id="761736749114493194">Aktivera och inaktivera kamerainramning. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Kameran har fästs i det nedre högra hörnet</translation>
@@ -1466,8 +1480,10 @@ Nyligen installerad</translation>
 <translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>
+<translation id="8858369206579825206">Integritetsinställningar</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
+<translation id="8876148469852588625">Händelse <ph name="EVENT_POSITION" /> av <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>
@@ -1491,6 +1507,7 @@ Nyligen installerad</translation>
 <translation id="8991617137207906966">Läget för inverterade färger har aktiverats. Tryck på Ctrl + Sök + H igen för att inaktivera det.</translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
 <translation id="9000771174482730261">HANTERA LAGRING</translation>
+<translation id="9005984960510803406">Öppna Crosh-fönstret</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
 <translation id="9024331582947483881">helskärm</translation>
 <translation id="9029736946581028033">Enheten stängs snart av</translation>

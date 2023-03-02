@@ -4468,6 +4468,7 @@
 <translation id="4975771730019223894">აპებზე ბეჯების მიმაგრება</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">წვდომის დადასტურება</translation>
+<translation id="4979263087381759787">დეველოპერთა პარამეტრები</translation>
 <translation id="4980805016576257426">ეს გაფართოება მავნე პროგრამას შეიცავს.</translation>
 <translation id="4981449534399733132">თქვენი Google ანგარიშიდან და ყველა სინქრონიზებული მოწყობილობიდან დათვალიერების მონაცემების გასასუფთავებლად <ph name="BEGIN_LINK" />შედით სისტემაში<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">პარამეტრებიდან ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენზე მორგებას.</translation>
@@ -5557,6 +5558,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{შემოწმება შესრულდა 1 საიტისთვის}other{შემოწმება შესრულდა {NUM_SITES} საიტისთვის}}</translation>
 <translation id="5997337190805127100">შეიტყვეთ მეტი საიტების წვდომის შესახებ</translation>
 <translation id="5998458948782718639">დაგვეხმარეთ, გავაუმჯობესოთ ავტომატური შევსება</translation>
+<translation id="5999630716831179808">ხმები</translation>
 <translation id="6000758707621254961">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა <ph name="RESULT_COUNT" /> შედეგი</translation>
 <translation id="6001839398155993679">დავიწყოთ</translation>
 <translation id="6002122790816966947">თქვენი მოწყობილობები</translation>

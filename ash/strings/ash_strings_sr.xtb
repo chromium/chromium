@@ -294,6 +294,7 @@
 <translation id="2509468283778169019">CAPS LOCK је укључен</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Откључај прозоре</translation>
+<translation id="2530896289327917474">Укључите или искључите навигацију курсором</translation>
 <translation id="2542089167727451762">Додирните слику профила</translation>
 <translation id="255671100581129685">Google помоћник није доступан у јавној сесији.</translation>
 <translation id="256712445991462162">монтирана лупа екрана</translation>
@@ -419,6 +420,7 @@
 <translation id="3249513730522716925">Прозор <ph name="WINDOW_TITLE" /> је премештен са радне површине <ph name="ACTIVE_DESK" /> на радну површину <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Подешавање</translation>
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
+<translation id="3256109297135787951">Уклоните истицање са ставке на полици</translation>
 <translation id="3260969790895726815">Говор се обрађује локално и диктирање ради офлајн, али неке гласовне команде не раде.</translation>
 <translation id="3269597722229482060">Десни клик</translation>
 <translation id="3289544412142055976">Linux апликације тренутно нису подржане</translation>
@@ -611,6 +613,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
 <translation id="423685346499232137">Тренутно не можете да копирате ни налепите садржај</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Режим прегледа</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
 <translation id="4247123849143712100">Ажурирај и искључи</translation>
 <translation id="4250229828105606438">Снимак екрана</translation>
@@ -910,6 +913,7 @@
 <translation id="576453121877257266">Ноћно светло је укључено.</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5773950591113557721">Ово омогућава приступ апликацији <ph name="APP_NAME" /> и свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон</translation>
+<translation id="5774295353725270860">Отварање апликације Датотеке</translation>
 <translation id="5777841717266010279">Желите ли да прекинете дељење екрана?</translation>
 <translation id="5779721926447984944">Закачени фајлови</translation>
 <translation id="5788127256798019331">Play датотеке</translation>
@@ -963,6 +967,7 @@
 <translation id="6043212731627905357">Овај монитор није компатибилан са уређајем <ph name="DEVICE_TYPE" /> (монитор није подржан).</translation>
 <translation id="6043994281159824495">Одјави ме одмах</translation>
 <translation id="6045629311476491587">Користе апликације (<ph name="APP_COUNT" />)</translation>
+<translation id="6045998054441862242">Укључите режим високог контраста</translation>
 <translation id="6047696787498798094">Дељење екрана ће се прекинути када пребаците на другог корисника. Желите ли да наставите?</translation>
 <translation id="6054305421211936131">Пријавите се помоћу паметне картице</translation>
 <translation id="6059276912018042191">Недавне Chrome картице</translation>
@@ -1074,6 +1079,7 @@
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жели да потврди да сте то ви</translation>
 <translation id="6650933572246256093">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Унесите ову шифру на том уређају: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Лозинка</translation>
+<translation id="666343722268997814">Отворите мени истакнуте ставке који се активира десним тастером миша</translation>
 <translation id="6665545700722362599">Дозволите веб-сајтовима, апликацијама и додацима да користе услуге локације или микрофон, камеру или друге функције уређаја</translation>
 <translation id="6667908387435388584">Повежите се са хотспотом телефона, искључите звук уређаја и пронађите га и прегледајте недавне Chrome картице отворене на телефону</translation>
 <translation id="6670153871843998651">Радна површина 3</translation>
@@ -1124,6 +1130,7 @@
 <translation id="6901883536534621389">Испробајте покрете за кретање</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="6931576957638141829">Сачувајте у</translation>
+<translation id="6941333068993625698">Пошаљите повратне информације</translation>
 <translation id="6942518653766415536">Мени за формат снимања</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6960565108681981554">Није активирано. Обратите се мобилном оператеру.</translation>
@@ -1245,6 +1252,7 @@
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7609951632080598826">Приказ календара, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера је поново повезана.</translation>
+<translation id="7611271430932669992">Померите фокус на искачуће прозоре и дијалоге</translation>
 <translation id="761736749114493194">Укључите уоквиривање камере. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камера је уклопљена у доњи леви угао</translation>
@@ -1473,6 +1481,7 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Верификација PIN-а или лозинке још увек није успела. Напомена: Ако сте недавно променили лозинку, користите стару. Нова лозинка ће бити примењена када се одјавите.</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>
+<translation id="8858369206579825206">Контроле приватности</translation>
 <translation id="8870509716567206129">Апликација не подржава подељени екран.</translation>
 <translation id="8874184842967597500">Није повезано</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />. догађај од <ph name="EVENT_TOTAL_COUNT" /></translation>
@@ -1499,6 +1508,7 @@
 <translation id="8991617137207906966">Режим инверзије боја је омогућен. Поново притисните Ctrl + тастер за претрагу + H да бисте га искључили.</translation>
 <translation id="899350903320462459">Откључајте уређај помоћу ИД-а пријављивања <ph name="LOGIN_ID" /> да бисте добили обавештење</translation>
 <translation id="9000771174482730261">УПРАВЉАЈТЕ МЕМОРИЈСКИМ ПРОСТОРОМ</translation>
+<translation id="9005984960510803406">Отворите Crosh прозор</translation>
 <translation id="9017320285115481645">Унесите приступни кôд родитеља за Family Link.</translation>
 <translation id="9024331582947483881">цео екран</translation>
 <translation id="9029736946581028033">Уређај ће се ускоро искључити</translation>

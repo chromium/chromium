@@ -487,6 +487,7 @@
 <translation id="2108755909498034140">আপোনাৰ কম্পিউটাৰটো ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="2111166930115883695">খেলিবলৈ স্পে’চ টিপক</translation>
 <translation id="2112529237938317174">অনুমতিৰ সবিশেষ দেখুৱাওক</translation>
+<translation id="2113232594265919362">আপুনি এই সকীয়নিটো দেখা পাইছে কাৰণ এই ছাইটটোৱে HTTPS সমৰ্থন নকৰে আৰু আপুনি Googleৰ সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাৰ প্ৰ’গ্ৰামৰ অধীনত আছে। <ph name="BEGIN_LEARN_MORE_LINK" />অধিক জানক<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">কাৰ্ড</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" />এ ইয়াক অ’ভাৰৰাইড কৰাৰ বাবে অৱজ্ঞা কৰা হৈছে।</translation>
 <translation id="2118132148597630479">এনভেল’প C5</translation>
@@ -1207,6 +1208,7 @@
 <translation id="3990250421422698716">লাহেকৈ অফছেটক হেঁচক</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠাখনৰ বিষয়ে</translation>
 <translation id="399952081411886534">বিজ্ঞাপনসমূহক অধিক গোপনীয় কৰি তোলা আন সুবিধাসমূহ</translation>
+<translation id="4000598935132966791">পৰিচালিত ব্ৰাউজাৰত ছাইটৰ প্ৰতিবন্ধকতাৰ বিষয়ে অধিক জানক</translation>
 <translation id="4006465311664329701">Google Pay ব্যৱহাৰ কৰা পৰিশোধ পদ্ধতি, অফাৰ আৰু ঠিকনা</translation>
 <translation id="4009243425692662128">আপুনি প্ৰিণ্ট কৰা পৃষ্ঠাখনৰ সমলখিনি বিশ্লেষণ কৰিবলৈ Google Cloud অথবা তৃতীয় পক্ষসমূহলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, সেইসমূহ সংবেদনশীল ডেটাৰ বাবে স্কেন কৰা হ’ব পাৰে।</translation>
 <translation id="4010758435855888356">ষ্ট’ৰেজ এক্সেছ কৰাৰ অনুমতি দিবনে?</translation>
@@ -2162,6 +2164,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />প্ৰক্সি, ফায়াৰৱাল আৰু সুৰক্ষিত DNS কনফিগাৰেশ্বন পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">বাওঁফালে দুবাৰ ষ্টে'পল কৰক</translation>
+<translation id="6367196786591004737">প্ৰৱিষ্টি মচক</translation>
 <translation id="6370022303958842211">ডিভাইচ এক্সেছৰ কাৰ্যসমূহ যেনে লগইন (ব্যৰ্থ লগইনৰ কাৰণসমূহকে ধৰি), লগআউট, লক কৰা আৰু আনলক কৰা</translation>
 <translation id="6374865374745447009">ৱিণ্ড’ পৰিচালনা</translation>
 <translation id="6377268785556383139">’<ph name="SEARCH_TEXT" />’ৰ বাবে পোৱা ১টা ফলাফল</translation>
@@ -2306,6 +2309,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফাৰেন্সিং</translation>
 <translation id="6753269504797312559">নীতিৰ মান</translation>
+<translation id="6753434778807740853">প্ৰৱিষ্টি <ph name="ENTRY_VOICEOVER" /> মচক</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">আপোনাৰ ডিভাইচটো সুপ্ত অৱস্থালৈ গৈছে।</translation>
 <translation id="6767985426384634228">ঠিকনা আপডে’ট কৰিবনে?</translation>
@@ -2318,6 +2322,7 @@
 <translation id="678982761784843853">সুৰক্ষিত সমল আইডি</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="679355240208270552">নীতি অনুযায়ী ডিফ’ল্ট সন্ধান সক্ষম হৈ নথকাৰ কাৰণে উপেক্ষা কৰা হ’ল৷</translation>
+<translation id="6794049111359324414"><ph name="APP_NAME" /> এপ্‌টোক ৱাই-ফাই নেটৱৰ্ক ছেট আপ কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="6794951432696553238">এতিয়াৰ পৰা Windows Hello ব্যৱহাৰ কৰি আপোনাৰ কাৰ্ডসমূহ খৰতকীয়াকৈ নিশ্চিত কৰক</translation>
 <translation id="6798460514924505775">এনভেল’প শ্বু ৩</translation>
 <translation id="6805030849054648206">এনভেল’প B6/C4</translation>
@@ -2811,7 +2816,6 @@
 <translation id="7950027195171824198">Chromeৰ ছেটিঙত আপোনাৰ কুকিৰ অগ্ৰাধিকাৰ পৰিচালনা কৰক</translation>
 <translation id="7951415247503192394">(৩২-বিট)</translation>
 <translation id="7952192831285741665">ইউৰোপীয়ান EDP</translation>
-<translation id="7952804540472583406">নেটৱৰ্কটোত <ph name="BEGIN_LINK" />ছাইন ইন কৰি থকা হৈছে<ph name="END_LINK" />।</translation>
 <translation id="7953569069500808819">ওপৰৰ অংশৰ কাষত চিলাওক</translation>
 <translation id="7955105108888461311">ব্যক্তিগতভাৱে সোধক</translation>
 <translation id="7956713633345437162">ম'বাইল বুকমার্ক</translation>
@@ -3356,6 +3360,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" আনইনষ্টল বা অক্ষম কৰি চাওক&lt;/li&gt;
     &lt;li&gt;অন্য নেটৱৰ্কত সংযোগ কৰি চাওক&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">এই এপ্‌টোৱে নতুন ৱাই-ফাই নেটৱৰ্ক ছেট আপ কৰাৰ অনুমতি বিচাৰি অনুৰোধ জনাইছে। ছেটআপ কৰা পাছত, অংশগ্ৰহণ কৰা ৱাই-ফাই নেটৱৰ্কসমূহৰ সৈতে আপোনাৰ <ph name="DEVICE_TYPE" /> স্বয়ংক্ৰিয়ভাৱে সংযুক্ত হ’ব। <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Payৰ পৰা</translation>
 </translationbundle>

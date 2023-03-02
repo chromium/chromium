@@ -99,7 +99,6 @@
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2717722538473713889">ईमेल पते</translation>
 <translation id="2750481671343847896">साइटें, पहचान करने वाली सेवा से जुड़े, साइन इन करने के अनुरोध दिखा सकती हैं.</translation>
-<translation id="2779966372261694284">आपको इस साइट से साइन आउट कर दिया जाएगा</translation>
 <translation id="2822354292072154809">क्या आप वाकई <ph name="CHOSEN_OBJECT_NAME" /> की सभी साइट अनुमतियां रीसेट करना चाहते हैं?</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
@@ -261,6 +260,7 @@
 <translation id="5740126560802162366">साइटें आपके डिवाइस पर डेटा सेव कर सकती हैं</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> को ब्लॉक किया गया</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
+<translation id="5810805850857689118">इस कार्रवाई से, <ph name="ORIGIN" /> से जुड़ी सभी साइटों का सारा डेटा और कुकी मिट जाएंगी</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5876056640971328065">वीडियो रोकें</translation>
 <translation id="5884085660368669834">साइट की प्राथमिकता</translation>
@@ -413,6 +413,7 @@
 <translation id="8514955299594277296">साइटों को अपने डिवाइस पर डेटा सेव करने की अनुमति न दें. हालांकि, हम इसका सुझाव नहीं देते</translation>
 <translation id="851751545965956758">साइटों को डिवाइस से कनेक्ट होने से रोकें</translation>
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
+<translation id="8528440122773422556">इस कार्रवाई से, <ph name="ORIGIN" /> से जुड़ी सभी साइटों या आपकी होम स्क्रीन पर मौजूद ऐप्लिकेशन के ज़रिए सेव किया गया सारा डेटा और कुकी मिट जाएंगी</translation>
 <translation id="8541410041357371550">यह साइट, विज्ञापनों के विषयों बारे में जानने के लिए Chrome की मदद लेती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखाए जा सकें</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> की <ph name="FPS_MEMBERS_COUNT" /> साइट के लिए कुकी का इस्तेमाल किया जा सकता है}one{<ph name="FPS_OWNER" /> की <ph name="FPS_MEMBERS_COUNT" /> साइट के लिए कुकी का इस्तेमाल किया जा सकता है}other{<ph name="FPS_OWNER" /> की <ph name="FPS_MEMBERS_COUNT" /> साइटों के लिए कुकी का इस्तेमाल किया जा सकता है}}</translation>
 <translation id="857943718398505171">अनुमति दी गई (सुझाया गया)</translation>
@@ -441,6 +442,7 @@
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8990043154272859344">आपको सभी साइटों से साइन आउट कर दिया जाएगा</translation>
 <translation id="9019902583201351841">आपके अभिभावकों द्वारा प्रबंधित</translation>
+<translation id="9039697262778250930">आपको इन साइटों से साइन आउट किया जा सकता है</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9090268041676521955">यह साइट ऐसे ग्रुप में है जिस पर आपकी गतिविधि देखी जा सकती है. यह ग्रुप <ph name="FPS_OWNER" /> ने तय किया है</translation>
 <translation id="9106233582039520022">क्या आपको कुकी को मिटाना है?</translation>

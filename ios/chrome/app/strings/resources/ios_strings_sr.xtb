@@ -212,6 +212,7 @@
 <translation id="2500374554657206846">Опције за чување лозинке</translation>
 <translation id="2523363575747517183">Овај веб-сајт непрекидно покушава да отвори другу апликацију.</translation>
 <translation id="2529021024822217800">Отвори све</translation>
+<translation id="2547458583188611426">Синхронизација не ради. Да бисте покренули синхронизацију, унесите приступну фразу.</translation>
 <translation id="2556092377360758201">Без заштите (не препоручује се)</translation>
 <translation id="2562041823070056534">Шаље се на уређај <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">Користите и сачувајте лозинке на Google налогу</translation>
@@ -488,6 +489,7 @@
 <translation id="4536418791685807335">Пробајте поново да се пријавите.</translation>
 <translation id="4540780316273593836">Нешто није у реду</translation>
 <translation id="457386861538956877">Још...</translation>
+<translation id="4587235830039045480">Сачувајте лозинку на Google налогу</translation>
 <translation id="4587589328781138893">Сајтови</translation>
 <translation id="4588014171431912783">Подешавања синхронизације ће се вратити основу последње резервне копије. <ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Тастатура</translation>
@@ -655,6 +657,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5755162682436943950">Одјављени сте. Отвара дијалог за пријављивање и укључивање синхронизације.</translation>
 <translation id="5758631781033351321">Овде ћете пронаћи листу за читање</translation>
 <translation id="5765456154762864099">Мени → Подешавања → Подразумевани прегледач</translation>
+<translation id="5777888488419460501">Сачувај на налогу</translation>
 <translation id="5782227691023083829">Превођење је у току...</translation>
 <translation id="5791632441210678828">Дугме Сортирај за фид Пратите.</translation>
 <translation id="5802829331520313983">Подесите…</translation>
@@ -1040,6 +1043,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="8378714024927312812">Овим управља организација</translation>
 <translation id="8386068868580335421">Ресетуј</translation>
+<translation id="838867811594159347">Унеси приступну фразу…</translation>
 <translation id="8393889347136007944">Картице се не користе <ph name="THRESHOLD" /> дана</translation>
 <translation id="8407669440184693619">Није пронађена ниједна лозинка за овај сајт</translation>
 <translation id="842017693807136194">Пријављени сте помоћу:</translation>
@@ -1112,6 +1116,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Дели...</translation>
 <translation id="8911759861431145525">Додирните Додај, па унесите информације</translation>
+<translation id="891282356902782456">Ова лозинка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу, <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Истакните текст на сајту</translation>
 <translation id="8917490105272468696">Да, омогући</translation>
 <translation id="8928133177108699615">Рачунар</translation>

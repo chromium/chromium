@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ហើយត្រូវប្រាកដថាការតំឡើងរបស់អ្នកកំណត់ទៅ "គ្មានប្រូកស៊ី" ឬ "ដោយផ្ទាល់។"</translation>
+<translation id="6549378540556750549">Chromium អាច​បង្កើត​ឡើង​បាន​ដោយ<ph name="BEGIN_LINK_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_OSS" />ផ្សេង​ទៀត​ផងដែរ។</translation>
 <translation id="6613594504749178791">ការផ្លាស់ប្តូររបស់អ្នកនឹងមានប្រសិទ្ធភាពនៅពេលដែលបើកដំណើរការ Chromium ឡើងវិញពេលក្រោយ។</translation>
+<translation id="7681937895330411637">Chromium អាច​បង្កើត​ឡើង​បាន​ដោយគម្រោងកូដ​ចំហ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />។</translation>
 <translation id="7861509383340276692">ទៅកាន់
         ម៉ឺនុយ Chromium &gt;
         <ph name="SETTINGS_TITLE" />

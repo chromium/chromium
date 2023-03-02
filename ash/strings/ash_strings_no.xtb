@@ -294,6 +294,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2509468283778169019">Caps Lock er på</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Lås opp vinduene</translation>
+<translation id="2530896289327917474">Slå markørsurfing på eller av</translation>
 <translation id="2542089167727451762">Trykk på profilbildet ditt</translation>
 <translation id="255671100581129685">Google-assistenten er ikke tilgjengelig i offentlige økter.</translation>
 <translation id="256712445991462162">den dokkede lupen</translation>
@@ -419,6 +420,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfigurer</translation>
 <translation id="3255483164551725916">Hva kan du gjøre?</translation>
+<translation id="3256109297135787951">Fjern fremhevingen av et element på hyllen</translation>
 <translation id="3260969790895726815">Tale behandles lokalt, og diktering fungerer uten nett, men enkelte talekommandoer fungerer ikke.</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
 <translation id="3289544412142055976">Linux-apper støttes ikke for øyeblikket</translation>
@@ -503,6 +505,11 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3633097874324966332">Åpne Bluetooth-innstillingene for å koble til enheten</translation>
 <translation id="3638400994746983214">Slå av/på personvernskjermen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Oppdateringen er forfalt</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> til
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Velg for å se flere detaljer i Google Kalender.</translation>
 <translation id="3659444876902283058">(dag <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Omtrent <ph name="TIME_LEFT" /> igjen (<ph name="PERCENTAGE" /> %).
 Koble enheten til strøm.</translation>
@@ -605,6 +612,7 @@ Koble enheten til strøm.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installert app, satt på pause</translation>
 <translation id="423685346499232137">Kan ikke kopiere eller lime inn innhold akkurat nå</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Oversiktsmodus</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4247123849143712100">Oppdater og slå av</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
@@ -904,6 +912,7 @@ Koble enheten til strøm.</translation>
 <translation id="576453121877257266">Nattlys er på.</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
 <translation id="5773950591113557721">Dette gir tilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
+<translation id="5774295353725270860">Åpne Filer-appen</translation>
 <translation id="5777841717266010279">Vil du stoppe skjermdelingen?</translation>
 <translation id="5779721926447984944">Festede filer</translation>
 <translation id="5788127256798019331">Play-filer</translation>
@@ -957,6 +966,7 @@ Koble enheten til strøm.</translation>
 <translation id="6043212731627905357">Denne skjermen liker ikke <ph name="DEVICE_TYPE" /> (skjermen støttes ikke).</translation>
 <translation id="6043994281159824495">Logg av nå</translation>
 <translation id="6045629311476491587">Brukt av <ph name="APP_COUNT" /> apper</translation>
+<translation id="6045998054441862242">Slå på høykontrastmodus</translation>
 <translation id="6047696787498798094">Skjermdelingen stopper hvis du bytter til en annen bruker.</translation>
 <translation id="6054305421211936131">Logg på med smartkort</translation>
 <translation id="6059276912018042191">Nylige Chrome-faner</translation>
@@ -1068,6 +1078,7 @@ Nylig installert</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
 <translation id="6650933572246256093">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne tilgangskoden på den aktuelle enheten: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Passord</translation>
+<translation id="666343722268997814">Åpne høyreklikkmenyen for elementet som er fremhevet</translation>
 <translation id="6665545700722362599">gi nettsteder, apper og utvidelser tillatelse til å bruke posisjonstjenester, enhetens mikrofon, kamera eller andre funksjoner</translation>
 <translation id="6667908387435388584">Koble til telefonens wifi-sone, demp og finn enheten, og se nylige Chrome-faner som er åpne på telefonen</translation>
 <translation id="6670153871843998651">Skrivebord 3</translation>
@@ -1118,6 +1129,7 @@ Nylig installert</translation>
 <translation id="6901883536534621389">Prøv å navigere med bevegelser</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6931576957638141829">Lagre i</translation>
+<translation id="6941333068993625698">Send tilbakemelding</translation>
 <translation id="6942518653766415536">Meny for opptaksformat</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6960565108681981554">Ikke aktivert. Kontakt operatøren din.</translation>
@@ -1239,6 +1251,7 @@ Nylig installert</translation>
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7609951632080598826">Kalendervisning, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameraet er koblet til igjen.</translation>
+<translation id="7611271430932669992">Flytt fokus til forgrunnsvinduer og dialogbokser</translation>
 <translation id="761736749114493194">Slå av/på kamerainnramming. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kameraet er festet til nedre høyre hjørne</translation>
@@ -1467,8 +1480,10 @@ Nylig installert</translation>
 <translation id="8850991929411075241">Søk+Esc</translation>
 <translation id="8853703225951107899">PIN-koden eller passordet kunne fremdeles ikke verifiseres. Merk: Hvis du nylig har byttet passord, bruker du det gamle passordet. Det nye passordet blir tatt i bruk når du logger av.</translation>
 <translation id="8855885154700222542">Tast for fullskjermmodus</translation>
+<translation id="8858369206579825206">Personverninnstillinger</translation>
 <translation id="8870509716567206129">Appen støtter ikke delt skjerm.</translation>
 <translation id="8874184842967597500">Ikke tilkoblet</translation>
+<translation id="8876148469852588625">Hendelse <ph name="EVENT_POSITION" /> av <ph name="EVENT_TOTAL_COUNT" />.</translation>
 <translation id="8876661425082386199">Sjekk tilkoblingen din</translation>
 <translation id="8877788021141246043">Angi en påminnelse</translation>
 <translation id="8878886163241303700">Utvidet skjerm</translation>
@@ -1492,6 +1507,7 @@ Nylig installert</translation>
 <translation id="8991617137207906966">Modus for fargeinvertering er slått på. Trykk på Ctrl + søketasten + H igjen for å slå den av.</translation>
 <translation id="899350903320462459">Lås opp enheten som <ph name="LOGIN_ID" /> for å utføre varselhandlingen</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGRING</translation>
+<translation id="9005984960510803406">Åpne Crosh-vindu</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
 <translation id="9024331582947483881">full skjerm</translation>
 <translation id="9029736946581028033">Enheten slår seg av snart</translation>

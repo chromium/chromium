@@ -216,6 +216,7 @@
 <translation id="1186771945450942097">移除有害软件</translation>
 <translation id="1187722533808055681">闲置状态唤醒</translation>
 <translation id="1188807932851744811">未上传日志。</translation>
+<translation id="1190086046506744802">非常宽松</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{可访问您计算机上存储的 1 个文件}other{可访问您计算机上存储的 # 个文件}}</translation>
 <translation id="119092896208640858">要想仅清除此设备中的浏览数据而保留您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />退出<ph name="END_LINK" />。</translation>
 <translation id="1191353342579061195">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等等，只需右键点击桌面即可执行所需操作。</translation>
@@ -292,6 +293,7 @@
 <translation id="1251578593170406502">正在搜寻移动数据网络…</translation>
 <translation id="125220115284141797">默认</translation>
 <translation id="1252987234827889034">发生个人资料错误</translation>
+<translation id="1253664522045778676">只要您点击某条结果，系统便会在当前标签页中打开相应网页</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
 <translation id="1257336506558170607">导出所选证书</translation>
 <translation id="1258491128795710625">新变化</translation>
@@ -488,6 +490,7 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
+<translation id="1433478348197382180">朗读模式</translation>
 <translation id="1434696352799406980">这将重置您的启动页、“打开新的标签页”页面、搜索引擎和固定标签页，同时还会停用所有扩展程序并清除临时数据（例如 Cookie）。但是，系统不会清除您的书签、历史记录和保存的密码。</translation>
 <translation id="1434886155212424586">首页是新标签页</translation>
 <translation id="1436390408194692385">有效期：<ph name="TICKET_TIME_LEFT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="1526560967942511387">无标题文档</translation>
 <translation id="1527336312600375509">显示器刷新频率</translation>
 <translation id="152913213824448541">“附近分享”功能联系人</translation>
+<translation id="1529769834253316556">行高</translation>
 <translation id="1529891865407786369">电源</translation>
 <translation id="1531275250079031713">显示“添加新 Wi-Fi 网络”对话框</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
@@ -822,6 +826,7 @@
 <translation id="1725562816265788801">标签页滚动</translation>
 <translation id="1726503915437308071">斜体</translation>
 <translation id="1729533290416704613">它还能够控制您通过多功能框进行搜索时系统显示的页面。</translation>
+<translation id="1730666151302379551">忘记了旧密码</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">滚动至最后一个标签页</translation>
 <translation id="1731911755844941020">正在发送请求...</translation>
@@ -875,6 +880,7 @@
 <translation id="1778457539567749232">标记为未读</translation>
 <translation id="1778991607452011493">发送调试日志（推荐）</translation>
 <translation id="1779441632304440041">安全系数低的密码容易被人猜到。请务必设置安全系数高的密码。</translation>
+<translation id="1779453062283607806">从新增的侧边栏中更快速地比较搜索结果</translation>
 <translation id="1779468444204342338">最小值</translation>
 <translation id="177989070088644880">应用 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">关闭组</translation>
@@ -1019,6 +1025,7 @@
 <translation id="1886996562706621347">允许网站要求成为协议的默认处理程序（推荐）</translation>
 <translation id="1887442540531652736">登录错误</translation>
 <translation id="1887597546629269384">再说一次“Hey Google”</translation>
+<translation id="1889091146873278175">点击“G”按钮即可在侧边栏中查看更多搜索结果</translation>
 <translation id="189035593835762169">条款及条件</translation>
 <translation id="1891362123137972260">磁盘空间严重不足。请释放磁盘空间。</translation>
 <translation id="189210018541388520">以全屏模式打开</translation>
@@ -1589,6 +1596,7 @@
 <translation id="2364498172489649528">通过</translation>
 <translation id="2365507699358342471">此页面可以查看复制到剪贴板的文字和图片。</translation>
 <translation id="2367972762794486313">显示应用</translation>
+<translation id="2369058545741334020">在朗读模式下打开</translation>
 <translation id="236939127352773362">当附近的设备正在分享内容时</translation>
 <translation id="2371076942591664043">完成时打开(&amp;D)</translation>
 <translation id="2373666622366160481">适合纸张大小</translation>
@@ -2577,6 +2585,7 @@
 <translation id="328119399589609861">控制对摄像头、麦克风等设备的使用权限</translation>
 <translation id="3281892622610078515">要隔离的文件和程序：</translation>
 <translation id="3282210178675490297">正在与 <ph name="APP_NAME" /> 分享某个标签页</translation>
+<translation id="3284050785966252943">自动填充元数据预览</translation>
 <translation id="3285322247471302225">打开新的标签页(&amp;T)</translation>
 <translation id="3285500645985761267">允许相关网站查看您在该群组中的活动记录</translation>
 <translation id="328571385944182268">保存您的密码？</translation>
@@ -2641,6 +2650,7 @@
 <translation id="3341699307020049241">PIN 码不正确。您还剩 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="3341703758641437857">允许访问文件网址</translation>
 <translation id="3342361181740736773">“<ph name="TRIGGERING_EXTENSION_NAME" />”想要移除该扩展程序。</translation>
+<translation id="3343046414300263892">增大字号</translation>
 <translation id="3343977377045378693">正在设置</translation>
 <translation id="3345634917232014253">刚刚运行过安全检查</translation>
 <translation id="3345886924813989455">没有找到支持的浏览器</translation>
@@ -2669,6 +2679,7 @@
 <translation id="3370260763947406229">自动更正</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="337286756654493126">读取您在该应用中打开的文件夹</translation>
+<translation id="3373059063088819384">在朗读模式下打开</translation>
 <translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
 <translation id="3374294321938930390">已将书签“<ph name="BOOKMARK_TITLE" />”移入文件夹“<ph name="NEW_FOLDER_TITLE" />”。</translation>
 <translation id="3378572629723696641">此扩展程序可能已损坏。</translation>
@@ -4445,6 +4456,7 @@
 <translation id="4975771730019223894">应用通知数量标志</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">确认访问</translation>
+<translation id="4979263087381759787">开发者选项</translation>
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
 <translation id="4981449534399733132">要想清除您的所有已同步设备中的浏览数据以及您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
 <translation id="4986706507552097681">您始终可在“设置”中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索和其他服务中为您提供个性化的体验。</translation>
@@ -5094,6 +5106,7 @@
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在加载应用…</translation>
 <translation id="5590418976913374224">设备启动时播放声音</translation>
+<translation id="5591465468509111843">非常宽</translation>
 <translation id="5592595402373377407">尚无足够的数据。</translation>
 <translation id="5594899180331219722">选择文件</translation>
 <translation id="5595307023264033512">网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
@@ -5529,6 +5542,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{为确保您能够继续浏览网页，请让您的管理员卸载这款应用。}other{为确保您能够继续浏览网页，请让您的管理员卸载这些应用。}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 个网站已完成审核}other{{NUM_SITES} 个网站已完成审核}}</translation>
 <translation id="5997337190805127100">详细了解网站访问权限</translation>
+<translation id="5999630716831179808">语音</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6001839398155993679">开始</translation>
 <translation id="6002122790816966947">您的设备</translation>
@@ -5789,6 +5803,7 @@
 <translation id="6234474535228214774">正等待安装</translation>
 <translation id="6235208551686043831">设备的摄像头已开启。请将摄像头对准您的 eSIM 卡二维码。</translation>
 <translation id="6237474966939441970">触控笔记事应用</translation>
+<translation id="623755660902014047">朗读模式</translation>
 <translation id="6238767809035845642">从其他设备分享的文字</translation>
 <translation id="6238923052227198598">始终将最新记事显示在锁定屏幕上</translation>
 <translation id="6239558157302047471">重新加载框架(&amp;F)</translation>
@@ -5926,6 +5941,7 @@
 <translation id="6368276408895187373">已启用 - <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6370021412472292592">无法加载清单。</translation>
+<translation id="637135143619858508">宽松</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">重试</translation>
 <translation id="6374635887697228982">要获取折扣吗？</translation>
@@ -6141,6 +6157,7 @@
 <translation id="656293578423618167">该文件的路径或名称过长。请以较短的名称保存或保存到其他位置。</translation>
 <translation id="6568283005472142698">标签页搜索</translation>
 <translation id="65711204837946324">需有下载权限</translation>
+<translation id="6571533309669248172">设置文字格式</translation>
 <translation id="6571772921213691236">修改登录数据</translation>
 <translation id="6572081226337824427">在您访问的网页中，有一些是预加载的网页。</translation>
 <translation id="657229725818377235">进一步防范危险的网站和下载内容</translation>
@@ -6298,6 +6315,7 @@
 <translation id="6709802811835274327">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载。</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6710394144992407503">在网页上输入文字时检查是否有拼写错误</translation>
+<translation id="671226373742585927">点击“X”按钮即可关闭侧边栏</translation>
 <translation id="6712943853047024245">您已经保存过此用户名在 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="6713233729292711163">添加工作资料</translation>
 <translation id="6713668088933662563">一律不询问是否翻译这些语言</translation>
@@ -6308,6 +6326,7 @@
 <translation id="6721744718589119342">如果需要您提供更多信息或想向您提供最新信息，我们可能会向您发送电子邮件</translation>
 <translation id="6721972322305477112">文件(&amp;F)</translation>
 <translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
+<translation id="6722744767592605627">您可以恢复 <ph name="EMAIL" />，但本地数据将被删除。</translation>
 <translation id="6723661294526996303">导入书签和设置...</translation>
 <translation id="6723839827191551955">控制您正在投放的媒体</translation>
 <translation id="6723839937902243910">电源</translation>
@@ -7141,6 +7160,7 @@
 <translation id="7476989672001283112">已自动禁用“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
 <translation id="7477748600276493962">为此页面创建二维码</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
+<translation id="7478069565037869084">宽</translation>
 <translation id="7478485216301680444">无法安装自助服务终端应用。</translation>
 <translation id="7478658909253570368">不允许网站连接到串行端口</translation>
 <translation id="7479221278376295180">存储空间使用情况概览</translation>
@@ -7265,6 +7285,7 @@
 <translation id="7602079150116086782">没有在其他设备打开的标签页</translation>
 <translation id="7602173054665172958">打印管理</translation>
 <translation id="7603785829538808504">下列网站采用的是自定义设置</translation>
+<translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{有 1 个密码未导入}other{有 {NUM_PASSWORDS} 个密码未导入}}</translation>
 <translation id="7605594153474022051">同步功能无法正常运行</translation>
 <translation id="7606248551867844312">确认剪裁</translation>
 <translation id="7606560865764296217">暂停动画</translation>
@@ -7399,6 +7420,7 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">此网站已被禁止使用移动传感器。</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
+<translation id="770831926727930011">您的本地数据受旧密码保护。请输入您的旧密码以恢复本地数据。</translation>
 <translation id="7709152031285164251">失败 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">投放(&amp;C)…</translation>
 <translation id="7711900714716399411">请使用一根 USB 线将手机连接到计算机。如果您的手机已连接到计算机，请拔下 USB 线，然后再重新插上。</translation>
@@ -8494,11 +8516,13 @@
 <translation id="8699188901396699995">“<ph name="PRINTER_NAME" />”的 PPD</translation>
 <translation id="8702278591052316269">包含隐藏的已存标签页分组的菜单</translation>
 <translation id="8702825062053163569">您的 <ph name="DEVICE_TYPE" /> 已锁定。</translation>
+<translation id="8703166594516496633">缩小字号</translation>
 <translation id="8703346390800944767">跳过广告</translation>
 <translation id="8705331520020532516">序列号</translation>
 <translation id="8705580154597116082">可通过手机使用 Wi-Fi</translation>
 <translation id="8705629851992224300">无法读取您的安全密钥</translation>
 <translation id="8706111173576263877">二维码已扫描完毕。</translation>
+<translation id="8707318721234217615">字母间距</translation>
 <translation id="8708000541097332489">退出时清除</translation>
 <translation id="870805141700401153">Microsoft 个人代码签名</translation>
 <translation id="8708671767545720562">详细信息(&amp;M)</translation>

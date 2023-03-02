@@ -294,6 +294,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2509468283778169019">CAPS LOCK está ativado</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Desbloquear as janelas</translation>
+<translation id="2530896289327917474">Ativar ou desativar Caret Browsing</translation>
 <translation id="2542089167727451762">Toque na imagem do seu perfil</translation>
 <translation id="255671100581129685">O Google Assistente não está disponível para uma sessão pública.</translation>
 <translation id="256712445991462162">a lupa em área fixa</translation>
@@ -419,6 +420,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configuração</translation>
 <translation id="3255483164551725916">O que você pode fazer?</translation>
+<translation id="3256109297135787951">Remover o destaque de um item na estante</translation>
 <translation id="3260969790895726815">A fala é processada localmente e o ditado funciona off-line, mas alguns comandos de voz não vão funcionar.</translation>
 <translation id="3269597722229482060">Clique com o botão direito do mouse</translation>
 <translation id="3289544412142055976">No momento, não há suporte para os apps do Linux</translation>
@@ -610,6 +612,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalado, pausado</translation>
 <translation id="423685346499232137">Não é possível copiar nem colar conteúdo no momento</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Modo de visão geral</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4247123849143712100">Atualizar e desligar</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
@@ -909,6 +912,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="576453121877257266">O Modo noturno está ativado.</translation>
 <translation id="5769373120130404283">Tela de privacidade</translation>
 <translation id="5773950591113557721">Esta ação libera o acesso para o app <ph name="APP_NAME" /> e todos os apps e sites com essas permissões</translation>
+<translation id="5774295353725270860">Abrir aplicativo Arquivos</translation>
 <translation id="5777841717266010279">Interromper compartilhamento de tela?</translation>
 <translation id="5779721926447984944">Arquivos fixados</translation>
 <translation id="5788127256798019331">Arquivos do Google Play</translation>
@@ -962,6 +966,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6043212731627905357">Este monitor não está funcionando bem com seu <ph name="DEVICE_TYPE" /> (o monitor não é compatível).</translation>
 <translation id="6043994281159824495">Sair agora</translation>
 <translation id="6045629311476491587">Usados por <ph name="APP_COUNT" /> apps</translation>
+<translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
 <translation id="6047696787498798094">O compartilhamento de tela será interrompido quando você alternar para outro usuário. Quer continuar?</translation>
 <translation id="6054305421211936131">Fazer login com cartão inteligente</translation>
 <translation id="6059276912018042191">Guias recentes do Chrome</translation>
@@ -1073,6 +1078,7 @@ Nova instalação</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quer confirmar sua identidade</translation>
 <translation id="6650933572246256093">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento. Digite esta senha no dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Senha</translation>
+<translation id="666343722268997814">Abrir menu de clique com o botão direito para o item destacado</translation>
 <translation id="6665545700722362599">conceder aos sites, apps e extensões permissão para usar serviços de localização, microfone, câmera ou outros recursos do dispositivo;</translation>
 <translation id="6667908387435388584">Conecte-se ao ponto de acesso do smartphone, silencie e localize o aparelho e veja as guias recentes do Chrome abertas no dispositivo</translation>
 <translation id="6670153871843998651">Espaço de trabalho 3</translation>
@@ -1123,6 +1129,7 @@ Nova instalação</translation>
 <translation id="6901883536534621389">Tente navegar usando gestos</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>
 <translation id="6931576957638141829">Salvar em</translation>
+<translation id="6941333068993625698">Enviar feedback</translation>
 <translation id="6942518653766415536">Menu de formato de gravação</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6960565108681981554">Desativada. Entre em contato com a operadora.</translation>
@@ -1244,6 +1251,7 @@ Nova instalação</translation>
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7609951632080598826">Visualização da agenda (<ph name="DATE" />, <ph name="TIME" />)</translation>
 <translation id="7611213136657090146">Câmera reconectada.</translation>
+<translation id="7611271430932669992">Mover o foco para pop-ups e caixas de diálogo</translation>
 <translation id="761736749114493194">Alterne o enquadramento da câmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Câmera alinhada ao canto direito de baixo</translation>
@@ -1472,6 +1480,7 @@ Nova instalação</translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível verificar seu PIN ou sua senha. Observação: se você mudou a senha recentemente, use a antiga. A nova senha será aplicada depois que você sair.</translation>
 <translation id="8855885154700222542">Tecla de tela cheia</translation>
+<translation id="8858369206579825206">Controles de privacidade</translation>
 <translation id="8870509716567206129">O app não é compatível com a divisão de tela.</translation>
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>
@@ -1498,6 +1507,7 @@ Nova instalação</translation>
 <translation id="8991617137207906966">Modo de inversão de cores ativado. Pressione Ctrl + Pesquisa + H novamente para desativar.</translation>
 <translation id="899350903320462459">Desbloqueie o dispositivo com a conta <ph name="LOGIN_ID" /> para executar a ação de notificação</translation>
 <translation id="9000771174482730261">GERENCIE O ARMAZENAMENTO</translation>
+<translation id="9005984960510803406">Abrir janela Crosh</translation>
 <translation id="9017320285115481645">Insira o código de acesso do familiar responsável do Family Link.</translation>
 <translation id="9024331582947483881">tela cheia</translation>
 <translation id="9029736946581028033">O dispositivo vai desligar em breve</translation>

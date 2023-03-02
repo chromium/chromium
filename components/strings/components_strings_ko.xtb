@@ -2169,6 +2169,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />프록시, 방화벽, 보안 DNS 설정 확인<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">왼쪽 듀얼 스테이플</translation>
+<translation id="6367196786591004737">항목 삭제</translation>
 <translation id="6370022303958842211">로그인(로그인 실패 이유 포함), 로그아웃, 잠금, 잠금 해제와 같은 기기 액세스 작업</translation>
 <translation id="6374865374745447009">창 관리</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
@@ -2313,6 +2314,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">화상회의</translation>
 <translation id="6753269504797312559">정책 값</translation>
+<translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> 항목 삭제</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">기기가 절전 모드 상태입니다.</translation>
 <translation id="6767985426384634228">주소를 업데이트하시겠습니까?</translation>
@@ -2325,6 +2327,7 @@
 <translation id="678982761784843853">보호된 콘텐츠 ID</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="679355240208270552">정책에 의해 기본 검색이 사용 설정되지 않았기 때문에 무시되었습니다.</translation>
+<translation id="6794049111359324414"><ph name="APP_NAME" /> 앱이 Wi-Fi 네트워크를 설정하도록 허용하시겠습니까?</translation>
 <translation id="6794951432696553238">지금부터 Windows Hello를 사용하여 빠르게 카드를 확인합니다.</translation>
 <translation id="6798460514924505775">봉투 Chou 3</translation>
 <translation id="6805030849054648206">봉투 B6/C4</translation>
@@ -2817,7 +2820,6 @@
 <translation id="7950027195171824198">Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="7951415247503192394">(32비트)</translation>
 <translation id="7952192831285741665">European EDP</translation>
-<translation id="7952804540472583406">네트워크에 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />합니다.</translation>
 <translation id="7953569069500808819">상단 에지 스티치</translation>
 <translation id="7955105108888461311">직접 요청</translation>
 <translation id="7956713633345437162">모바일 북마크</translation>
@@ -3363,6 +3365,7 @@
     &lt;li&gt;'<ph name="SOFTWARE_NAME" />'을(를) 제거하거나 사용 중지해 보세요.&lt;/li&gt;
     &lt;li&gt;다른 네트워크에 연결해 보세요.&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">이 앱에서 새 Wi-Fi 네트워크를 설정할 수 있는 권한을 요청합니다. 설정이 완료되면 <ph name="DEVICE_TYPE" /> 기기가 제휴 Wi-Fi 네트워크에 자동으로 연결됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">출처: Google Pay</translation>
 </translationbundle>

@@ -563,6 +563,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> ועוד <ph name="NUMBER" /> אלבומים</translation>
 <translation id="6122191549521593678">אונליין</translation>
 <translation id="6122277663991249694">‏שירות שיטת הקלט של ChromeOS</translation>
+<translation id="6136285399872347291">מחיקת תו אחד</translation>
 <translation id="6137767437444130246">אישור משתמש</translation>
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -665,6 +666,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">הזנת מפתח</translation>
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>

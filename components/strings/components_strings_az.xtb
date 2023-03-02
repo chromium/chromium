@@ -2165,6 +2165,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proksi, qoruyucu divar və DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Soldan qoşa ştapel vurun</translation>
+<translation id="6367196786591004737">Daxiletməni silin</translation>
 <translation id="6370022303958842211">Hesaba giriş (uğursuz giriş səbəbləri daxil olmaqla), çıxışlar, kilidlər və kilidi açmaq kimi cihaza giriş əməliyyatları</translation>
 <translation id="6374865374745447009">pəncərə idarəetməsi</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" üçün 1 nəticə</translation>
@@ -2309,6 +2310,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonfrans</translation>
 <translation id="6753269504797312559">Siyasət dəyəri</translation>
+<translation id="6753434778807740853">Daxiletməni silin: <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Cihazınız yatmağa getdi.</translation>
 <translation id="6767985426384634228">Ünvan yenilənsin?</translation>
@@ -2321,6 +2323,7 @@
 <translation id="678982761784843853">Qorunan məzmun ID-ləri</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="679355240208270552">Defolt axtarış siyasət tərəfindən aktiv edilmədiyinə görə blok edilib.</translation>
+<translation id="6794049111359324414"><ph name="APP_NAME" /> tətbiqinə WiFi şəbəkələrini ayarlamaq icazəsi verilsin?</translation>
 <translation id="6794951432696553238">Bundan sonra Windows Hello istifadə edərək kartlarınızı daha sürətli təsdiqləyin</translation>
 <translation id="6798460514924505775">Zərf Çou 3</translation>
 <translation id="6805030849054648206">Zərf B6/C4</translation>
@@ -2814,7 +2817,6 @@
 <translation id="7950027195171824198">Chrome ayarlarında kuki tərcihlərinizi idarə edin</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">Avropa EDP</translation>
-<translation id="7952804540472583406">Şəbəkəyə <ph name="BEGIN_LINK" />daxil olunur<ph name="END_LINK" />.</translation>
 <translation id="7953569069500808819">Yuxarıdan kənarını tikin</translation>
 <translation id="7955105108888461311">Şəxsən soruşun</translation>
 <translation id="7956713633345437162">Mobil əlfəcinlər</translation>
@@ -3360,6 +3362,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" proqramını sistemdən silin və ya deaktiv edin&lt;/li&gt;
     &lt;li&gt;Başqa şəbəkəyə qoşulun&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">Bu tətbiq yeni WiFi şəbəkələri ayarlamaq üçün icazə tələb edir. Ayarlamadan sonra <ph name="DEVICE_TYPE" /> əlçatan WiFi şəbəkələrinə avtomatik qoşulacaq. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay'dən</translation>
 </translationbundle>

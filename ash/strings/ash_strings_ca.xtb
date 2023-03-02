@@ -293,6 +293,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Desbloqueja les finestres</translation>
+<translation id="2530896289327917474">Activa o desactiva la navegació amb cursor de text</translation>
 <translation id="2542089167727451762">Toca la teva imatge de perfil</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
@@ -418,6 +419,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> ha passat de l'escriptori <ph name="ACTIVE_DESK" /> a l'escriptori <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configuració</translation>
 <translation id="3255483164551725916">Què pots fer?</translation>
+<translation id="3256109297135787951">Deixa de destacar un element del prestatge</translation>
 <translation id="3260969790895726815">La parla es processa localment i el dictat funciona sense connexió, però algunes ordres de veu no funcionaran.</translation>
 <translation id="3269597722229482060">Clic amb el botó dret</translation>
 <translation id="3289544412142055976">Actualment, les aplicacions de Linux no s'admeten</translation>
@@ -502,6 +504,11 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3633097874324966332">Obre la configuració del Bluetooth per vincular el dispositiu</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> a
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Selecciona-ho per obtenir més informació a Google Calendar.</translation>
 <translation id="3659444876902283058">(Dia <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Queden <ph name="TIME_LEFT" /> (un <ph name="PERCENTAGE" />%) aproximadament.
 Connecta el dispositiu a l'alimentació.</translation>
@@ -604,6 +611,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
 <translation id="423685346499232137">En aquests moments no es pot copiar ni enganxar contingut</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Mode de visió general</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4247123849143712100">Actualitza i apaga</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -903,6 +911,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
 <translation id="5769373120130404283">Pantalla de privadesa</translation>
 <translation id="5773950591113557721">Es concedirà l'accés a <ph name="APP_NAME" /> i totes les aplicacions i tots els llocs web que tinguin els permisos per accedir a la càmera i al micròfon</translation>
+<translation id="5774295353725270860">Obre l'aplicació Fitxers</translation>
 <translation id="5777841717266010279">Vols aturar la compartició de pantalla?</translation>
 <translation id="5779721926447984944">Fitxers fixats</translation>
 <translation id="5788127256798019331">Fitxers de Play</translation>
@@ -956,6 +965,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6043212731627905357">Aquest monitor i el teu <ph name="DEVICE_TYPE" /> no s'entenen (el monitor no és compatible).</translation>
 <translation id="6043994281159824495">Tanca la sessió ara</translation>
 <translation id="6045629311476491587">Utilitzats per <ph name="APP_COUNT" /> aplicacions</translation>
+<translation id="6045998054441862242">Activa el mode d'alt contrast</translation>
 <translation id="6047696787498798094">La compartició de pantalla s'aturarà quan canviïs d'usuari. Vols continuar?</translation>
 <translation id="6054305421211936131">Inicia la sessió amb la targeta intel·ligent</translation>
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>
@@ -1067,6 +1077,7 @@ Instal·lació nova</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="6650933572246256093">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per vincular-se. Introdueix-hi aquesta clau d'accés: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
+<translation id="666343722268997814">Obre el menú contextual de l'element destacat</translation>
 <translation id="6665545700722362599">Concedir permís als llocs web, a les aplicacions i a les extensions per utilitzar els serveis d'ubicació o el micròfon, la càmera o altres funcions del dispositiu.</translation>
 <translation id="6667908387435388584">Connecta't al punt d'accés Wi-Fi del telèfon, silencia i localitza el dispositiu i consulta les pestanyes de Chrome obertes recentment al telèfon</translation>
 <translation id="6670153871843998651">Escriptori 3</translation>
@@ -1117,6 +1128,7 @@ Instal·lació nova</translation>
 <translation id="6901883536534621389">Prova els gestos per navegar</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6931576957638141829">Desa a</translation>
+<translation id="6941333068993625698">Envia suggeriments</translation>
 <translation id="6942518653766415536">Menú de format de gravació</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6960565108681981554">No està activada. Contacta amb l'operador.</translation>
@@ -1235,6 +1247,7 @@ Instal·lació nova</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7609951632080598826">Visualització de calendari, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">S'ha tornat a connectar la càmera.</translation>
+<translation id="7611271430932669992">Mou el focus a les finestres emergents i als quadres de diàleg</translation>
 <translation id="761736749114493194">Commuta l'enquadrament de la càmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>
@@ -1463,8 +1476,10 @@ Instal·lació nova</translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
+<translation id="8858369206579825206">Controls de privadesa</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
 <translation id="8874184842967597500">No connectada</translation>
+<translation id="8876148469852588625">Esdeveniment <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Comprova la connexió</translation>
 <translation id="8877788021141246043">Configura un recordatori</translation>
 <translation id="8878886163241303700">Ampliació de la pantalla</translation>
@@ -1488,6 +1503,7 @@ Instal·lació nova</translation>
 <translation id="8991617137207906966">Mode d'inversió de colors activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
 <translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>
+<translation id="9005984960510803406">Obre la finestra de Crosh</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9029736946581028033">El dispositiu s'apagarà aviat</translation>

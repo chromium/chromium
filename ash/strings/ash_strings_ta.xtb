@@ -293,6 +293,7 @@
 <translation id="2509468283778169019">CAPS LOCK இயக்கத்தில்</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">சாளரங்களை அன்லாக் செய்</translation>
+<translation id="2530896289327917474">சுட்டி உலாவலை இயக்க/முடக்க</translation>
 <translation id="2542089167727451762">உங்கள் சுயவிவரப் படத்தைத் தட்டவும்</translation>
 <translation id="255671100581129685">பொது அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த முடியாது.</translation>
 <translation id="256712445991462162">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
@@ -418,6 +419,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> என்ற சாளரமானது டெஸ்க்<ph name="ACTIVE_DESK" />ல் இருந்து டெஸ்க் <ph name="TARGET_DESK" />க்கு நகர்த்தப்பட்டது</translation>
 <translation id="3252573918265662711">அமைவு</translation>
 <translation id="3255483164551725916">உன்னால் என்னவெல்லாம் செய்ய முடியும்?</translation>
+<translation id="3256109297135787951">உங்கள் ஷெல்ஃபில் உருப்படியைத் தனிப்படுத்தியதை அகற்றும்</translation>
 <translation id="3260969790895726815">பேச்சு சாதனத்திற்குள்ளேயே செயலாக்கப்படும் மற்றும் சொல்வதை எழுதும் வசதி ஆஃப்லைனில் செயல்படும். ஆனால் சில குரல் கட்டளைகள் செயல்படாது.</translation>
 <translation id="3269597722229482060">வலது கிளிக்</translation>
 <translation id="3289544412142055976">Linux ஆப்ஸைத் தற்போது பயன்படுத்த முடியாது</translation>
@@ -502,6 +504,11 @@
 <translation id="3633097874324966332">உங்கள் சாதனத்தை இணைக்க, புளூடூத் அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="3638400994746983214">தனிப்பட்ட திரையை நிலைமாற்றும். <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">புதுப்பிப்பு நிலுவையில் உள்ளது</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> முதல்
+        <ph name="END_TIME" /> வரை,
+        <ph name="TIME_ZONE" />. Google Calendarரில் கூடுதல் விவரங்களை அறிய தேர்ந்தெடுக்கவும்.</translation>
 <translation id="3659444876902283058">(நாள் <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">சுமார் <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%) சாதனத்தைப் பயன்படுத்தலாம்.
 சாதனத்தை சார்ஜ் செய்யவும்.</translation>
@@ -604,6 +611,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, நிறுவப்பட்ட ஆப்ஸ், இடைநிறுத்தப்பட்டுள்ளது</translation>
 <translation id="423685346499232137">தற்சமயம் உள்ளடக்கத்தை நகலெடுக்கவோ ஒட்டவோ முடியாது</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">மேலோட்டப் பயன்முறை</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
 <translation id="4247123849143712100">புதுப்பித்து ஷட் டவுன் செய்</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
@@ -903,6 +911,7 @@
 <translation id="576453121877257266">நைட் லைட் ஆன் செய்யப்பட்டது.</translation>
 <translation id="5769373120130404283">தனிப்பட்ட திரை</translation>
 <translation id="5773950591113557721">கேமரா, மைக்ரோஃபோனைப் பயன்படுத்த அனுமதி கேட்கும் <ph name="APP_NAME" /> ஆப்ஸ் மற்றும் ஆப்ஸ், இணையதளங்கள் அனைத்திற்கும் அணுகலை இது வழங்கும்</translation>
+<translation id="5774295353725270860">ஃபைல்கள்  பயன்பாட்டைத் திற</translation>
 <translation id="5777841717266010279">திரைப் பகிர்வதை நிறுத்தவா?</translation>
 <translation id="5779721926447984944">பின் (pin) செய்யப்பட்ட ஃபைல்கள் </translation>
 <translation id="5788127256798019331">Play ஃபைல்கள் </translation>
@@ -956,6 +965,7 @@
 <translation id="6043212731627905357">இந்த மானிட்டர் உங்கள் <ph name="DEVICE_TYPE" /> உடன் செயல்படவில்லை (இந்த மானிட்டர் ஆதரிக்கப்படவில்லை).</translation>
 <translation id="6043994281159824495">இப்போது வெளியேறு</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ஆப்ஸ் பயன்படுத்துகிறது</translation>
+<translation id="6045998054441862242">அதிக ஒளி மாறுபாட்டுப் பயன்முறையை இயக்கும்</translation>
 <translation id="6047696787498798094">நீங்கள் வேறொரு பயனருக்கு மாறும்போது, திரைப் பகிர்வு நிறுத்தப்படும். தொடர விருப்பமா?</translation>
 <translation id="6054305421211936131">ஸ்மார்ட் கார்டு மூலம் உள்நுழைக</translation>
 <translation id="6059276912018042191">சமீபத்திய Chrome தாவல்கள்</translation>
@@ -1067,6 +1077,7 @@
 <translation id="6650072551060208490">இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="6650933572246256093">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />" இணைப்பதற்கான அனுமதியை விரும்புகிறது. அந்தச் சாதனத்தில் இந்தக் கடவுச்சொல்லை உள்ளிடவும்: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
+<translation id="666343722268997814">தனிப்படுத்தப்பட்ட உருப்படிக்கான வலது கிளிக் மெனுவைத் திறக்கும்</translation>
 <translation id="6665545700722362599">இருப்பிடச் சேவைகள், சாதனத்தின் மைக்ரோஃபோன், கேமரா அல்லது பிற அம்சங்களை இணையதளங்கள், ஆப்ஸ், நீட்டிப்புகள் ஆகியவை பயன்படுத்த அனுமதி அளித்தல்</translation>
 <translation id="6667908387435388584">உங்கள் மொபைலின் ஹாட்ஸ்பாட்டுடன் இணைக்கலாம், சாதனத்தின் ஒலியை அடக்கி அது இருக்குமிடத்தைக் கண்டறியலாம், மொபைலில் திறந்த நிலையிலுள்ள சமீபத்திய Chrome தாவல்களைப் பார்க்கலாம்</translation>
 <translation id="6670153871843998651">மேசை 3</translation>
@@ -1117,6 +1128,7 @@
 <translation id="6901883536534621389">அடுத்ததற்குச் செல்ல, சைகைகளைப் பயன்படுத்துங்கள்</translation>
 <translation id="6919251195245069855">உங்கள் ஸ்மார்ட் கார்டை அடையாளம் காண முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="6931576957638141829">இதில் சேமி</translation>
+<translation id="6941333068993625698">கருத்தைச் சமர்ப்பி</translation>
 <translation id="6942518653766415536">ரெக்கார்டிங் வடிவமைப்பு மெனு</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6960565108681981554">இயக்கப்படவில்லை. சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
@@ -1238,6 +1250,7 @@
 <translation id="7607002721634913082">இடைநிறுத்தப்பட்டது</translation>
 <translation id="7609951632080598826">Calendar காட்சி, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">கேமரா மீண்டும் இணைக்கப்பட்டது.</translation>
+<translation id="7611271430932669992">பாப்அப்களுக்கும் உரையாடல்களுக்கும் ஃபோகஸை நகர்த்தும்</translation>
 <translation id="761736749114493194">'கேமரா ஃபிரேமிங்' அம்சத்தை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது</translation>
@@ -1466,8 +1479,10 @@
 <translation id="8850991929411075241">தேடல்+Esc</translation>
 <translation id="8853703225951107899">உங்கள் பின்னையோ கடவுச்சொல்லையோ இப்போதும் சரிபார்க்க முடியவில்லை. கவனத்திற்கு: நீங்கள் சமீபத்தில் கடவுச்சொல்லை மாற்றியிருந்தால் பழைய கடவுச்சொல்லைப் பயன்படுத்தவும். வெளியேறினால் மட்டுமே புதிய கடவுச்சொல்லைப் பயன்படுத்த முடியும்.</translation>
 <translation id="8855885154700222542">முழுத்திரை விசை</translation>
+<translation id="8858369206579825206">தனியுரிமைக் கட்டுப்பாடுகள்</translation>
 <translation id="8870509716567206129">திரையைப் பிரிப்பதைப் ஆப்ஸ் ஆதரிக்கவில்லை.</translation>
 <translation id="8874184842967597500">இணைக்கப்படவில்லை</translation>
+<translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> நிகழ்வுகளில் <ph name="EVENT_POSITION" />வது</translation>
 <translation id="8876661425082386199">இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="8877788021141246043">நினைவூட்டலை அமை</translation>
 <translation id="8878886163241303700">திரையை விரிவாக்குகிறது</translation>
@@ -1491,6 +1506,7 @@
 <translation id="8991617137207906966">கலர் இன்வெர்ஷன் பயன்முறை இயக்கப்பட்டது. முடக்க Ctrl+Search+H பட்டன்களை மீண்டும் அழுத்தவும்.</translation>
 <translation id="899350903320462459">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை <ph name="LOGIN_ID" /> ஆக அன்லாக் செய்யவும்</translation>
 <translation id="9000771174482730261">சேமிப்பிடத்தை நிர்வகியுங்கள்</translation>
+<translation id="9005984960510803406">Crosh சாளரத்தைத் திறக்கும்</translation>
 <translation id="9017320285115481645">Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்.</translation>
 <translation id="9024331582947483881">முழுத்திரை</translation>
 <translation id="9029736946581028033">சாதனம் விரைவில் ஸ்விட்ச் ஆஃப் ஆகும்</translation>

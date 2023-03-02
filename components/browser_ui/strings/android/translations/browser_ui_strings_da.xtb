@@ -99,7 +99,6 @@
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
-<translation id="2779966372261694284">Du bliver logget ud af dette website</translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Forrige nummer</translation>
@@ -261,6 +260,7 @@
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
+<translation id="5810805850857689118">Denne handling rydder alle data og cookies for <ph name="ORIGIN" /> og alle websites i denne gruppe</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5876056640971328065">Sæt video på pause</translation>
 <translation id="5884085660368669834">Websitepræference</translation>
@@ -413,6 +413,7 @@
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
+<translation id="8528440122773422556">Denne handling rydder alle data og cookies, som er gemt af alle websites i gruppen <ph name="ORIGIN" /> eller den tilhørende app på din startskærm</translation>
 <translation id="8541410041357371550">Dette website henter dine annonceemner fra Chrome for at vise dig mere relevante annoncer</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}one{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}other{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites tilhørende <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
@@ -441,6 +442,7 @@
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>
 <translation id="9019902583201351841">Administreret af dine forældre</translation>
+<translation id="9039697262778250930">Du bliver muligvis logget ud af disse websites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vil du slette cookies?</translation>

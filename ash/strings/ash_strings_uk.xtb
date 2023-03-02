@@ -279,6 +279,7 @@
 <translation id="2429753432712299108">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Перш ніж надати його, підтвердьте, що на пристрої відображається цей ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="243878895369688216">Відкрито вчора</translation>
+<translation id="2440978926514840421">Запис у форматі GIF зроблено</translation>
 <translation id="2441427462554639370">Запис завершився через критично малий обсяг пам’яті</translation>
 <translation id="24452542372838207">Розгорнути сповіщення</translation>
 <translation id="2449089818483227734">Низький заряд</translation>
@@ -293,6 +294,7 @@
 <translation id="2509468283778169019">Режим CAPS LOCK увімкнено</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Розблокувати вікна</translation>
+<translation id="2530896289327917474">Увімкнути або вимкнути клавішну навігацію</translation>
 <translation id="2542089167727451762">Натисніть зображення профілю</translation>
 <translation id="255671100581129685">Google Асистент недоступний у сеансі для всіх.</translation>
 <translation id="256712445991462162">закріплену лупу</translation>
@@ -418,6 +420,7 @@
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
 <translation id="3252573918265662711">Налаштування</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
+<translation id="3256109297135787951">Скасувати виділення елемента на полиці</translation>
 <translation id="3260969790895726815">Ви можете використовувати функцію диктування в режимі офлайн, оскільки мовлення обробляється локально. Однак при цьому деякі голосові команди не працюватимуть.</translation>
 <translation id="3269597722229482060">Натиснути правою кнопкою миші</translation>
 <translation id="3289544412142055976">Додатки Linux наразі не підтримуються</translation>
@@ -502,6 +505,11 @@
 <translation id="3633097874324966332">Відкрийте налаштування Bluetooth, щоб створити пару з пристроєм</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Оновлення прострочено</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> –
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Виберіть подію, щоб переглянути відомості про неї в Google Календарі.</translation>
 <translation id="3659444876902283058">(день <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Залишилося приблизно <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Підключіть пристрій до джерела живлення.</translation>
@@ -604,6 +612,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установлений додаток, призупинено</translation>
 <translation id="423685346499232137">Наразі не вдається скопіювати або вставити контент</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Режим огляду</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
 <translation id="4247123849143712100">Оновити й завершити роботу</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
@@ -903,6 +912,7 @@
 <translation id="576453121877257266">Нічний екран увімкнено.</translation>
 <translation id="5769373120130404283">Маскування контенту</translation>
 <translation id="5773950591113557721">Буде надано доступ для додатка <ph name="APP_NAME" /> і всіх додатків та веб-сайтів, які мають дозволи на доступ до камери й мікрофона</translation>
+<translation id="5774295353725270860">Відкрити програму файлів</translation>
 <translation id="5777841717266010279">Скасувати спільний доступ до екрана?</translation>
 <translation id="5779721926447984944">Закріплені файли</translation>
 <translation id="5788127256798019331">Файли Play</translation>
@@ -956,6 +966,7 @@
 <translation id="6043212731627905357">Ваш пристрій <ph name="DEVICE_TYPE" /> не підтримує цей монітор.</translation>
 <translation id="6043994281159824495">Вийти зараз</translation>
 <translation id="6045629311476491587">Використано в стількох додатках: <ph name="APP_COUNT" /></translation>
+<translation id="6045998054441862242">Увімкнути режим високого контрасту</translation>
 <translation id="6047696787498798094">Якщо змінити користувача, спільний доступ до екрана буде скасовано. Продовжити?</translation>
 <translation id="6054305421211936131">Увійти за допомогою розумної картки</translation>
 <translation id="6059276912018042191">Останні вкладки Chrome</translation>
@@ -1067,6 +1078,7 @@
 <translation id="6650072551060208490">Сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="6650933572246256093">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Введіть на пристрої цей ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
+<translation id="666343722268997814">Відкрити контекстне меню виділеного елемента</translation>
 <translation id="6665545700722362599">надавати веб-сайтам, додаткам і розширенням дозвіл використовувати служби локації, мікрофон, камеру й інші функції пристрою;</translation>
 <translation id="6667908387435388584">Підключайтеся до точки доступу телефона, вимикайте звук на пристрої, визначайте його місцезнаходження та переглядайте останні вкладки Chrome, відкриті на телефоні</translation>
 <translation id="6670153871843998651">Робочий стіл 3</translation>
@@ -1117,6 +1129,7 @@
 <translation id="6901883536534621389">Спробуйте навігацію за допомогою жестів</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
+<translation id="6941333068993625698">Надіслати відгук</translation>
 <translation id="6942518653766415536">Меню форматів запису</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6960565108681981554">Не активовано. Зв’яжіться з оператором.</translation>
@@ -1238,6 +1251,7 @@
 <translation id="7607002721634913082">Призупинено</translation>
 <translation id="7609951632080598826">Запис у календарі, <ph name="DATE" /> о <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камеру знову підключено.</translation>
+<translation id="7611271430932669992">Виділити спливаючі або діалогові вікна</translation>
 <translation id="761736749114493194">Увімкнути або вимкнути режим слідкування. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Зображення з камери закріплено в нижньому правому куті</translation>
@@ -1466,8 +1480,10 @@
 <translation id="8850991929411075241">Search (Пошук)+Esc</translation>
 <translation id="8853703225951107899">PIN-код або пароль усе ще не вдається підтвердити. Примітка: якщо ви нещодавно змінювали пароль, введіть старий. Новий пароль буде застосовано, щойно ви вийдете з облікового запису.</translation>
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
+<translation id="8858369206579825206">Налаштування конфіденційності</translation>
 <translation id="8870509716567206129">Додаток не підтримує розділення екрана.</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
+<translation id="8876148469852588625">Подія <ph name="EVENT_POSITION" /> з <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Перевірте з'єднання</translation>
 <translation id="8877788021141246043">Налаштуй нагадування</translation>
 <translation id="8878886163241303700">Розширення екрана</translation>
@@ -1491,6 +1507,7 @@
 <translation id="8991617137207906966">Увімкнено режим інверсії кольорів. Щоб вимкнути його, ще раз натисніть Ctrl + клавіша пошуку + H.</translation>
 <translation id="899350903320462459">Щоб виконати дію зі сповіщенням, розблокуйте пристрій як <ph name="LOGIN_ID" /></translation>
 <translation id="9000771174482730261">КЕРУВАТИ СХОВИЩЕМ</translation>
+<translation id="9005984960510803406">Відкрити вікно Crosh</translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
 <translation id="9024331582947483881">усього екрана</translation>
 <translation id="9029736946581028033">Пристрій скоро розрядиться</translation>

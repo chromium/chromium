@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           and make sure your configuration is set to "no proxy" or "direct."</translation>
+<translation id="6549378540556750549">Chromium is also made possible by other <ph name="BEGIN_LINK_OSS" />open-source software<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Your changes will take effect the next time you relaunch Chromium.</translation>
+<translation id="7681937895330411637">Chromium is made possible by the <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open-source project.</translation>
 <translation id="7861509383340276692">Go to
           the Chromium menu &gt;
           <ph name="SETTINGS_TITLE" />

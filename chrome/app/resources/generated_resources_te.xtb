@@ -4482,6 +4482,7 @@
 <translation id="4975771730019223894">యాప్ బ్యాడ్జింగ్</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">యాక్సెస్‌ను నిర్ధారించండి</translation>
+<translation id="4979263087381759787">డెవలపర్ ఎంపికలు</translation>
 <translation id="4980805016576257426">ఈ ఎక్స్‌టెన్షన్‌లో మాల్వేర్ ఉంది.</translation>
 <translation id="4981449534399733132">మీ అన్ని సింక్ చేయబడుతున్న పరికరాలతో సహా, మీ Google ఖాతా నుండి బ్రౌజింగ్ డేటాను తీసివేయడానికి, <ph name="BEGIN_LINK" />సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">ఏ సింక్ చేయాలనే దాన్ని, మీరు సెట్టింగ్‌లలో ఎప్పుడైనా ఎంచుకోవచ్చు. Google మీ హిస్టరీ ఆధారంగా సెర్చ్, ఇతర సర్వీస్‌లను వ్యక్తిగతీకరించవచ్చు.</translation>
@@ -5571,6 +5572,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 సైట్‌కు రివ్యూ పూర్తయింది}other{{NUM_SITES} సైట్‌లకు రివ్యూ పూర్తయింది}}</translation>
 <translation id="5997337190805127100">సైట్ యాక్సెస్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="5998458948782718639">ఆటోఫిల్‌ను మెరుగుపరచడంలో సహాయపడండి</translation>
+<translation id="5999630716831179808">వాయిస్‌లు</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' అనే దానికి <ph name="RESULT_COUNT" /> ఫలితాలు లభించాయి</translation>
 <translation id="6001839398155993679">ప్రారంభిద్దాం</translation>
 <translation id="6002122790816966947">మీ పరికరాలు</translation>

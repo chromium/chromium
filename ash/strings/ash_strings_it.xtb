@@ -293,6 +293,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2509468283778169019">BLOC MAIUSC è attivo</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Sblocca le finestre</translation>
+<translation id="2530896289327917474">Attiva o disattiva la navigazione con cursore</translation>
 <translation id="2542089167727451762">Tocca la tua immagine del profilo</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
@@ -418,6 +419,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> è stata spostata dalla scrivania <ph name="ACTIVE_DESK" /> alla scrivania <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configura</translation>
 <translation id="3255483164551725916">Cosa sai fare?</translation>
+<translation id="3256109297135787951">Consente di rimuovere l'evidenziazione da un elemento sulla barra delle app</translation>
 <translation id="3260969790895726815">Il riconoscimento vocale viene elaborato localmente e la dettatura funziona offline, ma alcuni comandi vocali non funzionano.</translation>
 <translation id="3269597722229482060">Clic con il pulsante destro</translation>
 <translation id="3289544412142055976">Al momento le app Linux non sono supportate</translation>
@@ -606,6 +608,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app installata, messa in pausa</translation>
 <translation id="423685346499232137">Al momento non è possibile copiare o incollare contenuti</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Modalità panoramica</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="4247123849143712100">Aggiorna e spegni</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -905,6 +908,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="576453121877257266">Luminosità notturna attiva.</translation>
 <translation id="5769373120130404283">Schermata sulla privacy</translation>
 <translation id="5773950591113557721">Consente l'accesso per <ph name="APP_NAME" /> e tutti i siti web e tutte le app che dispongono delle autorizzazioni di accesso al microfono e alla fotocamera</translation>
+<translation id="5774295353725270860">Apri l'applicazione File</translation>
 <translation id="5777841717266010279">Interrompere la condivisione dello schermo?</translation>
 <translation id="5779721926447984944">File bloccati</translation>
 <translation id="5788127256798019331">File Google Play</translation>
@@ -958,6 +962,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6043212731627905357">Questo monitor non è compatibile con il tuo dispositivo <ph name="DEVICE_TYPE" /> (il monitor non è supportato).</translation>
 <translation id="6043994281159824495">Esci ora</translation>
 <translation id="6045629311476491587">Usati da <ph name="APP_COUNT" /> app</translation>
+<translation id="6045998054441862242">Attiva la modalità ad alto contrasto</translation>
 <translation id="6047696787498798094">La condivisione dello schermo verrà interrotta se cambi utente. Vuoi continuare?</translation>
 <translation id="6054305421211936131">Accedi con la smart card</translation>
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
@@ -1069,6 +1074,7 @@ Nuova installazione</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vorrebbe verificare la tua identità</translation>
 <translation id="6650933572246256093">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato. Inserisci questa passkey sul dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Password</translation>
+<translation id="666343722268997814">Apre il menu di scelta rapida per l'elemento evidenziato</translation>
 <translation id="6665545700722362599">Concedere a siti web, app ed estensioni l'autorizzazione a utilizzare i servizi di geolocalizzazione, il microfono del dispositivo, la fotocamera o altre funzioni.</translation>
 <translation id="6667908387435388584">Connettiti all'hotspot del tuo telefono, disattiva i suoni del dispositivo, individualo e visualizza le schede recenti di Chrome aperte sul telefono</translation>
 <translation id="6670153871843998651">Scrivania 3</translation>
@@ -1119,6 +1125,7 @@ Nuova installazione</translation>
 <translation id="6901883536534621389">Prova i gesti per la navigazione</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="6931576957638141829">Salva in</translation>
+<translation id="6941333068993625698">Consente di inviare feedback</translation>
 <translation id="6942518653766415536">Menu del formato di registrazione</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
@@ -1240,6 +1247,7 @@ Nuova installazione</translation>
 <translation id="7607002721634913082">In pausa</translation>
 <translation id="7609951632080598826">Visualizzazione Calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Fotocamera riconnessa.</translation>
+<translation id="7611271430932669992">Consente di spostare lo stato attivo su finestre di dialogo e popup</translation>
 <translation id="761736749114493194">Attiva/disattiva Zoom automatico. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Fotocamera allineata all'angolo in basso a destra</translation>
@@ -1467,6 +1475,7 @@ Nuova installazione</translation>
 <translation id="8850991929411075241">Tasto di ricerca+ESC</translation>
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
+<translation id="8858369206579825206">Controlli per la privacy</translation>
 <translation id="8870509716567206129">L'app non supporta la modalità Schermo diviso.</translation>
 <translation id="8874184842967597500">Non connesso</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> di <ph name="EVENT_TOTAL_COUNT" /></translation>
@@ -1493,6 +1502,7 @@ Nuova installazione</translation>
 <translation id="8991617137207906966">Modalità inversione dei colori attivata. Premi nuovamente Ctrl + Tasto per la ricerca + H per disattivarla.</translation>
 <translation id="899350903320462459">Sblocca il dispositivo con l'account <ph name="LOGIN_ID" /> per eseguire l'azione di notifica</translation>
 <translation id="9000771174482730261">GESTISCI SPAZIO DI ARCHIVIAZIONE</translation>
+<translation id="9005984960510803406">Consente di aprire la finestra Crosh</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
 <translation id="9024331582947483881">schermo intero</translation>
 <translation id="9029736946581028033">Il dispositivo si spegnerà a breve</translation>

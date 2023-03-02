@@ -38,4 +38,6 @@
           e desmarque "Usar um servidor proxy para a rede local".</translation>
 <translation id="7230956101631259640">Está a ver uma página segura do Chrome</translation>
 <translation id="8187289872471304532">Aceda a Apps &gt; Preferências do Sistema &gt; Rede &gt; Avançadas &gt; Proxies e desmarque todos os proxies selecionados.</translation>
+<translation id="8232971017369963250">A criação do Chrome foi possível devido ao projeto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">A criação do Chrome também foi possível devido a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

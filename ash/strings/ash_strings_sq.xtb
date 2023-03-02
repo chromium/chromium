@@ -293,6 +293,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2509468283778169019">KYÇJA E KAPITALEVE është aktive</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Shkyç dritaret</translation>
+<translation id="2530896289327917474">Aktivizo ose çaktivizo shfletimin me kursor teksti</translation>
 <translation id="2542089167727451762">Trokit imazhin e profilit tënd</translation>
 <translation id="255671100581129685">"Asistenti i Google" nuk ofrohet në një sesion publik.</translation>
 <translation id="256712445991462162">zmadhuesi i stacionuar</translation>
@@ -418,6 +419,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Konfigurimi</translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
+<translation id="3256109297135787951">Hiq theksimin nga një artikull në raftin tënd</translation>
 <translation id="3260969790895726815">Ligjërimi përpunohet në nivel lokal dhe diktimi funksionon jashtë linje, por disa komanda zanore nuk do të funksionojnë.</translation>
 <translation id="3269597722229482060">Kliko me butonin djathtas</translation>
 <translation id="3289544412142055976">Aplikacionet për Linux nuk mbështeten aktualisht</translation>
@@ -609,6 +611,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplikacioni i instaluar, në pauzë</translation>
 <translation id="423685346499232137">Nuk mund të kopjohen ose të ngjiten përmbajtje në këtë moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Modaliteti "Përmbledhja"</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4247123849143712100">Përditëso dhe fike</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
@@ -908,6 +911,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="576453121877257266">"Drita e natës" është aktive.</translation>
 <translation id="5769373120130404283">Ekrani i privatësisë</translation>
 <translation id="5773950591113557721">Kjo lejon qasjen për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit që kanë lejen për kamerën dhe mikrofonin</translation>
+<translation id="5774295353725270860">Hap aplikacionin "Skedarët"</translation>
 <translation id="5777841717266010279">Dëshiron të ndalosh ndarjen e ekranit?</translation>
 <translation id="5779721926447984944">Skedarët e gozhduar</translation>
 <translation id="5788127256798019331">Skedarët e Play</translation>
@@ -961,6 +965,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6043212731627905357">Ky monitor nuk po përshtatet me pajisjen tënde <ph name="DEVICE_TYPE" /> (monitori nuk mbështetet).</translation>
 <translation id="6043994281159824495">Dil tani</translation>
 <translation id="6045629311476491587">Përdorur nga <ph name="APP_COUNT" /> aplikacione</translation>
+<translation id="6045998054441862242">Aktivizo modalitetin "kontrast i lartë"</translation>
 <translation id="6047696787498798094">Ndarja e ekranit do të ndalojë kur të kalosh te një përdorues tjetër. Dëshiron që të vazhdosh?</translation>
 <translation id="6054305421211936131">Identifikohu me kartën smart</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
@@ -1072,6 +1077,7 @@ Instalim i ri</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="6650933572246256093">Pajisja me Bluetooth "<ph name="DEVICE_NAME" />" kërkon leje për çiftim. Fut çelësin e kalimit në atë pajisje: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
+<translation id="666343722268997814">Hap menynë e klikimit me të djathtë për artikullin e theksuar</translation>
 <translation id="6665545700722362599">Jepi leje sajteve të uebit, aplikacioneve dhe shtesave të përdorin shërbimet e vendndodhjes, mikrofonin e pajisjes, kamerën ose funksione të tjera</translation>
 <translation id="6667908387435388584">Lidhu me zonën e qasjes për internet të telefonit tënd, vendos në heshtje dhe lokalizo pajisjen tënde, si dhe shiko skedat e fundit të Chrome të hapura në telefonin tënd</translation>
 <translation id="6670153871843998651">Tavolina e punës 3</translation>
@@ -1122,6 +1128,7 @@ Instalim i ri</translation>
 <translation id="6901883536534621389">Provo gjestet për të naviguar</translation>
 <translation id="6919251195245069855">Karta smart nuk mund të njihej. Provo përsëri.</translation>
 <translation id="6931576957638141829">Ruaj te</translation>
+<translation id="6941333068993625698">Dërgo komentet</translation>
 <translation id="6942518653766415536">Menyja e formatit të regjistrimit</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
@@ -1243,6 +1250,7 @@ Instalim i ri</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7609951632080598826">Pamja e kalendarit, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera u rilidh.</translation>
+<translation id="7611271430932669992">Zhvendos fokusin te dritaret kërcyese dhe dialogët</translation>
 <translation id="761736749114493194">Aktivizo/çaktivizo inkuadrimin e kamerës. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas</translation>
@@ -1471,6 +1479,7 @@ Instalim i ri</translation>
 <translation id="8850991929411075241">Kërko+Esc</translation>
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
+<translation id="8858369206579825206">Kontrollet e privatësisë</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8876148469852588625">Ngjarja <ph name="EVENT_POSITION" /> nga <ph name="EVENT_TOTAL_COUNT" /></translation>
@@ -1497,6 +1506,7 @@ Instalim i ri</translation>
 <translation id="8991617137207906966">Modaliteti i anasjelljes së ngjyrës u aktivizua. Shtyp përsëri Ctrl+Kërko+H për ta çaktivizuar.</translation>
 <translation id="899350903320462459">Shkyç pajisjen si <ph name="LOGIN_ID" /> për të kryer veprimin e njoftimit</translation>
 <translation id="9000771174482730261">MENAXHO HAPËSIRËN RUAJTËSE</translation>
+<translation id="9005984960510803406">Hap dritaren e Crosh</translation>
 <translation id="9017320285115481645">Fut kodin e qasjes së prindit për Family Link</translation>
 <translation id="9024331582947483881">ekrani i plotë</translation>
 <translation id="9029736946581028033">Pajisja do të fiket së shpejti</translation>

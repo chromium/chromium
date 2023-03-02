@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">ไปที่
           แอปพลิเคชัน &gt; ค่ากำหนดของระบบ &gt; เครือข่าย &gt; ขั้นสูง &gt; พร็อกซี
           แล้วยกเลิกการเลือกพร็อกซีที่ได้เลือกไว้</translation>
+<translation id="8232971017369963250">Chrome เกิดขึ้นได้ด้วยโปรเจ็กต์โอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /></translation>
+<translation id="8279509328145658601">Chrome ยังเกิดขึ้นได้ด้วย<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
 </translationbundle>

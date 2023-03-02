@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Ідзе пошук сканераў</translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
 <translation id="3268178239013324452">Збой: дзверцы прынтара адкрыты</translation>
+<translation id="3275506277319227640">Замацаваць <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Відарыс аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Змяніць файл}one{Змяніць файлы}few{Змяніць файлы}many{Змяніць файлы}other{Змяніць файлы}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Бяспека</translation>
 <translation id="3435896845095436175">Уключыць</translation>
+<translation id="345256797477978759">Замацаваць акно <ph name="DIRECTION" /> на большай частцы экрана</translation>
 <translation id="3456078764689556234">Надрукавана старонка <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканіруецца старонка <ph name="PAGE_NUM" />. Выканана <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Друк</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Акумулятар поўнасцю зараджаны</translation>
 <translation id="3600339377155080675">Адлюстраваць экран</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
+<translation id="360282891121575443">Іншыя карыстальнікі могуць змяняць фота ў абагуленых альбомах. Калі ў набор шпалер змяненні ўносяцца кожны дзень, вам могуць паказвацца шпалеры, якіх зараз няма ў альбоме.</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Змяніць шпалеры</translation>
 <translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
 <translation id="3606583719724308068">Высокая затрымка на вэб-сайтах HTTPS</translation>
 <translation id="361575905210396100">Дзякуй за водгук</translation>
 <translation id="3632579075709132555">Пераключэнне экрана прыватнасці</translation>
+<translation id="3639846061339007994">зверху</translation>
 <translation id="3651050199673793219">Выберыце адзінку вымярэння тэмпературы</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (праверка)</translation>
 <translation id="370665806235115550">Загрузка…</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Поўнасцю</translation>
 <translation id="4333390807948134856">Клавіша "<ph name="KEY_NAME" />" націснута</translation>
 <translation id="435692326371619097">Кіраванне наладамі сеткавых APN. З дапамогай APN устанаўліваецца падключэнне паміж сотавай сеткай і інтэрнэтам. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Замацаваць на меншым баку</translation>
 <translation id="4378373042927530923">Паслядоўнасць дзеянняў не запускалася</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Укладка</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
+<translation id="6698459586333070823">Іншыя карыстальнікі могуць змяняць абагуленыя альбомы.</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6723847290197874913">Падсветка клавіятуры</translation>
@@ -665,6 +671,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Збой: памылка аўтарызацыі</translation>
 <translation id="7103252855940681301">Прылада <ph name="INDEX" /> з <ph name="COUNT" />. Назва: <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Назва пункта доступу (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
@@ -674,6 +681,7 @@
 <translation id="7155171745945906037">Існуючае фота з камеры або файла</translation>
 <translation id="7162487448488904999">Галерэя</translation>
 <translation id="7170236477717446850">Фота профілю</translation>
+<translation id="7171919371520438592">Замацаваць акно <ph name="DIRECTION" /> на меншай частцы экрана</translation>
 <translation id="7172721935181587524">1 відарыс</translation>
 <translation id="7177485034254901881">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
@@ -749,6 +757,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тып пастаўшчыка</translation>
 <translation id="7882501334836096755">Адкрыты ключ</translation>
+<translation id="78957024357676568">злева</translation>
 <translation id="7915220255123750251">Кіраванне наладамі сеткавых APN. З дапамогай APN устанаўліваецца падключэнне паміж сотавай сеткай і інтэрнэтам.</translation>
 <translation id="7936303884198020182">Серверы даменных імён не знойдзены</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
@@ -777,6 +786,7 @@
 <translation id="8183974620058026102">Далучыць</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
+<translation id="8210733748736414123">знізу</translation>
 <translation id="8226628635270268143">Выберыце любімыя фота і альбомы</translation>
 <translation id="8227119283605456246">Далучыць файл</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
@@ -794,6 +804,7 @@
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
 <translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>
 <translation id="8372477600026034341">Дадатковыя хосты</translation>
+<translation id="8380114448424469341">Замацаваць акно <ph name="DIRECTION" /> на палову экрана</translation>
 <translation id="8395584934117017006">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе арганізацыя</translation>
 <translation id="8398927464629426868">Цяперашняя хуткасць зарадкі або разрадкі прылады</translation>
 <translation id="8410244574650205435">Вызначана аўтаматычна</translation>
@@ -858,6 +869,7 @@
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>
 <translation id="8936793075252196307">IP-адрас кліента</translation>
 <translation id="894617464444543719">Гэта тэлефон.</translation>
+<translation id="8957423540740801332">справа</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
 <translation id="8970109610781093811">Выканаць яшчэ раз</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -885,6 +897,7 @@
 <translation id="9137526406337347448">Сэрвісы Google</translation>
 <translation id="9138630967333032450">Shift злева</translation>
 <translation id="9149391708638971077">Выканаць праверку памяці</translation>
+<translation id="9157515863513902090">Замацаваць на большым баку</translation>
 <translation id="9173638680043580060">Застаецца менш за хвіліну</translation>
 <translation id="917720651393141712">Праверыць</translation>
 <translation id="9188992814426075118">Падсветка клавіятуры можа аўтаматычна падбірацца пад колер шпалер</translation>

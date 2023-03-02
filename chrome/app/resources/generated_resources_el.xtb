@@ -4484,6 +4484,7 @@
 <translation id="4975771730019223894">Προσθήκη σήματος σε εφαρμογές</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Επιβεβαίωση πρόσβασης</translation>
+<translation id="4979263087381759787">Επιλογές για προγραμματιστές</translation>
 <translation id="4980805016576257426">Αυτή η επέκταση περιέχει κακόβουλο πρόγραμμα.</translation>
 <translation id="4981449534399733132">Για να διαγράψετε τα δεδομένα περιήγησης από όλες τις συγχρονισμένες συσκευές σας και τον Λογαριασμό σας Google, <ph name="BEGIN_LINK" />συνδεθείτε<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις ρυθμίσεις. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>
@@ -5574,6 +5575,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Ολοκληρώθηκε ο έλεγχος για 1 ιστότοπο}other{Ολοκληρώθηκε ο έλεγχος για {NUM_SITES} ιστοτόπους}}</translation>
 <translation id="5997337190805127100">Μάθετε περισσότερα για την πρόσβαση ιστοτόπου</translation>
 <translation id="5998458948782718639">Συμβάλετε στη βελτίωση της αυτόματης συμπλήρωσης</translation>
+<translation id="5999630716831179808">Φωνές</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> αποτελέσματα για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6001839398155993679">Ας ξεκινήσουμε</translation>
 <translation id="6002122790816966947">Οι συσκευές σας</translation>

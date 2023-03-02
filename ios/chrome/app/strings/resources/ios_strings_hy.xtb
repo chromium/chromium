@@ -322,6 +322,7 @@
 <translation id="3244271242291266297">ամիս</translation>
 <translation id="3245744387817103524">Փոփոխությունը չհաջողվեց պահել։</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" />-ը <ph name="NUM_SUGGESTIONS" />-ից</translation>
+<translation id="3264775633254836593">Գաղտնաբառերի ինքնալրացում</translation>
 <translation id="3268451620468152448">Բաց ներդիրները</translation>
 <translation id="3272527697863656322">Չեղարկել</translation>
 <translation id="3277021493514034324">Կայքի հասցեն պատճենվել է</translation>
@@ -389,6 +390,7 @@
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="380329542618494757">Անուն</translation>
 <translation id="3803696231112616155">Առաջարկել այս կայքի թագմանությունը</translation>
+<translation id="3803967590068704619">Այս հասցեն պահվում է ձեր Google հաշվում (<ph name="USER_EMAIL" />)։ Դուք կարող եք հասցեն օգտագործել ցանկացած սարքից՝ Google-ի արտադրանքներում։</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
 <translation id="3818293389945649617">Գտնել հաջորդը</translation>
 <translation id="3819183753496523827">Կապ չկա։ Ստուգեք կապը և նորից փորձեք։</translation>
@@ -427,6 +429,7 @@
 <translation id="408404951701638773">Որոնման տողից այժմ ավելի հեշտ է օգտվել</translation>
 <translation id="4092655288299341041">Ցույց տալ օգնության էջը</translation>
 <translation id="4101942614374785540">Գաղտնաբառերն այժմ պահվում են ձեր Google հաշվում (<ph name="ACCOUNT" />)։ Դուք կարող եք օգտագործել դրանք ցանկացած սարքում, որում մուտք եք գործել հաշիվ։ Այս գործառույթն անջատելու համար անցեք <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" />։</translation>
+<translation id="4105841739161771091">{count,plural, =1{Ջնջել հասցեն}one{Ջնջել հասցեն}other{Ջնջել հասցեները}}</translation>
 <translation id="4108998448622696017">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
 <translation id="411254640334432676">Ներբեռնումը չհաջողվեց:</translation>
 <translation id="4112644173421521737">Որոնել</translation>
@@ -739,9 +742,11 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6324669097367352121">Մուտքի կարգավորումներ</translation>
 <translation id="6337234675334993532">Գաղտնագրում</translation>
 <translation id="633809752005859102">Առաջացել է լուրջ խնդիր: Մենք կաշխատենք ուղղել այն:</translation>
+<translation id="6340285871011301182">Մասնակի թարգմանությունը հասանելի չէ։</translation>
 <translation id="6342069812937806050">Հենց նոր</translation>
 <translation id="6344783595350022745">Մաքրել տեքստը</translation>
 <translation id="6346549652287021269">Սկսե՞լ ներբեռնումը զրոյից</translation>
+<translation id="6347953390226388422">{count,plural, =1{Այս հասցեն կջնջվի ձեր Google հաշվից (<ph name="USER_EMAIL" />) և այս սարքից։}one{Այս հասցեն կջնջվի ձեր Google հաշվից (<ph name="USER_EMAIL" />) և այս սարքից։}other{Այս հասցեները կջնջվեն ձեր Google հաշվից (<ph name="USER_EMAIL" />) և այս սարքից։}}</translation>
 <translation id="634878792104344809">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունը և մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="6361848730467328243">Հետևել <ph name="DOMAIN_NAME" /> կայքին</translation>
 <translation id="6362362396625799311">Ինկոգնիտո ներդիրներ չկան</translation>
@@ -849,6 +854,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6914583639806229067">Որոնեք ձեր պատճենած պատկերը</translation>
 <translation id="6914783257214138813">Ձեր գաղտնաբառերը տեսանելի կլինեն արտահանված ֆայլին մուտք ունեցող բոլոր օգտատերերին:</translation>
 <translation id="6930799952781667037">Հպեք՝ այս լեզուն փոխելու համար։</translation>
+<translation id="6939941780796374211">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="6944369514868857500">Ընտրել այլ հաշիվ</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6965382102122355670">Եղավ</translation>
@@ -944,6 +950,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7738120385185846461">Հաղորդել խնդրի մասին…</translation>
 <translation id="7741325291586284254">Նոր ինկոգնիտո ներդիրի էջ</translation>
 <translation id="7744394900930577716">Գաղտնաբառեր այլ հավելվածներում</translation>
+<translation id="7749790401023484470">Դուք չեք ընտրել որևէ տեքստ։</translation>
 <translation id="7756478488453921771">Ընտրացանկ → Կարգավորումներ → Վճարման եղանակներ</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
@@ -1058,6 +1065,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8534481786647257214">Google+ ցանցում փակցնումն ավարտվեց:</translation>
 <translation id="8548878600947630424">Գտնել էջում…</translation>
 <translation id="8558480467877843976">Այժմ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chrome-ում։</translation>
+<translation id="8585679456315406468">Նշումները կարող են ունենալ առավելագույնը 1000 նիշ։</translation>
 <translation id="8588404856427128947">Անջատված է</translation>
 <translation id="8591976964826315682">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="8605219856220328675">Փակել ներդիրը:</translation>

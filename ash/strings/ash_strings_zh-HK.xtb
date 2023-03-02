@@ -294,6 +294,7 @@
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">解鎖視窗</translation>
+<translation id="2530896289327917474">開啟或關閉「鍵盤瀏覽」功能</translation>
 <translation id="2542089167727451762">輕按您的個人檔案圖片</translation>
 <translation id="255671100581129685">「Google 助理」不適用於公開工作階段。</translation>
 <translation id="256712445991462162">固定的放大鏡</translation>
@@ -419,6 +420,7 @@
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">設定</translation>
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
+<translation id="3256109297135787951">取消捷徑列上項目的突顯狀態</translation>
 <translation id="3260969790895726815">語音會在本機處理，而語音聽寫可離線運作，但部分語音指令無法使用。</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
 <translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
@@ -610,6 +612,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已經安裝嘅應用程式，已經暫停</translation>
 <translation id="423685346499232137">現在無法複製或貼上內容</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">概覽模式</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4247123849143712100">更新並關機</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
@@ -908,6 +911,7 @@
 <translation id="576453121877257266">「夜燈模式」已開啟。</translation>
 <translation id="5769373120130404283">私隱保護畫面</translation>
 <translation id="5773950591113557721">此操作會允許「<ph name="APP_NAME" />」和所有獲得相機和麥克風存取權的應用程式和網站存取這些裝置</translation>
+<translation id="5774295353725270860">開啟「檔案」應用程式</translation>
 <translation id="5777841717266010279">停止共用畫面？</translation>
 <translation id="5779721926447984944">已固定的檔案</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
@@ -961,6 +965,7 @@
 <translation id="6043212731627905357">此顯示器與您的 <ph name="DEVICE_TYPE" /> 無法配對 (並不支援該顯示器)。</translation>
 <translation id="6043994281159824495">立即登出</translation>
 <translation id="6045629311476491587">正由 <ph name="APP_COUNT" /> 個應用程式使用</translation>
+<translation id="6045998054441862242">開啟高對比模式</translation>
 <translation id="6047696787498798094">切換到另一個使用者會停止共用畫面，您要繼續嗎？</translation>
 <translation id="6054305421211936131">使用智能卡登入</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
@@ -1071,6 +1076,7 @@
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認您的身分</translation>
 <translation id="6650933572246256093">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入這個密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">密碼</translation>
+<translation id="666343722268997814">為突顯的項目開啟滑鼠右鍵選單</translation>
 <translation id="6665545700722362599">授予網站、應用程式和擴充程式使用定位服務，或裝置的麥克風、相機或其他功能的權限</translation>
 <translation id="6667908387435388584">連線至手機的熱點、將裝置設為靜音、尋找裝置所在的位置，並查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="6670153871843998651">桌面 3</translation>
@@ -1121,6 +1127,7 @@
 <translation id="6901883536534621389">試用手勢瀏覽功能</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
 <translation id="6931576957638141829">儲存至</translation>
+<translation id="6941333068993625698">提交意見</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6960565108681981554">未啟用。請聯絡您的流動網絡供應商。</translation>
@@ -1242,6 +1249,7 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7609951632080598826">日曆檢視，<ph name="DATE" />，<ph name="TIME" /></translation>
 <translation id="7611213136657090146">攝錄機已經重新連線。</translation>
+<translation id="7611271430932669992">將焦點移至彈出式視窗和對話框</translation>
 <translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7634648064048557203">攝錄機已經對齊右下角</translation>
@@ -1470,6 +1478,7 @@
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證您的 PIN 或密碼。注意：如果您最近變更過密碼，請嘗試使用舊密碼，新密碼會在您登出後立即生效。</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
+<translation id="8858369206579825206">私隱權設定</translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8876148469852588625">第 <ph name="EVENT_POSITION" /> 個活動，總共有 <ph name="EVENT_TOTAL_COUNT" /> 個</translation>
@@ -1496,6 +1505,7 @@
 <translation id="8991617137207906966">已啟用「色彩反轉模式」。再次按下 Ctrl+Search+H 鍵便可停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解鎖裝置即可執行有關通知的動作</translation>
 <translation id="9000771174482730261">管理儲存空間</translation>
+<translation id="9005984960510803406">開啟 Crosh Window</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9029736946581028033">裝置即將關閉</translation>

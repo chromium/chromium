@@ -4470,6 +4470,7 @@
 <translation id="4975771730019223894">Число уведомлений на значке приложения</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Подтверждение доступа</translation>
+<translation id="4979263087381759787">Для разработчиков</translation>
 <translation id="4980805016576257426">Это расширение содержит вредоносное ПО.</translation>
 <translation id="4981449534399733132">Чтобы удалить данные о работе в браузере со всех синхронизированных устройств и из аккаунта Google, <ph name="BEGIN_LINK" />войдите в систему<ph name="END_LINK" />.</translation>
 <translation id="4986706507552097681">Вы всегда можете выбрать, что синхронизировать, в настройках. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
@@ -5559,6 +5560,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Выполнена проверка для 1 сайта.}one{Выполнена проверка для {NUM_SITES} сайта.}few{Выполнена проверка для {NUM_SITES} сайтов.}many{Выполнена проверка для {NUM_SITES} сайтов.}other{Выполнена проверка для {NUM_SITES} сайта.}}</translation>
 <translation id="5997337190805127100">Подробнее о доступе для сайта…</translation>
 <translation id="5998458948782718639">Помочь в улучшении автозаполнения</translation>
+<translation id="5999630716831179808">Голоса</translation>
 <translation id="6000758707621254961">Количество результатов поиска по запросу "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="6001839398155993679">Создать</translation>
 <translation id="6002122790816966947">Ваши устройства</translation>

@@ -2173,6 +2173,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Έλεγχος του διακομιστή μεσολάβησης, του τείχους προστασίας και της διαμόρφωσης ασφαλούς DNS<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Διπλή συρραφή στα αριστερά</translation>
+<translation id="6367196786591004737">Διαγραφή καταχώρισης</translation>
 <translation id="6370022303958842211">Ενέργειες πρόσβασης στη συσκευή, όπως συνδέσεις (συμπεριλαμβανομένων των λόγων που οδήγησαν σε αποτυχημένες συνδέσεις), αποσυνδέσεις, κλειδώματα και ξεκλειδώματα</translation>
 <translation id="6374865374745447009">διαχείριση παραθύρων</translation>
 <translation id="6377268785556383139">1 αποτέλεσμα για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
@@ -2317,6 +2318,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Τηλεσυνδιάσκεψη</translation>
 <translation id="6753269504797312559">Τιμή πολιτικής</translation>
+<translation id="6753434778807740853">Διαγραφή καταχώρισης <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Η συσκευή σας τέθηκε σε αδράνεια.</translation>
 <translation id="6767985426384634228">Ενημέρωση διεύθυνσης;</translation>
@@ -2329,6 +2331,7 @@
 <translation id="678982761784843853">Προστατευμένα αναγνωριστικά περιεχομένου</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="679355240208270552">Έγινε παράβλεψη επειδή η προεπιλεγμένη αναζήτηση δεν έχει ενεργοποιηθεί από την πολιτική.</translation>
+<translation id="6794049111359324414">Να επιτρέπεται στην εφαρμογή <ph name="APP_NAME" /> η ρύθμιση δικτύων Wi-Fi;</translation>
 <translation id="6794951432696553238">Επιβεβαιώστε πιο γρήγορα τις κάρτες σας, χρησιμοποιώντας το Windows Hello από εδώ και στο εξής</translation>
 <translation id="6798460514924505775">Φάκελος Chou 3</translation>
 <translation id="6805030849054648206">Φάκελος B6/C4</translation>
@@ -2822,7 +2825,6 @@
 <translation id="7950027195171824198">Διαχειριστείτε τις προτιμήσεις σας για τα cookie από τις ρυθμίσεις του Chrome</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">European EDP</translation>
-<translation id="7952804540472583406"><ph name="BEGIN_LINK" />Σύνδεση<ph name="END_LINK" /> στο δίκτυο.</translation>
 <translation id="7953569069500808819">Ραφή στο επάνω άκρο</translation>
 <translation id="7955105108888461311">Ερώτηση αυτοπροσώπως</translation>
 <translation id="7956713633345437162">Σελιδοδείκτες κινητής συσκευής</translation>
@@ -3371,6 +3373,7 @@
     &lt;li&gt;Δοκιμάστε να απεγκαταστήσετε το λογισμικό "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Δοκιμάστε να συνδεθείτε σε κάποιο άλλο δίκτυο&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">Αυτή η εφαρμογή ζητά άδεια για τη ρύθμιση νέων δικτύων Wi-Fi. Μετά τη ρύθμιση, η συσκευή <ph name="DEVICE_TYPE" /> θα συνδεθεί αυτόματα στα δίκτυα Wi-Fi που συμμετέχουν. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Από το Google Pay</translation>
 </translationbundle>

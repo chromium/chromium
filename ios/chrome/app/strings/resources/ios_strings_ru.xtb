@@ -212,6 +212,7 @@
 <translation id="2500374554657206846">Параметры сохранения пароля</translation>
 <translation id="2523363575747517183">Этот сайт часто пытается открыть другое приложение.</translation>
 <translation id="2529021024822217800">Открыть все</translation>
+<translation id="2547458583188611426">Синхронизация не выполняется. Чтобы запустить ее, введите кодовую фразу.</translation>
 <translation id="2556092377360758201">Защита отключена (не рекомендуется)</translation>
 <translation id="2562041823070056534">Отправка на устройство <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Сохранять пароли в аккаунте Google</translation>
@@ -488,6 +489,7 @@
 <translation id="4536418791685807335">Войдите в аккаунт снова.</translation>
 <translation id="4540780316273593836">Ошибка</translation>
 <translation id="457386861538956877">Ещё...</translation>
+<translation id="4587235830039045480">Сохраните пароль в аккаунте Google.</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4588014171431912783">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. <ph name="BEGIN_LINK" />Какие данные можно синхронизировать<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавиатура</translation>
@@ -655,6 +657,7 @@
 <translation id="5755162682436943950">Выполнен выход. Открывает диалоговое окно для входа и включения синхронизации.</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
 <translation id="5765456154762864099">Меню → Настройки → Браузер по умолчанию</translation>
+<translation id="5777888488419460501">Сохранить в аккаунте</translation>
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="5791632441210678828">Кнопка "Сортировать" для ленты новостей.</translation>
 <translation id="5802829331520313983">Настроить</translation>
@@ -1040,6 +1043,7 @@
 <translation id="8343993175958086504">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8386068868580335421">Сбросить</translation>
+<translation id="838867811594159347">Ввести кодовую фразу</translation>
 <translation id="8393889347136007944">Не использовались в течение <ph name="THRESHOLD" /> дн.</translation>
 <translation id="8407669440184693619">Паролей для этого сайта не найдено</translation>
 <translation id="842017693807136194">Выполнен вход через</translation>
@@ -1112,6 +1116,7 @@
 <translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Поделиться...</translation>
 <translation id="8911759861431145525">Нажмите "Добавить" и введите необходимую информацию.</translation>
+<translation id="891282356902782456">Пароль сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">Выделите текст на сайте.</translation>
 <translation id="8917490105272468696">Включить функцию</translation>
 <translation id="8928133177108699615">Версия для компьютера</translation>

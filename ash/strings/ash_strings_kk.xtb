@@ -294,6 +294,7 @@
 <translation id="2509468283778169019">CAPS LOCK қосулы</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Терезелер құлпын ашу</translation>
+<translation id="2530896289327917474">Пернелер арқылы навигациялауды қосу немесе өшіру</translation>
 <translation id="2542089167727451762">Профиль суретіңізді түртіңіз.</translation>
 <translation id="255671100581129685">Google Assistant баршаға ашық сеанста жұмыс істемейді.</translation>
 <translation id="256712445991462162">бекітілген ұлғайтқыш</translation>
@@ -419,6 +420,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезесі <ph name="ACTIVE_DESK" /> үстелінен <ph name="TARGET_DESK" /> үстеліне көшірілді.</translation>
 <translation id="3252573918265662711">Орнату</translation>
 <translation id="3255483164551725916">Сен не істей аласың?</translation>
+<translation id="3256109297135787951">Сөредегі элементтің ерекшеленуін өшіру</translation>
 <translation id="3260969790895726815">Сөйлеу жергілікті түрде өңделеді және мәтінді дауыспен енгізу офлайн жұмыс істейді, бірақ кейбір дауыстық пәрмендер жұмыс істемейді.</translation>
 <translation id="3269597722229482060">Тінтуірдің оң жақ түймесін басу</translation>
 <translation id="3289544412142055976">Linux қолданбаларына қазір қолдау көрсетілмейді.</translation>
@@ -610,6 +612,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, қолданба орнатылған, кідіртілген</translation>
 <translation id="423685346499232137">Контентті қазір көшіру немесе қою мүмкін емес.</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Шолу режимі</translation>
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
 <translation id="4247123849143712100">Жаңарту және өшіру</translation>
 <translation id="4250229828105606438">Скриншот</translation>
@@ -909,6 +912,7 @@
 <translation id="576453121877257266">"Түнгі жарық" функциясы қосулы.</translation>
 <translation id="5769373120130404283">Құпиялық экраны</translation>
 <translation id="5773950591113557721">Бұл <ph name="APP_NAME" /> қолданбасына және камера мен микрофон рұқсаттары бар барлық қолданба мен веб-сайтқа кіруге мүмкіндік береді</translation>
+<translation id="5774295353725270860">Файлдар қолданбасын ашу</translation>
 <translation id="5777841717266010279">Экран бөлісуді тоқтату қажет пе?</translation>
 <translation id="5779721926447984944">Бекітілген файлдар</translation>
 <translation id="5788127256798019331">Play файлдары</translation>
@@ -962,6 +966,7 @@
 <translation id="6043212731627905357">Бұл монитор <ph name="DEVICE_TYPE" /> құрылғысымен үйлеспейді (мониторға қолдау көрсетілмейді).</translation>
 <translation id="6043994281159824495">Қазір шығу</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> қолданба пайдаланды</translation>
+<translation id="6045998054441862242">Жоғары контраст режимін қосу</translation>
 <translation id="6047696787498798094">Басқа пайдаланушыға ауысқан кезде, экран бөлісілмейді. Жалғастыруды қалайсыз ба?</translation>
 <translation id="6054305421211936131">Смарт картамен кіру</translation>
 <translation id="6059276912018042191">Соңғы Chrome қойындылары</translation>
@@ -1073,6 +1078,7 @@
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптасуға рұқсат сұрайды. Айтылған құрылғыда осы негізгі кілтті енгізіңіз: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
+<translation id="666343722268997814">Ерекшеленген элемент үшін контекстік мәзірді ашу</translation>
 <translation id="6665545700722362599">Веб-сайттарға, қолданбаларға және кеңейтімдерге орынды анықтау қызметін, құрылғының микрофонын, камерасын немесе басқа функцияларын пайдалануға рұқсат беріңіз</translation>
 <translation id="6667908387435388584">Телефоныңыздың хотспотына қосылыңыз, құрылғыңыздың дауысын өшіріп, қай жерде тұрғанын көріңіз, сондай-ақ телефоныңызда соңғы ашылған Chrome қойындыларын көре аласыз.</translation>
 <translation id="6670153871843998651">3-ші жұмыс үстелі</translation>
@@ -1123,6 +1129,7 @@
 <translation id="6901883536534621389">Навигация қимылдарын байқап көріңіз</translation>
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
 <translation id="6931576957638141829">Сақтау орны</translation>
+<translation id="6941333068993625698">Пікір жіберу</translation>
 <translation id="6942518653766415536">Жазба форматының мәзірі</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6960565108681981554">Іске қосылмаған. Операторға хабарласыңыз.</translation>
@@ -1244,6 +1251,7 @@
 <translation id="7607002721634913082">Кідіртілген</translation>
 <translation id="7609951632080598826">Күнтізбе көрінісі: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера қайта жалғанды.</translation>
+<translation id="7611271430932669992">Қалқымалы терезелерге және диалогтарға өту</translation>
 <translation id="761736749114493194">Камерамен кадрлауды ауыстыру. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камера төменгі оң жақ бұрышқа ауыстырылды.</translation>
@@ -1472,6 +1480,7 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, аккаунттан шыққаннан кейін, күшіне енеді.</translation>
 <translation id="8855885154700222542">Толық экран пернесі</translation>
+<translation id="8858369206579825206">Құпиялық параметрлері</translation>
 <translation id="8870509716567206129">Қолданба бөлінген экранды қолдамайды.</translation>
 <translation id="8874184842967597500">Қосылмаған</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /> іс-шара</translation>
@@ -1498,6 +1507,7 @@
 <translation id="8991617137207906966">Түс инверсиясы режимі қосылды. Оны өшіру үшін Ctrl+Search+H пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="899350903320462459">Хабарландыруда ұсынылған әрекетті орындау үшін <ph name="LOGIN_ID" /> арқылы құрылғының құлпын ашыңыз</translation>
 <translation id="9000771174482730261">ЖАДТЫ БАСҚАРУ</translation>
+<translation id="9005984960510803406">Crosh терезесін ашу</translation>
 <translation id="9017320285115481645">Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
 <translation id="9024331582947483881">толық экран</translation>
 <translation id="9029736946581028033">Құрылғы сәлден соң өшеді</translation>

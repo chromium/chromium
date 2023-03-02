@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
+<translation id="3275506277319227640">Ancrer sur la <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Image d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3435896845095436175">Activer</translation>
+<translation id="345256797477978759">Ancrer la fenêtre sur la plus grande partie <ph name="DIRECTION" /> de l'écran</translation>
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Numérisation de la page <ph name="PAGE_NUM" /> en cours… Progression : <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Impression</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Batterie entièrement chargée</translation>
 <translation id="3600339377155080675">Duplication d'écran</translation>
 <translation id="3602290021589620013">Aperçu</translation>
+<translation id="360282891121575443">Les photos des albums partagés peuvent être mises à jour par d'autres utilisateurs. Le changement quotidien peut afficher des fonds d'écran qui ne sont pas dans l'album pour le moment.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
 <translation id="361575905210396100">Merci de vos commentaires</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
+<translation id="3639846061339007994">haut</translation>
 <translation id="3651050199673793219">Sélectionnez une unité de température</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Chargement en cours...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> enfoncée</translation>
 <translation id="435692326371619097">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Ancrer sur le plus petit côté</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4378551569595875038">Connexion...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -563,6 +568,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> autres albums</translation>
 <translation id="6122191549521593678">En ligne</translation>
 <translation id="6122277663991249694">Service de méthode d'entrée Chrome OS</translation>
+<translation id="6136285399872347291">effacement arrière</translation>
 <translation id="6137767437444130246">Certificat utilisateur</translation>
 <translation id="6146993107019042706">Pour terminer cette opération, entrez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -629,6 +635,7 @@
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
+<translation id="6698459586333070823">Les albums partagés peuvent être mis à jour par d'autres utilisateurs</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6723847290197874913">Rétroéclairage du clavier</translation>
@@ -665,6 +672,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Échec – Échec de l'autorisation</translation>
 <translation id="7103252855940681301">Appareil <ph name="INDEX" /> de <ph name="COUNT" /> nommé <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">Entrée</translation>
 <translation id="7130438335435247835">Nom du point d'accès (NPA)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7143207342074048698">Connexion…</translation>
@@ -674,6 +682,7 @@
 <translation id="7155171745945906037">Photo existante de l'appareil photo ou du fichier</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Photo du profil</translation>
+<translation id="7171919371520438592">Ancrer la fenêtre sur la plus petite partie <ph name="DIRECTION" /> de l'écran</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
@@ -778,6 +787,7 @@
 <translation id="8183974620058026102">Joindre</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
+<translation id="8210733748736414123">bas</translation>
 <translation id="8226628635270268143">Sélectionner vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
@@ -795,6 +805,7 @@
 <translation id="8352772353338965963">Ajouter un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
+<translation id="8380114448424469341">Ancrer la fenêtre sur la moitié <ph name="DIRECTION" /> de l'écran</translation>
 <translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
 <translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
 <translation id="8410244574650205435">Pays détecté automatiquement</translation>
@@ -887,6 +898,7 @@
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9138630967333032450">Majuscule gauche</translation>
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
+<translation id="9157515863513902090">Ancrer sur le plus grand côté</translation>
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Votre clavier peut automatiquement s'agencer à votre fond d'écran</translation>

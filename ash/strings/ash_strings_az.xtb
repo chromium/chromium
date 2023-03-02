@@ -294,6 +294,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2509468283778169019">CAPS LOCK aktivdir</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Pəncərələrin kilidini açın</translation>
+<translation id="2530896289327917474">Klaviatura ilə baxışı aktiv və ya deaktiv edin</translation>
 <translation id="2542089167727451762">Profil şəklinizə toxunun</translation>
 <translation id="255671100581129685">Google Assistent ictimai sessiyada əlçatan deyil.</translation>
 <translation id="256712445991462162">iç böyüdücü</translation>
@@ -419,6 +420,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> pəncərəsi <ph name="ACTIVE_DESK" /> Masasından <ph name="TARGET_DESK" /> Masasına köçürüldü</translation>
 <translation id="3252573918265662711">Quraşdırma</translation>
 <translation id="3255483164551725916">Nə edə bilərsiniz?</translation>
+<translation id="3256109297135787951">Rəfdəki elementdən vurğulamanı silin</translation>
 <translation id="3260969790895726815">Nitq lokal olaraq emal edilir və diktə oflayn işləyir, lakin bəzi səs əmrləri işləməyəcək.</translation>
 <translation id="3269597722229482060">Sağ düymə ilə toxunun</translation>
 <translation id="3289544412142055976">Linux tətbiqləri hazırda dəstəklənmir</translation>
@@ -610,6 +612,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Quraşdırılmış Tətbiq, Durdurulub</translation>
 <translation id="423685346499232137">Hazırda məzmunu kopyalamaq və ya əlavə etmək mümkün deyil</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Giriş rejimi</translation>
 <translation id="4242533952199664413">Ayarları açın</translation>
 <translation id="4247123849143712100">Güncəlləyin və söndürün</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
@@ -909,6 +912,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="576453121877257266">Gecə İşığı aktivdir.</translation>
 <translation id="5769373120130404283">Məxfilik ekranı</translation>
 <translation id="5773950591113557721">Bu, kamera və mikrofon icazələri olan <ph name="APP_NAME" /> və bütün tətbiq və vebsaytlara giriş icazəsi verir</translation>
+<translation id="5774295353725270860">Fayl tətbiqini açın</translation>
 <translation id="5777841717266010279">Ekran paylaşımı dayandırılsın?</translation>
 <translation id="5779721926447984944">Bərkidilmiş fayllar</translation>
 <translation id="5788127256798019331">Faylları oxudun</translation>
@@ -962,6 +966,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6043212731627905357">Bu monitor <ph name="DEVICE_TYPE" /> cihazına uyğun gəlmir (monitor dəstəklənmir).</translation>
 <translation id="6043994281159824495">Hesabdan çıxın</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> tətbiq istifadə edir</translation>
+<translation id="6045998054441862242">Yüksək kontrast rejimini aktiv edin</translation>
 <translation id="6047696787498798094">Digər istifadəçiyə keçirdiyiniz zaman ekran paylaşması dayandırılacaq. Davam etmək istəyirsiniz?</translation>
 <translation id="6054305421211936131">Smart kart ilə daxil olun</translation>
 <translation id="6059276912018042191">Son Chrome tabları</translation>
@@ -1073,6 +1078,7 @@ Yeni quraşdırma</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> siz olduğunuzu təsdiqləmək istəyir</translation>
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" cihazı cütlənmək üçün icazə istəyir. Bu parolu həmin cihazda daxil edin: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parol</translation>
+<translation id="666343722268997814">Seçilmiş element üçün sağ düymə ilə açılan menyuya klikləyin</translation>
 <translation id="6665545700722362599">Məkan xidmətləri, cihazın mikrofon, kamera və s. funksiyalarından istifadə etməsi üçün veb sayt, tətbiq və artırmalara icazə verin</translation>
 <translation id="6667908387435388584">Telefonunuzun hotspotuna qoşulun, cihazınızı susdurun və tapın və telefonunuzda açılan son Chrome tablarına baxın</translation>
 <translation id="6670153871843998651">Masa 3</translation>
@@ -1123,6 +1129,7 @@ Yeni quraşdırma</translation>
 <translation id="6901883536534621389">Naviqasiya etmək üçün jestləri sınayın</translation>
 <translation id="6919251195245069855">Smart kartınız tanınmadı. Yenidən sınayın.</translation>
 <translation id="6931576957638141829">Burada saxlayın:</translation>
+<translation id="6941333068993625698">Rəy göndərin</translation>
 <translation id="6942518653766415536">Yazı formatı menyusu</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6960565108681981554">Aktiv edilməyib. Operatorunuz ilə əlaqə saxlayın.</translation>
@@ -1244,6 +1251,7 @@ Yeni quraşdırma</translation>
 <translation id="7607002721634913082">Durduruldu</translation>
 <translation id="7609951632080598826">Təqvim baxışı, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera yenidən qoşuldu.</translation>
+<translation id="7611271430932669992">Fokusu popap və dialoqlara köçürün</translation>
 <translation id="761736749114493194">Kamera çərçivəsini keçirin. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kamera aşağı sağ küncə çəkildi</translation>
@@ -1472,6 +1480,7 @@ Yeni quraşdırma</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN və ya parolunuzu yenə doğrulamaq mümkün olmadı. Qeyd: Bu yaxınlarda parolunuzu dəyişmisinizsə, köhnə parolunuzu istifadə edin. Çıxdıqdan sonra yeni parolunuz tətbiq ediləcək.</translation>
 <translation id="8855885154700222542">Tam ekran açarı</translation>
+<translation id="8858369206579825206">Məxfilik kontrolları</translation>
 <translation id="8870509716567206129">Tətbiq ekran bölünməsini dəstəkləmir.</translation>
 <translation id="8874184842967597500">Qoşulmayıb</translation>
 <translation id="8876148469852588625">Tədbir <ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /></translation>
@@ -1498,6 +1507,7 @@ Yeni quraşdırma</translation>
 <translation id="8991617137207906966">Rəng İnversiyası Rejimi aktivdir. Onu deaktiv etmək üçün yenidən Ctrl+Search+H düymələrini basın.</translation>
 <translation id="899350903320462459">Bildiriş əməliyyatını icra etmək üçün cihazı <ph name="LOGIN_ID" /> olaraq kiliddən çıxarın</translation>
 <translation id="9000771174482730261">YADDAŞI İDARƏ EDİN</translation>
+<translation id="9005984960510803406">Crosh pənərəsini açın</translation>
 <translation id="9017320285115481645">Family Link valideyn girişi kodunu daxil edin.</translation>
 <translation id="9024331582947483881">Tam ekran</translation>
 <translation id="9029736946581028033">Cihaz tezliklə sönəcək</translation>

@@ -558,6 +558,7 @@
 <translation id="1487335504823219454">បើក - ការកំណត់ផ្ទាល់ខ្លួន</translation>
 <translation id="1493892686965953381">កំពុងរង់ចាំ <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">​គេហទំព័រ​អាចស្នើសុំប្រើពុម្ព​អក្សរ​ ដែលបានដំឡើងនៅលើឧបករណ៍របស់អ្នក</translation>
+<translation id="1494429729245089920">មាន​ម៉ាស៊ីន​និម្មិត​ "<ph name="VM_NAME" />" ប៉ុន្តែ​វាហាក់ដូច​ជាមិន​មែន​​ជា​​ម៉ាស៊ីន​និម្មិត​ <ph name="APP_NAME" /> ដែល​ត្រឹមត្រូវ​ទេ។ សូមទាក់ទងទៅ​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="1495677929897281669">ត្រឡប់ទៅ​ផ្ទាំងវិញ</translation>
 <translation id="1500297251995790841">ឧបករណ៍មិនស្គាល់ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ស្វែងយល់​បន្ថែម​អំពី​កម្មវិធី Chrome ដែលមិនអាចប្រើបាន</translation>
@@ -4484,6 +4485,7 @@
 <translation id="4975771730019223894">ការដាក់គ្រឿង​សម្គាល់កម្មវិធី</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">អះអាងការចូលប្រើ</translation>
+<translation id="4979263087381759787">ជម្រើសសម្រាប់​អ្នក​អភិវឌ្ឍន៍</translation>
 <translation id="4980805016576257426">ផ្នែកបន្ថែមនេះមានផ្ទុកមេរោគ</translation>
 <translation id="4981449534399733132">ដើម្បីសម្អាត​ទិន្នន័យ​រុករក​ចេញពី​ឧបករណ៍​ដែលបាន​ធ្វើសមកាលកម្ម​ទាំងអស់​របស់អ្នក និងគណនី​ ​Google របស់អ្នក <ph name="BEGIN_LINK" />សូមចូលគណនី<ph name="END_LINK" />។</translation>
 <translation id="4986706507552097681">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុងការកំណត់បានជានិច្ច។ Google អាច​កំណត់​ម៉ាស៊ីន​​ស្វែងរក និង​សេវាកម្ម​ផ្សេង​ទៀតឱ្យមាន​លក្ខណៈ​ផ្ទាល់​ខ្លួន​ ផ្អែក​តាម​ប្រវត្តិ​របស់​អ្នក។</translation>
@@ -5574,6 +5576,7 @@
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{បានបញ្ចប់​ការ​ពិនិត្យមើលសម្រាប់គេហទំព័រ 1}other{បានបញ្ចប់​ការ​ពិនិត្យមើលសម្រាប់គេហទំព័រ {NUM_SITES}}}</translation>
 <translation id="5997337190805127100">ស្វែងយល់​បន្ថែម​អំពី​ការចូលប្រើ​គេហទំព័រ</translation>
 <translation id="5998458948782718639">ជួយកែលម្អការ​បំពេញស្វ័យប្រវត្តិ</translation>
+<translation id="5999630716831179808">សម្លេង</translation>
 <translation id="6000758707621254961">លទ្ធផល <ph name="RESULT_COUNT" /> សម្រាប់ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6001839398155993679">តោះ​​ទៅ</translation>
 <translation id="6002122790816966947">ឧបករណ៍របស់អ្នក</translation>

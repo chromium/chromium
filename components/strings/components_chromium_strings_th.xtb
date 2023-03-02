@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           และตรวจสอบว่าคุณตั้งการกำหนดค่าของคุณเป็น "ไม่มีพร็อกซี" หรือ "โดยตรง"</translation>
+<translation id="6549378540556750549">Chromium ยังเกิดขึ้นได้ด้วย<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
 <translation id="6613594504749178791">การเปลี่ยนแปลงของคุณจะมีผลในครั้งถัดไปที่คุณเปิด Chromium ขึ้นอีก</translation>
+<translation id="7681937895330411637">Chromium เกิดขึ้นได้ด้วยโปรเจ็กต์โอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="7861509383340276692">ไปที่
           เมนู Chromium &gt;
           <ph name="SETTINGS_TITLE" />
