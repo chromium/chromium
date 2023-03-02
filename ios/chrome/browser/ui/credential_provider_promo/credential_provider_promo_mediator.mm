@@ -119,10 +119,8 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   if (!self.promosManager) {
     return;
   }
-
-  // TODO(crbug.com/1392116): register the promo with a 24 hour delay.
   self.promosManager->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::CredentialProviderExtension);
+      promos_manager::Promo::CredentialProviderExtension, base::Hours(24));
 
   GetApplicationContext()->GetLocalState()->SetBoolean(
       prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, true);
