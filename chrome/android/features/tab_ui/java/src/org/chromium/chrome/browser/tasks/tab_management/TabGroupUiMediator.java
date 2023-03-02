@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -99,7 +100,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final BottomControlsCoordinator
             .BottomControlsVisibilityController mVisibilityController;
     private final IncognitoStateProvider mIncognitoStateProvider;
-    private final TabGridDialogMediator.DialogController mTabGridDialogController;
+    private final Supplier<TabGridDialogMediator.DialogController> mTabGridDialogControllerSupplier;
     private final IncognitoStateObserver mIncognitoStateObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -119,7 +120,7 @@ public class TabGroupUiMediator implements BackPressHandler {
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             IncognitoStateProvider incognitoStateProvider,
-            @Nullable TabGridDialogMediator.DialogController dialogController,
+            @Nullable Supplier<TabGridDialogMediator.DialogController> dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mContext = context;
         mResetHandler = resetHandler;
@@ -128,7 +129,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         mTabCreatorManager = tabCreatorManager;
         mVisibilityController = visibilityController;
         mIncognitoStateProvider = incognitoStateProvider;
-        mTabGridDialogController = dialogController;
+        mTabGridDialogControllerSupplier = dialogControllerSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
 
         if (layoutStateProviderSupplier.get() != null
@@ -412,21 +413,27 @@ public class TabGroupUiMediator implements BackPressHandler {
     public boolean onBackPressed() {
         // TODO(crbug.com/1006421): add a regression test to make sure that the back button closes
         // the dialog when the dialog is showing.
-        return mTabGridDialogController != null && mTabGridDialogController.handleBackPressed();
+        return mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()
+                && mTabGridDialogControllerSupplier.get().handleBackPressed();
     }
 
     @Override
     public @BackPressResult int handleBackPress() {
-        if (mTabGridDialogController != null) return mTabGridDialogController.handleBackPress();
+        if (mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()) {
+            return mTabGridDialogControllerSupplier.get().handleBackPress();
+        }
         return BackPressResult.FAILURE;
     }
 
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        if (mTabGridDialogController == null) {
+        if (mTabGridDialogControllerSupplier == null
+                || !mTabGridDialogControllerSupplier.hasValue()) {
             return BackPressHandler.super.getHandleBackPressChangedSupplier();
         }
-        return mTabGridDialogController.getHandleBackPressChangedSupplier();
+        return mTabGridDialogControllerSupplier.get().getHandleBackPressChangedSupplier();
     }
 
     public void destroy() {

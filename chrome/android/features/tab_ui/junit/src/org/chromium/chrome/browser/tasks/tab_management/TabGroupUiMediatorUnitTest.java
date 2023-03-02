@@ -45,6 +45,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -205,9 +206,12 @@ public class TabGroupUiMediatorUnitTest {
         TabGridDialogMediator.DialogController controller =
                 TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext) ? mTabGridDialogController
                                                                           : null;
+        Supplier<TabGridDialogMediator.DialogController> controllerSupplier = () -> {
+            return controller;
+        };
         mTabGroupUiMediator = new TabGroupUiMediator(mContext, mVisibilityController, mResetHandler,
                 mModel, mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
-                mIncognitoStateProvider, controller, mOmniboxFocusStateSupplier);
+                mIncognitoStateProvider, controllerSupplier, mOmniboxFocusStateSupplier);
 
         if (currentTab == null) {
             verifyNeverReset();
