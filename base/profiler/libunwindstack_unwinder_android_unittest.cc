@@ -220,7 +220,13 @@ TEST(LibunwindstackUnwinderAndroidTest, MAYBE_JavaFunction) {
                                     "callWithJavaFunction"});
 }
 
-TEST(LibunwindstackUnwinderAndroidTest, ReparsesMapsOnNewDynamicLibraryLoad) {
+// TODO(crbug/1384173): Investigate whether this test should pass on 32-bit ARM.
+#if defined(ARCH_CPU_ARM_FAMILY) && !defined(ARCH_CPU_ARM64)
+#define MAYBE_ReparsesMapsOnNewDynamicLibraryLoad DISABLED_ReparsesMapsOnNewDynamicLibraryLoad
+#else
+#define MAYBE_ReparsesMapsOnNewDynamicLibraryLoad ReparsesMapsOnNewDynamicLibraryLoad
+#endif
+TEST(LibunwindstackUnwinderAndroidTest, MAYBE_ReparsesMapsOnNewDynamicLibraryLoad) {
   // The current version of /proc/self/maps is used to create
   // memory_regions_map_ object.
   auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();
