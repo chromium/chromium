@@ -41,8 +41,7 @@ class MockAccessibilityPrivate {
     };
 
     this.AccessibilityFeature = {
-      DICTATION_PUMPKIN_PARSING: 'dictationPumpkinParsing',
-      DICTATION_MORE_COMMANDS: 'dictationMoreCommands',
+      DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
     };
 
     this.DictationBubbleIconType = {

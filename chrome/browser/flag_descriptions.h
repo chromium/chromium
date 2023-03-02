@@ -3116,22 +3116,12 @@ extern const char kExoGamepadVibrationDescription[];
 extern const char kExoOrdinalMotionName[];
 extern const char kExoOrdinalMotionDescription[];
 
-extern const char kExperimentalAccessibilityDictationWithPumpkinName[];
-extern const char kExperimentalAccessibilityDictationWithPumpkinDescription[];
-
-extern const char kExperimentalAccessibilityDictationMoreCommandsName[];
-extern const char kExperimentalAccessibilityDictationMoreCommandsDescription[];
-
 extern const char kExperimentalAccessibilityDictationContextCheckingName[];
 extern const char
     kExperimentalAccessibilityDictationContextCheckingDescription[];
 
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
-
-extern const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingName[];
-extern const char
-    kExperimentalAccessibilitySelectToSpeakVoiceSwitchingDescription[];
 
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];

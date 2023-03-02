@@ -5431,27 +5431,10 @@ const char kExoOrdinalMotionName[] =
 const char kExoOrdinalMotionDescription[] =
     "Send unaccelerated values as raw motion events to linux applications.";
 
-const char kExperimentalAccessibilityDictationWithPumpkinName[] =
-    "Experimental accessibility dictation using the pumpkin semantic parser.";
-const char kExperimentalAccessibilityDictationWithPumpkinDescription[] =
-    "Enables the pumpkin semantic parser for the accessibility dictation "
-    "feature.";
-
-const char kExperimentalAccessibilityDictationMoreCommandsName[] =
-    "Additional experimental accessibility dictation commands.";
-const char kExperimentalAccessibilityDictationMoreCommandsDescription[] =
-    "Enables experimental dictation commands.";
-
 const char kExperimentalAccessibilityDictationContextCheckingName[] =
     "Experimental accessibility dictation using context checking.";
 const char kExperimentalAccessibilityDictationContextCheckingDescription[] =
     "Enables experimental dictation context checking.";
-
-const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingName[] =
-    "Experimental accessibility Select-to-Speak voice switching.";
-const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingDescription[] =
-    "Enables Select-to-Speak voice switching, which will change the "
-    "text-to-speech voice depending on the language it encounters.";
 
 const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[] =
     "Experimental accessibility Google TTS Langauge Packs.";

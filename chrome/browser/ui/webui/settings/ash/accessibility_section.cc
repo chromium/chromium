@@ -430,11 +430,6 @@ bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
   return ::features::IsAccessibilitySelectToSpeakPageMigrationEnabled();
 }
 
-bool IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled() {
-  return ::features::
-      IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
-}
-
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return ::features::
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
@@ -985,10 +980,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilitySelectToSpeakPageMigrationEnabled",
                           IsAccessibilitySelectToSpeakPageMigrationEnabled());
-
-  html_source->AddBoolean(
-      "isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled",
-      IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled());
 
   html_source->AddBoolean(
       "areExperimentalAccessibilityColorEnhancementSettingsEnabled",

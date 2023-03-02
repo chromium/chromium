@@ -2268,19 +2268,9 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-experimental-accessibility-dictation-more-commands",
-    "owners": [ "jeevam","akihiroota"],
-    "expiry_milestone": 111
-  },
-  {
-    "name": "enable-experimental-accessibility-dictation-with-pumpkin",
-    "owners": [ "akihiroota"],
-    "expiry_milestone": 111
-  },
-  {
     "name": "enable-experimental-accessibility-google-tts-language-packs",
     "owners": [ "akihiroota", "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "enable-experimental-accessibility-language-detection",
@@ -2291,11 +2281,6 @@
     "name": "enable-experimental-accessibility-language-detection-dynamic",
     "owners": [ "chrishall", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "enable-experimental-accessibility-select-to-speak-voice-switching",
-    "owners": [ "akihiroota", "katie", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 111
   },
   {
     "name": "enable-experimental-accessibility-switch-access-text",

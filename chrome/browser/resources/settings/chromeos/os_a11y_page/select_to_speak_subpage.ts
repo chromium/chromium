@@ -205,14 +205,6 @@ class SettingsSelectToSpeakSubpageElement extends
         },
       },
 
-      isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled');
-        },
-      },
-
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */

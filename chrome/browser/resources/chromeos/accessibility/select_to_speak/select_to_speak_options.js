@@ -53,16 +53,6 @@ class SelectToSpeakOptionsPage {
           }
         });  // End of the chrome.settingsPrivate.getPref
 
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        AccessibilityFeature.SELECT_TO_SPEAK_VOICE_SWITCHING, (enabled) => {
-          // TODO(crbug.com/950391): Since voice switching only happens when
-          // enhanced network voices aren't being used, check with UX if we
-          // should hide or disable this option when enhanced network voices are
-          // disabled.
-          const option = document.getElementById('voiceSwitchingOption');
-          enabled ? this.showElement(option) : this.hideElement(option);
-        });
-
     this.syncCheckboxControlToPref_(
         'wordHighlight', PrefsManager.WORD_HIGHLIGHT_KEY, checked => {
           const elem = document.getElementById('highlightSubOption');

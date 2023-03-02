@@ -257,16 +257,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_DICTATIONPUMPKINPARSING:
-      enabled =
-          ::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_DICTATIONMORECOMMANDS:
-      enabled =
-          ::features::IsExperimentalAccessibilityDictationMoreCommandsEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_DICTATIONCONTEXTCHECKING:
       enabled = ::features::
           IsExperimentalAccessibilityDictationContextCheckingEnabled();
@@ -275,11 +265,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
         ACCESSIBILITY_FEATURE_SELECTTOSPEAKCONTEXTMENUOPTION:
       enabled =
           ::features::IsAccessibilitySelectToSpeakContextMenuOptionEnabled();
-      break;
-    case accessibility_private::
-        ACCESSIBILITY_FEATURE_SELECTTOSPEAKVOICESWITCHING:
-      enabled = ::features::
-          IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:

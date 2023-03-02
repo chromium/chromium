@@ -87,27 +87,13 @@ AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
-// Enables accessibility Dictation with the pumpkin semantic parser.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kExperimentalAccessibilityDictationWithPumpkin);
-
-// Returns true if Dictation with context checking is enabled.
-AX_BASE_EXPORT bool
-IsExperimentalAccessibilityDictationContextCheckingEnabled();
-
 // Enables Context Checking with the accessibility Dictation feature.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kExperimentalAccessibilityDictationContextChecking);
 
-// Returns true if dictation with pumpkin is enabled.
-AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationWithPumpkinEnabled();
-
-// Enables more commands with the accessibility Dictation feature.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kExperimentalAccessibilityDictationMoreCommands);
-
-// Returns true if Dictation with more commands is enabled.
-AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationMoreCommandsEnabled();
+// Returns true if Dictation with context checking is enabled.
+AX_BASE_EXPORT bool
+IsExperimentalAccessibilityDictationContextCheckingEnabled();
 
 // Enables downloading Google TTS voices using Language Packs.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
@@ -116,14 +102,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 // Returns true if using Language Packs to download Google TTS voices is
 // enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
-
-// Enables Select-to-Speak voice switching.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
-
-// Returns true if the Select-to-Speak voice switching feature is enabled.
-AX_BASE_EXPORT bool
-IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
 
 // Enables the experimental color enhancements settings.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(

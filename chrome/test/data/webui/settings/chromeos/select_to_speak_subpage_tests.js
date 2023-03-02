@@ -26,9 +26,6 @@ suite('SelectToSpeakSubpageTests', function() {
     browserProxy = new TestSelectToSpeakSubpageBrowserProxy();
     SelectToSpeakSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    loadTimeData.overrideValues(
-        {isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled: true});
-
     PolymerTest.clearBody();
 
     const prefElement = document.createElement('settings-prefs');

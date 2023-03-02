@@ -2461,8 +2461,7 @@ speech::LanguageCode AccessibilityManager::GetDictationLanguageCode() {
 void AccessibilityManager::InstallPumpkinForDictation(
     InstallPumpkinCallback callback) {
   DCHECK(!callback.is_null());
-  if (!::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled() ||
-      !IsDictationEnabled()) {
+  if (!IsDictationEnabled()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -2482,8 +2481,7 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
     return;
   }
 
-  if (!::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled() ||
-      !success) {
+  if (!success) {
     std::move(install_pumpkin_callback_).Run(absl::nullopt);
     return;
   }

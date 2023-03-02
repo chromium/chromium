@@ -4782,20 +4782,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardRoundCornersName,
      flag_descriptions::kVirtualKeyboardRoundCornersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kVirtualKeyboardRoundCorners)},
-    {"enable-experimental-accessibility-dictation-with-pumpkin",
-     flag_descriptions::kExperimentalAccessibilityDictationWithPumpkinName,
-     flag_descriptions::
-         kExperimentalAccessibilityDictationWithPumpkinDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kExperimentalAccessibilityDictationWithPumpkin)},
-    {"enable-experimental-accessibility-dictation-more-commands",
-     flag_descriptions::kExperimentalAccessibilityDictationMoreCommandsName,
-     flag_descriptions::
-         kExperimentalAccessibilityDictationMoreCommandsDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kExperimentalAccessibilityDictationMoreCommands)},
     {"enable-experimental-accessibility-dictation-context-checking",
      flag_descriptions::kExperimentalAccessibilityDictationContextCheckingName,
      flag_descriptions::
@@ -4810,14 +4796,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityGoogleTtsLanguagePacks)},
-    {"enable-experimental-accessibility-select-to-speak-voice-switching",
-     flag_descriptions::
-         kExperimentalAccessibilitySelectToSpeakVoiceSwitchingName,
-     flag_descriptions::
-         kExperimentalAccessibilitySelectToSpeakVoiceSwitchingDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,

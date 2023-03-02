@@ -40,13 +40,6 @@ class AccessibilityPrivateApiTest
   AccessibilityPrivateApiTest(const AccessibilityPrivateApiTest&) = delete;
 
  protected:
-  // ExtensionApiTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationWithPumpkin);
-  }
-
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     dictation_bubble_test_helper_ =
@@ -130,10 +123,10 @@ class AccessibilityPrivateApiFeatureTest : public AccessibilityPrivateApiTest {
     AccessibilityPrivateApiTest::SetUpCommandLine(command_line);
     if (enabled) {
       scoped_feature_list_.InitAndEnableFeature(
-          ::features::kExperimentalAccessibilityDictationMoreCommands);
+          ::features::kExperimentalAccessibilityDictationContextChecking);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          ::features::kExperimentalAccessibilityDictationMoreCommands);
+          ::features::kExperimentalAccessibilityDictationContextChecking);
     }
   }
 

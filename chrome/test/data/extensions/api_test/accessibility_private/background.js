@@ -57,7 +57,7 @@ var availableTests = [
 
   function testFeatureDisabled() {
     chrome.accessibilityPrivate.isFeatureEnabled(
-        'dictationMoreCommands', (enabled) => {
+        'dictationContextChecking', (enabled) => {
           chrome.test.assertFalse(enabled);
           chrome.test.succeed();
         });
@@ -65,7 +65,7 @@ var availableTests = [
 
   function testFeatureEnabled() {
     chrome.accessibilityPrivate.isFeatureEnabled(
-        'dictationMoreCommands', (enabled) => {
+        'dictationContextChecking', (enabled) => {
           chrome.test.assertTrue(enabled);
           chrome.test.succeed();
         });
