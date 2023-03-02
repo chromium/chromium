@@ -325,10 +325,12 @@ TEST_P(CookieSettingsTest, CookiesBlockThirdParty) {
 TEST_P(CookieSettingsTest, CookiesControlsDefault) {
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kBlockedSite, kFirstPartySiteForCookies,
-      /*top_frame_origin=*/absl::nullopt, net::CookieSettingOverrides()));
-  EXPECT_FALSE(cookie_settings_incognito_->IsFullCookieAccessAllowed(
-      kBlockedSite, kFirstPartySiteForCookies,
-      /*top_frame_origin=*/absl::nullopt, net::CookieSettingOverrides()));
+      /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
+  EXPECT_EQ(
+      cookie_settings_incognito_->IsFullCookieAccessAllowed(
+          kBlockedSite, kFirstPartySiteForCookies,
+          /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()),
+      IsForceAllowThirdPartyCookies());
 }
 
 TEST_P(CookieSettingsTest, CookiesControlsEnabled) {
