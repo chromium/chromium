@@ -289,23 +289,23 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       RunBluetoothPairingRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
-  void AddBluetoothObserver(
+  void DEPRECATED_AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer)
       override;
-  void AddLidObserver(
+  void DEPRECATED_AddLidObserver(
       mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) override;
-  void AddPowerObserver(
+  void DEPRECATED_AddPowerObserver(
       mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) override;
   void AddNetworkObserver(
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver> observer)
       override;
-  void AddAudioObserver(
+  void DEPRECATED_AddAudioObserver(
       mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) override;
-  void AddThunderboltObserver(
+  void DEPRECATED_AddThunderboltObserver(
       mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer)
       override;
-  void AddUsbObserver(
+  void DEPRECATED_AddUsbObserver(
       mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) override;
   void AddEventObserver(
       ash::cros_healthd::mojom::EventCategoryEnum category,

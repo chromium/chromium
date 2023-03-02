@@ -366,15 +366,7 @@ void FakeCrosHealthd::RunFloatingPointAccuracyRoutine(
 void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("wear_level_threshold",
-                                static_cast<int>(wear_level_threshold));
-
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), run_routine_response_.Clone()),
-      callback_delay_);
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::RunNvmeWearLevelRoutine(
@@ -697,17 +689,17 @@ void FakeCrosHealthd::RunBluetoothPairingRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
-void FakeCrosHealthd::AddBluetoothObserver(
+void FakeCrosHealthd::DEPRECATED_AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   NOTREACHED();
 }
 
-void FakeCrosHealthd::AddLidObserver(
+void FakeCrosHealthd::DEPRECATED_AddLidObserver(
     mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) {
   NOTREACHED();
 }
 
-void FakeCrosHealthd::AddPowerObserver(
+void FakeCrosHealthd::DEPRECATED_AddPowerObserver(
     mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) {
   NOTREACHED();
 }
@@ -718,17 +710,17 @@ void FakeCrosHealthd::AddNetworkObserver(
   network_observers_.Add(std::move(observer));
 }
 
-void FakeCrosHealthd::AddAudioObserver(
+void FakeCrosHealthd::DEPRECATED_AddAudioObserver(
     mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) {
   NOTREACHED();
 }
 
-void FakeCrosHealthd::AddThunderboltObserver(
+void FakeCrosHealthd::DEPRECATED_AddThunderboltObserver(
     mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer) {
   NOTREACHED();
 }
 
-void FakeCrosHealthd::AddUsbObserver(
+void FakeCrosHealthd::DEPRECATED_AddUsbObserver(
     mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) {
   NOTREACHED();
 }

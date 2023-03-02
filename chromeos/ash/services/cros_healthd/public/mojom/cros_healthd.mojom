@@ -733,21 +733,23 @@ interface CrosHealthdEventService {
   //
   // The request:
   // * |observer| - Bluetooth observer to be added to cros_healthd.
-  AddBluetoothObserver@0(pending_remote<CrosHealthdBluetoothObserver> observer);
+  DEPRECATED_AddBluetoothObserver@0(
+      pending_remote<CrosHealthdBluetoothObserver> observer);
 
   // Adds an observer to be notified on lid events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - lid observer to be added to cros_healthd.
-  AddLidObserver@1(pending_remote<CrosHealthdLidObserver> observer);
+  DEPRECATED_AddLidObserver@1(pending_remote<CrosHealthdLidObserver> observer);
 
   // Adds an observer to be notified on power events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - power observer to be added to cros_healthd.
-  AddPowerObserver@2(pending_remote<CrosHealthdPowerObserver> observer);
+  DEPRECATED_AddPowerObserver@2(
+      pending_remote<CrosHealthdPowerObserver> observer);
 
   // Adds an observer to be notified on network events. The caller can remove
   // the observer created by this call by closing their end of the message pipe.
@@ -763,7 +765,8 @@ interface CrosHealthdEventService {
   //
   // The request:
   // * |observer| - audio observer to be added to cros_healthd.
-  AddAudioObserver@4(pending_remote<CrosHealthdAudioObserver> observer);
+  DEPRECATED_AddAudioObserver@4(
+      pending_remote<CrosHealthdAudioObserver> observer);
 
   // Adds an observer to be notified on Thunderbolt events. The caller can
   // remove the observer created by this call by closing their end of the
@@ -771,7 +774,7 @@ interface CrosHealthdEventService {
   //
   // The request:
   // * |observer| - Thunderbolt observer to be added to cros_healthd.
-  AddThunderboltObserver@5(
+  DEPRECATED_AddThunderboltObserver@5(
       pending_remote<CrosHealthdThunderboltObserver> observer);
 
   // Adds an observer to be notified on USB events. The caller can remove the
@@ -779,7 +782,7 @@ interface CrosHealthdEventService {
   //
   // The request:
   // * |observer| - USB observer to be added to cros_healthd.
-  [MinVersion=1] AddUsbObserver@6(
+  [MinVersion=1] DEPRECATED_AddUsbObserver@6(
       pending_remote<CrosHealthdUsbObserver> observer);
 
   // Adds an observer to be notified on events. The caller can remove the
@@ -838,7 +841,7 @@ interface CrosHealthdProbeService {
   // * |multiple_process_info| - Information about the requested processes and
   //                             errors if any occurred and not skipped.
   [MinVersion=1] ProbeMultipleProcessInfo@2(array<uint32>? process_ids,
-    bool ignore_single_process_error)
+                                            bool ignore_single_process_error)
     => (MultipleProcessResult multiple_process_info);
 };
 
