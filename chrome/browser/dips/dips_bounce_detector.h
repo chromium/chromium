@@ -72,6 +72,8 @@ class DIPSRedirectContext {
   // Terminates the current redirect chain, ending it with the given URL.
   void EndChain(GURL url);
 
+  [[nodiscard]] bool AddLateCookieAccess(GURL url, CookieOperation op);
+
   size_t size() const { return redirects_.size(); }
 
   void SetRedirectChainHandlerForTesting(DIPSRedirectChainHandler handler) {
@@ -85,6 +87,9 @@ class DIPSRedirectContext {
   DIPSRedirectChainHandler handler_;
   GURL initial_url_;
   std::vector<DIPSRedirectInfoPtr> redirects_;
+  // The index of the last redirect to have a known cookie access. When adding
+  // late cookie accesses, we only consider redirects from this offset onwards.
+  size_t update_offset_ = 0;
 };
 
 // A simplified interface to WebContents and DIPSService that can be faked in

@@ -118,6 +118,9 @@ DIPSRedirectContext::~DIPSRedirectContext() = default;
 void DIPSRedirectContext::AppendClientRedirect(
     DIPSRedirectInfoPtr client_redirect) {
   DCHECK_EQ(client_redirect->redirect_type, DIPSRedirectType::kClient);
+  if (client_redirect->access_type > CookieAccessType::kNone) {
+    update_offset_ = redirects_.size();
+  }
   redirects_.push_back(std::move(client_redirect));
 }
 
@@ -125,6 +128,9 @@ void DIPSRedirectContext::AppendServerRedirects(
     std::vector<DIPSRedirectInfoPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
     DCHECK_EQ(redirect->redirect_type, DIPSRedirectType::kServer);
+    if (redirect->access_type > CookieAccessType::kNone) {
+      update_offset_ = redirects_.size();
+    }
     redirects_.push_back(std::move(redirect));
   }
 }
@@ -192,6 +198,21 @@ void DIPSRedirectContext::EndChain(GURL url) {
 
   initial_url_ = std::move(url);
   redirects_.clear();
+  update_offset_ = 0;
+}
+
+bool DIPSRedirectContext::AddLateCookieAccess(GURL url, CookieOperation op) {
+  while (update_offset_ < redirects_.size()) {
+    if (redirects_[update_offset_]->url == url) {
+      redirects_[update_offset_]->access_type =
+          redirects_[update_offset_]->access_type | ToCookieAccessType(op);
+      return true;
+    }
+
+    update_offset_++;
+  }
+
+  return false;
 }
 
 void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
@@ -332,12 +353,21 @@ void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
   if (op == CookieOperation::kChange) {
     delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
   }
+
+  // We might be called for "late" server cookie accesses, not just client
+  // cookies. Attempt to attribute the cookie access to the current redirect
+  // chain to handle that case.
+  //
+  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
+  // uncommitted navigations?
+  if (redirect_context_.AddLateCookieAccess(url, op)) {
+    return;
+  }
+
   if (client_detection_state_ &&
       GetSiteForDIPS(url) == client_detection_state_->current_site) {
     client_detection_state_->cookie_access_type =
-        client_detection_state_->cookie_access_type |
-        (op == CookieOperation::kChange ? CookieAccessType::kWrite
-                                        : CookieAccessType::kRead);
+        client_detection_state_->cookie_access_type | ToCookieAccessType(op);
   }
 }
 

@@ -64,6 +64,10 @@ base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
   }
 }
 
+std::ostream& operator<<(std::ostream& os, CookieAccessType access_type) {
+  return os << CookieAccessTypeToString(access_type);
+}
+
 // DIPSCookieMode:
 DIPSCookieMode GetDIPSCookieMode(bool is_otr, bool block_third_party_cookies) {
   if (is_otr) {

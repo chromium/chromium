@@ -62,7 +62,7 @@ struct DIPSRedirectInfo {
 
   const GURL url;
   const DIPSRedirectType redirect_type;
-  const CookieAccessType access_type;
+  CookieAccessType access_type;  // may be updated by late cookie notifications
   // Index of this URL within the overall chain.
   const int index;
   const ukm::SourceId source_id;

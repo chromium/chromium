@@ -38,7 +38,13 @@ enum class CookieAccessType {
   kReadWrite = 3
 };
 
+inline CookieAccessType ToCookieAccessType(CookieOperation op) {
+  return (op == CookieOperation::kChange ? CookieAccessType::kWrite
+                                         : CookieAccessType::kRead);
+}
+
 base::StringPiece CookieAccessTypeToString(CookieAccessType type);
+std::ostream& operator<<(std::ostream& os, CookieAccessType access_type);
 
 constexpr CookieAccessType operator|(CookieAccessType lhs,
                                      CookieAccessType rhs) {
