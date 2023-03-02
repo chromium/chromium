@@ -401,10 +401,11 @@ read from stdin.
 whitespace will be stripped (needed for copy-pasting data
 from NetLogs).''')
 
-  parser.add_argument(
-      '--output', dest='outputs', action='store',
-      default="header,der2ascii,openssl_text,pem",
-      help='output formats to use. Default: %(default)s')
+  parser.add_argument('--output',
+                      dest='outputs',
+                      action='store',
+                      default="header,openssl_text,pem",
+                      help='output formats to use. Default: %(default)s')
 
   args = parser.parse_args()
 
