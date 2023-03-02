@@ -452,7 +452,7 @@ std::u16string WebstorePrivateBeginInstallWithManifest3Function::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateBeginInstallWithManifest3Function::Run() {
-  params_ = Params::CreateDeprecated(args());
+  params_ = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   profile_ = Profile::FromBrowserContext(browser_context());
@@ -952,8 +952,8 @@ WebstorePrivateCompleteInstallFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateCompleteInstallFunction::Run() {
-  std::unique_ptr<CompleteInstall::Params> params(
-      CompleteInstall::Params::CreateDeprecated(args()));
+  absl::optional<CompleteInstall::Params> params =
+      CompleteInstall::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
@@ -1091,8 +1091,8 @@ WebstorePrivateSetStoreLoginFunction::WebstorePrivateSetStoreLoginFunction() =
 WebstorePrivateSetStoreLoginFunction::~WebstorePrivateSetStoreLoginFunction() {}
 
 ExtensionFunction::ResponseAction WebstorePrivateSetStoreLoginFunction::Run() {
-  std::unique_ptr<SetStoreLogin::Params> params(
-      SetStoreLogin::Params::CreateDeprecated(args()));
+  absl::optional<SetStoreLogin::Params> params =
+      SetStoreLogin::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   SetWebstoreLogin(Profile::FromBrowserContext(browser_context()),
                    params->login);
@@ -1177,8 +1177,8 @@ WebstorePrivateIsPendingCustodianApprovalFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
-  std::unique_ptr<IsPendingCustodianApproval::Params> params(
-      IsPendingCustodianApproval::Params::CreateDeprecated(args()));
+  absl::optional<IsPendingCustodianApproval::Params> params =
+      IsPendingCustodianApproval::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!Profile::FromBrowserContext(browser_context())->IsChild())
@@ -1207,7 +1207,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
 
 ExtensionFunction::ResponseValue
 WebstorePrivateIsPendingCustodianApprovalFunction::BuildResponse(bool result) {
-  return OneArgument(base::Value(result));
+  return WithArguments(result);
 }
 
 WebstorePrivateGetReferrerChainFunction::
@@ -1276,8 +1276,8 @@ WebstorePrivateGetExtensionStatusFunction::
 
 ExtensionFunction::ResponseAction
 WebstorePrivateGetExtensionStatusFunction::Run() {
-  std::unique_ptr<GetExtensionStatus::Params> params(
-      GetExtensionStatus::Params::CreateDeprecated(args()));
+  absl::optional<GetExtensionStatus::Params> params =
+      GetExtensionStatus::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const ExtensionId& extension_id = params->id;

@@ -140,7 +140,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   const Params::Details& details() const { return params_->details; }
 
-  std::unique_ptr<Params> params_;
+  absl::optional<Params> params_;
 
   raw_ptr<Profile> profile_ = nullptr;
 
