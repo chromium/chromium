@@ -180,7 +180,6 @@ blink_core_tests_loader = [
   "frame_loader_test.cc",
   "frame_resource_fetcher_properties_test.cc",
   "idleness_detector_test.cc",
-  "image_loader_test.cc",
   "interactive_detector_test.cc",
   "link_loader_test.cc",
   "long_task_detector_test.cc",
