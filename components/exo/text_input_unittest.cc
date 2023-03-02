@@ -415,18 +415,21 @@ TEST_F(TextInputTest, SetTypeModeFlag) {
   EXPECT_EQ(ui::TEXT_INPUT_MODE_TEXT, text_input()->GetTextInputMode());
   EXPECT_EQ(0, text_input()->GetTextInputFlags());
   EXPECT_TRUE(text_input()->ShouldDoLearning());
+  EXPECT_TRUE(text_input()->CanComposeInline());
 
   int flags = ui::TEXT_INPUT_FLAG_AUTOCOMPLETE_OFF |
               ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE;
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
-  text_input()->SetTypeModeFlags(ui::TEXT_INPUT_TYPE_URL,
-                                 ui::TEXT_INPUT_MODE_URL, flags, false);
+  text_input()->SetTypeModeFlags(
+      ui::TEXT_INPUT_TYPE_URL, ui::TEXT_INPUT_MODE_URL, flags,
+      /*should_do_learning=*/false, /*can_compose_inline=*/false);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_URL, text_input()->GetTextInputMode());
   EXPECT_EQ(flags, text_input()->GetTextInputFlags());
   EXPECT_FALSE(text_input()->ShouldDoLearning());
+  EXPECT_FALSE(text_input()->CanComposeInline());
 
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
 }

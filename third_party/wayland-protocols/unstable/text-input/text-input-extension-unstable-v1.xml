@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="7">
+  <interface name="zcr_text_input_extension_v1" version="8">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="7">
+  <interface name="zcr_extended_text_input_v1" version="8">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -156,13 +156,9 @@
       <entry name="enabled" value="1" />
     </enum>
 
-    <request name="set_input_type" since="2">
+    <request name="deprecated_set_input_type" since="2">
       <description summary="Sets input type, mode and flags together">
-        In wayland, there's a concept that can be mapped to Chrome's
-        TextInputType, Mode and Flags. It can be set via
-        zwp_text_input::set_content_type. However, the variation is not rich
-        enough to represent Chrome's detailed behavior change. This API can be
-        used as a replacement of set_content_type.
+        Deprecated. Use the new set_input_type.
       </description>
       <arg name="input_type" type="uint" enum="input_type" />
       <arg name="input_mode" type="uint" enum="input_mode" />
@@ -325,6 +321,32 @@
         `text_input::active request`.
       </description>
       <arg name="reason" type="uint" enum="focus_reason_type" />
+    </request>
+
+    <!-- Version 8 -->
+
+    <enum name="inline_composition_support" since="8">
+      <description summary="Whether inline composition is supported">
+        Inline composition is an IME feature for certain languages (e.g. CJK)
+        which displays the uncommitted composition inside the input field as it
+        is being typed.
+      </description>
+      <entry name="unsupported" value="0" />
+      <entry name="supported" value="1" />
+    </enum>
+
+    <request name="set_input_type" since="8">
+      <description summary="Sets input type, mode and flags together">
+        Used in place of zwp_text_input::set_content_type.
+
+        Instead of hint and purpose, this API uses concepts that more closely
+        align with those used by Chrome.
+      </description>
+      <arg name="input_type" type="uint" enum="input_type" />
+      <arg name="input_mode" type="uint" enum="input_mode" />
+      <arg name="input_flags" type="uint" />
+      <arg name="learning_mode" type="uint" enum="learning_mode" />
+      <arg name="inline_composition_support" type="uint" enum="inline_composition_support" />
     </request>
 
   </interface>

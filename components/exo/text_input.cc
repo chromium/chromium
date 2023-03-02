@@ -134,16 +134,19 @@ void TextInput::SetSurroundingText(const std::u16string& text,
 void TextInput::SetTypeModeFlags(ui::TextInputType type,
                                  ui::TextInputMode mode,
                                  int flags,
-                                 bool should_do_learning) {
+                                 bool should_do_learning,
+                                 bool can_compose_inline) {
   if (!input_method_)
     return;
   bool changed = (input_type_ != type) || (input_mode_ != mode) ||
                  (flags_ != flags) ||
-                 (should_do_learning_ != should_do_learning);
+                 (should_do_learning_ != should_do_learning) ||
+                 (can_compose_inline_ != can_compose_inline);
   input_type_ = type;
   input_mode_ = mode;
   flags_ = flags;
   should_do_learning_ = should_do_learning;
+  can_compose_inline_ = can_compose_inline;
   if (changed)
     input_method_->OnTextInputTypeChanged(this);
 }
@@ -271,7 +274,7 @@ int TextInput::GetTextInputFlags() const {
 }
 
 bool TextInput::CanComposeInline() const {
-  return true;
+  return can_compose_inline_;
 }
 
 gfx::Rect TextInput::GetCaretBounds() const {
