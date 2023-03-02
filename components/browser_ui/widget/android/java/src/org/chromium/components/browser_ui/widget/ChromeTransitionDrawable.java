@@ -14,6 +14,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.util.IntProperty;
 
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -138,13 +139,13 @@ public class ChromeTransitionDrawable extends LayerDrawable {
         return new TransitionHandle(mAnimator);
     }
 
-    /** Reset to showing only the initial drawable. */
-    public void resetTransition() {
+    /** Reset to showing only either the initial or final drawable, cancelling any animation. */
+    public void finishTransition(boolean resolveToFinalDrawable) {
         if (mAnimator.isRunning()) {
             mAnimator.cancel();
         }
 
-        setProgress(MIN_PROGRESS_ALPHA);
+        setProgress(resolveToFinalDrawable ? MAX_PROGRESS_ALPHA : MIN_PROGRESS_ALPHA);
     }
 
     public Drawable getInitialDrawable() {
@@ -153,6 +154,12 @@ public class ChromeTransitionDrawable extends LayerDrawable {
 
     public Drawable getFinalDrawable() {
         return mFinalDrawable;
+    }
+
+    @VisibleForTesting
+    @NonNull
+    public Animator getAnimatorForTesting() {
+        return mAnimator;
     }
 
     @Override

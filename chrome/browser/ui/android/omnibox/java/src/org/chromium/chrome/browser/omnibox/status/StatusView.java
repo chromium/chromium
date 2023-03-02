@@ -201,8 +201,13 @@ public class StatusView extends LinearLayout {
             if (!isIconHidden) {
                 Drawable existingDrawable = mIconView.getDrawable();
                 if (existingDrawable instanceof ChromeTransitionDrawable) {
-                    existingDrawable =
-                            ((ChromeTransitionDrawable) existingDrawable).getFinalDrawable();
+                    ChromeTransitionDrawable transitionDrawable =
+                            (ChromeTransitionDrawable) existingDrawable;
+                    // Finish any running animations in the existing drawable because we're going to
+                    // reuse it. Concurrent animations could clobber each other's changes and cause
+                    // inconsistent states.
+                    transitionDrawable.finishTransition(true);
+                    existingDrawable = transitionDrawable.getFinalDrawable();
                 }
 
                 ChromeTransitionDrawable newImage = new ChromeTransitionDrawable(existingDrawable,

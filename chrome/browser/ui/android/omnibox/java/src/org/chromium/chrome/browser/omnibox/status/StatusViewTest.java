@@ -21,9 +21,12 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
+import android.animation.Animator;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.test.filters.MediumTest;
@@ -41,13 +44,16 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -279,5 +285,46 @@ public class StatusViewTest extends BlankUiTestActivityTestCase {
         });
 
         CriteriaHelper.pollUiThread(() -> !mStatusView.isStatusIconAnimating(), 300, 20);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Omnibox"})
+    @DisableAnimationsTestRule.EnsureAnimationsOn
+    public void testStatusViewAnimation_noConcurrentAnimation()
+            throws ExecutionException, InterruptedException, InvocationTargetException,
+                   IllegalAccessException {
+        runOnUiThreadBlocking(() -> {
+            mStatusView.setIconAnimationDurationForTesting(100);
+            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+            mStatusModel.set(StatusProperties.ANIMATIONS_ENABLED, true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
+                    new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0));
+            assertTrue(mStatusView.isStatusIconAnimating());
+            ChromeTransitionDrawable initialTransitionDrawable =
+                    (ChromeTransitionDrawable) ((ImageView) mStatusView.getSecurityView())
+                            .getDrawable();
+            Animator initialAnimator = initialTransitionDrawable.getAnimatorForTesting();
+            assertTrue(
+                    "Initial transition drawable should be animating", initialAnimator.isStarted());
+            assertTrue(
+                    "Initial transition drawable should be animating", initialAnimator.isRunning());
+            Drawable finalDrawable = initialTransitionDrawable.getFinalDrawable();
+
+            mStatusView.setIconAnimationDurationForTesting(0);
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
+                    new StatusIconResource(R.drawable.ic_search, 0));
+
+            assertFalse("Initial transition drawable should have stopped animating",
+                    initialAnimator.isStarted());
+            assertFalse("Initial transition drawable should have stopped animating",
+                    initialAnimator.isRunning());
+            assertEquals(255, finalDrawable.getAlpha());
+            assertTrue(mStatusView.isStatusIconAnimating());
+            ChromeTransitionDrawable nextTransitionDrawable =
+                    (ChromeTransitionDrawable) ((ImageView) mStatusView.getSecurityView())
+                            .getDrawable();
+            assertTrue(nextTransitionDrawable.getAnimatorForTesting().isStarted());
+        });
     }
 }
