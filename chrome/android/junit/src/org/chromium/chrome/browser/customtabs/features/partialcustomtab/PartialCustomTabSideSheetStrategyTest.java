@@ -65,11 +65,20 @@ public class PartialCustomTabSideSheetStrategyTest {
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(@Px int widthPx) {
+        return createPcctSideSheetStrategy(widthPx, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+    }
+
+    private PartialCustomTabSideSheetStrategy createLeftPcctSideSheetStrategy(@Px int widthPx) {
+        return createPcctSideSheetStrategy(widthPx, ACTIVITY_SIDE_SHEET_POSITION_START);
+    }
+
+    private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
+            @Px int widthPx, int position) {
         PartialCustomTabSideSheetStrategy pcct = new PartialCustomTabSideSheetStrategy(
                 mPCCTTestRule.mActivity, widthPx, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizedButton=*/true,
-                /*startMaximized=*/false, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT,
-                ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT, mPCCTTestRule.mHandleStrategyFactory, 0);
+                /*startMaximized=*/false, position, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+                mPCCTTestRule.mHandleStrategyFactory, 0);
         pcct.setMockViewForTesting(mPCCTTestRule.mCoordinatorLayout, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator);
         return pcct;
@@ -202,6 +211,27 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertEquals(
                 "Side-sheet has wrong width", 2000, mPCCTTestRule.mAttributeResults.get(0).width);
         assertNotEquals("Left margin should be non-zero for the shadow", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+        assertEquals("Right margin should be zero because shadow is on left side", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+    }
+
+    @Test
+    public void rightShadowIsVisible() {
+        doReturn(47)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+
+        mPCCTTestRule.configLandscapeMode();
+        createLeftPcctSideSheetStrategy(2000);
+
+        mPCCTTestRule.verifyWindowFlagsSet();
+        assertTabIsAtFullLandscapeHeight();
+        assertEquals(
+                "Side-sheet has wrong width", 2000, mPCCTTestRule.mAttributeResults.get(0).width);
+        assertNotEquals("Right margin should be non-zero for the shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+        assertEquals("Left margin should be zero because shadow is on right side", 0,
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 

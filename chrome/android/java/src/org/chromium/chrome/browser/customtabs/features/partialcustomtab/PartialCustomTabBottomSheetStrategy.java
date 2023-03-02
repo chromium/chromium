@@ -88,6 +88,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final @Px int mUnclampedInitialHeight;
     private final boolean mIsFixedHeight;
+    private final int mSideShadowOffsetPx;
 
     private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
@@ -156,6 +157,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
+        mSideShadowOffsetPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_shadow_offset)
+                * SIDE_SHADOW_MULTIPLIER;
     }
 
     @Override
@@ -419,6 +423,14 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         mActivity.getWindow().setAttributes(attrs);
     }
 
+    private boolean isMaxWidthBottomSheet() {
+        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return false;
+
+        int displayWidth = mVersionCompat.getDisplayWidth();
+        int density = (int) (mActivity.getResources().getDisplayMetrics().density);
+        return displayWidth >= BOTTOM_SHEET_MAX_WIDTH_DP * density;
+    }
+
     private void updateDragBarVisibility() {
         updateDragBarVisibility(
                 /*dragHandlebarVisibility*/ isFixedHeight() ? View.GONE : View.VISIBLE);
@@ -427,16 +439,33 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @Override
     protected void setTopMargins(int shadowOffset, int handleOffset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        boolean isMaxWidthBottomSheet = isMaxWidthBottomSheet();
+
+        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
+            float maxWidthBottomSheetEv =
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+            float regBottomSheetEv =
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
+            float elevation = isMaxWidthBottomSheet ? maxWidthBottomSheetEv : regBottomSheetEv;
+
+            ViewGroup coordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
+            coordinatorLayout.setElevation(elevation);
+            if (handleView != null) {
+                handleView.setElevation(elevation);
+            }
+        }
+
+        int sideMargin = isMaxWidthBottomSheet ? mSideShadowOffsetPx : 0;
         if (handleView != null) {
             ViewGroup.MarginLayoutParams lp =
                     (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
-            lp.setMargins(0, shadowOffset, 0, 0);
+            lp.setMargins(sideMargin, shadowOffset, sideMargin, 0);
         }
 
         // Make enough room for the handle View.
         ViewGroup.MarginLayoutParams mlp =
                 (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
-        mlp.setMargins(0, handleOffset, 0, 0);
+        mlp.setMargins(sideMargin, handleOffset, sideMargin, 0);
     }
 
     @Override

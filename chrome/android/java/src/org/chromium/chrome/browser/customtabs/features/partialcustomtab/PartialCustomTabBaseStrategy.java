@@ -46,6 +46,9 @@ import java.util.function.BooleanSupplier;
  */
 public abstract class PartialCustomTabBaseStrategy
         extends CustomTabHeightStrategy implements FullscreenManager.Observer {
+    // TODO(katzz) - Find optimal shadow/elevation combination for side shadows
+    protected static final int SIDE_SHADOW_MULTIPLIER = 5;
+
     protected final Activity mActivity;
     protected final OnResizedCallback mOnResizedCallback;
     protected final FullscreenManager mFullscreenManager;
