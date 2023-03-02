@@ -56,6 +56,35 @@ luci.bucket(
     ],
 )
 
+# Shadow bucket of `try`, for led builds.
+luci.bucket(
+    name = "try.shadow",
+    shadows = "try",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.chromium.try", "luci.chromium.try.orchestrator"],
+        service_accounts = [
+            "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+            "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        ],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = [
+                "mdb/chrome-troopers",
+                "chromium-led-users",
+            ],
+            users = [
+                "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+                "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
+            ],
+        ),
+    ],
+    dynamic = True,
+)
+
 luci.cq_group(
     name = "cq",
     retry_config = cq.RETRY_ALL_FAILURES,
