@@ -168,9 +168,9 @@ WebrtcAudioPrivateGetAssociatedSinkFunction::
 
 ExtensionFunction::ResponseAction
 WebrtcAudioPrivateGetAssociatedSinkFunction::Run() {
-  params_ = wap::GetAssociatedSink::Params::CreateDeprecated(args());
+  params_ = wap::GetAssociatedSink::Params::Create(args());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params_);
   InitDeviceIDSalt();
 
   GetAudioSystem()->GetDeviceDescriptions(
@@ -228,7 +228,7 @@ void WebrtcAudioPrivateGetAssociatedSinkFunction::Reply(
   } else {
     sink_id = associated_sink_id;
   }
-  Respond(OneArgument(base::Value(sink_id)));
+  Respond(WithArguments(sink_id));
 }
 
 }  // namespace extensions

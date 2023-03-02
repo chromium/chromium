@@ -67,7 +67,7 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   // Returns the WebContents we are associated with, NULL if it's been closed.
   content::WebContents* GetWebContents();
 
-  std::unique_ptr<extensions::api::page_capture::SaveAsMHTML::Params> params_;
+  absl::optional<extensions::api::page_capture::SaveAsMHTML::Params> params_;
 
   // The path to the temporary file containing the MHTML data.
   base::FilePath mhtml_path_;

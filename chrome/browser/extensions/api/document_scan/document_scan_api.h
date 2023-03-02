@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -44,7 +43,7 @@ class DocumentScanScanFunction : public ExtensionFunction {
   void OnScanCompleted(crosapi::mojom::ScanFailureMode failure_mode,
                        const absl::optional<std::string>& scan_data);
 
-  std::unique_ptr<document_scan::Scan::Params> params_;
+  absl::optional<document_scan::Scan::Params> params_;
 
   // Used to transmit mojo interface method calls to ash chrome.
   // Null if the interface is unavailable.

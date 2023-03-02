@@ -279,7 +279,7 @@ OmniboxSendSuggestionsFunction::OmniboxSendSuggestionsFunction() = default;
 OmniboxSendSuggestionsFunction::~OmniboxSendSuggestionsFunction() = default;
 
 ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
-  params_ = SendSuggestions::Params::CreateDeprecated(args());
+  params_ = SendSuggestions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (is_from_service_worker() && !params_->suggest_results.empty()) {
@@ -340,12 +340,12 @@ void OmniboxSendSuggestionsFunction::NotifySuggestionsReady() {
   Profile* profile =
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   OmniboxSuggestionsWatcher::GetForBrowserContext(profile)
-      ->NotifySuggestionsReady(params_.get());
+      ->NotifySuggestionsReady(&*params_);
 }
 
 ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
-  std::unique_ptr<SetDefaultSuggestion::Params> params(
-      SetDefaultSuggestion::Params::CreateDeprecated(args()));
+  absl::optional<SetDefaultSuggestion::Params> params =
+      SetDefaultSuggestion::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!params->suggestion.description_styles) {

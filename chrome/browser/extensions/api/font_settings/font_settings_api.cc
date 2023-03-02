@@ -8,7 +8,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -268,9 +267,9 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  std::unique_ptr<fonts::ClearFont::Params> params(
-      fonts::ClearFont::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<fonts::ClearFont::Params> params =
+      fonts::ClearFont::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
                                               params->details.script);
@@ -284,9 +283,9 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
-  std::unique_ptr<fonts::GetFont::Params> params(
-      fonts::GetFont::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<fonts::GetFont::Params> params =
+      fonts::GetFont::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
                                               params->details.script);
@@ -322,9 +321,9 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  std::unique_ptr<fonts::SetFont::Params> params(
-      fonts::SetFont::Params::CreateDeprecated(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<fonts::SetFont::Params> params =
+      fonts::SetFont::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
                                               params->details.script);
