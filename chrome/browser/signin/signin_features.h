@@ -19,7 +19,7 @@ enum class SigninPromoVariant { kSignIn, kMakeYourOwn, kDoMore };
 extern const base::FeatureParam<SigninPromoVariant>
     kForYouFreSignInPromoVariant;
 
-BASE_DECLARE_FEATURE(kForYouFreStudy);
+BASE_DECLARE_FEATURE(kForYouFreSyntheticTrialRegistration);
 
 extern const base::FeatureParam<std::string> kForYouFreStudyGroup;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

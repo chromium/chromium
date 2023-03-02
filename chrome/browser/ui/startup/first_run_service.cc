@@ -453,7 +453,7 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(kForYouFreStudy)) {
+  if (base::FeatureList::IsEnabled(kForYouFreSyntheticTrialRegistration)) {
     // We use this point to register for the study as it can give us a good
     // counterfactual, before checking the state of the feature itself. The
     // service is created on demand so we are in a code path that will require
