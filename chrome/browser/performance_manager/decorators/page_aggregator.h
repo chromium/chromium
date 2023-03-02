@@ -39,6 +39,7 @@ class PageAggregator : public FrameNode::ObserverDefaultImpl,
   void OnFrameIsHoldingIndexedDBLockChanged(
       const FrameNode* frame_node) override;
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
+  void OnHadUserEditsChanged(const FrameNode* frame_node) override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;

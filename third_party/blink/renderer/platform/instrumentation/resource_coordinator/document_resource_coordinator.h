@@ -39,6 +39,7 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
   void SetIsAdFrame(bool is_ad_frame);
   void OnNonPersistentNotificationCreated();
   void SetHadFormInteraction();
+  void SetHadUserEdits();
   void OnFirstContentfulPaint(base::TimeDelta time_since_navigation_start);
   void OnWebMemoryMeasurementRequested(
       WebMemoryMeasurementMode mode,
@@ -51,6 +52,7 @@ class PLATFORM_EXPORT DocumentResourceCoordinator final {
       service_;
 
   bool had_form_interaction_ = false;
+  bool had_user_edits_ = false;
 };
 
 }  // namespace blink

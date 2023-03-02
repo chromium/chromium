@@ -32,6 +32,12 @@ interface DocumentCoordinationUnit {
   // Called the first time a form in this document is interacted with.
   SetHadFormInteraction();
 
+  // Called the first time the user has edited the content of an element. This
+  // is a superset of `SetHadFormInteraction()`: form interactions trigger both
+  // events but changes to e.g. a `<div>` with the `contenteditable` property
+  // will only trigger `SetHadUserEdits()`.
+  SetHadUserEdits();
+
   // Called whenever the frame associated with this document is tagged or
   // untagged as an ad, providing the new status.
   SetIsAdFrame(bool is_ad_frame);

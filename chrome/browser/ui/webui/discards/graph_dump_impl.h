@@ -101,6 +101,9 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   void OnHadFormInteractionChanged(
       const performance_manager::FrameNode* frame_node) override {}
   // Ignored.
+  void OnHadUserEditsChanged(
+      const performance_manager::FrameNode* frame_node) override {}
+  // Ignored.
   void OnIsAudibleChanged(
       const performance_manager::FrameNode* frame_node) override {}
   // Ignored.
@@ -158,6 +161,9 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnHadFormInteractionChanged(
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored
+  void OnHadUserEditsChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnTitleUpdated(const performance_manager::PageNode* page_node) override {

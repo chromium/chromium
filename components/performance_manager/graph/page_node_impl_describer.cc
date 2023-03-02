@@ -79,6 +79,7 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
              page_node_impl->is_holding_indexeddb_lock_.value());
   result.Set("had_form_interaction",
              page_node_impl->had_form_interaction_.value());
+  result.Set("had_user_edits", page_node_impl->had_user_edits_.value());
   if (page_node_impl->embedding_type_ != PageNode::EmbeddingType::kInvalid) {
     result.Set("embedding_type",
                PageNode::ToString(page_node_impl->embedding_type_));

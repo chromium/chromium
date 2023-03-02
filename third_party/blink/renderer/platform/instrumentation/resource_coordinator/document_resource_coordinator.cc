@@ -61,6 +61,16 @@ void DocumentResourceCoordinator::SetHadFormInteraction() {
   had_form_interaction_ = true;
 }
 
+void DocumentResourceCoordinator::SetHadUserEdits() {
+  // Only send this signal for the first interaction as it doesn't get cleared
+  // for the lifetime of the frame and it's inefficient to send this message
+  // for every keystroke.
+  if (!had_user_edits_) {
+    service_->SetHadUserEdits();
+  }
+  had_user_edits_ = true;
+}
+
 void DocumentResourceCoordinator::OnFirstContentfulPaint(
     base::TimeDelta time_since_navigation_start) {
   service_->OnFirstContentfulPaint(time_since_navigation_start);
