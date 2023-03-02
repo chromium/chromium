@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
+#import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
+#import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -44,6 +46,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
@@ -74,13 +77,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// Private methods in BrowserViewController to test.
-@interface BrowserViewController (Testing)
-
-- (void)webStateSelected:(web::WebState*)webState
-           notifyToolbar:(BOOL)notifyToolbar;
-@end
 
 #pragma mark -
 
@@ -264,6 +260,18 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                                       keyCommandsProvider:key_commands_provider_
                                              dependencies:dependencies];
 
+    id NTPCoordinator_ =
+        [[NewTabPageCoordinator alloc] initWithBrowser:browser_.get()];
+
+    SessionRestorationBrowserAgent* sessionRestorationBrowserAgent_ =
+        SessionRestorationBrowserAgent::FromBrowser(browser_.get());
+
+    tab_events_mediator_ = [[TabEventsMediator alloc]
+        initWithWebStateList:browser_.get()->GetWebStateList()
+              ntpCoordinator:NTPCoordinator_
+            restorationAgent:sessionRestorationBrowserAgent_];
+    tab_events_mediator_.consumer = bvc_;
+
     // Force the view to load.
     UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];
     [window addSubview:[bvc_ view]];
@@ -271,6 +279,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   }
 
   void TearDown() override {
+    [tab_events_mediator_ disconnect];
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
 
@@ -335,10 +344,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   SideSwipeController* side_swipe_controller_;
   BookmarksCoordinator* bookmarks_coordinator_;
   FullscreenController* fullscreen_controller_;
+  TabEventsMediator* tab_events_mediator_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
-  [bvc_ webStateSelected:ActiveWebState() notifyToolbar:YES];
+  [bvc_ webStateSelected:ActiveWebState()];
   EXPECT_EQ(ActiveWebState()->GetView().superview, container_.view);
   EXPECT_TRUE(ActiveWebState()->IsVisible());
 }

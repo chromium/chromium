@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -37,15 +39,19 @@
 
   WebStateList* _webStateList;
   __weak NewTabPageCoordinator* _ntpCoordinator;
+  SessionRestorationBrowserAgent* _sessionRestorationBrowserAgent;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                      ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator {
+                      ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator
+                    restorationAgent:(SessionRestorationBrowserAgent*)
+                                         sessionRestorationBrowserAgent {
   if (self = [super init]) {
     _webStateList = webStateList;
     // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator and remove
     // this dependency.
     _ntpCoordinator = ntpCoordinator;
+    _sessionRestorationBrowserAgent = sessionRestorationBrowserAgent;
 
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
@@ -112,7 +118,60 @@
   // animation. (The animation for foreground tab insertion is handled in
   // `didChangeActiveWebState`).
   if (!activating) {
-    [self.consumer animateNewBackgroundTab];
+    [self.consumer initiateNewTabBackgroundAnimation];
+  }
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didChangeActiveWebState:(web::WebState*)newWebState
+                oldWebState:(web::WebState*)oldWebState
+                    atIndex:(int)atIndex
+                     reason:(ActiveWebStateChangeReason)reason {
+  if (reason == ActiveWebStateChangeReason::Inserted) {
+    [self didInsertActiveWebState:newWebState];
+  }
+  if (oldWebState) {
+    [self.consumer prepareForNewTabAnimation];
+  }
+  // NOTE: webStateSelected expects to always be called with a
+  // non-null WebState.
+  if (newWebState) {
+    [self.consumer webStateSelected:newWebState];
+  }
+}
+
+#pragma mark - WebStateListObserving helpers (Private)
+
+- (void)didInsertActiveWebState:(web::WebState*)newWebState {
+  DCHECK(newWebState);
+  if (_sessionRestorationBrowserAgent->IsRestoringSession()) {
+    return;
+  }
+  auto* animationTabHelper =
+      NewTabAnimationTabHelper::FromWebState(newWebState);
+  BOOL animated =
+      !animationTabHelper || animationTabHelper->ShouldAnimateNewTab();
+  if (animationTabHelper) {
+    // Remove the helper because it isn't needed anymore.
+    NewTabAnimationTabHelper::RemoveFromWebState(newWebState);
+  }
+  // Since we share the NTP coordinator across web states, the feed type could
+  // be different from default, so we reset it.
+  NewTabPageTabHelper* NTPHelper =
+      NewTabPageTabHelper::FromWebState(newWebState);
+  if (NTPHelper && NTPHelper->IsActive()) {
+    [_ntpCoordinator start];
+    FeedType defaultFeedType = NTPHelper->DefaultFeedType();
+    if (_ntpCoordinator.selectedFeed != defaultFeedType) {
+      [_ntpCoordinator selectFeedType:defaultFeedType];
+    }
+  }
+  BOOL inBackground =
+      (NTPHelper && NTPHelper->ShouldShowStartSurface()) || !animated;
+  if (inBackground) {
+    [self.consumer initiateNewTabBackgroundAnimation];
+  } else {
+    [self.consumer initiateNewTabForegroundAnimationForWebState:newWebState];
   }
 }
 

@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/promos_manager/features.h"
+#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
@@ -1218,11 +1219,14 @@ enum class ToolbarKind {
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   BrowserViewController* browserViewController = self.viewController;
+  SessionRestorationBrowserAgent* sessionRestorationBrowserAgent =
+      SessionRestorationBrowserAgent::FromBrowser(self.browser);
 
   DCHECK(self.browserContainerCoordinator.viewController);
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
-            ntpCoordinator:_NTPCoordinator];
+            ntpCoordinator:_NTPCoordinator
+          restorationAgent:sessionRestorationBrowserAgent];
   self.tabEventsMediator.consumer = browserViewController;
 
   browserViewController.reauthHandler =
