@@ -156,11 +156,6 @@ class DeskModel {
   // count synchronously.
   virtual size_t GetEntryCount() const = 0;
 
-  // Gets the maximum number of templates this storage backend could hold.
-  // Adding more templates beyond this limit will result in `kHitMaximumLimit`
-  // error.
-  virtual size_t GetMaxEntryCount() const = 0;
-
   // Gets the number of save and recall desks currently saved.
   virtual size_t GetSaveAndRecallDeskEntryCount() const = 0;
 

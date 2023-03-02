@@ -271,7 +271,6 @@ class LocalDeskDataManagerTest : public testing::Test {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     data_manager_ = std::make_unique<LocalDeskDataManager>(temp_dir_.GetPath(),
                                                            account_id_);
-    data_manager_->SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
     desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
     task_environment_.RunUntilIdle();
     testing::Test::SetUp();
@@ -649,14 +648,20 @@ TEST_F(LocalDeskDataManagerTest,
   // Add two user templates.
   AddTwoTemplates();
 
-  size_t initial_max_count = data_manager_->GetMaxEntryCount();
+  size_t max_entry_count = data_manager_->GetMaxDeskTemplateEntryCount() +
+                           data_manager_->GetMaxSaveAndRecallDeskEntryCount();
+  EXPECT_EQ(12ul, max_entry_count);
 
   // Set one admin template.
   data_manager_->SetPolicyDeskTemplates(GetPolicyWithOneTemplate());
 
+  size_t max_entry_count_with_admin_template =
+      data_manager_->GetMaxDeskTemplateEntryCount() +
+      data_manager_->GetMaxSaveAndRecallDeskEntryCount();
+
   // The max entry count should increase by 1 since we have set an admin
   // template.
-  EXPECT_EQ(initial_max_count + 1ul, data_manager_->GetMaxEntryCount());
+  EXPECT_EQ(13ul, max_entry_count_with_admin_template);
 }
 
 TEST_F(LocalDeskDataManagerTest, AddDeskTemplatesAndSaveAndRecallDeskEntries) {

@@ -26,9 +26,6 @@ class Window;
 
 namespace ash {
 
-inline constexpr char kFloatingWorkspaceTemplateUuid[] =
-    "c098bdcf-5803-484b-9bfd-d3a9a4b497ab";
-
 class DeskTemplate;
 enum class DeskTemplateType;
 

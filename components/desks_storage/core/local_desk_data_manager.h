@@ -84,7 +84,6 @@ class LocalDeskDataManager : public DeskModel {
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   size_t GetEntryCount() const override;
-  size_t GetMaxEntryCount() const override;
   size_t GetSaveAndRecallDeskEntryCount() const override;
   size_t GetDeskTemplateEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;
@@ -98,8 +97,6 @@ class LocalDeskDataManager : public DeskModel {
       const base::GUID& uuid) const override;
 
   static void SetDisableMaxTemplateLimitForTesting(bool disabled);
-  static void SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(
-      bool disabled);
 
  private:
   friend class ash::OverviewTestBase;

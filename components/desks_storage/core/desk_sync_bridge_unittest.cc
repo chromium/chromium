@@ -375,7 +375,7 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
     base::Time created_time = base::Time::Now(),
     int number_of_tabs = 2,
     SyncDeskType desk_type =
-        SyncDeskType::WorkspaceDeskSpecifics_DeskType_SAVE_AND_RECALL) {
+        SyncDeskType::WorkspaceDeskSpecifics_DeskType_TEMPLATE) {
   WorkspaceDeskSpecifics specifics =
       ExampleWorkspaceDeskSpecificsWithoutDeskType(
           uuid, template_name, created_time, number_of_tabs);
@@ -1704,13 +1704,12 @@ TEST_F(DeskSyncBridgeTest, GetMaxEntryCountShouldIncreaseWithAdminTemplates) {
 
   AddTwoTemplates();
 
-  size_t max_entry_count = bridge()->GetMaxEntryCount();
-
+  EXPECT_EQ(6ul, bridge()->GetMaxDeskTemplateEntryCount());
   SetOneAdminTemplate();
 
   // The max entry count should increase by 1 since we have set an admin
   // template.
-  EXPECT_EQ(max_entry_count + 1ul, bridge()->GetMaxEntryCount());
+  EXPECT_EQ(7ul, bridge()->GetMaxDeskTemplateEntryCount());
 }
 
 TEST_F(DeskSyncBridgeTest, GetTemplateJsonShouldReturnList) {
@@ -1774,10 +1773,8 @@ TEST_F(DeskSyncBridgeTest, CanRecordFileSizeMetrics) {
 
   EXPECT_EQ(2ul, bridge()->GetEntryCount());
 
-  histogram_tester.ExpectTotalCount(kSaveAndRecallTemplateSizeHistogramName,
-                                    2u);
-  histogram_tester.ExpectBucketCount(kSaveAndRecallTemplateSizeHistogramName,
-                                     572, 2u);
+  histogram_tester.ExpectTotalCount(kTemplateSizeHistogramName, 2u);
+  histogram_tester.ExpectBucketCount(kTemplateSizeHistogramName, 572, 2u);
 }
 
 }  // namespace

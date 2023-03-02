@@ -44,7 +44,6 @@ class DeskModelWrapper : public DeskModel {
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   size_t GetEntryCount() const override;
-  size_t GetMaxEntryCount() const override;
   size_t GetSaveAndRecallDeskEntryCount() const override;
   size_t GetDeskTemplateEntryCount() const override;
   size_t GetMaxSaveAndRecallDeskEntryCount() const override;

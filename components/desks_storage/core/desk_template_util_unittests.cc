@@ -55,4 +55,20 @@ TEST_F(DeskTemplateUtilTest, FindNoDuplicateEntryInAOneElementMap) {
       desk_template_util::FindOtherEntryWithName(u"Template 1", uuid, entries));
 }
 
+TEST_F(DeskTemplateUtilTest, FindNoDuplicateEntryWithFloatingWorkspaceName) {
+  base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>> entries;
+  base::GUID uuid = base::GUID::GenerateRandomV4();
+
+  entries[uuid] = std::make_unique<ash::DeskTemplate>(
+      uuid, ash::DeskTemplateSource::kUser, "Template 1", base::Time::Now(),
+      ash::DeskTemplateType::kTemplate);
+
+  base::GUID new_uuid = base::GUID::GenerateRandomV4();
+  entries[new_uuid] = std::make_unique<ash::DeskTemplate>(
+      new_uuid, ash::DeskTemplateSource::kUser, "Template 1", base::Time::Now(),
+      ash::DeskTemplateType::kFloatingWorkspace);
+  EXPECT_FALSE(
+      desk_template_util::FindOtherEntryWithName(u"Template 1", uuid, entries));
+}
+
 }  // namespace desks_storage

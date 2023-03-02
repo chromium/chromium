@@ -39,14 +39,6 @@ namespace {
 // desk templates. Used only for testing.
 bool g_disable_max_template_limit = false;
 
-// Setting this to true allows us to exclude the max count of save and recall
-// desk entries as part of `GetMaxEntryCount` since there are some tests
-// treating save and recall desks behavior as regular desk templates (such as
-// button enablement). Also, since save and recall desks and desk templates are
-// currently being treated as desk templates, exclude save and recall desks
-// limit until save and recall desks are enabled.
-bool g_exclude_save_and_recall_desk_in_max_entry_count = true;
-
 // File extension for saving template entries.
 constexpr char kFileExtension[] = ".saveddesk";
 constexpr char kSavedDeskDirectoryName[] = "saveddesk";
@@ -367,14 +359,6 @@ size_t LocalDeskDataManager::GetDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
-size_t LocalDeskDataManager::GetMaxEntryCount() const {
-  return kMaxDeskTemplateCount +
-         (!g_exclude_save_and_recall_desk_in_max_entry_count
-              ? kMaxSaveAndRecallDeskCount
-              : 0u) +
-         policy_entries_.size();
-}
-
 size_t LocalDeskDataManager::GetMaxSaveAndRecallDeskEntryCount() const {
   return kMaxSaveAndRecallDeskCount;
 }
@@ -414,12 +398,6 @@ ash::DeskTemplate* LocalDeskDataManager::FindOtherEntryWithName(
 // static
 void LocalDeskDataManager::SetDisableMaxTemplateLimitForTesting(bool disabled) {
   g_disable_max_template_limit = disabled;
-}
-
-// static
-void LocalDeskDataManager::SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(
-    bool exclude) {
-  g_exclude_save_and_recall_desk_in_max_entry_count = exclude;
 }
 
 // static
@@ -582,7 +560,7 @@ size_t LocalDeskDataManager::GetMaxEntryCountByDeskType(
     ash::DeskTemplateType desk_type) const {
   switch (desk_type) {
     case ash::DeskTemplateType::kTemplate:
-      return kMaxDeskTemplateCount;
+      return kMaxDeskTemplateCount + policy_entries_.size();
     case ash::DeskTemplateType::kSaveAndRecall:
       return kMaxSaveAndRecallDeskCount;
     case ash::DeskTemplateType::kFloatingWorkspace:

@@ -124,10 +124,6 @@ size_t DeskModelWrapper::GetDeskTemplateEntryCount() const {
          policy_entries_.size();
 }
 
-size_t DeskModelWrapper::GetMaxEntryCount() const {
-  return GetMaxSaveAndRecallDeskEntryCount() + GetMaxDeskTemplateEntryCount();
-}
-
 size_t DeskModelWrapper::GetMaxSaveAndRecallDeskEntryCount() const {
   return save_and_recall_desks_model_->GetMaxSaveAndRecallDeskEntryCount();
 }

@@ -198,7 +198,6 @@ class DeskModelWrapperTest : public testing::Test {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     data_manager_ = std::make_unique<LocalDeskDataManager>(temp_dir_.GetPath(),
                                                            account_id_);
-    data_manager_->SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
     desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
     model_wrapper_ = std::make_unique<DeskModelWrapper>(data_manager_.get());
     task_environment_.RunUntilIdle();
@@ -664,7 +663,9 @@ TEST_F(DeskModelWrapperTest,
   EXPECT_EQ(model_wrapper_->GetEntryCount(), 5ul);
   // MaxEntryCount should be 6 max save and recall desks + 6 max user templates
   // + 1 admin template.
-  EXPECT_EQ(model_wrapper_->GetMaxEntryCount(), 13ul);
+  size_t max_entry_count = model_wrapper_->GetMaxDeskTemplateEntryCount() +
+                           model_wrapper_->GetMaxSaveAndRecallDeskEntryCount();
+  EXPECT_EQ(max_entry_count, 13ul);
 }
 
 TEST_F(DeskModelWrapperTest, GetMaxEntryCountShouldIncreaseWithAdminTemplates) {
@@ -673,15 +674,20 @@ TEST_F(DeskModelWrapperTest, GetMaxEntryCountShouldIncreaseWithAdminTemplates) {
   // Add two user templates.
   AddTwoTemplates();
 
-  size_t max_entry_count = model_wrapper_->GetMaxDeskTemplateEntryCount();
+  size_t max_entry_count = model_wrapper_->GetMaxDeskTemplateEntryCount() +
+                           model_wrapper_->GetMaxSaveAndRecallDeskEntryCount();
+  // The max entry count should increase by 1 since we have set an admin
+  // template.
+  EXPECT_EQ(max_entry_count, 12ul);
 
   // Set one admin template.
   model_wrapper_->SetPolicyDeskTemplates(GetPolicyStringWithOneTemplate());
-
+  size_t max_entry_count_with_admin_template =
+      model_wrapper_->GetMaxDeskTemplateEntryCount() +
+      model_wrapper_->GetMaxSaveAndRecallDeskEntryCount();
   // The max entry count should increase by 1 since we have set an admin
   // template.
-  EXPECT_EQ(model_wrapper_->GetMaxDeskTemplateEntryCount(),
-            max_entry_count + 1ul);
+  EXPECT_EQ(max_entry_count_with_admin_template, 13ul);
   // Sanity check to make sure that save and recall desk max count isn't
   // affected by the admin template.
   EXPECT_EQ(model_wrapper_->GetMaxSaveAndRecallDeskEntryCount(), 6ul);
