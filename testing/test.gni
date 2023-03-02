@@ -154,8 +154,6 @@ template("mixed_test") {
 #   fuchsia_package_deps: (Fuchsia, optional) List of fuchsia_component()
 #      targets that this test package contains.
 #   # TODO(crbug/1280705): remove when all tests are migrated to CFv2.
-#   fuchsia_legacy_script_required: (Fuchsia, optional) Whether the old test
-#      scripts are required to run the test target.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -501,12 +499,6 @@ template("test") {
       output_conversion = "json"
     }
 
-    use_v2_script = use_v2_script_default
-    if (defined(invoker.fuchsia_legacy_script_required) &&
-        invoker.fuchsia_legacy_script_required) {
-      use_v2_script = false
-    }
-
     _test_runner_shard =
         "//build/config/fuchsia/test/elf_test_runner.shard.test-cml"
     if (defined(invoker.test_runner_shard)) {
@@ -624,7 +616,6 @@ template("test") {
                                "data_deps",
                                "package_deps",
                                "use_test_server",
-                               "use_v2_script",
                              ])
 
       is_test_exe = true
