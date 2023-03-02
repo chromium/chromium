@@ -84,11 +84,11 @@ class IBAN : public AutofillDataModel {
   std::u16string GetIdentifierStringForAutofillDisplay(
       bool is_value_masked = true) const;
 
- private:
   // Returns a version of |value_| which does not have any separator characters
   // (e.g., '-' and ' ').
   std::u16string GetStrippedValue() const;
 
+ private:
   // This is the ID assigned by the server to uniquely identify this IBAN.
   // Note: server_id is empty for now as only local IBAN is supported.
   std::string server_id_;
