@@ -15790,6 +15790,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1" label="Zero logical CPUs"/>
   <int value="2" label="Some CPUs have zero frequencies"/>
   <int value="3" label="All CPUs have zero frequencies"/>
+  <int value="4" label="Success after retry"/>
 </enum>
 
 <enum name="ChromeOSParseLacrosPath">

@@ -20,6 +20,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/process_type_collector.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
@@ -407,7 +408,8 @@ void PerfCollector::SetUp() {
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&PerfCollector::ParseCPUFrequencies, task_runner,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), /*attempt=*/1,
+                     /*max_retries=*/3));
 
   CHECK(command_selector_.SetOdds(internal::GetDefaultCommandsForCpuModel(
       GetCPUIdentity(), base::SysInfo::HardwareModelName())));
@@ -744,7 +746,9 @@ void PerfCollector::CollectProfile(
 // static
 void PerfCollector::ParseCPUFrequencies(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::WeakPtr<PerfCollector> perf_collector) {
+    base::WeakPtr<PerfCollector> perf_collector,
+    int attempt,
+    int max_retries) {
   const char kCPUMaxFreqPath[] =
       "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq";
   int num_cpus = base::SysInfo::NumberOfProcessors();
@@ -764,6 +768,25 @@ void PerfCollector::ParseCPUFrequencies(
     // Convert kHz frequencies to MHz.
     frequencies_mhz.push_back(static_cast<uint32_t>(frequency_khz / 1000));
   }
+  // Save what we have even if we are going to retry. Collections are triggered
+  // asynchronously, and we rather send partial CPU frequency data for any early
+  // reports.
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&PerfCollector::SaveCPUFrequencies,
+                                       perf_collector, frequencies_mhz));
+  // Retry as long as the outcome is not successful and we didn't exhaust the
+  // retry budget.
+  if ((num_cpus == 0 || num_zeros > 0) && attempt < max_retries) {
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(&PerfCollector::ParseCPUFrequencies, task_runner,
+                       perf_collector, attempt + 1, max_retries),
+        base::Seconds(30 * attempt));
+    return;
+  }
+
   if (num_cpus == 0) {
     base::UmaHistogramEnumeration(kParseFrequenciesHistogramName,
                                   ParseFrequencyStatus::kNumCPUsIsZero);
@@ -774,13 +797,13 @@ void PerfCollector::ParseCPUFrequencies(
     base::UmaHistogramEnumeration(
         kParseFrequenciesHistogramName,
         ParseFrequencyStatus::kSomeZeroCPUFrequencies);
-  } else {
+  } else if (attempt == 1) {
     base::UmaHistogramEnumeration(kParseFrequenciesHistogramName,
                                   ParseFrequencyStatus::kSuccess);
+  } else {
+    base::UmaHistogramEnumeration(kParseFrequenciesHistogramName,
+                                  ParseFrequencyStatus::kSuccessOnRetry);
   }
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(&PerfCollector::SaveCPUFrequencies,
-                                       perf_collector, frequencies_mhz));
 }
 
 void PerfCollector::SaveCPUFrequencies(
