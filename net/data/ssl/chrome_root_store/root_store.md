@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 9
+Version: 10
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -114,9 +114,6 @@ be6c4da2bbb9ba59b6f3939768374246c3c005993fa98f020d1dedbed48a81d5 | CN=SwissSign 
 59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b | CN=TWCA Global Root CA,OU=Root CA,O=TAIWAN-CA,C=TW | 2012-06-27 | 2030-12-31
 bfd88fe1101c41ae3e801bf8be56350ee9bad1a6b9bd515edc5c6d5b8711ac44 | CN=TWCA Root Certification Authority,OU=Root CA,O=TAIWAN-CA,C=TW | 2008-08-28 | 2030-12-31
 dd6936fe21f8f077c123a1a521c12224f72255b73e03a7260693e8a24b0fa389 | CN=TeliaSonera Root CA v1,O=TeliaSonera | 2007-10-18 | 2032-10-18
-0753e940378c1bd5e3836e395daea5cb839e5046f1bd0eae1951cf10fec7c965 | CN=TrustCor RootCert CA-2,OU=TrustCor Certificate Authority,O=TrustCor Systems S. de R.L.,L=Panama City,ST=Panama,C=PA | 2016-02-04 | 2034-12-31
-5a885db19c01d912c5759388938cafbbdf031ab2d48e91ee15589b42971d039c | CN=TrustCor ECA-1,OU=TrustCor Certificate Authority,O=TrustCor Systems S. de R.L.,L=Panama City,ST=Panama,C=PA | 2016-02-04 | 2029-12-31
-d40e9c86cd8fe468c1776959f49ea774fa548684b6c406f3909261f4dce2575c | CN=TrustCor RootCert CA-1,OU=TrustCor Certificate Authority,O=TrustCor Systems S. de R.L.,L=Panama City,ST=Panama,C=PA | 2016-02-04 | 2029-12-31
 6b328085625318aa50d173c98d8bda09d57e27413d114cf787a0f5d06c030cf6 | CN=Certum EC-384 CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-26 | 2043-03-26
 fe7696573855773e37a95e7ad4d9cc96c30157c15d31765ba9b15704e1ae78fd | CN=Certum Trusted Root CA,OU=Certum Certification Authority,O=Asseco Data Systems S.A.,C=PL | 2018-03-16 | 2043-03-16
 e59aaa816009c22bff5b25bad37df306f049797c1f81d85ab089e657bd8f0044 | CN=D-TRUST BR Root CA 1 2020,O=D-Trust GmbH,C=DE | 2020-02-11 | 2035-02-11

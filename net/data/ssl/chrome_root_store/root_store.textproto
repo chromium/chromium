@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 9
+version_major: 10
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -686,21 +686,6 @@ trust_anchors {
 # CN=TeliaSonera Root CA v1, O=TeliaSonera
 trust_anchors {
   sha256_hex: "dd6936fe21f8f077c123a1a521c12224f72255b73e03a7260693e8a24b0fa389"
-}
-
-# CN=TrustCor RootCert CA-2, OU=TrustCor Certificate Authority, O=TrustCor Systems S. de R.L., L=Panama City, ST=Panama, C=PA
-trust_anchors {
-  sha256_hex: "0753e940378c1bd5e3836e395daea5cb839e5046f1bd0eae1951cf10fec7c965"
-}
-
-# CN=TrustCor ECA-1, OU=TrustCor Certificate Authority, O=TrustCor Systems S. de R.L., L=Panama City, ST=Panama, C=PA
-trust_anchors {
-  sha256_hex: "5a885db19c01d912c5759388938cafbbdf031ab2d48e91ee15589b42971d039c"
-}
-
-# CN=TrustCor RootCert CA-1, OU=TrustCor Certificate Authority, O=TrustCor Systems S. de R.L., L=Panama City, ST=Panama, C=PA
-trust_anchors {
-  sha256_hex: "d40e9c86cd8fe468c1776959f49ea774fa548684b6c406f3909261f4dce2575c"
 }
 
 # CN=Certum EC-384 CA, OU=Certum Certification Authority, O=Asseco Data Systems S.A., C=PL
