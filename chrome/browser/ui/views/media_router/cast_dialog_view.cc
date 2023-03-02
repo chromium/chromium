@@ -73,8 +73,8 @@ CastDialogView::CastDialogView(
           l10n_util::GetStringUTF16(
               IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON)));
   sources_button_->SetEnabled(false);
-  ShowNoSinksView();
   MaybeShowAccessCodeCastButton();
+  ShowNoSinksView();
 }
 
 CastDialogView::~CastDialogView() {
