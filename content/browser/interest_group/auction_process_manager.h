@@ -150,9 +150,9 @@ class CONTENT_EXPORT AuctionProcessManager {
   // properties.
   //
   // If a process is synchronously assigned to the ProcessHandle, returns true
-  // and the service pointer can immediately be retrieved from `handle`.
+  // and the service pointer can immediately be retrieved from `process_handle`.
   // `callback` will not be invoked. Otherwise, returns false and will invoke
-  // `callback` when the service pointer can be retrieved from `handle`.
+  // `callback` when the service pointer can be retrieved from `process_handle`.
   //
   // Auctions must request (and get) a service for their `kSeller` worklet
   // before requesting any `kBidder` worklets to avoid deadlock.
