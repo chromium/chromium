@@ -5,6 +5,8 @@
 #include "content/browser/preloading/prerender/prerender_handle_impl.h"
 
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/public/browser/prerender_trigger_type.h"
 
 namespace content {

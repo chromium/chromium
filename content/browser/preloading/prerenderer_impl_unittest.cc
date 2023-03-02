@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerenderer_impl.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/prerender_test_util.h"
