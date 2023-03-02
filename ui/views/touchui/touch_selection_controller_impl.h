@@ -47,6 +47,8 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
  private:
   friend class TouchSelectionControllerImplTest;
 
+  void OnHandleTapped(EditingHandleView* handle);
+
   void OnDragBegin(EditingHandleView* handle);
 
   // Callback to inform the client view that the selection handle has been
@@ -124,9 +126,17 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   bool command_executed_ = false;
   base::TimeTicks selection_start_time_;
 
-  // Timer to trigger quick menu (Quick menu is not shown if the selection
-  // handles are being updated. It appears only when the handles are stationary
-  // for a certain amount of time).
+  // Whether tapping the cursor handle toggles showing and hiding the quick
+  // menu. If enabled, the menu won't be shown when the cursor handle is
+  // initially shown.
+  bool tap_cursor_to_toggle_menu_enabled_ = false;
+
+  // Whether the quick menu has been requested to be shown.
+  bool quick_menu_requested_ = false;
+
+  // Timer to trigger quick menu after it has been requested. If a touch handle
+  // is being dragged, the menu will be hidden and the timer will only start
+  // after the drag is lifted.
   base::OneShotTimer quick_menu_timer_;
 
   // Pointer to the SelectionHandleView being dragged during a drag session.
