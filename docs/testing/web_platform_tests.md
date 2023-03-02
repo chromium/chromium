@@ -71,14 +71,14 @@ Some specs may define testing APIs (e.g.
 [WebUSB](https://wicg.github.io/webusb/test/)), which may be polyfilled with
 internal API like [MojoJS](../../mojo/public/js/README.md).  MojoJS is only
 allowed in WPT for this purpose. Please reach out to
-ecosystem-infra@chromium.org before following the process below for adding a new
+blink-dev@chromium.org before following the process below for adding a new
 test-only API:
 
  1. Create a full list of `*.mojom.m.js` files that you need, including all
     dependencies. Generated modules load dependencies recursively by default,
     so you can check the network panel of DevTools to see the full list of
     dependencies it loads.
- 2. Check [FILES.cfg](../../chrome/tools/build/linux/FILES.cfg) and add any
+ 2. Check [linux-archive-rel.json](../../infra/archive_config/linux-archive-rel.json) and add any
     missing `*.mojom.m.js` files to the `mojojs.zip` archive. Globs are
     supported in `filename`. Do not copy Mojom bindings into WPT.
  3. Meanwhile in Chromium, you can create a helper for your WPT tests to do
@@ -282,7 +282,7 @@ ahead landing your CL and the exporter will automatically merge the PR.
 
 If GitHub status is red on the PR, please try to resolve the failures before
 merging. If you run into any issues, or if you have a CL with WPT changes that
-the exporter did not pick up, please reach out to ecosystem-infra@chromium.org.
+the exporter did not pick up, please reach out to blink-dev@chromium.org.
 
 Additional things to note:
 
@@ -339,9 +339,9 @@ importer is allowed to modify.
 For valid rejections, it is the job of the rotation sheriff to land the CL
 manually. You need to un-abandon the import, `CR+1` it yourself, and `CQ+2` it.
 If you don't have permission to do that (e.g. are not a committer), contact
-ecosystem-infra@chromium.org.
+blink-dev@chromium.org.
 
-For invalid rejections, message ecosystem-infra@chromium.org or add an exception
+For invalid rejections, message blink-dev@chromium.org or add an exception
 rule yourself. [This is an example
 CL](https://chrome-internal-review.googlesource.com/c/infradata/config/+/3608170)
 that adds an exception rule. (Note that you need internal access to access this
