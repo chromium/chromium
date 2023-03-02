@@ -13,10 +13,9 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/check_is_test.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -110,21 +109,18 @@ MapBackgroundBlurCameraHalStateToEffectState(cros::mojom::BlurLevel level,
 
 }  // namespace
 
-CameraEffectsController::CameraEffectsController() {
+CameraEffectsController::CameraEffectsController()
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
 
   current_effects_ = cros::mojom::EffectsConfig::New();
 
-  media::CameraHalDispatcherImpl::GetInstance()
-      ->SetCameraEffectsControllerCallback(
-          // The callback passed to CameraHalDispatcherImpl will be called on a
-          // different thread inside CameraHalDispatcherImpl, so we need always
-          // post the callback onto current task runner.
-          base::BindPostTaskToCurrentDefault(base::BindRepeating(
-              &CameraEffectsController::OnNewCameraEffectsSet,
-              weak_factory_.GetWeakPtr())));
+  // The effects are not applied when this is constructed, observe for changes
+  // that will come later.
+  media::CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
+      this, base::DoNothing());
 }
 
 CameraEffectsController::~CameraEffectsController() {
@@ -135,6 +131,8 @@ CameraEffectsController::~CameraEffectsController() {
     // unregistered.
     effects_manager.UnregisterDelegate(this);
   }
+  media::CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(
+      this);
 }
 
 // TODO(b/265586822): this should be eventually detected from hardware support.
@@ -152,13 +150,6 @@ bool CameraEffectsController::IsCameraEffectsSupported(
 
 cros::mojom::EffectsConfigPtr CameraEffectsController::GetCameraEffects() {
   return current_effects_.Clone();
-}
-
-void CameraEffectsController::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-void CameraEffectsController::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 // static
@@ -254,6 +245,27 @@ void CameraEffectsController::OnEffectControlActivated(
   SetCameraEffects(std::move(new_effects));
 }
 
+void CameraEffectsController::OnCameraEffectChanged(
+    const cros::mojom::EffectsConfigPtr& new_effects) {
+  // As `CameraHalDispatcher` notifies the `new_effects` from a different
+  // thread, we want to ensure the `current_effects_` is always accessed through
+  // the `main_task_runner_`.
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CameraEffectsController::OnCameraEffectChanged,
+                       weak_factory_.GetWeakPtr(), new_effects.Clone()));
+    return;
+  }
+
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  // If `SetCamerEffects()` finished, update `current_effects_` and prefs.
+  if (!new_effects.is_null()) {
+    SetEffectsConfigToPref(new_effects.Clone());
+    current_effects_ = new_effects.Clone();
+  }
+}
+
 void CameraEffectsController::SetCameraEffects(
     cros::mojom::EffectsConfigPtr config) {
   // For backwards compatibility, will be removed after mojom is updated.
@@ -268,10 +280,9 @@ void CameraEffectsController::SetCameraEffects(
   }
 
   // Directly calls the callback for testing case.
-  if (effect_result_for_testing_.has_value()) {
+  if (in_testing_mode_) {
     CHECK_IS_TEST();
-    OnNewCameraEffectsSet(std::move(config),
-                          effect_result_for_testing_.value());
+    OnCameraEffectChanged(std::move(config));
   } else {
     media::CameraHalDispatcherImpl::GetInstance()->SetCameraEffects(
         std::move(config));
@@ -282,32 +293,6 @@ void CameraEffectsController::SetInitialCameraEffects(
     cros::mojom::EffectsConfigPtr config) {
   media::CameraHalDispatcherImpl::GetInstance()->SetInitialCameraEffects(
       std::move(config));
-}
-
-void CameraEffectsController::OnNewCameraEffectsSet(
-    cros::mojom::EffectsConfigPtr new_config,
-    cros::mojom::SetEffectResult result) {
-  // If SetCamerEffects succeeded, update `current_effects_` and notify all
-  // observers.
-  // This callback with null EffectsConfigPtr indicates that
-  // (1) The last SetCamerEffect failed.
-  // (2) It was the first SetCamerEffect call after the camera stack
-  // initialized; so no camera effects were applied before that. Assuming this
-  // does not happen very often, the only way to keep the pref to be consisitent
-  // with the prefs is to reset everything.
-  if (result == cros::mojom::SetEffectResult::kOk || new_config.is_null()) {
-    if (new_config.is_null()) {
-      new_config = cros::mojom::EffectsConfig::New();
-    }
-
-    SetEffectsConfigToPref(new_config.Clone());
-
-    current_effects_ = std::move(new_config);
-
-    for (auto& ob : observers_) {
-      ob.OnCameraEffectsChanged(current_effects_.Clone());
-    }
-  }
 }
 
 cros::mojom::EffectsConfigPtr

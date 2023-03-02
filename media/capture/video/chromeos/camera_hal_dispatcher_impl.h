@@ -443,9 +443,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // when the camera server is registered.
   cros::mojom::EffectsConfigPtr initial_effects_;
 
-  // Called when `SetCameraEffects` succeeds or fails.
-  CameraEffectsControllerCallback camera_effects_controller_callback_;
-
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_;
 
