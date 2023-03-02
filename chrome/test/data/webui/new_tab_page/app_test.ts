@@ -96,9 +96,14 @@ suite('NewTabPageAppTest', () => {
       assertEquals(1, metrics.count('NewTabPage.Height'));
       assertEquals(
           1,
-          metrics.count(
-              'NewTabPage.Height',
-              Math.floor(document.documentElement.clientHeight)));
+          metrics.count('NewTabPage.Height', Math.floor(window.innerHeight)));
+    });
+
+    test('logs width', async () => {
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Width'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Width', Math.floor(window.innerWidth)));
     });
 
     test('open voice search event opens voice search overlay', async () => {

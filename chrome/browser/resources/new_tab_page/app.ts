@@ -372,7 +372,16 @@ export class AppElement extends AppElementBase {
           max: 1000,
           buckets: 200,
         },
-        Math.floor(document.documentElement.clientHeight));
+        Math.floor(window.innerHeight));
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.Width',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 1,
+          max: 1920,
+          buckets: 384,
+        },
+        Math.floor(window.innerWidth));
 
     startColorChangeUpdater();
   }
