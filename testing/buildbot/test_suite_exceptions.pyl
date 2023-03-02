@@ -3408,14 +3408,6 @@
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
       'Linux MSan Tests',  # https://crbug.com/831676
     ],
-    'replacements': {
-      # TODO(crbug.com/1078982): Remove once the test is fixed on 10.15.4.
-      'Mac FYI Experimental Release (Intel)': {
-        'args': {
-          '--gtest_filter': '*Detection*:-FaceDetectionImplMacTest.ScanOneFace*',
-        },
-      },
-    },
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         'swarming': {
@@ -4217,22 +4209,8 @@
         },
       },
     },
-    'replacements': {
-      'Dawn Mac x64 Experimental Release (Intel)': {
-        'args': {
-          '--platform': 'mac-mac11',
-        },
-      }
-    },
   },
   'webgpu_blink_web_tests_with_backend_validation': {
-    'replacements': {
-      'Dawn Mac x64 Experimental Release (Intel)': {
-        'args': {
-          '--platform': 'mac-mac11',
-        },
-      },
-    },
     # Remove from bots where capacity is constrained.
     'remove_from': [
       # TODO(crbug.com/1363409): Enable these once they're shown to work on
