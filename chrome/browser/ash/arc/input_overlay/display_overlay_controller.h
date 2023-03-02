@@ -171,6 +171,8 @@ class DisplayOverlayController : public ui::EventHandler,
   // window is moved back to the front of task stack on ARC side for view mode.
   void EnsureTaskWindowToFrontForViewMode(views::Widget* overlay_widget);
 
+  bool ShowingNudge();
+
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
   void DismissEducationalViewForTesting();
