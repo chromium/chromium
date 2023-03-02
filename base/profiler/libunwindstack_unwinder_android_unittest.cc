@@ -12,6 +12,8 @@
 
 #include "base/android/build_info.h"
 #include "base/functional/bind.h"
+#include "base/native_library.h"
+#include "base/path_service.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
@@ -21,6 +23,7 @@
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "stack_sampling_profiler_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -215,6 +218,36 @@ TEST(LibunwindstackUnwinderAndroidTest, MAYBE_JavaFunction) {
                                scenario.GetOuterFunctionAddressRange()});
   ExpectStackContainsNames(sample, {"org.chromium.base.profiler.TestSupport."
                                     "callWithJavaFunction"});
+}
+
+TEST(LibunwindstackUnwinderAndroidTest, ReparsesMapsOnNewDynamicLibraryLoad) {
+  // The current version of /proc/self/maps is used to create
+  // memory_regions_map_ object.
+  auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();
+  ModuleCache module_cache;
+  unwinder->Initialize(&module_cache);
+
+  // Dynamically loading a library should update maps and a reparse is required
+  // to actually unwind through functions involving this library.
+  NativeLibrary dynamic_library =
+      LoadTestLibrary("base_profiler_reparsing_test_support_library");
+  UnwindScenario scenario(
+      BindRepeating(&CallThroughOtherLibrary, Unretained(dynamic_library)));
+
+  auto sample =
+      CaptureScenario(&scenario, &module_cache,
+                      BindLambdaForTesting([&](RegisterContext* thread_context,
+                                               uintptr_t stack_top,
+                                               std::vector<Frame>* sample) {
+                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+                        UnwindResult result = unwinder->TryUnwind(
+                            thread_context, stack_top, sample);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                      }));
+
+  ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
+                               scenario.GetSetupFunctionAddressRange(),
+                               scenario.GetOuterFunctionAddressRange()});
 }
 
 }  // namespace base

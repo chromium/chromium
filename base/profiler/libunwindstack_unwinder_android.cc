@@ -34,14 +34,6 @@
 
 namespace base {
 namespace {
-// How frequently we're willing to try and reparse maps. Sometimes, dynamic
-// libraries get added and can cause unwinding to fail which can be solved by
-// reparsing maps. However reparsing maps is an expensive operation and we don't
-// want to cause churn if there is for some reason some map consistently
-// failing.
-//
-// if we're sampling every 50ms, 1200 samples is 1 minute.
-const int kMinSamplesBeforeNextMapsParse = 1200;
 
 class NonElfModule : public ModuleCache::Module {
  public:
@@ -82,10 +74,12 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
   return nullptr;
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 }
+
 }  // namespace
 
 LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid()
-    : memory_regions_map_(NativeUnwinderAndroid::CreateMemoryRegionsMap()),
+    : memory_regions_map_(NativeUnwinderAndroid::CreateMemoryRegionsMap(
+          /*use_updatable_maps=*/true)),
       process_memory_(std::shared_ptr<unwindstack::Memory>(
           memory_regions_map_->TakeMemory().release())) {
   TRACE_EVENT_INSTANT(
@@ -139,46 +133,21 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
     std::vector<unwindstack::FrameData> frames;
   };
 
-  auto attempt_unwind = [&]() {
-    // regs will get clobbered by each attempt, so if it fails we have to
-    // start fresh from the initial context.
-    std::unique_ptr<unwindstack::Regs> regs =
-        CreateFromRegisterContext(thread_context);
-    DCHECK(regs);
-    unwindstack::Unwinder unwinder(kMaxFrames, memory_regions_map_->GetMaps(),
-                                   regs.get(), process_memory_);
+  std::unique_ptr<unwindstack::Regs> regs =
+      CreateFromRegisterContext(thread_context);
+  DCHECK(regs);
+  unwindstack::Unwinder unwinder(kMaxFrames, memory_regions_map_->GetMaps(),
+                                 regs.get(), process_memory_);
 
-    unwinder.SetJitDebug(GetOrCreateJitDebug(regs->Arch()));
-    unwinder.SetDexFiles(GetOrCreateDexFiles(regs->Arch()));
+  unwinder.SetJitDebug(GetOrCreateJitDebug(regs->Arch()));
+  unwinder.SetDexFiles(GetOrCreateDexFiles(regs->Arch()));
 
-    unwinder.Unwind(/*initial_map_names_to_skip=*/nullptr,
-                    /*map_suffixes_to_ignore=*/nullptr);
-    ++samples_since_last_maps_parse_;
-    // Currently libunwindstack doesn't support warnings.
-    return UnwindValues{unwinder.LastErrorCode(), /*unwinder.warnings()*/ 0,
-                        unwinder.ConsumeFrames()};
-  };
-
-  // We now proceed with the first unwind.
-  UnwindValues values = attempt_unwind();
-
-  // If our maps are invalid and we haven't reparsed in awhile then attempt to
-  // reparse the maps and reunwind the stack to recover from the error.
-  bool should_retry =
-      values.error_code == unwindstack::ERROR_INVALID_MAP &&
-      samples_since_last_maps_parse_ > kMinSamplesBeforeNextMapsParse;
-  if (should_retry) {
-    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
-                "TryUnwind Reparsing Maps");
-    samples_since_last_maps_parse_ = 0;
-    memory_regions_map_->GetMaps()->Parse();
-    jit_debug_.reset();
-    dex_files_.reset();
-
-    // Our second attempt will override our first attempt when we check the
-    // result later.
-    values = attempt_unwind();
-  }
+  unwinder.Unwind(/*initial_map_names_to_skip=*/nullptr,
+                  /*map_suffixes_to_ignore=*/nullptr);
+  // Currently libunwindstack doesn't support warnings.
+  UnwindValues values =
+      UnwindValues{unwinder.LastErrorCode(), /*unwinder.warnings()*/ 0,
+                   unwinder.ConsumeFrames()};
 
   // Check the result of either the first or second unwind. If we were
   // successful transfer from libunwindstack format into base::Unwinder format.

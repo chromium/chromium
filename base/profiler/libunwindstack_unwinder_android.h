@@ -42,7 +42,6 @@ class LibunwindstackUnwinderAndroid : public Unwinder {
   unwindstack::JitDebug* GetOrCreateJitDebug(unwindstack::ArchEnum arch);
   unwindstack::DexFiles* GetOrCreateDexFiles(unwindstack::ArchEnum arch);
 
-  int samples_since_last_maps_parse_ = 0;
   std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap> memory_regions_map_;
   // libunwindstack::Unwinder requires that process_memory be provided as a
   // std::shared_ptr. Since this is a third_party library this exception to

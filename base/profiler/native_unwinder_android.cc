@@ -131,8 +131,13 @@ size_t UnwindStackMemoryAndroid::Read(uint64_t addr, void* dst, size_t size) {
 
 // static
 std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap>
-NativeUnwinderAndroid::CreateMemoryRegionsMap() {
-  auto maps = std::make_unique<unwindstack::LocalMaps>();
+NativeUnwinderAndroid::CreateMemoryRegionsMap(bool use_updatable_maps) {
+  std::unique_ptr<unwindstack::Maps> maps;
+  if (use_updatable_maps) {
+    maps = std::make_unique<unwindstack::LocalUpdatableMaps>();
+  } else {
+    maps = std::make_unique<unwindstack::LocalMaps>();
+  }
   const bool success = maps->Parse();
   DCHECK(success);
 

@@ -2805,6 +2805,20 @@ if ((is_win && (current_cpu == "x64" || current_cpu == "arm64")) || is_mac ||
   }
 }
 
+if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
+  # Use separate library for
+  # |LibunwindstackUnwinderAndroidTest.ReparsesMapsOnNewDynamicLibraryLoad|
+  # testcase. We can't use the existing `base_profiler_test_support_library`
+  # library for this test since this gets loaded by other tests and unloading
+  # a library in Android doesn't guarantee it will actually be unloaded.
+  # And in the test we would like to observe the change in /proc/self/maps
+  # on loading a dynamic library.
+  loadable_module("base_profiler_reparsing_test_support_library") {
+    testonly = true
+    sources = [ "profiler/test_support_library.cc" ]
+  }
+}
+
 if (is_android) {
   source_set("native_unwinder_android") {
     # This target is intended to be used only within the stack_unwinder dynamic
@@ -3568,6 +3582,7 @@ test("base_unittests") {
         "profiler/native_unwinder_android_unittest.cc",
       ]
       deps += [
+        ":base_profiler_reparsing_test_support_library",
         ":base_profiler_test_support_java",
         ":base_profiler_test_support_jni_headers",
         ":base_profiler_test_support_library",

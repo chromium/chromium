@@ -424,29 +424,33 @@ void ExpectStackDoesNotContain(
   }
 }
 
-NativeLibrary LoadOtherLibrary() {
+NativeLibrary LoadTestLibrary(StringPiece library_name) {
   // The lambda gymnastics works around the fact that we can't use ASSERT_*
   // macros in a function returning non-null.
-  const auto load = [](NativeLibrary* library) {
-    FilePath other_library_path;
+  const auto load = [&](NativeLibrary* library) {
+    FilePath library_path;
 #if BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/1262430): Find a solution that works across platforms.
-    ASSERT_TRUE(PathService::Get(DIR_ASSETS, &other_library_path));
+    ASSERT_TRUE(PathService::Get(DIR_ASSETS, &library_path));
 #else
     // The module is next to the test module rather than with test data.
-    ASSERT_TRUE(PathService::Get(DIR_MODULE, &other_library_path));
+    ASSERT_TRUE(PathService::Get(DIR_MODULE, &library_path));
 #endif  // BUILDFLAG(IS_FUCHSIA)
-    other_library_path = other_library_path.AppendASCII(
-        GetLoadableModuleName("base_profiler_test_support_library"));
+    library_path =
+        library_path.AppendASCII(GetLoadableModuleName(library_name));
     NativeLibraryLoadError load_error;
-    *library = LoadNativeLibrary(other_library_path, &load_error);
-    ASSERT_TRUE(*library) << "error loading " << other_library_path.value()
-                          << ": " << load_error.ToString();
+    *library = LoadNativeLibrary(library_path, &load_error);
+    ASSERT_TRUE(*library) << "error loading " << library_path.value() << ": "
+                          << load_error.ToString();
   };
 
   NativeLibrary library = nullptr;
   load(&library);
   return library;
+}
+
+NativeLibrary LoadOtherLibrary() {
+  return LoadTestLibrary("base_profiler_test_support_library");
 }
 
 uintptr_t GetAddressInOtherLibrary(NativeLibrary library) {

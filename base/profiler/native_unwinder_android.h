@@ -39,8 +39,16 @@ class NativeUnwinderAndroid : public Unwinder,
   // Creates maps object from /proc/self/maps for use by NativeUnwinderAndroid.
   // Since this is an expensive call, the maps object should be re-used across
   // all profiles in a process.
+  // Set |use_updatable_maps| to true to use unwindstack::LocalUpdatableMaps,
+  // instead of unwindstack::LocalMaps. LocalUpdatableMaps might be preferable
+  // when the frames come from dynamically added ELFs like JITed ELFs, or
+  // dynamically loaded libraries. With LocalMaps the frames corresponding to
+  // newly loaded ELFs don't get unwound since the existing maps structure
+  // fails to find a map for the given pc while LocalUpdatableMaps reparses
+  // /proc/self/maps when it fails to find a map for the given pc and then can
+  // successfully unwind through newly loaded ELFs as well.
   static std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap>
-  CreateMemoryRegionsMap();
+  CreateMemoryRegionsMap(bool use_updatable_maps = false);
 
   // |exclude_module_with_base_address| is used to exclude a specific module and
   // let another unwinder take control. TryUnwind() will exit with
