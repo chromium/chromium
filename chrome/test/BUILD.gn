@@ -3523,6 +3523,7 @@ if (!is_android) {
         "../browser/ui/views/payments/payment_request_payment_app_browsertest.cc",
         "../browser/ui/views/payments/payment_request_payment_response_browsertest.cc",
         "../browser/ui/views/payments/payment_request_retry_browsertest.cc",
+        "../browser/ui/views/payments/payment_request_sheet_controller_browsertest.cc",
         "../browser/ui/views/payments/payment_request_shipping_address_instance_browsertest.cc",
         "../browser/ui/views/payments/payment_request_show_promise_browsertest.cc",
         "../browser/ui/views/payments/payment_request_update_with_browsertest.cc",

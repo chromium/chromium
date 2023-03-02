@@ -23,6 +23,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -125,6 +126,16 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
       const views::ViewHierarchyChangedDetails& details) override {
     if (!details.is_add && details.child == first_focusable_)
       first_focusable_ = nullptr;
+  }
+
+  void SetVisible(bool visible) override {
+    views::View::SetVisible(visible);
+
+    // Screen readers do not ignore invisible elements, so force the screen
+    // reader to skip invisible sheet views by making it an ignored leaf node in
+    // the accessibility tree.
+    GetViewAccessibility().OverrideIsIgnored(!visible);
+    GetViewAccessibility().OverrideIsLeaf(!visible);
   }
 
   raw_ptr<views::View> first_focusable_ = nullptr;

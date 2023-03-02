@@ -43,6 +43,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -393,6 +394,7 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
           origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
   origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
   origin_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
+  origin_label->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   // Turn off autoreadability because the computed foreground color takes
   // contrast into account.
   SkColor background_color = container->background()->get_color();
@@ -567,6 +569,11 @@ void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
     // The progress bar reflects the load progress until it reaches 1.0, at
     // which point it's reset to 0 to just show the separator color.
     progress_bar_->SetValue(progress < 1.0 ? progress : 0);
+
+    // The progress bar is accessibility-visible while loading, and then ignored
+    // once it just serves as a separator.
+    progress_bar_->GetViewAccessibility().OverrideIsIgnored(progress == 1.0);
+    progress_bar_->GetViewAccessibility().OverrideIsLeaf(progress == 1.0);
   } else {
     progress_bar_->SetValue(progress);
     const bool show_progress = progress < 1.0;
