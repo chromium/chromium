@@ -4,8 +4,129 @@
 
 module device.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // TODO(crbug.com/1386175): Add interfaces for exposing the platform's PC/SC
 // (winscard.h) service:
-//  * SmartCardContextFactory
-//  * SmartCardContext
 //  * SmartCardConnection
+
+// The result of a SmartCard request.
+// Either a success or an error.
+union SmartCardResult {
+  SmartCardSuccess success;
+  SmartCardError error;
+};
+
+// Indicates that a SmartCard request succeeded.
+enum SmartCardSuccess {
+  kOk
+};
+
+// PC/SC error codes we can expect to hit (thus a non-exhaustive list).
+// UNKNOWN means an SCARD error code that is not mapped in this enum (and
+// thus should probably be added here).
+enum SmartCardError {
+  kRemovedCard,
+  kResetCard,
+  kUnpoweredCard,
+  kUnresponsiveCard,
+  kUnsupportedCard,
+  kReaderUnavailable,
+  kSharingViolation,
+  kNotTransacted,
+  kNoSmartcard,
+  kProtoMismatch,
+  kSystemCancelled,
+  kNotReady,
+  kCancelled,
+  kInsufficientBuffer,
+  kInvalidHandle,
+  kInvalidParameter,
+  kInvalidValue,
+  kNoMemory,
+  kTimeout,
+  kUnknownReader,
+  kUnsupportedFeature,
+  kNoReadersAvailable,
+  kServiceStopped,
+  kNoService,
+  kCommError,
+  kInternalError,
+  kUnknownError,
+  kServerTooBusy,
+  kUnexpected,
+  kShutdown,
+  kUnknown
+};
+
+// Flags for describing the state of a smart card reader.
+// Maps to the corresponding SCARD_STATE_* flags in winscard.h
+struct SmartCardReaderStateFlags {
+  bool unaware;
+  bool ignore;
+  bool changed;
+  bool unknown;
+  bool unavailable;
+  bool empty;
+  bool present;
+  bool exclusive;
+  bool inuse;
+  bool mute;
+  bool unpowered;
+};
+
+// Describes the last known state of a smart card reader.
+// SmartCardContext uses that information to decide whether the reader state
+// has changed (ie, whether it's different from what the API user knows).
+struct SmartCardReaderStateIn {
+  string reader;
+  SmartCardReaderStateFlags current_state;
+};
+
+// Describes the actual state of a smart card reader.
+struct SmartCardReaderStateOut {
+  string reader;
+  SmartCardReaderStateFlags event_state;
+  array<uint8> answer_to_reset;
+};
+
+// The result of a SmartCardContext.GetStatusChange request.
+union SmartCardStatusChangeResult {
+  array<SmartCardReaderStateOut> reader_states;
+  SmartCardError error;
+};
+
+// The result of a SmartCardContext.ListReaders request.
+union SmartCardListReadersResult {
+  array<string> readers;
+  SmartCardError error;
+};
+
+// The result of a SmartCardContextFactory.CreateContext request.
+union SmartCardCreateContextResult {
+  pending_remote<SmartCardContext> context;
+  SmartCardError error;
+};
+
+// An interface to a valid context in a PC/SC (winscard.h) provider.
+//
+// Dropping a remote of this interface equates to calling SCardReleaseContext()
+// on the corresponding PC/SC provider.
+interface SmartCardContext {
+  // Returns a list of currently available readers on the system.
+  ListReaders() => (SmartCardListReadersResult result);
+
+  // Waits until the current availability of the cards in a specific set of
+  // readers changes.
+  GetStatusChange(mojo_base.mojom.TimeDelta timeout,
+                  array<SmartCardReaderStateIn> reader_states)
+    => (SmartCardStatusChangeResult result);
+
+  // TODO(crbug.com/1386175): Add Connect method.
+};
+
+// An interface to establish contexts with a PC/SC (winscard.h) provider.
+interface SmartCardContextFactory {
+  // Creates an Application Context to the PC/SC Resource Manager.
+  CreateContext() => (SmartCardCreateContextResult result);
+};

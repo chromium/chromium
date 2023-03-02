@@ -4,6 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
+assert(is_chromeos)
+
 source_set("smart_card_provider_private") {
   sources = [
     "smart_card_provider_private_api.cc",
@@ -14,5 +16,20 @@ source_set("smart_card_provider_private") {
     "//base",
     "//chrome/common/extensions/api",
     "//extensions/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "smart_card_provider_private_apitest.cc" ]
+
+  # From test("browser_tests")
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":smart_card_provider_private",
+    "//chrome/browser",
+    "//chrome/test:test_support",
   ]
 }
