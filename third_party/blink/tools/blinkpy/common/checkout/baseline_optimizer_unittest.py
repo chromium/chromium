@@ -796,62 +796,70 @@ class ResultDigestTest(unittest.TestCase):
 
     def test_all_pass_testharness_result(self):
         self.assertTrue(
-            ResultDigest(self.fs,
-                         '/all-pass/foo-expected.txt').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/all-pass/foo-expected.txt').is_extra_result)
         self.assertTrue(
-            ResultDigest(self.fs,
-                         '/all-pass/bar-expected.txt').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/all-pass/bar-expected.txt').is_extra_result)
         self.assertFalse(
-            ResultDigest(self.fs,
-                         '/failures/baz-expected.txt').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/failures/baz-expected.txt').is_extra_result)
 
     def test_empty_result(self):
         self.assertFalse(
-            ResultDigest(self.fs,
-                         '/others/something-expected.png').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/others/something-expected.png').is_extra_result)
         self.assertTrue(
-            ResultDigest(self.fs,
-                         '/others/empty-expected.txt').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/others/empty-expected.txt').is_extra_result)
         self.assertTrue(
-            ResultDigest(self.fs,
-                         '/others/empty-expected.png').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/others/empty-expected.png').is_extra_result)
 
     def test_extra_png_for_reftest_result(self):
         self.assertFalse(
-            ResultDigest(self.fs,
-                         '/others/something-expected.png').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/others/something-expected.png').is_extra_result)
         self.assertTrue(
-            ResultDigest(
-                self.fs, '/others/reftest-expected.png',
-                is_reftest=True).is_extra_result)
+            ResultDigest.from_file(self.fs,
+                                   '/others/reftest-expected.png',
+                                   is_reftest=True).is_extra_result)
 
     def test_non_extra_result(self):
         self.assertFalse(
-            ResultDigest(self.fs,
-                         '/others/something-expected.png').is_extra_result)
+            ResultDigest.from_file(
+                self.fs, '/others/something-expected.png').is_extra_result)
 
     def test_implicit_extra_result(self):
         # Implicit empty equal to any extra result but not failures.
-        implicit = ResultDigest(None, None)
-        self.assertTrue(
-            implicit == ResultDigest(self.fs, '/all-pass/foo-expected.txt'))
-        self.assertTrue(
-            implicit == ResultDigest(self.fs, '/all-pass/bar-expected.txt'))
-        self.assertFalse(
-            implicit == ResultDigest(self.fs, '/failures/baz-expected.txt'))
-        self.assertTrue(implicit == ResultDigest(
-            self.fs, '/others/reftest-expected.png', is_reftest=True))
+        implicit = ResultDigest.from_file(None, None)
+        self.assertEqual(
+            implicit,
+            ResultDigest.from_file(self.fs, '/all-pass/foo-expected.txt'))
+        self.assertEqual(
+            implicit,
+            ResultDigest.from_file(self.fs, '/all-pass/bar-expected.txt'))
+        self.assertNotEqual(
+            implicit,
+            ResultDigest.from_file(self.fs, '/failures/baz-expected.txt'))
+        self.assertEqual(
+            implicit,
+            ResultDigest.from_file(self.fs,
+                                   '/others/reftest-expected.png',
+                                   is_reftest=True))
 
     def test_different_all_pass_results(self):
-        x = ResultDigest(self.fs, '/all-pass/foo-expected.txt')
-        y = ResultDigest(self.fs, '/all-pass/bar-expected.txt')
+        x = ResultDigest.from_file(self.fs, '/all-pass/foo-expected.txt')
+        y = ResultDigest.from_file(self.fs, '/all-pass/bar-expected.txt')
         self.assertTrue(x != y)
         self.assertFalse(x == y)
 
     def test_same_extra_png_for_reftest(self):
-        x = ResultDigest(
-            self.fs, '/others/reftest-expected.png', is_reftest=True)
-        y = ResultDigest(
-            self.fs, '/others/reftest2-expected.png', is_reftest=True)
+        x = ResultDigest.from_file(self.fs,
+                                   '/others/reftest-expected.png',
+                                   is_reftest=True)
+        y = ResultDigest.from_file(self.fs,
+                                   '/others/reftest2-expected.png',
+                                   is_reftest=True)
         self.assertTrue(x == y)
         self.assertFalse(x != y)

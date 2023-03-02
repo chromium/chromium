@@ -271,8 +271,8 @@ class BaselineOptimizer:
         for location in locations:
             path = self._path(location, baseline_name)
             if self._filesystem.exists(path):
-                digests[location] = ResultDigest(self._filesystem, path,
-                                                 is_reftest)
+                digests[location] = ResultDigest.from_file(
+                    self._filesystem, path, is_reftest)
         return digests
 
     def _maybe_promote_root(
@@ -390,7 +390,16 @@ class ResultDigest:
     # thus will be removed.
     _IMPLICIT_EXTRA_RESULT = '<EXTRA>'
 
-    def __init__(self, fs, path, is_reftest=False):
+    def __init__(self,
+                 sha: str,
+                 path: Optional[str] = None,
+                 is_extra_result: bool = False):
+        self.sha = sha
+        self.path = path
+        self.is_extra_result = is_extra_result
+
+    @classmethod
+    def from_file(cls, fs, path, is_reftest=False) -> 'ResultDigest':
         """Constructs the digest for a result.
 
         Args:
@@ -399,32 +408,27 @@ class ResultDigest:
                 an *implicit* extra result.
             is_reftest: Whether the test is a reftest.
         """
-        self.path = path
         if path is None:
-            self.sha = self._IMPLICIT_EXTRA_RESULT
-            self.is_extra_result = True
-            return
+            return cls(cls._IMPLICIT_EXTRA_RESULT, path, is_extra_result=True)
 
         assert fs.exists(path), path + " does not exist"
         if path.endswith('.txt'):
             try:
                 content = fs.read_text_file(path)
-                self.is_extra_result = not content or is_all_pass_testharness_result(
+                is_extra_result = not content or is_all_pass_testharness_result(
                     content)
             except UnicodeDecodeError as e:
-                self.is_extra_result = False
+                is_extra_result = False
             # Unfortunately, we may read the file twice, once in text mode
             # and once in binary mode.
-            self.sha = fs.sha1(path)
-            return
+            return cls(fs.sha1(path), path, is_extra_result)
 
         if path.endswith('.png') and is_reftest:
-            self.is_extra_result = True
-            self.sha = ''
-            return
+            return cls('', path, is_extra_result=True)
 
-        self.is_extra_result = not fs.read_binary_file(path)
-        self.sha = fs.sha1(path)
+        return cls(fs.sha1(path),
+                   path,
+                   is_extra_result=(not fs.read_binary_file(path)))
 
     def __eq__(self, other):
         if other is None:
@@ -460,7 +464,8 @@ class FallbackGraph:
     def __init__(self, digests: DigestMap):
         # Contains digests of baselines that exist on disk.
         self._digests = digests
-        self._digests.setdefault(self.ALL_PASS, ResultDigest(None, None))
+        self._digests.setdefault(self.ALL_PASS,
+                                 ResultDigest.from_file(None, None))
         # This is an adjacency list.
         self.successors: Dict[BaselineLocation, Set[BaselineLocation]]
         self.successors = collections.defaultdict(set)
