@@ -3578,6 +3578,11 @@ const char kCCTRealTimeEngagementSignalsName[] =
 const char kCCTRealTimeEngagementSignalsDescription[] =
     "Enables sending real-time engagement signals (e.g. scroll) through "
     "CustomTabsCallback.";
+const char kCCTRealTimeEngagementSignalsAlternativeImplName[] =
+    "Enable alternative implementation for CCT real-time engagement signals.";
+const char kCCTRealTimeEngagementSignalsAlternativeImplDescription[] =
+    "Enables an alternative implementation for sending real-time engagement "
+    "signals (e.g. scroll) through CustomTabsCallback.";
 
 const char kChimeAlwaysShowNotificationDescription[] =
     "A debug flag to always show Chime notification after receiving a payload.";

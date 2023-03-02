@@ -2047,6 +2047,8 @@ extern const char kCCTRetainingStateInMemoryDescription[];
 
 extern const char kCCTRealTimeEngagementSignalsName[];
 extern const char kCCTRealTimeEngagementSignalsDescription[];
+extern const char kCCTRealTimeEngagementSignalsAlternativeImplName[];
+extern const char kCCTRealTimeEngagementSignalsAlternativeImplDescription[];
 
 extern const char kChimeAlwaysShowNotificationDescription[];
 extern const char kChimeAlwaysShowNotificationName[];

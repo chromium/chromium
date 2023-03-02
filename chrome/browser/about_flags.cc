@@ -474,6 +474,26 @@ const FeatureEntry::FeatureVariation kCCTRealTimeEngagementSignalsVariations[] =
      {"Send fake values", kCCTRealTimeEngagementSignalsParamFakeValues,
       std::size(kCCTRealTimeEngagementSignalsParamFakeValues), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kCCTRealTimeEngagementSignalsAlternativeImplParam100[] = {
+        {"time_can_update_after_end", "100"}  // 100ms
+};
+const FeatureEntry::FeatureParam
+    kCCTRealTimeEngagementSignalsAlternativeImplParam25[] = {
+        {"time_can_update_after_end", "25"}  // 25ms
+};
+
+const FeatureEntry::FeatureVariation
+    kCCTRealTimeEngagementSignalsAlternativeImplVariations[] = {
+        {"Allow 100ms for scroll updates after scroll-end",
+         kCCTRealTimeEngagementSignalsAlternativeImplParam100,
+         std::size(kCCTRealTimeEngagementSignalsAlternativeImplParam100),
+         nullptr},
+        {"Allow 25ms for scroll updates after scroll-end",
+         kCCTRealTimeEngagementSignalsAlternativeImplParam25,
+         std::size(kCCTRealTimeEngagementSignalsAlternativeImplParam25),
+         nullptr}};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -6251,6 +6271,14 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kCCTRealTimeEngagementSignals,
          kCCTRealTimeEngagementSignalsVariations,
          "CCTRealTimeEngagementSignals")},
+    {"cct-real-time-engagement-signals-alternative-impl",
+     flag_descriptions::kCCTRealTimeEngagementSignalsAlternativeImplName,
+     flag_descriptions::kCCTRealTimeEngagementSignalsAlternativeImplDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kCCTRealTimeEngagementSignalsAlternativeImpl,
+         kCCTRealTimeEngagementSignalsAlternativeImplVariations,
+         "CCTRealTimeEngagementSignalsAlternativeImpl")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

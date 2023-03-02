@@ -64189,6 +64189,8 @@ from previous Chrome versions.
       label="TabbedAppOverflowMenuThreeButtonActionbar:enabled"/>
   <int value="1313850691" label="Metal:disabled"/>
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
+  <int value="1314797690"
+      label="CCTRealTimeEngagementSignalsAlternativeImpl:disabled"/>
   <int value="1316142697" label="canvas-2d-layers"/>
   <int value="1316607485" label="MultiProfileAccountConsistency:enabled"/>
   <int value="1316844889" label="ScreenshotsForAndroidV2:disabled"/>
@@ -64395,6 +64397,8 @@ from previous Chrome versions.
       label="OmniboxRemoveSuggestionsFromClipboard:disabled"/>
   <int value="1442798825" label="enable-quic"/>
   <int value="1442830837" label="MemoryAblation:disabled"/>
+  <int value="1442843126"
+      label="CCTRealTimeEngagementSignalsAlternativeImpl:enabled"/>
   <int value="1443830588" label="VerticalSnap:disabled"/>
   <int value="1443836294"
       label="AboutThisSitePersistentSidePanelEntry:enabled"/>

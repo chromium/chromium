@@ -228,6 +228,7 @@ public class CustomTabActivityTabControllerUnitTest {
 
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
+    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void attachEngagementSignalObserver() {
         when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
         env.reachNativeInit(mTabController);
