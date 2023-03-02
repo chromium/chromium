@@ -54,9 +54,13 @@ class InProcessContextFactory : public ContextFactory {
     return frame_sink_manager_;
   }
 
-  // Set refresh rate will be set to 200 to spend less time waiting for
-  // BeginFrame when used for tests.
-  void SetUseFastRefreshRateForTests();
+  // Setting a higher refresh rate will spend less time waiting for BeginFrame;
+  // while setting a lower refresh rate will reduce the workload per unit of
+  // time, which could be useful, e.g., when using mock time and fast forwarding
+  // by a long duration.
+  //
+  // Takes effect for the next CreateLayerTreeFrameSink() call.
+  void SetRefreshRateForTests(double refresh_rate);
 
   // ContextFactory implementation.
   void CreateLayerTreeFrameSink(base::WeakPtr<Compositor> compositor) override;

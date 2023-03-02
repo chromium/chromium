@@ -27,6 +27,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/env.h"
+#include "ui/compositor/test/test_context_factories.h"
 #include "ui/display/display.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
@@ -266,6 +267,13 @@ class AshTestBase : public testing::Test {
   TestingPrefServiceSimple* local_state() { return &local_state_; }
   AshTestHelper* ash_test_helper() { return ash_test_helper_.get(); }
 
+  // Returns nullptr before SetUp() is called.
+  ui::InProcessContextFactory* GetContextFactory() {
+    return test_context_factories_
+               ? test_context_factories_->GetContextFactory()
+               : nullptr;
+  }
+
   void SetUserPref(const std::string& user_email,
                    const std::string& path,
                    const base::Value& value);
@@ -380,6 +388,8 @@ class AshTestBase : public testing::Test {
   // A helper class to take screen shots then compare with benchmarks. Set by
   // `PrepareForPixelDiffTest()`.
   std::unique_ptr<AshPixelDiffer> pixel_differ_;
+
+  std::unique_ptr<ui::TestContextFactories> test_context_factories_;
 
   // Must be constructed after |task_environment_|.
   std::unique_ptr<AshTestHelper> ash_test_helper_;

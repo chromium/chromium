@@ -192,8 +192,8 @@ InProcessContextFactory::~InProcessContextFactory() {
   DCHECK(per_compositor_data_.empty());
 }
 
-void InProcessContextFactory::SetUseFastRefreshRateForTests() {
-  refresh_rate_ = 200.0;
+void InProcessContextFactory::SetRefreshRateForTests(double refresh_rate) {
+  refresh_rate_ = refresh_rate;
 }
 
 void InProcessContextFactory::CreateLayerTreeFrameSink(

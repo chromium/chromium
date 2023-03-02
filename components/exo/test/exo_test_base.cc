@@ -50,6 +50,12 @@ ExoTestBase::~ExoTestBase() = default;
 
 void ExoTestBase::SetUp() {
   SetUp(nullptr);
+
+  if (task_environment()->UsesMockTime()) {
+    // Reduce the refresh rate to save cost for fast forwarding when mock time
+    // is used.
+    GetContextFactory()->SetRefreshRateForTests(10.0);
+  }
 }
 
 void ExoTestBase::TearDown() {
