@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -1103,7 +1102,7 @@ TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
 
 TEST_F(WallpaperControllerTest, CelebiNotSavedWhenJellyIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kJelly);
+  features.InitAndDisableFeature(chromeos::features::kJelly);
   TestWallpaperControllerObserver observer(controller_);
 
   const char location[] = "test_wallpaper_here";
@@ -1126,7 +1125,7 @@ TEST_F(WallpaperControllerTest, CelebiNotSavedWhenJellyIsDisabled) {
 }
 
 TEST_F(WallpaperControllerTest, SaveCelebiColorWhenJellyActive) {
-  base::test::ScopedFeatureList features(features::kJelly);
+  base::test::ScopedFeatureList features(chromeos::features::kJelly);
   TestWallpaperControllerObserver observer(controller_);
 
   const char location[] = "test_wallpaper_here";

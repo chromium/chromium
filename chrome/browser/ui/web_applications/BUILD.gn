@@ -87,6 +87,10 @@ source_set("browser_tests") {
       "//chrome/browser/ui/ash/system_web_apps",
     ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
 }
 
 # On Lacros, these browser tests require Ash to be running, as they rely on
@@ -139,6 +143,7 @@ source_set("app_service_browser_tests") {
   if (is_chromeos_lacros) {
     deps += [
       "//chrome/test:lacros_test_support_ui",
+      "//chromeos/constants",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
     ]

@@ -266,7 +266,7 @@ class PersonalizationAppThemeProviderImplJellyTest
     : public PersonalizationAppThemeProviderImplTest {
  public:
   PersonalizationAppThemeProviderImplJellyTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kJelly);
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
   }
 
   PersonalizationAppThemeProviderImplJellyTest(

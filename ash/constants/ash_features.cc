@@ -1258,9 +1258,6 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionControl,
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Jelly features.
-BASE_FEATURE(kJelly, "Jelly", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables IME button in the floating accessibility menu for the Kiosk session.
 BASE_FEATURE(kKioskEnableImeButton,
              "KioskEnableImeButton",
@@ -2769,7 +2766,9 @@ bool IsIppClientInfoEnabled() {
 }
 
 bool IsJellyEnabled() {
-  return base::FeatureList::IsEnabled(kJelly);
+  // TODO(b/270741618): Callers are being migrated to
+  // chromeos::features::IsJellyEnabled(). Do not use.
+  return chromeos::features::IsJellyEnabled();
 }
 
 bool IsKeyboardBacklightToggleEnabled() {

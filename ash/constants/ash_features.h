@@ -373,7 +373,6 @@ BASE_DECLARE_FEATURE(kInternalServerSideSpeechRecognition);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInternalServerSideSpeechRecognitionControl);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kIppClientInfo);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kJelly);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kKioskEnableImeButton);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAutoEnrollmentKioskInOobe);
@@ -751,6 +750,8 @@ bool IsInternalServerSideSpeechRecognitionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIppClientInfoEnabled();
+// TODO(b/270741618): Callers are being migrated to
+// chromeos::features::IsJellyEnabled(). Do not use.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();
