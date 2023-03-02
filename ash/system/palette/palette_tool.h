@@ -54,9 +54,6 @@ class ASH_EXPORT PaletteTool {
     virtual void RecordPaletteOptionsUsage(PaletteTrayOptions option,
                                            PaletteInvocationMethod method) = 0;
 
-    // Record mode cancellation of pen palette.
-    virtual void RecordPaletteModeCancellation(PaletteModeCancelType type) = 0;
-
    protected:
     virtual ~Delegate() {}
   };

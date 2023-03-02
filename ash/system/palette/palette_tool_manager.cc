@@ -41,8 +41,6 @@ void PaletteToolManager::ActivateTool(PaletteToolId tool_id) {
 
   if (previous_tool) {
     previous_tool->OnDisable();
-    RecordPaletteModeCancellation(PaletteToolIdToPaletteModeCancelType(
-        previous_tool->GetToolId(), true /*is_switched*/));
   }
 
   active_tools_[new_tool->GetGroup()] = new_tool;
@@ -136,11 +134,6 @@ void PaletteToolManager::RecordPaletteOptionsUsage(
     PaletteTrayOptions option,
     PaletteInvocationMethod method) {
   return delegate_->RecordPaletteOptionsUsage(option, method);
-}
-
-void PaletteToolManager::RecordPaletteModeCancellation(
-    PaletteModeCancelType type) {
-  return delegate_->RecordPaletteModeCancellation(type);
 }
 
 PaletteTool* PaletteToolManager::FindToolById(PaletteToolId tool_id) const {
