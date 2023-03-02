@@ -8,8 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
@@ -61,6 +64,10 @@ constexpr int kProgressRingRadiusTouchMode = 12;
 constexpr float kProgressRingStrokeWidth = 1.7f;
 // 7.5 rows * 60 px per row = 450;
 constexpr int kMaxHeightForRowList = 450;
+
+// Close the partial bubble after 5 seconds if the user doesn't interact with
+// it.
+constexpr base::TimeDelta kAutoClosePartialViewDelay = base::Seconds(5);
 
 // Helper class to draw a circular badge with text.
 class CircleBadgeImageSource : public gfx::CanvasImageSource {
@@ -281,7 +288,13 @@ bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() {
 void DownloadToolbarButtonView::ShowDetails() {
   if (!bubble_delegate_) {
     is_primary_partial_view_ = true;
+    if (!auto_close_bubble_timer_) {
+      CreateAutoCloseTimer();
+    }
     CreateBubbleDialogDelegate(GetPrimaryView());
+  }
+  if (auto_close_bubble_timer_) {
+    auto_close_bubble_timer_->Reset();
   }
 }
 
@@ -432,6 +445,27 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate_->GetWidget()->Show();
 }
 
+void DownloadToolbarButtonView::CreateAutoCloseTimer() {
+  auto_close_bubble_timer_ = std::make_unique<base::RetainingOneShotTimer>(
+      FROM_HERE, kAutoClosePartialViewDelay,
+      base::BindRepeating(&DownloadToolbarButtonView::AutoClosePartialView,
+                          base::Unretained(this)));
+}
+
+void DownloadToolbarButtonView::DeactivateAutoClose() {
+  auto_close_bubble_timer_.reset();
+}
+
+void DownloadToolbarButtonView::AutoClosePartialView() {
+  if (!is_primary_partial_view_ || !auto_close_bubble_timer_) {
+    return;
+  }
+  if (primary_view_ && primary_view_->IsMouseHovered()) {
+    return;
+  }
+  HideDetails();
+}
+
 // If the bubble delegate is set (either the main or the partial view), the
 // button press is going to make the bubble lose focus, and will destroy
 // the bubble.
@@ -456,7 +490,9 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
     return nullptr;
 
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
-      is_primary_partial_view_, browser_);
+      is_primary_partial_view_, browser_,
+      base::BindOnce(&DownloadToolbarButtonView::DeactivateAutoClose,
+                     base::Unretained(this)));
   for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
     // raw pointer is safe as the toolbar owns the bubble, which owns an
     // individual row view.
