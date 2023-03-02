@@ -944,7 +944,7 @@ cc_test("cc_unittests") {
   if (is_ios) {
     public_deps = [
       ":unit_tests_bundle_data",
-      "//components/viz:unit_tests_bundle_data",
+      "//components/test:viz_test_bundle_data",
     ]
   }
 }
