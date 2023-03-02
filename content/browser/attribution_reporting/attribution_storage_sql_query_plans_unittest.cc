@@ -73,12 +73,12 @@ TEST_F(AttributionSqlQueryPlanTest, kSelectExpiredSourcesSql) {
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectInactiveSourcesSql) {
-  EXPECT_THAT(GetPlan(attribution_queries::kSelectInactiveSourcesSql),
-              AllOf(UsesCoveringIndex(
-                        "sources_by_active_destination_site_reporting_origin",
-                        {"event_level_active", "aggregatable_active"}),
-                    UsesIndex("event_level_reports_by_source_id"),
-                    UsesIndex("aggregate_source_id_idx")));
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kSelectInactiveSourcesSql),
+      AllOf(UsesCoveringIndex("sources_by_active_reporting_origin",
+                              {"event_level_active", "aggregatable_active"}),
+            UsesIndex("event_level_reports_by_source_id"),
+            UsesIndex("aggregate_source_id_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kScanCandidateData) {
@@ -118,10 +118,9 @@ TEST_F(AttributionSqlQueryPlanTest, kGetContributionsSql) {
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetSourcesDataKeysSql) {
-  EXPECT_THAT(
-      GetPlan(attribution_queries::kGetSourcesDataKeysSql,
-              SqlFullScanReason::kIntentional),
-      UsesCoveringIndex("sources_by_active_destination_site_reporting_origin"));
+  EXPECT_THAT(GetPlan(attribution_queries::kGetSourcesDataKeysSql,
+                      SqlFullScanReason::kIntentional),
+              UsesCoveringIndex("sources_by_active_reporting_origin"));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
@@ -132,17 +131,13 @@ TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
 
 TEST_F(AttributionSqlQueryPlanTest, kCountEventLevelReportsSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kCountEventLevelReportsSql),
-              AllOf(UsesCoveringIndex(
-                        "sources_by_active_destination_site_reporting_origin",
-                        {"event_level_active"}),
+              AllOf(UsesCoveringIndex("sources_by_destination_site"),
                     UsesCoveringIndex("event_level_reports_by_source_id")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountAggregatableReportsSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kCountAggregatableReportsSql),
-              AllOf(UsesCoveringIndex(
-                        "sources_by_active_destination_site_reporting_origin",
-                        {"event_level_active"}),
+              AllOf(UsesCoveringIndex("sources_by_destination_site"),
                     UsesCoveringIndex("aggregate_source_id_idx")));
 }
 

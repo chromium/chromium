@@ -149,7 +149,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           attribution_info.source.common_info().source_time()));
   additional_fields.Set(
       "attribution_destination",
-      attribution_info.source.common_info().destination_site().Serialize());
+      net::SchemefulSite(attribution_info.context_origin).Serialize());
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,

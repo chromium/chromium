@@ -46,6 +46,7 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -291,6 +292,25 @@ TEST_F(AttributionStorageTest,
           TriggerBuilder()
               .SetDestinationOrigin(
                   *SuitableOrigin::Deserialize("https://a.test"))
+              .SetReportingOrigin(impression.common_info().reporting_origin())
+              .Build()));
+}
+
+TEST_F(AttributionStorageTest,
+       ImpressionWithMultipleDestinations_ImpressionConverted) {
+  auto impression = SourceBuilder()
+                        .SetDestinationSites(
+                            {net::SchemefulSite::Deserialize("https://a.test"),
+                             net::SchemefulSite::Deserialize("https://b.test"),
+                             net::SchemefulSite::Deserialize("https://c.test")})
+                        .Build();
+  storage()->StoreSource(impression);
+  EXPECT_EQ(
+      AttributionTrigger::EventLevelResult::kSuccess,
+      MaybeCreateAndStoreEventLevelReport(
+          TriggerBuilder()
+              .SetDestinationOrigin(
+                  *SuitableOrigin::Deserialize("https://c.test"))
               .SetReportingOrigin(impression.common_info().reporting_origin())
               .Build()));
 }
@@ -724,6 +744,54 @@ TEST_F(AttributionStorageTest, MaxEventLevelReportsPerDestination) {
                     CreateReportMaxAggregatableReportsLimitIs(absl::nullopt)));
 }
 
+TEST_F(AttributionStorageTest,
+       MaxEventLevelReportsPerDestination_MultipleDestinations) {
+  SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
+
+  delegate()->set_max_reports_per_destination(
+      AttributionReport::Type::kEventLevel, 1);
+  storage()->StoreSource(
+      source_builder
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://b.test")})
+          .Build());
+  storage()->StoreSource(
+      source_builder
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://c.test")})
+          .Build());
+
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetDestinationOrigin(
+                          *SuitableOrigin::Deserialize("https://a.test"))
+                      .Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    CreateReportMaxEventLevelReportsLimitIs(absl::nullopt),
+                    CreateReportMaxAggregatableReportsLimitIs(absl::nullopt)));
+
+  // Verify that MaxReportsPerDestination is enforced.
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetDestinationOrigin(
+                          *SuitableOrigin::Deserialize("https://a.test"))
+                      .Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::
+                            kNoCapacityForConversionDestination),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    DroppedEventLevelReportIs(absl::nullopt),
+                    CreateReportMaxEventLevelReportsLimitIs(1),
+                    CreateReportMaxAggregatableReportsLimitIs(absl::nullopt)));
+}
+
 TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
   SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
 
@@ -744,6 +812,54 @@ TEST_F(AttributionStorageTest, MaxAggregatableReportsPerDestination) {
   // Verify that MaxReportsPerDestination is enforced.
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
                   DefaultAggregatableTriggerBuilder().Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::
+                            kNoCapacityForConversionDestination),
+                    ReplacedEventLevelReportIs(absl::nullopt),
+                    DroppedEventLevelReportIs(absl::nullopt),
+                    CreateReportMaxEventLevelReportsLimitIs(absl::nullopt),
+                    CreateReportMaxAggregatableReportsLimitIs(1)));
+}
+
+TEST_F(AttributionStorageTest,
+       MaxAggregatableReportsPerDestination_MultipleDestinations) {
+  SourceBuilder source_builder = TestAggregatableSourceProvider().GetBuilder();
+
+  delegate()->set_max_reports_per_destination(
+      AttributionReport::Type::kAggregatableAttribution, 1);
+  storage()->StoreSource(
+      source_builder
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://b.test")})
+          .Build());
+  storage()->StoreSource(
+      source_builder
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.test"),
+               net::SchemefulSite::Deserialize("https://c.test")})
+          .Build());
+
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetDestinationOrigin(
+                          *SuitableOrigin::Deserialize("https://a.test"))
+                      .Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess),
+                    CreateReportMaxEventLevelReportsLimitIs(absl::nullopt),
+                    CreateReportMaxAggregatableReportsLimitIs(absl::nullopt)));
+
+  // Verify that MaxReportsPerDestination is enforced.
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetDestinationOrigin(
+                          *SuitableOrigin::Deserialize("https://a.test"))
+                      .Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
@@ -1351,6 +1467,27 @@ TEST_F(AttributionStorageTest,
                              .SetSourceType(SourceType::kEvent)
                              .Build());
 
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
+}
+
+TEST_F(AttributionStorageTest,
+       MaxAttributionDestinationsPerSource_SourceWithTooManyDestinations) {
+  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example/"),
+               net::SchemefulSite::Deserialize("https://b.example/")})
+          .SetSourceType(SourceType::kNavigation)
+          .Build());
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
+
+  storage()->StoreSource(SourceBuilder()
+                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
+                                 "https://c.example"))
+                             .SetSourceType(SourceType::kEvent)
+                             .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
 

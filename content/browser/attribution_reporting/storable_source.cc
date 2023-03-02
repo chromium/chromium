@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -18,9 +19,24 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+namespace {
+
+using ::attribution_reporting::SuitableOrigin;
+
+base::flat_set<net::SchemefulSite> DestinationSet(
+    net::SchemefulSite destination) {
+  base::flat_set<net::SchemefulSite> set;
+  set.reserve(1);
+  set.insert(std::move(destination));
+  return set;
+}
+
+}  // namespace
 
 StorableSource::StorableSource(CommonSourceInfo common_info,
                                bool is_within_fenced_frame,
@@ -41,7 +57,7 @@ StorableSource::StorableSource(
       common_info_(
           reg.source_event_id,
           std::move(source_origin),
-          std::move(reg.destination),
+          DestinationSet(std::move(reg.destination)),
           std::move(reporting_origin),
           source_time,
           CommonSourceInfo::GetExpiryTime(reg.expiry, source_time, source_type),

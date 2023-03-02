@@ -13,12 +13,14 @@ inline constexpr const char kMinPrioritySql[] =
     "WHERE source_id=? AND report_time=?";
 
 inline constexpr const char kGetMatchingSourcesSql[] =
-    "SELECT source_id,num_attributions,aggregatable_budget_consumed "
-    "FROM sources "
-    "WHERE destination_site=? AND reporting_origin=? "
-    "AND(event_level_active=1 OR aggregatable_active=1)"
-    "AND expiry_time>? "
-    "ORDER BY priority DESC,source_time DESC";
+    "SELECT I.source_id,I.num_attributions,I.aggregatable_budget_consumed "
+    "FROM sources I "
+    "JOIN source_destinations D "
+    "ON D.source_id=I.source_id AND D.destination_site=? "
+    "WHERE I.reporting_origin=? "
+    "AND(I.event_level_active=1 OR I.aggregatable_active=1)"
+    "AND I.expiry_time>? "
+    "ORDER BY I.priority DESC,I.source_time DESC";
 
 inline constexpr const char kSelectExpiredSourcesSql[] =
     "SELECT source_id FROM sources "
@@ -83,16 +85,11 @@ inline constexpr const char kGetSourcesDataKeysSql[] =
 inline constexpr const char kGetRateLimitDataKeysSql[] =
     "SELECT DISTINCT reporting_origin FROM rate_limits";
 
-// We need to hint to the query planner that/ `event_level_active` and
-// `aggregatable_active` are booleans, so include them in the conditional.
-#define ATTRIBUTION_COUNT_REPORTS_SQL(table) \
-  "SELECT COUNT(*)FROM " table               \
-  " R "                                      \
-  "JOIN sources I "                          \
-  "ON I.source_id=R.source_id "              \
-  "WHERE I.destination_site=? "              \
-  "AND(event_level_active BETWEEN 0 AND 1)"  \
-  "AND(aggregatable_active BETWEEN 0 AND 1)"
+#define ATTRIBUTION_COUNT_REPORTS_SQL(table)   \
+  "SELECT COUNT(*)FROM source_destinations D " \
+  "JOIN " table                                \
+  " R ON R.source_id=D.source_id "             \
+  "WHERE D.destination_site=?"
 
 inline constexpr const char kCountEventLevelReportsSql[] =
     ATTRIBUTION_COUNT_REPORTS_SQL("event_level_reports");
@@ -140,7 +137,6 @@ inline constexpr const char kSetAggregatableReportTimeSql[] =
   prefix "source_id,"                          \
   prefix "source_event_id,"                    \
   prefix "source_origin,"                      \
-  prefix "destination_site,"                   \
   prefix "reporting_origin,"                   \
   prefix "source_time,"                        \
   prefix "expiry_time,"                        \

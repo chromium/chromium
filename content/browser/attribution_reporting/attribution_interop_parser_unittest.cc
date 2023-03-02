@@ -98,6 +98,7 @@ bool operator==(AttributionConfig a, AttributionConfig b) {
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 
@@ -179,8 +180,8 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(source1->common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_EQ(source1->common_info().destination_site(),
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source1->common_info().destination_sites(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_FALSE(source1->is_within_fenced_frame());
   EXPECT_TRUE(result->front().debug_permission);
 
@@ -192,8 +193,8 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://b.r.test"));
   EXPECT_EQ(source2->common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_EQ(source2->common_info().destination_site(),
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source2->common_info().destination_sites(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_FALSE(source2->is_within_fenced_frame());
   EXPECT_FALSE(result->back().debug_permission);
 }

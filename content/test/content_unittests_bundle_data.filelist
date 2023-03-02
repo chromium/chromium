@@ -53,6 +53,7 @@
 //content/test/data/attribution_reporting/databases/version_44.sql
 //content/test/data/attribution_reporting/databases/version_45.sql
 //content/test/data/attribution_reporting/databases/version_46.sql
+//content/test/data/attribution_reporting/databases/version_47.sql
 //content/test/data/attribution_reporting/interop/aggregatable_budget.json
 //content/test/data/attribution_reporting/interop/aggregatable_contributions_creation.json
 //content/test/data/attribution_reporting/interop/aggregatable_dedup_key.json

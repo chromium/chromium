@@ -525,6 +525,58 @@ bool To46(sql::Database* db) {
   return true;
 }
 
+bool To47(sql::Database* db) {
+  static constexpr char kSourceDestinationsTableSql[] =
+      "CREATE TABLE source_destinations("
+      "source_id INTEGER NOT NULL,"
+      "destination_site TEXT NOT NULL,"
+      "PRIMARY KEY(source_id,destination_site))WITHOUT ROWID";
+  if (!db->Execute(kSourceDestinationsTableSql)) {
+    return false;
+  }
+
+  static constexpr char kInsertDestinationsSql[] =
+      "INSERT INTO source_destinations "
+      "SELECT source_id,destination_site "
+      "FROM sources";
+  if (!db->Execute(kInsertDestinationsSql)) {
+    return false;
+  }
+
+  static constexpr char kDropDestinationSiteIndexSql[] =
+      "DROP INDEX sources_by_active_destination_site_reporting_origin";
+  if (!db->Execute(kDropDestinationSiteIndexSql)) {
+    return false;
+  }
+
+  if (!db->Execute("ALTER TABLE sources DROP COLUMN destination_site")) {
+    return false;
+  }
+
+  static constexpr char kSourcesByActiveReportingOriginIndexSql[] =
+      "CREATE INDEX sources_by_active_reporting_origin "
+      "ON sources(event_level_active,"
+      "aggregatable_active,reporting_origin)";
+  if (!db->Execute(kSourcesByActiveReportingOriginIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kSourceDestinationsIndexSql[] =
+      "CREATE INDEX sources_by_destination_site "
+      "ON source_destinations(destination_site)";
+  if (!db->Execute(kSourceDestinationsIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kDropObsoleteIndexSql[] =
+      "DROP INDEX active_unattributed_sources_by_site_reporting_origin";
+  if (!db->Execute(kDropObsoleteIndexSql)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -550,12 +602,13 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
             MaybeMigrate(db, meta_table, 42, &To43) &&
             MaybeMigrate(db, meta_table, 43, &To44) &&
             MaybeMigrate(db, meta_table, 44, &To45) &&
-            MaybeMigrate(db, meta_table, 45, &To46);
+            MaybeMigrate(db, meta_table, 45, &To46) &&
+            MaybeMigrate(db, meta_table, 46, &To47);
   if (!ok) {
     return false;
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 46,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 47,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {
