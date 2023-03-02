@@ -467,7 +467,8 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
         settings_function.get(), std::string("[]"), browser()));
 
     EXPECT_TRUE(result->is_dict());
-    base::Value* data_to_remove = result->FindDictKey("dataToRemove");
+    base::Value::Dict* data_to_remove =
+        result->GetDict().FindDict("dataToRemove");
     EXPECT_TRUE(data_to_remove);
 
     JSONStringValueSerializer serializer(&json);

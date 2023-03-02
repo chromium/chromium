@@ -748,8 +748,8 @@ void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
   }
 
   SendCommand::Results::Result result;
-  if (base::Value* result_body = response.FindDictKey("result")) {
-    result.additional_properties = std::move(result_body->GetDict());
+  if (base::Value::Dict* result_body = response.GetDict().FindDict("result")) {
+    result.additional_properties = std::move(*result_body);
   }
 
   Respond(ArgumentList(SendCommand::Results::Create(result)));
