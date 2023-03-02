@@ -549,16 +549,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
     NSIndexPath* dropIndexPath = CreateIndexPath(destinationIndex);
     // Drop synchronously if local object is available.
-    __weak __typeof(self) weakSelf = self;
     if (item.dragItem.localObject) {
-      _dropAnimationInProgress = YES;
-      [[coordinator dropItem:item.dragItem toItemAtIndexPath:dropIndexPath]
-          addCompletion:^(UIViewAnimatingPosition finalPosition) {
-            [weakSelf dropAnimationDidEnd];
-          }];
-
       // The sourceIndexPath is non-nil if the drop item is from this same
       // collection view.
+      _dropAnimationInProgress = YES;
       [self.dragDropHandler dropItem:item.dragItem
                              toIndex:destinationIndex
                   fromSameCollection:(item.sourceIndexPath != nil)];
@@ -781,6 +775,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // disappear from the user's sight.
   [self scrollCollectionViewToLastItemAnimated:YES];
 
+  [self dropAnimationDidEnd];
   [self pinnedTabsAvailable:_available];
 }
 
