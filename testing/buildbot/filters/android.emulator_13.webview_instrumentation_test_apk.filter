@@ -1,0 +1,23 @@
+# crbug.com/1420823
+-org.chromium.android_webview.test.devui.CrashesListFragmentTest.testConsentErrorMessage_shown_onlyInCrashFragment
+-org.chromium.android_webview.test.devui.DeveloperUiTest.testNavigateBetweenFragments
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testCaseInsensitive
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testClearingSearchShowsAllFlags
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testDeletingTextHidesClearTextButton
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testElsewhereOnSearchBarDoesNotClearText
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testFlagStates_baseFeature
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testFlagStates_commandLineFlag
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testMultipleResults
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testResetFlags
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testResetFlagsByIntent
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testSearchByDescription
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testSearchByName
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testSearchEmptyByDefault
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testSearchHighlightingQueryWordsInFlagDescription
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testSearchHighlightingQueryWordsInFlagName
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testSearchHighlightingQueryWordsInFlagNameAndDescription
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testSearchMatchingNameAndDescriptionWithIndividualWordsInQuery
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testTappingClearButtonClearsText
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testToggledFlagsFloatToTop
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testTogglingFlagShowsBlueDot_baseFeature
+-org.chromium.android_webview.test.devui.FlagsFragmentTest.testTogglingFlagShowsBlueDot_commandLineFlag
