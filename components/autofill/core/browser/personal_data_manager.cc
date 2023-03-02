@@ -70,11 +70,9 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/version_info/version_info.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -641,7 +639,7 @@ absl::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
 AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
   // Check if the user is signed out.
   if (!sync_service_ || !identity_manager_ ||
-      syncer::DetermineAccountToUse(identity_manager_).account_info.IsEmpty()) {
+      sync_service_->GetAccountInfo().IsEmpty()) {
     return AutofillSyncSigninState::kSignedOut;
   }
 

@@ -1455,6 +1455,7 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
 
   // Sign out.
   identity_test_env_.ClearPrimaryAccount();
+  sync_service_.SetAccountInfo(CoreAccountInfo());
   EXPECT_EQ(AutofillSyncSigninState::kSignedOut,
             personal_data_->GetSyncSigninState());
   EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
@@ -1474,6 +1475,9 @@ TEST_F(PersonalDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Sign in.
   identity_test_env_.MakePrimaryAccountAvailable("test@gmail.com",
                                                  signin::ConsentLevel::kSync);
+  sync_service_.SetAccountInfo(
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync));
   sync_service_.SetHasSyncConsent(true);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -5650,6 +5654,8 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, GetSyncSigninState) {
   // Check that the sync state is |SignedOut| when the account info is empty.
   {
     identity_test_env_.ClearPrimaryAccount();
+    sync_service_.SetAccountInfo(CoreAccountInfo());
+    sync_service_.SetHasSyncConsent(false);
     EXPECT_EQ(AutofillSyncSigninState::kSignedOut,
               personal_data_->GetSyncSigninState());
   }
@@ -5760,6 +5766,8 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   // kSignedOut
   ///////////////////////////////////////////////////////////
   identity_test_env_.ClearPrimaryAccount();
+  sync_service_.SetAccountInfo(CoreAccountInfo());
+  sync_service_.SetHasSyncConsent(false);
   {
     EXPECT_EQ(AutofillSyncSigninState::kSignedOut,
               personal_data_->GetSyncSigninState());
@@ -5777,6 +5785,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest, OnUserAcceptedUpstreamOffer) {
   ///////////////////////////////////////////////////////////
   identity_test_env_.MakePrimaryAccountAvailable(active_info.email,
                                                  signin::ConsentLevel::kSync);
+  sync_service_.SetAccountInfo(active_info);
   sync_service_.SetHasSyncConsent(true);
   {
     EXPECT_EQ(AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled,
