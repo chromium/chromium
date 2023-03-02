@@ -299,13 +299,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabBackForwardCacheTest, TabsOnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
 }
 
-// Flaky on Linux. http://crbug.com/657376.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TabsNoPermissions DISABLED_TabsNoPermissions
-#else
-#define MAYBE_TabsNoPermissions TabsNoPermissions
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_TabsNoPermissions) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsNoPermissions) {
   ASSERT_TRUE(RunExtensionTest("tabs/no_permissions")) << message_;
 }
 
