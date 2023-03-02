@@ -75,6 +75,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _hiddenNodes = hiddenNodes;
+    _allowsNewFolders = YES;
   }
   return self;
 }
@@ -87,9 +88,9 @@
           self.browser->GetBrowserState());
   _viewController = [[BookmarksFolderChooserViewController alloc]
       initWithBookmarkModel:model
-           allowsNewFolders:YES
+           allowsNewFolders:_allowsNewFolders
                 editedNodes:_hiddenNodes
-               allowsCancel:YES
+               allowsCancel:_navigationController != nil
              selectedFolder:_selectedFolder
                     browser:self.browser];
   _viewController.delegate = self;
@@ -124,7 +125,8 @@
   } else {
     // If there is no `_baseNavigationController` and `_navigationController`,
     // the view controller has been already dismissed. See
-    // `presentationControllerDidDismiss:`.
+    // `presentationControllerDidDismiss:` and
+    // `bookmarksFolderChooserViewControllerDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
     // `nullptr`.
     DCHECK(!self.baseViewController.presentedViewController);
@@ -176,7 +178,14 @@
 }
 
 - (void)bookmarksFolderChooserViewControllerDidCancel:
-    (BookmarksFolderChooserViewController*)folderPicker {
+    (BookmarksFolderChooserViewController*)viewController {
+  [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
+}
+
+- (void)bookmarksFolderChooserViewControllerDidDismiss:
+    (BookmarksFolderChooserViewController*)viewController {
+  DCHECK(_baseNavigationController);
+  _baseNavigationController = nil;
   [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
 }
 
