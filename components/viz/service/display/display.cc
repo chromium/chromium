@@ -1239,11 +1239,10 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
       // Skip quad if it is a AggregatedRenderPassDrawQuad because it is a
       // special type of DrawQuad where the visible_rect of shared quad state is
       // not entirely covered by draw quads in it.
-      if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
+      if (auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
         // A RenderPass with backdrop filters may apply to a quad underlying
         // RenderPassQuad. These regions should be tracked so that correctly
         // handle splitting and occlusion of the underlying quad.
-        auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(*quad);
         auto it = backdrop_filter_rects.find(rpdq->render_pass_id);
         if (it != backdrop_filter_rects.end()) {
           backdrop_filters_in_target_space.Union(it->second);
