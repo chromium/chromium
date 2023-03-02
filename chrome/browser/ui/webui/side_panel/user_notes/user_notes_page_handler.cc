@@ -14,6 +14,9 @@
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/common/power.h"
@@ -22,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "components/user_notes/user_notes_prefs.h"
+#include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -277,6 +281,18 @@ void UserNotesPageHandler::HasNotesInAnyPages(
           std::move(callback)));
 }
 
+void UserNotesPageHandler::OpenInNewTab(const ::GURL& url) {
+  OpenUrl(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
+void UserNotesPageHandler::OpenInNewWindow(const ::GURL& url) {
+  OpenUrl(url, WindowOpenDisposition::NEW_WINDOW);
+}
+
+void UserNotesPageHandler::OpenInIncognitoWindow(const ::GURL& url) {
+  OpenUrl(url, WindowOpenDisposition::OFF_THE_RECORD);
+}
+
 void UserNotesPageHandler::OnSortByNewestPrefChanged() {
   PrefService* pref_service = profile_->GetPrefs();
   if (pref_service) {
@@ -319,5 +335,35 @@ void UserNotesPageHandler::UpdateCurrentTabUrl() {
     current_tab_url_ = web_contents->GetLastCommittedURL();
     page_->CurrentTabUrlChanged(start_creation_after_tab_change_);
     start_creation_after_tab_change_ = false;
+  }
+}
+
+void UserNotesPageHandler::OpenUrl(const ::GURL& url,
+                                   WindowOpenDisposition open_location) {
+  // We will open in incognito if the user is already in incognito or requesting
+  // to open in incognito.
+  bool opening_in_incognito =
+      (browser_->profile() && browser_->profile()->IsIncognitoProfile()) ||
+      open_location == WindowOpenDisposition::OFF_THE_RECORD;
+  if (opening_in_incognito &&
+      !IsURLAllowedInIncognito(url, browser_->profile())) {
+    return;
+  }
+
+  NavigateParams params(browser_->profile(), url,
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = open_location;
+  params.browser = browser_;
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+
+  // If we have opened in a new window, we need to open the side panel to user
+  // notes.
+  bool opening_in_new_window =
+      open_location == WindowOpenDisposition::NEW_WINDOW ||
+      open_location == WindowOpenDisposition::OFF_THE_RECORD;
+  if (opening_in_new_window && handle) {
+    content::WebContents* opened_tab = handle->GetWebContents();
+    auto* new_browser = chrome::FindBrowserWithWebContents(opened_tab);
+    UserNotesController::ShowUserNotesForBrowser(new_browser);
   }
 }

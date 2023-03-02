@@ -69,6 +69,61 @@ suite('UserNoteOverviewsListTest', () => {
               .textContent!.trim(),
           noteOverviews[i]!.title);
     }
+
+    test('add a note context menu option', async () => {
+      const noteOverviewElements = queryNoteOverviews();
+      assertEquals(noteOverviewElements.length, 2);
+      const overviewElement = noteOverviewElements[0]!;
+      const contextMenuElement = overviewElement.shadowRoot!.querySelector(
+          'user-note-overview-row-menu')!;
+      const overviewMenuButton = contextMenuElement.shadowRoot!.querySelector(
+                                     '#menuButton') as HTMLButtonElement;
+      overviewMenuButton.click();
+      const overviewMenu = contextMenuElement.$.menu;
+      // Click add a note button.
+      const addNoteButton = overviewMenu.querySelectorAll(
+                                '.dropdown-item')[0]! as HTMLButtonElement;
+      addNoteButton.click();
+      const [url, _clickModifiers] =
+          await testProxy.whenCalled('noteOverviewSelected');
+      assertEquals(url, overviewElement.overview.url);
+    });
+
+    test('open in new tab context menu option', async () => {
+      const noteOverviewElements = queryNoteOverviews();
+      assertEquals(noteOverviewElements.length, 2);
+      const overviewElement = noteOverviewElements[0]!;
+      const contextMenuElement = overviewElement.shadowRoot!.querySelector(
+          'user-note-overview-row-menu')!;
+      const overviewMenuButton = contextMenuElement.shadowRoot!.querySelector(
+                                     '#menuButton') as HTMLButtonElement;
+      overviewMenuButton.click();
+      const overviewMenu = contextMenuElement.$.menu;
+      // Click open in new tab button.
+      const openInNewTabButton = overviewMenu.querySelectorAll(
+                                     '.dropdown-item')[1]! as HTMLButtonElement;
+      openInNewTabButton.click();
+      const url = await testProxy.whenCalled('openInNewTab');
+      assertEquals(url, overviewElement.overview.url);
+    });
+
+    test('delete context menu option', async () => {
+      const noteOverviewElements = queryNoteOverviews();
+      assertEquals(noteOverviewElements.length, 2);
+      const overviewElement = noteOverviewElements[0]!;
+      const contextMenuElement = overviewElement.shadowRoot!.querySelector(
+          'user-note-overview-row-menu')!;
+      const overviewMenuButton = contextMenuElement.shadowRoot!.querySelector(
+                                     '#menuButton') as HTMLButtonElement;
+      overviewMenuButton.click();
+      const overviewMenu = contextMenuElement.$.menu;
+      // Click delete button.
+      const deleteButton = overviewMenu.querySelectorAll(
+                               '.dropdown-item')[4]! as HTMLButtonElement;
+      deleteButton.click();
+      const url = await testProxy.whenCalled('deleteNotesForUrl');
+      assertEquals(url, overviewElement.overview.url);
+    });
   });
 
   test('headers and separator shown', () => {

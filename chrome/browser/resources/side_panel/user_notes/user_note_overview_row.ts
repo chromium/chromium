@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import './user_note_overview_row_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
@@ -93,14 +94,6 @@ export class UserNoteOverviewRowElement extends PolymerElement {
    */
   private onRowContextMenu_(event: MouseEvent) {
     this.dispatchCustomEvent_('context-menu', event);
-  }
-
-  /**
-   * Dispatches a custom click event when the user clicks anywhere on the
-   * trailing icon button.
-   */
-  private onTrailingIconClicked_(event: MouseEvent) {
-    this.dispatchCustomEvent_('trailing-icon-clicked', event);
   }
 }
 

@@ -50,3 +50,11 @@ void UserNotesController::InitiateNoteCreationForCurrentTab(Browser* browser) {
   DCHECK(notes_ui);
   notes_ui->StartNoteCreation();
 }
+
+// static
+void UserNotesController::ShowUserNotesForBrowser(Browser* browser) {
+  user_notes::UserNotesUI* notes_ui = static_cast<user_notes::UserNotesUI*>(
+      browser->GetUserData(user_notes::UserNotesUI::UserDataKey()));
+  DCHECK(notes_ui);
+  notes_ui->Show();
+}

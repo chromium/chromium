@@ -1,6 +1,7 @@
 <template is="dom-if" if="[[viewingOverviews_]]" restamp>
   <user-note-overviews-list overviews="[[overviews_]]"
-      on-current-tab-overview-selected="onCurrentTabOverviewSelected_">
+      on-current-tab-overview-selected="onCurrentTabOverviewSelected_"
+      on-start-note-creation="onStartNoteCreation_">
   </user-note-overviews-list>
 </template>
 <template is="dom-if" if="[[!viewingOverviews_]]" restamp>

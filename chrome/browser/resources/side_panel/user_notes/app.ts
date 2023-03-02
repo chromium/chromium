@@ -129,6 +129,10 @@ export class UserNotesAppElement extends PolymerElement {
     this.viewingOverviews_ = false;
   }
 
+  private onStartNoteCreation_() {
+    this.startNoteCreation_ = true;
+  }
+
   private onAllNotesClick_() {
     this.updateNoteOverviews_();
     this.viewingOverviews_ = true;

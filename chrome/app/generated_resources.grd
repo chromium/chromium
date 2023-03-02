@@ -7596,6 +7596,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NOTES_COUNT" desc="Text description for the number of notes for a note overview item showing the number of notes on a page">
         {NUM_NOTES, plural, =1 {1 Note} other {# Notes}}
       </message>
+      <message name="IDS_USER_NOTES_MENU_OPEN_IN_NEW_TAB" desc="Menu description for opening a page with notes in a new tab.">
+        Open in New Tab
+      </message>
+      <message name="IDS_USER_NOTES_MENU_OPEN_IN_NEW_WINDOW" desc="Menu description for opening a page with notes in a new window.">
+        Open in New Window
+      </message>
+      <message name="IDS_USER_NOTES_MENU_OPEN_IN_INCOGNITO" desc="Menu description for opening a page with notes in an incognito window.">
+        Open in Incognito Window
+      </message>
 
       <!-- Feed button and menu -->
       <message name="IDS_FEED_TITLE" desc="Title of the feed menu">

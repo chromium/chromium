@@ -1,0 +1,41 @@
+<style include="cr-icons">
+  #menuButton {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  }
+
+  .hr {
+    border-top: 1px solid var(--google-grey-300);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .hr {
+      border-top: 1px solid var(--google-grey-700);
+    }
+  }
+</style>
+
+<cr-icon-button id="menuButton" class="no-overlap" iron-icon="cr:more-vert"
+    on-click="onMenuButtonClick_" >
+</cr-icon-button>
+
+<cr-lazy-render id="contextMenu">
+  <cr-action-menu id="menu">
+      <button class="dropdown-item" on-click="onAddNoteClick_">
+        $i18n{addANote}
+      </button>
+      <div class="hr"></div>
+      <button class="dropdown-item" on-click="onOpenInNewTabClick_">
+        $i18n{openInNewTab}
+      </button>
+      <button class="dropdown-item" on-click="onOpenInNewWindowClick_">
+        $i18n{openInNewWindow}
+      </button>
+      <button class="dropdown-item" on-click="onOpenInIncognitoWindowClick_">
+        $i18n{openInIncognitoWindow}
+      </button>
+      <div class="hr"></div>
+      <button class="dropdown-item" on-click="onDeleteClick_">
+        $i18n{delete}
+      </button>
+  </cr-action-menu>
+</cr-lazy-render>

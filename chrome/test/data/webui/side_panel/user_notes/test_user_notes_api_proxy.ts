@@ -20,10 +20,15 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'deleteNote',
+      'deleteNotesForUrl',
       'getNotesForCurrentTab',
       'getNoteOverviews',
+      'hasNotesInAnyPages',
       'newNoteFinished',
       'noteOverviewSelected',
+      'openInIncognitoWindow',
+      'openInNewTab',
+      'openInNewWindow',
       'setSortOrder',
       'showUi',
       'updateNote',
@@ -38,6 +43,11 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
     return Promise.resolve({success: true});
   }
 
+  deleteNotesForUrl(url: Url) {
+    this.methodCalled('deleteNotesForUrl', url);
+    return Promise.resolve({success: true});
+  }
+
   getNotesForCurrentTab() {
     this.methodCalled('getNotesForCurrentTab');
     return Promise.resolve({notes: this.notes_.slice()});
@@ -48,6 +58,11 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
     return Promise.resolve({overviews: this.overviews_.slice()});
   }
 
+  hasNotesInAnyPages() {
+    this.methodCalled('hasNotesInAnyPages');
+    return Promise.resolve({hasNotes: this.overviews_.length !== 0});
+  }
+
   newNoteFinished(text: string) {
     this.methodCalled('newNoteFinished', text);
     return Promise.resolve({success: true});
@@ -55,6 +70,18 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
 
   noteOverviewSelected(url: Url, clickModifiers: ClickModifiers) {
     this.methodCalled('noteOverviewSelected', url, clickModifiers);
+  }
+
+  openInIncognitoWindow(url: Url) {
+    this.methodCalled('openInIncognitoWindow', url);
+  }
+
+  openInNewTab(url: Url) {
+    this.methodCalled('openInNewTab', url);
+  }
+
+  openInNewWindow(url: Url) {
+    this.methodCalled('openInNewWindow', url);
   }
 
   setSortOrder(sortByNewest: boolean) {

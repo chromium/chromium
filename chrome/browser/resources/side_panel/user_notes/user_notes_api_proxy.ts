@@ -16,8 +16,13 @@ export interface UserNotesApiProxy {
   newNoteFinished(text: string): Promise<{success: boolean}>;
   updateNote(guid: string, text: string): Promise<{success: boolean}>;
   deleteNote(guid: string): Promise<{success: boolean}>;
+  deleteNotesForUrl(url: Url): Promise<{success: boolean}>;
   noteOverviewSelected(url: Url, clickModifiers: ClickModifiers): void;
   setSortOrder(sortByNewest: boolean): void;
+  hasNotesInAnyPages(): Promise<{hasNotes: boolean}>;
+  openInNewTab(url: Url): void;
+  openInNewWindow(url: Url): void;
+  openInIncognitoWindow(url: Url): void;
   getCallbackRouter(): UserNotesPageCallbackRouter;
 }
 
@@ -58,6 +63,10 @@ export class UserNotesApiProxyImpl implements UserNotesApiProxy {
     return this.handler.deleteNote(guid);
   }
 
+  deleteNotesForUrl(url: Url) {
+    return this.handler.deleteNotesForUrl(url);
+  }
+
   noteOverviewSelected(url: Url, clickModifiers: ClickModifiers) {
     this.handler.noteOverviewSelected(url, clickModifiers);
   }
@@ -66,8 +75,20 @@ export class UserNotesApiProxyImpl implements UserNotesApiProxy {
     this.handler.setSortOrder(sortByNewest);
   }
 
-  hasNotesOnAnyPages() {
+  hasNotesInAnyPages() {
     return this.handler.hasNotesInAnyPages();
+  }
+
+  openInNewTab(url: Url) {
+    this.handler.openInNewTab(url);
+  }
+
+  openInNewWindow(url: Url) {
+    this.handler.openInNewWindow(url);
+  }
+
+  openInIncognitoWindow(url: Url) {
+    this.handler.openInIncognitoWindow(url);
   }
 
   getCallbackRouter() {

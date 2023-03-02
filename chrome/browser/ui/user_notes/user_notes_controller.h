@@ -25,6 +25,9 @@ class UserNotesController {
 
   // Opens notes ui and starts the note creation flow.
   static void InitiateNoteCreationForCurrentTab(Browser* browser);
+
+  // Opens the notes ui for the provided browser.
+  static void ShowUserNotesForBrowser(Browser* browser);
 };
 
 #endif  // CHROME_BROWSER_UI_USER_NOTES_USER_NOTES_CONTROLLER_H_

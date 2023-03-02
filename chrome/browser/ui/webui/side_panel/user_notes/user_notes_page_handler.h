@@ -63,6 +63,9 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   void SetSortOrder(bool sort_by_newest) override;
   void HasNotesInAnyPages(HasNotesInAnyPagesCallback callback) override;
+  void OpenInNewTab(const ::GURL& url) override;
+  void OpenInNewWindow(const ::GURL& url) override;
+  void OpenInIncognitoWindow(const ::GURL& url) override;
 
   void OnSortByNewestPrefChanged();
 
@@ -86,6 +89,7 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   void PrimaryPageChanged(content::Page& page) override;
 
   void UpdateCurrentTabUrl();
+  void OpenUrl(const ::GURL& url, WindowOpenDisposition open_location);
 
   mojo::Receiver<side_panel::mojom::UserNotesPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::UserNotesPage> page_;
