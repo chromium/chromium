@@ -12,28 +12,6 @@
 
 namespace ash::quick_start {
 
-namespace {
-
-// Derive a 4-digit decimal pin code from the authentication token. This is
-// meant to match the Android implementation found here:
-// http://google3/java/com/google/android/gmscore/integ/modules/smartdevice/src/com/google/android/gms/smartdevice/d2d/nearby/advertisement/VerificationUtils.java;l=37;rcl=511361463
-std::string DerivePin(const std::string& authentication_token) {
-  std::string hash_str = base::SHA1HashString(authentication_token);
-  std::vector<int8_t> hash_ints =
-      std::vector<int8_t>(hash_str.begin(), hash_str.end());
-
-  return base::NumberToString(
-             std::abs((hash_ints[0] << 8 | hash_ints[1]) % 10)) +
-         base::NumberToString(
-             std::abs((hash_ints[2] << 8 | hash_ints[3]) % 10)) +
-         base::NumberToString(
-             std::abs((hash_ints[4] << 8 | hash_ints[5]) % 10)) +
-         base::NumberToString(
-             std::abs((hash_ints[6] << 8 | hash_ints[7]) % 10));
-}
-
-}  // namespace
-
 IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
                                        RandomSessionId session_id,
                                        const std::string& authentication_token)
@@ -53,6 +31,22 @@ IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
       pin_(DerivePin(authentication_token)) {}
 
 IncomingConnection::~IncomingConnection() = default;
+
+std::string IncomingConnection::DerivePin(
+    const std::string& authentication_token) {
+  std::string hash_str = base::SHA1HashString(authentication_token);
+  std::vector<int8_t> hash_ints =
+      std::vector<int8_t>(hash_str.begin(), hash_str.end());
+
+  return base::NumberToString(
+             std::abs((hash_ints[0] << 8 | hash_ints[1]) % 10)) +
+         base::NumberToString(
+             std::abs((hash_ints[2] << 8 | hash_ints[3]) % 10)) +
+         base::NumberToString(
+             std::abs((hash_ints[4] << 8 | hash_ints[5]) % 10)) +
+         base::NumberToString(
+             std::abs((hash_ints[6] << 8 | hash_ints[7]) % 10));
+}
 
 std::vector<uint8_t> IncomingConnection::GetQrCodeData() const {
   std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());

@@ -67,8 +67,9 @@ void VerifyFileReadWrite(base::File& input_file, base::File& output_file) {
 base::FilePath InitializeTemporaryFile(base::File& file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath path;
-  if (!base::CreateTemporaryFile(&path))
+  if (!base::CreateTemporaryFile(&path)) {
     return path;
+  }
 
   file.Initialize(path, base::File::Flags::FLAG_CREATE_ALWAYS |
                             base::File::Flags::FLAG_READ |
@@ -112,7 +113,13 @@ class MockIncomingConnectionListener
     : public NearbyConnectionsManager::IncomingConnectionListener {
  public:
   MOCK_METHOD(void,
-              OnIncomingConnection,
+              OnIncomingConnectionInitiated,
+              (const std::string& endpoint_id,
+               const std::vector<uint8_t>& endpoint_info),
+              (override));
+
+  MOCK_METHOD(void,
+              OnIncomingConnectionAccepted,
               (const std::string& endpoint_id,
                const std::vector<uint8_t>& endpoint_info,
                NearbyConnection* connection),
@@ -308,6 +315,8 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           incoming_connection_listener,
       mojo::Remote<PayloadListener>& payload_listener_remote) {
     base::RunLoop accept_run_loop;
+    EXPECT_CALL(incoming_connection_listener,
+                OnIncomingConnectionInitiated(testing::_, testing::_));
     EXPECT_CALL(nearby_connections_, AcceptConnection)
         .WillOnce(
             [&](const std::string& service_id, const std::string& endpoint_id,
@@ -335,8 +344,9 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
     NearbyConnection* nearby_connection;
     base::RunLoop incoming_connection_run_loop;
-    EXPECT_CALL(incoming_connection_listener,
-                OnIncomingConnection(testing::_, testing::_, testing::_))
+    EXPECT_CALL(
+        incoming_connection_listener,
+        OnIncomingConnectionAccepted(testing::_, testing::_, testing::_))
         .WillOnce([&](const std::string&, const std::vector<uint8_t>&,
                       NearbyConnection* connection) {
           nearby_connection = connection;

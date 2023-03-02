@@ -31,6 +31,11 @@ class IncomingConnection : public Connection {
   IncomingConnection& operator=(IncomingConnection&) = delete;
   ~IncomingConnection() override;
 
+  // Derive a 4-digit decimal pin code from the authentication token. This is
+  // meant to match the Android implementation found here:
+  // http://google3/java/com/google/android/gmscore/integ/modules/smartdevice/src/com/google/android/gms/smartdevice/d2d/nearby/advertisement/VerificationUtils.java;l=37;rcl=511361463
+  static std::string DerivePin(const std::string& authentication_token);
+
   // Returns a deep link URL as a vector of bytes that will form the QR code
   // used to authenticate the connection.
   std::vector<uint8_t> GetQrCodeData() const;

@@ -919,8 +919,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     SetUpKeyVerification(/*is_incoming=*/true,
                          sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
     SetUpForegroundReceiveSurface(callback);
-    service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                   &connection_);
+    service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                           &connection_);
     ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                              /*success=*/true, for_self_share);
     run_loop.Run();
@@ -2769,8 +2769,8 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
 
@@ -2821,8 +2821,8 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -2873,8 +2873,8 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/false);
   run_loop.Run();
@@ -2987,8 +2987,8 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -3061,8 +3061,8 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -3111,8 +3111,8 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -3191,8 +3191,8 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -3723,8 +3723,8 @@ TEST_P(NearbySharingServiceImplTest,
                        sharing::mojom::PairedKeyResultFrame_Status::kUnable);
   SetUpForegroundReceiveSurface(callback);
 
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -3783,8 +3783,8 @@ TEST_P(NearbySharingServiceImplTest,
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
 
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -3821,8 +3821,8 @@ TEST_P(NearbySharingServiceImplTest,
       .Times(0);
   connection_.AppendReadableData(bytes);
 
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
 
@@ -3854,8 +3854,8 @@ TEST_P(NearbySharingServiceImplTest,
       .Times(0);
   connection_.AppendReadableData(bytes);
 
-  service_->OnIncomingConnection(kEndpointId, kValidV1EndpointInfo,
-                                 &connection_);
+  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+                                         &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
 

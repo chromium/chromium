@@ -587,12 +587,19 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
     return;
   }
 
+  bool is_incoming_connection = info->is_incoming_connection;
+  const std::vector<uint8_t>& endpoint_info = info->endpoint_info;
   auto result = connection_info_map_.emplace(endpoint_id, std::move(info));
   DCHECK(result.second);
 
   mojo::PendingRemote<PayloadListener> payload_listener;
   payload_listeners_.Add(this,
                          payload_listener.InitWithNewPipeAndPassReceiver());
+
+  if (is_incoming_connection && incoming_connection_listener_) {
+    incoming_connection_listener_->OnIncomingConnectionInitiated(endpoint_id,
+                                                                 endpoint_info);
+  }
 
   process_reference_->GetNearbyConnections()->AcceptConnection(
       service_id_, endpoint_id, std::move(payload_listener),
@@ -623,7 +630,7 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     auto result = connections_.emplace(
         endpoint_id, std::make_unique<NearbyConnectionImpl>(this, endpoint_id));
     DCHECK(result.second);
-    incoming_connection_listener_->OnIncomingConnection(
+    incoming_connection_listener_->OnIncomingConnectionAccepted(
         endpoint_id, it->second->endpoint_info, result.first->second.get());
   } else {
     auto pending_it = pending_outgoing_connections_.find(endpoint_id);

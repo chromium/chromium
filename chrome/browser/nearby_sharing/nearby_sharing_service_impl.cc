@@ -1172,7 +1172,7 @@ NearbySharingServiceImpl::GetNearbySharingDecoder() {
   return decoder;
 }
 
-void NearbySharingServiceImpl::OnIncomingConnection(
+void NearbySharingServiceImpl::OnIncomingConnectionAccepted(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info,
     NearbyConnection* connection) {

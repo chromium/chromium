@@ -354,7 +354,21 @@ void TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising(
   std::move(callback).Run();
 }
 
-void TargetDeviceConnectionBrokerImpl::OnIncomingConnection(
+void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
+    const std::string& endpoint_id,
+    const std::vector<uint8_t>& endpoint_info) {
+  absl::optional<std::string> auth_token =
+      nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+  DCHECK(auth_token);
+  std::string pin = IncomingConnection::DerivePin(*auth_token);
+  QS_LOG(INFO) << "Incoming Nearby Connection Initiated: endpoint_id="
+               << endpoint_id << " pin=" << pin;
+
+  // TODO(b/234655072): Notify ConnectionLifecycleListener about the incoming
+  // connection if pin authentication is expected.
+}
+
+void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info,
     NearbyConnection* connection) {
@@ -364,7 +378,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnection(
   std::unique_ptr<IncomingConnection> incoming_connection =
       std::make_unique<IncomingConnection>(connection, random_session_id_,
                                            *auth_token);
-  QS_LOG(INFO) << "Nearby Connections incoming connection, endpoint_id="
+  QS_LOG(INFO) << "Incoming Nearby Connection Accepted: endpoint_id="
                << endpoint_id << " pin="
                << incoming_connection->GetConnectionVerificationPin();
 

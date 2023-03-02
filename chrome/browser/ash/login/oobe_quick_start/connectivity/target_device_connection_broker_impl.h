@@ -62,9 +62,12 @@ class TargetDeviceConnectionBrokerImpl
   friend class TargetDeviceConnectionBrokerImplTest;
 
   // NearbyConnectionsManager::IncomingConnectionListener:
-  void OnIncomingConnection(const std::string& endpoint_id,
-                            const std::vector<uint8_t>& endpoint_info,
-                            NearbyConnection* connection) override;
+  void OnIncomingConnectionInitiated(
+      const std::string& endpoint_id,
+      const std::vector<uint8_t>& endpoint_info) override;
+  void OnIncomingConnectionAccepted(const std::string& endpoint_id,
+                                    const std::vector<uint8_t>& endpoint_info,
+                                    NearbyConnection* connection) override;
 
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
