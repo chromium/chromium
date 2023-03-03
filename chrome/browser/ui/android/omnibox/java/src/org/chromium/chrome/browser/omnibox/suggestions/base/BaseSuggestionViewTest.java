@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 
 /**
  * Tests for {@link BaseSuggestionView}.
@@ -31,12 +32,15 @@ import org.chromium.chrome.R;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseSuggestionViewTest {
+    private static final int CONTENT_VIEW_REPORTED_HEIGHT_PX = 10;
     // Used as a (fixed) width of a refine icon.
     private int mActionIconWidthPx;
+    private int mSemicompactSuggestionViewHeight;
+    private int mCompactSuggestionViewHeight;
+    private int mDecorationIconWidthPx;
 
     private BaseSuggestionViewForTest mView;
     private Activity mActivity;
-    private View mDecoratedView;
     private View mContentView;
 
     @Mock
@@ -84,13 +88,21 @@ public class BaseSuggestionViewTest {
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mContentView = new View(mActivity);
+        mContentView.setMinimumHeight(CONTENT_VIEW_REPORTED_HEIGHT_PX);
         mView = new BaseSuggestionViewForTest(mContentView);
         mView.setOnFocusViaSelectionListener(mOnFocusListener);
 
         mActionIconWidthPx = mActivity.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_action_icon_width);
+                R.dimen.omnibox_suggestion_action_button_width);
 
-        mDecoratedView = mView.getDecoratedSuggestionView();
+        mSemicompactSuggestionViewHeight = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_content_height);
+
+        mCompactSuggestionViewHeight = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_compact_content_height);
+
+        mDecorationIconWidthPx = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_icon_area_size);
     }
 
     /**
@@ -102,11 +114,6 @@ public class BaseSuggestionViewTest {
         mView.setLayoutDirection(layoutDirection);
         Assert.assertEquals(
                 "layout direction not supported", layoutDirection, mView.getLayoutDirection());
-
-        // Let ContentView drive the height of the Suggestion. The dummy view could shrink, so let's
-        // prevent that from happening. We don't technically have any content, so we need to prevent
-        // the view from shrinking, too.
-        mContentView.setMinimumHeight(contentHeight);
 
         mView.performLayoutForTest(containerWidth);
     }
@@ -129,11 +136,11 @@ public class BaseSuggestionViewTest {
         final int paddingStart = 12;
         final int paddingEnd = 34;
 
-        final int giveSuggestionWidth =
-                useContentWidth + 3 * mActionIconWidthPx + paddingStart + paddingEnd;
+        final int giveSuggestionWidth = mDecorationIconWidthPx + useContentWidth
+                + 3 * mActionIconWidthPx + paddingStart + paddingEnd;
         final int giveContentHeight = 15;
 
-        final int expectedContentLeft = paddingStart;
+        final int expectedContentLeft = paddingStart + mDecorationIconWidthPx;
         final int expectedContentRight = expectedContentLeft + useContentWidth;
         final int expectedRefine1Left = expectedContentRight;
         final int expectedRefine1Right = expectedRefine1Left + mActionIconWidthPx;
@@ -150,14 +157,14 @@ public class BaseSuggestionViewTest {
 
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
 
-        verifyViewLayout(
-                actionButton1, expectedRefine1Left, 0, expectedRefine1Right, giveContentHeight);
-        verifyViewLayout(
-                actionButton2, expectedRefine2Left, 0, expectedRefine2Right, giveContentHeight);
-        verifyViewLayout(
-                actionButton3, expectedRefine3Left, 0, expectedRefine3Right, giveContentHeight);
-        verifyViewLayout(
-                mDecoratedView, expectedContentLeft, 0, expectedContentRight, giveContentHeight);
+        verifyViewLayout(actionButton1, expectedRefine1Left, 0, expectedRefine1Right,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(actionButton2, expectedRefine2Left, 0, expectedRefine2Right,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(actionButton3, expectedRefine3Left, 0, expectedRefine3Right,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mSemicompactSuggestionViewHeight);
     }
 
     @Test
@@ -166,8 +173,8 @@ public class BaseSuggestionViewTest {
         final int paddingStart = 13;
         final int paddingEnd = 57;
 
-        final int giveSuggestionWidth =
-                useContentWidth + 3 * mActionIconWidthPx + paddingStart + paddingEnd;
+        final int giveSuggestionWidth = mDecorationIconWidthPx + useContentWidth
+                + 3 * mActionIconWidthPx + paddingStart + paddingEnd;
         final int giveContentHeight = 25;
 
         final int expectedRefine1Left = paddingEnd;
@@ -177,7 +184,8 @@ public class BaseSuggestionViewTest {
         final int expectedRefine3Left = expectedRefine2Right;
         final int expectedRefine3Right = expectedRefine3Left + mActionIconWidthPx;
         final int expectedContentLeft = expectedRefine3Right;
-        final int expectedContentRight = giveSuggestionWidth - paddingStart;
+        final int expectedContentRight =
+                giveSuggestionWidth - paddingStart - mDecorationIconWidthPx;
 
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
@@ -189,14 +197,14 @@ public class BaseSuggestionViewTest {
 
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_RTL);
 
-        verifyViewLayout(
-                actionButton1, expectedRefine1Left, 0, expectedRefine1Right, giveContentHeight);
-        verifyViewLayout(
-                actionButton2, expectedRefine2Left, 0, expectedRefine2Right, giveContentHeight);
-        verifyViewLayout(
-                actionButton3, expectedRefine3Left, 0, expectedRefine3Right, giveContentHeight);
-        verifyViewLayout(
-                mDecoratedView, expectedContentLeft, 0, expectedContentRight, giveContentHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(actionButton1, expectedRefine1Left, 0, expectedRefine1Right,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(actionButton2, expectedRefine2Left, 0, expectedRefine2Right,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(actionButton3, expectedRefine3Left, 0, expectedRefine3Right,
+                mSemicompactSuggestionViewHeight);
     }
 
     @Test
@@ -207,19 +215,18 @@ public class BaseSuggestionViewTest {
 
         // Expectations (edge to edge):
         //
-        // +----------------+----+-+  ^
-        // | CONTENT        |ACT1|#|  giveContentHeight
-        // +----------------+----+-+  v
-        //
+        // +---+--------------+----+
+        // | % | CONTENT      |ACT1|
+        // +---+--------------+----+
         // <- giveSuggestionWidth ->
         //
-        // where ACT is action button and # is final padding.
+        // where ACT is action button and % is the suggestion icon.
 
-        final int giveSuggestionWidth =
-                useContentWidth + mActionIconWidthPx + paddingStart + paddingEnd;
+        final int giveSuggestionWidth = mDecorationIconWidthPx + useContentWidth
+                + mActionIconWidthPx + paddingStart + paddingEnd;
         final int giveContentHeight = 15;
 
-        final int expectedContentLeft = paddingStart;
+        final int expectedContentLeft = paddingStart + mDecorationIconWidthPx;
         final int expectedContentRight = expectedContentLeft + useContentWidth;
         final int expectedRefineLeft = expectedContentRight;
         final int expectedRefineRight = giveSuggestionWidth - paddingEnd;
@@ -230,10 +237,10 @@ public class BaseSuggestionViewTest {
 
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
 
-        verifyViewLayout(
-                actionButton, expectedRefineLeft, 0, expectedRefineRight, giveContentHeight);
-        verifyViewLayout(
-                mDecoratedView, expectedContentLeft, 0, expectedContentRight, giveContentHeight);
+        verifyViewLayout(actionButton, expectedRefineLeft, 0, expectedRefineRight,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mSemicompactSuggestionViewHeight);
     }
 
     @Test
@@ -244,22 +251,22 @@ public class BaseSuggestionViewTest {
 
         // Expectations (edge to edge):
         //
-        // +----+----------------+-+  ^
-        // |ACT1| CONTENT        |#|  giveContentHeight
-        // +----+----------------+-+  v
-        //
+        // +----+--------------+---+
+        // |ACT1| CONTENT      | % |
+        // +----+--------------+---+
         // <- giveSuggestionWidth ->
         //
-        // where ACT is action button and # is final padding.
+        // where ACT is action button and % is the suggestion icon.
 
-        final int giveSuggestionWidth =
-                useContentWidth + mActionIconWidthPx + paddingStart + paddingEnd;
+        final int giveSuggestionWidth = mDecorationIconWidthPx + useContentWidth
+                + mActionIconWidthPx + paddingStart + paddingEnd;
         final int giveContentHeight = 25;
 
         final int expectedRefineLeft = paddingEnd;
         final int expectedRefineRight = expectedRefineLeft + mActionIconWidthPx;
         final int expectedContentLeft = expectedRefineRight;
-        final int expectedContentRight = giveSuggestionWidth - paddingStart;
+        final int expectedContentRight =
+                giveSuggestionWidth - paddingStart - mDecorationIconWidthPx;
 
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
@@ -268,20 +275,19 @@ public class BaseSuggestionViewTest {
 
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_RTL);
 
-        verifyViewLayout(
-                actionButton, expectedRefineLeft, 0, expectedRefineRight, giveContentHeight);
-        verifyViewLayout(
-                mDecoratedView, expectedContentLeft, 0, expectedContentRight, giveContentHeight);
+        verifyViewLayout(actionButton, expectedRefineLeft, 0, expectedRefineRight,
+                mSemicompactSuggestionViewHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mSemicompactSuggestionViewHeight);
     }
 
     @Test
     public void layout_LtrRefineInvisible() {
         // Expectations (edge to edge):
         //
-        // +---------------------+-+  ^
-        // |CONTENT              |#|  giveContentHeight
-        // +---------------------+-+  v
-        //
+        // +---+-------------------+
+        // | % |CONTENT            |
+        // +---+-------------------+
         // <- giveSuggestionWidth ->
         //
         // The reason for this is that we want content to align correctly with the end of the
@@ -292,43 +298,176 @@ public class BaseSuggestionViewTest {
         final int paddingStart = 11;
         final int paddingEnd = 22;
 
-        final int expectedContentLeft = paddingStart;
+        final int expectedContentLeft = paddingStart + mDecorationIconWidthPx;
         final int expectedContentRight = giveSuggestionWidth - paddingEnd;
 
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
-        verifyViewLayout(
-                mDecoratedView, expectedContentLeft, 0, expectedContentRight, giveContentHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mSemicompactSuggestionViewHeight);
     }
 
     @Test
     public void layout_RtlRefineInvisible() {
         // Expectations (edge to edge):
         //
-        // +---------------------+-+  ^
-        // |CONTENT              |#|  giveContentHeight
-        // +---------------------+-+  v
-        //
+        // +-------------------+---+
+        // |CONTENT            | % |
+        // +-------------------+---+
         // <- giveSuggestionWidth ->
         //
         // The reason for this is that we want content to align correctly with the end of the
         // omnibox field. Otherwise, content would end (RTL) at the left screen edge.
-
         final int giveSuggestionWidth = 250;
         final int giveContentHeight = 15;
         final int paddingStart = 57;
         final int paddingEnd = 31;
 
         final int expectedContentLeft = paddingEnd;
-        final int expectedContentRight = giveSuggestionWidth - paddingStart;
+        final int expectedContentRight =
+                giveSuggestionWidth - paddingStart - mDecorationIconWidthPx;
 
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
         executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_RTL);
-        verifyViewLayout(
-                mDecoratedView, expectedContentLeft, 0, expectedContentRight, giveContentHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mSemicompactSuggestionViewHeight);
     }
 
+    @Test
+    public void layout_LtrWithFooterAndActionButton() {
+        // Expectations (edge to edge):
+        //
+        // +---+--------------+----+
+        // | % | CONTENT      |ACT1|
+        // +---+--------------+----+
+        // | FOOTER                |
+        // +-----------------------+
+        // <- giveSuggestionWidth ->
+        //
+        // where ACT is action button and % is the suggestion icon.
+        final int useContentWidth = 120;
+        final int paddingStart = 12;
+        final int paddingEnd = 34;
+
+        final int giveSuggestionWidth = mDecorationIconWidthPx + useContentWidth
+                + mActionIconWidthPx + paddingStart + paddingEnd;
+
+        final int expectedContentLeft = paddingStart + mDecorationIconWidthPx;
+        final int expectedContentRight = expectedContentLeft + useContentWidth;
+        final int expectedRefineLeft = expectedContentRight;
+        final int expectedRefineRight = giveSuggestionWidth - paddingEnd;
+
+        final int footerHeightPx = 10;
+
+        var footer = new View(mActivity);
+        footer.setMinimumHeight(footerHeightPx);
+        mView.addView(footer, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+        mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
+        mView.setActionButtonsCount(1);
+
+        final View actionButton = (View) mView.getActionButtons().get(0);
+
+        executeLayoutTest(giveSuggestionWidth, 0, View.LAYOUT_DIRECTION_LTR);
+
+        verifyViewLayout(actionButton, expectedRefineLeft, 0, expectedRefineRight,
+                mCompactSuggestionViewHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mCompactSuggestionViewHeight);
+        verifyViewLayout(footer, paddingStart, mCompactSuggestionViewHeight,
+                giveSuggestionWidth - paddingEnd, mCompactSuggestionViewHeight + footerHeightPx);
+    }
+
+    @Test
+    public void layout_RtlWithFooterAndActionButton() {
+        final int useContentWidth = 120;
+        final int paddingStart = 13;
+        final int paddingEnd = 57;
+
+        // Expectations (edge to edge):
+        //
+        // +----+--------------+---+
+        // |ACT1| CONTENT      | % |
+        // +----+--------------+---+
+        // | FOOTER                |
+        // +-----------------------+
+        // <- giveSuggestionWidth ->
+        //
+        // where ACT is action button and % is the suggestion icon.
+
+        final int giveSuggestionWidth = mDecorationIconWidthPx + useContentWidth
+                + mActionIconWidthPx + paddingStart + paddingEnd;
+        final int giveContentHeight = 25;
+
+        final int expectedRefineLeft = paddingEnd;
+        final int expectedRefineRight = expectedRefineLeft + mActionIconWidthPx;
+        final int expectedContentLeft = expectedRefineRight;
+        final int expectedContentRight =
+                giveSuggestionWidth - paddingStart - mDecorationIconWidthPx;
+
+        final int footerHeightPx = 10;
+
+        var footer = new View(mActivity);
+        footer.setMinimumHeight(footerHeightPx);
+        mView.addView(footer, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+        mView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        mView.setPaddingRelative(paddingStart, 0, paddingEnd, 0);
+        mView.setActionButtonsCount(1);
+        final View actionButton = (View) mView.getActionButtons().get(0);
+
+        executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_RTL);
+
+        verifyViewLayout(actionButton, expectedRefineLeft, 0, expectedRefineRight,
+                mCompactSuggestionViewHeight);
+        verifyViewLayout(mContentView, expectedContentLeft, 0, expectedContentRight,
+                mCompactSuggestionViewHeight);
+        // Note: in RTL layouts, paddingEnd is equivalent to left-side padding.
+        // and paddingStart is equivalent to right-side padding.
+        verifyViewLayout(footer, paddingEnd, mCompactSuggestionViewHeight,
+                giveSuggestionWidth - paddingStart, mCompactSuggestionViewHeight + footerHeightPx);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void layout_missingContentView() {
+        // Make sure there's no content views.
+        mView.removeView(mContentView);
+        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void layout_multipleContentViews() {
+        var content = new View(mActivity);
+        mView.addView(content, LayoutParams.forViewType(LayoutParams.SuggestionViewType.CONTENT));
+        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void layout_hiddenContentViews() {
+        mContentView.setVisibility(View.GONE);
+        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void layout_emptyContentViews() {
+        mContentView.setMinimumHeight(0);
+        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
+    }
+
+    @Test
+    public void layout_minimumHeightWithNoFooterIsSemicompact() {
+        mView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
+        Assert.assertEquals(mSemicompactSuggestionViewHeight, mView.getMeasuredHeight());
+    }
+
+    @Test
+    public void layout_minimumHeightWithFooterIsCompact() {
+        var content = new View(mActivity);
+        mView.addView(content, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+        mView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        executeLayoutTest(100, 10, View.LAYOUT_DIRECTION_LTR);
+        Assert.assertEquals(mCompactSuggestionViewHeight, mView.getMeasuredHeight());
+    }
     @Test
     public void setSelected_emitsOmniboxUpdateWhenSelected() {
         mView.setSelected(true);

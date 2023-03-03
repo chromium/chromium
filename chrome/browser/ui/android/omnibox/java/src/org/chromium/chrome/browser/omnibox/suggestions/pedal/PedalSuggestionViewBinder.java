@@ -8,11 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -42,7 +40,7 @@ public final class PedalSuggestionViewBinder<T extends View>
 
     @Override
     public void bind(PropertyModel model, PedalSuggestionView<T> view, PropertyKey propertyKey) {
-        mBaseViewBinder.bind(model, view.getBaseSuggestionView(), propertyKey);
+        mBaseViewBinder.bind(model, view, propertyKey);
 
         if (PedalSuggestionViewProperties.PEDAL_LIST == propertyKey) {
             var isIncognito = model.get(SuggestionCommonProperties.COLOR_SCHEME)
@@ -54,13 +52,6 @@ public final class PedalSuggestionViewBinder<T extends View>
             adapter.registerType(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW,
                     parent -> createChipView(parent, isIncognito), ChipViewBinder::bind);
             view.getPedalView().setAdapter(adapter);
-        } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
-            BaseSuggestionViewBinder.applySelectableBackground(model, view);
-        } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
-            ViewCompat.setLayoutDirection(
-                    view.getPedalView(), model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-        } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
-            BaseSuggestionViewBinder.updateMargin(model, view);
         }
     }
 

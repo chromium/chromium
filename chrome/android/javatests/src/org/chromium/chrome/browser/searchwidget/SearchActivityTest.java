@@ -768,8 +768,8 @@ public class SearchActivityTest {
             throws InterruptedException {
         SuggestionInfo<BaseSuggestionView> info =
                 mOmnibox.getSuggestionByType(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
-        TestTouchUtils.performClickOnMainSync(InstrumentationRegistry.getInstrumentation(),
-                info.view.getDecoratedSuggestionView());
+        TestTouchUtils.performClickOnMainSync(
+                InstrumentationRegistry.getInstrumentation(), info.view);
     }
 
     private SearchActivity startSearchActivity() {

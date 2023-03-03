@@ -52,7 +52,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mDecorationImageSizePx = context.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_decoration_image_size);
         mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_semicompact_height);
+                R.dimen.omnibox_suggestion_content_height);
         mFaviconFetcher = faviconFetcher;
     }
 

@@ -52,8 +52,7 @@ public class PedalView extends RecyclerView {
         });
 
         setPaddingRelative(0, 0, 0,
-                getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_semicompact_padding));
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
     }
 
     @Override
