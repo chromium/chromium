@@ -137,7 +137,7 @@ HRESULT CreateLocalServer(GUID clsid,
     if (!::ChangeServiceConfig(service.Get(), SERVICE_NO_CHANGE,
                                SERVICE_NO_CHANGE, SERVICE_NO_CHANGE, nullptr,
                                nullptr, nullptr, nullptr, nullptr, nullptr,
-                               L"Test Service Display Name")) {
+                               nullptr)) {
       is_service_gone = ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
     }
   }
