@@ -264,6 +264,8 @@ void SavedPasswordsPresenter::AddCredentials(
   std::vector<CredentialUIEntry> valid_credentials;
   valid_credentials.reserve(credentials.size());
 
+  // TODO(crbug/1417650): Remove validation from this method. Validation needs
+  // to be carried out by the caller.
   base::ranges::transform(credentials, std::back_inserter(results),
                           [&](const CredentialUIEntry& credential) {
                             AddResult result = GetExpectedAddResult(credential);
