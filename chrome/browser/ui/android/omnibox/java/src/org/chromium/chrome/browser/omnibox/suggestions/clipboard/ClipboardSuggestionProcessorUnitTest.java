@@ -241,19 +241,19 @@ public class ClipboardSuggestionProcessorUnitTest {
     @SmallTest
     public void clipboardSuggestion_revealButton() {
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         mProcessor.revealButtonClickHandler(mSuggestion, mModel);
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         mProcessor.revealButtonClickHandler(mSuggestion, mModel);
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL());
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         mProcessor.revealButtonClickHandler(mSuggestion, mModel);
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
     }
 
     @Test

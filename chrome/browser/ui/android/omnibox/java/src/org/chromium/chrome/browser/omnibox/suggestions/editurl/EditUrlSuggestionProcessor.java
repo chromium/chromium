@@ -114,7 +114,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                         .setAllowTint(true)
                         .build());
 
-        setCustomActions(model,
+        setActionButtons(model,
                 Arrays.asList(new Action(mContext,
                                       SuggestionDrawableState.Builder
                                               .forDrawableRes(

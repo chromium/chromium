@@ -137,7 +137,7 @@ public class BaseSuggestionViewBinderUnitTest {
         List<Action> list = Arrays.asList(
                 new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
                         R.string.accessibility_omnibox_btn_refine, callback));
-        mModel.set(BaseSuggestionViewProperties.ACTIONS, list);
+        mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
         List<ImageView> actionButtons = mBaseView.getActionButtons();
         Assert.assertEquals(1, actionButtons.size());
@@ -165,7 +165,7 @@ public class BaseSuggestionViewBinderUnitTest {
                         R.string.accessibility_omnibox_btn_refine, call2),
                 new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
                         R.string.accessibility_omnibox_btn_refine, call3));
-        mModel.set(BaseSuggestionViewProperties.ACTIONS, list);
+        mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
 
         List<ImageView> actionButtons = mBaseView.getActionButtons();
         Assert.assertEquals(3, actionButtons.size());
@@ -200,7 +200,7 @@ public class BaseSuggestionViewBinderUnitTest {
                         R.string.accessibility_omnibox_btn_refine, () -> {}));
 
         final List<ImageView> actionButtons = mBaseView.getActionButtons();
-        mModel.set(BaseSuggestionViewProperties.ACTIONS, list);
+        mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list);
         Assert.assertEquals(3, actionButtons.size());
         final View actionButton1 = actionButtons.get(0);
         final View actionButton2 = actionButtons.get(1);
@@ -209,15 +209,15 @@ public class BaseSuggestionViewBinderUnitTest {
         verify(mBaseView, times(1)).addView(actionButton2);
         verify(mBaseView, times(1)).addView(actionButton3);
 
-        mModel.set(BaseSuggestionViewProperties.ACTIONS, list.subList(0, 2));
+        mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list.subList(0, 2));
         Assert.assertEquals(2, actionButtons.size());
         verify(mBaseView, times(1)).removeView(actionButton3);
 
-        mModel.set(BaseSuggestionViewProperties.ACTIONS, list.subList(0, 1));
+        mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list.subList(0, 1));
         Assert.assertEquals(1, actionButtons.size());
         verify(mBaseView, times(1)).removeView(actionButton2);
 
-        mModel.set(BaseSuggestionViewProperties.ACTIONS, null);
+        mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, null);
         Assert.assertEquals(0, actionButtons.size());
         verify(mBaseView, times(1)).removeView(actionButton1);
     }
@@ -226,7 +226,7 @@ public class BaseSuggestionViewBinderUnitTest {
     public void actionIcon_dontCrashWhenRecycling() {
         // Force a dirty/recycled view that would have a button view, when the model does not carry
         // any aciton.
-        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         mBaseView.setActionButtonsCount(1);
         // Change in color scheme happening ahead of setting action could cause a crash.
         mModel.set(SuggestionCommonProperties.COLOR_SCHEME, BrandedColorScheme.LIGHT_BRANDED_THEME);

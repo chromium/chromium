@@ -80,8 +80,8 @@ public final class BaseSuggestionViewBinder<T extends View>
             roundSuggestionViewCorners(model, view);
         } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
             updateMargin(model, view);
-        } else if (BaseSuggestionViewProperties.ACTIONS == propertyKey) {
-            bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTIONS));
+        } else if (BaseSuggestionViewProperties.ACTION_BUTTONS == propertyKey) {
+            bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
             view.setOnFocusViaSelectionListener(
                     model.get(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION));
@@ -150,9 +150,9 @@ public final class BaseSuggestionViewBinder<T extends View>
         updateSuggestionIcon(model, view);
         applySelectableBackground(model, view);
 
-        final List<Action> actions = model.get(BaseSuggestionViewProperties.ACTIONS);
-        // Setting ACTIONS and updating actionViews can happen later. Appropriate color scheme will
-        // be applied then.
+        final List<Action> actions = model.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
+        // Setting ACTION_BUTTONS and updating actionViews can happen later. Appropriate color
+        // scheme will be applied then.
         if (actions == null) return;
 
         final List<ImageView> actionViews = view.getActionButtons();

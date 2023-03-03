@@ -91,8 +91,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param model Property model to update.
      * @param actions List of actions for the suggestion.
      */
-    protected void setCustomActions(PropertyModel model, List<Action> actions) {
-        model.set(BaseSuggestionViewProperties.ACTIONS, actions);
+    protected void setActionButtons(PropertyModel model, List<Action> actions) {
+        model.set(BaseSuggestionViewProperties.ACTION_BUTTONS, actions);
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     R.string.accessibility_omnibox_btn_refine, suggestion.getFillIntoEdit());
             action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
         }
-        setCustomActions(model,
+        setActionButtons(model,
                 Arrays.asList(
                         new Action(SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
                                            .setLarge(true)
@@ -156,7 +156,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 () -> onSuggestionLongClicked(suggestion, position));
         model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
-        setCustomActions(model, null);
+        setActionButtons(model, null);
     }
 
     /**

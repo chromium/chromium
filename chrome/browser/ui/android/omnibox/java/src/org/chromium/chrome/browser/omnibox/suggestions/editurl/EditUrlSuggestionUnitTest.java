@@ -261,7 +261,7 @@ public final class EditUrlSuggestionUnitTest {
         mProcessor.doesProcessSuggestion(mWhatYouTypedSuggestion, 0);
         mProcessor.populateModel(mWhatYouTypedSuggestion, mModel, 0);
 
-        List<Action> actions = mModel.get(BaseSuggestionViewProperties.ACTIONS);
+        List<Action> actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals("EditUrl suggestion should have 3 action buttons.", 3, actions.size());
         actions.get(ACTION_EDIT).callback.run();
         verify(mUrlBarDelegate).setOmniboxEditingText(WEB_URL.getSpec());
@@ -273,7 +273,7 @@ public final class EditUrlSuggestionUnitTest {
         mProcessor.doesProcessSuggestion(mWhatYouTypedSuggestion, 0);
         mProcessor.populateModel(mWhatYouTypedSuggestion, mModel, 0);
 
-        List<Action> actions = mModel.get(BaseSuggestionViewProperties.ACTIONS);
+        List<Action> actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals("EditUrl suggestion should have 3 action buttons.", 3, actions.size());
         actions.get(ACTION_SHARE).callback.run();
         verify(mShareDelegate, times(1))
@@ -286,7 +286,7 @@ public final class EditUrlSuggestionUnitTest {
         mProcessor.doesProcessSuggestion(mWhatYouTypedSuggestion, 0);
         mProcessor.populateModel(mWhatYouTypedSuggestion, mModel, 0);
 
-        List<Action> actions = mModel.get(BaseSuggestionViewProperties.ACTIONS);
+        List<Action> actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
 
         Assert.assertEquals("EditUrl suggestion should have 3 action buttons.", 3, actions.size());
         ArgumentCaptor<ClipData> argument = ArgumentCaptor.forClass(ClipData.class);

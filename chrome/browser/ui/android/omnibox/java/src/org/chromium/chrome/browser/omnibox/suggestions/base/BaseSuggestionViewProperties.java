@@ -87,7 +87,7 @@ public class BaseSuggestionViewProperties {
             new WritableObjectPropertyKey<>();
 
     /** Action Icons description. */
-    public static final WritableObjectPropertyKey<List<Action>> ACTIONS =
+    public static final WritableObjectPropertyKey<List<Action>> ACTION_BUTTONS =
             new WritableObjectPropertyKey();
 
     /** Callback invoked when the Suggestion view is highlighted. */
@@ -106,7 +106,7 @@ public class BaseSuggestionViewProperties {
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
-            ICON, ACTIONS, ON_FOCUS_VIA_SELECTION, DENSITY, ON_CLICK, ON_LONG_CLICK};
+            ICON, ACTION_BUTTONS, ON_FOCUS_VIA_SELECTION, DENSITY, ON_CLICK, ON_LONG_CLICK};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
