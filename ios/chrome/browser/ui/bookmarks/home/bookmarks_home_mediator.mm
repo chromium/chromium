@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
@@ -63,13 +64,12 @@ const int kMaxBookmarksSearchResults = 50;
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+  // The browser for this mediator.
+  Browser* _browser;
 }
 
 // Shared state between Bookmark home classes.
 @property(nonatomic, strong) BookmarksHomeSharedState* sharedState;
-
-// The browser state for this mediator.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
 
 // The controller managing the display of the promo cell and the promo view
 // controller.
@@ -81,16 +81,12 @@ const int kMaxBookmarksSearchResults = 50;
 @end
 
 @implementation BookmarksHomeMediator
-@synthesize bookmarkPromoController = _bookmarkPromoController;
-@synthesize browserState = _browserState;
-@synthesize consumer = _consumer;
-@synthesize sharedState = _sharedState;
 
 - (instancetype)initWithSharedState:(BookmarksHomeSharedState*)sharedState
-                       browserState:(ChromeBrowserState*)browserState {
+                            browser:(Browser*)browser {
   if ((self = [super init])) {
     _sharedState = sharedState;
-    _browserState = browserState;
+    _browser = browser;
   }
   return self;
 }
@@ -100,18 +96,19 @@ const int kMaxBookmarksSearchResults = 50;
   DCHECK(self.sharedState);
 
   // Set up observers.
+  ChromeBrowserState* browserState = _browser->GetBrowserState();
   _modelBridge = std::make_unique<BookmarkModelBridge>(
       self, self.sharedState.bookmarkModel);
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
-          self, self.browserState);
+          self, browserState);
   _bookmarkPromoController =
-      [[BookmarkPromoController alloc] initWithBrowserState:self.browserState
-                                                   delegate:self
-                                                  presenter:self];
+      [[BookmarkPromoController alloc] initWithBrowser:_browser
+                                              delegate:self
+                                             presenter:self];
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-  _prefChangeRegistrar->Init(self.browserState->GetPrefs());
+  _prefChangeRegistrar->Init(browserState->GetPrefs());
   _prefObserverBridge.reset(new PrefObserverBridge(self));
 
   _prefObserverBridge->ObserveChangesForPreference(
@@ -120,7 +117,7 @@ const int kMaxBookmarksSearchResults = 50;
   _prefObserverBridge->ObserveChangesForPreference(
       bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
 
-  _syncService = SyncServiceFactory::GetForBrowserState(self.browserState);
+  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
@@ -132,7 +129,7 @@ const int kMaxBookmarksSearchResults = 50;
 
   _modelBridge = nullptr;
   _syncedBookmarksObserver = nullptr;
-  self.browserState = nullptr;
+  _browser = nullptr;
   self.consumer = nil;
   self.sharedState = nil;
   _prefChangeRegistrar.reset();
@@ -224,8 +221,9 @@ const int kMaxBookmarksSearchResults = 50;
   }
 
   // Add "Managed Bookmarks" to the table if it exists.
+  ChromeBrowserState* browserState = _browser->GetBrowserState();
   bookmarks::ManagedBookmarkService* managedBookmarkService =
-      ManagedBookmarkServiceFactory::GetForBrowserState(self.browserState);
+      ManagedBookmarkServiceFactory::GetForBrowserState(browserState);
   const BookmarkNode* managedNode = managedBookmarkService->managed_node();
   if (managedNode && managedNode->IsVisible()) {
     BookmarksHomeNodeItem* managedItem = [[BookmarksHomeNodeItem alloc]
@@ -560,9 +558,10 @@ const int kMaxBookmarksSearchResults = 50;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
+  ChromeBrowserState* browserState = _browser->GetBrowserState();
   bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
-  PrefService* prefService = self.browserState->GetPrefs();
+  PrefService* prefService = browserState->GetPrefs();
   bool syncTypesDisabledPolicy =
       IsManagedSyncDataType(prefService, SyncSetupService::kSyncBookmarks);
   return syncDisabledPolicy || syncTypesDisabledPolicy;

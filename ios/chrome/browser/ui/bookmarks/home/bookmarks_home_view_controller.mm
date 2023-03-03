@@ -256,7 +256,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self.mediator disconnect];
   _sharedState.tableView.dataSource = nil;
   _sharedState.tableView.delegate = nil;
-
+  self.browser = nullptr;
+  self.browserState = nullptr;
   _bridge.reset();
 }
 
@@ -504,7 +505,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // Create the mediator and hook up the table view.
   self.mediator =
       [[BookmarksHomeMediator alloc] initWithSharedState:self.sharedState
-                                            browserState:self.browserState];
+                                                 browser:_browser];
   self.mediator.consumer = self;
   [self.mediator startMediating];
 

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-class ChromeBrowserState;
+class Browser;
 @protocol SigninPresenter;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;
@@ -37,10 +37,9 @@ class ChromeBrowserState;
 
 @property(nonatomic, readonly) SigninPromoViewMediator* signinPromoViewMediator;
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                            delegate:
-                                (id<BookmarkPromoControllerDelegate>)delegate
-                           presenter:(id<SigninPresenter>)presenter;
+- (instancetype)initWithBrowser:(Browser*)browser
+                       delegate:(id<BookmarkPromoControllerDelegate>)delegate
+                      presenter:(id<SigninPresenter>)presenter;
 
 // Called before the instance is deallocated.
 - (void)shutdown;
