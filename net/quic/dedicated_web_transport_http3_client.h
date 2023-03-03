@@ -65,7 +65,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   quic::WebTransportSession* session() override;
 
   void OnSettingsReceived();
-  void OnHeadersComplete();
+  void OnHeadersComplete(const spdy::Http2HeaderBlock& headers);
   void OnConnectStreamWriteSideInDataRecvdState();
   void OnConnectStreamAborted();
   void OnCloseTimeout();
