@@ -79,6 +79,7 @@ import java.util.concurrent.TimeoutException;
  * workflow and UI transition.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisabledTest(message = "https://crbug.com/1421247")
 public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @IntDef({FragmentState.LOADING, FragmentState.NO_POLICY, FragmentState.HAS_POLICY,
             FragmentState.WAITING_UNTIL_NEXT_PAGE})
@@ -168,9 +169,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
 
         EnterpriseInfo.setInstanceForTest(mFakeEnterpriseInfo);
-
-        FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
-                FREMobileIdentityConsistencyFieldTrial.DISABLED_GROUP);
 
         setAppRestrictionsMockNotInitialized();
         setPolicyServiceMockNotInitialized();
