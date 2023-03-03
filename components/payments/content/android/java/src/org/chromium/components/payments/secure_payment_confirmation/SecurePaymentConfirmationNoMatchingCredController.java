@@ -13,6 +13,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.R;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -32,6 +33,8 @@ public class SecurePaymentConfirmationNoMatchingCredController {
     private Runnable mResponseCallback;
     private Runnable mOptOutCallback;
     private SecurePaymentConfirmationNoMatchingCredView mView;
+
+    private InputProtector mInputProtector = new InputProtector();
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
@@ -142,6 +145,10 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         mHider = null;
     }
 
+    public void closePressed() {
+        if (mInputProtector.shouldInputBeProcessed()) close();
+    }
+
     public void optOut() {
         assert mOptOutCallback != null;
         mOptOutCallback.run();
@@ -149,6 +156,10 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         if (mHider == null) return;
         mHider.run();
         mHider = null;
+    }
+
+    public void optOutPressed() {
+        if (mInputProtector.shouldInputBeProcessed()) optOut();
     }
 
     /**
@@ -172,6 +183,8 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         BottomSheetController bottomSheet = BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheet == null) return false;
 
+        mInputProtector.markShowTime();
+
         bottomSheet.addObserver(mBottomSheetObserver);
 
         String origin = UrlFormatter.formatUrlForSecurityDisplay(
@@ -179,7 +192,7 @@ public class SecurePaymentConfirmationNoMatchingCredController {
                 SchemeDisplay.OMIT_CRYPTOGRAPHIC);
 
         mView = new SecurePaymentConfirmationNoMatchingCredView(
-                context, origin, rpId, showOptOut, this::close, this::optOut);
+                context, origin, rpId, showOptOut, this::closePressed, this::optOutPressed);
 
         mHider = () -> {
             bottomSheet.removeObserver(mBottomSheetObserver);
@@ -197,6 +210,11 @@ public class SecurePaymentConfirmationNoMatchingCredController {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setInputProtectorForTesting(InputProtector inputProtector) {
+        mInputProtector = inputProtector;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public SecurePaymentConfirmationNoMatchingCredView getView() {
         return mView;
     }
@@ -206,10 +224,21 @@ public class SecurePaymentConfirmationNoMatchingCredController {
         return mHider == null;
     }
 
+    /**
+     * Called by PaymentRequestTestBridge for cross-platform browsertests, the following methods
+     * bypass the input protector. The Java unit tests simulate clicking the button and therefore
+     * test the input protector.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean optOutForTest() {
         if (mOptOutCallback == null) return false;
         optOut();
+        return true;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean closeForTest() {
+        close();
         return true;
     }
 }

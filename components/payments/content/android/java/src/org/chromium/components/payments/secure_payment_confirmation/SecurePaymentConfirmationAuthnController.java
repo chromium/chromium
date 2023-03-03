@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.components.payments.R;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -45,6 +46,8 @@ public class SecurePaymentConfirmationAuthnController {
     private Callback<Boolean> mResponseCallback;
     private Runnable mOptOutCallback;
     private SecurePaymentConfirmationAuthnView mView;
+
+    private InputProtector mInputProtector = new InputProtector();
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
@@ -167,6 +170,8 @@ public class SecurePaymentConfirmationAuthnController {
         BottomSheetController bottomSheet = BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheet == null) return false;
 
+        mInputProtector.markShowTime();
+
         // The instrument icon may be empty, if it couldn't be downloaded/decoded
         // and iconMustBeShown was set to false. In that case, use a default icon.
         // The actual display color is set based on the theme in OnThemeChanged.
@@ -179,7 +184,8 @@ public class SecurePaymentConfirmationAuthnController {
         }
 
         SecurePaymentConfirmationAuthnView.OptOutInfo optOutInfo =
-                new SecurePaymentConfirmationAuthnView.OptOutInfo(showOptOut, rpId, this::onOptOut);
+                new SecurePaymentConfirmationAuthnView.OptOutInfo(
+                        showOptOut, rpId, this::onOptOutPressed);
 
         PropertyModel model =
                 new PropertyModel.Builder(SecurePaymentConfirmationAuthnProperties.ALL_KEYS)
@@ -195,9 +201,9 @@ public class SecurePaymentConfirmationAuthnController {
                                 total.amount.currency)
                         .with(SecurePaymentConfirmationAuthnProperties.OPT_OUT_INFO, optOutInfo)
                         .with(SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_CALLBACK,
-                                this::onConfirm)
+                                this::onConfirmPressed)
                         .with(SecurePaymentConfirmationAuthnProperties.CANCEL_BUTTON_CALLBACK,
-                                this::onCancel)
+                                this::onCancelPressed)
                         .build();
 
         bottomSheet.addObserver(mBottomSheetObserver);
@@ -268,9 +274,17 @@ public class SecurePaymentConfirmationAuthnController {
         mResponseCallback.onResult(true);
     }
 
+    private void onConfirmPressed() {
+        if (mInputProtector.shouldInputBeProcessed()) onConfirm();
+    }
+
     private void onCancel() {
         hide();
         mResponseCallback.onResult(false);
+    }
+
+    private void onCancelPressed() {
+        if (mInputProtector.shouldInputBeProcessed()) onCancel();
     }
 
     private void onOptOut() {
@@ -279,6 +293,20 @@ public class SecurePaymentConfirmationAuthnController {
         mOptOutCallback.run();
     }
 
+    private void onOptOutPressed() {
+        if (mInputProtector.shouldInputBeProcessed()) onOptOut();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setInputProtectorForTesting(InputProtector inputProtector) {
+        mInputProtector = inputProtector;
+    }
+
+    /**
+     * Called by PaymentRequestTestBridge for cross-platform browsertests, the following methods
+     * bypass the input protector. The Java unit tests simulate clicking the button and therefore
+     * test the input protector.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean cancelForTest() {
         onCancel();
