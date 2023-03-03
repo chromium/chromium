@@ -5,6 +5,7 @@
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
 #include "base/base64.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
@@ -684,5 +685,13 @@ TEST_F(EncryptedReportingJobConfigurationTest, FailedUploadsSequenceThrottled) {
         DeviceManagementService::kInvalidAuthCookieOrDMToken,
         ResponseValueBuilder::CreateResponseString(upload.response));
   }
+}
+
+TEST_F(EncryptedReportingJobConfigurationTest, UmaName) {
+  EncryptedReportingJobConfiguration configuration(
+      shared_url_loader_factory_, DMAuth::FromDMToken(kDmToken), kServerUrl,
+      RequestPayloadBuilder().Build(), kDmToken, kClientId, base::DoNothing());
+
+  EXPECT_EQ(configuration.GetUmaName(), "Browser.ERP.UploadEncryptedReport");
 }
 }  // namespace policy

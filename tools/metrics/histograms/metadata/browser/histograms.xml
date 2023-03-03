@@ -231,6 +231,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.UploadEncryptedReport"
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2024-03-01">
+  <owner>anasr@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Status of a completed ERP upload request, either successful, with a failure
+    or with a server error.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.{Param}PayloadSizePerHour" units="KiB"
     expires_after="2023-11-17">
   <owner>xuhong@chromium.org</owner>

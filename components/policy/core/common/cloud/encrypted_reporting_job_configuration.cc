@@ -307,7 +307,7 @@ void EncryptedReportingJobConfiguration::OnURLLoadComplete(
 }
 
 std::string EncryptedReportingJobConfiguration::GetUmaString() const {
-  return "Enterprise.EncryptedReportingSuccess";
+  return "Browser.ERP.";
 }
 
 std::set<std::string>
