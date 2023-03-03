@@ -136,7 +136,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
             // Notify the view of changes to the elements list as the promo might be showing.
             updateHeader(true);
         };
-        mPromoHeaderManager = new BookmarkPromoHeader(mContext, promoHeaderChangeAction);
+        mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, promoHeaderChangeAction);
     }
 
     /**
