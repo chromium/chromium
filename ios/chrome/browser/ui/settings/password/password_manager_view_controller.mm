@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <utility>
+#import <vector>
+
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -45,6 +48,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_items.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
@@ -75,7 +79,6 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -214,14 +217,6 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
 }  // namespace
 
-@interface PasswordFormContentItem : TableViewURLItem
-// TODO(crbug.com/1359392): Remove CredentialUIEntry object.
-@property(nonatomic) password_manager::CredentialUIEntry credential;
-@property(nonatomic) password_manager::AffiliatedGroup affiliatedGroup;
-@end
-@implementation PasswordFormContentItem
-@end
-
 @protocol PasswordExportActivityViewControllerDelegate <NSObject>
 
 // Used to reset the export state when the activity view disappears.
@@ -357,9 +352,9 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 @property(nonatomic, assign) absl::optional<password_manager::CredentialUIEntry>
     mostRecentlyUpdatedPassword;
 
-// Stores the PasswordFormContentItem which has form attribute's username and
-// site equivalent to that of `mostRecentlyUpdatedPassword`.
-@property(nonatomic, weak) PasswordFormContentItem* mostRecentlyUpdatedItem;
+// Stores the item which has form attribute's username and site equivalent to
+// that of `mostRecentlyUpdatedPassword`.
+@property(nonatomic, weak) TableViewItem* mostRecentlyUpdatedItem;
 
 // YES, if the user has tapped on the "Check Now" button.
 @property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
@@ -370,11 +365,6 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
 // Return YES if the search bar should be enabled.
 @property(nonatomic, assign) BOOL shouldEnableSearchBar;
-
-// Keep track of how many passwords have been loaded for the logs and how many
-// of them are favicons with an image (not monogram string).
-@property(nonatomic, strong)
-    NSMutableDictionary<NSString*, NSNumber*>* passwordsLoadedWithFavicons;
 
 // The search controller used in this view. This may be added/removed from the
 // navigation controller, but the instance will persist here.
@@ -505,10 +495,6 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
   if (!_didReceivePasswords) {
     [self showLoadingSpinnerBackground];
-  }
-
-  if (!self.passwordsLoadedWithFavicons) {
-    self.passwordsLoadedWithFavicons = [[NSMutableDictionary alloc] init];
   }
 }
 
@@ -724,7 +710,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
       NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
       if (itemType == ItemTypeSavedPassword) {
         password_manager::AffiliatedGroup affiliatedGroup =
-            base::mac::ObjCCastStrict<PasswordFormContentItem>(
+            base::mac::ObjCCastStrict<AffiliatedGroupTableViewItem>(
                 [self.tableViewModel itemAtIndexPath:indexPath])
                 .affiliatedGroup;
         [origins addObject:base::SysUTF8ToNSString(
@@ -1087,16 +1073,11 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   return exportPasswordsItem;
 }
 
-// TODO(crbug.com/1359392): Remove this.
-- (PasswordFormContentItem*)savedFormItemForCredential:
+- (CredentialTableViewItem*)savedFormItemForCredential:
     (const password_manager::CredentialUIEntry&)credential {
-  PasswordFormContentItem* passwordItem =
-      [[PasswordFormContentItem alloc] initWithType:ItemTypeSavedPassword];
-  passwordItem.title =
-      base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
+  CredentialTableViewItem* passwordItem =
+      [[CredentialTableViewItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.credential = credential;
-  passwordItem.detailText = base::SysUTF16ToNSString(credential.username);
-  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
@@ -1110,22 +1091,11 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   return passwordItem;
 }
 
-- (PasswordFormContentItem*)savedFormItemForAffiliatedGroup:
+- (AffiliatedGroupTableViewItem*)savedFormItemForAffiliatedGroup:
     (const password_manager::AffiliatedGroup&)affiliatedGroup {
-  PasswordFormContentItem* passwordItem =
-      [[PasswordFormContentItem alloc] initWithType:ItemTypeSavedPassword];
-  passwordItem.title =
-      base::SysUTF8ToNSString(affiliatedGroup.GetDisplayName());
+  AffiliatedGroupTableViewItem* passwordItem =
+      [[AffiliatedGroupTableViewItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.affiliatedGroup = affiliatedGroup;
-  const int nbAccounts = affiliatedGroup.GetCredentials().size();
-  passwordItem.detailText =
-      nbAccounts > 1
-          ? l10n_util::GetNSStringF(IDS_IOS_SETTINGS_PASSWORDS_NUMBER_ACCOUNT,
-                                    base::NumberToString16(nbAccounts))
-          : @"";
-  // TODO(crbug.com/1355956): Fix favicon logic.
-  passwordItem.URL = [[CrURL alloc]
-      initWithGURL:affiliatedGroup.GetCredentials().begin()->GetURL()];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
@@ -1139,15 +1109,11 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   return passwordItem;
 }
 
-- (PasswordFormContentItem*)blockedSiteItem:
+- (CredentialTableViewItem*)blockedSiteItem:
     (const password_manager::CredentialUIEntry&)credential {
-  PasswordFormContentItem* passwordItem =
-      [[PasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
+  CredentialTableViewItem* passwordItem =
+      [[CredentialTableViewItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.credential = credential;
-  passwordItem.title =
-      base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
-  passwordItem.detailText = @"";
-  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return passwordItem;
@@ -1701,7 +1667,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 - (void)updatePasswordsSectionWithSearchTerm:(NSString*)searchTerm {
   if (IsPasswordGroupingEnabled()) {
     for (const auto& affiliatedGroup : _affiliatedGroups) {
-      PasswordFormContentItem* item =
+      AffiliatedGroupTableViewItem* item =
           [self savedFormItemForAffiliatedGroup:affiliatedGroup];
       bool hidden =
           searchTerm.length > 0 &&
@@ -1713,7 +1679,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     }
   } else {
     for (const auto& credential : _passwords) {
-      PasswordFormContentItem* item =
+      CredentialTableViewItem* item =
           [self savedFormItemForCredential:credential];
       bool hidden =
           searchTerm.length > 0 &&
@@ -1741,7 +1707,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   if (!_blockedSites.empty()) {
     [model deleteAllItemsFromSectionWithIdentifier:SectionIdentifierBlocked];
     for (const auto& credential : _blockedSites) {
-      PasswordFormContentItem* item = [self blockedSiteItem:credential];
+      CredentialTableViewItem* item = [self blockedSiteItem:credential];
       bool hidden =
           searchTerm.length > 0 &&
           ![item.title localizedCaseInsensitiveContainsString:searchTerm];
@@ -2104,12 +2070,12 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   for (NSIndexPath* indexPath in indexPaths) {
     // Only form items are editable.
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
 
     // Remove affiliated group.
     if (IsPasswordGroupingEnabled() && itemType == ItemTypeSavedPassword) {
       password_manager::AffiliatedGroup affiliatedGroup =
-          base::mac::ObjCCastStrict<PasswordFormContentItem>(
-              [self.tableViewModel itemAtIndexPath:indexPath])
+          base::mac::ObjCCastStrict<AffiliatedGroupTableViewItem>(item)
               .affiliatedGroup;
 
       // Remove from local cache.
@@ -2123,9 +2089,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
                                  affiliatedGroup.GetCredentials().end());
     } else {
       password_manager::CredentialUIEntry credential =
-          base::mac::ObjCCastStrict<PasswordFormContentItem>(
-              [self.tableViewModel itemAtIndexPath:indexPath])
-              .credential;
+          base::mac::ObjCCastStrict<CredentialTableViewItem>(item).credential;
 
       auto removeCredential =
           [](std::vector<password_manager::CredentialUIEntry>& credentials,
@@ -2243,27 +2207,49 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
 // Logs metrics related to favicons for the Password Manager.
 - (void)logMetricsForFavicons {
-  // Log the number of passwords with a favicon loaded.
+  int n_monograms = 0;
+  int n_images = 0;
+  std::vector sections_and_types = {
+      std::pair{SectionIdentifierSavedPasswords, ItemTypeSavedPassword},
+      std::pair{SectionIdentifierBlocked, ItemTypeBlocked}};
+  for (auto [section, type] : sections_and_types) {
+    if (![self.tableViewModel hasSectionForSectionIdentifier:section]) {
+      continue;
+    }
+
+    NSArray<NSIndexPath*>* indexPaths =
+        [self.tableViewModel indexPathsForItemType:type
+                                 sectionIdentifier:section];
+    for (NSIndexPath* indexPath : indexPaths) {
+      PasswordFormContentCell* cell =
+          [self.tableView cellForRowAtIndexPath:indexPath];
+      if (!cell) {
+        // Cell not queued for displaying yet.
+        continue;
+      }
+
+      switch (cell.faviconTypeForMetrics) {
+        case FaviconTypeNotLoaded:
+          continue;
+        case FaviconTypeMonogram:
+          n_monograms++;
+          break;
+        case FaviconTypeImage:
+          n_images++;
+          break;
+      }
+    }
+  }
+
   base::UmaHistogramCounts10000(
       "IOS.PasswordManager.PasswordsWithFavicons.Count",
-      self.passwordsLoadedWithFavicons.count);
-
-  if (self.passwordsLoadedWithFavicons.count == 0)
-    return;
-
-  int count = 0;
-  NSNumber* yesAsNSNumber = [NSNumber numberWithBool:YES];
-  for (NSNumber* value in self.passwordsLoadedWithFavicons.allValues) {
-    if (value == yesAsNSNumber)
-      count++;
+      n_images + n_monograms);
+  if (n_images + n_monograms > 0) {
+    base::UmaHistogramCounts10000("IOS.PasswordManager.Favicons.Count",
+                                  n_images);
+    base::UmaHistogramPercentage("IOS.PasswordManager.Favicons.Percentage",
+                                 100.0f * n_images / (n_images + n_monograms));
   }
-  // Log the number of favicons loaded (image, not monogram string).
-  base::UmaHistogramCounts10000("IOS.PasswordManager.Favicons.Count", count);
-  // Log % of passwords that have a favicon that is an image.
-  float percentage =
-      ((float)count / (float)self.passwordsLoadedWithFavicons.count) * 100.0f;
-  base::UmaHistogramPercentage("IOS.PasswordManager.Favicons.Percentage",
-                               percentage);
 }
 
 - (bool)allowsAddPassword {
@@ -2440,18 +2426,17 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
+      TableViewItem* item = [model itemAtIndexPath:indexPath];
       if (IsPasswordGroupingEnabled()) {
-        password_manager::AffiliatedGroup affiliatedGroup =
-            base::mac::ObjCCastStrict<PasswordFormContentItem>(
-                [model itemAtIndexPath:indexPath])
-                .affiliatedGroup;
-        [self.handler showDetailedViewForAffiliatedGroup:affiliatedGroup];
+        [self.handler
+            showDetailedViewForAffiliatedGroup:
+                base::mac::ObjCCastStrict<AffiliatedGroupTableViewItem>(item)
+                    .affiliatedGroup];
       } else {
-        password_manager::CredentialUIEntry credential =
-            base::mac::ObjCCastStrict<PasswordFormContentItem>(
-                [model itemAtIndexPath:indexPath])
-                .credential;
-        [self.handler showDetailedViewForCredential:credential];
+        [self.handler
+            showDetailedViewForCredential:base::mac::ObjCCastStrict<
+                                              CredentialTableViewItem>(item)
+                                              .credential];
       }
       break;
     }
@@ -2459,7 +2444,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
       DCHECK_EQ(SectionIdentifierBlocked,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
       password_manager::CredentialUIEntry credential =
-          base::mac::ObjCCastStrict<PasswordFormContentItem>(
+          base::mac::ObjCCastStrict<CredentialTableViewItem>(
               [model itemAtIndexPath:indexPath])
               .credential;
       [self.handler showDetailedViewForCredential:credential];
@@ -2605,47 +2590,13 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     }
     case ItemTypeSavedPassword:
     case ItemTypeBlocked: {
-      TableViewURLCell* urlCell =
-          base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-      urlCell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
       // Load the favicon from cache.
-      [self loadFaviconAtIndexPath:indexPath forCell:cell];
+      [base::mac::ObjCCastStrict<PasswordFormContentCell>(cell)
+          loadFavicon:self.imageDataSource];
       break;
     }
   }
   return cell;
-}
-
-// Asynchronously loads favicon for given index path that is of type
-// `ItemTypeSavedPassword` or `ItemTypeBlocked`. The loads are cancelled upon
-// cell reuse automatically.
-- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
-                       forCell:(UITableViewCell*)cell {
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  DCHECK(item);
-  DCHECK(cell);
-
-  TableViewURLItem* URLItem = base::mac::ObjCCastStrict<TableViewURLItem>(item);
-  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-
-  NSString* itemIdentifier = URLItem.uniqueIdentifier;
-  [self.imageDataSource
-      faviconForPageURL:URLItem.URL
-             completion:^(FaviconAttributes* attributes) {
-               // Only set favicon if the cell hasn't been reused.
-               if ([URLCell.cellUniqueIdentifier
-                       isEqualToString:itemIdentifier]) {
-                 DCHECK(attributes);
-                 [URLCell.faviconView configureWithAttributes:attributes];
-
-                 // Value is YES if the favicon is an image not a monogram
-                 // string. Storing as the value as an NSNumber object because
-                 // values in an NSDictionary must be objects.
-                 [self.passwordsLoadedWithFavicons
-                     setValue:(attributes.faviconImage != nil ? @YES : @NO)
-                       forKey:itemIdentifier];
-               }
-             }];
 }
 
 #pragma mark PasswordExporterDelegate
