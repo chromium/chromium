@@ -338,7 +338,6 @@ bool Progress::HasEnoughFreeSpace() const {
 // with and potentially made dynamic depending on feedback of the in progress
 // queue.
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
-constexpr TimeDelta kFreeSpaceInterval = base::Seconds(60);
 
 bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
   using Type = mojom::FileMetadata::Type;
@@ -657,7 +656,7 @@ void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
-      kFreeSpaceInterval);
+      space_check_interval_);
 }
 
 void PinManager::OnSearchResultForSizeCalculation(

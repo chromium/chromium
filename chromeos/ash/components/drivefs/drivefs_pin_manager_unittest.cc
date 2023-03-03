@@ -17,6 +17,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
@@ -1547,6 +1548,47 @@ TEST_F(DriveFsPinManagerTest, OnFreeSpaceRetrieved2) {
   EXPECT_EQ(progress.pinned_files, 0);
 
   manager.progress_.stage = Stage::kStopped;
+}
+
+// Tests that the space check is actually periodic.
+TEST_F(DriveFsPinManagerTest, PeriodicSpaceCheck) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
+
+  EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1 << 30))     // 1 GB is enough space
+      .WillOnce(RunOnceCallback<1>(800 << 20))   // 800 MB is enough space
+      .WillOnce(RunOnceCallback<1>(600 << 20))   // 600 MB is enough space
+      .WillOnce(RunOnceCallback<1>(400 << 20));  // 400 MB is not enough
+
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+
+  // Check the original time interval.
+  EXPECT_EQ(manager.space_check_interval_, base::Seconds(60));
+
+  // But use a much shorter interval for this test.
+  manager.space_check_interval_ = base::Milliseconds(100);
+
+  manager.SetSpaceGetter(GetSpaceGetter());
+  manager.SetCompletionCallback(completion_callback.Get());
+  manager.progress_.stage = Stage::kSyncing;
+
+  manager.CheckFreeSpace();
+
+  // There should be 3 iterations of 100 ms each.
+  base::ElapsedTimer timer;
+  run_loop.Run();
+  EXPECT_GE(timer.Elapsed(), base::Milliseconds(300));
+
+  const Progress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, Stage::kNotEnoughSpace);
+  EXPECT_EQ(progress.free_space, 400 << 20);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
 }
 
 TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {

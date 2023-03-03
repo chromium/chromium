@@ -21,6 +21,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -366,6 +367,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   bool should_check_stalled_files_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
+  // Interval at which the free space is periodically checked.
+  base::TimeDelta space_check_interval_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      base::Seconds(60);
+
   SpaceGetter space_getter_ GUARDED_BY_CONTEXT(sequence_checker_);
   CompletionCallback completion_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -400,6 +405,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, CannotGetFreeSpace2);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, NotEnoughSpace2);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, OnFreeSpaceRetrieved2);
+  FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, PeriodicSpaceCheck);
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
