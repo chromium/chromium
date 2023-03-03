@@ -12,6 +12,9 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/payments/core/currency_formatter.h"
+#import "components/power_bookmarks/core/power_bookmark_utils.h"
+#import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
@@ -280,18 +283,36 @@ using PriceNotificationItems =
 - (void)fetchTrackedItems {
   std::vector<const bookmarks::BookmarkNode*> subscribedItems =
       commerce::GetAllPriceTrackedBookmarks(self.bookmarkModel);
-  std::vector<int64_t> bookmarkIDs;
   for (const bookmarks::BookmarkNode* bookmark : subscribedItems) {
-    bookmarkIDs.push_back(bookmark->id());
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(self.bookmarkModel, bookmark);
+    if (!meta || !meta->has_shopping_specifics()) {
+      continue;
+    }
+    const power_bookmarks::ShoppingSpecifics specifics =
+        meta->shopping_specifics();
+    // To build the PriceNotificationTableViewItem for product on current page
+    // which are not being tracked, we have to use its ProductInfo. To avoid
+    // duplicate APIs, here we also convert BookmarkMeta to ProductInfo to build
+    // the PriceNotificationTableViewItem for tracked products, instead of
+    // passing BookmarkMeta directly.
+    absl::optional<commerce::ProductInfo> info;
+    info.emplace();
+    info->title = specifics.title();
+    info->image_url = GURL(meta->lead_image().url());
+    info->product_cluster_id = specifics.product_cluster_id();
+    info->offer_id = specifics.offer_id();
+    info->currency_code = specifics.current_price().currency_code();
+    info->amount_micros = specifics.current_price().amount_micros();
+    info->country_code = specifics.country_code();
+    if (specifics.has_previous_price() &&
+        specifics.previous_price().amount_micros() >
+            specifics.current_price().amount_micros()) {
+      info->previous_amount_micros.emplace(
+          specifics.previous_price().amount_micros());
+    }
+    [self addTrackedItem:info fromSite:bookmark->url()];
   }
-
-  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
-  self.shoppingService->GetUpdatedProductInfoForBookmarks(
-      bookmarkIDs,
-      base::BindRepeating(^(const int64_t bookmarkID, const GURL& productURL,
-                            absl::optional<commerce::ProductInfo> productInfo) {
-        [weakSelf addTrackedItem:productInfo fromSite:productURL];
-      }));
 }
 
 // Retrieves the product data for the items the user has subscribed to and the

@@ -18,6 +18,7 @@ source_set("price_notifications") {
     "//components/commerce/core:shopping_service",
     "//components/image_fetcher/core",
     "//components/payments/core",
+    "//components/power_bookmarks/core",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
