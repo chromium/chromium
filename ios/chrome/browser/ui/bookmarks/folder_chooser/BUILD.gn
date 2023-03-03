@@ -62,7 +62,7 @@ source_set("ui") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/bookmarks:constants",
-    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/bookmarks/cells",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/table_view",

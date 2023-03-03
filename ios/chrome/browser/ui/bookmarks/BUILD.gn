@@ -16,6 +16,7 @@ source_set("bookmarks") {
   deps = [
     ":constants",
     ":core",
+    ":utils",
     "resources:bookmark_blue_check",
     "resources:bookmark_blue_folder",
     "resources:bookmark_blue_new_folder",
@@ -66,27 +67,20 @@ source_set("core") {
     "bookmark_navigation_controller.mm",
     "bookmark_path_cache.h",
     "bookmark_path_cache.mm",
-    "bookmark_utils_ios.h",
-    "bookmark_utils_ios.mm",
   ]
   deps = [
     ":constants",
-    ":undo_manager",
+    ":utils",
     "//base",
     "//components/bookmarks/browser",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/query_parser",
-    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
-    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/default_promo:utils",
-    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:url_with_title",
@@ -97,19 +91,35 @@ source_set("core") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("undo_manager") {
+source_set("utils") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "bookmark_utils_ios.h",
+    "bookmark_utils_ios.mm",
     "undo_manager_bridge_observer.h",
     "undo_manager_bridge_observer.mm",
     "undo_manager_wrapper.h",
     "undo_manager_wrapper.mm",
   ]
   deps = [
+    ":constants",
     "//base",
+    "//base:i18n",
+    "//components/bookmarks/browser",
+    "//components/query_parser",
+    "//components/strings",
     "//components/undo",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/undo",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
   ]
 }
 
@@ -132,6 +142,7 @@ source_set("unit_tests") {
   deps = [
     ":bookmarks",
     ":core",
+    ":utils",
     "//base",
     "//components/bookmarks/browser",
     "//components/sync_preferences:test_support",
@@ -194,6 +205,7 @@ source_set("eg_app_support+eg2") {
     ":bookmarks",
     ":constants",
     ":core",
+    ":utils",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",

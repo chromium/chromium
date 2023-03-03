@@ -33,6 +33,7 @@ source_set("home") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/bookmarks/cells",
     "//ios/chrome/browser/ui/bookmarks/editor",
     "//ios/chrome/browser/ui/bookmarks/folder_chooser",
