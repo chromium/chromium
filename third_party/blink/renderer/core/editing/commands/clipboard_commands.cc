@@ -421,6 +421,13 @@ void ClipboardCommands::PasteFromClipboard(LocalFrame& frame,
 
 void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
   DCHECK(frame.GetDocument());
+
+  // The code below makes multiple calls to SystemClipboard methods which
+  // implies multiple IPC calls to the ClipboardHost in the browaser process.
+  // SystemClipboard snapshotting tells SystemClipboard to cache results from
+  // the ClipboardHost so that at most one IPC is made for each type.
+  ScopedSystemClipboardSnapshot snapshot(*frame.GetSystemClipboard());
+
   if (!DispatchPasteEvent(frame, PasteMode::kAllMimeTypes, source))
     return;
   if (!frame.GetEditor().CanPaste())
