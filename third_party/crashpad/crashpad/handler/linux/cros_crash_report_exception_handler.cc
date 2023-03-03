@@ -18,6 +18,9 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#if defined(CRASHPAD_IS_IN_CHROMIUM)
+#include "base/system/sys_info.h"
+#endif // CRASHPAD_IS_IN_CHROMIUM
 #include "client/settings.h"
 #include "handler/linux/capture_snapshot.h"
 #include "handler/minidump_to_upload_parameters.h"
@@ -247,15 +250,28 @@ bool CrosCrashReportExceptionHandler::HandleExceptionWithConnection(
   // crash_reporter needs to know the pid and uid of the crashing process.
   std::vector<std::string> argv({"/sbin/crash_reporter"});
 
-  // Used to distinguish between non-fatal and fatal crashes.
-  const ExceptionSnapshot* const exception_snapshot = snapshot->Exception();
-  if (exception_snapshot) {
-    // convert to int32, since crashpad uses -1 as a signal for non-fatal
-    // crashes.
-    argv.push_back(base::StringPrintf(
-        "--chrome_signal=%d",
-        static_cast<int32_t>(exception_snapshot->Exception())));
+#if defined(CRASHPAD_IS_IN_CHROMIUM)
+  int32_t major_version = 0, minor_version = 0, bugfix_version = 0;
+  base::SysInfo::OperatingSystemVersionNumbers(
+      &major_version, &minor_version, &bugfix_version);
+  // The version on which https://crrev.com/c/4265753 landed.
+  constexpr int32_t kFixedVersion = 15363;
+  // TODO(https://crbug.com/1420445): Remove this check (and the
+  // CRASHPAD_IS_IN_CHROMIUM defines) when M115 branches.
+  // (Lacros is guaranteed not to be more than 2 milestones ahead of ash, and
+  // M113 on ash has the relevant crash_reporter change.)
+  if (major_version >= kFixedVersion) {
+    // Used to distinguish between non-fatal and fatal crashes.
+    const ExceptionSnapshot* const exception_snapshot = snapshot->Exception();
+    if (exception_snapshot) {
+      // convert to int32, since crashpad uses -1 as a signal for non-fatal
+      // crashes.
+      argv.push_back(base::StringPrintf(
+          "--chrome_signal=%d",
+          static_cast<int32_t>(exception_snapshot->Exception())));
+    }
   }
+#endif // CRASHPAD_IS_IN_CHROMIUM
 
   argv.push_back("--chrome_memfd=" + std::to_string(file_writer.fd()));
 
