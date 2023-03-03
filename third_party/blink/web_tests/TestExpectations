@@ -3696,6 +3696,32 @@ crbug.com/1052642 external/wpt/service-workers/service-worker/unregister-immedia
 # Sheriff failures 2017-07-03
 crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html [ Pass Timeout ]
 
+# Crashes with CSSTransitionDiscrete enabled
+crbug.com/1399631 animations/custom-properties/custom-ident-type-interpolation.html [ Crash ]
+crbug.com/1399631 animations/custom-properties/custom-list-type-interpolation.html [ Crash ]
+crbug.com/1399631 animations/custom-properties/ident-type-interpolation.html [ Crash ]
+crbug.com/1399631 animations/custom-properties/token-stream-type-interpolation.html [ Crash ]
+crbug.com/1399631 animations/custom-properties/url-type-interpolation.html [ Crash ]
+crbug.com/1399631 animations/interpolation/svg-fill-interpolation.html [ Crash ]
+crbug.com/1399631 animations/interpolation/svg-stroke-interpolation.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-anchor-position/anchor-default-basics.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-anchor-position/anchor-name-basics.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-anchor-position/position-fallback-basics.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/at-property-animation.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/register-property.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/animation/custom-property-transition-custom-ident.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/animation/custom-property-transition-image.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/animation/custom-property-transition-mismatched-list.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/animation/custom-property-transition-transform-function.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/animation/custom-property-transition-transform-list.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-properties-values-api/animation/custom-property-transition-url.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-sizing/animation/aspect-ratio-interpolation.html [ Crash ]
+crbug.com/1399631 external/wpt/css/css-transitions/discrete-no-interpolation.tentative.html [ Crash ]
+crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-001.html [ Crash ]
+crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-003.html [ Crash ]
+crbug.com/1399631 external/wpt/css/filter-effects/animation/filter-interpolation-003.html [ Crash ]
+crbug.com/1399631 transitions/unanimatable-properties.html [ Crash ]
+
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
 crbug.com/832169 media/media-controls-fit-properly-while-zoomed.html [ Failure Pass ]

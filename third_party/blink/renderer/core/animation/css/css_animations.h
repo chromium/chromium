@@ -283,7 +283,8 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateTransitionUpdateForPropertyHandle(
       TransitionUpdateState&,
       const PropertyHandle&,
-      size_t transition_index);
+      size_t transition_index,
+      bool animate_all);
 
   static void CalculateAnimationActiveInterpolations(
       CSSAnimationUpdate&,

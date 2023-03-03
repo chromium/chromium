@@ -69,6 +69,12 @@ class CSSDefaultInterpolationType : public InterpolationType {
     return nullptr;
   }
 
+  PairwiseInterpolationValue MaybeMergeSingles(
+      InterpolationValue&& start,
+      InterpolationValue&& end) const override {
+    return nullptr;
+  }
+
   void Composite(UnderlyingValueOwner& underlying_value_owner,
                  double underlying_fraction,
                  const InterpolationValue& value,
