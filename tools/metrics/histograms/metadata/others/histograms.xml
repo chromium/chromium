@@ -8099,6 +8099,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ModuleBlocklistCache.ExpectedMD5Digest" enum="Boolean"
     expires_after="M85">
+  <obsolete>
+    Retained for historical data.
+  </obsolete>
   <owner>pmonette@chromium.org</owner>
   <summary>
     Records whether the MD5 digest of the module blocklist cache matched the one

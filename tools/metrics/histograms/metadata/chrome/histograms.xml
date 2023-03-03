@@ -352,6 +352,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ChromeElf.ThirdPartyStatus" enum="ThirdPartyStatus"
     expires_after="M82">
+  <obsolete>
+    Retained for historical data.
+  </obsolete>
   <owner>chrisha@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <summary>
