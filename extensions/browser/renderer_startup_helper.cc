@@ -46,12 +46,12 @@ using ::content::BrowserContext;
 
 // Returns the current activation sequence of |extension| if the extension is
 // Service Worker-based, otherwise returns absl::nullopt.
-absl::optional<base::UnguessableToken> GetWorkerActivationSequence(
+absl::optional<base::UnguessableToken> GetWorkerActivationToken(
     BrowserContext* browser_context,
     const Extension& extension) {
   if (BackgroundInfo::IsServiceWorkerBased(&extension)) {
     return ServiceWorkerTaskQueue::Get(browser_context)
-        ->GetCurrentSequence(extension.id());
+        ->GetCurrentActivationToken(extension.id());
   }
   return absl::nullopt;
 }
@@ -84,7 +84,7 @@ mojom::ExtensionLoadedParamsPtr CreateExtensionLoadedParams(
       permissions_data->policy_blocked_hosts(),
       permissions_data->policy_allowed_hosts(),
       permissions_data->UsesDefaultPolicyHostRestrictions(), extension.id(),
-      GetWorkerActivationSequence(browser_context, extension),
+      GetWorkerActivationToken(browser_context, extension),
       extension.creation_flags(), extension.guid());
 }
 

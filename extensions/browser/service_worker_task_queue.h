@@ -67,11 +67,12 @@ class Extension;
 // worker completion.
 //
 // Sequences of extension activation:
-//   This class also assigns a unique sequence id to an extension activation so
-//   that it can differentiate between two activations of a particular extension
-//   (e.g. reloading an extension can cause two activations). |pending_tasks_|,
-//   worker registration and start (#C1) have sequence ids attached to them.
-//   The sequence is expired upon extension deactivation, and tasks are dropped
+//   This class also assigns a unique activation token to an extension
+//   activation so that it can differentiate between two activations of a
+//   particular extension (e.g. reloading an extension can cause two
+//   activations). |pending_tasks_|, worker registration and start (#C1) have
+//   activation tokens attached to them.
+//   The activation expires upon extension deactivation, and tasks are dropped
 //   from |pending_tasks_|.
 //
 // TODO(lazyboy): Clean up queue when extension is unloaded/uninstalled.
@@ -114,7 +115,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   void DidStartServiceWorkerContext(
       int render_process_id,
       const ExtensionId& extension_id,
-      const base::UnguessableToken& activation_sequence,
+      const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
       int thread_id);
@@ -122,15 +123,15 @@ class ServiceWorkerTaskQueue : public KeyedService,
   void DidStopServiceWorkerContext(
       int render_process_id,
       const ExtensionId& extension_id,
-      const base::UnguessableToken& activation_sequence,
+      const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
       int thread_id);
 
-  // Returns the current activation sequence for an extension, if the extension
+  // Returns the current activation token for an extension, if the extension
   // is currently activated. Returns absl::nullopt if the extension isn't
   // activated.
-  absl::optional<base::UnguessableToken> GetCurrentSequence(
+  absl::optional<base::UnguessableToken> GetCurrentActivationToken(
       const ExtensionId& extension_id) const;
 
   // Activates incognito split mode extensions that are activated in |other|
@@ -198,9 +199,10 @@ class ServiceWorkerTaskQueue : public KeyedService,
                                 RegistrationReason reason,
                                 base::Time start_time,
                                 blink::ServiceWorkerStatusCode status);
-  void DidUnregisterServiceWorker(const ExtensionId& extension_id,
-                                  const base::UnguessableToken& sequence,
-                                  bool success);
+  void DidUnregisterServiceWorker(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_token,
+      bool success);
 
   void DidStartWorkerForScope(const SequencedContextId& context_id,
                               base::Time start_time,
@@ -230,10 +232,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // all pending tasks for that worker.
   void RunPendingTasksIfWorkerReady(const SequencedContextId& context_id);
 
-  // Returns true if |sequence| is the current activation sequence for
+  // Returns true if |activation_token| is the current activation for
   // |extension_id|.
-  bool IsCurrentSequence(const ExtensionId& extension_id,
-                         const base::UnguessableToken& sequence) const;
+  bool IsCurrentActivation(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_token) const;
 
   WorkerState* GetWorkerState(const SequencedContextId& context_id);
 
@@ -269,15 +272,15 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // will manage storing and retrieving this data.
   std::unordered_map<ExtensionId, base::Version> off_the_record_registrations_;
 
-  // Current activation sequence for each activated extensions.
-  std::map<ExtensionId, base::UnguessableToken> activation_sequences_;
+  // Current activation tokens for each activated extensions.
+  std::map<ExtensionId, base::UnguessableToken> activation_tokens_;
 
   // A set of pending service worker registrations. These are registrations that
   // succeeded in the first step (triggering `DidRegisterServiceWorker`), but
   // have not yet been stored. They are cleared out (and the registration state
   // is stored) in response to `OnRegistrationStored`.
   // The key is the service worker scope (which is the associated extension's
-  // base URL), and the value is the activation sequence expected for that
+  // base URL), and the value is the activation token expected for that
   // registration.
   std::map<GURL, base::UnguessableToken> pending_registrations_;
 

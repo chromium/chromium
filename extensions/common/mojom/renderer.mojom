@@ -45,8 +45,8 @@ struct ExtensionLoadedParams {
   string id;
 
   // If this extension is Service Worker based, then this contains the
-  // activation sequence of the extension
-  mojo_base.mojom.UnguessableToken? worker_activation_sequence;
+  // activation token of the extension
+  mojo_base.mojom.UnguessableToken? worker_activation_token;
 
   // Send creation flags so that extension is initialized identically.
   int32 creation_flags;
