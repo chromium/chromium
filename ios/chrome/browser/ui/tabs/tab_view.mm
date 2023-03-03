@@ -300,24 +300,10 @@ UIImage* DefaultFaviconImage() {
 - (void)createButtonsAndLabel {
   _closeButton = [HighlightButton buttonWithType:UIButtonTypeCustom];
   [_closeButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (@available(iOS 15, *)) {
-    NSDirectionalEdgeInsets contentInsets =
-        NSDirectionalEdgeInsetsMake(kTabCloseTopInset, kTabCloseLeftInset,
-                                    kTabCloseBottomInset, kTabCloseRightInset);
-    [_closeButton.configuration setContentInsets:contentInsets];
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    [_closeButton setContentEdgeInsets:UIEdgeInsetsMake(kTabCloseTopInset,
-                                                        kTabCloseLeftInset,
-                                                        kTabCloseBottomInset,
-                                                        kTabCloseRightInset)];
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
+  [_closeButton setContentEdgeInsets:UIEdgeInsetsMake(kTabCloseTopInset,
+                                                      kTabCloseLeftInset,
+                                                      kTabCloseBottomInset,
+                                                      kTabCloseRightInset)];
   UIImage* closeButton =
       UseSymbols()
           ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,

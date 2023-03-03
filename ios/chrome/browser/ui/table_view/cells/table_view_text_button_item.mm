@@ -154,21 +154,9 @@ const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = kButtonCornerRadius;
     self.button.clipsToBounds = YES;
-
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (@available(iOS 15, *)) {
-      self.button.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      self.button.contentEdgeInsets = UIEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    self.button.contentEdgeInsets = UIEdgeInsetsMake(
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
 
     self.button.pointerInteractionEnabled = YES;
     // This button's background color is configured whenever the cell is

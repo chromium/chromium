@@ -433,21 +433,8 @@ CGFloat const kContentOptimalWidth = 327;
 - (UIButton*)actionButton {
   if (!_actionButton) {
     _actionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
-
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (@available(iOS 15, *)) {
-      _actionButton.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
-          kButtonHorizontalMargin);
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _actionButton.contentEdgeInsets =
-          UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
+    _actionButton.contentEdgeInsets =
+        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     [_actionButton
         setBackgroundColor:[UIColor
                                colorNamed:kGroupedSecondaryBackgroundColor]];
@@ -466,14 +453,8 @@ CGFloat const kContentOptimalWidth = 327;
     _actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _actionButton.accessibilityIdentifier =
         kPasswordsInOtherAppsActionAccessibilityIdentifier;
-
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     _actionButton.titleEdgeInsets = UIEdgeInsetsMake(
         0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
     _actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [_actionButton addTarget:self
                       action:@selector(didTapActionButton)
