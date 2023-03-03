@@ -15,6 +15,19 @@ namespace {
 constexpr SkColor kEditModeBgColorAlpha =
     SkColorSetA(SK_ColorBLACK, 0x99 /*60%*/);
 constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
+
+// Return true if |v1| is on top than |v2|, or |v1| is on the left side of |v2|
+// when |v1| has the same y position as |v2|.
+bool CompareActionViewPosition(const ActionView* v1, const ActionView* v2) {
+  auto center1 = v1->GetTouchCenterInWindow();
+  auto center2 = v2->GetTouchCenterInWindow();
+
+  if (center1.y() != center2.y()) {
+    return center1.y() < center2.y();
+  }
+  return center1.x() < center2.x();
+}
+
 }  // namespace
 
 InputMappingView::InputMappingView(
@@ -49,6 +62,7 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       SetBackground(nullptr);
       break;
     case DisplayMode::kEdit:
+      SortChildren();
       SetBackground(views::CreateSolidBackground(
           AllowReposition() ? kEditModeBgColor : kEditModeBgColorAlpha));
       break;
@@ -102,6 +116,30 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
         break;
       }
     }
+  }
+}
+
+void InputMappingView::SortChildren() {
+  std::vector<ActionView*> left, right;
+  float aspect_ratio = (float)width() / height();
+  for (auto* child : children()) {
+    auto* action_view = static_cast<ActionView*>(child);
+    if (aspect_ratio > 1 &&
+        action_view->GetTouchCenterInWindow().x() < width() / 2) {
+      left.emplace_back(action_view);
+    } else {
+      right.emplace_back(action_view);
+    }
+  }
+
+  std::sort(left.begin(), left.end(), CompareActionViewPosition);
+  std::sort(right.begin(), right.end(), CompareActionViewPosition);
+
+  for (auto* child : left) {
+    AddChildView(child);
+  }
+  for (auto* child : right) {
+    AddChildView(child);
   }
 }
 

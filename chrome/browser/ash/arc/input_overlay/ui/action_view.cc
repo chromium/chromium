@@ -401,7 +401,7 @@ void ActionView::ChangePositionBinding(const gfx::Point& new_touch_center) {
   action_->PrepareToBindPosition(new_touch_center);
 }
 
-gfx::Point ActionView::GetTouchCenterInWindow() {
+gfx::Point ActionView::GetTouchCenterInWindow() const {
   if (!touch_point_center_) {
     auto point = action_->GetUICenterPosition();
     return gfx::Point(point.x(), point.y());

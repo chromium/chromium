@@ -32,6 +32,14 @@ class InputMappingView : public views::View {
  private:
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
+  // Reorder the child views to have focus order as:
+  // If the window aspect-ratio > 1
+  // - First, focus the views on the left half of the window from top to bottom.
+  // - Then focus the views on the right half of the window from top to bottom.
+  // If the window aspect-ratio <= 1
+  // - Focus from top to bottom.
+  void SortChildren();
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

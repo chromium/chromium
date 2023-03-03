@@ -93,7 +93,7 @@ class ActionView : public views::View {
   bool ApplyKeyReleased(const ui::KeyEvent& event);
 
   void SetTouchPointCenter(const gfx::Point& touch_point_center);
-  gfx::Point GetTouchCenterInWindow();
+  gfx::Point GetTouchCenterInWindow() const;
 
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }
