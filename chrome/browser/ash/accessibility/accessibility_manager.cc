@@ -1989,8 +1989,18 @@ void AccessibilityManager::SetKeyboardListenerExtensionId(
 }
 
 bool AccessibilityManager::ToggleDictation() {
-  if (!profile_)
+  if (!profile_) {
     return false;
+  }
+
+  const speech::LanguageCode language_code = GetDictationLanguageCode();
+  if (!dictation_active_ && ::features::IsDictationOfflineAvailable() &&
+      speech::SodaInstaller::GetInstance()->IsSodaDownloading(language_code)) {
+    // Only return early if the user tried to toggle Dictation on during a SODA
+    // download; if the user tried to toggle Dictation off, we can let this pass
+    // through, even if SODA is in-progress.
+    return false;
+  }
 
   // Send an event to accessibility common, where Dictation logic lives.
   dictation_active_ = !dictation_active_;
