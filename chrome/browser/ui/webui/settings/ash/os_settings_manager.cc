@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/ash/settings_user_action_tracker.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace ash::settings {
@@ -67,7 +67,8 @@ OsSettingsManager::~OsSettingsManager() = default;
 void OsSettingsManager::AddLoadTimeData(content::WebUIDataSource* html_source) {
   for (const auto& section : sections_->sections())
     section->AddLoadTimeData(html_source);
-  html_source->AddBoolean("isJellyEnabled", features::IsJellyEnabled());
+  html_source->AddBoolean("isJellyEnabled",
+                          chromeos::features::IsJellyEnabled());
   html_source->UseStringsJs();
 }
 
