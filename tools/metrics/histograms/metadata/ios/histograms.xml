@@ -93,6 +93,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.BringAndroidTabs.ActionOnPrompt"
+    enum="IOSBringAndroidTabsPromptActionType" expires_after="2024-02-28">
+  <owner>hiramahmood@google.com</owner>
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The action taken by the user after the Bring Android Tabs Tabs List view is
+    presented.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BringAndroidTabs.ActionOnTabsList"
+    enum="IOSBringAndroidTabsTabsListActionType" expires_after="2024-02-28">
+  <owner>hiramahmood@google.com</owner>
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The action taken by the user in response to the Bring Android Tabs Tab List
+    .
+  </summary>
+</histogram>
+
+<histogram name="IOS.BringAndroidTabs.DeselectedTabs" units="count"
+    expires_after="2024-02-28">
+  <owner>hiramahmood@google.com</owner>
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The number of tabs deselected from the Tab List View of the Bring Android
+    Tabs prompt. Recorded after the Tab List View is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BringAndroidTabs.PromptTabsForAndroidSwitcherState"
+    enum="IOSPromptTabsForAndroidSwitcherState" expires_after="2024-02-28">
+  <owner>hiramahmood@google.com</owner>
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The result of prompting the set of tabs for an Android switcher. Recorded
+    after the set of tabs are prompted.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BringAndroidTabs.TabListTabCount" units="count"
+    expires_after="2024-02-28">
+  <owner>hiramahmood@google.com</owner>
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The number of tabs shown in the Bring Android Tabs Tab List prompt. Recorded
+    when the prompt is displayed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CaptivePortal.SecureConnectionFailed"
     enum="CaptivePortalStatus" expires_after="2023-10-16">
   <owner>ajuma@chromium.org</owner>
