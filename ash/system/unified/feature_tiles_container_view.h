@@ -74,14 +74,21 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   int page_count() { return pages_.size(); }
 
  private:
-  class PageContainer;
-  class RowContainer;
-
   friend class FeatureTilesContainerViewTest;
   friend class QuickSettingsViewTest;
 
+  class RowContainer;
+  class PageContainer;
+
   // Calculates the number of rows based on the available `height`.
   int CalculateRowsFromHeight(int height);
+
+  // Calculates and sets the position of the container pages that are animating
+  // through a scroll, drag gesture or by clicking on a pagination dot.
+  // This function is called multiple times per page transition.
+  // After animation ends, `SelectedPageChanged` will be called to update bounds
+  // of all pages, including those that were not part of the transition.
+  void UpdateAnimatingPagesBounds(int old_selected, int new_selected);
 
   // Updates page splits for feature tiles.
   void UpdateTotalPages();

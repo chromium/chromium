@@ -195,12 +195,10 @@ void FeatureTilesContainerView::SelectedPageChanged(int old_selected,
 }
 
 void FeatureTilesContainerView::TransitionChanged() {
-  const PaginationModel::Transition& transition =
-      pagination_model_->transition();
-  if (!pagination_model_->is_valid_page(transition.target_page)) {
-    return;
+  const int target_page = pagination_model_->transition().target_page;
+  if (pagination_model_->is_valid_page(target_page)) {
+    UpdateAnimatingPagesBounds(pagination_model_->selected_page(), target_page);
   }
-  pagination_model_->SelectPage(transition.target_page, true /*animate*/);
 }
 
 void FeatureTilesContainerView::OnGestureEvent(ui::GestureEvent* event) {
@@ -224,9 +222,24 @@ bool FeatureTilesContainerView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 void FeatureTilesContainerView::Layout() {
   views::View::Layout();
 
-  // `SelectedPageChanged` is called in order to recalculate the bounds of the
-  // page we're currently in.
+  // `SelectedPageChanged` is called to recalculate the pages bounds after a
+  // Layout (e.g. when changing the UI scale).
   SelectedPageChanged(0, pagination_model_->selected_page());
+}
+
+void FeatureTilesContainerView::UpdateAnimatingPagesBounds(int old_selected,
+                                                           int new_selected) {
+  DCHECK(pagination_model_->is_valid_page(old_selected));
+  DCHECK(pagination_model_->is_valid_page(new_selected));
+
+  // Transition to next page means negative offset.
+  const int direction = new_selected > old_selected ? -1 : 1;
+
+  const int page_offset = kRevampedTrayMenuWidth * direction;
+  const int transition_offset =
+      pagination_model_->transition().progress * page_offset;
+  pages_[old_selected]->SetX(transition_offset);
+  pages_[new_selected]->SetX(transition_offset - page_offset);
 }
 
 void FeatureTilesContainerView::AddedToWidget() {

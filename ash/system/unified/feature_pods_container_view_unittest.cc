@@ -53,6 +53,9 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override { return nullptr; }
+  std::unique_ptr<FeatureTile> CreateTile(bool compact) override {
+    return nullptr;
+  }
 
   void OnIconPressed() override {}
 

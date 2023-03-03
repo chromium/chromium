@@ -132,6 +132,8 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetVisibleCount() { return container()->GetVisibleFeatureTileCount(); }
 
+  std::vector<views::View*> pages() { return container()->children(); }
+
   // Fills the container with a number of `pages` given the max amount of
   // displayable primary tiles per page.
   void FillContainerWithPrimaryTiles(int pages) {
@@ -443,6 +445,41 @@ TEST_F(FeatureTilesContainerViewTest, SwitchPageWithFocus) {
   // Pressing shift tab returns to the previous page.
   PressShiftTab();
   EXPECT_EQ(0, pagination_model()->selected_page());
+}
+
+TEST_F(FeatureTilesContainerViewTest, PaginationTransition) {
+  FillContainerWithPrimaryTiles(/*pages=*/3);
+  views::test::RunScheduledLayout(container());
+
+  gfx::Rect initial_bounds = pages()[0]->bounds();
+  gfx::Rect current_bounds;
+  gfx::Rect previous_bounds = initial_bounds;
+
+  // Page bounds should slide to the left during a transition to the next page.
+  PaginationModel::Transition transition(
+      pagination_model()->selected_page() + 1, 0);
+
+  for (double i = 0.1; i <= 1.0; i += 0.1) {
+    transition.progress = i;
+    pagination_model()->SetTransition(transition);
+
+    current_bounds = pages()[0]->bounds();
+
+    EXPECT_LT(current_bounds.x(), previous_bounds.x());
+    EXPECT_EQ(current_bounds.y(), previous_bounds.y());
+
+    previous_bounds = current_bounds;
+  }
+
+  // Page position after the transition ends should be a page offset to the
+  // left.
+  int page_offset = kRevampedTrayMenuWidth;
+  gfx::Rect final_bounds =
+      gfx::Rect(initial_bounds.x() - page_offset, initial_bounds.y(),
+                initial_bounds.width(), initial_bounds.height());
+  pagination_model()->SelectPage(1, false);
+  views::test::RunScheduledLayout(container());
+  EXPECT_EQ(final_bounds, pages()[0]->bounds());
 }
 
 }  // namespace ash

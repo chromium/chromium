@@ -30,9 +30,7 @@ class ASH_EXPORT FeaturePodControllerBase {
 
   // Creates FeatureTile view. `compact` determines whether to present a Primary
   // or Compact tile.
-  // TODO(b/252871301): Make function pure virtual after implementing
-  // every feature tile.
-  virtual std::unique_ptr<FeatureTile> CreateTile(bool compact);
+  virtual std::unique_ptr<FeatureTile> CreateTile(bool compact) = 0;
 
   // Returns the feature catalog name which is used for UMA tracking. Please
   // remember to call the corresponding tracking method (`TrackToggleUMA` and

@@ -44,11 +44,6 @@ class ASH_EXPORT FeatureTile : public views::Button {
     kMaxValue = kCompact,
   };
 
-  // Constructor for prototype tiles without a callback. Applies placeholder
-  // icons and titles.
-  // TODO(b/252871301): Remove when having implemented each feature tile.
-  explicit FeatureTile(TileType type = TileType::kPrimary);
-
   // Constructor for FeatureTiles. `callback` will be called when interacting
   // with the main part of the button, which accounts for the whole tile.
   // For primary tiles with drill-in, `callback` is called when interacting with

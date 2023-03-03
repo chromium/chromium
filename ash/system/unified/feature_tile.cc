@@ -48,25 +48,6 @@ constexpr gfx::Insets kCompactIconContainerInteriorMargin(
 
 }  // namespace
 
-// Constructor for prototype tiles without a callback.
-// TODO(b/252871301): Remove when having implemented each feature tile.
-FeatureTile::FeatureTile(TileType type)
-    : Button(PressedCallback()), type_(type) {
-  UpdateColors();
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kButtonRadius);
-  SetAccessibleName(u"Placeholder Tile");
-
-  CreateChildViews();
-  if (type == TileType::kPrimary) {
-    label_->SetText(u"Title");
-    sub_label_->SetText(u"Subtitle");
-  } else {
-    label_->SetText(u"Two line\ntitle");
-  }
-  SetVectorIcon(vector_icons::kDogfoodIcon);
-}
-
 FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
                          bool is_togglable,
                          TileType type)
