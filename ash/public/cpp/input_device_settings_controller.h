@@ -68,7 +68,7 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
 
   // Configure the settings for keyboard of |id| with the provided |settings|.
   virtual void SetKeyboardSettings(DeviceId id,
-                                   const mojom::KeyboardSettings& settings) = 0;
+                                   mojom::KeyboardSettingsPtr settings) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

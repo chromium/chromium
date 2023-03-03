@@ -33,6 +33,8 @@ const ui::InputDevice kSampleKeyboardBluetooth = {
     10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
 const ui::InputDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
                                             "kSampleKeyboardUsb"};
+const ui::InputDevice kSampleKeyboardUsb2 = {20, ui::INPUT_DEVICE_USB,
+                                             "kSampleKeyboardUsb2"};
 
 constexpr char kUserEmail[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -45,14 +47,21 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
     num_keyboard_settings_initialized_++;
   }
   void UpdateKeyboardSettings(PrefService* pref_service,
-                              const mojom::Keyboard& keyboard) override {}
+                              const mojom::Keyboard& keyboard) override {
+    num_keyboard_settings_updated_++;
+  }
 
   uint32_t num_keyboard_settings_initialized() {
     return num_keyboard_settings_initialized_;
   }
 
+  uint32_t num_keyboard_settings_updated() {
+    return num_keyboard_settings_updated_;
+  }
+
  private:
   uint32_t num_keyboard_settings_initialized_ = 0;
+  uint32_t num_keyboard_settings_updated_ = 0;
 };
 
 class FakeInputDeviceSettingsControllerObserver
@@ -66,10 +75,18 @@ class FakeInputDeviceSettingsControllerObserver
     num_keyboards_connected_--;
   }
 
+  void OnKeyboardSettingsUpdated(const mojom::Keyboard& keyboard) override {
+    num_keyboards_settings_updated_++;
+  }
+
   uint32_t num_keyboards_connected() { return num_keyboards_connected_; }
+  uint32_t num_keyboards_settings_updated() {
+    return num_keyboards_settings_updated_;
+  }
 
  private:
   uint32_t num_keyboards_connected_;
+  uint32_t num_keyboards_settings_updated_;
 };
 
 class InputDeviceSettingsControllerTest : public AshTestBase {
@@ -235,6 +252,32 @@ TEST_F(InputDeviceSettingsControllerTest,
                                                    std::move(pref_service_2));
   SimulateUserLogin(account_id_2);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 3u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
+  controller()->OnKeyboardListUpdated({kSampleKeyboardUsb}, {});
+
+  EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
+  controller()->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
+                                    mojom::KeyboardSettings::New());
+
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
+  // The SetKeyboardSettings call should update both keyboards since they have
+  // the same |device_key|.
+  controller()->OnKeyboardListUpdated({kSampleKeyboardUsb, kSampleKeyboardUsb2},
+                                      {});
+
+  EXPECT_EQ(observer_->num_keyboards_connected(), 2u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 2u);
+  controller()->SetKeyboardSettings((DeviceId)kSampleKeyboardUsb.id,
+                                    mojom::KeyboardSettings::New());
+  EXPECT_EQ(observer_->num_keyboards_settings_updated(), 2u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
 }
 
 }  // namespace ash

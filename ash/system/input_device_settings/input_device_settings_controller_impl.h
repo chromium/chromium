@@ -55,7 +55,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) override;
   void SetKeyboardSettings(DeviceId id,
-                           const mojom::KeyboardSettings& settings) override;
+                           mojom::KeyboardSettingsPtr settings) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

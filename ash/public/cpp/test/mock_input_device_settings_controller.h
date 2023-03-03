@@ -54,7 +54,7 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               (override));
   MOCK_METHOD(void,
               SetKeyboardSettings,
-              (DeviceId id, const mojom::KeyboardSettings& settings),
+              (DeviceId id, mojom::KeyboardSettingsPtr settings),
               (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));

@@ -23,7 +23,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/devices/input_device.h"
@@ -247,11 +246,25 @@ InputDeviceSettingsControllerImpl::GetConnectedPointingSticks() {
   return pointing_stick_vector;
 }
 
-// TODO(dpad): Implement updating of keyboard settings.
 void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     DeviceId id,
-    const mojom::KeyboardSettings& settings) {
-  NOTIMPLEMENTED();
+    mojom::KeyboardSettingsPtr settings) {
+  DCHECK(base::Contains(keyboards_, id));
+  DCHECK(active_pref_service_);
+  auto& found_keyboard = *keyboards_.at(id);
+  found_keyboard.settings = settings.Clone();
+  keyboard_pref_handler_->UpdateKeyboardSettings(active_pref_service_,
+                                                 found_keyboard);
+  DispatchKeyboardSettingsChanged(id);
+  // Check the list of keyboards to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, keyboard] : keyboards_) {
+    if (device_id != found_keyboard.id &&
+        keyboard->device_key == found_keyboard.device_key) {
+      keyboard->settings = settings->Clone();
+      DispatchKeyboardSettingsChanged(device_id);
+    }
+  }
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {

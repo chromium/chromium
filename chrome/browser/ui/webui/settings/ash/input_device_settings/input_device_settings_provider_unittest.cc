@@ -117,7 +117,7 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   }
   void SetKeyboardSettings(
       DeviceId id,
-      const ::ash::mojom::KeyboardSettings& settings) override {}
+      ::ash::mojom::KeyboardSettingsPtr settings) override {}
   void AddObserver(Observer* observer) override { observer_ = observer; }
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
 
