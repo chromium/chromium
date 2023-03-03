@@ -277,7 +277,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   auto query_complete_callback = base::BindOnce(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
       weak_factory_.GetWeakPtr(), tentative_resource_request,
-      std::move(callback), tab_helper);
+      std::move(callback), prefs, tab_helper);
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->IsHSTSActiveForHost(
@@ -290,6 +290,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     const network::ResourceRequest& tentative_resource_request,
     content::URLLoaderRequestInterceptor::LoaderCallback callback,
+    PrefService* prefs,
     HttpsOnlyModeTabHelper* tab_helper,
     bool is_hsts_active_for_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -300,16 +301,12 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
 
-  // TODO(crbug.com/1394910): Check for HttpsUpgrades and HttpsAllowlist
-  // enterprise policies as well (possibly earlier). It might be best to
-  // consolidate these checks into the HttpsUpgradesNavigationThrottle which
-  // sees the navigation first, but we need to ensure not to break metrics in
-  // the process.
-
   // Both HTTPS-First Mode and HTTPS-Upgrades are forms of upgrading all HTTP
   // navigations to HTTPS, with HTTPS-First Mode additionally enabling the
-  // HTTP interstitial on fallback.
-  if (!base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
+  // HTTP interstitial on fallback. The `HttpsUpgradesEnabled` enterprise policy
+  // can also be set to `false` to disable HTTPS-Upgrades.
+  if ((!base::FeatureList::IsEnabled(features::kHttpsUpgrades) ||
+       !prefs->GetBoolean(prefs::kHttpsUpgradesEnabled)) &&
       !http_interstitial_enabled_) {
     // Don't upgrade the request and let the default loader continue, but record
     // that the request *would have* upgraded, had upgrading been enabled.

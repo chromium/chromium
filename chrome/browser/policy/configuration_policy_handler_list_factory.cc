@@ -296,6 +296,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHttpAllowlist,
     prefs::kHttpAllowlist,
     base::Value::Type::LIST },
+  { key::kHttpsUpgradesEnabled,
+    prefs::kHttpsUpgradesEnabled,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

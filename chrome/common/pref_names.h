@@ -1307,6 +1307,7 @@ extern const char kQuickDeleteDialogSuppressed[];
 #endif
 
 extern const char kHttpAllowlist[];
+extern const char kHttpsUpgradesEnabled[];
 
 }  // namespace prefs
 
