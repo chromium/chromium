@@ -12,7 +12,6 @@ import android.view.View.OnClickListener;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
@@ -147,15 +146,11 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             return true;
         } else if (menuItem.getItemId() == R.id.selection_open_in_new_tab_id) {
             RecordUserAction.record("MobileBookmarkManagerEntryOpenedInNewTab");
-            RecordHistogram.recordCount1000Histogram(
-                    "Bookmarks.Count.OpenInNewTab", mSelectionDelegate.getSelectedItems().size());
             mDelegate.openBookmarksInNewTabs(
                     selectionDelegate.getSelectedItemsAsList(), /*incognito=*/false);
             return true;
         } else if (menuItem.getItemId() == R.id.selection_open_in_incognito_tab_id) {
             RecordUserAction.record("MobileBookmarkManagerEntryOpenedInIncognito");
-            RecordHistogram.recordCount1000Histogram("Bookmarks.Count.OpenInIncognito",
-                    mSelectionDelegate.getSelectedItems().size());
             mDelegate.openBookmarksInNewTabs(
                     selectionDelegate.getSelectedItemsAsList(), /*incognito=*/true);
             return true;
