@@ -2004,7 +2004,11 @@
     },
     {
       name: "MachineLearningNeuralNetwork",
-      status: {"Win": "experimental", "default": "test"},
+      status: {
+        "Win": "experimental",
+        "Linux": "experimental",
+        "default": "test"
+      },
       base_feature: "none",
     },
     {
