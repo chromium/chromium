@@ -209,7 +209,6 @@ class PLATFORM_EXPORT FontCache final {
     antialiased_text_enabled_ = enabled;
   }
   static void SetLCDTextEnabled(bool enabled) { lcd_text_enabled_ = enabled; }
-  static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
   // Functions to cache and retrieve the system font metrics.
   static void SetMenuFontMetrics(const AtomicString& family_name,
                                  int32_t font_height);
@@ -369,8 +368,6 @@ class PLATFORM_EXPORT FontCache final {
   static WebFontPrewarmer* prewarmer_;
   static bool antialiased_text_enabled_;
   static bool lcd_text_enabled_;
-  static HashMap<String, sk_sp<SkTypeface>, CaseFoldingHashTraits<String>>*
-      sideloaded_fonts_;
   // The system font metrics cache.
   static AtomicString* menu_font_family_name_;
   static int32_t menu_font_height_;

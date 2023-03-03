@@ -5,11 +5,6 @@
 #ifndef CONTENT_WEB_TEST_COMMON_WEB_TEST_SWITCHES_H_
 #define CONTENT_WEB_TEST_COMMON_WEB_TEST_SWITCHES_H_
 
-#include <string>
-#include <vector>
-
-#include "build/build_config.h"
-
 namespace switches {
 
 extern const char kAllowExternalPages[];
@@ -24,14 +19,6 @@ extern const char kStableReleaseMode[];
 extern const char kDisableHeadlessMode[];
 extern const char kDisableAutoWPTOriginIsolation[];
 extern const char kResetBrowsingInstanceBetweenTests[];
-
-#if BUILDFLAG(IS_WIN)
-extern const char kRegisterFontFiles[];
-
-// Returns list of extra font files to be made accessible to the renderer, that
-// are specified via kRegisterFontFiles.
-std::vector<std::string> GetSideloadFontFiles();
-#endif
 
 }  // namespace switches
 

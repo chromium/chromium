@@ -36,12 +36,6 @@
 #include "ui/gfx/icc_profile.h"
 #include "v8/include/v8.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "third_party/blink/public/web/win/web_font_rendering.h"
-#include "third_party/skia/include/core/SkFontMgr.h"
-#include "third_party/skia/include/ports/SkTypeface_win.h"
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #include "skia/ext/test_fonts.h"
 #endif

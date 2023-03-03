@@ -226,15 +226,6 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
-  // TODO(vmpstr): Deal with paint typeface here.
-  if (sideloaded_fonts_) {
-    auto sideloaded_font = sideloaded_fonts_->find(name.c_str());
-    if (sideloaded_font != sideloaded_fonts_->end())
-      return sideloaded_font->value;
-  }
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // On linux if the fontManager has been overridden then we should be calling
   // the embedder provided font Manager rather than calling

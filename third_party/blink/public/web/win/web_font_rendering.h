@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkFontMgr;
-class SkTypeface;
 
 namespace blink {
 
@@ -27,7 +26,6 @@ class BLINK_EXPORT WebFontRendering {
   // alive until the process exits.
   static void SetFontRenderingClient(WebFontRenderingClient*);
   static WebFontPrewarmer* GetFontPrewarmer();
-  static void AddSideloadedFontForTesting(sk_sp<SkTypeface>);
   static void SetMenuFontMetrics(const WebString& family_name,
                                  int32_t font_height);
   static void SetSmallCaptionFontMetrics(const WebString& family_name,

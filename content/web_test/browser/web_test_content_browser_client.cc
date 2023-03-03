@@ -404,14 +404,11 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
                                                             child_process_id);
 
   static const char* kForwardSwitches[] = {
-    // Switches from web_test_switches.h that are used in the renderer.
-    switches::kEnableAccelerated2DCanvas,
-    switches::kEnableFontAntialiasing,
-    switches::kAlwaysUseComplexText,
-    switches::kStableReleaseMode,
-#if BUILDFLAG(IS_WIN)
-    switches::kRegisterFontFiles,
-#endif
+      // Switches from web_test_switches.h that are used in the renderer.
+      switches::kEnableAccelerated2DCanvas,
+      switches::kEnableFontAntialiasing,
+      switches::kAlwaysUseComplexText,
+      switches::kStableReleaseMode,
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),

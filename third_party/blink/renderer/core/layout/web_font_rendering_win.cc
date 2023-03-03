@@ -32,11 +32,6 @@ void WebFontRendering::SetFontRenderingClient(
 }
 
 // static
-void WebFontRendering::AddSideloadedFontForTesting(sk_sp<SkTypeface> typeface) {
-  FontCache::AddSideloadedFontForTesting(std::move(typeface));
-}
-
-// static
 void WebFontRendering::SetMenuFontMetrics(const WebString& family_name,
                                           int32_t font_height) {
   FontCache::SetMenuFontMetrics(family_name, font_height);
