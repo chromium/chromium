@@ -18,9 +18,9 @@ namespace ash::shortcut_ui {
 // Search() is expected to be invoked by the Shortcuts UI as well as the
 // Launcher search UI.
 //
-// Search results are obtained by matching the provided query against search
-// tags indexed in the LocalSearchService and cross-referencing results with
-// SearchTagRegistry.
+// Search results are obtained by matching the provided query against
+// SearchConcepts indexed in the LocalSearchService and cross-referencing
+// results with SearchConceptRegistry.
 //
 // Searches which do not provide any matches result in an empty results array.
 class SearchHandler : public shortcut_customization::mojom::SearchHandler {
