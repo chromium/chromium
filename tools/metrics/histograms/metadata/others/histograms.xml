@@ -1183,19 +1183,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AutocompleteActionPredictor.Confidence" units="units"
-    expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The distribution of confidence ratings. The AutocompleteActionPredictor uses
-    a heuristic to calculate a confidence score given a URL and user-entered
-    text pair. It is in the range [0,1] and is mapped on to a recommended
-    action, one of the enumerated AutocompleteActionPredictor::Action values:
-    PRERENDER, PRECONNECT or NONE. This is the distribution of those scores
-    multiplied by 100.
-  </summary>
-</histogram>
-
 <histogram name="AutocompleteActionPredictor.DatabaseAction"
     enum="AutocompleteActionPredictorDatabaseAction" expires_after="2022-11-13">
   <owner>tbansal@chromium.org</owner>

@@ -286,11 +286,6 @@ AutocompleteActionPredictor::RecommendAction(
   base::UmaHistogramBoolean("AutocompleteActionPredictor.MatchIsInDb",
                             is_in_db);
 
-  if (is_in_db) {
-    base::UmaHistogramCounts100("AutocompleteActionPredictor.Confidence",
-                                confidence * 100);
-  }
-
   // Map the confidence to an action.
   Action action = ACTION_NONE;
   if (confidence >= kPrerenderDUIConfidenceCutoff.Get()) {
