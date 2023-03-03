@@ -142,6 +142,17 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       defaultRemappings: {
         type: Object,
       },
+
+      /**
+       * Set it to false when the page is initializing and prefs are being
+       * synced to match those in the keyboard's settings from the provider.
+       * onSettingsChanged function shouldn't be called during the
+       * initialization process.
+       */
+      isInitialized: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -183,6 +194,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private hasAssistantKey: boolean;
   private hasCapsLockKey: boolean;
   private metaKeyLabel: string;
+  private isInitialized: boolean;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
@@ -192,7 +204,15 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.getKeyboard();
   }
 
+  /**
+   * Get the keyboard to display according to the keyboardId in the url query,
+   * initializing the page and pref with the keyboard data.
+   */
   private async getKeyboard(): Promise<void> {
+    // Set isInitialized to false to prevent calling update keyboard settings
+    // api while the prefs are initializing.
+    this.isInitialized = false;
+
     const urlSearchQuery =
         Router.getInstance().getQueryParameters().get('keyboardId');
     assert(!!urlSearchQuery);
@@ -220,6 +240,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         .forEach(originalKey => {
           this.setRemappedKey(originalKey);
         });
+    this.isInitialized = true;
   }
 
   onKeyboardListUpdated(keyboards: Keyboard[]): void {
@@ -289,9 +310,57 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     }
   }
 
+  /**
+   * Update keyboard settings when the prefs change.
+   */
   private onSettingsChanged(): void {
-    // TODO(yyhyyh@): Call update keyboard settings API when user changes
-    // settings value.
+    if (!this.isInitialized) {
+      return;
+    }
+
+    this.keyboard.settings = {
+      ...this.keyboard.settings,
+      modifierRemappings: this.getUpdatedRemappings(),
+    };
+    this.inputDeviceSettingsProvider.setKeyboardSettings(
+        this.keyboard.id, this.keyboard.settings);
+  }
+
+  /**
+   * Get the modifier remappings with updated pref values.
+   */
+  private getUpdatedRemappings(): Map<ModifierKey, ModifierKey> {
+    const updatedRemappings = new Map<ModifierKey, ModifierKey>();
+
+    if (this.defaultRemappings[ModifierKey.ALT] !== this.fakeAltPref.value) {
+      updatedRemappings.set(ModifierKey.ALT, this.fakeAltPref.value);
+    }
+    if (this.defaultRemappings[ModifierKey.ASSISTANT] !==
+        this.fakeAssistantPref.value) {
+      updatedRemappings.set(
+          ModifierKey.ASSISTANT, this.fakeAssistantPref.value);
+    }
+    if (this.defaultRemappings[ModifierKey.BACKSPACE] !==
+        this.fakeBackspacePref.value) {
+      updatedRemappings.set(
+          ModifierKey.BACKSPACE, this.fakeBackspacePref.value);
+    }
+    if (this.defaultRemappings[ModifierKey.CAPS_LOCK] !==
+        this.fakeCapsLockPref.value) {
+      updatedRemappings.set(ModifierKey.CAPS_LOCK, this.fakeCapsLockPref.value);
+    }
+    if (this.defaultRemappings[ModifierKey.CONTROL] !==
+        this.fakeCtrlPref.value) {
+      updatedRemappings.set(ModifierKey.CONTROL, this.fakeCtrlPref.value);
+    }
+    if (this.defaultRemappings[ModifierKey.ESC] !== this.fakeEscPref.value) {
+      updatedRemappings.set(ModifierKey.ESC, this.fakeEscPref.value);
+    }
+    if (this.defaultRemappings[ModifierKey.META] !== this.fakeMetaPref.value) {
+      updatedRemappings.set(ModifierKey.META, this.fakeMetaPref.value);
+    }
+
+    return updatedRemappings;
   }
 
   private updateDefaultRemapping(): void {

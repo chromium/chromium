@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeKeyboards, KeyboardRemapModifierKeyRowElement, ModifierKey, Router, routes, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, getInputDeviceSettingsProvider, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 suite('PerDeviceKeyboardRemapKeys', function() {
@@ -12,17 +12,23 @@ suite('PerDeviceKeyboardRemapKeys', function() {
    */
   let page = null;
 
+  /**
+   *  @type {?FakeInputDeviceSettingsProvider}
+   */
+  let provider = null;
   setup(() => {
+    provider = getInputDeviceSettingsProvider();
     PolymerTest.clearBody();
   });
 
   teardown(() => {
     page = null;
+    provider = null;
   });
 
-  async function initializeRemapKeyspage() {
+  async function initializeRemapKeysPage() {
     page = document.createElement('settings-per-device-keyboard-remap-keys');
-
+    assertFalse(page.isInitialized);
     // Set the current route with keyboardId as search param and notify
     // the observer to update keyboard settings.
     const url = new URLSearchParams(
@@ -37,10 +43,29 @@ suite('PerDeviceKeyboardRemapKeys', function() {
   }
 
   /**
+   * Check that all the prefs are set to default keyboard value.
+   */
+  function checkPrefsSetToDefault() {
+    const ctrlDefaultMapping = page.keyboard.metaKey === MetaKey.COMMAND ?
+        ModifierKey.META :
+        ModifierKey.CONTROL;
+    const metaDefaultMapping = page.keyboard.metaKey === MetaKey.COMMAND ?
+        ModifierKey.CONTROL :
+        ModifierKey.META;
+    assertEquals(page.fakeAltPref.value, ModifierKey.ALT);
+    assertEquals(page.fakeAssistantPref.value, ModifierKey.ASSISTANT);
+    assertEquals(page.fakeBackspacePref.value, ModifierKey.BACKSPACE);
+    assertEquals(page.fakeCapsLockPref.value, ModifierKey.CAPS_LOCK);
+    assertEquals(page.fakeCtrlPref.value, ctrlDefaultMapping);
+    assertEquals(page.fakeEscPref.value, ModifierKey.ESC);
+    assertEquals(page.fakeMetaPref.value, metaDefaultMapping);
+  }
+
+  /**
    * Verify that the remap subpage is correctly loaded with keyboard data.
    */
   test('keyboard remap subpage loaded', async () => {
-    await initializeRemapKeyspage();
+    await initializeRemapKeysPage();
     assertTrue(!!page.keyboard);
 
     // Verify that the dropdown menu for unremapped key is displayed as default.
@@ -85,7 +110,7 @@ suite('PerDeviceKeyboardRemapKeys', function() {
    * keyboardId is passed through the query url.
    */
   test('keyboard remap subpage updated for different keyboard', async () => {
-    await initializeRemapKeyspage();
+    await initializeRemapKeysPage();
 
     // Update the subpage with a new keyboard.
     const url = new URLSearchParams(
@@ -135,7 +160,7 @@ suite('PerDeviceKeyboardRemapKeys', function() {
    * Verify that the restore defaults button will restore the remapping keys.
    */
   test('keyboard remap subpage restore defaults', async () => {
-    await initializeRemapKeyspage();
+    await initializeRemapKeysPage();
 
     // Click the restore defaults button.
     const restoreButton =
@@ -196,7 +221,7 @@ suite('PerDeviceKeyboardRemapKeys', function() {
    * the remapping page, it will switch back to per device keyboard page.
    */
   test('re-route to back page when keyboard disconnected', async () => {
-    await initializeRemapKeyspage();
+    await initializeRemapKeysPage();
     // Check it's currently in the modifier remapping page.
     assertEquals(
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
@@ -204,5 +229,36 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     const updatedKeyboards = [fakeKeyboards[1], fakeKeyboards[2]];
     page.onKeyboardListUpdated(updatedKeyboards);
     assertEquals(routes.PER_DEVICE_KEYBOARD, Router.getInstance().currentRoute);
+  });
+
+  /**
+   * Test that update keyboard settings api is called when keyboard remapping
+   * prefs settings change.
+   */
+  test('Update keyboard settings', async () => {
+    await initializeRemapKeysPage();
+    assertTrue(page.isInitialized);
+    // Set the modifier remappings to default stage.
+    const restoreButton =
+        page.shadowRoot.querySelector('#restoreDefaultsButton');
+    assertTrue(!!restoreButton);
+    restoreButton.click();
+    checkPrefsSetToDefault();
+
+    // Change several key remappings in the page.
+    page.set('fakeAltPref.value', ModifierKey.ASSISTANT);
+    page.set('fakeBackspacePref.value', ModifierKey.CONTROL);
+    page.set('fakeEscPref.value', ModifierKey.VOID);
+
+    // Verify that the keyboard settings in the provider are updated.
+    const updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    assertTrue(!!updatedKeyboards);
+    const updatedRemapping = updatedKeyboards[0].settings.modifierRemappings;
+    assertTrue(!!updatedRemapping);
+    assertEquals(updatedRemapping.size, 3);
+    assertEquals(updatedRemapping.get(ModifierKey.ALT), ModifierKey.ASSISTANT);
+    assertEquals(
+        updatedRemapping.get(ModifierKey.BACKSPACE), ModifierKey.CONTROL);
+    assertEquals(updatedRemapping.get(ModifierKey.ESC), ModifierKey.VOID);
   });
 });
