@@ -40,6 +40,24 @@ public class AccessorySheetCoordinator {
     private final AccessorySheetMediator mMediator;
 
     /**
+     * Describes the events that are emitted when an accessory sheet is closed / changed. A class
+     * implementing this interface takes the responsibility control the sheet, i.e.
+     * ManualFillingCoordinator.
+     */
+    public interface SheetVisibilityDelegate {
+        /**
+         * Is triggered when a tab in the accessory was selected and the sheet needs to change.
+         * @param sheetIndex The index of the selected sheet in the sheet openers / tab bar.
+         */
+        void onChangeAccessorySheet(int sheetIndex);
+
+        /**
+         * Called when the sheet needs to be hidden.
+         */
+        void onCloseAccessorySheet();
+    }
+
+    /**
      * Creates the sheet component by instantiating Model, View and Controller before wiring these
      * parts up.
      * @param sheetStub A {@link AsyncViewStub} for the accessory sheet layout.

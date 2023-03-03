@@ -83,7 +83,8 @@ import java.util.HashSet;
  * on the currently shown tab.
  */
 class ManualFillingMediator
-        extends EmptyTabObserver implements KeyboardAccessoryCoordinator.VisibilityDelegate,
+        extends EmptyTabObserver implements KeyboardAccessoryCoordinator.BarVisibilityDelegate,
+                                            AccessorySheetCoordinator.SheetVisibilityDelegate,
                                             View.OnLayoutChangeListener, BackPressHandler {
     private static final int MINIMAL_AVAILABLE_VERTICAL_SPACE = 128; // in DP.
     private static final int MINIMAL_AVAILABLE_HORIZONTAL_SPACE = 180; // in DP.
