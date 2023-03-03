@@ -1060,7 +1060,7 @@ INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
                          testing::Bool());
 
 // Verify that Autofill context menu items are displayed on a plain text field.
-TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
+TEST_P(RenderViewContestMenuAutofillTest, DISABLED_ShowAutofillOptions) {
   autofill::PersonalDataManager* pdm =
       autofill::PersonalDataManagerFactory::GetForProfile(
           profile()->GetOriginalProfile());

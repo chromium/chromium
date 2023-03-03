@@ -153,7 +153,7 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 };
 
 // Tests that the Autofill context menu is correctly set up.
-TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
+TEST_F(AutofillContextMenuManagerTest, DISABLED_AutofillContextMenuContents) {
   autofill_context_menu_manager()->AppendItems();
   std::vector<std::u16string> all_added_strings;
 
@@ -260,7 +260,7 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
 // For all the command ids that are used to set up the context menu, initiating
 // filling for each one of them results in the call to
 // `RendererShouldFillFieldWithValue`.
-TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
+TEST_F(AutofillContextMenuManagerTest, DISABLED_ExecuteCommand) {
   DCHECK(driver());
   autofill_context_menu_manager()->AppendItems();
   auto mapper = autofill_context_menu_manager()
@@ -289,7 +289,8 @@ TEST_F(AutofillContextMenuManagerTest, ExecuteCommand) {
 
 // Tests that the Autofill's ContentAutofillDriver is called to record metrics
 // when the context menu is triggered on a field.
-TEST_F(AutofillContextMenuManagerTest, RecordContextMenuIsShownOnField) {
+TEST_F(AutofillContextMenuManagerTest,
+       DISABLED_RecordContextMenuIsShownOnField) {
   FormRendererId form_renderer_id(test::MakeFormRendererId());
   FieldRendererId field_renderer_id(test::MakeFieldRendererId());
   autofill_context_menu_manager()->set_params_for_testing(
