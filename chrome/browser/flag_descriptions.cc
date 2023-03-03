@@ -5222,9 +5222,10 @@ const char kDisableDnsProxyDescription[] =
     "Turns off DNS proxying and SecureDNS for ChromeOS (only). Does not impact "
     "Chrome browser.";
 
-const char kPasspointARCSupportName[] = "PasspointARCSupport";
+const char kPasspointARCSupportName[] = "Enable Passpoint ARC support";
 const char kPasspointARCSupportDescription[] =
-    "Feature to allow ARC apps to provision WiFi networks through Passpoint.";
+    "Feature to allow Android apps (running on ARC) to provision WiFi networks "
+    "through Passpoint.";
 
 const char kEnableEdidBasedDisplayIdsName[] = "Enable EDID-based display IDs";
 const char kEnableEdidBasedDisplayIdsDescription[] =
