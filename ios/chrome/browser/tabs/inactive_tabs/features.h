@@ -34,7 +34,7 @@ bool IsInactiveTabsEnabled();
 //     The tab should not immediately be considered inactive at 10:06am today.
 //
 // The padding is here to encompass a flexbility of a day.
-base::TimeDelta TabInactivityThreshold();
+const base::TimeDelta TabInactivityThreshold();
 
 // Convenience method for getting a displayable representation of the thrsshold.
 // This is the number of days as a string.

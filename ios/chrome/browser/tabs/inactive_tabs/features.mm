@@ -30,7 +30,7 @@ bool IsInactiveTabsEnabled() {
   return isIPhoneIdiom && base::FeatureList::IsEnabled(kTabInactivityThreshold);
 }
 
-base::TimeDelta TabInactivityThreshold() {
+const base::TimeDelta TabInactivityThreshold() {
   DCHECK(IsInactiveTabsEnabled());
   std::string featureParam = base::GetFieldTrialParamValueByFeature(
       kTabInactivityThreshold, kTabInactivityThresholdParameterName);
