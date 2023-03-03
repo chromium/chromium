@@ -144,22 +144,9 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
   button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
   button.translatesAutoresizingMaskIntoConstraints = NO;
-
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (@available(iOS 15, *)) {
-    button.configuration.contentInsets =
-        NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
-                                    kButtonInsetBottom, kButtonInsetTrailing);
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
-    button.contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
-                         kButtonInsetBottom, kButtonInsetTrailing);
-  }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
+  button.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading, kButtonInsetBottom,
+                       kButtonInsetTrailing);
   button.tag = action.uniqueIdentifier;
   return button;
 }
