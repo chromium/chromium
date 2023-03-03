@@ -74,13 +74,18 @@ MainThreadMetricsHelper::MainThreadMetricsHelper(
           DURATION_PER_TASK_TYPE_METRIC_NAME ".UseCaseLoading"),
       input_handling_per_task_type_duration_reporter_(
           DURATION_PER_TASK_TYPE_METRIC_NAME ".UseCaseInputHandling"),
-      queueing_delay_histograms_{{QUEUEING_DELAY_HISTOGRAM_INIT("Control")},
-                                 {QUEUEING_DELAY_HISTOGRAM_INIT("Highest")},
-                                 {QUEUEING_DELAY_HISTOGRAM_INIT("VeryHigh")},
-                                 {QUEUEING_DELAY_HISTOGRAM_INIT("High")},
-                                 {QUEUEING_DELAY_HISTOGRAM_INIT("Normal")},
-                                 {QUEUEING_DELAY_HISTOGRAM_INIT("Low")},
-                                 {QUEUEING_DELAY_HISTOGRAM_INIT("BestEffort")}},
+      // Order here must match TaskPriority (in descending priority order).
+      queueing_delay_histograms_{
+          {QUEUEING_DELAY_HISTOGRAM_INIT("Control")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("Highest")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("VeryHigh")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("HighContinuation")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("High")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("NormalContinuation")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("Normal")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("LowContinuation")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("Low")},
+          {QUEUEING_DELAY_HISTOGRAM_INIT("BestEffort")}},
       total_task_time_reporter_(
           "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Positive",
           "Scheduler.Experimental.Renderer.TotalTime.Wall.MainThread.Negative"),

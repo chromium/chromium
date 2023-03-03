@@ -853,6 +853,11 @@ message SequenceManagerTask {
     NORMAL_PRIORITY = 5;
     LOW_PRIORITY = 6;
     BEST_EFFORT_PRIORITY = 7;
+
+    // Renderer-specific priorities.
+    HIGH_PRIORITY_CONTINUATION = 8;
+    NORMAL_PRIORITY_CONTINUATION = 9;
+    LOW_PRIORITY_CONTINUATION = 10;
   }
 
   enum QueueName {

@@ -22,10 +22,16 @@ ProtoPriority ToProtoPriority(TaskPriority priority) {
       return ProtoPriority::HIGHEST_PRIORITY;
     case TaskPriority::kVeryHighPriority:
       return ProtoPriority::VERY_HIGH_PRIORITY;
+    case TaskPriority::kHighPriorityContinuation:
+      return ProtoPriority::HIGH_PRIORITY_CONTINUATION;
     case TaskPriority::kHighPriority:
       return ProtoPriority::HIGH_PRIORITY;
+    case TaskPriority::kNormalPriorityContinuation:
+      return ProtoPriority::NORMAL_PRIORITY_CONTINUATION;
     case TaskPriority::kNormalPriority:
       return ProtoPriority::NORMAL_PRIORITY;
+    case TaskPriority::kLowPriorityContinuation:
+      return ProtoPriority::LOW_PRIORITY_CONTINUATION;
     case TaskPriority::kLowPriority:
       return ProtoPriority::LOW_PRIORITY;
     case TaskPriority::kBestEffortPriority:
@@ -63,10 +69,16 @@ const char* TaskPriorityToString(TaskPriority priority) {
       return "highest";
     case TaskPriority::kVeryHighPriority:
       return "very_high";
+    case TaskPriority::kHighPriorityContinuation:
+      return "high_continuation";
     case TaskPriority::kHighPriority:
       return "high";
+    case TaskPriority::kNormalPriorityContinuation:
+      return "normal_continuation";
     case TaskPriority::kNormalPriority:
       return "normal";
+    case TaskPriority::kLowPriorityContinuation:
+      return "low_continuation";
     case TaskPriority::kLowPriority:
       return "low";
     case TaskPriority::kBestEffortPriority:

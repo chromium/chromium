@@ -73,6 +73,7 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
       override;
   void SetPreemptedForCooperativeScheduling(Preempted) override {}
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
+      WebSchedulingQueueType,
       WebSchedulingPriority) override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(

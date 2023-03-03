@@ -144,6 +144,7 @@ blink_platform_sources("scheduler") {
     "public/thread_type.h",
     "public/virtual_time_controller.h",
     "public/web_scheduling_priority.h",
+    "public/web_scheduling_queue_type.h",
     "public/web_scheduling_task_queue.h",
     "public/widget_scheduler.h",
     "public/worker_pool.h",
@@ -211,6 +212,8 @@ source_set("test_support") {
     "test/recording_task_time_observer.h",
     "test/renderer_scheduler_test_support.cc",
     "test/web_fake_thread_scheduler.cc",
+    "test/web_scheduling_test_helper.cc",
+    "test/web_scheduling_test_helper.h",
   ]
 
   deps = [

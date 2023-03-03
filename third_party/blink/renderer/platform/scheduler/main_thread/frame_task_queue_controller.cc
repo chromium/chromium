@@ -56,6 +56,7 @@ FrameTaskQueueController::GetAllTaskQueuesAndVoters() const {
 scoped_refptr<MainThreadTaskQueue>
 FrameTaskQueueController::NewWebSchedulingTaskQueue(
     QueueTraits queue_traits,
+    WebSchedulingQueueType queue_type,
     WebSchedulingPriority priority) {
   // Note: we only track this |task_queue| in |all_task_queues_and_voters_|.
   // It's interacted with through the MainThreadWebSchedulingTaskQueueImpl that
@@ -65,6 +66,7 @@ FrameTaskQueueController::NewWebSchedulingTaskQueue(
           MainThreadTaskQueue::QueueCreationParams(
               MainThreadTaskQueue::QueueType::kWebScheduling)
               .SetQueueTraits(queue_traits)
+              .SetWebSchedulingQueueType(queue_type)
               .SetWebSchedulingPriority(priority)
               .SetFrameScheduler(frame_scheduler_impl_));
   TaskQueueCreated(task_queue);

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 
 namespace blink {
@@ -161,7 +162,8 @@ void DOMScheduler::CreateFixedPriorityTaskQueues(ExecutionContext* context) {
   for (size_t i = 0; i < kWebSchedulingPriorityCount; i++) {
     auto priority = static_cast<WebSchedulingPriority>(i);
     std::unique_ptr<WebSchedulingTaskQueue> task_queue =
-        scheduler->CreateWebSchedulingTaskQueue(priority);
+        scheduler->CreateWebSchedulingTaskQueue(
+            WebSchedulingQueueType::kTaskQueue, priority);
     fixed_priority_task_queues_.push_back(
         MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority));
   }
@@ -176,7 +178,8 @@ void DOMScheduler::CreateTaskQueueFor(DOMTaskSignal* signal) {
       WTF::BindRepeating(&DOMScheduler::OnPriorityChange,
                          WrapWeakPersistent(this), WrapWeakPersistent(signal)));
   std::unique_ptr<WebSchedulingTaskQueue> task_queue =
-      scheduler->CreateWebSchedulingTaskQueue(priority);
+      scheduler->CreateWebSchedulingTaskQueue(
+          WebSchedulingQueueType::kTaskQueue, priority);
   signal_to_task_queue_map_.insert(
       signal, MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue),
                                                  priority, handle));

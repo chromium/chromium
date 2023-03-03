@@ -548,9 +548,12 @@ chromium-metrics-reviews@google.com.
     <variant name="BestEffort"/>
     <variant name="Control"/>
     <variant name="High"/>
+    <variant name="HighContinuation"/>
     <variant name="Highest"/>
     <variant name="Low"/>
+    <variant name="LowContinaution"/>
     <variant name="Normal"/>
+    <variant name="NormalContinuation"/>
     <variant name="VeryHigh"/>
   </token>
 </histogram>

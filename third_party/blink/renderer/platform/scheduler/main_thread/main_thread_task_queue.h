@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base::sequence_manager {
@@ -277,6 +278,12 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     explicit QueueCreationParams(QueueType queue_type)
         : queue_type(queue_type), spec(NameForQueueType(queue_type)) {}
 
+    QueueCreationParams SetWebSchedulingQueueType(
+        absl::optional<WebSchedulingQueueType> type) {
+      web_scheduling_queue_type = type;
+      return *this;
+    }
+
     QueueCreationParams SetWebSchedulingPriority(
         absl::optional<WebSchedulingPriority> priority) {
       web_scheduling_priority = priority;
@@ -367,6 +374,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler;
     FrameSchedulerImpl* frame_scheduler = nullptr;
     QueueTraits queue_traits;
+    absl::optional<WebSchedulingQueueType> web_scheduling_queue_type;
     absl::optional<WebSchedulingPriority> web_scheduling_priority;
 
    private:
@@ -439,8 +447,15 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
       TaskType task_type);
 
+  absl::optional<WebSchedulingQueueType> GetWebSchedulingQueueType() const {
+    return web_scheduling_queue_type_;
+  }
+
+  absl::optional<WebSchedulingPriority> GetWebSchedulingPriority() const {
+    return web_scheduling_priority_;
+  }
+
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
-  absl::optional<WebSchedulingPriority> web_scheduling_priority() const;
 
   void OnWebSchedulingTaskQueueDestroyed();
 
@@ -547,6 +562,10 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;
+
+  // Set if this is queue is used for the web-exposed scheduling API. Used to
+  // differentiate initial tasks from continuations for prioritization.
+  const absl::optional<WebSchedulingQueueType> web_scheduling_queue_type_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used in conjunction with the frame

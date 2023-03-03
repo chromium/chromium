@@ -40,7 +40,8 @@ WorkerSchedulerImpl::WorkerSchedulerImpl(
     WorkerSchedulerProxy* proxy)
     : throttleable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
           base::sequence_manager::QueueName::WORKER_THROTTLEABLE_TQ,
-          true)),
+          NonMainThreadTaskQueue::QueueCreationParams().SetCanBeThrottled(
+              true))),
       pausable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
           base::sequence_manager::QueueName::WORKER_PAUSABLE_TQ)),
       pausable_non_vt_task_queue_(worker_thread_scheduler->CreateTaskQueue(
@@ -333,11 +334,14 @@ WorkerSchedulerImpl::GetFrameOrWorkerSchedulerWeakPtr() {
 
 std::unique_ptr<WebSchedulingTaskQueue>
 WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
+    WebSchedulingQueueType queue_type,
     WebSchedulingPriority priority) {
   scoped_refptr<NonMainThreadTaskQueue> task_queue =
       thread_scheduler_->CreateTaskQueue(
-          base::sequence_manager::QueueName::WORKER_WEB_SCHEDULING_TQ);
-  task_queue->SetWebSchedulingPriority(priority);
+          base::sequence_manager::QueueName::WORKER_WEB_SCHEDULING_TQ,
+          NonMainThreadTaskQueue::QueueCreationParams()
+              .SetWebSchedulingQueueType(queue_type)
+              .SetWebSchedulingPriority(priority));
   return std::make_unique<NonMainThreadWebSchedulingTaskQueueImpl>(
       std::move(task_queue));
 }

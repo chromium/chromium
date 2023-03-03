@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -163,7 +164,10 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
       ObserverType,
       OnLifecycleStateChangedCallback);
 
+  // Creates a new task queue for use with the web-exposed scheduling API with
+  // the given priority and type. See https://wicg.github.io/scheduling-apis.
   virtual std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
+      WebSchedulingQueueType,
       WebSchedulingPriority) = 0;
 
   virtual FrameScheduler* ToFrameScheduler() { return nullptr; }

@@ -98,7 +98,11 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   TaskDurationPerTaskTypeMetricReporter
       input_handling_per_task_type_duration_reporter_;
 
-  static_assert(static_cast<size_t>(TaskPriority::kPriorityCount) == 7);
+  // When adding a new renderer priority, initialize an entry in the constructor
+  // and update histograms.xml.
+  static_assert(
+      static_cast<size_t>(TaskPriority::kPriorityCount) == 10,
+      "Queueing delay histograms must be kept in sync with TaskPriority.");
   CustomCountHistogram queueing_delay_histograms_[static_cast<size_t>(
       TaskPriority::kPriorityCount)];
 
