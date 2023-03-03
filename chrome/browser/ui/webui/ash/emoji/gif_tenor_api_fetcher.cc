@@ -218,7 +218,7 @@ void GifTenorApiFetcher::OnGifsJsonParsed(
             "", std::vector<emoji_picker::mojom::GifResponsePtr>{}));
     return;
   }
-  const auto* next = result->FindStringKey("next");
+  const auto* next = result->GetDict().FindString("next");
   std::move(callback).Run(emoji_picker::mojom::Status::kHttpOk,
                           emoji_picker::mojom::TenorGifResponse::New(
                               next ? *next : "", ParseGifs(gifs)));

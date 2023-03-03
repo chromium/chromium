@@ -383,13 +383,13 @@ TEST_F(BrowsingHistoryHandlerTest, MdTruncatesTitles) {
   ASSERT_TRUE(web_ui()->call_data().front()->arg2()->GetBool());
   const base::Value* arg3 = web_ui()->call_data().front()->arg3();
   ASSERT_TRUE(arg3->is_dict());
-  const base::Value* list = arg3->FindListKey("value");
+  const base::Value* list = arg3->GetDict().Find("value");
   ASSERT_TRUE(list->is_list());
 
   const base::Value& first_entry = list->GetList()[0];
   ASSERT_TRUE(first_entry.is_dict());
 
-  const std::string* title = first_entry.FindStringKey("title");
+  const std::string* title = first_entry.GetDict().FindString("title");
   ASSERT_TRUE(title);
 
   ASSERT_EQ(0u, title->find("http://loooo"));

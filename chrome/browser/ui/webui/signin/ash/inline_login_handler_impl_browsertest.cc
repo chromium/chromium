@@ -403,7 +403,7 @@ class InlineLoginHandlerTestWithArcRestrictions
       const base::Value::List& values,
       const std::string& email) {
     for (const base::Value& value : values) {
-      const std::string* email_val = value.FindStringKey("email");
+      const std::string* email_val = value.GetDict().FindString("email");
       EXPECT_TRUE(email_val != nullptr);
       if (*email_val == email)
         return value.Clone();

@@ -348,13 +348,13 @@ void CheckVersion(const base::FilePath& pnacl_path, std::string* version) {
       pnacl_path.AppendASCII("pnacl_public_pnacl_json");
   JSONFileValueDeserializer deserializer(pnacl_json_path);
   std::string error;
-  std::unique_ptr<base::Value> root = deserializer.Deserialize(NULL, &error);
+  std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
   if (!root || !root->is_dict())
     return;
 
   // Now try to get the field. This may leave version empty if the
   // the "get" fails (no key, or wrong type).
-  if (const std::string* ptr = root->FindStringKey("pnacl-version")) {
+  if (const std::string* ptr = root->GetDict().FindString("pnacl-version")) {
     if (base::IsStringASCII(*ptr))
       *version = *ptr;
   }

@@ -27,11 +27,11 @@ namespace {
 // Key used in dictionaries for the url.
 const char kURL[] = "url";
 
-// Returns a Value representing the supplied StartupTab.
-base::Value EncodeTab(const GURL& url) {
+// Returns a Value::Dict representing the supplied StartupTab.
+base::Value::Dict EncodeTab(const GURL& url) {
   base::Value::Dict dict;
-  dict.SetByDottedPath(kURL, url.spec());
-  return base::Value(std::move(dict));
+  dict.Set(kURL, url.spec());
+  return dict;
 }
 
 // Encodes all the pinned tabs from |browser| into |serialized_tabs|.
@@ -48,8 +48,8 @@ void EncodePinnedTabs(Browser* browser, base::Value::List& serialized_tabs) {
 
 // Decodes the previously written values in |value| to |tab|, returning true
 // on success.
-absl::optional<StartupTab> DecodeTab(const base::Value& value) {
-  const std::string* const url_string = value.FindStringPath(kURL);
+absl::optional<StartupTab> DecodeTab(const base::Value::Dict& value) {
+  const std::string* const url_string = value.FindString(kURL);
   return url_string ? absl::make_optional(StartupTab(GURL(*url_string),
                                                      StartupTab::Type::kPinned))
                     : absl::nullopt;
@@ -103,7 +103,7 @@ StartupTabs PinnedTabCodec::ReadPinnedTabs(Profile* profile) {
   for (const auto& serialized_tab : prefs->GetList(prefs::kPinnedTabs)) {
     if (!serialized_tab.is_dict())
       continue;
-    absl::optional<StartupTab> tab = DecodeTab(serialized_tab);
+    absl::optional<StartupTab> tab = DecodeTab(serialized_tab.GetDict());
     if (tab.has_value())
       results.push_back(tab.value());
   }

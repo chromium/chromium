@@ -184,8 +184,9 @@ net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
 void ValidateSitesWithFps(
     const base::Value::List& storage_and_cookie_list,
     base::flat_map<net::SchemefulSite, net::SchemefulSite>& first_party_sets) {
-  for (const base::Value& site_group : storage_and_cookie_list) {
-    std::string etld_plus1 = *site_group.GetDict().FindString("etldPlus1");
+  for (const base::Value& site_group_value : storage_and_cookie_list) {
+    const base::Value::Dict& site_group = site_group_value.GetDict();
+    std::string etld_plus1 = *site_group.FindString("etldPlus1");
     auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
 
     if (first_party_sets.count(schemeful_site)) {
@@ -193,21 +194,20 @@ void ValidateSitesWithFps(
       // |first_party_sets| mapping of site group owners.
       std::string owner_etldplus1 =
           first_party_sets[schemeful_site].GetURL().host();
-      ASSERT_EQ(owner_etldplus1, *site_group.GetDict().FindString("fpsOwner"));
+      ASSERT_EQ(owner_etldplus1, *site_group.FindString("fpsOwner"));
       if (owner_etldplus1 == "google.com") {
-        ASSERT_EQ(2, *site_group.GetDict().FindInt("fpsNumMembers"));
-        ASSERT_EQ(false,
-                  *site_group.GetDict().FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(2, *site_group.FindInt("fpsNumMembers"));
+        ASSERT_EQ(false, *site_group.FindBool("fpsEnterpriseManaged"));
       } else if (owner_etldplus1 == "example.com") {
-        ASSERT_EQ(1, *site_group.GetDict().FindInt("fpsNumMembers"));
-        ASSERT_EQ(true, *site_group.GetDict().FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(1, *site_group.FindInt("fpsNumMembers"));
+        ASSERT_EQ(true, *site_group.FindBool("fpsEnterpriseManaged"));
       }
     } else {
       // The site is not part of a FPS therefore doesn't have `fpsOwner` or
       // `fpsNumMembers` set. `FindString` and `FindInt` should return null.
-      ASSERT_FALSE(site_group.GetDict().FindString("fpsOwner"));
-      ASSERT_FALSE(site_group.GetDict().FindInt("fpsNumMembers"));
-      ASSERT_FALSE(site_group.GetDict().FindBool("fpsEnterpriseManaged"));
+      ASSERT_FALSE(site_group.FindString("fpsOwner"));
+      ASSERT_FALSE(site_group.FindInt("fpsNumMembers"));
+      ASSERT_FALSE(site_group.FindBool("fpsEnterpriseManaged"));
     }
   }
 }
@@ -352,9 +352,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
   void RecordNotification(permissions::NotificationsEngagementService* service,
                           GURL url,
-                          int daily_avarage_count) {
+                          int daily_average_count) {
     // This many notifications were recorded during the past week in total.
-    int total_count = daily_avarage_count * 7;
+    int total_count = daily_average_count * 7;
     service->RecordNotificationDisplayed(url, total_count);
   }
 
@@ -418,13 +418,12 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    const base::Value* default_value = data.arg3();
-    ASSERT_TRUE(default_value->is_dict());
-    const std::string* setting = default_value->FindStringKey(kSetting);
+    const base::Value::Dict& default_value = data.arg3()->GetDict();
+    const std::string* setting = default_value.FindString(kSetting);
     ASSERT_TRUE(setting);
     EXPECT_EQ(content_settings::ContentSettingToString(expected_setting),
               *setting);
-    const std::string* source = default_value->FindStringKey(kSource);
+    const std::string* source = default_value.FindString(kSource);
     if (source) {
       EXPECT_EQ(site_settings::SiteSettingSourceToString(expected_source),
                 *source);
@@ -450,30 +449,28 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_TRUE(data.arg3()->is_list());
     EXPECT_EQ(1U, data.arg3()->GetList().size());
 
-    const base::Value& exception = data.arg3()->GetList()[0];
-    ASSERT_TRUE(exception.is_dict());
+    const base::Value::Dict& exception = data.arg3()->GetList()[0].GetDict();
 
-    const std::string* origin = exception.FindStringKey(site_settings::kOrigin);
+    const std::string* origin = exception.FindString(site_settings::kOrigin);
     ASSERT_TRUE(origin);
     ASSERT_EQ(expected_origin, *origin);
 
     const std::string* display_name =
-        exception.FindStringKey(site_settings::kDisplayName);
+        exception.FindString(site_settings::kDisplayName);
     ASSERT_TRUE(display_name);
     ASSERT_EQ(expected_display_name, *display_name);
 
     const std::string* embedding_origin =
-        exception.FindStringKey(site_settings::kEmbeddingOrigin);
+        exception.FindString(site_settings::kEmbeddingOrigin);
     ASSERT_TRUE(embedding_origin);
     ASSERT_EQ(expected_embedding, *embedding_origin);
 
-    const std::string* setting =
-        exception.FindStringKey(site_settings::kSetting);
+    const std::string* setting = exception.FindString(site_settings::kSetting);
     ASSERT_TRUE(setting);
     ASSERT_EQ(content_settings::ContentSettingToString(expected_setting),
               *setting);
 
-    const std::string* source = exception.FindStringKey(site_settings::kSource);
+    const std::string* source = exception.FindString(site_settings::kSource);
     ASSERT_TRUE(source);
     ASSERT_EQ(site_settings::SiteSettingSourceToString(expected_source),
               *source);
@@ -554,14 +551,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     } else {
       EXPECT_EQ(1U, exceptions.size());
 
-      const base::Value& exception = exceptions[0];
-      ASSERT_TRUE(exception.is_dict());
+      const base::Value::Dict& exception = exceptions[0].GetDict();
 
-      const std::string* host = exception.FindStringKey("origin");
+      const std::string* host = exception.FindString("origin");
       ASSERT_TRUE(host);
       ASSERT_EQ(expected_host, *host);
 
-      const std::string* zoom = exception.FindStringKey("zoom");
+      const std::string* zoom = exception.FindString("zoom");
       ASSERT_TRUE(zoom);
       ASSERT_EQ(expected_zoom, *zoom);
     }
@@ -1420,8 +1416,9 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
   auto validate_exception = [&kOriginToBlock](const base::Value& exception) {
     ASSERT_TRUE(exception.is_dict());
 
-    ASSERT_TRUE(exception.FindStringKey(site_settings::kOrigin));
-    ASSERT_EQ(kOriginToBlock, *exception.FindStringKey(site_settings::kOrigin));
+    ASSERT_TRUE(exception.GetDict().FindString(site_settings::kOrigin));
+    ASSERT_EQ(kOriginToBlock,
+              *exception.GetDict().FindString(site_settings::kOrigin));
   };
 
   CreateIncognitoProfile();
@@ -1941,7 +1938,7 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
       const base::Value& exception = data.arg3()->GetList()[0];
       ASSERT_TRUE(exception.is_dict());
       const std::string* extension_name_with_id =
-          exception.FindStringKey(site_settings::kExtensionNameWithId);
+          exception.GetDict().FindString(site_settings::kExtensionNameWithId);
       ASSERT_TRUE(extension_name_with_id);
       ASSERT_EQ(base::StringPrintf("Test Extension (ID: %s)",
                                    extension->id().c_str()),
@@ -1972,10 +1969,9 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
       EXPECT_EQ("cr.webUIResponse", data.function_name());
       ASSERT_TRUE(data.arg3()->is_list());
       EXPECT_EQ(1U, data.arg3()->GetList().size());
-      const base::Value& exception = data.arg3()->GetList()[0];
-      ASSERT_TRUE(exception.is_dict());
+      const base::Value::Dict& exception = data.arg3()->GetList()[0].GetDict();
       const std::string* extension_name_with_id =
-          exception.FindStringKey(site_settings::kExtensionNameWithId);
+          exception.FindString(site_settings::kExtensionNameWithId);
       ASSERT_FALSE(extension_name_with_id);
     }
   }
@@ -2237,12 +2233,12 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // |origin_query| tab to a different origin.
   const GURL origin_path("https://www.example.com/path/to/page.html");
   content::WebContents* foo_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(/*foo=*/0);
+      browser()->tab_strip_model()->GetWebContentsAt(/*index=*/0);
   NavigateAndCommit(foo_contents, origin_path);
 
   const GURL example_without_www("https://example.com/");
   content::WebContents* origin_query_contents =
-      browser2()->tab_strip_model()->GetWebContentsAt(/*origin_query=*/1);
+      browser2()->tab_strip_model()->GetWebContentsAt(/*index=*/1);
   NavigateAndCommit(origin_query_contents, example_without_www);
 
   // Reset all permissions.
@@ -2279,7 +2275,7 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
 
   // Make sure it's the correct infobar that's being shown.
   EXPECT_EQ(infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE,
-            GetInfoBarManagerForTab(browser(), /*origin_path=*/0, &tab_url)
+            GetInfoBarManagerForTab(browser(), /*tab_index=*/0, &tab_url)
                 ->infobar_at(0)
                 ->delegate()
                 ->GetIdentifier());
@@ -2819,9 +2815,9 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 namespace {
 
 std::vector<std::string> GetExceptionDisplayNames(
-    const base::Value& exceptions) {
+    const base::Value::List& exceptions) {
   std::vector<std::string> display_names;
-  for (const base::Value& exception : exceptions.GetList()) {
+  for (const base::Value& exception : exceptions) {
     const std::string* display_name =
         exception.GetDict().FindString(site_settings::kDisplayName);
     if (display_name) {
@@ -2887,24 +2883,24 @@ class SiteSettingsHandlerChooserExceptionTest
     ASSERT_TRUE(data.arg3()->is_list());
   }
 
-  const base::Value& GetChooserExceptionListFromWebUiCallData(
+  const base::Value::List& GetChooserExceptionListFromWebUiCallData(
       const std::string& chooser_type,
       size_t expected_total_calls) {
     ValidateChooserExceptionList(chooser_type, expected_total_calls);
-    return *web_ui()->call_data().back()->arg3();
+    return web_ui()->call_data().back()->arg3()->GetList();
   }
 
   // Iterate through the exception's sites array and return true if a site
   // exception matches |requesting_origin| and |embedding_origin|.
-  bool ChooserExceptionContainsSiteException(const base::Value& exception,
+  bool ChooserExceptionContainsSiteException(const base::Value::Dict& exception,
                                              base::StringPiece origin) {
-    const base::Value* sites = exception.FindListKey(site_settings::kSites);
+    const base::Value::List* sites = exception.FindList(site_settings::kSites);
     if (!sites)
       return false;
 
-    for (const auto& site : sites->GetList()) {
+    for (const auto& site : *sites) {
       const std::string* exception_origin =
-          site.FindStringKey(site_settings::kOrigin);
+          site.GetDict().FindString(site_settings::kOrigin);
       if (!exception_origin)
         continue;
       if (*exception_origin == origin)
@@ -2916,20 +2912,19 @@ class SiteSettingsHandlerChooserExceptionTest
   // Iterate through the |exception_list| array and return true if there is a
   // chooser exception with |display_name| that contains a site exception for
   // |origin|.
-  bool ChooserExceptionContainsSiteException(const base::Value& exceptions,
-                                             base::StringPiece display_name,
-                                             base::StringPiece origin) {
-    if (!exceptions.is_list())
-      return false;
-
-    for (const auto& exception : exceptions.GetList()) {
+  bool ChooserExceptionContainsSiteException(
+      const base::Value::List& exceptions,
+      base::StringPiece display_name,
+      base::StringPiece origin) {
+    for (const auto& exception : exceptions) {
       const std::string* exception_display_name =
-          exception.FindStringKey(site_settings::kDisplayName);
+          exception.GetDict().FindString(site_settings::kDisplayName);
       if (!exception_display_name)
         continue;
 
       if (*exception_display_name == display_name) {
-        return ChooserExceptionContainsSiteException(exception, origin);
+        return ChooserExceptionContainsSiteException(exception.GetDict(),
+                                                     origin);
       }
     }
     return false;
@@ -2949,8 +2944,9 @@ class SiteSettingsHandlerChooserExceptionTest
     const std::string group_name(
         site_settings::ContentSettingsTypeToGroupName(content_type()));
 
-    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-        group_name, /*expected_total_calls=*/1u);
+    const base::Value::List& exceptions =
+        GetChooserExceptionListFromWebUiCallData(group_name,
+                                                 /*expected_total_calls=*/1u);
 
     // There are 9 granted permissions:
     // 1. Persistent permission for persistent-device on kChromiumOrigin
@@ -3043,8 +3039,9 @@ class SiteSettingsHandlerChooserExceptionTest
     // The objects returned by GetChooserExceptionListFromProfile should also
     // include the incognito permissions.
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3086,8 +3083,9 @@ class SiteSettingsHandlerChooserExceptionTest
     EXPECT_EQ(web_ui()->call_data().size(), 2u);
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/3u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/3u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3144,8 +3142,9 @@ class SiteSettingsHandlerChooserExceptionTest
         kGoogleUrl.DeprecatedGetOriginAsURL().spec();
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3198,8 +3197,9 @@ class SiteSettingsHandlerChooserExceptionTest
     {
       // The exception list size should not have been reduced since there is
       // still a policy granted permission for "persistent-device".
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/4u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/4u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3262,8 +3262,9 @@ class SiteSettingsHandlerChooserExceptionTest
     // contentSettingChooserPermissionChanged to fire.
     EXPECT_EQ(web_ui()->call_data().size(), 6u);
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/7u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/7u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3331,8 +3332,9 @@ class SiteSettingsHandlerChooserExceptionTest
     // contentSettingChooserPermissionChanged to fire.
     EXPECT_EQ(web_ui()->call_data().size(), 9u);
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/10u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(
+              group_name, /*expected_total_calls=*/10u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(GetExceptionDisplayNames(exceptions),
@@ -3380,8 +3382,9 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::ContentSettingsTypeToGroupName(content_type()));
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(GetExceptionDisplayNames(exceptions),
@@ -3426,11 +3429,13 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::GetVisiblePermissionCategories().size();
     EXPECT_EQ(kContentSettingsTypeCount + 3, web_ui()->call_data().size());
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/kContentSettingsTypeCount + 4);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(
+              group_name,
+              /*expected_total_calls=*/kContentSettingsTypeCount + 4);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_TRUE(exceptions.GetList().empty());
+          EXPECT_TRUE(exceptions.empty());
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -3463,11 +3468,12 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::ContentSettingsTypeToGroupName(content_type()));
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_TRUE(exceptions.GetList().empty());
+          EXPECT_TRUE(exceptions.empty());
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -3503,11 +3509,13 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::GetVisiblePermissionCategories().size();
     EXPECT_EQ(kContentSettingsTypeCount + 1, web_ui()->call_data().size());
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/kContentSettingsTypeCount + 2);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(
+              group_name,
+              /*expected_total_calls=*/kContentSettingsTypeCount + 2);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_TRUE(exceptions.GetList().empty());
+          EXPECT_TRUE(exceptions.empty());
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -4435,7 +4443,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   auto verify_site_group = [](const base::Value& site_group,
                               std::string expected_etld_plus1) {
     ASSERT_TRUE(site_group.is_dict());
-    const std::string* etld_plus1 = site_group.FindStringKey("etldPlus1");
+    const std::string* etld_plus1 =
+        site_group.GetDict().FindString("etldPlus1");
     ASSERT_TRUE(etld_plus1);
     ASSERT_EQ(expected_etld_plus1, *etld_plus1);
   };
@@ -4686,7 +4695,7 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
       ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
   EXPECT_EQ(1U, client_hints_settings.size());
 
-  // www.google.com should be the only remainining entry.
+  // www.google.com should be the only remaining entry.
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             client_hints_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
@@ -4763,7 +4772,7 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
       ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
   EXPECT_EQ(1U, accept_language_settings.size());
 
-  // www.google.com should be the only remainining entry.
+  // www.google.com should be the only remaining entry.
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             accept_language_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
@@ -5230,9 +5239,11 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
   // descending order of notification count.
   EXPECT_EQ(2UL, notification_permissions.size());
   EXPECT_EQ("https://www.youtube.com:443",
-            *notification_permissions[0].FindStringKey(site_settings::kOrigin));
+            *notification_permissions[0].GetDict().FindString(
+                site_settings::kOrigin));
   EXPECT_EQ("https://google.com:443",
-            *notification_permissions[1].FindStringKey(site_settings::kOrigin));
+            *notification_permissions[1].GetDict().FindString(
+                site_settings::kOrigin));
 
   // Increasing notification count also promotes host in the list.
   RecordNotification(notification_engagement_service,
@@ -5241,10 +5252,10 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
       handler()->PopulateNotificationPermissionReviewData();
   EXPECT_EQ(2UL, updated_notification_permissions.size());
   EXPECT_EQ("https://google.com:443",
-            *updated_notification_permissions[0].FindStringKey(
+            *updated_notification_permissions[0].GetDict().FindString(
                 site_settings::kOrigin));
   EXPECT_EQ("https://www.youtube.com:443",
-            *updated_notification_permissions[1].FindStringKey(
+            *updated_notification_permissions[1].GetDict().FindString(
                 site_settings::kOrigin));
 }
 

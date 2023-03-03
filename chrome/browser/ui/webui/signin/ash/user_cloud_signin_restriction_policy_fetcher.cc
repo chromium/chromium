@@ -234,7 +234,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
   if (error.state() == GoogleServiceAuthError::NONE) {
     auto result = base::JSONReader::Read(*response_body, base::JSON_PARSE_RFC);
     const std::string* policy_value =
-        result ? result->FindStringKey("policyValue") : nullptr;
+        result ? result->GetDict().FindString("policyValue") : nullptr;
 
     if (policy_value) {
       restriction = *policy_value;

@@ -15,8 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace chrome {
-namespace mac {
+namespace chrome::mac {
 
 namespace {
 
@@ -97,7 +96,7 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value* value) {
     case base::Value::Type::DICT: {
       NSAppleEventDescriptor* keyValuePairs =
           [NSAppleEventDescriptor listDescriptor];
-      for (auto iter : value->DictItems()) {
+      for (auto iter : value->GetDict()) {
         AppendValueToListDescriptor(keyValuePairs, base::Value(iter.first));
         AppendValueToListDescriptor(keyValuePairs, iter.second);
       }
@@ -123,5 +122,4 @@ bool IsJavaScriptEnabledForProfile(Profile* profile) {
   return prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents);
 }
 
-}  // namespace mac
-}  // namespace chrome
+}  // namespace chrome::mac

@@ -840,8 +840,8 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
     bool col_visibility = dictionary.FindBoolByDottedPath(col_id_key)
                               .value_or(kColumns[i].default_visibility);
 
-    // If the above FindBoolPath() fails, the |col_visibility| remains at the
-    // default visibility.
+    // If the above FindBoolByDottedPath() fails, the |col_visibility| remains
+    // at the default visibility.
     columns_settings_.SetByDottedPath(col_id_key, col_visibility);
     table_view_delegate_->SetColumnVisibility(col_id, col_visibility);
     UpdateRefreshTypes(col_id, col_visibility);
