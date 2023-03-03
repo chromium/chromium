@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -132,13 +133,6 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(InputControllerEvdevTest, AccelerationSuspension);
-  FRIEND_TEST_ALL_PREFIXES(InputControllerEvdevTest,
-                           AccelerationChangeDuringSuspension);
-
-  struct StoredAccelerationSettings {
-    bool mouse = false;
-    bool pointing_stick = false;
-  };
 
   // Post task to update settings.
   void ScheduleUpdateDeviceSettings();
@@ -149,17 +143,8 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   // Send caps lock update to input_device_factory_.
   void UpdateCapsLockLed();
 
-  // Indicates whether the mouse acceleration is turned off for PointerLock.
-  bool is_mouse_acceleration_suspended() {
-    return stored_acceleration_settings_.get() != nullptr;
-  }
-
   // Configuration that needs to be passed on to InputDeviceFactory.
   InputDeviceSettingsEvdev input_device_settings_;
-
-  // Holds acceleration settings while suspended. Should only be considered
-  // valid while |mouse_acceleration_suspended| is true.
-  std::unique_ptr<StoredAccelerationSettings> stored_acceleration_settings_;
 
   // Task to update config from input_device_settings_ is pending.
   bool settings_update_pending_ = false;

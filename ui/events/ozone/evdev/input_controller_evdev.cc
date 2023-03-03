@@ -294,11 +294,6 @@ void InputControllerEvdev::SetMouseReverseScroll(absl::optional<int> device_id,
 void InputControllerEvdev::SetPointingStickAcceleration(
     absl::optional<int> device_id,
     bool enabled) {
-  // TODO(dpad): Implement acceleration suspending with multiple devices.
-  if (is_mouse_acceleration_suspended()) {
-    stored_acceleration_settings_->pointing_stick = enabled;
-    return;
-  }
   GetPointingStickSettings(input_device_settings_, device_id)
       .acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
@@ -306,11 +301,6 @@ void InputControllerEvdev::SetPointingStickAcceleration(
 
 void InputControllerEvdev::SetMouseAcceleration(absl::optional<int> device_id,
                                                 bool enabled) {
-  // TODO(dpad): Implement acceleration suspending with multiple devices.
-  if (is_mouse_acceleration_suspended()) {
-    stored_acceleration_settings_->mouse = enabled;
-    return;
-  }
   GetMouseSettings(input_device_settings_, device_id).acceleration_enabled =
       enabled;
   ScheduleUpdateDeviceSettings();
@@ -342,24 +332,13 @@ std::vector<uint64_t> InputControllerEvdev::GetGamepadKeyBits(int id) {
 }
 
 void InputControllerEvdev::SuspendMouseAcceleration() {
-  // multiple calls to suspend are currently not supported.
-  DCHECK(!is_mouse_acceleration_suspended());
-  stored_acceleration_settings_ =
-      std::make_unique<StoredAccelerationSettings>();
-  stored_acceleration_settings_->mouse =
-      input_device_settings_.GetMouseSettings().acceleration_enabled;
-  stored_acceleration_settings_->pointing_stick =
-      input_device_settings_.GetPointingStickSettings().acceleration_enabled;
-  input_device_settings_.GetMouseSettings().acceleration_enabled = false;
-  input_device_settings_.GetPointingStickSettings().acceleration_enabled =
-      false;
+  input_device_settings_.suspend_acceleration = true;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::EndMouseAccelerationSuspension() {
-  auto stored_settings = std::move(stored_acceleration_settings_);
-  SetMouseAcceleration(absl::nullopt, stored_settings->mouse);
-  SetPointingStickAcceleration(absl::nullopt, stored_settings->pointing_stick);
+  input_device_settings_.suspend_acceleration = false;
+  ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTapToClickPaused(bool state) {

@@ -311,7 +311,9 @@ void InputDeviceFactoryEvdev::SetMousePropertiesPerDevice() {
     SetIntPropertyForOneDevice(id, "Pointer Sensitivity",
                                mouse_settings.sensitivity);
     SetBoolPropertyForOneDevice(id, "Pointer Acceleration",
-                                mouse_settings.acceleration_enabled);
+                                input_device_settings_.suspend_acceleration
+                                    ? false
+                                    : mouse_settings.acceleration_enabled);
     SetIntPropertyForOneDevice(id, "Mouse Scroll Sensitivity",
                                mouse_settings.scroll_sensitivity);
     SetBoolPropertyForOneDevice(id, "Mouse Scroll Acceleration",
@@ -376,8 +378,11 @@ void InputDeviceFactoryEvdev::SetPointingStickPropertiesPerDevice() {
         input_device_settings_.GetPointingStickSettings(id);
     SetIntPropertyForOneDevice(id, "Pointer Sensitivity",
                                pointing_stick_settings.sensitivity);
-    SetBoolPropertyForOneDevice(id, "Pointer Acceleration",
-                                pointing_stick_settings.acceleration_enabled);
+    SetBoolPropertyForOneDevice(
+        id, "Pointer Acceleration",
+        input_device_settings_.suspend_acceleration
+            ? false
+            : pointing_stick_settings.acceleration_enabled);
     SetBoolPropertyForOneDevice(id, "Mouse High Resolution Scrolling", true);
     SetBoolPropertyForOneDevice(id, "Output Mouse Wheel Gestures", true);
   }

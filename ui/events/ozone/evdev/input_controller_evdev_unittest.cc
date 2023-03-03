@@ -18,13 +18,15 @@ TEST(InputControllerEvdevTest, AccelerationSuspension) {
                   .acceleration_enabled);
   EXPECT_TRUE(controller.input_device_settings_.GetPointingStickSettings()
                   .acceleration_enabled);
+  EXPECT_FALSE(controller.input_device_settings_.suspend_acceleration);
 
   // Suspending should disable the acceleration temporarily.
   controller.SuspendMouseAcceleration();
-  EXPECT_FALSE(controller.input_device_settings_.GetMouseSettings()
-                   .acceleration_enabled);
-  EXPECT_FALSE(controller.input_device_settings_.GetPointingStickSettings()
-                   .acceleration_enabled);
+  EXPECT_TRUE(controller.input_device_settings_.GetMouseSettings()
+                  .acceleration_enabled);
+  EXPECT_TRUE(controller.input_device_settings_.GetPointingStickSettings()
+                  .acceleration_enabled);
+  EXPECT_TRUE(controller.input_device_settings_.suspend_acceleration);
 
   // Resuming should enable it again.
   controller.EndMouseAccelerationSuspension();
@@ -32,36 +34,7 @@ TEST(InputControllerEvdevTest, AccelerationSuspension) {
                   .acceleration_enabled);
   EXPECT_TRUE(controller.input_device_settings_.GetPointingStickSettings()
                   .acceleration_enabled);
-}
-
-TEST(InputControllerEvdevTest, AccelerationChangeDuringSuspension) {
-  InputControllerEvdev controller(nullptr, nullptr, nullptr);
-  controller.SetMouseAcceleration(absl::nullopt, true);
-  controller.SetPointingStickAcceleration(absl::nullopt, true);
-
-  // Suspending should disable the acceleration temporarily.
-  controller.SuspendMouseAcceleration();
-  EXPECT_FALSE(controller.input_device_settings_.GetMouseSettings()
-                   .acceleration_enabled);
-  EXPECT_FALSE(controller.input_device_settings_.GetPointingStickSettings()
-                   .acceleration_enabled);
-
-  // Settings changes while suspended should not take effect immediately...
-  controller.SetMouseAcceleration(absl::nullopt, true);
-  controller.SetPointingStickAcceleration(absl::nullopt, true);
-  EXPECT_FALSE(controller.input_device_settings_.GetMouseSettings()
-                   .acceleration_enabled);
-  EXPECT_FALSE(controller.input_device_settings_.GetPointingStickSettings()
-                   .acceleration_enabled);
-
-  // ...instead being applied when the suspension ends.
-  controller.SetMouseAcceleration(absl::nullopt, false);
-  controller.SetPointingStickAcceleration(absl::nullopt, false);
-  controller.EndMouseAccelerationSuspension();
-  EXPECT_FALSE(controller.input_device_settings_.GetMouseSettings()
-                   .acceleration_enabled);
-  EXPECT_FALSE(controller.input_device_settings_.GetPointingStickSettings()
-                   .acceleration_enabled);
+  EXPECT_FALSE(controller.input_device_settings_.suspend_acceleration);
 }
 
 }  // namespace ui
