@@ -28,6 +28,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
+#include "components/translate/core/browser/translate_ui_languages_manager.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -812,8 +813,11 @@ TEST_F(TranslateMessageTest, OverflowMenuChangeSourceLanguage) {
 
   std::vector<SecondaryMenuItem> menu_items;
   TranslateUIDelegate ui_delegate(manager_->GetWeakPtr(), "fr", "en");
-  for (size_t i = 0U; i < ui_delegate.GetNumberOfLanguages(); ++i) {
-    std::string language_code = ui_delegate.GetLanguageCodeAt(i);
+  for (size_t i = 0U;
+       i < ui_delegate.translate_ui_languages_manager()->GetNumberOfLanguages();
+       ++i) {
+    std::string language_code =
+        ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
     if (language_code == "fr")
       continue;
     menu_items.emplace_back(SecondaryMenuItem{
@@ -888,8 +892,11 @@ TEST_F(TranslateMessageTest,
 
   std::vector<SecondaryMenuItem> menu_items;
   TranslateUIDelegate ui_delegate(manager_->GetWeakPtr(), "fr", "en");
-  for (size_t i = 0U; i < ui_delegate.GetNumberOfLanguages(); ++i) {
-    std::string language_code = ui_delegate.GetLanguageCodeAt(i);
+  for (size_t i = 0U;
+       i < ui_delegate.translate_ui_languages_manager()->GetNumberOfLanguages();
+       ++i) {
+    std::string language_code =
+        ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
     if (language_code == "en" || language_code == kUnknownLanguageCode)
       continue;
     menu_items.emplace_back(SecondaryMenuItem{
@@ -978,8 +985,11 @@ TEST_F(TranslateMessageTest,
   };
 
   TranslateUIDelegate ui_delegate(manager_->GetWeakPtr(), "fr", "en");
-  for (size_t i = 0U; i < ui_delegate.GetNumberOfLanguages(); ++i) {
-    std::string language_code = ui_delegate.GetLanguageCodeAt(i);
+  for (size_t i = 0U;
+       i < ui_delegate.translate_ui_languages_manager()->GetNumberOfLanguages();
+       ++i) {
+    std::string language_code =
+        ui_delegate.translate_ui_languages_manager()->GetLanguageCodeAt(i);
     if (language_code == "en" || language_code == kUnknownLanguageCode)
       continue;
     menu_items.emplace_back(SecondaryMenuItem{

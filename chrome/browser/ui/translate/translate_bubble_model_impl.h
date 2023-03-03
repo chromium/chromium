@@ -12,6 +12,7 @@
 
 namespace translate {
 class TranslateUIDelegate;
+class TranslateUILanguagesManager;
 }
 
 // The standard implementation of TranslateBubbleModel.
@@ -63,6 +64,7 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
 
  private:
   std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;
+  translate::TranslateUILanguagesManager* ui_languages_manager_;
   ViewState current_view_state_;
 
   bool translation_declined_;

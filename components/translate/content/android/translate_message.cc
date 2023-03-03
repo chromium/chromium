@@ -26,6 +26,7 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
+#include "components/translate/core/browser/translate_ui_languages_manager.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -169,6 +170,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
   if (!ui_delegate_) {
     ui_delegate_ = std::make_unique<TranslateUIDelegate>(
         translate_manager_, source_language, target_language);
+    ui_languages_manager_ = ui_delegate_->translate_ui_languages_manager();
   }
 
   if (state_ == State::kDismissed) {
@@ -182,8 +184,8 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
     RecordCompactInfobarEvent(InfobarEvent::INFOBAR_IMPRESSION);
   }
 
-  ui_delegate_->UpdateSourceLanguage(source_language);
-  ui_delegate_->UpdateTargetLanguage(target_language);
+  ui_delegate_->UpdateAndRecordSourceLanguage(source_language);
+  ui_delegate_->UpdateAndRecordTargetLanguage(target_language);
 
   if (step == TRANSLATE_STEP_TRANSLATE_ERROR) {
     // Prevent auto-always-translate from triggering if an error occurs.
@@ -211,9 +213,11 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
   }
 
   const std::u16string& source_language_display_name =
-      ui_delegate_->GetLanguageNameAt(ui_delegate_->GetSourceLanguageIndex());
+      ui_languages_manager_->GetLanguageNameAt(
+          ui_languages_manager_->GetSourceLanguageIndex());
   const std::u16string& target_language_display_name =
-      ui_delegate_->GetLanguageNameAt(ui_delegate_->GetTargetLanguageIndex());
+      ui_languages_manager_->GetLanguageNameAt(
+          ui_languages_manager_->GetTargetLanguageIndex());
 
   base::android::ScopedJavaLocalRef<jstring> title;
   base::android::ScopedJavaLocalRef<jstring> description;
@@ -397,8 +401,8 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
               env,
               l10n_util::GetStringFUTF16(
                   IDS_TRANSLATE_MESSAGE_AUTO_NEVER_TRANSLATE_LANGUAGE_TITLE,
-                  ui_delegate_->GetLanguageNameAt(
-                      ui_delegate_->GetSourceLanguageIndex()))),
+                  ui_languages_manager_->GetLanguageNameAt(
+                      ui_languages_manager_->GetSourceLanguageIndex()))),
           /*description=*/nullptr,
           /*primary_button_text=*/
           base::android::ConvertUTF16ToJavaString(
@@ -453,7 +457,8 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
   size_t item_count = 0U;
 
   const std::u16string& source_language_display_name =
-      ui_delegate_->GetLanguageNameAt(ui_delegate_->GetSourceLanguageIndex());
+      ui_languages_manager_->GetLanguageNameAt(
+          ui_languages_manager_->GetSourceLanguageIndex());
 
   // "More languages".
   CHECK_GT(std::extent<decltype(titles)>::value, item_count);
@@ -468,7 +473,7 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
       static_cast<int>(OverflowMenuItemId::kInvalid);
 
   if (!ui_delegate_->IsIncognito() &&
-      ui_delegate_->GetSourceLanguageCode() != kUnknownLanguageCode) {
+      ui_languages_manager_->GetSourceLanguageCode() != kUnknownLanguageCode) {
     // "Always translate pages in <source language>".
     CHECK_GT(std::extent<decltype(titles)>::value, item_count);
     titles[item_count] = l10n_util::GetStringFUTF16(
@@ -479,7 +484,7 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
         static_cast<int>(OverflowMenuItemId::kToggleAlwaysTranslateLanguage);
   }
 
-  if (ui_delegate_->GetSourceLanguageCode() != kUnknownLanguageCode) {
+  if (ui_languages_manager_->GetSourceLanguageCode() != kUnknownLanguageCode) {
     // "Never translate pages in <source language>".
     CHECK_GT(std::extent<decltype(titles)>::value, item_count);
     titles[item_count] = l10n_util::GetStringFUTF16(
@@ -542,7 +547,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     switch (static_cast<OverflowMenuItemId>(overflow_menu_item_id)) {
       case OverflowMenuItemId::kChangeSourceLanguage:
         ui_delegate_->ReportUIInteraction(UIInteraction::kChangeSourceLanguage);
-        ui_delegate_->UpdateSourceLanguage(language_code_utf8);
+        ui_delegate_->UpdateAndRecordSourceLanguage(language_code_utf8);
         ui_delegate_->Translate();
         break;
 
@@ -550,7 +555,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
         RecordCompactInfobarEvent(
             InfobarEvent::INFOBAR_MORE_LANGUAGES_TRANSLATE);
         ui_delegate_->ReportUIInteraction(UIInteraction::kChangeTargetLanguage);
-        ui_delegate_->UpdateTargetLanguage(language_code_utf8);
+        ui_delegate_->UpdateAndRecordTargetLanguage(language_code_utf8);
         ui_delegate_->Translate();
         break;
 
@@ -567,7 +572,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     case OverflowMenuItemId::kChangeSourceLanguage: {
       RecordCompactInfobarEvent(InfobarEvent::INFOBAR_PAGE_NOT_IN);
       const std::string skip_language_codes[] = {
-          ui_delegate_->GetSourceLanguageCode()};
+          ui_languages_manager_->GetSourceLanguageCode()};
       return ConstructLanguagePickerMenu(
           env, OverflowMenuItemId::kChangeSourceLanguage,
           /*content_language_codes=*/base::span<const std::string>(),
@@ -577,7 +582,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     case OverflowMenuItemId::kChangeTargetLanguage: {
       RecordCompactInfobarEvent(InfobarEvent::INFOBAR_MORE_LANGUAGES);
       const std::string skip_language_codes[] = {
-          ui_delegate_->GetTargetLanguageCode(), kUnknownLanguageCode};
+          ui_languages_manager_->GetTargetLanguageCode(), kUnknownLanguageCode};
       std::vector<std::string> content_language_codes;
       ui_delegate_->GetContentLanguagesCodes(&content_language_codes);
       return ConstructLanguagePickerMenu(
@@ -647,8 +652,8 @@ void TranslateMessage::RevertTranslationAndUpdateMessage() {
   // this message to be dismissed or destroyed, since that could cause a
   // use-after-free.
   ShowTranslateStep(TRANSLATE_STEP_BEFORE_TRANSLATE,
-                    ui_delegate_->GetSourceLanguageCode(),
-                    ui_delegate_->GetTargetLanguageCode());
+                    ui_languages_manager_->GetSourceLanguageCode(),
+                    ui_languages_manager_->GetTargetLanguageCode());
 
   ui_delegate_->RevertTranslation();
 }
@@ -692,14 +697,14 @@ TranslateMessage::ConstructLanguagePickerMenu(
   }
 
   // Add the full list of languages to the menu.
-  for (size_t i = 0U; i < ui_delegate_->GetNumberOfLanguages(); ++i) {
-    std::string code = ui_delegate_->GetLanguageCodeAt(i);
+  for (size_t i = 0U; i < ui_languages_manager_->GetNumberOfLanguages(); ++i) {
+    std::string code = ui_languages_manager_->GetLanguageCodeAt(i);
     if (base::Contains(skip_language_codes, code)) {
       continue;
     }
 
-    titles.emplace_back(ui_delegate_->GetLanguageNameAt(i));
-    subtitles.emplace_back(std::u16string());
+    titles.emplace_back(ui_languages_manager_->GetLanguageNameAt(i));
+    subtitles.emplace_back();
     overflow_menu_item_ids.emplace_back(
         static_cast<int>(overflow_menu_item_id));
     language_codes.emplace_back(std::move(code));

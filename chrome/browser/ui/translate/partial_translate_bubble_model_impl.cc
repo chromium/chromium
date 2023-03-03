@@ -12,8 +12,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "components/translate/content/browser/partial_translate_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_ui_delegate.h"
+#include "components/translate/core/browser/translate_ui_languages_manager.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
 
@@ -38,13 +39,14 @@ PartialTranslateBubbleModelImpl::PartialTranslateBubbleModelImpl(
     const std::u16string& source_text,
     const std::u16string& target_text,
     std::unique_ptr<PartialTranslateManager> partial_translate_manager,
-    std::unique_ptr<translate::TranslateUIDelegate> ui_delegate)
+    std::unique_ptr<translate::TranslateUILanguagesManager>
+        ui_languages_manager)
     : current_view_state_(view_state),
       error_type_(error_type),
       source_text_(source_text),
       target_text_(target_text),
       partial_translate_manager_(std::move(partial_translate_manager)),
-      ui_delegate_(std::move(ui_delegate)) {
+      ui_languages_manager_(std::move(ui_languages_manager)) {
   DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
   DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
 }
@@ -72,12 +74,12 @@ void PartialTranslateBubbleModelImpl::SetViewState(
 
 void PartialTranslateBubbleModelImpl::SetSourceLanguage(
     const std::string& language_code) {
-  ui_delegate_->UpdateSourceLanguage(language_code);
+  ui_languages_manager_->UpdateSourceLanguage(language_code);
 }
 
 void PartialTranslateBubbleModelImpl::SetTargetLanguage(
     const std::string& language_code) {
-  ui_delegate_->UpdateTargetLanguage(language_code);
+  ui_languages_manager_->UpdateTargetLanguage(language_code);
 }
 
 void PartialTranslateBubbleModelImpl::SetSourceText(
@@ -115,52 +117,52 @@ translate::TranslateErrors PartialTranslateBubbleModelImpl::GetError() const {
 }
 
 int PartialTranslateBubbleModelImpl::GetNumberOfSourceLanguages() const {
-  return ui_delegate_->GetNumberOfLanguages();
+  return ui_languages_manager_->GetNumberOfLanguages();
 }
 
 int PartialTranslateBubbleModelImpl::GetNumberOfTargetLanguages() const {
   // Subtract 1 to account for unknown language option being omitted.
-  return ui_delegate_->GetNumberOfLanguages() - 1;
+  return ui_languages_manager_->GetNumberOfLanguages() - 1;
 }
 
 std::u16string PartialTranslateBubbleModelImpl::GetSourceLanguageNameAt(
     int index) const {
-  return ui_delegate_->GetLanguageNameAt(index);
+  return ui_languages_manager_->GetLanguageNameAt(index);
 }
 
 std::u16string PartialTranslateBubbleModelImpl::GetTargetLanguageNameAt(
     int index) const {
   // Add 1 to account for unknown language option at index 0 in
-  // TranslateUIDelegate language list.
-  return ui_delegate_->GetLanguageNameAt(index + 1);
+  // TranslateUILanguagesManager language list.
+  return ui_languages_manager_->GetLanguageNameAt(index + 1);
 }
 
 int PartialTranslateBubbleModelImpl::GetSourceLanguageIndex() const {
-  return ui_delegate_->GetSourceLanguageIndex();
+  return ui_languages_manager_->GetSourceLanguageIndex();
 }
 
 void PartialTranslateBubbleModelImpl::UpdateSourceLanguageIndex(int index) {
-  ui_delegate_->UpdateSourceLanguageIndex(index);
+  ui_languages_manager_->UpdateSourceLanguageIndex(index);
 }
 
 int PartialTranslateBubbleModelImpl::GetTargetLanguageIndex() const {
   // Subtract 1 to account for unknown language option being omitted from the
   // bubble target language list.
-  return ui_delegate_->GetTargetLanguageIndex() - 1;
+  return ui_languages_manager_->GetTargetLanguageIndex() - 1;
 }
 
 void PartialTranslateBubbleModelImpl::UpdateTargetLanguageIndex(int index) {
   // Add 1 to account for unknown language option at index 0 in
-  // TranslateUIDelegate language list.
-  ui_delegate_->UpdateTargetLanguageIndex(index + 1);
+  // TranslateUILanguagesManager language list.
+  ui_languages_manager_->UpdateTargetLanguageIndex(index + 1);
 }
 
 std::string PartialTranslateBubbleModelImpl::GetSourceLanguageCode() const {
-  return ui_delegate_->GetSourceLanguageCode();
+  return ui_languages_manager_->GetSourceLanguageCode();
 }
 
 std::string PartialTranslateBubbleModelImpl::GetTargetLanguageCode() const {
-  return ui_delegate_->GetTargetLanguageCode();
+  return ui_languages_manager_->GetTargetLanguageCode();
 }
 
 void PartialTranslateBubbleModelImpl::Translate(
@@ -200,7 +202,7 @@ void PartialTranslateBubbleModelImpl::Translate(
       web_contents, request,
       base::BindOnce(
           &PartialTranslateBubbleModelImpl::OnPartialTranslateResponse,
-          // partial_translate_manager_ is owned by Model and will be
+          // |partial_translate_manager_| is owned by Model and will be
           // destructed (cancelling the Callback) if Model is.
           base::Unretained(this), request));
 }

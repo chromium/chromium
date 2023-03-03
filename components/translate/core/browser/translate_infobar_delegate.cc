@@ -33,7 +33,8 @@ BASE_FEATURE(kTranslateCompactUI,
              "TranslateCompactUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const size_t TranslateInfoBarDelegate::kNoIndex = TranslateUIDelegate::kNoIndex;
+const size_t TranslateInfoBarDelegate::kNoIndex =
+    TranslateUILanguagesManager::kNoIndex;
 
 TranslateInfoBarDelegate::~TranslateInfoBarDelegate() {
   for (auto& observer : observers_) {
@@ -108,39 +109,40 @@ void TranslateInfoBarDelegate::Create(
 }
 
 size_t TranslateInfoBarDelegate::num_languages() const {
-  return ui_delegate_.GetNumberOfLanguages();
+  return ui_languages_manager_->GetNumberOfLanguages();
 }
 
 std::string TranslateInfoBarDelegate::language_code_at(size_t index) const {
-  return ui_delegate_.GetLanguageCodeAt(index);
+  return ui_languages_manager_->GetLanguageCodeAt(index);
 }
 
 std::u16string TranslateInfoBarDelegate::language_name_at(size_t index) const {
-  return ui_delegate_.GetLanguageNameAt(index);
+  return ui_languages_manager_->GetLanguageNameAt(index);
 }
 
 std::u16string TranslateInfoBarDelegate::source_language_name() const {
-  return language_name_at(ui_delegate_.GetSourceLanguageIndex());
+  return language_name_at(ui_languages_manager_->GetSourceLanguageIndex());
 }
 
 std::u16string TranslateInfoBarDelegate::initial_source_language_name() const {
-  return language_name_at(ui_delegate_.GetInitialSourceLanguageIndex());
+  return language_name_at(
+      ui_languages_manager_->GetInitialSourceLanguageIndex());
 }
 
 std::u16string TranslateInfoBarDelegate::target_language_name() const {
-  return language_name_at(ui_delegate_.GetTargetLanguageIndex());
+  return language_name_at(ui_languages_manager_->GetTargetLanguageIndex());
 }
 
 std::u16string TranslateInfoBarDelegate::unknown_language_name() const {
-  return ui_delegate_.GetUnknownLanguageDisplayName();
+  return ui_languages_manager_->GetUnknownLanguageDisplayName();
 }
 
 void TranslateInfoBarDelegate::GetLanguagesNames(
     std::vector<std::u16string>* languages) const {
   DCHECK(languages != nullptr);
   languages->clear();
-  for (size_t i = 0; i < ui_delegate_.GetNumberOfLanguages(); ++i) {
-    languages->push_back(ui_delegate_.GetLanguageNameAt(i));
+  for (size_t i = 0; i < ui_languages_manager_->GetNumberOfLanguages(); ++i) {
+    languages->push_back(ui_languages_manager_->GetLanguageNameAt(i));
   }
 }
 void TranslateInfoBarDelegate::GetLanguagesCodes(
@@ -148,19 +150,19 @@ void TranslateInfoBarDelegate::GetLanguagesCodes(
   DCHECK(languages_codes != nullptr);
   languages_codes->clear();
 
-  for (size_t i = 0; i < ui_delegate_.GetNumberOfLanguages(); ++i) {
-    languages_codes->push_back(ui_delegate_.GetLanguageCodeAt(i));
+  for (size_t i = 0; i < ui_languages_manager_->GetNumberOfLanguages(); ++i) {
+    languages_codes->push_back(ui_languages_manager_->GetLanguageCodeAt(i));
   }
 }
 
 void TranslateInfoBarDelegate::UpdateSourceLanguage(
     const std::string& language_code) {
-  ui_delegate_.UpdateSourceLanguage(language_code);
+  ui_delegate_.UpdateAndRecordSourceLanguage(language_code);
 }
 
 void TranslateInfoBarDelegate::UpdateTargetLanguage(
     const std::string& language_code) {
-  ui_delegate_.UpdateTargetLanguage(language_code);
+  ui_delegate_.UpdateAndRecordTargetLanguage(language_code);
 }
 
 void TranslateInfoBarDelegate::OnErrorShown(TranslateErrors error_type) {
@@ -360,6 +362,7 @@ TranslateInfoBarDelegate::TranslateInfoBarDelegate(
       step_(step),
       ui_delegate_(translate_manager, source_language, target_language),
       translate_manager_(translate_manager),
+      ui_languages_manager_(ui_delegate_.translate_ui_languages_manager()),
       error_type_(error_type),
       prefs_(translate_manager->translate_client()->GetTranslatePrefs()),
       triggered_from_menu_(triggered_from_menu) {

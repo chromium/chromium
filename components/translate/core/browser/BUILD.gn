@@ -40,6 +40,8 @@ static_library("browser") {
     "translate_trigger_decision.h",
     "translate_ui_delegate.cc",
     "translate_ui_delegate.h",
+    "translate_ui_languages_manager.cc",
+    "translate_ui_languages_manager.h",
     "translate_url_fetcher.cc",
     "translate_url_fetcher.h",
     "translate_url_util.cc",
@@ -119,6 +121,7 @@ source_set("unit_tests") {
     "translate_ranker_impl_unittest.cc",
     "translate_script_unittest.cc",
     "translate_ui_delegate_unittest.cc",
+    "translate_ui_languages_manager_unittest.cc",
     "translate_url_util_unittest.cc",
   ]
   deps = [
