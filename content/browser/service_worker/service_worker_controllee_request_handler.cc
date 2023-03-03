@@ -194,13 +194,15 @@ ServiceWorkerControlleeRequestHandler::
 }
 
 void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
-  if (!container_host_ || !container_host_->controller())
+  if (!container_host_ || !container_host_->controller()) {
     return;
+  }
 
   // For navigations, the update logic is taken care of
   // during navigation and waits for the HintToUpdateServiceWorker message.
-  if (blink::IsRequestDestinationFrame(destination_))
+  if (blink::IsRequestDestinationFrame(destination_)) {
     return;
+  }
 
   // For shared workers. The renderer doesn't yet send a
   // HintToUpdateServiceWorker message.
@@ -208,8 +210,9 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
   // to simplify the code.
 
   // If DevTools forced an update, there is no need to update again.
-  if (force_update_started_)
+  if (force_update_started_) {
     return;
+  }
 
   container_host_->controller()->ScheduleUpdate();
 }
@@ -420,8 +423,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
   // Initiate activation of a waiting version. Usually a register job initiates
   // activation but that doesn't happen if the browser exits prior to activation
   // having occurred. This check handles that case.
-  if (registration->waiting_version())
+  if (registration->waiting_version()) {
     registration->ActivateWaitingVersionWhenReady();
+  }
 
   scoped_refptr<ServiceWorkerVersion> active_version =
       registration->active_version();
@@ -522,8 +526,9 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
       "TypeAtContinueWithActivatedVersion",
       active_version->fetch_handler_type());
 
-  if (blink::IsRequestDestinationFrame(destination_))
+  if (blink::IsRequestDestinationFrame(destination_)) {
     container_host_->AddServiceWorkerToUpdate(active_version);
+  }
 
   switch (active_version->EffectiveFetchHandlerType()) {
     case ServiceWorkerVersion::FetchHandlerType::kNoHandler: {
@@ -584,6 +589,50 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
             std::move(active_version),
             ServiceWorkerMetrics::EventType::BYPASS_MAIN_RESOURCE);
         return;
+      }
+      // If the feature param ServiceWorkerBypassFetchHandlerTarget is
+      // |kAllOnlyIfServiceWorkerNotStarted| takes effect and the ServiceWorker
+      // isn't started yet, skip the fetch handler and then start the
+      // ServiceWorker.
+      if (base::FeatureList::IsEnabled(
+              features::kServiceWorkerBypassFetchHandler) &&
+          features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
+              features::ServiceWorkerBypassFetchHandlerTarget::
+                  kAllOnlyIfServiceWorkerNotStarted) {
+        switch (active_version->running_status()) {
+          case EmbeddedWorkerStatus::STOPPED:
+          case EmbeddedWorkerStatus::STOPPING:
+            active_version->set_fetch_handler_bypass_option(
+                blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+                    kBypassOnlyIfServiceWorkerNotStarted);
+            CompleteWithoutLoader();
+            RecordSkipReason(
+                FetchHandlerSkipReason::
+                    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop);
+            MaybeStartServiceWorker(
+                std::move(active_version),
+                ServiceWorkerMetrics::EventType::
+                    BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED);
+            return;
+          case EmbeddedWorkerStatus::STARTING:
+            // If the status is STARTING, the Serviceworker is not actually
+            // started yet. So it makes sense to skip the fetch handler, but
+            // unlike STOPPED or STOPPING status, it doesn't have to invoke
+            // StartServiceWorker since the ServiceWorker is already in the
+            // start process.
+            active_version->set_fetch_handler_bypass_option(
+                blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+                    kBypassOnlyIfServiceWorkerNotStarted);
+            CompleteWithoutLoader();
+            RecordSkipReason(
+                FetchHandlerSkipReason::
+                    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting);
+            return;
+          case EmbeddedWorkerStatus::RUNNING:
+            active_version->set_fetch_handler_bypass_option(
+                blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
+            break;
+        }
       }
       // Otherwise, record the skip reason as kNotSkipped.
       RecordSkipReason(FetchHandlerSkipReason::kNotSkipped);

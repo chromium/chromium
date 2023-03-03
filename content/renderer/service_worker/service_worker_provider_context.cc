@@ -21,6 +21,7 @@
 #include "content/renderer/worker/worker_thread_registry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_worker_client.mojom.h"
@@ -113,6 +114,15 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
     // not be ready for this case.
     CountFeature(
         blink::mojom::WebFeature::kServiceWorkerSkippedForSubresourceLoad);
+    return nullptr;
+  }
+
+  if (fetch_handler_bypass_option_ ==
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+          kBypassOnlyIfServiceWorkerNotStarted) {
+    // If the fetch handler for the main resource is skipped by
+    // ServiceWorkerBypassFetchHandler, the fetch handler doesn't handle
+    // subresources too.
     return nullptr;
   }
 
@@ -326,6 +336,7 @@ void ServiceWorkerProviderContext::SetController(
   fetch_handler_type_ = controller_info->fetch_handler_type;
   effective_fetch_handler_type_ = controller_info->effective_fetch_handler_type;
   remote_controller_ = std::move(controller_info->remote_controller);
+  fetch_handler_bypass_option_ = controller_info->fetch_handler_bypass_option;
 
   // Propagate the controller to workers related to this provider.
   if (controller_) {

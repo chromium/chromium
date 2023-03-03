@@ -4529,15 +4529,18 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
 
 class ServiceWorkerBypassFetchHandlerTest
     : public ServiceWorkerBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<bool,
+                     bool,
+                     features::ServiceWorkerBypassFetchHandlerTarget>> {
  public:
   ServiceWorkerBypassFetchHandlerTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerBypassFetchHandler,
           {{"script_checksum_to_bypass",
             ShouldUseValidChecksum() ? kValidChecksum : kInvalidChecksum},
-           {"strategy",
-            ShouldUseAllowListStrategy() ? "allowlist" : "optin"}}}},
+           {"strategy", ShouldUseAllowListStrategy() ? "allowlist" : "optin"},
+           {"bypass_for", BypassFetchHandlerTargetStr()}}}},
         {});
   }
   ~ServiceWorkerBypassFetchHandlerTest() override = default;
@@ -4551,6 +4554,18 @@ class ServiceWorkerBypassFetchHandlerTest
  protected:
   bool ShouldUseValidChecksum() { return std::get<0>(GetParam()); }
   bool ShouldUseAllowListStrategy() { return std::get<1>(GetParam()); }
+  features::ServiceWorkerBypassFetchHandlerTarget BypassFetchHandlerTarget() {
+    return std::get<2>(GetParam());
+  }
+  std::string BypassFetchHandlerTargetStr() {
+    switch (BypassFetchHandlerTarget()) {
+      case features::ServiceWorkerBypassFetchHandlerTarget::kMainResource:
+        return "main_resource";
+      case features::ServiceWorkerBypassFetchHandlerTarget::
+          kAllOnlyIfServiceWorkerNotStarted:
+        return "all_only_if_service_worker_not_started";
+    }
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -4559,18 +4574,26 @@ class ServiceWorkerBypassFetchHandlerTest
   std::string kInvalidChecksum = "";
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ServiceWorkerBypassFetchHandlerTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerBypassFetchHandlerTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(
+            features::ServiceWorkerBypassFetchHandlerTarget::kMainResource,
+            features::ServiceWorkerBypassFetchHandlerTarget::
+                kAllOnlyIfServiceWorkerNotStarted)));
 
-IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, UrlInAllowList) {
+IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
   StartServerAndNavigateToSetup();
 
   const GURL create_service_worker_url(embedded_test_server()->GetURL(
       "/service_worker/create_service_worker.html"));
   const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
+  // |in_scope_url| is a page that has more than one subresources.
   const GURL in_scope_url(
-      embedded_test_server()->GetURL("/service_worker/empty.html"));
+      embedded_test_server()->GetURL("/service_worker/with_subresources.html"));
 
   // Register a service worker.
   WorkerRunningStatusObserver observer1(public_context());
@@ -4607,22 +4630,52 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, UrlInAllowList) {
   )";
 
   // Navigate to the service worker's scope.
+  WorkerRunningStatusObserver observer2(public_context());
   EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
 
-  if (ShouldUseAllowListStrategy()) {
-    if (ShouldUseValidChecksum()) {
-      // If bypassing is allowed, the service worker was bypassed and the
-      // navigation request shouldn't be handled by the fetch handler.
+  switch (BypassFetchHandlerTarget()) {
+    case features::ServiceWorkerBypassFetchHandlerTarget::kMainResource:
+      if (ShouldUseAllowListStrategy()) {
+        if (ShouldUseValidChecksum()) {
+          // If bypassing is allowed, the service worker was bypassed and the
+          // navigation request shouldn't be handled by the fetch handler.
+          // 2 from subresources.
+          EXPECT_EQ(2, EvalJs(GetPrimaryMainFrame(), script));
+        } else {
+          // If bypassing is not allowed, the navigation request should be
+          // handled by the fetch handler. 3 = main + subresources
+          EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
+        }
+      } else {
+        // If the allowlist isn't used, the service worker was bypassed and the
+        // navigation request shouldn't be handled by the fetch handler.
+        EXPECT_EQ(2, EvalJs(GetPrimaryMainFrame(), script));
+      }
+      break;
+    case features::ServiceWorkerBypassFetchHandlerTarget::
+        kAllOnlyIfServiceWorkerNotStarted:
+      // TODO(crbug.com/1371756): Consider supporing the allowlist if needed.
+
+      // this option doesn't involve a fetch handler at all when the
+      // ServiceWorker is not started yet while the navigation happens.
       EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
-    } else {
-      // If bypassing is not allowed, the navigation request should be handled
-      // by the fetch handler.
-      EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
-    }
-  } else {
-    // If the allowlist isn't used, the service worker was bypassed and the
-    // navigation request shouldn't be handled by the fetch handler.
-    EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
+
+      // Wait until running.
+      observer2.WaitUntilRunning();
+      version = wrapper()->GetLiveVersion(observer2.version_id());
+      EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+
+      // The handler is not used for subsequent requests even if the
+      // worker has already started.
+      EXPECT_TRUE(
+          ExecJs(GetPrimaryMainFrame(), "fetch('/service_worker/empty.html')"));
+      EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
+
+      // Navigate to the page again while the ServicWorker is running.
+      EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
+      // Expect both the main resource and subresource are handled.
+      EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
+      break;
   }
 }
 

@@ -9,6 +9,7 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom";
 import "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_object.mojom";
@@ -75,6 +76,11 @@ struct ControllerServiceWorkerInfo {
   ServiceWorkerFetchHandlerType effective_fetch_handler_type =
       ServiceWorkerFetchHandlerType.kNoHandler;
 
+  // Experimental feature (crbug.com/1371756). Not followed by the spec.
+  //
+  // Additional option to bypass fetch handlers. A renderer-side decides whether
+  // it involves fetch handlers or not.
+  ServiceWorkerFetchHandlerBypassOption fetch_handler_bypass_option = ServiceWorkerFetchHandlerBypassOption.kDefault;
 
   // Non-null iff there is a controller and it has a fetch event handler.
   pending_remote<ControllerServiceWorker>? remote_controller;

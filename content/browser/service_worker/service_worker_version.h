@@ -137,6 +137,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
       base::OnceCallback<void(blink::mojom::ServiceWorkerEventStatus)>;
   using FetchHandlerExistence = blink::mojom::FetchHandlerExistence;
   using FetchHandlerType = blink::mojom::ServiceWorkerFetchHandlerType;
+  using FetchHandlerBypassOption =
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption;
 
   // Current version status; some of the status (e.g. INSTALLED and ACTIVATED)
   // should be persisted unlike running status.
@@ -252,6 +254,17 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Note that FCP/LCP with skippable fetch handler type is taken in this
   // way.
   FetchHandlerType EffectiveFetchHandlerType() const;
+
+  // Return the option indicating how the fetch handler should be bypassed.
+  // ServiceWorkerBypassFetchHandler feature uses this to let the renderer know
+  // to bypass fetch handlers for subresources.
+  FetchHandlerBypassOption fetch_handler_bypass_option() {
+    return fetch_handler_bypass_option_;
+  }
+  void set_fetch_handler_bypass_option(
+      FetchHandlerBypassOption fetch_handler_bypass_option) {
+    fetch_handler_bypass_option_ = fetch_handler_bypass_option;
+  }
 
   base::TimeDelta TimeSinceNoControllees() const {
     return GetTickDuration(no_controllees_time_);
@@ -981,6 +994,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // https://w3c.github.io/ServiceWorker/#dfn-type
   const blink::mojom::ScriptType script_type_;
   absl::optional<FetchHandlerType> fetch_handler_type_;
+
+  FetchHandlerBypassOption fetch_handler_bypass_option_ =
+      FetchHandlerBypassOption::kDefault;
+
   // The source of truth for navigation preload state is the
   // ServiceWorkerRegistration. |navigation_preload_state_| is essentially a
   // cached value because it must be looked up quickly and a live registration

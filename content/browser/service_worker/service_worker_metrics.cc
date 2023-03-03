@@ -128,6 +128,9 @@ const char* EventTypeToSuffix(ServiceWorkerMetrics::EventType event_type) {
       return "_BYPASS_MAIN_RESOURCE";
     case ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER:
       return "_SKIP_EMPTY_FETCH_HANDLER";
+    case ServiceWorkerMetrics::EventType::
+        BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:
+      return "_BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED";
   }
   return "_UNKNOWN";
 }
@@ -194,6 +197,9 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
       return "_BYPASS_MAIN_RESOURCE";
     case ServiceWorkerMetrics::EventType::SKIP_EMPTY_FETCH_HANDLER:
       return "Skip Empty Fetch Handler";
+    case ServiceWorkerMetrics::EventType::
+        BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:
+      return "Bypass Only If ServiceWorker Is Not Started";
   }
   NOTREACHED() << "Got unexpected event type: " << static_cast<int>(event_type);
   return "error";
@@ -405,6 +411,9 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
     // The navigation hint should not be sent as an event.
     case EventType::SKIP_EMPTY_FETCH_HANDLER:
     // The skip empty fetch handler should not be sent as an event.
+    case EventType::BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:
+    // The bypass_only_if_service_worker_not_started should not be sent as an
+    // event.
     case EventType::UNKNOWN:
       NOTREACHED() << "Invalid event type";
       break;

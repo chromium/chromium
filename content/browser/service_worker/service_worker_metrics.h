@@ -83,8 +83,9 @@ class ServiceWorkerMetrics {
     FETCH_FENCED_FRAME = 36,
     BYPASS_MAIN_RESOURCE = 37,
     SKIP_EMPTY_FETCH_HANDLER = 38,
+    BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED = 39,
     // Add new events to record here.
-    kMaxValue = SKIP_EMPTY_FETCH_HANDLER,
+    kMaxValue = BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED,
   };
 
   // Not used for UMA.

@@ -1015,10 +1015,16 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerStrategy>
         &service_worker_bypass_fetch_handler_strategy_options};
 
 const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>::Option
-    service_worker_bypass_fetch_handler_target_options[] = {{
-        ServiceWorkerBypassFetchHandlerTarget::kMainResource,
-        "main_resource",
-    }};
+    service_worker_bypass_fetch_handler_target_options[] = {
+        {
+            ServiceWorkerBypassFetchHandlerTarget::kMainResource,
+            "main_resource",
+        },
+        {
+            ServiceWorkerBypassFetchHandlerTarget::
+                kAllOnlyIfServiceWorkerNotStarted,
+            "all_only_if_service_worker_not_started",
+        }};
 const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
     kServiceWorkerBypassFetchHandlerTarget{
         &kServiceWorkerBypassFetchHandler, "bypass_for",

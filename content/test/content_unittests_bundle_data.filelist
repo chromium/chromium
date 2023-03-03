@@ -1520,6 +1520,7 @@ data/service_worker/while_true_in_install_worker.js
 data/service_worker/while_true_in_install_worker.js.mock-http-headers
 data/service_worker/while_true_worker.js
 data/service_worker/while_true_worker.js.mock-http-headers
+data/service_worker/with_subresources.html
 data/service_worker/worker.js
 data/service_worker/worker.js.mock-http-headers
 data/service_worker/worker_activate_rejected.js

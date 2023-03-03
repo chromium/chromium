@@ -47,12 +47,17 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // These have to be consistent with ServiceWorkerFetchHandlerSkipReason in
+  // tools/metrics/histograms/enums.xml
+  //
   // Only one reason is recorded even if multiple reasons are matched.
   // The order is following:
   // 1. kSkippedForEmptyFetchHandler
   // 2. kMainResourceSkippedDueToOriginTrial
   // 3. kMainResourceSkippedDueToFeatureFlag
   // 4. kMainResourceSkippedBecauseMatchedWithAllowedScriptList
+  // 5.
+  // kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_[Stop|Starting]
   enum class FetchHandlerSkipReason {
     kNoFetchHandler = 0,
     kNotSkipped = 1,
@@ -61,8 +66,11 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
     kMainResourceSkippedDueToFeatureFlag = 4,
     // kMainResourceSkippedBecauseMatchedWithAllowedOriginList = 5,
     kMainResourceSkippedBecauseMatchedWithAllowedScriptList = 6,
+    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop = 7,
+    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting = 8,
 
-    kMaxValue = kMainResourceSkippedBecauseMatchedWithAllowedScriptList,
+    kMaxValue =
+        kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting,
   };
 
   // If |skip_service_worker| is true, service workers are bypassed for

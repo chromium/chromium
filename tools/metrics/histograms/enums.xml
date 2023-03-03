@@ -92958,6 +92958,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Main resource is skipped by feature flag"/>
   <int value="5" label="Main resource is skipped by allowed origin list"/>
   <int value="6" label="Main resource is skipped by allowed script list"/>
+  <int value="7"
+      label="Skipped by
+             kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop"/>
+  <int value="8"
+      label="Skipped by
+             kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting"/>
 </enum>
 
 <enum name="ServiceWorkerFetchHandlerType">
@@ -93047,6 +93053,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="33" label="PERIODIC_SYNC"/>
   <int value="34" label="CONTENT_DELETE"/>
   <int value="35" label="PUSH_SUBSCRIPTION_CHANGE"/>
+  <int value="36" label="FETCH_FENCED_FRAME"/>
+  <int value="37" label="BYPASS_MAIN_RESOURCE"/>
+  <int value="38" label="SKIP_EMPTY_FETCH_HANDLER"/>
+  <int value="39" label="BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED"/>
 </enum>
 
 <enum name="ServiceWorkerOfflineCapability">
