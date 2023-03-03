@@ -944,6 +944,10 @@ void AppListItemView::OnBlur() {
 }
 
 int AppListItemView::GetDragOperations(const gfx::Point& press_pt) {
+  if (context_ == Context::kRecentAppsView) {
+    return ui::DragDropTypes::DRAG_NONE;
+  }
+
   return app_list_features::IsDragAndDropRefactorEnabled()
              ? ui::DragDropTypes::DRAG_MOVE
              : views::View::GetDragOperations(press_pt);
