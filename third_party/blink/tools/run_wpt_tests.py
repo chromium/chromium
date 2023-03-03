@@ -27,7 +27,7 @@ from blinkpy.web_tests.port.android import (
     ANDROID_WEBVIEW,
     CHROME_ANDROID,
 )
-from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR
+from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR, Port
 
 path_finder.add_testing_dir_to_sys_path()
 path_finder.add_build_android_to_sys_path()
@@ -322,21 +322,49 @@ class WPTAdapter:
             options.config = self.path_finder.path_from_web_tests(
                 'wptrunner.blink.ini')
         if options.flag_specific:
+            # Enable adding smoke tests later.
+            self.port.set_option_default('flag_specific',
+                                         options.flag_specific)
             configs = self.port.flag_specific_configs()
-            args, smoke_file_name = configs[options.flag_specific]
+            args, _ = configs[options.flag_specific]
             logger.info('Running with flag-specific arguments: "%s"',
                         ' '.join(args))
             options.binary_args.extend(args)
-            if smoke_file_name and not _has_explicit_tests(options):
-                options.include_file = self.path_finder.path_from_web_tests(
-                    smoke_file_name)
+
+        smoke_file_short_path = self.fs.relpath(
+            self.port.path_to_smoke_tests_file(), self.port.web_tests_dir())
+        if self.port.default_smoke_test_only():
+            if not _has_explicit_tests(options):
+                self._load_smoke_tests(options)
                 logger.info(
                     'Tests not explicitly specified; '
-                    'running tests from web_tests/%s', smoke_file_name)
-            elif smoke_file_name:
+                    'running tests from %s', smoke_file_short_path)
+            else:
                 logger.warning(
                     'Tests explicitly specified; '
-                    'not running tests from web_tests/%s', smoke_file_name)
+                    'not running tests from %s', smoke_file_short_path)
+
+    def _load_smoke_tests(self, options: argparse.Namespace):
+        """Read the smoke tests file and append its tests to the test list.
+
+        This method handles smoke test files inherited from `run_web_tests.py`
+        differently from the native `wpt run --include-file` parameter.
+        Specifically, tests are assumed to be relative to `web_tests/`, so a
+        line without a recognized `external/wpt/` or `wpt_internal/` prefix is
+        assumed to be a legacy layout test that is excluded.
+        """
+        smoke_file_path = self.port.path_to_smoke_tests_file()
+        options.include = options.include or []
+        with self.fs.open_text_file_for_reading(smoke_file_path) as smoke_file:
+            for line in smoke_file:
+                test, _, _ = line.partition('#')
+                test = test.strip()
+                for wpt_dir, url_prefix in Port.WPT_DIRS.items():
+                    if not wpt_dir.endswith('/'):
+                        wpt_dir += '/'
+                    if test.startswith(wpt_dir):
+                        options.include.append(
+                            test.replace(wpt_dir, url_prefix, 1))
 
     def _check_and_update_upstream_options(self, options: argparse.Namespace):
         if options.use_upstream_wpt:
