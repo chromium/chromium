@@ -973,15 +973,13 @@ IBAN FormDataImporter::ExtractIBANFromForm(const FormStructure& form) {
   IBAN candidate_iban;
 
   for (const auto& field : form) {
-    std::u16string value;
-    base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
-
-    if (!field->IsFieldFillable() || value.empty())
+    if (!field->IsFieldFillable() || field->value.empty()) {
       continue;
+    }
 
     AutofillType field_type = field->Type();
     if (field_type.GetStorableType() == IBAN_VALUE) {
-      candidate_iban.SetInfo(field_type, value, app_locale_);
+      candidate_iban.SetInfo(field_type, field->value, app_locale_);
       break;
     }
   }

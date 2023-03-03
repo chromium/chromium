@@ -42,6 +42,7 @@
 namespace {
 const char kIbanForm[] = "/autofill_iban_form.html";
 constexpr char kIbanValue[] = "DE91 1000 0000 0123 4567 89";
+constexpr char kIbanValueWithoutWhitespaces[] = "DE91100000000123456789";
 }  // namespace
 
 namespace autofill {
@@ -409,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   EXPECT_FALSE(GetSaveIbanBubbleView());
   EXPECT_EQ(
       1, iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()->GetStrikes(
-             kIbanValue));
+             kIbanValueWithoutWhitespaces));
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptOffer.Local.FirstShow",
       autofill_metrics::SaveIbanPromptOffer::kShown, 1);
@@ -438,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   }
   EXPECT_EQ(
       iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()->GetStrikes(
-          kIbanValue),
+          kIbanValueWithoutWhitespaces),
       iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
           ->GetMaxStrikesLimit());
   // Submit the form a fourth time. Since the IBAN now has maximum strikes,
@@ -450,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   WaitForObservedEvent();
 
   EXPECT_TRUE(iban_save_manager_->GetIBANSaveStrikeDatabaseForTesting()
-                  ->ShouldBlockFeature(kIbanValue));
+                  ->ShouldBlockFeature(kIbanValueWithoutWhitespaces));
 
   EXPECT_TRUE(GetSaveIbanIconView()->GetVisible());
   EXPECT_FALSE(GetSaveIbanBubbleView());

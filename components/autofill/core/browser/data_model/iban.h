@@ -61,7 +61,7 @@ class IBAN : public AutofillDataModel {
 
   // Returns the value (the actual bank account number) of IBAN.
   const std::u16string& value() const { return value_; }
-  void set_value(const std::u16string& value) { value_ = value; }
+  void set_value(const std::u16string& value);
 
   const std::u16string& nickname() const { return nickname_; }
   // Set the |nickname_| with the processed input (replace all tabs and newlines

@@ -185,7 +185,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
       suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
 
-  test_field.value = u"CH56 04";
+  test_field.value = u"CH5604";
 
   // Setting up mock to verify that the handler is returned only one
   // iban-based suggestion whose prefix matches `prefix_`. Only one of the two

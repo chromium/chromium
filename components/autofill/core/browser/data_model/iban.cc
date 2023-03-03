@@ -98,6 +98,11 @@ bool IBAN::operator!=(const IBAN& iban) const {
   return !operator==(iban);
 }
 
+void IBAN::set_value(const std::u16string& value) {
+  // Get rid of all whitespace in the value before storing.
+  base::ReplaceChars(value, u" ", u"", &value_);
+}
+
 void IBAN::set_nickname(const std::u16string& nickname) {
   // First replace all tabs and newlines with whitespaces and store it as
   // |nickname_|.

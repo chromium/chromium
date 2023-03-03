@@ -118,6 +118,7 @@ constexpr char kDefaultCreditCardExpYear[] = "2999";
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Define default value for Iban.
 constexpr char kIbanValue[] = "IE12 BOFI 9000 0112 3456 78";
+constexpr char kIbanValueWithoutWhitespaces[] = "IE12BOFI90000112345678";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // For a given ServerFieldType |type| returns a pair of field name and label
@@ -4426,7 +4427,8 @@ TEST_P(FormDataImporterTest,
       IBANSaveStrikeDatabase(autofill_client_->GetStrikeDatabase());
 
   iban_save_strike_database.AddStrikes(
-      iban_save_strike_database.GetMaxStrikesLimit(), kIbanValue);
+      iban_save_strike_database.GetMaxStrikesLimit(),
+      kIbanValueWithoutWhitespaces);
 
   // Simulate a form submission with a new IBAN.
   FormData form;
