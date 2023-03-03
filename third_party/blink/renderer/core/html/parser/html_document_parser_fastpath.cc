@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
@@ -791,6 +792,14 @@ class HTMLFastPathParser {
       }
       for (size_t i = 0; i < entity.length; ++i) {
         out->push_back(entity.data[i]);
+      }
+      // ConsumeHTMLEntity() may not have consumed all the input.
+      const unsigned remaining_length = input_segmented.length();
+      if (remaining_length) {
+        if (*(pos_ - 1) == ';') {
+          --pos_;
+        }
+        pos_ -= remaining_length;
       }
     }
   }
