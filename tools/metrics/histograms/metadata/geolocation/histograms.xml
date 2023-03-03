@@ -151,46 +151,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Geolocation.SettingsDialog.AcceptEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is accepted by
-    the user.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.SettingsDialog.DenyEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is rejected by
-    the user.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.SettingsDialog.ShowEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is shown to the
-    user.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.SettingsDialog.SuppressEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is suppressed
-    due to backoff.
-  </summary>
-</histogram>
-
 <histogram name="Geolocation.WifiDataProviderCommon.WifiScanTaskTime"
     units="ms" expires_after="2023-07-15">
   <owner>reillyg@chromium.org</owner>

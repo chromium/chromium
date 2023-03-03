@@ -2076,15 +2076,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PLT.PT_StartToFinish"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GeolocationSettingsDialogSource" separator=".">
-  <suffix name="DSE" label="Default search engine"/>
-  <suffix name="NonDSE" label="Non-default search engine"/>
-  <affected-histogram name="Geolocation.SettingsDialog.AcceptEvent"/>
-  <affected-histogram name="Geolocation.SettingsDialog.DenyEvent"/>
-  <affected-histogram name="Geolocation.SettingsDialog.ShowEvent"/>
-  <affected-histogram name="Geolocation.SettingsDialog.SuppressEvent"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GetAuthTokenType" separator=".">
   <suffix name="RemoteConsentApproved"
       label="The remote consent has been approved for the getAuthToken()
