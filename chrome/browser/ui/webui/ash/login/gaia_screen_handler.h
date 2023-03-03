@@ -440,7 +440,7 @@ class GaiaScreenHandler
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
-  const base::raw_ptr<ErrorScreen> error_screen_;
+  const base::raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_;
 
   NetworkStateInformer::State last_network_state_ =
       NetworkStateInformer::UNKNOWN;

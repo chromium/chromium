@@ -30,7 +30,7 @@ class ChromeArcSettingsAppDelegate : public ArcSettingsAppDelegate {
  private:
   void UpdateLocationSettings(bool is_enabled);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace arc

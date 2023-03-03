@@ -98,7 +98,7 @@ class TriggerThrottler {
 
   // Pref service for accessing local state prefs (ie: unsynced, tied to the
   // browser not to a profile). Used to persist quota.
-  raw_ptr<PrefService> local_state_prefs_;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_prefs_;
 
   // Can be set for testing.
   raw_ptr<base::Clock> clock_;

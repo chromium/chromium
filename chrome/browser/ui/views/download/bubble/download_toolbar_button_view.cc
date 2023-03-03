@@ -104,7 +104,7 @@ class CircleBadgeImageSource : public gfx::CanvasImageSource {
 
  private:
   // Pointee may be modified to change the text color upon painting.
-  const raw_ptr<gfx::RenderText> render_text_ = nullptr;
+  const raw_ptr<gfx::RenderText, DanglingUntriaged> render_text_ = nullptr;
   const SkColor text_color_;
   const SkColor background_color_;
 };

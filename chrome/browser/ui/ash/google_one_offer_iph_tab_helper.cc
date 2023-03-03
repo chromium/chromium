@@ -81,7 +81,7 @@ class DriveIphTabHelperNotificationDelegate
   friend class message_center::NotificationDelegate;
   ~DriveIphTabHelperNotificationDelegate() override = default;
 
-  raw_ptr<feature_engagement::Tracker> tracker_;
+  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> tracker_;
   raw_ptr<Profile> profile_;
 };
 

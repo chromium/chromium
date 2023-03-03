@@ -356,7 +356,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   SEQUENCE_CHECKER(sequence_checker_);
 
   const Path profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const raw_ptr<mojom::DriveFs> drivefs_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?

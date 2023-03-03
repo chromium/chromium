@@ -120,7 +120,8 @@ class ChromeFeatureListCreator {
   std::string actual_locale_;
 
   // This is owned by |metrics_services_manager_| but we need to expose it.
-  raw_ptr<ChromeMetricsServicesManagerClient> metrics_services_manager_client_;
+  raw_ptr<ChromeMetricsServicesManagerClient, DanglingUntriaged>
+      metrics_services_manager_client_;
 
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;

@@ -155,7 +155,8 @@ class CompoundTabContainer : public TabContainer,
 
   // Returns the child TabContainer that should contain `view`. NB this can be
   // different from `view->parent()` e.g. while `view` is being dragged.
-  raw_ref<TabContainer> GetTabContainerFor(TabSlotView* view) const;
+  raw_ref<TabContainer, DanglingUntriaged> GetTabContainerFor(
+      TabSlotView* view) const;
 
   // Returns the child TabContainer that should handle text drag and drop events
   // at `point_in_local_coords`.
@@ -193,14 +194,14 @@ class CompoundTabContainer : public TabContainer,
   const std::unique_ptr<TabContainerController>
       pinned_tab_container_controller_;
   // The TabContainer that holds the pinned tabs.
-  const raw_ref<TabContainer> pinned_tab_container_;
+  const raw_ref<TabContainer, DanglingUntriaged> pinned_tab_container_;
 
   // Adapts `unpinned_tab_container_`'s interactions with the model to account
   // for it only holding unpinned tabs.
   const std::unique_ptr<TabContainerController>
       unpinned_tab_container_controller_;
   // The TabContainer that holds the unpinned tabs.
-  const raw_ref<TabContainer> unpinned_tab_container_;
+  const raw_ref<TabContainer, DanglingUntriaged> unpinned_tab_container_;
 
   base::RepeatingCallback<int()> available_width_callback_;
 
@@ -219,7 +220,7 @@ class CompoundTabContainer : public TabContainer,
 
   // The sub-container that handled the last drag/drop update, if any. Used to
   // ensure HandleDragExited is called when necessary.
-  raw_ptr<TabContainer> current_text_drop_target_ = nullptr;
+  raw_ptr<TabContainer, DanglingUntriaged> current_text_drop_target_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMPOUND_TAB_CONTAINER_H_

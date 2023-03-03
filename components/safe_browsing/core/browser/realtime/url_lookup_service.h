@@ -146,7 +146,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
 
   // Unowned. For checking whether real-time checks can be enabled in a given
   // location.
-  raw_ptr<variations::VariationsService> variations_;
+  raw_ptr<variations::VariationsService, DanglingUntriaged> variations_;
 
   // Bypasses the check for probability when sending Protego sample pings.
   // Only for unit tests.

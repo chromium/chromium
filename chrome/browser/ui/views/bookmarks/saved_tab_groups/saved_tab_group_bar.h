@@ -128,7 +128,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
-  raw_ptr<views::MenuButton> overflow_button_;
+  raw_ptr<views::MenuButton, DanglingUntriaged> overflow_button_;
 
   // Used to show the overflow menu when clicked.
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;

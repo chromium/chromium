@@ -955,8 +955,8 @@ gfx::Rect CompoundTabContainer::ConvertUnpinnedContainerIdealBoundsToLocal(
   return ideal_bounds;
 }
 
-raw_ref<TabContainer> CompoundTabContainer::GetTabContainerFor(
-    TabSlotView* view) const {
+raw_ref<TabContainer, DanglingUntriaged>
+CompoundTabContainer::GetTabContainerFor(TabSlotView* view) const {
   if (view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader)
     return unpinned_tab_container_;
 
