@@ -627,6 +627,7 @@ bool Layer::LayerHasCustomColorMatrix() const {
 
 void Layer::ClearLayerCustomColorMatrix() {
   layer_custom_color_matrix_.reset();
+  SetLayerFilters();
 }
 
 void Layer::SetLayerInverted(bool inverted) {
