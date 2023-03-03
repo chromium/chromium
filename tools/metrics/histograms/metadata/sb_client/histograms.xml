@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
-    enum="BooleanHasUserGesture" expires_after="2023-04-13">
+    enum="BooleanHasUserGesture" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -514,7 +514,7 @@ chromium-metrics-reviews@google.com.
     type, we can calculate whether the bypass rate is different between
     user-initiated and automatically triggered downloads.
 
-    This metric is used to populate a dashboard on go/crsb-site.
+    This metric is used to populate a dashboard on go/crca-site.
   </summary>
   <token key="DangerType" variants="DownloadDangerTypeForBypassMetrics"/>
   <token key="Action" variants="DownloadWarningAction"/>
@@ -522,7 +522,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.Warning.DownloadIsHttps.{DangerType}.{Action}"
-    enum="BooleanHttps" expires_after="2023-04-13">
+    enum="BooleanHttps" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -533,14 +533,14 @@ chromium-metrics-reviews@google.com.
     calculate whether the bypass rate is different between HTTPS downloads and
     non-HTTPS downloads.
 
-    This metric is used to populate a dashboard on go/crsb-site.
+    This metric is used to populate a dashboard on go/crca-site.
   </summary>
   <token key="DangerType" variants="DownloadDangerTypeForBypassMetrics"/>
   <token key="Action" variants="DownloadWarningAction"/>
 </histogram>
 
 <histogram name="SBClientDownload.Warning.FileType.{DangerType}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2023-04-13">
+    enum="SBClientDownloadExtensions" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
     the shown and bypassed metrics for a specific danger type, we can calculate
     the bypass rate of different file types.
 
-    This metric is used to populate a dashboard on go/crsb-site.
+    This metric is used to populate a dashboard on go/crca-site.
   </summary>
   <token key="DangerType" variants="DownloadDangerTypeForBypassMetrics"/>
   <token key="Action" variants="DownloadWarningAction"/>
