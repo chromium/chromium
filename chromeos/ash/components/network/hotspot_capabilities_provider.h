@@ -58,6 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
     kNotAllowed = 1,
     kUpstreamNetworkNotAvailable = 2,
     kShillOperationFailed = 3,
+    kUnknownResult = 4,
   };
 
   HotspotCapabilitiesProvider();

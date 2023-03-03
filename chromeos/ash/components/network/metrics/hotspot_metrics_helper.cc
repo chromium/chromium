@@ -22,6 +22,116 @@ const char HotspotMetricsHelper::kHotspotAllowStatusHistogram[] =
 const char HotspotMetricsHelper::kHotspotAllowStatusAtLoginHistogram[] =
     "Network.Ash.Hotspot.Upstream.Cellular.Capability.AllowStatusAtLogin";
 
+// static
+const char HotspotMetricsHelper::kHotspotEnableResultHistogram[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.EnableHotspot.OperationResult";
+
+// static
+const char HotspotMetricsHelper::kHotspotDisableResultHistogram[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.DisableHotspot.OperationResult";
+
+// static
+const char HotspotMetricsHelper::kHotspotSetConfigResultHistogram[] =
+    "Network.Ash.Hotspot.SetConfig.OperationResult";
+
+// static
+const char HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.CheckReadiness.OperationResult";
+
+// static
+void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
+    bool enabled,
+    hotspot_config::mojom::HotspotControlResult result) {
+  HotspotMetricsSetEnabledResult metrics_result =
+      GetSetEnabledMetricsResult(result);
+  if (enabled) {
+    base::UmaHistogramEnumeration(kHotspotEnableResultHistogram,
+                                  metrics_result);
+    return;
+  }
+  base::UmaHistogramEnumeration(kHotspotDisableResultHistogram, metrics_result);
+}
+
+// static
+void HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
+    HotspotCapabilitiesProvider::CheckTetheringReadinessResult result) {
+  base::UmaHistogramEnumeration(kHotspotCheckReadinessResultHistogram,
+                                GetCheckReadinessMetricsResult(result));
+}
+
+// static
+void HotspotMetricsHelper::RecordSetHotspotConfigResult(
+    hotspot_config::mojom::SetHotspotConfigResult result) {
+  base::UmaHistogramEnumeration(kHotspotSetConfigResultHistogram,
+                                GetSetConfigMetricsResult(result));
+}
+
+HotspotMetricsHelper::HotspotMetricsSetEnabledResult
+HotspotMetricsHelper::GetSetEnabledMetricsResult(
+    const hotspot_config::mojom::HotspotControlResult& result) {
+  using hotspot_config::mojom::HotspotControlResult;
+
+  switch (result) {
+    case HotspotControlResult::kSuccess:
+      return HotspotMetricsSetEnabledResult::kSuccess;
+    case HotspotControlResult::kNotAllowed:
+      return HotspotMetricsSetEnabledResult::kNotAllowed;
+    case HotspotControlResult::kReadinessCheckFailed:
+      return HotspotMetricsSetEnabledResult::kReadinessCheckFailure;
+    case HotspotControlResult::kDisableWifiFailed:
+      return HotspotMetricsSetEnabledResult::kDisableWifiFailure;
+    case HotspotControlResult::kInvalidConfiguration:
+      return HotspotMetricsSetEnabledResult::kInvalidConfiguration;
+    case HotspotControlResult::kUpstreamNotAvailable:
+      return HotspotMetricsSetEnabledResult::kUpstreamNotAvailable;
+    case HotspotControlResult::kNetworkSetupFailure:
+      return HotspotMetricsSetEnabledResult::kNetworkSetupFailure;
+    case HotspotControlResult::kWifiDriverFailure:
+      return HotspotMetricsSetEnabledResult::kWifiDriverFailure;
+    case HotspotControlResult::kCellularAttachFailure:
+      return HotspotMetricsSetEnabledResult::kCellularAttachFailure;
+    case HotspotControlResult::kShillOperationFailed:
+      return HotspotMetricsSetEnabledResult::kShillOperationFailure;
+    default:
+      return HotspotMetricsSetEnabledResult::kUnknownFailure;
+  }
+}
+
+HotspotMetricsHelper::HotspotMetricsCheckReadinessResult
+HotspotMetricsHelper::GetCheckReadinessMetricsResult(
+    const HotspotCapabilitiesProvider::CheckTetheringReadinessResult& result) {
+  using CheckReadinessResult =
+      HotspotCapabilitiesProvider::CheckTetheringReadinessResult;
+
+  switch (result) {
+    case CheckReadinessResult::kReady:
+      return HotspotMetricsCheckReadinessResult::kReady;
+    case CheckReadinessResult::kNotAllowed:
+      return HotspotMetricsCheckReadinessResult::kNotAllowed;
+    case CheckReadinessResult::kUpstreamNetworkNotAvailable:
+      return HotspotMetricsCheckReadinessResult::kUpstreamNetworkNotAvailable;
+    case CheckReadinessResult::kShillOperationFailed:
+      return HotspotMetricsCheckReadinessResult::kShillOperationFailed;
+    case CheckReadinessResult::kUnknownResult:
+      return HotspotMetricsCheckReadinessResult::kUnknownResult;
+  }
+}
+
+HotspotMetricsHelper::HotspotMetricsSetConfigResult
+HotspotMetricsHelper::GetSetConfigMetricsResult(
+    const hotspot_config::mojom::SetHotspotConfigResult& result) {
+  using hotspot_config::mojom::SetHotspotConfigResult;
+
+  switch (result) {
+    case SetHotspotConfigResult::kSuccess:
+      return HotspotMetricsSetConfigResult::kSuccess;
+    case SetHotspotConfigResult::kFailedNotLogin:
+      return HotspotMetricsSetConfigResult::kFailedNotLogin;
+    case SetHotspotConfigResult::kFailedInvalidConfiguration:
+      return HotspotMetricsSetConfigResult::kFailedInvalidConfiguration;
+  }
+}
+
 HotspotMetricsHelper::HotspotMetricsHelper() = default;
 
 HotspotMetricsHelper::~HotspotMetricsHelper() {

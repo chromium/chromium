@@ -6,12 +6,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_test_observer.h"
@@ -175,6 +177,7 @@ class HotspotControllerTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
@@ -197,6 +200,12 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 1);
+
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             EnableHotspot());
   // Verifies that Wifi technology will be turned off.
@@ -204,6 +213,17 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
       NetworkStateHandler::TECHNOLOGY_AVAILABLE,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
           NetworkTypePattern::WiFi()));
+
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 2);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kSuccess, 1);
 }
 
 TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
@@ -212,6 +232,12 @@ TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
   SetValidTetheringCapabilities();
   AddActiveCellularServivce();
   base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 1);
 
   // Simulate check tethering readiness operation fail.
   network_state_test_helper_.manager_test()
@@ -225,6 +251,21 @@ TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
   EXPECT_EQ(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
+
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::
+          kShillOperationFailed,
+      1);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetEnabledResult::
+          kReadinessCheckFailure,
+      1);
 }
 
 TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
@@ -233,6 +274,12 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
   SetValidTetheringCapabilities();
   AddActiveCellularServivce();
   base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 1);
 
   // Simulate enable tethering operation fail with kShillNetworkingFailure
   // error.
@@ -247,6 +294,19 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
       NetworkStateHandler::TECHNOLOGY_ENABLED,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
           NetworkTypePattern::WiFi()));
+
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 2);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotEnableResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetEnabledResult::
+          kNetworkSetupFailure,
+      1);
 }
 
 TEST_F(HotspotControllerTest, DisableTetheringSuccess) {
@@ -254,6 +314,11 @@ TEST_F(HotspotControllerTest, DisableTetheringSuccess) {
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             DisableHotspot());
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotDisableResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotDisableResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kSuccess, 1);
 }
 
 TEST_F(HotspotControllerTest, QueuedRequests) {

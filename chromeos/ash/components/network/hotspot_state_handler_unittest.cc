@@ -6,11 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -109,6 +111,7 @@ class HotspotStateHandlerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   TestObserver observer_;
   NetworkStateTestHelper network_state_test_helper_{
@@ -236,6 +239,11 @@ TEST_F(HotspotStateHandlerTest, UpdateHotspotConfigWhenProfileLoaded) {
 TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
   EXPECT_EQ(hotspot_config::mojom::SetHotspotConfigResult::kFailedNotLogin,
             SetHotspotConfig(GenerateTestConfig()));
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetConfigResult::kFailedNotLogin, 1);
   ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());
   EXPECT_EQ(0u, observer_.hotspot_status_changed_count());
 
@@ -252,6 +260,11 @@ TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
   EXPECT_EQ(hotspot_config->ssid, kHotspotConfigSSID);
   EXPECT_EQ(hotspot_config->passphrase, kHotspotConfigPassphrase);
   EXPECT_FALSE(hotspot_config->bssid_randomization);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram, 2);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetConfigResult::kSuccess, 1);
 
   Logout();
   ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());

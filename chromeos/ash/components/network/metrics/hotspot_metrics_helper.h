@@ -21,6 +21,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     : public LoginState::Observer,
       public HotspotCapabilitiesProvider::Observer {
  public:
+  // Emits enable/disable hotspot operation result to related UMA histogram.
+  static void RecordSetTetheringEnabledResult(
+      bool enabled,
+      hotspot_config::mojom::HotspotControlResult result);
+
+  // Emits check tethering readiness operation result to related UMA histogram.
+  static void RecordCheckTetheringReadinessResult(
+      HotspotCapabilitiesProvider::CheckTetheringReadinessResult result);
+
+  // Emits set hotspot configuration operation result to related UMA histogram.
+  static void RecordSetHotspotConfigResult(
+      hotspot_config::mojom::SetHotspotConfigResult result);
+
   HotspotMetricsHelper();
   HotspotMetricsHelper(const HotspotMetricsHelper&) = delete;
   HotspotMetricsHelper& operator=(const HotspotMetricsHelper&) = delete;
@@ -32,10 +45,34 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   friend class HotspotMetricsHelperTest;
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotAllowStatusHistogram);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, EnableTetheringSuccess);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
+                           EnableTetheringReadinessCheckFailure);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
+                           EnableTetheringNetworkSetupFailure);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, DisableTetheringSuccess);
+  FRIEND_TEST_ALL_PREFIXES(HotspotStateHandlerTest, SetAndGetHotspotConfig);
+  FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,
+                           CheckTetheringReadiness);
+
+  enum class HotspotMetricsSetEnabledResult;
+  enum class HotspotMetricsSetConfigResult;
+  enum class HotspotMetricsCheckReadinessResult;
 
   static const char kHotspotAllowStatusHistogram[];
   static const char kHotspotAllowStatusAtLoginHistogram[];
+  static const char kHotspotEnableResultHistogram[];
+  static const char kHotspotDisableResultHistogram[];
+  static const char kHotspotSetConfigResultHistogram[];
+  static const char kHotspotCheckReadinessResultHistogram[];
   static const base::TimeDelta kLogAllowStatusAtLoginTimeout;
+
+  static HotspotMetricsCheckReadinessResult GetCheckReadinessMetricsResult(
+      const HotspotCapabilitiesProvider::CheckTetheringReadinessResult& result);
+  static HotspotMetricsSetEnabledResult GetSetEnabledMetricsResult(
+      const hotspot_config::mojom::HotspotControlResult& result);
+  static HotspotMetricsSetConfigResult GetSetConfigMetricsResult(
+      const hotspot_config::mojom::SetHotspotConfigResult& result);
 
   // Represents the hotspot allow status on device. Note:
   // kDisallowNoCellularUpstream is not logged in the metric because it means
@@ -50,6 +87,46 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kDisallowedReadinessCheckFail,
     kDisallowedByPolicy,
     kMaxValue = kDisallowedByPolicy,
+  };
+
+  // Represents the operation result of set hotspot configuration used for
+  // related UMA histogram. These values are persisted to logs. Entries should
+  // not be renumbered and numeric values should never be reused.
+  enum class HotspotMetricsSetConfigResult {
+    kSuccess,
+    kFailedNotLogin,
+    kFailedInvalidConfiguration,
+    kMaxValue = kFailedInvalidConfiguration,
+  };
+
+  // Represents the operation result of check tethering readiness used for
+  // related UMA histogram. These values are persisted to logs. Entries should
+  // not be renumbered and numeric values should never be reused.
+  enum class HotspotMetricsCheckReadinessResult {
+    kReady = 0,
+    kNotAllowed = 1,
+    kUpstreamNetworkNotAvailable = 2,
+    kShillOperationFailed = 3,
+    kUnknownResult = 4,
+    kMaxValue = kUnknownResult,
+  };
+
+  // Represents the operation result of enable/disable hotspot used for related
+  // UMA histograms. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  enum class HotspotMetricsSetEnabledResult {
+    kSuccess,
+    kNotAllowed,
+    kReadinessCheckFailure,
+    kDisableWifiFailure,
+    kInvalidConfiguration,
+    kUpstreamNotAvailable,
+    kNetworkSetupFailure,
+    kWifiDriverFailure,
+    kCellularAttachFailure,
+    kShillOperationFailure,
+    kUnknownFailure,
+    kMaxValue = kUnknownFailure,
   };
 
   // HotspotCapabilitiesProvider::Observer:

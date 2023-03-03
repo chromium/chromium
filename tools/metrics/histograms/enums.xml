@@ -50079,6 +50079,66 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
              prohibited by the enterprise policy."/>
 </enum>
 
+<enum name="HotspotCheckReadinessResult">
+  <int value="0"
+      label="kReady: Readiness check pass and the current mobile data support
+             hotspot."/>
+  <int value="1"
+      label="kNotAllowed: Readiness check doesn't pass because the current
+             mobile data doesn't support hotspot."/>
+  <int value="2"
+      label="kUpstreamNetworkNotAvailable: Readiness check failed because
+             upstream network is not connected."/>
+  <int value="3"
+      label="kShillOperationFailed: Readiness check failed because of shill
+             operation error."/>
+  <int value="4"
+      label="kUnknownResult: Readiness check doesn't pass because of unknown
+             result code."/>
+</enum>
+
+<enum name="HotspotSetConfigResult">
+  <int value="0" label="kSuccess: The operation completes successfully."/>
+  <int value="1"
+      label="kFailedNotLogin: The operation failed because user is not login."/>
+  <int value="2"
+      label="kFailedInvalidConfiguration: The operation failed because of
+             invalid hotspot configuration."/>
+</enum>
+
+<enum name="HotspotSetEnabledResult">
+  <int value="0" label="kSuccess: The operation completes successfully."/>
+  <int value="1"
+      label="kNotAllowed: The operation failed because it is not allowed."/>
+  <int value="2"
+      label="kReadinessCheckFailure: The operation failed because tethering
+             readiness check is failed."/>
+  <int value="3"
+      label="kDisableWifiFailure: The operation failed because it failed to
+             disable Wifi first."/>
+  <int value="4"
+      label="kInvalidConfiguration: The operation failed because of invalid
+             hotspot configuration."/>
+  <int value="5"
+      label="kUpstreamNotAvailable: The operation failed because upstream
+             network is not connected."/>
+  <int value="6"
+      label="kNetworkSetupFailure: The operation failed because of network
+             setup failure."/>
+  <int value="7"
+      label="kWifiDriverFailure: The operation failed because of Wifi driver
+             error."/>
+  <int value="8"
+      label="kCellularAttachFailure: The operation failed because of cellular
+             attach failure."/>
+  <int value="9"
+      label="kShillOperationFailure: The operation failed because of shill
+             operation error."/>
+  <int value="10"
+      label="kUnknownFailure: The operation is failed because of unknow
+             error."/>
+</enum>
+
 <enum name="HotspotSupport">
   <int value="0" label="Unsupported"/>
   <int value="1" label="Invalid version"/>

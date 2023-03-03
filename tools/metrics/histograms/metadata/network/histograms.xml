@@ -257,6 +257,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.Ash.Hotspot.SetConfig.OperationResult"
+    enum="HotspotSetConfigResult" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures and tracks the result of setting hotspot configuration. Emitted
+    whenever attempts to update hotspot configuration.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Hotspot.Upstream.Cellular.Capability.AllowStatus"
     enum="HotspotAllowStatus" expires_after="2023-10-01">
   <owner>jiajunz@google.com</owner>
@@ -280,6 +290,33 @@ chromium-metrics-reviews@google.com.
     when user login which gives the user enough time to connect to their
     upstream cellular network.
   </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Hotspot.Upstream.Cellular.CheckReadiness.OperationResult"
+    enum="HotspotCheckReadinessResult" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures and tracks the result of checking tethering readiness. Emitted
+    whenever attempts to check tehtering readiness, for exmaple: when cellular
+    network get connected or when enable hotspot.
+  </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Hotspot.Upstream.Cellular.{Operation}.OperationResult"
+    enum="HotspotSetEnabledResult" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures and tracks the result of turning on/off hotspot. Emitted whenever
+    attempts to enabled/disabled hotspot.
+  </summary>
+  <token key="Operation">
+    <variant name="DisableHotspot"/>
+    <variant name="EnableHotspot"/>
+  </token>
 </histogram>
 
 <histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"

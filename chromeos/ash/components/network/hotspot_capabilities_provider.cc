@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -237,22 +238,30 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
     SetHotspotAllowStatus(policy_allow_hotspot_
                               ? HotspotAllowStatus::kAllowed
                               : HotspotAllowStatus::kDisallowedByPolicy);
+    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
+        CheckTetheringReadinessResult::kReady);
     std::move(callback).Run(CheckTetheringReadinessResult::kReady);
     return;
   }
   if (result == shill::kTetheringReadinessUpstreamNetworkNotAvailable) {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
+    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
+        CheckTetheringReadinessResult::kUpstreamNetworkNotAvailable);
     std::move(callback).Run(
         CheckTetheringReadinessResult::kUpstreamNetworkNotAvailable);
     return;
   }
   if (result == shill::kTetheringReadinessNotAllowed) {
     SetHotspotAllowStatus(HotspotAllowStatus::kDisallowedReadinessCheckFail);
+    HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
+        CheckTetheringReadinessResult::kNotAllowed);
     std::move(callback).Run(CheckTetheringReadinessResult::kNotAllowed);
     return;
   }
   NET_LOG(ERROR) << "Unexpected check tethering readiness result: " << result;
-  std::move(callback).Run(CheckTetheringReadinessResult::kNotAllowed);
+  HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
+      CheckTetheringReadinessResult::kUnknownResult);
+  std::move(callback).Run(CheckTetheringReadinessResult::kUnknownResult);
 }
 
 void HotspotCapabilitiesProvider::OnCheckReadinessFailure(
@@ -263,6 +272,8 @@ void HotspotCapabilitiesProvider::OnCheckReadinessFailure(
                  << error_name << ", message: " << error_message;
   SetHotspotAllowStatus(
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedReadinessCheckFail);
+  HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
+      CheckTetheringReadinessResult::kShillOperationFailed);
   std::move(callback).Run(CheckTetheringReadinessResult::kShillOperationFailed);
 }
 

@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -88,12 +89,16 @@ void HotspotStateHandler::SetHotspotConfig(
 
   if (!LoginState::Get()->IsUserLoggedIn()) {
     NET_LOG(ERROR) << "Could not set hotspot config without login first.";
+    HotspotMetricsHelper::RecordSetHotspotConfigResult(
+        SetHotspotConfigResult::kFailedNotLogin);
     std::move(callback).Run(SetHotspotConfigResult::kFailedNotLogin);
     return;
   }
 
   if (!mojom_config) {
     NET_LOG(ERROR) << "Invalid hotspot configurations.";
+    HotspotMetricsHelper::RecordSetHotspotConfigResult(
+        SetHotspotConfigResult::kFailedInvalidConfiguration);
     std::move(callback).Run(
         SetHotspotConfigResult::kFailedInvalidConfiguration);
     return;
@@ -115,6 +120,8 @@ void HotspotStateHandler::SetHotspotConfig(
 
 void HotspotStateHandler::OnSetHotspotConfigSuccess(
     SetHotspotConfigCallback callback) {
+  HotspotMetricsHelper::RecordSetHotspotConfigResult(
+      hotspot_config::mojom::SetHotspotConfigResult::kSuccess);
   ShillManagerClient::Get()->GetProperties(
       base::BindOnce(&HotspotStateHandler::UpdateHotspotConfigAndRunCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -124,10 +131,13 @@ void HotspotStateHandler::OnSetHotspotConfigFailure(
     SetHotspotConfigCallback callback,
     const std::string& error_name,
     const std::string& error_message) {
+  using SetHotspotConfigResult = hotspot_config::mojom::SetHotspotConfigResult;
+
   NET_LOG(ERROR) << "Error setting hotspot config, error name:" << error_name
                  << ", message" << error_message;
-  std::move(callback).Run(hotspot_config::mojom::SetHotspotConfigResult::
-                              kFailedInvalidConfiguration);
+  HotspotMetricsHelper::RecordSetHotspotConfigResult(
+      SetHotspotConfigResult::kFailedInvalidConfiguration);
+  std::move(callback).Run(SetHotspotConfigResult::kFailedInvalidConfiguration);
 }
 
 void HotspotStateHandler::LoggedInStateChanged() {

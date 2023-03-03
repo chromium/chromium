@@ -6,6 +6,7 @@
 
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -147,6 +148,9 @@ void HotspotController::OnSetTetheringEnabledFailure(
 
 void HotspotController::CompleteCurrentRequest(
     hotspot_config::mojom::HotspotControlResult result) {
+  HotspotMetricsHelper::RecordSetTetheringEnabledResult(
+      current_request_->enabled, result);
+
   if (current_request_->wifi_turned_off && current_request_->enabled &&
       result != hotspot_config::mojom::HotspotControlResult::kSuccess) {
     // Turn Wifi back on if failed to enable hotspot.
