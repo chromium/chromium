@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -77,11 +76,6 @@ void OpenAllNow(Browser* browser,
                 const std::vector<const bookmarks::BookmarkNode*>& nodes,
                 WindowOpenDisposition initial_disposition,
                 content::BrowserContext* browser_context);
-
-// Tries to open all urls in |group|. If there are many, prompts the user first.
-void OpenSavedTabGroup(Browser* browser,
-                       const base::GUID& saved_group_id,
-                       const size_t num_tabs);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If
 // |incognito_context| is set, the function will use it to check if the URLs
