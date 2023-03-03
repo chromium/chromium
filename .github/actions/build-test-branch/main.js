@@ -18,6 +18,10 @@ const macBuildInput = process.env.INPUT_MAC_BUILD;
 console.log("MacBuild", macBuildInput);
 const macBuild = macBuildInput == "true";
 
+const windowsBuildInput = process.env.INPUT_WINDOWS_BUILD;
+console.log("WindowsBuild", windowsBuildInput);
+const windowsBuild = windowsBuildInput == "true";
+
 const driverRevision = process.env.INPUT_DRIVER_REVISION;
 console.log("DriverRevision", driverRevision);
 
@@ -62,6 +66,9 @@ if (linuxBuild) {
 }
 if (macBuild) {
   allTasks.push(...platformTasks("macOS"));
+}
+if (windowsBuild) {
+  allTasks.push(...platformTasks("windows"));
 }
 
 sendBuildTestRequest({ name: requestName, tasks: allTasks });

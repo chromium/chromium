@@ -12,6 +12,11 @@ on:
         type: boolean
         required: false
         default: "true"
+      windows_build:
+        description: "Build and run tests on windows"
+        type: boolean
+        required: false
+        default: "true"
       driver_revision:
         description: "Driver revision to use, if not the latest"
         required: false
@@ -65,6 +70,7 @@ jobs:
           BUILD_TEST_INSECURE: ${{ secrets.BUILD_TEST_INSECURE }}
           INPUT_LINUX_BUILD: ${{ github.event.inputs.linux_build }}
           INPUT_MAC_BUILD: ${{ github.event.inputs.mac_build }}
+          INPUT_WINDOWS_BUILD: ${{ github.event.inputs.windows_build }}
           INPUT_DRIVER_REVISION: ${{ github.event.inputs.driver_revision }}
           INPUT_CLOBBER: ${{ github.event.inputs.clobber }}
           INPUT_SLOT: ${{ github.event.inputs.slot }}
