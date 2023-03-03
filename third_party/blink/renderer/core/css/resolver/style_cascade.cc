@@ -1248,10 +1248,9 @@ bool StyleCascade::ValidateFallback(const CustomProperty& property,
   }
   auto context_mode =
       state_.GetDocument().GetExecutionContext()->GetSecureContextMode();
-  auto var_mode = CSSParserLocalContext::VariableMode::kTyped;
   auto* context = StrictCSSParserContext(context_mode);
-  auto local_context = CSSParserLocalContext().WithVariableMode(var_mode);
-  return property.ParseSingleValue(range, *context, local_context);
+  auto local_context = CSSParserLocalContext();
+  return property.Parse(range, *context, local_context);
 }
 
 void StyleCascade::MarkIsReferenced(const CSSProperty& referencer,

@@ -19,23 +19,6 @@ class CORE_EXPORT CSSParserLocalContext {
  public:
   CSSParserLocalContext() = default;
 
-  // When parsing registered custom properties, a different result is required
-  // depending on the context.
-  enum class VariableMode {
-    // The custom property is parsed according to the registered syntax (if
-    // available).
-    kTyped,
-    // The registration of the custom property (if any) is ignored; the custom
-    // property will parse as if unregistered.
-    kUntyped,
-    // The custom property will be parsed as if unregistered (that is,
-    // a CSSCustomPropertyDeclaration will be returned), but the tokens must
-    // also match the registered syntax (if any). This is useful for CSSOM,
-    // where incoming values must validate against the registered syntax, but
-    // are otherwise treated as unregistered.
-    kValidatedUntyped
-  };
-
   CSSParserLocalContext WithAliasParsing(bool use_alias_parsing) const {
     CSSParserLocalContext context = *this;
     context.use_alias_parsing_ = use_alias_parsing;
@@ -55,12 +38,6 @@ class CORE_EXPORT CSSParserLocalContext {
     return context;
   }
 
-  CSSParserLocalContext WithVariableMode(VariableMode variable_mode) const {
-    CSSParserLocalContext context = *this;
-    context.variable_mode_ = variable_mode;
-    return context;
-  }
-
   bool UseAliasParsing() const { return use_alias_parsing_; }
 
   // Any custom property used in a @keyframes rule becomes animation-tainted,
@@ -72,13 +49,10 @@ class CORE_EXPORT CSSParserLocalContext {
 
   CSSPropertyID CurrentShorthand() const { return current_shorthand_; }
 
-  VariableMode GetVariableMode() const { return variable_mode_; }
-
  private:
   bool use_alias_parsing_ = false;
   bool is_animation_tainted_ = false;
   CSSPropertyID current_shorthand_ = CSSPropertyID::kInvalid;
-  VariableMode variable_mode_ = VariableMode::kTyped;
 };
 
 }  // namespace blink

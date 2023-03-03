@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -1044,6 +1045,21 @@ TEST_F(StyleResolverTest, ComputeValueStandardProperty) {
   EXPECT_EQ("rgb(0, 128, 0)", computed_value->CssText());
 }
 
+namespace {
+
+const CSSValue* ParseCustomProperty(Document& document,
+                                    const CustomProperty& property,
+                                    const String& value) {
+  const auto* context = MakeGarbageCollected<CSSParserContext>(document);
+  CSSParserLocalContext local_context;
+  auto tokens = CSSTokenizer(value).TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+
+  return property.Parse(range, *context, local_context);
+}
+
+}  // namespace
+
 TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
@@ -1057,7 +1073,7 @@ TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
   ASSERT_TRUE(target);
 
   AtomicString custom_property_name = "--color";
-  const CSSValue* parsed_value = css_test_helpers::ParseLonghand(
+  const CSSValue* parsed_value = ParseCustomProperty(
       GetDocument(), CustomProperty(custom_property_name, GetDocument()),
       "blue");
   ASSERT_TRUE(parsed_value);

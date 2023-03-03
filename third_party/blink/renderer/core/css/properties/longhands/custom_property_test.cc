@@ -18,7 +18,6 @@
 namespace blink {
 
 using css_test_helpers::RegisterProperty;
-using VariableMode = CSSParserLocalContext::VariableMode;
 
 namespace {
 
@@ -41,14 +40,14 @@ class CustomPropertyTest : public PageTestBase {
                                               false /* allow_visited_style */);
   }
 
-  const CSSValue* ParseValue(const Longhand& property,
+  const CSSValue* ParseValue(const CustomProperty& property,
                              const String& value,
                              const CSSParserLocalContext& local_context) {
     CSSTokenizer tokenizer(value);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    return property.ParseSingleValue(range, *context, local_context);
+    return property.Parse(range, *context, local_context);
   }
 };
 
@@ -174,29 +173,6 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
 
   const CSSValue* value2 =
       ParseValue(property, "maroon", CSSParserLocalContext());
-  EXPECT_FALSE(value2);
-}
-
-TEST_F(CustomPropertyTest, ParseSingleValueUntyped) {
-  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
-  CustomProperty property("--x", GetDocument());
-  const CSSValue* value = ParseValue(
-      property, "maroon",
-      CSSParserLocalContext().WithVariableMode(VariableMode::kUntyped));
-  ASSERT_TRUE(value->IsCustomPropertyDeclaration());
-  EXPECT_EQ("maroon", value->CssText());
-}
-
-TEST_F(CustomPropertyTest, ParseSingleValueValidatedUntyped) {
-  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
-  CustomProperty property("--x", GetDocument());
-  auto local_context =
-      CSSParserLocalContext().WithVariableMode(VariableMode::kValidatedUntyped);
-  const CSSValue* value1 = ParseValue(property, "100px", local_context);
-  ASSERT_TRUE(value1->IsCustomPropertyDeclaration());
-  EXPECT_EQ("100px", value1->CssText());
-
-  const CSSValue* value2 = ParseValue(property, "maroon", local_context);
   EXPECT_FALSE(value2);
 }
 

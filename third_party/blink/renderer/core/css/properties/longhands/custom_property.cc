@@ -152,11 +152,9 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
       context = StrictCSSParserContext(
           state.GetDocument().GetExecutionContext()->GetSecureContextMode());
     }
-    auto mode = CSSParserLocalContext::VariableMode::kTyped;
-    auto local_context = CSSParserLocalContext().WithVariableMode(mode);
     CSSParserTokenRange range = data->TokenRange();
     const CSSValue* registered_value =
-        ParseSingleValue(range, *context, local_context);
+        Parse(range, *context, CSSParserLocalContext());
     if (!registered_value) {
       if (is_inherited_property) {
         ApplyInherit(state);
@@ -180,19 +178,8 @@ const CSSValue* CustomProperty::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  using VariableMode = CSSParserLocalContext::VariableMode;
-
-  switch (local_context.GetVariableMode()) {
-    case VariableMode::kTyped:
-      return ParseTyped(range, context, local_context);
-    case VariableMode::kUntyped:
-      return ParseUntyped(range, context, local_context);
-    case VariableMode::kValidatedUntyped:
-      if (registration_ && !ParseTyped(range, context, local_context)) {
-        return nullptr;
-      }
-      return ParseUntyped(range, context, local_context);
-  }
+  NOTREACHED();
+  return nullptr;
 }
 
 const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
@@ -228,7 +215,7 @@ const CSSValue* CustomProperty::ParseUntyped(
       {range, StringView()}, local_context.IsAnimationTainted(), context);
 }
 
-const CSSValue* CustomProperty::ParseTyped(
+const CSSValue* CustomProperty::Parse(
     CSSParserTokenRange range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {

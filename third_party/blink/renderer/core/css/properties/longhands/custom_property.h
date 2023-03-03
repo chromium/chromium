@@ -37,9 +37,19 @@ class CORE_EXPORT CustomProperty : public Variable {
   void ApplyInherit(StyleResolverState&) const override;
   void ApplyValue(StyleResolverState&, const CSSValue&) const override;
 
+  // Never used.
   const CSSValue* ParseSingleValue(CSSParserTokenRange&,
                                    const CSSParserContext&,
                                    const CSSParserLocalContext&) const override;
+
+  // The custom property is parsed according to the registered syntax (if
+  // available).
+  //
+  // NOTE: This is distinct from ParseSingleValue() because it will soon
+  // need to take in original_text, not just a token range.
+  const CSSValue* Parse(CSSParserTokenRange,
+                        const CSSParserContext&,
+                        const CSSParserLocalContext&) const;
 
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
@@ -63,9 +73,6 @@ class CORE_EXPORT CustomProperty : public Variable {
   const CSSValue* ParseUntyped(CSSParserTokenRange,
                                const CSSParserContext&,
                                const CSSParserLocalContext&) const;
-  const CSSValue* ParseTyped(CSSParserTokenRange,
-                             const CSSParserContext&,
-                             const CSSParserLocalContext&) const;
 
   AtomicString name_;
   Member<const PropertyRegistration> registration_;
