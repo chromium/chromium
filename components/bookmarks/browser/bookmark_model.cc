@@ -16,7 +16,6 @@
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -602,12 +601,8 @@ void BookmarkModel::OnFaviconsChanged(const std::set<GURL>& page_urls,
   }
 
   if (!icon_url.is_empty()) {
-    // Log Histogram to determine how often |icon_url| is non empty in
-    // practice.
     // TODO(pkotwicz): Do something more efficient if |icon_url| is non-empty
     // many times a day for each user.
-    UMA_HISTOGRAM_BOOLEAN("Bookmarks.OnFaviconsChangedIconURL", true);
-
     url_index_->GetNodesWithIconUrl(icon_url, &to_update);
   }
 

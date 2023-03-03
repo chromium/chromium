@@ -763,20 +763,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.OnFaviconsChangedIconURL" enum="BooleanHit"
-    expires_after="M77">
-  <owner>pkotwicz@chromium.org</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Logs how frequently BookmarkModel::OnFaviconsChanged() is called with a
-    non-empty |icon_url| to determine whether BookmarkNodes should be cached
-    based on their favicon URLs (e.g. http://www.google.com/favicon.ico) in
-    addition to their page URLs (e.g. http://www.google.com). OnFaviconChanged()
-    is expected to be called less than 10 times per user per day with a
-    non-empty |icon_url|.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.OpenBookmarkManager.PerProfileType"
     enum="BrowserProfileType" expires_after="2023-08-08">
   <owner>roagarwal@chromium.org</owner>
