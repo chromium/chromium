@@ -101,6 +101,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//chrome/common:version_header",
       "//chrome/install_static/test:test_support",
       "//components/policy/core/common",
       "//google_update",
