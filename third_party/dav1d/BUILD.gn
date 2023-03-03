@@ -57,7 +57,10 @@ config("public_dav1d_config") {
   }
 
   if (!is_android && !is_win) {
-    defines += [ "HAVE_PTHREAD_GETAFFINITY_NP=1" ]
+    defines += [
+      "HAVE_PTHREAD_GETAFFINITY_NP=1",
+      "HAVE_PTHREAD_SETAFFINITY_NP=1",
+    ]
   }
 
   # Don't let dav1d export any symbols. Otherwise the verify_order step on macOS

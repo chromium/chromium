@@ -130,8 +130,8 @@ def GenerateConfig(config_dir, env, special_args=[]):
             (r'(#define _WIN32_WINNT .*)',
              r'// \1 -- Windows version is controlled by Chromium'),
 
-            # Android doesn't have pthread_getaffinity_np.
-            (r'(#define HAVE_PTHREAD_GETAFFINITY_NP \d{1,2})',
+            # Android doesn't have pthread_{get,set}affinity_np.
+            (r'(#define HAVE_PTHREAD_(GET|SET)AFFINITY_NP \d{1,2})',
              r'// \1 -- Controlled by Chomium'),
         ])
 

@@ -41,6 +41,8 @@
 
 // #define HAVE_PTHREAD_GETAFFINITY_NP 1 -- Controlled by Chomium
 
+// #define HAVE_PTHREAD_SETAFFINITY_NP 1 -- Controlled by Chomium
+
 #define HAVE_UNISTD_H 1
 
 #define PIC 3
