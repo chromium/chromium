@@ -11,6 +11,7 @@
 
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -145,6 +146,8 @@ class POLICY_EXPORT PolicyLogger {
     base::Location location_;
   };
 
+  static constexpr base::TimeDelta kTimeToLive = base::Minutes(30);
+
   static PolicyLogger* GetInstance();
 
   PolicyLogger();
@@ -161,15 +164,30 @@ class POLICY_EXPORT PolicyLogger {
   // Returns the logs size for testing purposes.
   size_t GetPolicyLogsSizeForTesting() const;
 
-  // TODO(b/251799119): delete logs after an expiry period of ~30 minutes.
+  // Clears `logs_` and sets `is_log_deletion_scheduled_` as cleanup after every
+  // test.
+  void ResetLoggerAfterTest();
 
  private:
-  // Adds a new log to the logs_ list.
+  // Adds a new log to the logs_ list and calls `ScheduleOldLogsDeletion` if
+  // there is no deletion task scheduled.
   void AddLog(Log&& new_log);
+
+  // Deletes logs in the list that have been in the list for `kTimeToLive`
+  // minutes to an hour.
+  void DeleteOldLogs();
+
+  // Posts a new log deletion task and sets the `is_log_deletion_scheduled_`
+  // flag.
+  void ScheduleOldLogsDeletion();
+
+  bool is_log_deletion_scheduled_{false};
 
   std::vector<Log> logs_ GUARDED_BY_CONTEXT(logs_list_sequence_checker_);
 
   SEQUENCE_CHECKER(logs_list_sequence_checker_);
+
+  base::WeakPtrFactory<PolicyLogger> weak_factory_{this};
 };
 
 }  // namespace policy

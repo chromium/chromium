@@ -6,11 +6,13 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/features.h"
 #include "components/version_info/version_info.h"
 
@@ -23,8 +25,7 @@ constexpr char kChromiumCSUrlFormat[] =
     "https://source.chromium.org/chromium/chromium/src/+/main:%s;l=%i;drc:%s";
 
 // Gets the string value for the log source.
-std::string GetLogSourceValue(
-    const PolicyLogger::Log::Source log_source) {
+std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
   switch (log_source) {
     case PolicyLogger::Log::Source::kPolicyProcessing:
       return "Policy Processing";
@@ -41,8 +42,7 @@ std::string GetLogSourceValue(
   }
 }
 
-std::string GetLogSeverity(
-    const PolicyLogger::Log::Severity log_severity) {
+std::string GetLogSeverity(const PolicyLogger::Log::Severity log_severity) {
   switch (log_severity) {
     case PolicyLogger::Log::Severity::kInfo:
       return "INFO";
@@ -67,6 +67,11 @@ std::string GetLineURL(const base::Location location) {
   return base::StringPrintf(
       kChromiumCSUrlFormat, location.file_name(), location.line_number(),
       last_change.substr(0, last_change.find('-')).c_str());
+}
+
+// Checks if the log has been if the list for at least `kTimeToLive` minutes.
+bool IsLogExpired(PolicyLogger::Log& log) {
+  return base::Time::Now() - log.timestamp() >= PolicyLogger::kTimeToLive;
 }
 
 }  // namespace
@@ -173,7 +178,32 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
   if (IsPolicyLoggingEnabled()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
     logs_.emplace_back(std::move(new_log));
+
+    if (!is_log_deletion_scheduled_) {
+      ScheduleOldLogsDeletion();
+    }
   }
+}
+
+void PolicyLogger::DeleteOldLogs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
+  // Delete older logs with lifetime `kTimeToLive` mins, set the flag and
+  // reschedule the task.
+  logs_.erase(std::remove_if(logs_.begin(), logs_.end(), IsLogExpired),
+              logs_.end());
+  if (logs_.size() > 0) {
+    ScheduleOldLogsDeletion();
+    return;
+  }
+  is_log_deletion_scheduled_ = false;
+}
+
+void PolicyLogger::ScheduleOldLogsDeletion() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PolicyLogger::DeleteOldLogs, weak_factory_.GetWeakPtr()),
+      kTimeToLive);
+  is_log_deletion_scheduled_ = true;
 }
 
 base::Value::List PolicyLogger::GetAsList() const {
@@ -198,6 +228,12 @@ bool PolicyLogger::IsPolicyLoggingEnabled() const {
 size_t PolicyLogger::GetPolicyLogsSizeForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
   return logs_.size();
+}
+
+void PolicyLogger::ResetLoggerAfterTest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
+  logs_.erase(logs_.begin(), logs_.end());
+  is_log_deletion_scheduled_ = false;
 }
 
 }  // namespace policy
