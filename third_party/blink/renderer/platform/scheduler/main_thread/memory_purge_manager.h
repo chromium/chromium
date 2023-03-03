@@ -62,9 +62,9 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // details.
   static constexpr bool kPurgeEnabled =
 #if BUILDFLAG(IS_ANDROID)
-      true
-#else
       false
+#else
+      true
 #endif
       ;
 
