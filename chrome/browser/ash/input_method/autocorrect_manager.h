@@ -128,6 +128,9 @@ class AutocorrectManager {
                                       const std::u16string& current_text,
                                       bool set_range_success);
 
+  // Records any pending metrics that are awaiting a key press from the user.
+  void RecordPendingMetricsAwaitingKeyPress();
+
   struct PendingAutocorrectState {
     explicit PendingAutocorrectState(const std::u16string& original_text,
                                      const std::u16string& suggested_text,
@@ -206,6 +209,11 @@ class AutocorrectManager {
     std::string engine_id;
   };
 
+  struct PendingSuggestionProviderMetric {
+    // Suggestion provider that has been connected.
+    ime::AutocorrectSuggestionProvider provider;
+  };
+
   // State variable for pending autocorrect, nullopt means no autocorrect
   // suggestion is pending. The state is kept to avoid issue where
   // InputContext returns stale autocorrect range.
@@ -229,6 +237,12 @@ class AutocorrectManager {
   // if the user is currently using the physical keyboard.
   absl::optional<PendingPhysicalKeyboardUserPrefMetric>
       pending_user_pref_metric_;
+
+  // Holds a pending suggestion provider metric. This metric should be recorded
+  // only once per input, and only if the user is currently using the physical
+  // keyboard.
+  absl::optional<PendingSuggestionProviderMetric>
+      pending_suggestion_provider_metric_;
 
   // Holds the suggestion provider enabled for the current input method.
   absl::optional<ime::AutocorrectSuggestionProvider> suggestion_provider_;

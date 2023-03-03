@@ -427,6 +427,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="InputMethod.Assistive.AutocorrectV2.SuggestionProvider.Pk"
+    enum="IMEAutocorrectSuggestionProvider" expires_after="2023-06-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This metric is recorded whenever a user focuses on a new text input and the
+    IME service is connected and ready to provide autocorrect suggestions. This
+    is only recorded once per input focused.
+  </summary>
+</histogram>
+
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UndoWindow.LearnMoreButtonShown"
     enum="Boolean" expires_after="2023-09-17">

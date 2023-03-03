@@ -114,6 +114,8 @@ constexpr char kAutocorrectV2PkRejectionHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Rejection.PK";
 constexpr char kAutocorrectV2VkRejectionHistName[] =
     "InputMethod.Assistive.AutocorrectV2.Rejection.VK";
+constexpr char kAutocorrectV2PkSuggestionProviderHistName[] =
+    "InputMethod.Assistive.AutocorrectV2.SuggestionProvider.Pk";
 
 constexpr char kUsEnglishEngineId[] = "xkb:us::eng";
 constexpr char kUsInternationalEngineId[] = "xkb:us:intl:eng";
@@ -3544,6 +3546,83 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<PkEnabledByDefaultCase> info) {
       return info.param.test_name;
     });
+
+class AutocorrectSuggestionProviderMetric
+    : public AutocorrectManagerTest,
+      public testing::WithParamInterface<AutocorrectSuggestionProvider> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutocorrectManagerTest,
+    AutocorrectSuggestionProviderMetric,
+    testing::ValuesIn<AutocorrectSuggestionProvider>({
+        AutocorrectSuggestionProvider::kUnknown,
+        AutocorrectSuggestionProvider::kUsEnglishPrebundled,
+        AutocorrectSuggestionProvider::kUsEnglishDownloaded,
+        AutocorrectSuggestionProvider::kUsEnglish840,
+    }),
+    [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
+      return ToString(info.param);
+    });
+
+TEST_P(AutocorrectSuggestionProviderMetric, IsNotRecordedOnFocus) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+
+  histogram_tester_.ExpectTotalCount(
+      /*name=*/kAutocorrectV2PkSuggestionProviderHistName,
+      /*expected_count=*/0);
+}
+
+TEST_P(AutocorrectSuggestionProviderMetric, IsNotRecordedWhenVkIsVisible) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+  keyboard_client_->set_keyboard_enabled_for_test(true);
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+  manager_.OnKeyEvent(KeyA());
+
+  histogram_tester_.ExpectTotalCount(
+      /*name=*/kAutocorrectV2PkSuggestionProviderHistName,
+      /*expected_count=*/0);
+}
+
+TEST_P(AutocorrectSuggestionProviderMetric, IsRecordedCorrectly) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+  manager_.OnKeyEvent(KeyA());
+
+  histogram_tester_.ExpectTotalCount(
+      /*name=*/kAutocorrectV2PkSuggestionProviderHistName,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      /*name=*/kAutocorrectV2PkSuggestionProviderHistName,
+      /*sample*/ provider, /*expected_count=*/1);
+}
+
+TEST_P(AutocorrectSuggestionProviderMetric, IsRecordedOnlyOncePerInput) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+  manager_.OnKeyEvent(KeyA());
+  manager_.OnKeyEvent(KeyA());
+  manager_.OnKeyEvent(KeyA());
+
+  histogram_tester_.ExpectTotalCount(
+      /*name=*/kAutocorrectV2PkSuggestionProviderHistName,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      /*name=*/kAutocorrectV2PkSuggestionProviderHistName,
+      /*sample*/ provider, /*expected_count=*/1);
+}
 
 class AutocorrectManagerUkmMetricsTest : public AutocorrectManagerTest {
  protected:

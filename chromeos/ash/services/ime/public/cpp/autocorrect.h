@@ -8,14 +8,16 @@
 namespace ash {
 namespace ime {
 
-// Specifies the model that provides autocorrect suggestions.
-// TODO(b/270090531): Record UMA metric for these values whenever an input is
-// focused.
+// Must match with IMEAutocorrectSuggestionProvider in enums.xml
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AutocorrectSuggestionProvider {
   kUnknown = 0,
   kUsEnglishPrebundled = 1,
   kUsEnglishDownloaded = 2,
   kUsEnglish840 = 3,
+  kMaxValue = kUsEnglish840,
 };
 
 }  // namespace ime

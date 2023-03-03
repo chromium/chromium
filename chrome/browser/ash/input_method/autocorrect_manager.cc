@@ -345,6 +345,12 @@ void RecordPhysicalKeyboardAutocorrectPref(const std::string& engine_id,
       "InputMethod.Assistive.AutocorrectV2.PkUserPreference.All", pref);
 }
 
+void RecordSuggestionProviderMetric(
+    const ime::AutocorrectSuggestionProvider& provider) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.AutocorrectV2.SuggestionProvider.Pk", provider);
+}
+
 bool CouldTriggerAutocorrectWithSurroundingText(
     const std::u16string& text,
     const gfx::Range selection_range) {
@@ -468,6 +474,36 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
+}
+
+void AutocorrectManager::RecordPendingMetricsAwaitingKeyPress() {
+  if (pending_user_pref_metric_ && IsVkAutocorrect()) {
+    // We only want to record a pending user pref metric if the user is
+    // currently using the physical keyboard.
+    pending_user_pref_metric_ = absl::nullopt;
+  }
+
+  if (pending_user_pref_metric_) {
+    const std::string& engine_id = pending_user_pref_metric_->engine_id;
+    RecordPhysicalKeyboardAutocorrectPref(
+        engine_id,
+        GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()), engine_id));
+    pending_user_pref_metric_ = absl::nullopt;
+  }
+
+  if (pending_suggestion_provider_metric_ && IsVkAutocorrect()) {
+    // TODO(b/270090192): Unfortunately the virtual keyboard does not support
+    // the callback used to inform Chromium of the AutocorrectSuggestionProvider
+    // used in the IME service. Once it does then we can record this same metric
+    // for the virtual keyboard.
+    pending_suggestion_provider_metric_ = absl::nullopt;
+  }
+
+  if (pending_suggestion_provider_metric_) {
+    RecordSuggestionProviderMetric(
+        /*provider=*/pending_suggestion_provider_metric_->provider);
+    pending_suggestion_provider_metric_ = absl::nullopt;
+  }
 }
 
 bool AutocorrectManager::AutoCorrectPrefIsPkEnabledByDefault() {
@@ -727,19 +763,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
 }
 
 bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
-  if (pending_user_pref_metric_ && IsVkAutocorrect()) {
-    // We only want to record a pending user pref metric if the user is
-    // currently using the physical keyboard.
-    pending_user_pref_metric_ = absl::nullopt;
-  }
-
-  if (pending_user_pref_metric_) {
-    const std::string& engine_id = pending_user_pref_metric_->engine_id;
-    RecordPhysicalKeyboardAutocorrectPref(
-        engine_id,
-        GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()), engine_id));
-    pending_user_pref_metric_ = absl::nullopt;
-  }
+  RecordPendingMetricsAwaitingKeyPress();
 
   if (!pending_autocorrect_.has_value() || event.type() != ui::ET_KEY_PRESSED) {
     return false;
@@ -917,6 +941,8 @@ void AutocorrectManager::OnFocus(int context_id) {
 void AutocorrectManager::OnConnectedToSuggestionProvider(
     const ime::AutocorrectSuggestionProvider& suggestion_provider) {
   suggestion_provider_ = suggestion_provider;
+  pending_suggestion_provider_metric_ =
+      PendingSuggestionProviderMetric{.provider = suggestion_provider};
 }
 
 void AutocorrectManager::OnBlur() {
