@@ -1,6 +1,6 @@
 Test that prerender navigations receives the failure status updates
 {
-    method : Page.prerenderStatusUpdated
+    method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204
@@ -9,7 +9,7 @@ Test that prerender navigations receives the failure status updates
     sessionId : <string>
 }
 {
-    method : Page.prerenderStatusUpdated
+    method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204
@@ -18,7 +18,7 @@ Test that prerender navigations receives the failure status updates
     sessionId : <string>
 }
 {
-    method : Page.prerenderStatusUpdated
+    method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204

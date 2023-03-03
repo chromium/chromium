@@ -1,15 +1,15 @@
 (async function(testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
-        `Tests that Page.prefetchStatusUpdated is dispatched for prefetch requests.`);
+        `Tests that Preload.prefetchStatusUpdated is dispatched for prefetch requests.`);
 
-  await dp.Page.enable();
+  await dp.Preload.enable();
 
   page.navigate("https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html")
 
-  let statusReport = await dp.Page.oncePrefetchStatusUpdated();
+  let statusReport = await dp.Preload.oncePrefetchStatusUpdated();
   testRunner.log(statusReport, '', ['initiatingFrameId', 'sessionId']);
 
-  statusReport = await dp.Page.oncePrefetchStatusUpdated();
+  statusReport = await dp.Preload.oncePrefetchStatusUpdated();
   testRunner.log(statusReport, '', ['initiatingFrameId', 'sessionId']);
 
   testRunner.completeTest();

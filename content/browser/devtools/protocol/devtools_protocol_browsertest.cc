@@ -3781,7 +3781,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   int host_id = AddPrerender(kPrerenderingUrl);
   auto* prerender_render_frame_host = GetPrerenderedMainFrameHost(host_id);
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   // Executing `navigator.getGamepads()` to start binding the GamepadMonitor
@@ -3791,7 +3791,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
                                        "navigator.getGamepads()");
 
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
 
   // Verify Mojo capability control cancels prerendering.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
@@ -3855,11 +3855,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   AddPrerender(kPrerenderingUrl);
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
   NavigatePrimaryPage(kPrerenderingUrl);
 
-  WaitForNotification("Page.prerenderAttemptCompleted", true);
+  WaitForNotification("Preload.prerenderAttemptCompleted", true);
 
   // Navigate away from the prerendered page, and this should trigger the
   // mechanism of removing the stored prerender activation.
@@ -3885,11 +3885,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   AddPrerender(kPrerenderingUrl);
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
   NavigatePrimaryPage(kPrerenderingUrl);
 
-  WaitForNotification("Page.prerenderAttemptCompleted", true);
+  WaitForNotification("Preload.prerenderAttemptCompleted", true);
 
   // Trigger another prerender activation.
   AddPrerender(kPrerenderingUrl2);
@@ -3915,20 +3915,20 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl2));
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   // Ensure that prerenderAttemptCompleted can be fired properly with
   // multiple speculation rules is enabled.
   NavigatePrimaryPage(kPrerenderingUrl);
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 
   // TODO(crbug/1332386): Verifies that multiple activations can be received
   // properly when crbug/1350676 is ready. kPrerenderingUrl2 should be canceled
   // as navigating to kPrerenderingUrl2.
-  result = WaitForNotification("Page.prerenderAttemptCompleted", true);
+  result = WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
 }
 
@@ -3942,7 +3942,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   AddPrerender(kPrerenderingUrl);
@@ -3951,7 +3951,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
 
   NavigatePrimaryPage(kPrerenderingUrl);
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
 }
 
@@ -3973,7 +3973,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl2));
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   ASSERT_TRUE(NavigateToURL(shell(), kNavigateAwayUrl));
@@ -3981,9 +3981,9 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   // Both prerendered pages should receive prerenderAttemptCompleted for
   // cancelation reasons.
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
-  result = WaitForNotification("Page.prerenderAttemptCompleted", true);
+  result = WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 }
 

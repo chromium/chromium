@@ -39,6 +39,7 @@
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/overlay_handler.h"
 #include "content/browser/devtools/protocol/page_handler.h"
+#include "content/browser/devtools/protocol/preload_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/schema_handler.h"
 #include "content/browser/devtools/protocol/security_handler.h"
@@ -363,6 +364,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       DevToolsSession::Mode::kDoesNotSupportTabTarget) {
     target_handler->DisableAutoAttachOfPortals();
   }
+  session->CreateAndAddHandler<protocol::PreloadHandler>();
   session->CreateAndAddHandler<protocol::PageHandler>(
       emulation_handler, browser_handler,
       session->GetClient()->AllowUnsafeOperations(),

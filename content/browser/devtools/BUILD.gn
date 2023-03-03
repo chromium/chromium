@@ -131,6 +131,8 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/overlay.h",
     "protocol/page.cc",
     "protocol/page.h",
+    "protocol/preload.cc",
+    "protocol/preload.h",
     "protocol/protocol.h",
     "protocol/runtime.cc",
     "protocol/runtime.h",
