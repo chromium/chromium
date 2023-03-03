@@ -153,14 +153,19 @@ TEST_F(ThreadTest, StartWithOptions_StackSize) {
   // message. At the same time, we should scale with the bitness of the system
   // where 12 kb is definitely not enough.
   // 12 kb = 3072 Slots on a 32-bit system, so we'll scale based off of that.
+  int multiplier = 1;
   Thread::Options options;
 #if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
   // ASan bloats the stack variables and overflows the 3072 slot stack. Some
   // debug builds also grow the stack too much.
-  options.stack_size = 2 * 3072 * sizeof(uintptr_t);
-#else
-  options.stack_size = 3072 * sizeof(uintptr_t);
+  ++multiplier;
 #endif
+#if defined(LEAK_SANITIZER) && BUILDFLAG(IS_MAC)
+  // The first time an LSAN disable is fired on a thread, the LSAN Mac runtime
+  // initializes a 56k object on the stack.
+  ++multiplier;
+#endif
+  options.stack_size = 3072 * sizeof(uintptr_t) * multiplier;
   EXPECT_TRUE(a.StartWithOptions(std::move(options)));
   EXPECT_TRUE(a.task_runner());
   EXPECT_TRUE(a.IsRunning());
