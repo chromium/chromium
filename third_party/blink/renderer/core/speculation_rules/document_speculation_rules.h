@@ -16,8 +16,9 @@
 
 namespace blink {
 
-class SpeculationRuleLoader;
 class HTMLAnchorElement;
+class SpeculationCandidate;
+class SpeculationRuleLoader;
 
 // This corresponds to the document's list of speculation rule sets.
 //
@@ -81,7 +82,7 @@ class CORE_EXPORT DocumentSpeculationRules
   // Appends all candidates populated from links in the document (based on
   // document rules in all the rule sets).
   void AddLinkBasedSpeculationCandidates(
-      Vector<mojom::blink::SpeculationCandidatePtr>& candidates);
+      HeapVector<Member<SpeculationCandidate>>& candidates);
 
   // Initializes |link_map_| with all links in the document by traversing
   // through the document in shadow-including tree order.
@@ -132,7 +133,7 @@ class CORE_EXPORT DocumentSpeculationRules
   // re-traverse the document to find all links when a new ruleset is
   // added/removed.
   HeapHashMap<Member<HTMLAnchorElement>,
-              Vector<mojom::blink::SpeculationCandidatePtr>>
+              Member<HeapVector<Member<SpeculationCandidate>>>>
       matched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> unmatched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> pending_links_;

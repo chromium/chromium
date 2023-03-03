@@ -10742,6 +10742,45 @@ experimental domain Preload
       # - https://github.com/WICG/nav-speculation/blob/main/triggers.md
       string sourceText
 
+  # The type of preloading attempted. It corresponds to
+  # mojom::SpeculationAction (although PrefetchWithSubresources is omitted as it
+  # isn't being used by clients).
+  type SpeculationAction extends string
+    enum
+      Prefetch
+      Prerender
+
+  # Corresponds to mojom::SpeculationTargetHint.
+  # See https://github.com/WICG/nav-speculation/blob/main/triggers.md#window-name-targeting-hints
+  type SpeculationTargetHint extends string
+    enum
+      Blank
+      Self
+
+  # A key that identifies a preloading attempt.
+  #
+  # The url used is the url specified by the trigger (i.e. the initial URL), and
+  # not the final url that is navigated to. For example, prerendering allows
+  # same-origin main frame navigations during the attempt, but the attempt is
+  # still keyed with the initial URL.
+  type PreloadingAttemptKey extends object
+    properties
+      Network.LoaderId loaderId
+      SpeculationAction action
+      string url
+      optional SpeculationTargetHint targetHint
+
+  # Lists sources for a preloading attempt, specifically the ids of rule sets
+  # that had a speculation rule that triggered the attempt, and the
+  # BackendNodeIds of <a href> or <area href> elements that triggered the
+  # attempt (in the case of attempts triggered by a document rule). It is
+  # possible for mulitple rule sets and links to trigger a single attempt.
+  type PreloadingAttemptSource extends object
+    properties
+      PreloadingAttemptKey key
+      array of RuleSetId ruleSetIds
+      array of DOM.BackendNodeId nodeIds
+
   command enable
 
   command disable
@@ -10855,6 +10894,11 @@ experimental domain Preload
       Page.FrameId initiatingFrameId
       string prerenderingUrl
       PreloadingStatus status
+
+  # Send a list of sources for all preloading attempts.
+  event preloadingAttemptSourcesUpdated
+    parameters
+      array of PreloadingAttemptSource preloadingAttemptSources
 
 # This domain allows interacting with the FedCM dialog.
 experimental domain FedCm
