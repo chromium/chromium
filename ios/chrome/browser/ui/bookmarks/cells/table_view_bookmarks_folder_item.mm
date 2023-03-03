@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
+#import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
 
 #import "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
@@ -25,21 +25,22 @@ const CGFloat kFolderCellIndentationWidth = 32.0;
 const CGFloat kFolderCellHorizonalInset = 17.0;
 }  // namespace
 
-#pragma mark - BookmarkFolderItem
+#pragma mark - TableViewBookmarksFolderItem
 
-@interface BookmarkFolderItem ()
-@property(nonatomic, assign) BookmarkFolderStyle style;
+@interface TableViewBookmarksFolderItem ()
+@property(nonatomic, assign) TableViewBookmarksFolderStyle style;
 @end
 
-@implementation BookmarkFolderItem
+@implementation TableViewBookmarksFolderItem
 @synthesize currentFolder = _currentFolder;
 @synthesize indentationLevel = _indentationLevel;
 @synthesize style = _style;
 @synthesize title = _title;
 
-- (instancetype)initWithType:(NSInteger)type style:(BookmarkFolderStyle)style {
+- (instancetype)initWithType:(NSInteger)type
+                       style:(TableViewBookmarksFolderStyle)style {
   if ((self = [super initWithType:type])) {
-    self.cellClass = [TableViewBookmarkFolderCell class];
+    self.cellClass = [TableViewBookmarksFolderCell class];
     self.style = style;
   }
   return self;
@@ -48,10 +49,10 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 - (void)configureCell:(TableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  TableViewBookmarkFolderCell* folderCell =
-      base::mac::ObjCCastStrict<TableViewBookmarkFolderCell>(cell);
+  TableViewBookmarksFolderCell* folderCell =
+      base::mac::ObjCCastStrict<TableViewBookmarksFolderCell>(cell);
   switch (self.style) {
-    case BookmarkFolderStyleNewFolder: {
+    case BookmarksFolderStyleNewFolder: {
       folderCell.folderTitleTextField.text =
           l10n_util::GetNSString(IDS_IOS_BOOKMARK_CREATE_GROUP);
       folderCell.folderImageView.image =
@@ -61,13 +62,13 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
       folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
       break;
     }
-    case BookmarkFolderStyleFolderEntry: {
+    case BookmarksFolderStyleFolderEntry: {
       folderCell.folderTitleTextField.text = self.title;
       folderCell.accessibilityIdentifier = self.title;
       folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
       if (self.isCurrentFolder) {
-        folderCell.bookmarkAccessoryType =
-            TableViewBookmarkFolderAccessoryTypeCheckmark;
+        folderCell.bookmarksAccessoryType =
+            BookmarksFolderAccessoryTypeCheckmark;
       }
       // In order to indent the cell's content we need to modify its
       // indentation constraint.
@@ -83,9 +84,9 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 
 @end
 
-#pragma mark - TableViewBookmarkFolderCell
+#pragma mark - TableViewBookmarksFolderCell
 
-@interface TableViewBookmarkFolderCell () <UITextFieldDelegate>
+@interface TableViewBookmarksFolderCell () <UITextFieldDelegate>
 // Re-declare as readwrite.
 @property(nonatomic, strong, readwrite)
     NSLayoutConstraint* indentationConstraint;
@@ -93,8 +94,8 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 @property(nonatomic, assign) BOOL isTextCommitted;
 @end
 
-@implementation TableViewBookmarkFolderCell
-@synthesize bookmarkAccessoryType = _bookmarkAccessoryType;
+@implementation TableViewBookmarksFolderCell
+@synthesize bookmarksAccessoryType = _bookmarksAccessoryType;
 @synthesize folderImageView = _folderImageView;
 @synthesize folderTitleTextField = _folderTitleTextFieldl;
 @synthesize indentationConstraint = _indentationConstraint;
@@ -159,15 +160,15 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
   return self;
 }
 
-- (void)setBookmarkAccessoryType:
-    (TableViewBookmarkFolderAccessoryType)bookmarkAccessoryType {
-  _bookmarkAccessoryType = bookmarkAccessoryType;
-  switch (_bookmarkAccessoryType) {
-    case TableViewBookmarkFolderAccessoryTypeCheckmark:
+- (void)setBookmarksAccessoryType:
+    (TableViewBookmarksFolderAccessoryType)bookmarksAccessoryType {
+  _bookmarksAccessoryType = bookmarksAccessoryType;
+  switch (_bookmarksAccessoryType) {
+    case BookmarksFolderAccessoryTypeCheckmark:
       self.accessoryView = [[UIImageView alloc]
           initWithImage:[UIImage imageNamed:@"bookmark_blue_check"]];
       break;
-    case TableViewBookmarkFolderAccessoryTypeDisclosureIndicator: {
+    case BookmarksFolderAccessoryTypeDisclosureIndicator: {
       self.accessoryView = [[UIImageView alloc]
           initWithImage:[UIImage imageNamed:@"table_view_cell_chevron"]];
       // TODO(crbug.com/870841): Use default accessory type.
@@ -176,7 +177,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
       }
       break;
     }
-    case TableViewBookmarkFolderAccessoryTypeNone:
+    case BookmarksFolderAccessoryTypeNone:
       self.accessoryView = nil;
       break;
   }
@@ -184,7 +185,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  self.bookmarkAccessoryType = TableViewBookmarkFolderAccessoryTypeNone;
+  self.bookmarksAccessoryType = BookmarksFolderAccessoryTypeNone;
   self.indentationWidth = 0;
   self.imageView.image = nil;
   self.indentationConstraint.constant = kFolderCellHorizonalInset;

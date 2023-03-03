@@ -4,8 +4,6 @@
 
 source_set("cells") {
   sources = [
-    "bookmark_folder_item.h",
-    "bookmark_folder_item.mm",
     "bookmark_home_node_item.h",
     "bookmark_home_node_item.mm",
     "bookmark_parent_folder_item.h",
@@ -14,6 +12,8 @@ source_set("cells") {
     "bookmark_table_cell_title_editing.h",
     "bookmark_text_field_item.h",
     "bookmark_text_field_item.mm",
+    "table_view_bookmarks_folder_item.h",
+    "table_view_bookmarks_folder_item.mm",
   ]
 
   deps = [

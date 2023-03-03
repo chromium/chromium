@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
-#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
+#import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -366,9 +366,10 @@ using bookmarks::BookmarkNode;
 
   // Adds default "Add Folder" item if needed.
   if (self.allowsNewFolders) {
-    BookmarkFolderItem* createFolderItem =
-        [[BookmarkFolderItem alloc] initWithType:ItemTypeCreateNewFolder
-                                           style:BookmarkFolderStyleNewFolder];
+    TableViewBookmarksFolderItem* createFolderItem =
+        [[TableViewBookmarksFolderItem alloc]
+            initWithType:ItemTypeCreateNewFolder
+                   style:BookmarksFolderStyleNewFolder];
     // Add the "Add Folder" Item to the same section as the rest of the folder
     // entries.
     [self.tableViewModel addItem:createFolderItem
@@ -378,9 +379,10 @@ using bookmarks::BookmarkNode;
   // Add Folders entries.
   for (NSUInteger row = 0; row < _folders.size(); row++) {
     const BookmarkNode* folderNode = self.folders[row];
-    BookmarkFolderItem* folderItem = [[BookmarkFolderItem alloc]
-        initWithType:ItemTypeBookmarkFolder
-               style:BookmarkFolderStyleFolderEntry];
+    TableViewBookmarksFolderItem* folderItem =
+        [[TableViewBookmarksFolderItem alloc]
+            initWithType:ItemTypeBookmarkFolder
+                   style:BookmarksFolderStyleFolderEntry];
     folderItem.title = bookmark_utils_ios::TitleForBookmarkNode(folderNode);
     folderItem.currentFolder = (self.selectedFolder == folderNode);
 
