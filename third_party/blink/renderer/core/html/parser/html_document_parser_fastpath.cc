@@ -260,6 +260,10 @@ class HTMLFastPathParser {
     template <class T, PermittedParents parents>
     struct VoidTag : Tag<T, parents> {
       static constexpr bool is_void = true;
+
+      // Called after parsing the attributes. Named to match similar calls
+      // else where.
+      static void FinishedParsingChildren(Element* element) {}
     };
 
     template <class T, PermittedParents parents>
@@ -361,6 +365,11 @@ class HTMLFastPathParser {
       static HTMLInputElement* Create(Document& document) {
         return MakeGarbageCollected<HTMLInputElement>(
             document, CreateElementFlags::ByFragmentParser(&document));
+      }
+      static void FinishedParsingChildren(Element* element) {
+        // HTMLInputElement has logic that requires this to be called in certain
+        // cases.
+        element->FinishParsingChildren();
       }
     };
 
@@ -1039,7 +1048,11 @@ class HTMLFastPathParser {
   template <class Tag>
   Element* ParseElementAfterTagname() {
     if constexpr (Tag::is_void) {
-      return ParseVoidElement(Tag::Create(document_));
+      Element* e = ParseVoidElement(Tag::Create(document_));
+      if (!failed_) {
+        Tag::FinishedParsingChildren(e);
+      }
+      return e;
     } else {
       return ParseContainerElement<Tag>(Tag::Create(document_));
     }
