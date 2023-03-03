@@ -302,6 +302,10 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
       delegate_(delegate) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
+  } else {
+    // When hosted within a `views::ScrollView`, the anchor view may be
+    // (partially) outside the viewport. Ensure that the anchor view is visible.
+    anchor.view->ScrollViewToVisible();
   }
   // The anchor for promo bubbles should not highlight.
   set_highlight_button_when_shown(false);
