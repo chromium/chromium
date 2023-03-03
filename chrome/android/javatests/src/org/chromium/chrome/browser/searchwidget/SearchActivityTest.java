@@ -567,7 +567,7 @@ public class SearchActivityTest {
 
         startSearchActivity();
         SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.getSuggestionByType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
+                mOmnibox.findSuggestionWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
 
         Assert.assertNotNull("The image clipboard suggestion should contains post content type.",
                 info.suggestion.getPostContentType());
@@ -609,7 +609,7 @@ public class SearchActivityTest {
         // Start the Activity.
         final SearchActivity searchActivity = startSearchActivity();
         final SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.getSuggestionByType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
+                mOmnibox.findSuggestionWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
 
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(info.suggestion.getUrl().getSpec()));
@@ -767,7 +767,7 @@ public class SearchActivityTest {
     private void clickFirstClipboardSuggestion(SearchActivityLocationBarLayout locationBar)
             throws InterruptedException {
         SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.getSuggestionByType(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
+                mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
         TestTouchUtils.performClickOnMainSync(
                 InstrumentationRegistry.getInstrumentation(), info.view);
     }

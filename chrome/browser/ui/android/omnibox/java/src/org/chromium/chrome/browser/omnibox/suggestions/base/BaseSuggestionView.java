@@ -11,10 +11,12 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -30,6 +32,7 @@ import java.util.List;
 public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     private final List<ImageView> mActionButtons;
     private final ImageView mDecorationIcon;
+    private final @NonNull ActionChipsView mActionChips;
     private T mContentView;
     private @Nullable Runnable mOnFocusViaSelectionListener;
 
@@ -48,10 +51,12 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         mDecorationIcon.setOutlineProvider(new RoundedCornerOutlineProvider(
                 getResources().getDimensionPixelSize(R.dimen.default_rounded_corner_radius)));
         mDecorationIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-        mDecorationIcon.setLayoutParams(
+        addView(mDecorationIcon,
                 LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
-        addView(mDecorationIcon);
+
+        mActionChips = new ActionChipsView(getContext());
+        mActionChips.setVisibility(GONE);
+        addView(mActionChips, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
 
         mActionButtons = new ArrayList<>();
 
@@ -126,6 +131,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Pass event to ActionChips first in case this key event is appropriate for ActionChip
+        // navigation.
+        if (mActionChips.onKeyDown(keyCode, event)) return true;
+
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         if ((!isRtl && KeyNavigationUtil.isGoRight(event))
                 || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
@@ -148,6 +157,10 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     /** @return Embedded suggestion content view. */
     public T getContentView() {
         return mContentView;
+    }
+
+    public ActionChipsView getActionChipsView() {
+        return mActionChips;
     }
 
     /**

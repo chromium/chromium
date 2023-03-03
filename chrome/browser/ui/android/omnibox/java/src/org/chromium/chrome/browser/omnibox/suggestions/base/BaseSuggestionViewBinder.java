@@ -66,6 +66,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     @Override
     public void bind(PropertyModel model, BaseSuggestionView<T> view, PropertyKey propertyKey) {
         mContentBinder.bind(model, view.getContentView(), propertyKey);
+        ActionChipsBinder.bind(model, view.getActionChipsView(), propertyKey);
 
         if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);

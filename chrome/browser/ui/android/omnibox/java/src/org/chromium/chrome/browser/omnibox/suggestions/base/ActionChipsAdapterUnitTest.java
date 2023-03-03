@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.pedal;
+package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
@@ -31,11 +31,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Tests for {@link PedalViewAdapter}.
+ * Tests for {@link ActionChipsAdapter}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class PedalViewAdapterUnitTest {
+public class ActionChipsAdapterUnitTest {
     private static final int HEADER_INDEX = 0;
     private static final int CHIP_1_INDEX = 1;
     private static final int CHIP_2_INDEX = 2;
@@ -48,28 +48,28 @@ public class PedalViewAdapterUnitTest {
 
     private ModelList mModel = new ModelList();
     private RecyclerView mRecyclerView;
-    private PedalViewAdapter mAdapter = new PedalViewAdapter(mModel);
+    private ActionChipsAdapter mAdapter = new ActionChipsAdapter(mModel);
 
     @Before
     public void setUp() {
         // Header
-        mModel.add(new ListItem(PedalSuggestionViewProperties.ViewType.HEADER,
-                new PropertyModel(ChipProperties.ALL_KEYS)));
+        mModel.add(new ListItem(
+                ActionChipsProperties.ViewType.HEADER, new PropertyModel(ChipProperties.ALL_KEYS)));
         doReturn(mHeader).when(mLayoutManager).findViewByPosition(HEADER_INDEX);
 
         // Chip with View, 1
-        mModel.add(new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW,
-                new PropertyModel(ChipProperties.ALL_KEYS)));
+        mModel.add(new ListItem(
+                ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
         doReturn(mChip1).when(mLayoutManager).findViewByPosition(CHIP_1_INDEX);
 
         // Chip with View, 2
-        mModel.add(new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW,
-                new PropertyModel(ChipProperties.ALL_KEYS)));
+        mModel.add(new ListItem(
+                ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
         doReturn(mChip2).when(mLayoutManager).findViewByPosition(CHIP_2_INDEX);
 
         // Chip with no View, 3
-        mModel.add(new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW,
-                new PropertyModel(ChipProperties.ALL_KEYS)));
+        mModel.add(new ListItem(
+                ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
 
         mRecyclerView = new RecyclerView(ContextUtils.getApplicationContext());
         mRecyclerView.setLayoutManager(mLayoutManager);

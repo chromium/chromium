@@ -44,8 +44,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestion
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionView;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -222,9 +220,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
                 adapter.registerType(
                     OmniboxSuggestionUiType.PEDAL_SUGGESTION,
-                    parent -> new PedalSuggestionView<View>(
+                    parent -> new BaseSuggestionView<View>(
                             parent.getContext(), R.layout.omnibox_basic_suggestion),
-                    new PedalSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
+                    new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
 
                 adapter.registerType(
                     OmniboxSuggestionUiType.DIVIDER_LINE,

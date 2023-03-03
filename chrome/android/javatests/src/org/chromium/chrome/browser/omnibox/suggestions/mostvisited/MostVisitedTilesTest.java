@@ -143,7 +143,7 @@ public class MostVisitedTilesTest {
         setUpSuggestionsToShow();
         focusOmniboxAndWaitForSuggestions();
 
-        mCarousel = mOmnibox.getSuggestionByType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
+        mCarousel = mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
     }
 
     @After

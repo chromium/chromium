@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.pedal;
+package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
@@ -21,37 +20,29 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /**
- * Binds chip suggestion view properties.
- * @param <T> The inner content view type being updated.
+ * Binds ActionChipsView properties.
  */
-public final class PedalSuggestionViewBinder<T extends View>
-        implements ViewBinder<PropertyModel, PedalSuggestionView<T>, PropertyKey> {
+public final class ActionChipsBinder {
     private static final ViewBinder<PropertyModel, View, PropertyKey> NOOP_BINDER = (m, v, p) -> {};
-    private final BaseSuggestionViewBinder<T> mBaseViewBinder;
 
-    /**
-     * Constructs a new pedal view binder.
-     *
-     * @param contentBinder The view binder for the BaseSuggestionView.
-     */
-    public PedalSuggestionViewBinder(ViewBinder<PropertyModel, T, PropertyKey> contentBinder) {
-        mBaseViewBinder = new BaseSuggestionViewBinder<T>(contentBinder);
-    }
-
-    @Override
-    public void bind(PropertyModel model, PedalSuggestionView<T> view, PropertyKey propertyKey) {
-        mBaseViewBinder.bind(model, view, propertyKey);
-
-        if (PedalSuggestionViewProperties.PEDAL_LIST == propertyKey) {
+    public static void bind(PropertyModel model, ActionChipsView view, PropertyKey propertyKey) {
+        if (ActionChipsProperties.ACTION_CHIPS == propertyKey) {
             var isIncognito = model.get(SuggestionCommonProperties.COLOR_SCHEME)
                     == BrandedColorScheme.INCOGNITO;
-            var chipList = model.get(PedalSuggestionViewProperties.PEDAL_LIST);
-            var adapter = new PedalViewAdapter(chipList);
-            adapter.registerType(PedalSuggestionViewProperties.ViewType.HEADER,
-                    PedalSuggestionViewBinder::createHeaderView, NOOP_BINDER);
-            adapter.registerType(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW,
-                    parent -> createChipView(parent, isIncognito), ChipViewBinder::bind);
-            view.getPedalView().setAdapter(adapter);
+            var chipList = model.get(ActionChipsProperties.ACTION_CHIPS);
+            ActionChipsAdapter adapter = null;
+            int actionChipsVisibility = View.GONE;
+
+            if (chipList != null) {
+                adapter = new ActionChipsAdapter(chipList);
+                adapter.registerType(ActionChipsProperties.ViewType.HEADER,
+                        ActionChipsBinder::createHeaderView, NOOP_BINDER);
+                adapter.registerType(ActionChipsProperties.ViewType.CHIP,
+                        parent -> createChipView(parent, isIncognito), ChipViewBinder::bind);
+                actionChipsVisibility = View.VISIBLE;
+            }
+            view.setAdapter(adapter);
+            view.setVisibility(actionChipsVisibility);
         }
     }
 

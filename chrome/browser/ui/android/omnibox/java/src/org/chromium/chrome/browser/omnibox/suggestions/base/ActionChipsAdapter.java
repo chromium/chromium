@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.pedal;
+package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.view.View;
 
@@ -16,14 +16,13 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** ModelListAdapter for Omnibox Suggestion Action Chips. */
-@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-public class PedalViewAdapter extends SimpleRecyclerViewAdapter {
+public class ActionChipsAdapter extends SimpleRecyclerViewAdapter {
     // The 0th element is always the lead-in header.
     private static final int FIRST_CHIP_INDEX = 1;
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 
-    PedalViewAdapter(ModelList data) {
+    public ActionChipsAdapter(ModelList data) {
         super(data);
     }
 

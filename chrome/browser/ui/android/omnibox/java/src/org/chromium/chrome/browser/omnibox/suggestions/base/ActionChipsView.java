@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.suggestions.pedal;
+package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -24,15 +24,15 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * Chips should be initially horizontally aligned with the Content view and stretch to the end of
  * the encompassing BaseSuggestionView
  */
-public class PedalView extends RecyclerView {
-    private @Nullable PedalViewAdapter mAdapter;
+public class ActionChipsView extends RecyclerView {
+    private @Nullable ActionChipsAdapter mAdapter;
 
     /**
      * Constructs a new pedal view.
      *
      * @param context The context used to construct the chip view.
      */
-    public PedalView(Context context) {
+    public ActionChipsView(Context context) {
         super(context);
 
         setItemAnimator(null);
@@ -57,7 +57,7 @@ public class PedalView extends RecyclerView {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        assert mAdapter != null;
+        if (mAdapter == null) return false;
 
         if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
             if (event.isShiftPressed()) {
@@ -74,13 +74,20 @@ public class PedalView extends RecyclerView {
         return super.onKeyDown(keyCode, event);
     }
 
-    public void setAdapter(@Nullable PedalViewAdapter adapter) {
+    public void setAdapter(@Nullable ActionChipsAdapter adapter) {
         super.setAdapter(adapter);
         mAdapter = adapter;
     }
 
     @Override
+    public @Nullable ActionChipsAdapter getAdapter() {
+        return mAdapter;
+    }
+
+    @Override
     public void setSelected(boolean isSelected) {
-        mAdapter.resetSelection();
+        if (mAdapter != null) {
+            mAdapter.resetSelection();
+        }
     }
 }

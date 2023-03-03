@@ -19,8 +19,9 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxPedal;
@@ -76,7 +77,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
 
     @Override
     public PropertyModel createModel() {
-        return new PropertyModel(PedalSuggestionViewProperties.ALL_KEYS);
+        return new PropertyModel(SuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
@@ -106,8 +107,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
         // The header item increases lead-in padding before the first actual chip is shown.
         // In default state, the chips will align with the suggestion text, but when scrolled
         // the chips may show up under the decoration.
-        modelList.add(
-                new ListItem(PedalSuggestionViewProperties.ViewType.HEADER, new PropertyModel()));
+        modelList.add(new ListItem(ActionChipsProperties.ViewType.HEADER, new PropertyModel()));
 
         for (OmniboxPedal chip : omniboxPedalList) {
             final var chipIcon = mOmniboxPedalDelegate.getIcon(chip);
@@ -123,8 +123,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
                             .with(ChipProperties.APPLY_ICON_TINT, chipIcon.tintWithTextColor)
                             .build();
 
-            modelList.add(
-                    new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW, chipModel));
+            modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
 
             if (chip.hasPedalId()) {
                 mLastVisiblePedals.add(chip.getPedalID());
@@ -134,9 +133,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
             }
         }
 
-        model.set(PedalSuggestionViewProperties.PEDAL_LIST, modelList);
-        model.set(
-                BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.COMPACT);
+        model.set(ActionChipsProperties.ACTION_CHIPS, modelList);
     }
 
     void executeAction(@NonNull OmniboxPedal omniboxPedal, int position) {
