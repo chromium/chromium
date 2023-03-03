@@ -108,7 +108,7 @@
       target.style.setProperty(property, isNeutralKeyframe(from) ? '' : from);
     },
     nonInterpolationExpectations: function(from, to) {
-      return expectFlip(from, to, -Infinity);
+      return expectFlip(from, to, 0.5);
     },
     interpolate: function(property, from, to, at, target) {
       target.style.transitionDuration = '2e10s';
