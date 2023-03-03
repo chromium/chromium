@@ -97,7 +97,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
   void ShowCreditCardSettings() override;
-  void SuggestionSelected(std::string unique_id) override;
+  void SuggestionSelected(std::string unique_id, bool is_virtual) override;
   void OnDismissed(bool dismissed_by_user) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) const;

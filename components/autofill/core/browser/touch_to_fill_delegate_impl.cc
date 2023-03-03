@@ -189,13 +189,21 @@ void TouchToFillDelegateImpl::ShowCreditCardSettings() {
   manager_->client()->ShowAutofillSettings(PopupType::kCreditCards);
 }
 
-void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
+void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id,
+                                                 bool is_virtual) {
   HideTouchToFill();
-  PersonalDataManager* pdm = manager_->client()->GetPersonalDataManager();
-  DCHECK(pdm);
-  CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
-  manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
-                                        query_form_, query_field_, card);
+
+  if (is_virtual) {
+    manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, unique_id, query_form_,
+        query_field_);
+  } else {
+    PersonalDataManager* pdm = manager_->client()->GetPersonalDataManager();
+    DCHECK(pdm);
+    CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
+    manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
+                                          query_form_, query_field_, card);
+  }
 }
 
 void TouchToFillDelegateImpl::OnDismissed(bool dismissed_by_user) {

@@ -22,7 +22,8 @@ class TouchToFillCreditCardViewController {
   virtual void ShowCreditCardSettings(JNIEnv* env) = 0;
   virtual void SuggestionSelected(
       JNIEnv* env,
-      base::android::JavaParamRef<jstring> unique_id) = 0;
+      base::android::JavaParamRef<jstring> unique_id,
+      bool is_virtual) = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 };
 

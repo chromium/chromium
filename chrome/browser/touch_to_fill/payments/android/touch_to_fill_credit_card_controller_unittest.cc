@@ -75,7 +75,10 @@ class MockTouchToFillDelegateImpl : public autofill::TouchToFillDelegate {
   MOCK_METHOD(void, ScanCreditCard, (), (override));
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
   MOCK_METHOD(void, ShowCreditCardSettings, (), (override));
-  MOCK_METHOD(void, SuggestionSelected, (std::string unique_id), (override));
+  MOCK_METHOD(void,
+              SuggestionSelected,
+              (std::string unique_id, bool is_virtual),
+              (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
 
  private:

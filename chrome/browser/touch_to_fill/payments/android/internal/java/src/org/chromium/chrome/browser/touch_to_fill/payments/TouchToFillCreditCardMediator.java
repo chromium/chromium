@@ -142,9 +142,10 @@ class TouchToFillCreditCardMediator {
     }
 
     public void onSelectedCreditCard(CreditCard card) {
-        mDelegate.suggestionSelected(card.getGUID());
+        mDelegate.suggestionSelected(card.getGUID(), card.getIsVirtual());
         RecordHistogram.recordEnumeratedHistogram(TOUCH_TO_FILL_OUTCOME_HISTOGRAM,
-                TouchToFillCreditCardOutcome.CREDIT_CARD,
+                card.getIsVirtual() ? TouchToFillCreditCardOutcome.VIRTUAL_CARD
+                                    : TouchToFillCreditCardOutcome.CREDIT_CARD,
                 TouchToFillCreditCardOutcome.MAX_VALUE + 1);
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_INDEX_SELECTED, mCards.indexOf(card));
     }

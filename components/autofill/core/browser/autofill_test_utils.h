@@ -293,6 +293,7 @@ CreditCard GetMaskedServerCardWithNonLegacyId();
 CreditCard GetMaskedServerCardWithLegacyId();
 CreditCard GetMaskedServerCardAmex();
 CreditCard GetMaskedServerCardWithNickname();
+CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber();
 
 // Returns a full server card full of dummy info.
 CreditCard GetFullServerCard();

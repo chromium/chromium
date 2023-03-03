@@ -650,6 +650,13 @@ CreditCard GetMaskedServerCardWithNickname() {
   return credit_card;
 }
 
+CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber() {
+  CreditCard credit_card = GetMaskedServerCard();
+  credit_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  return credit_card;
+}
+
 CreditCard GetFullServerCard() {
   CreditCard credit_card(CreditCard::FULL_SERVER_CARD, "c123");
   test::SetCreditCardInfo(&credit_card, "Full Carter",

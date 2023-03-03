@@ -96,6 +96,12 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormFieldData& field,
                const CreditCard* credit_card));
   MOCK_METHOD(void,
+              FillOrPreviewVirtualCardInformation,
+              (mojom::RendererFormDataAction action,
+               const std::string& guid,
+               const FormData& form,
+               const FormFieldData& field));
+  MOCK_METHOD(void,
               DidShowSuggestions,
               (bool has_autofill_suggestions,
                const FormData& form,
@@ -557,7 +563,7 @@ TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionClosesTheSheet) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id());
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id(), false);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionFillsCardForm) {
@@ -568,7 +574,19 @@ TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionFillsCardForm) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewCreditCardForm);
-  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id());
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id(), false);
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest, VirtualCardSelectionFillsCardForm) {
+  autofill_client_.GetPersonalDataManager()->ClearCreditCards();
+  CreditCard credit_card =
+      autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewVirtualCardInformation);
+  touch_to_fill_delegate_->SuggestionSelected(credit_card.server_id(), true);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest, AutofillUsedAfterTouchToFillDismissal) {

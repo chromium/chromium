@@ -55,10 +55,10 @@ class TouchToFillCreditCardControllerBridge implements TouchToFillCreditCardComp
     }
 
     @Override
-    public void suggestionSelected(String uniqueId) {
+    public void suggestionSelected(String uniqueId, boolean isVirtual) {
         if (mNativeTouchToFillCreditCardViewController != 0) {
             TouchToFillCreditCardControllerBridgeJni.get().suggestionSelected(
-                    mNativeTouchToFillCreditCardViewController, uniqueId);
+                    mNativeTouchToFillCreditCardViewController, uniqueId, isVirtual);
         }
     }
 
@@ -67,6 +67,7 @@ class TouchToFillCreditCardControllerBridge implements TouchToFillCreditCardComp
         void onDismissed(long nativeTouchToFillCreditCardViewController, boolean dismissedByUser);
         void scanCreditCard(long nativeTouchToFillCreditCardViewController);
         void showCreditCardSettings(long nativeTouchToFillCreditCardViewController);
-        void suggestionSelected(long nativeTouchToFillCreditCardViewController, String uniqueId);
+        void suggestionSelected(
+                long nativeTouchToFillCreditCardViewController, String uniqueId, boolean isVirtual);
     }
 }
