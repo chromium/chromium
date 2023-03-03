@@ -106,7 +106,8 @@ RuleBasedEngine::~RuleBasedEngine() = default;
 void RuleBasedEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info,
                               mojom::InputMethodSettingsPtr settings,
                               OnFocusCallback callback) {
-  std::move(callback).Run(false);
+  std::move(callback).Run(/*success=*/false,
+                          /*metadata=*/mojom::InputMethodMetadataPtr(nullptr));
 }
 
 bool RuleBasedEngine::IsConnected() {

@@ -16,6 +16,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -40,6 +41,7 @@ using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Return;
 
+using ime::AutocorrectSuggestionProvider;
 using UkmEntry = ukm::builders::InputMethod_Assistive_AutocorrectV2;
 
 constexpr char kCoverageHistogramName[] = "InputMethod.Assistive.Coverage";
@@ -419,6 +421,32 @@ void SetAutocorrectPreferenceTo(Profile& profile,
       engine_id + ".physicalKeyboardAutoCorrectionLevel", autocorrect_level);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           base::Value(std::move(input_method_setting)));
+}
+
+void EnableAutocorrect(Profile& profile, const std::string& engine_id) {
+  SetAutocorrectPreferenceTo(/*profile=*/profile,
+                             /*engine_id=*/engine_id,
+                             /*autocorrect_level=*/1);
+}
+
+void DisableAutocorrect(Profile& profile, const std::string& engine_id) {
+  SetAutocorrectPreferenceTo(/*profile=*/profile,
+                             /*engine_id=*/engine_id,
+                             /*autocorrect_level=*/0);
+}
+
+std::string ToString(const AutocorrectSuggestionProvider& provider) {
+  switch (provider) {
+    case AutocorrectSuggestionProvider::kUsEnglish840:
+      return "UsEnglish840";
+    case AutocorrectSuggestionProvider::kUsEnglishDownloaded:
+      return "UsEnglishDownloaded";
+    case AutocorrectSuggestionProvider::kUsEnglishPrebundled:
+      return "UsEnglishPrebundled";
+    case AutocorrectSuggestionProvider::kUnknown:
+    default:
+      return "Unknown";
+  }
 }
 
 class MockSuggestionHandler : public SuggestionHandlerInterface {
@@ -2777,6 +2805,178 @@ TEST_F(AutocorrectManagerTest, RecordRejectionForPkControlBackspace) {
       kAutocorrectV2PkRejectionHistName,
       AutocorrectRejectionBreakdown::kSuggestionRejected, 1);
   histogram_tester_.ExpectTotalCount(kAutocorrectV2PkRejectionHistName, 2);
+}
+
+TEST_F(AutocorrectManagerTest,
+       IsNotDisabledWhenNoSuggestionProviderAndNoExperimentFlag) {
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_F(AutocorrectManagerTest,
+       IsNotDisabledWhenNoSuggestionProviderAndUserExplicitlyEnablesPref) {
+  EnableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_F(AutocorrectManagerTest,
+       IsNotDisabledWhenNoSuggestionProviderAndUserExplicitlyDisablesPref) {
+  DisableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_F(AutocorrectManagerTest,
+       IsNotDisabledWhenNoSuggestionProviderAndVkIsVisible) {
+  keyboard_client_->set_keyboard_enabled_for_test(true);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+class NotDisabledByInvalidSuggestionProvider
+    : public AutocorrectManagerTest,
+      public testing::WithParamInterface<AutocorrectSuggestionProvider> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutocorrectManagerTest,
+    NotDisabledByInvalidSuggestionProvider,
+    testing::ValuesIn<AutocorrectSuggestionProvider>({
+        AutocorrectSuggestionProvider::kUnknown,
+        AutocorrectSuggestionProvider::kUsEnglishPrebundled,
+        AutocorrectSuggestionProvider::kUsEnglishDownloaded,
+        AutocorrectSuggestionProvider::kUsEnglish840,
+    }),
+    [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
+      return ToString(info.param);
+    });
+
+TEST_P(NotDisabledByInvalidSuggestionProvider,
+       WhenAutocorrectByDefaultFlagDisabled) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyEnablesPref) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+  EnableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyDisablesPref) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+  DisableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_P(NotDisabledByInvalidSuggestionProvider, WhenVkIsVisible) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+  keyboard_client_->set_keyboard_enabled_for_test(true);
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_F(AutocorrectManagerTest,
+       IsDisabledWhenNoSuggestionProviderAndUserInDefaultBucket) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+
+  EXPECT_TRUE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+TEST_F(AutocorrectManagerTest,
+       IsNotDisabledWithEn840SuggestionProviderAndUserInDefaultBucket) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(
+      AutocorrectSuggestionProvider::kUsEnglish840);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+}
+
+class DisabledByInvalidSuggestionProvider
+    : public AutocorrectManagerTest,
+      public testing::WithParamInterface<AutocorrectSuggestionProvider> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutocorrectManagerTest,
+    DisabledByInvalidSuggestionProvider,
+    testing::ValuesIn<>({
+        AutocorrectSuggestionProvider::kUnknown,
+        AutocorrectSuggestionProvider::kUsEnglishPrebundled,
+        AutocorrectSuggestionProvider::kUsEnglishDownloaded,
+    }),
+    [](const testing::TestParamInfo<AutocorrectSuggestionProvider> info) {
+      return ToString(info.param);
+    });
+
+TEST_P(DisabledByInvalidSuggestionProvider, WhenUserInDefaultExperiment) {
+  const AutocorrectSuggestionProvider& provider = GetParam();
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(provider);
+
+  EXPECT_TRUE(manager_.DisabledByInvalidSuggestionProvider());
 }
 
 struct RejectCase {

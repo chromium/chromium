@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
+#include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -118,6 +119,20 @@ struct StructTraits<ash::ime::mojom::AssistiveWindowDataView,
   }
 
   static bool Read(AssistiveWindowDataView input, AssistiveWindow* output);
+};
+
+template <>
+struct EnumTraits<ash::ime::mojom::AutocorrectSuggestionProvider,
+                  ash::ime::AutocorrectSuggestionProvider> {
+  using AutocorrectSuggestionProviderMojo =
+      ::ash::ime::mojom::AutocorrectSuggestionProvider;
+  using AutocorrectSuggestionProvider =
+      ::ash::ime::AutocorrectSuggestionProvider;
+
+  static AutocorrectSuggestionProviderMojo ToMojom(
+      AutocorrectSuggestionProvider provider);
+  static bool FromMojom(AutocorrectSuggestionProviderMojo input,
+                        AutocorrectSuggestionProvider* output);
 };
 
 }  // namespace mojo

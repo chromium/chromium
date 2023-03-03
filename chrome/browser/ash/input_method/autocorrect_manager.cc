@@ -706,6 +706,9 @@ void AutocorrectManager::LogAssistiveAutocorrectQualityBreakdown(
 
 void AutocorrectManager::OnActivate(const std::string& engine_id) {
   active_engine_id_ = engine_id;
+  // Reset the previously stored suggestion_provider, we should expect a new
+  // provider to be returned on the next OnConnectedToSuggestionProvider call.
+  suggestion_provider_ = absl::nullopt;
 
   PrefService* pref_service = profile_->GetPrefs();
   auto autocorrect_pref =
@@ -909,6 +912,11 @@ void AutocorrectManager::OnFocus(int context_id) {
 
   context_id_ = context_id;
   ProcessTextFieldChange();
+}
+
+void AutocorrectManager::OnConnectedToSuggestionProvider(
+    const ime::AutocorrectSuggestionProvider& suggestion_provider) {
+  suggestion_provider_ = suggestion_provider;
 }
 
 void AutocorrectManager::OnBlur() {
@@ -1168,6 +1176,29 @@ void AutocorrectManager::OnTextFieldContextualInfoChanged(
 
 bool AutocorrectManager::DisabledByRule() {
   return disabled_by_rule_;
+}
+
+bool AutocorrectManager::DisabledByInvalidSuggestionProvider() {
+  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault) ||
+      !active_engine_id_ || IsVkAutocorrect()) {
+    return false;
+  }
+
+  // If the user has explicitly set their autocorrect preference to on/off in
+  // the settings page, then we should honor that preference regardless of the
+  // suggestion provider currently enabled.
+  if (GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()),
+                                         *active_engine_id_) !=
+      AutocorrectPreference::kEnabledByDefault) {
+    return false;
+  }
+
+  // If the user is in the default bucket, and a suggestion provider has not
+  // been returned, or the suggestion provider returned doesn't match the
+  // expected UsEnglish840 then disable autocorrect.
+  return !(suggestion_provider_ &&
+           suggestion_provider_ ==
+               ime::AutocorrectSuggestionProvider::kUsEnglish840);
 }
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(

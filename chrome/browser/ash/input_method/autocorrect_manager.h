@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
+#include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -169,6 +170,11 @@ class AutocorrectManager {
   // Indicates a new text field is focused, used to save context ID.
   void OnFocus(int context_id);
 
+  // Triggered whenever a connection to the external autocorrect suggestion
+  // provider has been initialized successfully.
+  void OnConnectedToSuggestionProvider(
+      const ime::AutocorrectSuggestionProvider& suggestion_provider);
+
   // Handles OnBlur event and processes any pending autocorrect range.
   void OnBlur();
 
@@ -187,8 +193,13 @@ class AutocorrectManager {
 
   void UndoAutocorrect();
 
-  // Whether auto correction is disabled by some rule.
+  // Whether autocorrect is disabled by some rule.
   bool DisabledByRule();
+
+  // Whether autocorrect is disabled by an "invalid" suggestion provider. An
+  // example of an invalid suggestion provider could be a provider that is not
+  // allowed in the current experimental context.
+  bool DisabledByInvalidSuggestionProvider();
 
  private:
   void LogAssistiveAutocorrectAction(AutocorrectActions action);
@@ -334,10 +345,15 @@ class AutocorrectManager {
   absl::optional<PendingPhysicalKeyboardUserPrefMetric>
       pending_user_pref_metric_;
 
+  // Holds the suggestion provider enabled for the current input method.
+  absl::optional<ime::AutocorrectSuggestionProvider> suggestion_provider_;
+
+  // Holds the identifier of the currently focused input field.
+  int context_id_ = 0;
+
+  // Not owned by this class.
   SuggestionHandlerInterface* suggestion_handler_;
   Profile* profile_;
-
-  int context_id_ = 0;
 
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;

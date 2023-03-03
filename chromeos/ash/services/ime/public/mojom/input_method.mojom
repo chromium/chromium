@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 17
+// Next MinVersion: 18
 
 module ash.ime.mojom;
 
@@ -511,6 +511,22 @@ enum AssistiveWindowType {
   kLongpressDiacriticsSuggestion = 6,
 };
 
+// Next ordinal: 4
+[Stable, Extensible]
+enum AutocorrectSuggestionProvider {
+  [Default] kUnknown = 0,
+  kUsEnglishPrebundled = 1,
+  kUsEnglishDownloaded = 2,
+  kUsEnglish840 = 3,
+};
+
+// Next ordinal: 1
+[Stable]
+struct InputMethodMetadata {
+  // What kind of assistive window is shown currently to the user.
+  AutocorrectSuggestionProvider autocorrect_suggestion_provider@0;
+};
+
 // Next ordinal: 2
 [Stable]
 struct AssistiveWindow {
@@ -539,7 +555,8 @@ interface InputMethod {
   // `deprecated_settings` is DEPRECATED.
   [MinVersion=9]
   OnFocus@6(InputFieldInfo input_field_info,
-            InputMethodSettings? deprecated_settings) => (bool success);
+            InputMethodSettings? deprecated_settings)
+    => (bool success, [MinVersion=17] InputMethodMetadata? metadata);
 
   // Called when the input field loses focus.
   OnBlur@1();

@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -608,6 +609,21 @@ void UpdateCandidatesWindowSync(ime::mojom::CandidatesWindowPtr window) {
   candidate_window_handler->UpdateLookupTable(candidate_window);
 }
 
+ime::mojom::InputMethodSettingsPtr WithAutocorrectOverride(
+    ime::mojom::InputMethodSettingsPtr base_settings,
+    bool autocorrect_enabled) {
+  if (!(base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+        base_settings->is_latin_settings())) {
+    return base_settings;
+  }
+
+  return ime::mojom::InputMethodSettings::NewLatinSettings(
+      ime::mojom::LatinSettings::New(
+          /*autocorrect=*/autocorrect_enabled,
+          /*predictive_writing=*/base_settings->get_latin_settings()
+              ->predictive_writing));
+}
+
 }  // namespace
 
 bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
@@ -730,6 +746,9 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
   mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost> input_method_host;
   host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
 
+  // Note: Hotswitching autocorrect on/off is not required here because we are
+  // initializing a new IME service connection. This means that we will not have
+  // the correct model/version information yet.
   ime::mojom::InputMethodSettingsPtr settings =
       CreateSettingsFromPrefs(*prefs_, engine_id);
 
@@ -739,11 +758,18 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
       base::BindOnce(&OnConnected));
 }
 
-void NativeInputMethodEngineObserver::ActivateTextClient(
+void NativeInputMethodEngineObserver::OnFocusAck(
     int context_id,
-    bool on_focus_success) {
+    bool on_focus_success,
+    mojom::InputMethodMetadataPtr metadata) {
   if (text_client_ && text_client_->context_id == context_id)
     text_client_->state = TextClientState::kActive;
+  if ((base::FeatureList::IsEnabled(features::kAutocorrectByDefault) ||
+       base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate)) &&
+      !metadata.is_null()) {
+    autocorrect_manager_->OnConnectedToSuggestionProvider(
+        metadata->autocorrect_suggestion_provider);
+  }
 }
 
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
@@ -845,7 +871,7 @@ void NativeInputMethodEngineObserver::OnFocus(
   } else {
     // TODO(b/218608883): Support OnFocusCallback through extension based PK.
     ime_base_observer_->OnFocus(engine_id, context_id, context);
-    ActivateTextClient(context_id, true);
+    OnFocusAck(context_id, true, mojom::InputMethodMetadataPtr(nullptr));
   }
 }
 
@@ -864,8 +890,10 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
 
   // TODO(b/200611333): Make input_method_->OnFocus return the overriding
   // XKB layout instead of having the logic here in Chromium.
-  ime::mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(*prefs_, engine_id);
+  ime::mojom::InputMethodSettingsPtr settings = WithAutocorrectOverride(
+      /*base_settings=*/CreateSettingsFromPrefs(*prefs_, engine_id),
+      /*autocorrect_enabled=*/!autocorrect_manager_
+          ->DisabledByInvalidSuggestionProvider());
   OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
                             settings);
 
@@ -879,9 +907,10 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
   mojom::InputFieldInfoPtr input_field_info = CreateInputFieldInfo(
       engine_id, context, input_field_context, prefs_, is_normal_screen);
 
-  base::OnceCallback<void(bool)> on_focus_callback =
-      base::BindOnce(&NativeInputMethodEngineObserver::ActivateTextClient,
-                     weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);
+  base::OnceCallback<void(bool, mojom::InputMethodMetadataPtr)>
+      on_focus_callback = base::BindOnce(
+          &NativeInputMethodEngineObserver::OnFocusAck,
+          weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);
 
   input_method_->OnFocus(std::move(input_field_info),
                          prefs_ ? std::move(settings) : nullptr,

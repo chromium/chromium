@@ -23,6 +23,9 @@ using SuggestionCandidateDataView =
 using DecoderCompletionCandidate = ash::ime::DecoderCompletionCandidate;
 using AssistiveSuggestionType = ash::ime::AssistiveSuggestionType;
 using AssistiveSuggestion = ash::ime::AssistiveSuggestion;
+using AutocorrectSuggestionProvider = ash::ime::AutocorrectSuggestionProvider;
+using AutocorrectSuggestionProviderMojo =
+    ash::ime::mojom::AutocorrectSuggestionProvider;
 
 }  // namespace
 
@@ -179,6 +182,41 @@ bool StructTraits<AssistiveWindowDataView, AssistiveWindow>::Read(
   if (!input.ReadCandidates(&output->candidates))
     return false;
   return true;
+}
+
+AutocorrectSuggestionProviderMojo
+EnumTraits<AutocorrectSuggestionProviderMojo, AutocorrectSuggestionProvider>::
+    ToMojom(AutocorrectSuggestionProvider provider) {
+  switch (provider) {
+    case AutocorrectSuggestionProvider::kUsEnglishPrebundled:
+      return AutocorrectSuggestionProviderMojo::kUsEnglishPrebundled;
+    case AutocorrectSuggestionProvider::kUsEnglishDownloaded:
+      return AutocorrectSuggestionProviderMojo::kUsEnglishDownloaded;
+    case AutocorrectSuggestionProvider::kUsEnglish840:
+      return AutocorrectSuggestionProviderMojo::kUsEnglish840;
+    default:
+      return AutocorrectSuggestionProviderMojo::kUnknown;
+  }
+}
+
+bool EnumTraits<AutocorrectSuggestionProviderMojo,
+                AutocorrectSuggestionProvider>::
+    FromMojom(AutocorrectSuggestionProviderMojo input,
+              AutocorrectSuggestionProvider* output) {
+  switch (input) {
+    case AutocorrectSuggestionProviderMojo::kUsEnglishPrebundled:
+      *output = AutocorrectSuggestionProvider::kUsEnglishPrebundled;
+      return true;
+    case AutocorrectSuggestionProviderMojo::kUsEnglishDownloaded:
+      *output = AutocorrectSuggestionProvider::kUsEnglishDownloaded;
+      return true;
+    case AutocorrectSuggestionProviderMojo::kUsEnglish840:
+      *output = AutocorrectSuggestionProvider::kUsEnglish840;
+      return true;
+    default:
+      *output = AutocorrectSuggestionProvider::kUnknown;
+      return true;
+  }
 }
 
 }  // namespace mojo

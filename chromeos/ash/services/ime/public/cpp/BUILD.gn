@@ -13,6 +13,7 @@ source_set("structs") {
   sources = [
     "assistive_suggestions.cc",
     "assistive_suggestions.h",
+    "autocorrect.h",
   ]
 }
 
