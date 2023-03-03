@@ -801,6 +801,10 @@ const char kHasSeenSmartLockSignInRemovedNotification[] =
 const char kEasyUnlockLocalStateTpmKeys[] = "easy_unlock.public_tpm_keys";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 03/2023.
+const char kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime[] =
+    "browser.last_google_search_domain_mixing_metrics_time";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1079,6 +1083,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHasSeenSmartLockSignInRemovedNotification,
                                 false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 03/2023.
+  registry->RegisterTimePref(
+      kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime, base::Time());
 }
 
 }  // namespace
@@ -2117,6 +2125,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kHasSeenSmartLockSignInRemovedNotification);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 03/2023
+  profile_prefs->ClearPref(
+      kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -5022,46 +5022,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DomainMixing.OneDay" units="units" expires_after="M85">
-  <owner>qfiard@google.com</owner>
-  <summary>
-    The distribution over daily active users of Google Search of the ratio of
-    Google searches in the past day that were issued by the user on a Google
-    domain that is not the primary one used by the user over the same time
-    period.
-  </summary>
-</histogram>
-
-<histogram name="DomainMixing.OneMonth" units="units" expires_after="M85">
-  <owner>qfiard@google.com</owner>
-  <summary>
-    The distribution over daily active users of Google Search of the ratio of
-    Google searches in the past 30 days that were issued by the user on a Google
-    domain that is not the primary one used by the user over the same time
-    period.
-  </summary>
-</histogram>
-
-<histogram name="DomainMixing.OneWeek" units="units" expires_after="M85">
-  <owner>qfiard@google.com</owner>
-  <summary>
-    The distribution over daily active users of Google Search of the ratio of
-    Google searches in the past week that were issued by the user on a Google
-    domain that is not the primary one used by the user over the same time
-    period.
-  </summary>
-</histogram>
-
-<histogram name="DomainMixing.TwoWeeks" units="units" expires_after="M85">
-  <owner>qfiard@google.com</owner>
-  <summary>
-    The distribution over daily active users of Google Search of the ratio of
-    Google searches in the past two weeks that were issued by the user on a
-    Google domain that is not the primary one used by the user over the same
-    time period.
-  </summary>
-</histogram>
-
 <histogram name="Downgrade.CacheDirMove.FailureCount" units="count"
     expires_after="2020-12-31">
   <obsolete>

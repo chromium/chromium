@@ -57,7 +57,6 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
-#include "chrome/browser/google/google_search_domain_mixing_metrics_emitter_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/history/domain_diversity_reporter_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -599,7 +598,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering)) {
     GoogleGroupsUpdaterServiceFactory::GetInstance();
   }
-  GoogleSearchDomainMixingMetricsEmitterFactory::GetInstance();
   HeavyAdServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   HidChooserContextFactory::GetInstance();
