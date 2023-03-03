@@ -19,10 +19,6 @@ html::view-transition-group(*) {
   position: absolute;
   top: 0;
   left: 0;
-
-  /* The transform applied to the container includes any translation necessary
-     for the original element's transform-origin. */
-  transform-origin: top left;
 }
 
 ::view-transition-image-pair(*) {

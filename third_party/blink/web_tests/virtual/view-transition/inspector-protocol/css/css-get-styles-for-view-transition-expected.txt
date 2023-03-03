@@ -153,10 +153,6 @@ The test verifies functionality of querying style information for view-transitio
                                         name : left
                                         value : 0px
                                     }
-                                    [3] : {
-                                        name : transform-origin
-                                        value : left top
-                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -286,10 +282,6 @@ The test verifies functionality of querying style information for view-transitio
                                     [2] : {
                                         name : left
                                         value : 0px
-                                    }
-                                    [3] : {
-                                        name : transform-origin
-                                        value : left top
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1731,10 +1723,6 @@ Dumping styles for : ::view-transition-group with id root{
                                 name : left
                                 value : 0px
                             }
-                            [3] : {
-                                name : transform-origin
-                                value : left top
-                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -2438,10 +2426,6 @@ Dumping styles for : ::view-transition-group with id shared{
                             [2] : {
                                 name : left
                                 value : 0px
-                            }
-                            [3] : {
-                                name : transform-origin
-                                value : left top
                             }
                         ]
                         shorthandEntries : [
