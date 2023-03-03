@@ -236,7 +236,8 @@ bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
   bool success = base::mac::RemoveQuarantineAttribute(updater_bundle_path);
   base::FileEnumerator file_enumerator(
       base::FilePath(updater_bundle_path), true,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES |
+          base::FileEnumerator::SHOW_SYM_LINKS);
   for (base::FilePath name = file_enumerator.Next(); !name.empty();
        name = file_enumerator.Next()) {
     success = base::mac::RemoveQuarantineAttribute(name) && success;

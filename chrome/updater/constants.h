@@ -303,8 +303,8 @@ inline constexpr int kErrorFailedToDeleteDataFolder = 17;
 // Failed to get versioned updater folder path.
 inline constexpr int kErrorFailedToGetVersionedInstallDirectory = 18;
 
-// Failed to get the installed app bundle path.
-inline constexpr int kErrorFailedToGetAppBundlePath = 19;
+// Failed to get the install directory.
+inline constexpr int kErrorFailedToGetInstallDir = 19;
 
 // Failed to remove the active(unversioned) update service job from Launchd.
 inline constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;

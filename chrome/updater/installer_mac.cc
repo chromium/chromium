@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/install_from_archive.h"
+#include "chrome/updater/util/mac_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -23,7 +24,11 @@ AppInstallerResult RunApplicationInstaller(
     bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback /*progress_callback*/) {
-  VLOG(1) << "Running application install from DMG at " << app_installer;
+  if (!RemoveQuarantineAttributes(app_installer)) {
+    VLOG(1) << "Failed to remove quarantine attributes from " << app_installer;
+  }
+
+  VLOG(1) << "Running application install at " << app_installer;
   // InstallFromArchive() returns the exit code of the script. 0 is success and
   // anything else should be an error.
   const int exit_code =
