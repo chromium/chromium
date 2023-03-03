@@ -7,14 +7,14 @@
 
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 AshStructuredMetricsRecorder::AshStructuredMetricsRecorder() = default;
 AshStructuredMetricsRecorder::~AshStructuredMetricsRecorder() = default;
@@ -34,9 +34,14 @@ void AshStructuredMetricsRecorder::Initialize() {
 
     if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
       auto* user_manager = user_manager::UserManager::Get();
+      auto* session_termination_manager = ash::SessionTerminationManager::Get();
+
       DCHECK(user_manager);
+      DCHECK(session_termination_manager);
+
       user_session_observer_ =
-          std::make_unique<StructuredMetricsUserSessionObserver>(user_manager);
+          std::make_unique<StructuredMetricsUserSessionObserver>(
+              user_manager, session_termination_manager);
     }
     is_initialized_ = true;
   } else {
@@ -57,5 +62,4 @@ bool AshStructuredMetricsRecorder::IsReadyToRecord() const {
   return true;
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured

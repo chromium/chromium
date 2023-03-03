@@ -617,6 +617,13 @@
 
   </event>
 
+  <event name="UserLogout">
+    <summary>
+      An event to signify a user explicity logged out of the system.
+    </summary>
+
+  </event>
+
   <event name="Test1">
     <summary>
       Test event used for unit tests to ensure that the code-gen for the event

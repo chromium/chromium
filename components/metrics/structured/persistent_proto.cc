@@ -25,16 +25,19 @@ template <class T>
 std::pair<ReadStatus, std::unique_ptr<T>> Read(const base::FilePath& filepath) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  if (!base::PathExists(filepath))
+  if (!base::PathExists(filepath)) {
     return {ReadStatus::kMissing, nullptr};
+  }
 
   std::string proto_str;
-  if (!base::ReadFileToString(filepath, &proto_str))
+  if (!base::ReadFileToString(filepath, &proto_str)) {
     return {ReadStatus::kReadError, nullptr};
+  }
 
   auto proto = std::make_unique<T>();
-  if (!proto->ParseFromString(proto_str))
+  if (!proto->ParseFromString(proto_str)) {
     return {ReadStatus::kParseError, nullptr};
+  }
 
   return {ReadStatus::kOk, std::move(proto)};
 }
@@ -42,8 +45,9 @@ std::pair<ReadStatus, std::unique_ptr<T>> Read(const base::FilePath& filepath) {
 WriteStatus Write(const base::FilePath& filepath,
                   const std::string& proto_str) {
   const auto directory = filepath.DirName();
-  if (!base::DirectoryExists(directory))
+  if (!base::DirectoryExists(directory)) {
     base::CreateDirectory(directory);
+  }
 
   bool write_result;
   {
@@ -53,8 +57,9 @@ WriteStatus Write(const base::FilePath& filepath,
         filepath, proto_str, "StructuredMetricsPersistentProto");
   }
 
-  if (!write_result)
+  if (!write_result) {
     return WriteStatus::kWriteError;
+  }
   return WriteStatus::kOk;
 }
 
@@ -81,7 +86,15 @@ PersistentProto<T>::PersistentProto(
 }
 
 template <class T>
-PersistentProto<T>::~PersistentProto() = default;
+PersistentProto<T>::~PersistentProto() {
+  if (has_value()) {
+    std::string proto_str;
+    if (!proto_->SerializeToString(&proto_str)) {
+      OnWriteComplete(WriteStatus::kSerializationError);
+    }
+    Write(path_, proto_str);
+  }
+}
 
 template <class T>
 void PersistentProto<T>::OnReadComplete(
@@ -106,12 +119,14 @@ void PersistentProto<T>::OnReadComplete(
 template <class T>
 void PersistentProto<T>::QueueWrite() {
   DCHECK(proto_);
-  if (!proto_)
+  if (!proto_) {
     return;
+  }
 
   // If a save is already queued, do nothing.
-  if (write_is_queued_)
+  if (write_is_queued_) {
     return;
+  }
   write_is_queued_ = true;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -133,16 +148,18 @@ void PersistentProto<T>::OnQueueWrite() {
 template <class T>
 void PersistentProto<T>::StartWrite() {
   DCHECK(proto_);
-  if (!proto_)
+  if (!proto_) {
     return;
+  }
 
   // Serialize the proto outside of the posted task, because otherwise we need
   // to pass a proto pointer into the task. This causes a rare race condition
   // during destruction where the proto can be destroyed before serialization,
   // causing a crash.
   std::string proto_str;
-  if (!proto_->SerializeToString(&proto_str))
+  if (!proto_->SerializeToString(&proto_str)) {
     OnWriteComplete(WriteStatus::kSerializationError);
+  }
 
   // The SequentialTaskRunner ensures the writes won't trip over each other, so
   // we can schedule without checking whether another write is currently active.
