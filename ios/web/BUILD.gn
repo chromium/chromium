@@ -684,7 +684,6 @@ grit("resources") {
   ]
   deps = [
     "//mojo/public/js:bindings",
-    "//ui/base/mojom:mojom_js__generator",
     "//ui/webui/resources/mojo:build_ts",
   ]
 }
