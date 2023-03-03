@@ -269,6 +269,13 @@ void PresentationRequestNotificationProducer::ShowOrHideItem() {
     return;
   }
 
+  // If the dialog is open and the item is currently hidden, do not show it.
+  // Otherwise, the item might be shown when the user has dismissed a media
+  // session notification or a cast notification from the same WebContents.
+  if (should_hide_ && item_manager_->HasOpenDialog()) {
+    return;
+  }
+
   auto* web_contents = GetWebContentsFromPresentationRequest(item_->request());
   bool new_visibility =
       web_contents
