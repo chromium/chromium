@@ -1627,20 +1627,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "preload-devtools",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "http/tests/inspector-protocol/preload"
-    ],
-    "exclusive_tests": [
-      "http/tests/inspector-protocol/preload/preloading-attempt-sources-updated.js"
-    ],
-    "args": [
-      "--enable-blink-features=SpeculationRulesDocumentRules,SpeculationRulesDocumentRulesSelectorMatches"
-    ],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "cookie-reject-domain-non-ascii",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "http/tests/inspector-protocol/issues/cookie-domain-non-ascii.js" ],

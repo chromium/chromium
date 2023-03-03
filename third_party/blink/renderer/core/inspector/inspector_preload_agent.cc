@@ -4,12 +4,8 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_preload_agent.h"
 
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
-#include "third_party/blink/renderer/core/speculation_rules/speculation_candidate.h"
-#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
 namespace blink {
 
@@ -24,121 +20,6 @@ std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
       .setId(rule_set.InspectorId())
       .setLoaderId(loader_id)
       .setSourceText(rule_set.source()->GetSourceText())
-      .build();
-}
-
-// Struct to represent a unique preloading attempt (corresponds to
-// protocol::Preload::PreloadingAttemptKey). Multiple SpeculationCandidates
-// could correspond to a single PreloadingAttemptKey.
-struct PreloadingAttemptKey {
-  mojom::blink::SpeculationAction action;
-  KURL url;
-  mojom::blink::SpeculationTargetHint target_hint;
-};
-
-bool operator==(const PreloadingAttemptKey& a, const PreloadingAttemptKey& b) {
-  return std::tie(a.action, a.url, a.target_hint) ==
-         std::tie(b.action, b.url, b.target_hint);
-}
-
-struct PreloadingAttemptKeyHashTraits
-    : WTF::GenericHashTraits<PreloadingAttemptKey> {
-  static unsigned GetHash(const PreloadingAttemptKey& key) {
-    unsigned hash = WTF::GetHash(key.action);
-    hash = WTF::HashInts(hash, WTF::GetHash(key.url));
-    hash = WTF::HashInts(hash, WTF::GetHash(key.target_hint));
-    return hash;
-  }
-
-  static const bool kEmptyValueIsZero = false;
-
-  static PreloadingAttemptKey EmptyValue() {
-    return {mojom::blink::SpeculationAction::kPrefetch, KURL(),
-            mojom::blink::SpeculationTargetHint::kNoHint};
-  }
-
-  static bool IsDeletedValue(const PreloadingAttemptKey& key) {
-    const PreloadingAttemptKey deleted_value = {
-        mojom::blink::SpeculationAction::kPrerender, KURL(),
-        mojom::blink::SpeculationTargetHint::kNoHint};
-    return key == deleted_value;
-  }
-
-  static void ConstructDeletedValue(PreloadingAttemptKey& slot) {
-    slot.action = mojom::blink::SpeculationAction::kPrerender;
-    slot.url = KURL();
-    slot.target_hint = mojom::blink::SpeculationTargetHint::kNoHint;
-  }
-};
-
-protocol::Preload::SpeculationAction GetProtocolSpeculationAction(
-    mojom::blink::SpeculationAction action) {
-  switch (action) {
-    case mojom::blink::SpeculationAction::kPrerender:
-      return protocol::Preload::SpeculationActionEnum::Prerender;
-    case mojom::blink::SpeculationAction::kPrefetch:
-      return protocol::Preload::SpeculationActionEnum::Prefetch;
-    case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
-      NOTREACHED();
-      return String();
-  }
-}
-
-absl::optional<protocol::Preload::SpeculationTargetHint>
-GetProtocolSpeculationTargetHint(
-    mojom::blink::SpeculationTargetHint target_hint) {
-  switch (target_hint) {
-    case mojom::blink::SpeculationTargetHint::kNoHint:
-      return absl::nullopt;
-    case mojom::blink::SpeculationTargetHint::kSelf:
-      return protocol::Preload::SpeculationTargetHintEnum::Self;
-    case mojom::blink::SpeculationTargetHint::kBlank:
-      return protocol::Preload::SpeculationTargetHintEnum::Blank;
-  }
-}
-
-std::unique_ptr<protocol::Preload::PreloadingAttemptKey>
-BuildProtocolPreloadingAttemptKey(const PreloadingAttemptKey& key,
-                                  const Document& document) {
-  auto preloading_attempt_key =
-      protocol::Preload::PreloadingAttemptKey::create()
-          .setLoaderId(IdentifiersFactory::LoaderId(document.Loader()))
-          .setAction(GetProtocolSpeculationAction(key.action))
-          .setUrl(key.url)
-          .build();
-  absl::optional<String> target_hint_str =
-      GetProtocolSpeculationTargetHint(key.target_hint);
-  if (target_hint_str) {
-    preloading_attempt_key->setTargetHint(target_hint_str.value());
-  }
-  return preloading_attempt_key;
-}
-
-std::unique_ptr<protocol::Preload::PreloadingAttemptSource>
-BuildProtocolPreloadingAttemptSource(
-    const PreloadingAttemptKey& key,
-    const HeapVector<Member<SpeculationCandidate>>& candidates,
-    Document& document) {
-  auto preloading_attempt_key =
-      BuildProtocolPreloadingAttemptKey(key, document);
-
-  HeapHashSet<Member<SpeculationRuleSet>> unique_rule_sets;
-  HeapHashSet<Member<HTMLAnchorElement>> unique_anchors;
-  auto rule_set_ids = std::make_unique<protocol::Array<String>>();
-  auto node_ids = std::make_unique<protocol::Array<int>>();
-  for (SpeculationCandidate* candidate : candidates) {
-    if (unique_rule_sets.insert(candidate->rule_set()).is_new_entry) {
-      rule_set_ids->push_back(candidate->rule_set()->InspectorId());
-    }
-    if (HTMLAnchorElement* anchor = candidate->anchor();
-        anchor && unique_anchors.insert(anchor).is_new_entry) {
-      node_ids->push_back(DOMNodeIds::IdForNode(anchor));
-    }
-  }
-  return protocol::Preload::PreloadingAttemptSource::create()
-      .setKey(std::move(preloading_attempt_key))
-      .setRuleSetIds(std::move(rule_set_ids))
-      .setNodeIds(std::move(node_ids))
       .build();
 }
 
@@ -173,50 +54,6 @@ void InspectorPreloadAgent::DidRemoveSpeculationRuleSet(
   }
 
   GetFrontend()->ruleSetRemoved(rule_set.InspectorId());
-}
-
-void InspectorPreloadAgent::SpeculationCandidatesUpdated(
-    Document& document,
-    const HeapVector<Member<SpeculationCandidate>>& candidates) {
-  if (!enabled_.Get()) {
-    return;
-  }
-
-  HeapHashMap<PreloadingAttemptKey,
-              Member<HeapVector<Member<SpeculationCandidate>>>,
-              PreloadingAttemptKeyHashTraits>
-      preloading_attempts;
-  for (SpeculationCandidate* candidate : candidates) {
-    // We are explicitly not reporting candidates for kPrefetchWithSubresources
-    // to clients, they are currently only interested in kPrefetch and
-    // kPrerender.
-    if (candidate->action() ==
-        mojom::blink::SpeculationAction::kPrefetchWithSubresources) {
-      continue;
-    }
-    PreloadingAttemptKey key = {candidate->action(), candidate->url(),
-                                candidate->target_hint()};
-    auto& value = preloading_attempts.insert(key, nullptr).stored_value->value;
-    if (!value) {
-      value = MakeGarbageCollected<HeapVector<Member<SpeculationCandidate>>>();
-    }
-    value->push_back(candidate);
-  }
-
-  auto preloading_attempt_sources = std::make_unique<
-      protocol::Array<protocol::Preload::PreloadingAttemptSource>>();
-  for (auto it : preloading_attempts) {
-    preloading_attempt_sources->push_back(
-        BuildProtocolPreloadingAttemptSource(it.key, *(it.value), document));
-  }
-
-  // TODO(crbug.com/1384419): This will currently only notify the frontend of
-  // preloading attempt sources for a single document. We should either
-  // explicitly add specify a loaderId as part of the event, or include (and
-  // resend) any attempts we have previously seen from other documents in this
-  // target.
-  GetFrontend()->preloadingAttemptSourcesUpdated(
-      std::move(preloading_attempt_sources));
 }
 
 protocol::Response InspectorPreloadAgent::enable() {

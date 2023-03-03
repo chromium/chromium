@@ -7,8 +7,6 @@ blink_core_sources_speculation_rules = [
   "document_rule_predicate.h",
   "document_speculation_rules.cc",
   "document_speculation_rules.h",
-  "speculation_candidate.cc",
-  "speculation_candidate.h",
   "speculation_rule.cc",
   "speculation_rule.h",
   "speculation_rule_set.cc",
