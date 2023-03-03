@@ -420,6 +420,7 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     FetchParameters::DeferOption defer_option,
     FetchParameters::SpeculativePreloadType speculative_preload_type,
     RenderBlockingBehavior render_blocking_behavior,
+    mojom::blink::ScriptType script_type,
     bool is_link_preload) {
   DCHECK(!resource_request.PriorityHasBeenSet() ||
          type == ResourceType::kImage);
@@ -457,15 +458,17 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   if (FetchParameters::kIdleLoad == defer_option) {
     priority = ResourceLoadPriority::kVeryLow;
   } else if (type == ResourceType::kScript) {
-    // Special handling for scripts.
+    // Special handling for classic scripts.
     // Default/Parser-Blocking/Preload early in document: High (set in
     // typeToPriority)
     // Async/Defer: Low Priority (applies to both preload and parser-inserted)
     // Preload late in document: Medium
-    if (FetchParameters::kLazyLoad == defer_option) {
-      priority = ResourceLoadPriority::kLow;
-    } else if (late_document_from_preload_scanner) {
-      priority = ResourceLoadPriority::kMedium;
+    if (script_type == mojom::blink::ScriptType::kClassic) {
+      if (FetchParameters::kLazyLoad == defer_option) {
+        priority = ResourceLoadPriority::kLow;
+      } else if (late_document_from_preload_scanner) {
+        priority = ResourceLoadPriority::kMedium;
+      }
     }
   } else if (type == ResourceType::kCSSStyleSheet &&
              late_document_from_preload_scanner) {
@@ -953,7 +956,7 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
         resource_type, params.GetResourceRequest(),
         ResourcePriority::kNotVisible, params.Defer(),
         params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
-        params.IsLinkPreload());
+        params.GetScriptType(), params.IsLinkPreload());
   }
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);

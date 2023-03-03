@@ -82,6 +82,11 @@ resource_load_priority_service_worker_test(
   'kHigh priority');
 
 resource_load_priority_service_worker_test(
+  'resources/service-worker/module-script-low.html', kLow,
+  'Module scripts with and explicit fetchpriority=low passing through a ' +
+  'Service Worker should be loaded with kLow priority');
+
+resource_load_priority_service_worker_test(
   'resources/service-worker/xhr.html', kHigh,
   'XHRs passing through a Service Worker should be loaded with kHigh priority');
 

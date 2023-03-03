@@ -1,7 +1,7 @@
 <script src="../common.js"></script>
 <script>
   const xhr = new XMLHttpRequest();
-  xhr.open('GET', '../../../resources/dummy.html?getPriority');
+  xhr.open('GET', '../../../resources/dummy.html?sw-xhr&getPriority');
   xhr.send();
 
   xhr.onload = reportLoaded;
