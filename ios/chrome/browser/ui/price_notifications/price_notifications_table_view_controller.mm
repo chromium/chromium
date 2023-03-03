@@ -531,18 +531,18 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 // Creates the TableViewHeaderFooterItem for the section
 // `SectionIdentifierTableViewHeader`
-- (TableViewLinkHeaderFooterItem*)createHeaderForTableViewHeaderSection:
+- (TableViewTextHeaderFooterItem*)createHeaderForTableViewHeaderSection:
     (BOOL)isEmpty {
-  TableViewLinkHeaderFooterItem* header = [[TableViewLinkHeaderFooterItem alloc]
+  TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
       initWithType:ItemTypeTableViewHeader];
 
   if (isEmpty) {
-    header.text = l10n_util::GetNSString(
+    header.subtitle = l10n_util::GetNSString(
         IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_EMPTY_STATE);
     return header;
   }
 
-  header.text = l10n_util::GetNSString(
+  header.subtitle = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION);
   return header;
 }
