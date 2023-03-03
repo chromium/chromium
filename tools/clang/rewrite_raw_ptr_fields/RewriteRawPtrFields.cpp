@@ -1433,16 +1433,16 @@ int main(int argc, const char* argv[]) {
                                exclude_fields_param.ArgStr.str());
 
   std::unique_ptr<FilterFile> paths_to_exclude;
-  if (override_exclude_paths_param.hasArgStr()) {
-    paths_to_exclude =
-        std::make_unique<FilterFile>(override_exclude_paths_param,
-                                     override_exclude_paths_param.ArgStr.str());
-  } else {
+  if (override_exclude_paths_param.ValueStr.empty()) {
     std::vector<std::string> paths_to_exclude_lines;
     for (auto* const line : kRawPtrManualPathsToIgnore) {
       paths_to_exclude_lines.push_back(line);
     }
     paths_to_exclude = std::make_unique<FilterFile>(paths_to_exclude_lines);
+  } else {
+    paths_to_exclude =
+        std::make_unique<FilterFile>(override_exclude_paths_param,
+                                     override_exclude_paths_param.ArgStr.str());
   }
   RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
                                   fields_to_exclude, *paths_to_exclude);
