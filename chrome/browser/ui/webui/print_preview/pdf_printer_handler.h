@@ -80,6 +80,9 @@ class PdfPrinterHandler : public PrinterHandler,
                           content::WebContents* initiator,
                           bool prompt_user);
 
+  // Write data to the file system. Protected so unit tests can access it.
+  void PostPrintToPdfTask();
+
   // The print preview web contents. Protected so unit tests can access it.
   const raw_ptr<content::WebContents, DanglingUntriaged> preview_web_contents_;
 
@@ -87,7 +90,6 @@ class PdfPrinterHandler : public PrinterHandler,
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
  private:
-  void PostPrintToPdfTask();
   void OnGotUniqueFileName(const base::FilePath& path);
 
   // Prompts the user to save the file. The dialog will default to saving
@@ -100,7 +102,9 @@ class PdfPrinterHandler : public PrinterHandler,
                            const base::FilePath& path);
 
   // Return save location as the Drive mount or fetch from Download Preferences.
-  base::FilePath GetSaveLocation() const;
+  // Virtual so that unit tests could override it to avoid checking Download
+  // Preferences.
+  virtual base::FilePath GetSaveLocation() const;
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   const raw_ptr<PrintPreviewStickySettings> sticky_settings_;

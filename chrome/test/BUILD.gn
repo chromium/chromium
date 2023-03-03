@@ -8688,6 +8688,10 @@ test("unit_tests") {
         sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_posix_unittest.cc" ]
       }
 
+      if (is_fuchsia) {
+        sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_fuchsia_unittest.cc" ]
+      }
+
       if (is_chromeos) {
         sources += [
           "../browser/ui/webui/print_preview/local_printer_handler_chromeos_unittest.cc",
