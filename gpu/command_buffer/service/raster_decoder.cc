@@ -2152,7 +2152,7 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
   sk_sp<SkColorSpace> dst_color_space;
   if (color_space_size) {
     // For multiplanar formats readback is per plane, and destination color
-    // space must be nullptr to allow letting Skia assume srgb color space.
+    // space must be nullptr to avoid unexpected color conversions.
     if (source_format.is_multi_plane()) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                          "Unexpected color space for multiplanar shared image");
@@ -2216,60 +2216,18 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     return;
   }
 
-  std::vector<GrBackendSemaphore> begin_semaphores;
-  std::vector<GrBackendSemaphore> end_semaphores;
-
-  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
-      source_scoped_access = source_shared_image->BeginScopedReadAccess(
-          &begin_semaphores, &end_semaphores);
-
-  if (!source_scoped_access) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
-                       "Source shared image is not accessible");
-    return;
-  }
-
-  if (!begin_semaphores.empty()) {
-    bool wait_result = shared_context_state_->gr_context()->wait(
-        begin_semaphores.size(), begin_semaphores.data(),
-        /*deleteSemaphoresAfterWait=*/false);
-    DCHECK(wait_result);
-  }
-
-  sk_sp<SkImage> sk_image;
-  if (source_format.is_single_plane()) {
-    // Create SkImage without plane index for single planar formats or legacy
-    // multiplanar formats with external sampler.
-    sk_image = source_scoped_access->CreateSkImage(
-        shared_context_state_->gr_context());
+  CopySharedImageHelper helper(&shared_image_representation_factory_,
+                               shared_context_state_.get());
+  auto helper_result =
+      helper.ReadPixels(src_x, src_y, plane_index, row_bytes, dst_info,
+                        pixel_address, std::move(source_shared_image));
+  if (!helper_result.has_value()) {
+    LOCAL_SET_GL_ERROR(helper_result.error().gl_error,
+                       helper_result.error().function_name.c_str(),
+                       helper_result.error().msg.c_str());
   } else {
-    // Pass plane index for creating an SkImage for multiplanar formats.
-    sk_image = source_scoped_access->CreateSkImageForPlane(
-        plane_index, shared_context_state_->gr_context());
+    *result = 1;
   }
-
-  if (sk_image) {
-    bool success =
-        sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x, src_y);
-    if (!success) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                         "Failed to read pixels from SkImage");
-    } else {
-      *result = 1;
-    }
-  } else {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                       "Couldn't create SkImage for reading.");
-  }
-
-  if (auto end_state = source_scoped_access->TakeEndState()) {
-    gr_context()->setBackendTextureState(
-        source_scoped_access->promise_image_texture(plane_index)
-            ->backendTexture(),
-        *end_state);
-  }
-
-  SubmitIfNecessary(std::move(end_semaphores));
 }
 
 namespace {
