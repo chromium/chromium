@@ -597,7 +597,7 @@ public class CrashesListFragmentTest {
 
         CrashUploadUtil.setCrashUploadDelegateForTesting(new CrashUploadDelegate() {
             @Override
-            public void scheduleNewJob(Context context) {}
+            public void scheduleNewJob(Context context, boolean requiresUnmeteredNetwork) {}
 
             @Override
             public boolean isNetworkUnmetered(Context context) {
@@ -663,7 +663,7 @@ public class CrashesListFragmentTest {
 
         CrashUploadUtil.setCrashUploadDelegateForTesting(new CrashUploadDelegate() {
             @Override
-            public void scheduleNewJob(Context context) {}
+            public void scheduleNewJob(Context context, boolean requiresUnmeteredNetwork) {}
 
             @Override
             public boolean isNetworkUnmetered(Context context) {

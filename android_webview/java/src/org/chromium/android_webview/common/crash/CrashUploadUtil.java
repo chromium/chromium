@@ -35,8 +35,12 @@ public final class CrashUploadUtil {
     public static interface CrashUploadDelegate {
         /**
          * Schedule a MinidumpUploadJobService to attempt uploading all ready crash minidumps.
+         *
+         * @param context the context where the upload job will be scheduled from.
+         * @param requiresUnmeteredNetwork true if we want to restrict the upload job to unmetered
+         *         network only.
          */
-        void scheduleNewJob(@NonNull Context context);
+        void scheduleNewJob(@NonNull Context context, boolean requiresUnmeteredNetwork);
 
         /**
          * Check if network is unmetered or not.
@@ -46,9 +50,15 @@ public final class CrashUploadUtil {
 
     private static CrashUploadDelegate sDelegate = new CrashUploadDelegate() {
         @Override
-        public void scheduleNewJob(@NonNull Context context) {
-            JobInfo.Builder builder = new JobInfo.Builder(TaskIds.WEBVIEW_MINIDUMP_UPLOADING_JOB_ID,
-                    new ComponentName(context, ServiceNames.AW_MINIDUMP_UPLOAD_JOB_SERVICE));
+        public void scheduleNewJob(@NonNull Context context, boolean requiresUnmeteredNetwork) {
+            int networkType = requiresUnmeteredNetwork ? JobInfo.NETWORK_TYPE_UNMETERED
+                                                       : JobInfo.NETWORK_TYPE_ANY;
+            JobInfo.Builder builder =
+                    new JobInfo
+                            .Builder(TaskIds.WEBVIEW_MINIDUMP_UPLOADING_JOB_ID,
+                                    new ComponentName(
+                                            context, ServiceNames.AW_MINIDUMP_UPLOAD_JOB_SERVICE))
+                            .setRequiredNetworkType(networkType);
             MinidumpUploadJobService.scheduleUpload(builder);
         }
 
@@ -63,9 +73,21 @@ public final class CrashUploadUtil {
 
     /**
      * Schedule a MinidumpUploadJobService to attempt uploading all ready crash minidumps.
+     * Defaults to restrict the upload job to unmetered network only.
      */
     public static void scheduleNewJob(@NonNull Context context) {
-        sDelegate.scheduleNewJob(context);
+        scheduleNewJob(context, true);
+    }
+
+    /**
+     * Schedule a MinidumpUploadJobService to attempt uploading all ready crash minidumps.
+     *
+     * @param context the context where the upload job will be scheduled from.
+     * @param requiresUnmeteredNetwork true if we want to restrict the upload job to unmetered
+     *         network only.
+     */
+    public static void scheduleNewJob(@NonNull Context context, boolean requiresUnmeteredNetwork) {
+        sDelegate.scheduleNewJob(context, requiresUnmeteredNetwork);
     }
 
     /**
@@ -73,7 +95,8 @@ public final class CrashUploadUtil {
      *
      * Note that this method is asynchronous. All that is guaranteed is that upload attempts will be
      * enqueued. It marks the file as requested to be uploaded and then schedule an upload job that
-     * attempts uploading all files available to upload (including the given minidump file).
+     * attempts uploading all files available to upload (including the given minidump file). The
+     * upload job can run on any network type.
      *
      * @param context the context where the upload job will be scheduled from.
      * @param localId The local ID of the crash report.
@@ -94,7 +117,9 @@ public final class CrashUploadUtil {
             return;
         }
 
-        scheduleNewJob(context);
+        // We don't require unmetered network here as this is invoked from the DevUI. If a metered
+        // network is used, we show users a dialog before triggering this function.
+        scheduleNewJob(context, false);
     }
 
     public static boolean isNetworkUnmetered(@NonNull Context context) {
