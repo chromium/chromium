@@ -208,6 +208,10 @@ class CRWWebControllerTest : public WebTestWithWebController {
     OCMStub([result removeObserver:OCMOCK_ANY forKeyPath:OCMOCK_ANY]);
     OCMStub([result evaluateJavaScript:OCMOCK_ANY
                      completionHandler:OCMOCK_ANY]);
+    OCMStub([result evaluateJavaScript:OCMOCK_ANY
+                               inFrame:OCMOCK_ANY
+                        inContentWorld:OCMOCK_ANY
+                     completionHandler:OCMOCK_ANY]);
     OCMStub([result allowsBackForwardNavigationGestures]);
     OCMStub([result setAllowsBackForwardNavigationGestures:NO]);
     OCMStub([result setAllowsBackForwardNavigationGestures:YES]);

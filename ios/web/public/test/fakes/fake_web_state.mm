@@ -151,12 +151,12 @@ NavigationManager* FakeWebState::GetNavigationManager() {
   return navigation_manager_.get();
 }
 
-const WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() const {
-  return web_frames_manager_.get();
+WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() {
+  return web_frames_managers_[ContentWorld::kPageContentWorld].get();
 }
 
-WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() {
-  return web_frames_manager_.get();
+WebFramesManager* FakeWebState::GetWebFramesManager(ContentWorld world) {
+  return web_frames_managers_[world].get();
 }
 
 const SessionCertificatePolicyCache*
@@ -186,7 +186,14 @@ void FakeWebState::SetNavigationManager(
 
 void FakeWebState::SetWebFramesManager(
     std::unique_ptr<WebFramesManager> web_frames_manager) {
-  web_frames_manager_ = std::move(web_frames_manager);
+  SetWebFramesManager(ContentWorld::kPageContentWorld,
+                      std::move(web_frames_manager));
+}
+
+void FakeWebState::SetWebFramesManager(
+    ContentWorld content_world,
+    std::unique_ptr<WebFramesManager> web_frames_manager) {
+  web_frames_managers_[content_world] = std::move(web_frames_manager);
 }
 
 void FakeWebState::SetView(UIView* view) {

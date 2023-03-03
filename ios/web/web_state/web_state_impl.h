@@ -43,7 +43,6 @@ class NavigationManager;
 enum Permission : NSUInteger;
 enum PermissionState : NSUInteger;
 class SessionCertificatePolicyCacheImpl;
-class WebFrame;
 class WebFramesManagerImpl;
 
 // Implementation of WebState.
@@ -124,8 +123,8 @@ class WebStateImpl final : public WebState {
   // Returns the NavigationManager for this WebState.
   NavigationManagerImpl& GetNavigationManagerImpl();
 
-  // Returns the associated WebFramesManagerImpl.
-  WebFramesManagerImpl& GetWebFramesManagerImpl();
+  // Returns the WebFramesManagerImpl associated with the page content world.
+  WebFramesManagerImpl& GetWebFramesManagerImpl(ContentWorld world);
 
   // Returns/Sets the SessionCertificatePolicyCacheImpl for this WebStateImpl.
   SessionCertificatePolicyCacheImpl& GetSessionCertificatePolicyCacheImpl();
@@ -250,13 +249,6 @@ class WebStateImpl final : public WebState {
   // navigation related functions on the main WKWebView.
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const;
 
-  // Registers `frame` as a new web frame and notifies any observers.
-  void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
-
-  // Removes the web frame with `frame_id`, if one exists and notifies any
-  // observers.
-  void WebFrameBecameUnavailable(const std::string& frame_id);
-
   // Broadcasts a JavaScript message to request the frameId of all frames.
   void RetrieveExistingFrames();
 
@@ -297,8 +289,8 @@ class WebStateImpl final : public WebState {
   void Stop() final;
   const NavigationManager* GetNavigationManager() const final;
   NavigationManager* GetNavigationManager() final;
-  const WebFramesManager* GetPageWorldWebFramesManager() const final;
   WebFramesManager* GetPageWorldWebFramesManager() final;
+  WebFramesManager* GetWebFramesManager(ContentWorld world) final;
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const final;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() final;

@@ -8,6 +8,7 @@ source_set("public") {
   public_deps = [
     ":web_state_observer",
     "//ios/web/public/favicon",
+    "//ios/web/public/js_messaging:content_world_header",
     "//ios/web/public/navigation",
     "//ios/web/public/permissions",
     "//ios/web/public/thread",

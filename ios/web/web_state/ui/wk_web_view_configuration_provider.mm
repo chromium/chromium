@@ -198,12 +198,16 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
   }
   java_script_feature_manager->ConfigureFeatures(features);
 
-  WKUserContentController* userContentController =
+  WKUserContentController* user_content_controller =
       GetWebViewConfiguration().userContentController;
-  WebFramesManagerJavaScriptFeature::FromBrowserState(browser_state_)
-      ->ConfigureHandlers(userContentController);
+  auto web_frames_manager_features = WebFramesManagerJavaScriptFeature::
+      AllContentWorldFeaturesFromBrowserState(browser_state_);
+  for (WebFramesManagerJavaScriptFeature* feature :
+       web_frames_manager_features) {
+    feature->ConfigureHandlers(user_content_controller);
+  }
   SessionRestoreJavaScriptFeature::FromBrowserState(browser_state_)
-      ->ConfigureHandlers(userContentController);
+      ->ConfigureHandlers(user_content_controller);
 
   // Main frame script depends upon scripts injected into all frames, so the
   // "AllFrames" scripts must be injected first.

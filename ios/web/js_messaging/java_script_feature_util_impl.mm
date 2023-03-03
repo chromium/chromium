@@ -141,8 +141,12 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       NavigationJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
-      WebFramesManagerJavaScriptFeature::FromBrowserState(browser_state),
       WebUIMessagingJavaScriptFeature::GetInstance()};
+
+  auto frames_manager_features = WebFramesManagerJavaScriptFeature::
+      AllContentWorldFeaturesFromBrowserState(browser_state);
+  features.insert(features.end(), frames_manager_features.begin(),
+                  frames_manager_features.end());
 
   // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
   // completely removed.

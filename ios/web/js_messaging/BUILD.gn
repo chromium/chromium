@@ -10,6 +10,7 @@ source_set("js_messaging") {
   deps = [
     ":frame_listeners_js",
     ":java_script_content_world_header",
+    ":java_script_content_world_util",
     ":java_script_feature_manager_header",
     ":scoped_wk_script_message_handler",
     ":setup_frame_js",
@@ -50,6 +51,7 @@ source_set("java_script_feature") {
     ":java_script_feature_manager_header",
   ]
   deps = [
+    ":java_script_content_world_util",
     ":js_messaging",
     ":scoped_wk_script_message_handler",
     "//base",
@@ -85,7 +87,7 @@ source_set("java_script_content_world_util") {
 
   deps = [
     "//base",
-    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
   ]
 
   sources = [

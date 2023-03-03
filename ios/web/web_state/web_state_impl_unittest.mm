@@ -21,6 +21,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
+#import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
@@ -263,14 +264,16 @@ TEST_F(WebStateImplTest, ObserverTest) {
   ASSERT_FALSE(observer->web_frame_available_info());
   auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
   WebFrame* main_frame_ptr = main_frame.get();
-  web_state_->WebFrameBecameAvailable(std::move(main_frame));
+  web_state_->GetWebFramesManagerImpl(ContentWorld::kPageContentWorld)
+      .AddFrame(std::move(main_frame));
   ASSERT_TRUE(observer->web_frame_available_info());
   EXPECT_EQ(web_state_.get(), observer->web_frame_available_info()->web_state);
   EXPECT_EQ(main_frame_ptr, observer->web_frame_available_info()->web_frame);
 
   // Test that WebFrameWillBecomeUnavailable() is called.
   ASSERT_FALSE(observer->web_frame_unavailable_info());
-  web_state_->WebFrameBecameUnavailable(main_frame_ptr->GetFrameId());
+  web_state_->GetWebFramesManagerImpl(ContentWorld::kPageContentWorld)
+      .RemoveFrameWithId(main_frame_ptr->GetFrameId());
   ASSERT_TRUE(observer->web_frame_unavailable_info());
   EXPECT_EQ(web_state_.get(),
             observer->web_frame_unavailable_info()->web_state);

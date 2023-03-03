@@ -17,17 +17,19 @@ class BrowserState;
 
 // A feature which notifies the native application code of the creation and
 // destruction of webpage frames based on JavaScript messages from the webpage.
-class WebFramesManagerJavaScriptFeature : public base::SupportsUserData::Data,
-                                          public JavaScriptFeature {
+class WebFramesManagerJavaScriptFeature : public JavaScriptFeature {
  public:
-  WebFramesManagerJavaScriptFeature(BrowserState* browser_state);
   ~WebFramesManagerJavaScriptFeature() override;
 
-  // Returns the WebFramesManagerJavaScriptFeature associated with
-  // `browser_state`, creating one if necessary. `browser_state` must not be
-  // null.
-  static WebFramesManagerJavaScriptFeature* FromBrowserState(
-      BrowserState* browser_state);
+  WebFramesManagerJavaScriptFeature(const WebFramesManagerJavaScriptFeature&) =
+      delete;
+  WebFramesManagerJavaScriptFeature& operator=(
+      const WebFramesManagerJavaScriptFeature&) = delete;
+
+  // Returns a list of the `WebFramesManagerJavaScriptFeature` instances for
+  // all content worlds specified by `browser_state`s' JavaScriptFeatureManager.
+  static std::vector<WebFramesManagerJavaScriptFeature*>
+  AllContentWorldFeaturesFromBrowserState(BrowserState* browser_state);
 
   // Configures message handlers for the creation and destruction of frames.
   // `user_content_controller` is used directly (instead of using the built-in
@@ -36,18 +38,45 @@ class WebFramesManagerJavaScriptFeature : public base::SupportsUserData::Data,
   void ConfigureHandlers(WKUserContentController* user_content_controller);
 
  private:
+  // Container that stores the web frame manager feature for each content world.
+  // Usage example:
+  //
+  // WebFramesManagerJavaScriptFeature::Container::FromBrowserState(
+  //     browser_state)->FeatureForContentWorld(
+  //         ContentWorld::kPageContentWorld);
+  class Container : public base::SupportsUserData::Data {
+   public:
+    ~Container() override;
+
+    // Returns the Container associated with `browser_state`, creating one if
+    // necessary. `browser_state` must not be null.
+    static Container* FromBrowserState(BrowserState* browser_state);
+
+    // Returns the web frames manager feature for `content_world`.
+    WebFramesManagerJavaScriptFeature* FeatureForContentWorld(
+        ContentWorld content_world);
+
+   private:
+    Container(BrowserState* browser_state);
+
+    // The browser state associated with this instance of the feature.
+    BrowserState* browser_state_;
+    std::map<ContentWorld, std::unique_ptr<WebFramesManagerJavaScriptFeature>>
+        features_;
+  };
+
   friend class WebFramesManagerJavaScriptFeatureTest;
 
-  WebFramesManagerJavaScriptFeature(const WebFramesManagerJavaScriptFeature&) =
-      delete;
-  WebFramesManagerJavaScriptFeature& operator=(
-      const WebFramesManagerJavaScriptFeature&) = delete;
+  WebFramesManagerJavaScriptFeature(ContentWorld content_world,
+                                    BrowserState* browser_state);
 
   // Handles a message from JavaScript to register a new WebFrame.
   void FrameAvailableMessageReceived(WKScriptMessage* script_message);
   // Handles a message from JavaScript to remove a WebFrame.
   void FrameUnavailableMessageReceived(WKScriptMessage* script_message);
 
+  // The content world which this web frames manager operates in.
+  ContentWorld content_world_;
   // The browser state associated with this instance of the feature.
   BrowserState* browser_state_;
 

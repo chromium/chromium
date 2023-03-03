@@ -183,8 +183,9 @@ int WebStateImpl::GetNavigationItemCount() const {
                         : saved_->GetNavigationItemCount();
 }
 
-WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl() {
-  return RealizedState()->GetPageWorldWebFramesManager();
+WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl(
+    ContentWorld content_world) {
+  return RealizedState()->GetWebFramesManagerImpl(content_world);
 }
 
 SessionCertificatePolicyCacheImpl&
@@ -313,14 +314,6 @@ id<CRWWebViewNavigationProxy> WebStateImpl::GetWebViewNavigationProxy() const {
 }
 
 #pragma mark - WebFrame management
-
-void WebStateImpl::WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame) {
-  RealizedState()->WebFrameBecameAvailable(std::move(frame));
-}
-
-void WebStateImpl::WebFrameBecameUnavailable(const std::string& frame_id) {
-  RealizedState()->WebFrameBecameUnavailable(frame_id);
-}
 
 void WebStateImpl::RetrieveExistingFrames() {
   RealizedState()->RetrieveExistingFrames();
@@ -471,12 +464,12 @@ NavigationManager* WebStateImpl::GetNavigationManager() {
   return &RealizedState()->GetNavigationManager();
 }
 
-const WebFramesManager* WebStateImpl::GetPageWorldWebFramesManager() const {
-  return LIKELY(pimpl_) ? &pimpl_->GetPageWorldWebFramesManager() : nullptr;
-}
-
 WebFramesManager* WebStateImpl::GetPageWorldWebFramesManager() {
   return &RealizedState()->GetPageWorldWebFramesManager();
+}
+
+WebFramesManager* WebStateImpl::GetWebFramesManager(ContentWorld world) {
+  return &RealizedState()->GetWebFramesManagerImpl(world);
 }
 
 const SessionCertificatePolicyCache*

@@ -21,6 +21,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
+#include "ios/web/public/js_messaging/content_world.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -287,8 +288,11 @@ class WebState : public base::SupportsUserData {
 
   // Gets the WebFramesManager associated with this WebState. Can never return
   // null.
-  virtual const WebFramesManager* GetPageWorldWebFramesManager() const = 0;
   virtual WebFramesManager* GetPageWorldWebFramesManager() = 0;
+
+  // Returns the WebFrameManagerImpl associated with this WebState for the given
+  // `world`.
+  virtual WebFramesManager* GetWebFramesManager(ContentWorld world) = 0;
 
   // Gets the SessionCertificatePolicyCache for this WebState.  Can never return
   // null.

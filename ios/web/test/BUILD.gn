@@ -59,6 +59,7 @@ source_set("test_support") {
     "//ios/web:threads",
     "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
+    "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/navigation:core",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
