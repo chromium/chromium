@@ -433,12 +433,6 @@ bool IsProfileMigrationAvailable() {
     return false;
   }
 
-  // Profile migration is only available for is Lacros is the only browser i.e.
-  // LacrosOnly mode.
-  if (IsAshWebBrowserEnabled()) {
-    return false;
-  }
-
   // If migration is already completed, it is not necessary to run again.
   if (IsCopyOrMoveProfileMigrationCompletedForUser(
           user_manager->GetLocalState(), user->username_hash())) {
