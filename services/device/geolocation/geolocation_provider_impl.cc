@@ -37,7 +37,7 @@ base::LazyInstance<CustomLocationProviderCallback>::Leaky
 base::LazyInstance<std::unique_ptr<network::PendingSharedURLLoaderFactory>>::
     Leaky g_pending_url_loader_factory = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<std::string>::Leaky g_api_key = LAZY_INSTANCE_INITIALIZER;
-GeolocationManager* g_geolocation_manager;
+GeolocationManager* g_geolocation_manager = nullptr;
 }  // namespace
 
 // static
