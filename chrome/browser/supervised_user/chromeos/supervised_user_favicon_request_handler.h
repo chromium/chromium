@@ -45,8 +45,9 @@ class SupervisedUserFaviconRequestHandler {
 
   static const char* GetFaviconAvailabilityHistogramForTesting();
 
-  void StartFaviconFetch(
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback);
+  // Starts fetching the URL favicon and calls on_fetched_callback when
+  // finished. The favicon can be then obtained by calling GetFaviconOrFallback.
+  void StartFaviconFetch(base::OnceClosure on_fetched_callback);
 
   // Returns the fetched favicon if it is available. If the requestor asks for
   // the favicon before it has been fetched or the favicon has failed to be
@@ -76,9 +77,9 @@ class SupervisedUserFaviconRequestHandler {
   // True if a network request has already been made to fetch the favicon.
   bool network_request_completed_ = false;
 
-  // Callback run when the favicon has been fetched. If the favicon fails to be
-  // fetched, then the callback is run with a fallback icon.
-  base::OnceCallback<void(const gfx::ImageSkia&)> favicon_fetched_callback_;
+  // Callback run when the favicon has been fetched, either from the cache or
+  // via a network request.
+  base::OnceClosure on_fetched_callback_;
 
   favicon::LargeIconService* large_icon_service_ = nullptr;
   base::CancelableTaskTracker favicon_task_tracker_;
