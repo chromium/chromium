@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
@@ -139,6 +140,14 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             // again, all tabs sharing this renderer will be notified about the crash (including
             // potential background tabs that did not reload yet).
             if (mTab.needsReload() || SadTab.isShowing(mTab)) return;
+
+            // If the renderer crashes for a native page, it can be ignored as we never show that
+            // content. The URL check is done in addition to the isNativePage to ensure a navigation
+            // off the native page did not result in the crash.
+            if (mTab.isNativePage()
+                    && NativePage.isNativePageUrl(mTab.getUrl(), mTab.isIncognito())) {
+                return;
+            }
 
             int activityState = ApplicationStatus.getStateForActivity(
                     mTab.getWindowAndroid().getActivity().get());
