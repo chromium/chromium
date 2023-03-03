@@ -1,0 +1,35 @@
+<!doctype html>
+<style>
+#test {
+  height: 0px;
+  transition: height 1000s;
+  background: green;
+}
+</style>
+<div id="test">Testing...</div>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+
+function finish(result) {
+  document.body.textContent = result;
+  if (window.testRunner) {
+    testRunner.notifyDone();
+  }
+}
+
+onload = function() {
+  if (test.clientHeight != 0) {
+    return finish('FAIL -- expected initial height of 0px');
+  }
+
+  test.style.height = 'auto';
+  if (test.clientHeight == 0) {
+    return finish('FAIL -- transtion should not apply from 0px to auto');
+  }
+
+  return finish('PASS');
+};
+</script>
