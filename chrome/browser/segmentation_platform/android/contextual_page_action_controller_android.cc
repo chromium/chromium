@@ -9,12 +9,14 @@
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h"
+#include "components/segmentation_platform/public/android/input_context_android.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 #include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
@@ -52,9 +54,7 @@ void RunGetClassificationResultCallback(
 static void JNI_ContextualPageActionController_ComputeContextualPageAction(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
-    const JavaParamRef<jobject>& j_url,
-    jboolean j_can_track_price,
-    jboolean j_has_reader_mode,
+    const JavaParamRef<jobject>& j_input_context,
     const JavaParamRef<jobject>& j_callback) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   if (!profile) {
@@ -63,17 +63,10 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
                         segmentation_platform::PredictionStatus::kFailed));
     return;
   }
-  auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
   scoped_refptr<segmentation_platform::InputContext> input_context =
-      base::MakeRefCounted<segmentation_platform::InputContext>();
-  input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceTracking,
-      static_cast<float>(j_can_track_price));
-  input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputReaderMode,
-      static_cast<float>(j_has_reader_mode));
-  input_context->metadata_args.emplace("url", *url);
+      segmentation_platform::InputContextAndroid::ToNativeInputContext(
+          env, j_input_context);
 
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::

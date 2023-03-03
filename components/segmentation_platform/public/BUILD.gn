@@ -98,6 +98,7 @@ source_set("test_support") {
 if (is_android) {
   android_library("public_java") {
     sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/Constants.java",
       "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
       "android/java/src/org/chromium/components/segmentation_platform/ProcessedValue.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
