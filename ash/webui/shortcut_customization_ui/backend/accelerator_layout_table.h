@@ -205,6 +205,8 @@ using NonConfigurableActionsMap =
 
 const NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 
+std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
+
 // A fixed array of accelerator layouts used for categorization and styling of
 // accelerator actions. The ordering of the array is important and is used
 // 1:1 for displaying shortcuts in the shortcut customization app.

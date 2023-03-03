@@ -20,7 +20,6 @@
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -115,46 +114,10 @@ std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
 
 namespace {
 
-// This map is for KeyboardCodes that don't return a key_display from
-// `KeycodeToKeyString`. The string values here were arbitrarily chosen
-// based on the VKEY enum name.
-// TODO(cambickel): In the future, consolidate this lookup table to be in the
-// same location as the layout table.
-const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
-  static auto key_display_map =
-      base::NoDestructor(base::flat_map<ui::KeyboardCode, std::u16string>({
-          {ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
-           u"MicrophoneMuteToggle"},
-          {ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
-           u"KeyboardBacklightToggle"},
-          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP, u"KeyboardBrightnessUp"},
-          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
-           u"KeyboardBrightnessDown"},
-          {ui::KeyboardCode::VKEY_SLEEP, u"Sleep"},
-          {ui::KeyboardCode::VKEY_NEW, u"NewTab"},
-          {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
-           u"PrivacyScreenToggle"},
-          {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"OpenLauncher"},
-          {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
-          {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
-          {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
-          {ui::KeyboardCode::VKEY_SPACE, u"Space"},
-          {ui::KeyboardCode::VKEY_TAB,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB)},
-          {ui::KeyboardCode::VKEY_ESCAPE,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE)},
-          {ui::KeyboardCode::VKEY_RETURN,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_RETURN)},
-          {ui::KeyboardCode::VKEY_BACK,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_BACKSPACE)},
-      }));
-  return *key_display_map;
-}
-
 mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(
     const ui::Accelerator& accelerator) {
   return mojom::StandardAcceleratorProperties::New(
-      accelerator, shortcut_ui::GetKeyDisplay(accelerator.key_code()));
+      accelerator, ash::GetKeyDisplay(accelerator.key_code()));
 }
 
 mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
@@ -453,18 +416,6 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() {
   accelerator_config.emplace(mojom::AcceleratorSource::kAmbient,
                              std::move(non_configurable_accelerators));
   return accelerator_config;
-}
-
-std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
-  // If there's an entry for this key_code in our
-  // map, return that entry's value.
-  auto it = GetKeyDisplayMap().find(key_code);
-  if (it != GetKeyDisplayMap().end()) {
-    return it->second;
-  } else {
-    // Otherwise, get the key_display from a util function.
-    return KeycodeToKeyString(key_code);
-  }
 }
 
 }  // namespace shortcut_ui

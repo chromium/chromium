@@ -11,12 +11,49 @@
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
 namespace {
+
+// This map is for KeyboardCodes that don't return a key_display from
+// `KeycodeToKeyString`. The string values here were arbitrarily chosen
+// based on the VKEY enum name.
+const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
+  static auto key_display_map =
+      base::NoDestructor(base::flat_map<ui::KeyboardCode, std::u16string>({
+          {ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
+           u"MicrophoneMuteToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
+           u"KeyboardBacklightToggle"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP, u"KeyboardBrightnessUp"},
+          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
+           u"KeyboardBrightnessDown"},
+          {ui::KeyboardCode::VKEY_SLEEP, u"Sleep"},
+          {ui::KeyboardCode::VKEY_NEW, u"NewTab"},
+          {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
+           u"PrivacyScreenToggle"},
+          {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"OpenLauncher"},
+          {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
+          {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
+          {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
+          {ui::KeyboardCode::VKEY_SPACE, u"Space"},
+          {ui::KeyboardCode::VKEY_TAB,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB)},
+          {ui::KeyboardCode::VKEY_ESCAPE,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE)},
+          {ui::KeyboardCode::VKEY_RETURN,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_RETURN)},
+          {ui::KeyboardCode::VKEY_BACK,
+           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_BACKSPACE)},
+      }));
+  return *key_display_map;
+}
+
 std::u16string GetTextForModifier(ui::EventFlags modifier) {
   switch (modifier) {
     case ui::EF_SHIFT_DOWN:
@@ -47,7 +84,7 @@ TextAcceleratorPart::TextAcceleratorPart(ui::EventFlags modifier) {
 }
 
 TextAcceleratorPart::TextAcceleratorPart(ui::KeyboardCode key_code) {
-  text = KeycodeToKeyString(key_code);
+  text = GetKeyDisplay(key_code);
   type = mojom::TextAcceleratorPartType::kKey;
 }
 
@@ -461,5 +498,17 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN)})},
       });
   return *nonConfigurableActionsMap;
+}
+
+std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
+  // If there's an entry for this key_code in our
+  // map, return that entry's value.
+  auto it = GetKeyDisplayMap().find(key_code);
+  if (it != GetKeyDisplayMap().end()) {
+    return it->second;
+  } else {
+    // Otherwise, get the key_display from a util function.
+    return KeycodeToKeyString(key_code);
+  }
 }
 }  // namespace ash
