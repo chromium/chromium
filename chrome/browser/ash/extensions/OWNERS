@@ -1,6 +1,5 @@
 file://chrome/browser/chromeos/extensions/OWNERS
 
-per-file default_app*=jshikaram@chromium.org
 per-file default_app*=tsergeant@chromium.org
 
 # For backup
