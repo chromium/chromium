@@ -13,6 +13,22 @@ enum ActionSource {
   kPriceTracking,
 };
 
+// Used to indicate the order bookmarks are sorted in the side panel.
+// Do not reorder, used by profile prefs.
+enum SortOrder {
+  kNewest = 0,
+  kOldest = 1,
+  kAlphabetical = 2,
+  kReverseAlphabetical = 3,
+};
+
+// Used to indicate the order bookmarks are sorted in the side panel.
+// Do not reorder, used by profile prefs.
+enum ViewType {
+  kCompact = 0,
+  kExpanded = 1,
+};
+
 // Used by the Read Later WebUI page (for the side panel) to bootstrap
 // bidirectional communication.
 interface BookmarksPageHandlerFactory {
@@ -58,6 +74,14 @@ interface BookmarksPageHandler {
   OpenBookmark(int64 node_id, int32 parent_folder_depth,
                ui.mojom.ClickModifiers click_modifiers,
                ActionSource source);
+
+  // Called when the sort option has been updated and the profile pref should be
+  // updated.
+  SetSortOrder(SortOrder sort_order);
+
+  // Called when the view option has been updated and the profile pref should be
+  // updated.
+  SetViewType(ViewType view_type);
 
   // Opens a context menu for a bookmark node. The id parameter is internally
   // an int64 but gets passed as a string from the chrome.bookmarks Extension

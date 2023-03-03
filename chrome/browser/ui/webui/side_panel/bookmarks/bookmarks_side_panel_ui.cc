@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -144,6 +145,12 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
+  source->AddInteger(
+      "sortOrder",
+      prefs->GetInteger(bookmarks_webui::prefs::kBookmarksSortOrder));
+  source->AddInteger(
+      "viewType",
+      prefs->GetInteger(bookmarks_webui::prefs::kBookmarksViewType));
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);

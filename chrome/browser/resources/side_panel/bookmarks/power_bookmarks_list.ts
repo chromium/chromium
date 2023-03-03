@@ -39,7 +39,7 @@ import {listenOnce} from '//resources/js/util_ts.js';
 import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ActionSource} from './bookmarks.mojom-webui.js';
+import {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
 import {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
@@ -50,6 +50,11 @@ import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
 function getBookmarkName(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
   return bookmark.title || bookmark.url || '';
+}
+
+export interface SortOption {
+  sortOrder: SortOrder;
+  label: string;
 }
 
 export interface PowerBookmarksListElement {
@@ -82,7 +87,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
       compact_: {
         type: Boolean,
-        value: true,
+        value: () => loadTimeData.getInteger('viewType') === 0,
       },
 
       activeFolderPath_: {
@@ -101,16 +106,28 @@ export class PowerBookmarksListElement extends PolymerElement {
 
       activeSortIndex_: {
         type: Number,
-        value: 0,
+        value: () => loadTimeData.getInteger('sortOrder'),
       },
 
       sortTypes_: {
         type: Array,
         value: () =>
-            [loadTimeData.getString('sortNewest'),
-             loadTimeData.getString('sortOldest'),
-             loadTimeData.getString('sortAlphabetically'),
-             loadTimeData.getString('sortReverseAlphabetically')],
+            [{
+              sortOrder: SortOrder.kNewest,
+              label: loadTimeData.getString('sortNewest'),
+            },
+             {
+               sortOrder: SortOrder.kOldest,
+               label: loadTimeData.getString('sortOldest'),
+             },
+             {
+               sortOrder: SortOrder.kAlphabetical,
+               label: loadTimeData.getString('sortAlphabetically'),
+             },
+             {
+               sortOrder: SortOrder.kReverseAlphabetical,
+               label: loadTimeData.getString('sortReverseAlphabetically'),
+             }],
       },
 
       editing_: {
@@ -164,7 +181,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private compactDescriptions_ = new Map<string, string>();
   private expandedDescriptions_ = new Map<string, string>();
   private activeSortIndex_: number;
-  private sortTypes_: string[];
+  private sortTypes_: SortOption[];
   private searchQuery_: string|undefined;
   private currentUrl_: string|undefined;
   private editing_: boolean;
@@ -405,7 +422,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private getSortLabel_(): string {
-    return this.sortTypes_[this.activeSortIndex_]!;
+    return this.sortTypes_[this.activeSortIndex_]!.label;
   }
 
   private renamingItem_(id: string) {
@@ -439,12 +456,13 @@ export class PowerBookmarksListElement extends PolymerElement {
     return bookmark.id !== loadTimeData.getString('bookmarksBarId');
   }
 
-  private getSortMenuItemLabel_(sortType: string): string {
-    return loadTimeData.getStringF('sortByType', sortType);
+  private getSortMenuItemLabel_(sortType: SortOption): string {
+    return loadTimeData.getStringF('sortByType', sortType.label);
   }
 
-  private sortMenuItemIsSelected_(sortType: string): boolean {
-    return this.sortTypes_[this.activeSortIndex_] === sortType;
+  private sortMenuItemIsSelected_(sortType: SortOption): boolean {
+    return this.sortTypes_[this.activeSortIndex_].sortOrder ===
+        sortType.sortOrder;
   }
 
   /**
@@ -700,11 +718,12 @@ export class PowerBookmarksListElement extends PolymerElement {
         event, this.selectedBookmarks_.slice(), false, false);
   }
 
-  private onSortTypeClicked_(event: DomRepeatEvent<string>) {
+  private onSortTypeClicked_(event: DomRepeatEvent<SortOption>) {
     event.preventDefault();
     event.stopPropagation();
     this.$.sortMenu.close();
     this.activeSortIndex_ = event.model.index;
+    this.bookmarksApi_.setSortOrder(event.model.item.sortOrder);
   }
 
   private onVisualViewClicked_(event: MouseEvent) {
@@ -713,6 +732,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.$.sortMenu.close();
     this.compact_ = false;
     this.$.shownBookmarksIronList.notifyResize();
+    this.bookmarksApi_.setViewType(ViewType.kExpanded);
   }
 
   private onCompactViewClicked_(event: MouseEvent) {
@@ -721,6 +741,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.$.sortMenu.close();
     this.compact_ = true;
     this.$.shownBookmarksIronList.notifyResize();
+    this.bookmarksApi_.setViewType(ViewType.kCompact);
   }
 
   private onAddTabClicked_() {

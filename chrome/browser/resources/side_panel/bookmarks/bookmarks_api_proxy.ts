@@ -5,7 +5,7 @@
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
-import {ActionSource, BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
+import {ActionSource, BookmarksPageHandlerFactory, BookmarksPageHandlerRemote, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
 
 let instance: BookmarksApiProxy|null = null;
 
@@ -34,6 +34,8 @@ export interface BookmarksApiProxy {
       source: ActionSource): void;
   pasteToBookmark(parentId: string, destinationId?: string): Promise<void>;
   renameBookmark(id: string, title: string): void;
+  setSortOrder(sortOrder: SortOrder): void;
+  setViewType(viewType: ViewType): void;
   showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
   showUi(): void;
   undo(): void;
@@ -157,6 +159,14 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   renameBookmark(id: string, title: string) {
     chrome.bookmarks.update(id, {title: title});
+  }
+
+  setSortOrder(sortOrder: SortOrder) {
+    this.handler.setSortOrder(sortOrder);
+  }
+
+  setViewType(viewType: ViewType) {
+    this.handler.setViewType(viewType);
   }
 
   showContextMenu(id: string, x: number, y: number, source: ActionSource) {

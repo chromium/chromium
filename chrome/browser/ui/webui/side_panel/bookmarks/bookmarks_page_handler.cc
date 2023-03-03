@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/commerce/shopping_list_context_menu_controller.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
@@ -29,7 +30,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -265,6 +266,33 @@ void BookmarksPageHandler::OpenBookmark(
       parent_folder_depth > 0 ? BookmarkLaunchLocation::kSidePanelSubfolder
                               : BookmarkLaunchLocation::kSidePanelFolder,
       profile_metrics::GetBrowserProfileType(browser->profile()));
+}
+
+void BookmarksPageHandler::SetSortOrder(
+    side_panel::mojom::SortOrder sort_order) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  PrefService* pref_service = browser->profile()->GetPrefs();
+  if (pref_service) {
+    pref_service->SetInteger(bookmarks_webui::prefs::kBookmarksSortOrder,
+                             static_cast<int>(sort_order));
+  }
+}
+
+void BookmarksPageHandler::SetViewType(side_panel::mojom::ViewType view_type) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+
+  PrefService* pref_service = browser->profile()->GetPrefs();
+  if (pref_service) {
+    pref_service->SetInteger(bookmarks_webui::prefs::kBookmarksViewType,
+                             static_cast<int>(view_type));
+  }
 }
 
 void BookmarksPageHandler::ShowContextMenu(

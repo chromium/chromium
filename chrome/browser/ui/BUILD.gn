@@ -1465,6 +1465,8 @@ static_library("ui") {
       "webui/app_service_internals/app_service_internals_page_handler_impl.h",
       "webui/app_service_internals/app_service_internals_ui.cc",
       "webui/app_service_internals/app_service_internals_ui.h",
+      "webui/bookmarks/bookmark_prefs.cc",
+      "webui/bookmarks/bookmark_prefs.h",
       "webui/bookmarks/bookmarks_message_handler.cc",
       "webui/bookmarks/bookmarks_message_handler.h",
       "webui/bookmarks/bookmarks_ui.cc",

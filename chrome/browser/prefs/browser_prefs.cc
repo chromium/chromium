@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
+#include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
@@ -1492,6 +1493,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   variations::VariationsService::RegisterProfilePrefs(registry);
   video_tutorials::RegisterPrefs(registry);
 #else  // BUILDFLAG(IS_ANDROID)
+  bookmarks_webui::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   BrowserFeaturePromoSnoozeService::RegisterProfilePrefs(registry);
   captions::LiveTranslateController::RegisterProfilePrefs(registry);
