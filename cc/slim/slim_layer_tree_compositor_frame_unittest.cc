@@ -928,6 +928,60 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {
   }
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, NonInvertibleTransform) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto child_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kRed);
+  child_layer->SetTransform(gfx::Transform::MakeScale(0.0f));
+  root_layer->AddChild(child_layer);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  // Check only child layer does not generate a quad.
+  ASSERT_THAT(
+      pass->quad_list,
+      ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, VisibleRect) {
+  auto root_layer = CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(root_layer);
+
+  auto clip_and_scale_layer = Layer::Create();
+  clip_and_scale_layer->SetMasksToBounds(true);
+  // Odd size so halving scaling it by 0.5 results in non-integer rect.
+  clip_and_scale_layer->SetBounds(gfx::Size(49, 49));
+  clip_and_scale_layer->SetTransform(gfx::Transform::MakeScale(0.5f));
+  root_layer->AddChild(clip_and_scale_layer);
+
+  auto clipped_layer = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  clip_and_scale_layer->AddChild(clipped_layer);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      pass->quad_list,
+      ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                        viz::HasRect(gfx::Rect(50, 50)),
+                        viz::HasVisibleRect(gfx::Rect(49, 49)),
+                        viz::HasTransform(gfx::Transform::MakeScale(0.5f))),
+                  AllOf(viz::IsSolidColorQuad(SkColors::kGray),
+                        viz::HasRect(viewport_), viz::HasVisibleRect(viewport_),
+                        viz::HasTransform(gfx::Transform()))));
+  auto* child_quad = pass->quad_list.front();
+  EXPECT_EQ(child_quad->shared_quad_state->quad_layer_rect, gfx::Rect(50, 50));
+  EXPECT_EQ(child_quad->shared_quad_state->visible_quad_layer_rect,
+            gfx::Rect(49, 49));
+  ASSERT_TRUE(child_quad->shared_quad_state->clip_rect);
+  // `clip_rect` in target pass space should be rounded up.
+  EXPECT_EQ(child_quad->shared_quad_state->clip_rect, gfx::Rect(25, 25));
+}
+
 }  // namespace
 
 }  // namespace cc::slim

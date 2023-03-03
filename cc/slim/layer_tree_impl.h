@@ -26,6 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -141,8 +142,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   void Draw(Layer& layer,
             viz::CompositorRenderPass& render_pass,
             FrameData& data,
-            const gfx::Transform& transform_to_target,
-            const gfx::Rect* clip_from_parent);
+            const gfx::Transform& parent_transform_to_target,
+            const gfx::RectF* parent_clip_in_target,
+            const gfx::RectF& clip_in_parent);
 
   const raw_ptr<LayerTreeClient> client_;
   std::unique_ptr<FrameSinkImpl> frame_sink_;

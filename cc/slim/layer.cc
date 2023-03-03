@@ -221,6 +221,7 @@ void Layer::SetTransform(const gfx::Transform& transform) {
     cc_layer()->SetTransform(transform);
     return;
   }
+  CHECK(transform.Is2dTransform());
   if (transform_ == transform) {
     return;
   }
@@ -370,7 +371,7 @@ bool Layer::HasDrawableContent() const {
   return is_drawable_;
 }
 
-gfx::Transform Layer::ComputeTransformToParent() {
+gfx::Transform Layer::ComputeTransformToParent() const {
   // Layer transform is:
   // position x transform_origin x transform x -transform_origin
   gfx::Transform transform =
@@ -383,10 +384,30 @@ gfx::Transform Layer::ComputeTransformToParent() {
   return transform;
 }
 
+absl::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
+  // TODO(crbug.com/1408128): Consider caching this result since GetInverse
+  // may be expensive.
+  gfx::Transform inverse_transform;
+  if (!transform_.GetInverse(&inverse_transform)) {
+    return absl::nullopt;
+  }
+  // TransformFromParent is:
+  // transform_origin x inverse_transform x -transform_origin x -position
+  gfx::Transform from_parent;
+  from_parent.Translate3d(transform_origin_.x(), transform_origin_.y(),
+                          transform_origin_.z());
+  from_parent.PreConcat(inverse_transform);
+  from_parent.Translate3d(-transform_origin_.x(), -transform_origin_.y(),
+                          -transform_origin_.z());
+  from_parent.Translate(-position_.x(), -position_.y());
+  return from_parent;
+}
+
 void Layer::AppendQuads(viz::CompositorRenderPass& render_pass,
                         FrameData& data,
                         const gfx::Transform& transform,
-                        const gfx::Rect* clip) {}
+                        const gfx::Rect* clip_in_target,
+                        const gfx::Rect& visible_rect) {}
 
 void Layer::NotifyTreeChanged() {
   if (cc_layer()) {
@@ -407,17 +428,17 @@ void Layer::NotifyPropertyChanged() {
 viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
     viz::CompositorRenderPass& render_pass,
     const gfx::Transform& transform,
-    const gfx::Rect* clip) {
+    const gfx::Rect* clip_in_target,
+    const gfx::Rect& visible_rect) {
   viz::SharedQuadState* quad_state =
       render_pass.CreateAndAppendSharedQuadState();
-  const gfx::Rect rect{bounds()};
+  const gfx::Rect layer_rect{bounds()};
+  DCHECK(layer_rect.Contains(visible_rect));
   absl::optional<gfx::Rect> clip_opt;
-  if (clip) {
-    clip_opt = *clip;
+  if (clip_in_target) {
+    clip_opt = *clip_in_target;
   }
-  // TODO(crbug.com/1408128): Set visible_layer_rect properly.
-  quad_state->SetAll(transform, /*layer_rect=*/rect,
-                     /*visible_layer_rect=*/rect, gfx::MaskFilterInfo(),
+  quad_state->SetAll(transform, layer_rect, visible_rect, gfx::MaskFilterInfo(),
                      std::move(clip_opt), contents_opaque(), opacity(),
                      SkBlendMode::kSrcOver, 0);
   return quad_state;

@@ -22,6 +22,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -220,7 +221,7 @@ bool LayerTreeImpl::BeginFrame(
   // need for another frame.
   needs_draw_ = false;
 
-  if (!root_) {
+  if (!root_ || device_viewport_rect_.IsEmpty()) {
     UpdateNeedsBeginFrame();
     return false;
   }
@@ -367,7 +368,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
   // * Support multiple render passes (non-axis aligned clip, filters)
   // * Damage tracking
   // * Occlusion culling
-  // * Visible rect (ie clip) on quads
   // * Ensure entire viewport is covered by quads.
   TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
 
@@ -408,8 +408,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
 
   FrameData frame_data(out_hit_test_region_list.regions);
   Draw(*root_, *render_pass, frame_data,
-       /*transform_to_target=*/gfx::Transform(),
-       /*clip_from_parent=*/nullptr);
+       /*parent_transform_to_target=*/gfx::Transform(),
+       /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_));
 
   render_pass->copy_requests = std::move(copy_requests_for_next_frame_);
   copy_requests_for_next_frame_.clear();
@@ -441,40 +441,73 @@ void LayerTreeImpl::GenerateCompositorFrame(
 void LayerTreeImpl::Draw(Layer& layer,
                          viz::CompositorRenderPass& parent_pass,
                          FrameData& data,
-                         const gfx::Transform& transform_to_target,
-                         const gfx::Rect* clip_from_parent) {
+                         const gfx::Transform& parent_transform_to_target,
+                         const gfx::RectF* parent_clip_in_target,
+                         const gfx::RectF& clip_in_parent) {
+  DCHECK(!clip_in_parent.IsEmpty());
   if (layer.hide_layer_and_subtree()) {
     return;
   }
 
-  gfx::Transform transform_to_parent = layer.ComputeTransformToParent();
-
-  // New transform is: parent transform x layer transform.
-  gfx::Transform new_transform_to_target = transform_to_target;
-  new_transform_to_target.PreConcat(transform_to_parent);
-
-  bool use_new_clip = false;
-  gfx::Rect new_clip;
-  // Drop non-axis aligned clip instead of using new render pass.
-  // TODO(crbug.com/1408128): Clip in layer space (visible rect) for clip
-  // that is not an exact integer.
-  if (layer.masks_to_bounds() &&
-      new_transform_to_target.Preserves2dAxisAlignment()) {
-    new_clip.set_size(layer.bounds());
-    new_clip = new_transform_to_target.MapRect(new_clip);
-    if (clip_from_parent) {
-      new_clip.Intersect(*clip_from_parent);
-    }
-    use_new_clip = true;
+  absl::optional<gfx::Transform> transform_from_parent =
+      layer.ComputeTransformFromParent();
+  // If a 2d transform isn't invertible, then it must map the whole 2d space to
+  // a single line or pointer, neither is visible.
+  if (!transform_from_parent) {
+    DLOG(WARNING) << "Skipping layer subtree from non-invertible transform.";
+    return;
   }
-  const gfx::Rect* clip = use_new_clip ? &new_clip : clip_from_parent;
+
+  // Compute new clip in layer space.
+  gfx::RectF clip_in_layer = transform_from_parent->MapRect(clip_in_parent);
+  if (layer.masks_to_bounds()) {
+    clip_in_layer.Intersect(
+        gfx::RectF(layer.bounds().width(), layer.bounds().height()));
+  }
+  if (clip_in_layer.IsEmpty()) {
+    return;
+  }
+
+  // New to target transform is: parent_to_target x layer_to_parent.
+  gfx::Transform transform_to_target = parent_transform_to_target;
+  transform_to_target.PreConcat(layer.ComputeTransformToParent());
+
+  // Compute new clip in target space.
+  gfx::RectF new_clip_in_target;
+  const gfx::RectF* clip_in_target = parent_clip_in_target;
+  // Dropping non-axis aligned clip instead of using new render pass until
+  // non-root render pass is implemented.
+  if (layer.masks_to_bounds() &&
+      transform_to_target.Preserves2dAxisAlignment()) {
+    new_clip_in_target.set_width(layer.bounds().width());
+    new_clip_in_target.set_height(layer.bounds().height());
+    new_clip_in_target = transform_to_target.MapRect(new_clip_in_target);
+    if (parent_clip_in_target) {
+      new_clip_in_target.Intersect(*parent_clip_in_target);
+    }
+    if (!new_clip_in_target.Contains(gfx::RectF(parent_pass.output_rect))) {
+      clip_in_target = &new_clip_in_target;
+    }
+  }
 
   for (auto& child : base::Reversed(layer.children())) {
-    Draw(*child, parent_pass, data, new_transform_to_target, clip);
+    Draw(*child, parent_pass, data, transform_to_target, clip_in_target,
+         clip_in_layer);
   }
 
-  if (!layer.bounds().IsEmpty() && layer.HasDrawableContent()) {
-    layer.AppendQuads(parent_pass, data, new_transform_to_target, clip);
+  gfx::Rect integer_clip_in_target;
+  if (clip_in_target) {
+    integer_clip_in_target = gfx::ToEnclosingRect(*clip_in_target);
+  }
+  // Viz expects the visible rect to be a subrect of layer_rect (ie `bounds()`).
+  // So intersect here unconditionally in case this layer is not
+  // `masks_to_bounds()`.
+  clip_in_layer.Intersect(
+      gfx::RectF(layer.bounds().width(), layer.bounds().height()));
+  if (!clip_in_layer.IsEmpty() && layer.HasDrawableContent()) {
+    layer.AppendQuads(parent_pass, data, transform_to_target,
+                      clip_in_target ? &integer_clip_in_target : nullptr,
+                      /*visible_rect=*/gfx::ToEnclosingRect(clip_in_layer));
   }
 }
 

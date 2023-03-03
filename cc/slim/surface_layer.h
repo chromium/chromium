@@ -57,7 +57,8 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
   void AppendQuads(viz::CompositorRenderPass& render_pass,
                    FrameData& data,
                    const gfx::Transform& transform,
-                   const gfx::Rect* clip) override;
+                   const gfx::Rect* clip_in_target,
+                   const gfx::Rect& visible_rect) override;
 
   bool stretch_content_to_fill_bounds_ = false;
   viz::SurfaceRange surface_range_;

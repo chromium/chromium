@@ -46,7 +46,8 @@ class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
   void AppendQuads(viz::CompositorRenderPass& render_pass,
                    FrameData& data,
                    const gfx::Transform& transform,
-                   const gfx::Rect* clip) override;
+                   const gfx::Rect* clip_in_target,
+                   const gfx::Rect& visible_rect) override;
 
  private:
   explicit NinePatchLayer(scoped_refptr<cc::NinePatchLayer> cc_layer);

@@ -29,7 +29,8 @@ class COMPONENT_EXPORT(CC_SLIM) SolidColorLayer : public Layer {
   void AppendQuads(viz::CompositorRenderPass& render_pass,
                    FrameData& data,
                    const gfx::Transform& transform,
-                   const gfx::Rect* clip) override;
+                   const gfx::Rect* clip_in_target,
+                   const gfx::Rect& visible_rect) override;
 
   cc::SolidColorLayer* cc_layer() const;
 };

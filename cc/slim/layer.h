@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/frame_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -115,6 +116,10 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
 
   // Set or get the transform to be used when compositing this layer into its
   // target. The transform is inherited by this layers children.
+  // Slim compositor implementation only supports transforms where
+  // `Is2dTransform` is true and has CHECK for it. This includes scale,
+  // translate, and shear in the x-y plane, as well as rotation about the z
+  // axis.
   void SetTransform(const gfx::Transform& transform);
   const gfx::Transform& transform() const;
 
@@ -190,7 +195,8 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   virtual ~Layer();
 
   // Called by LayerTree.
-  gfx::Transform ComputeTransformToParent();
+  gfx::Transform ComputeTransformToParent() const;
+  absl::optional<gfx::Transform> ComputeTransformFromParent() const;
 
   void UpdateDrawsContent();
   virtual bool HasDrawableContent() const;
@@ -198,14 +204,16 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   virtual void AppendQuads(viz::CompositorRenderPass& render_pass,
                            FrameData& data,
                            const gfx::Transform& transform,
-                           const gfx::Rect* clip);
+                           const gfx::Rect* clip_in_target,
+                           const gfx::Rect& visible_rect);
 
   void NotifyTreeChanged();
   void NotifyPropertyChanged();
   virtual viz::SharedQuadState* CreateAndAppendSharedQuadState(
       viz::CompositorRenderPass& render_pass,
       const gfx::Transform& transform,
-      const gfx::Rect* clip);
+      const gfx::Rect* clip_in_target,
+      const gfx::Rect& visible_rect);
 
   const scoped_refptr<cc::Layer> cc_layer_;
 

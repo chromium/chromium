@@ -154,9 +154,10 @@ void SurfaceLayer::SetSurfaceRange(const viz::SurfaceRange& surface_range) {
 void SurfaceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                                FrameData& data,
                                const gfx::Transform& transform,
-                               const gfx::Rect* clip) {
-  viz::SharedQuadState* quad_state =
-      CreateAndAppendSharedQuadState(render_pass, transform, clip);
+                               const gfx::Rect* clip_in_target,
+                               const gfx::Rect& visible_rect) {
+  viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
+      render_pass, transform, clip_in_target, visible_rect);
 
   if (surface_range_.IsValid()) {
     auto* quad = render_pass.CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
