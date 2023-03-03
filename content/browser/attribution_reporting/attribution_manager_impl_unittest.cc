@@ -74,6 +74,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #endif
 
@@ -1032,6 +1033,7 @@ TEST_F(AttributionManagerImplTest, ClearDataFromBrowserOnly) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
 TEST_F(AttributionManagerImplTest, ClearDataFromBrowserAndOs) {
   auto os_level_manager = std::make_unique<MockAttributionOsLevelManager>();
   auto* os_level_manager_ptr = os_level_manager.get();
@@ -1096,7 +1098,71 @@ TEST_F(AttributionManagerImplTest, ClearAllDataFromBrowserAndOs) {
 
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
-#endif
+
+TEST_F(AttributionManagerImplTest, HandleOsSource) {
+  const GURL kRegistrationUrl1("https://r1.test/x");
+  const GURL kRegistrationUrl2("https://r2.test/y");
+  const GURL kRegistrationUrl3;  // opaque
+  const GURL kRegistrationUrl4("https://r4.test/y");
+
+  const auto kTopLevelOrigin1 = url::Origin::Create(GURL("https://o1.test"));
+  const auto kTopLevelOrigin2 = url::Origin::Create(GURL("https://o2.test"));
+  const auto kTopLevelOrigin3 = url::Origin::Create(GURL("https://o3.test"));
+  const auto kTopLevelOrigin4 = url::Origin::Create(GURL("https://o4.test"));
+
+  auto os_level_manager = std::make_unique<MockAttributionOsLevelManager>();
+  auto* os_level_manager_ptr = os_level_manager.get();
+  OverrideOsLevelManager(std::move(os_level_manager));
+
+  cookie_checker_->AddOriginWithDebugCookieSet(
+      url::Origin::Create(kRegistrationUrl1));
+
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*os_level_manager_ptr,
+                RegisterAttributionSource(kRegistrationUrl1, kTopLevelOrigin1,
+                                          /*is_debug_key_allowed=*/true, _));
+
+    EXPECT_CALL(*os_level_manager_ptr,
+                RegisterAttributionSource(kRegistrationUrl2, kTopLevelOrigin2,
+                                          /*is_debug_key_allowed=*/false, _));
+  }
+
+  // Dropped due to the URL being opaque.
+  EXPECT_CALL(
+      *os_level_manager_ptr,
+      RegisterAttributionSource(kRegistrationUrl3, kTopLevelOrigin3, _, _))
+      .Times(0);
+
+  // Prohibited by policy below.
+  EXPECT_CALL(
+      *os_level_manager_ptr,
+      RegisterAttributionSource(kRegistrationUrl4, kTopLevelOrigin4, _, _))
+      .Times(0);
+
+  attribution_manager_->HandleOsSource(kRegistrationUrl1, kTopLevelOrigin1,
+                                       AttributionInputEvent(), kFrameId);
+  attribution_manager_->HandleOsSource(kRegistrationUrl2, kTopLevelOrigin2,
+                                       AttributionInputEvent(), kFrameId);
+  attribution_manager_->HandleOsSource(kRegistrationUrl3, kTopLevelOrigin3,
+                                       AttributionInputEvent(), kFrameId);
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _, ContentBrowserClient::AttributionReportingOperation::kSource, _,
+          Pointee(kTopLevelOrigin4), IsNull(),
+          Pointee(url::Origin::Create(kRegistrationUrl4))))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  attribution_manager_->HandleOsSource(kRegistrationUrl4, kTopLevelOrigin4,
+                                       AttributionInputEvent(), kFrameId);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   Checkpoint checkpoint;

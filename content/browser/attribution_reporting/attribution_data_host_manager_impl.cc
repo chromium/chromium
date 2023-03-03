@@ -17,6 +17,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -38,6 +40,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#endif
 
 namespace content {
 
@@ -137,6 +143,8 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
 
   void IncrementNumDataRegistered() { ++num_data_registered_; }
+
+  AttributionInputEvent input_event() const { return input_event_; }
 
  private:
   // Top-level origin the data host was created in.
@@ -456,25 +464,34 @@ void AttributionDataHostManagerImpl::NotifyNavigationSuccess(
   MaybeOnBeaconRegistrationsFinished(beacon_id);
 }
 
+const AttributionDataHostManagerImpl::ReceiverContext*
+AttributionDataHostManagerImpl::GetReceiverContextForSource() {
+  ReceiverContext& context = receivers_.current_context();
+
+  if (context.registration_type() == RegistrationType::kTrigger) {
+    mojo::ReportBadMessage("AttributionDataHost: Not eligible for sources.");
+    return nullptr;
+  }
+
+  context.set_registration_type(RegistrationType::kSource);
+  context.IncrementNumDataRegistered();
+
+  return &context;
+}
+
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration data) {
   // This is validated by the Mojo typemapping.
   DCHECK(reporting_origin.IsValid());
 
-  ReceiverContext& context = receivers_.current_context();
-
-  if (context.registration_type() == RegistrationType::kTrigger) {
-    mojo::ReportBadMessage("AttributionDataHost: Not eligible for sources.");
+  const ReceiverContext* context = GetReceiverContextForSource();
+  if (!context) {
     return;
   }
 
-  context.set_registration_type(RegistrationType::kSource);
-
-  context.IncrementNumDataRegistered();
-
   auto source_type = SourceType::kEvent;
-  if (auto nav_type = context.nav_type()) {
+  if (auto nav_type = context->nav_type()) {
     source_type = SourceType::kNavigation;
 
     base::UmaHistogramEnumeration(
@@ -484,9 +501,9 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
                      /*source_time=*/base::Time::Now(),
-                     /*source_origin=*/context.context_origin(), source_type,
-                     context.is_within_fenced_frame()),
-      context.render_frame_id());
+                     /*source_origin=*/context->context_origin(), source_type,
+                     context->is_within_fenced_frame()),
+      context->render_frame_id());
 }
 
 void AttributionDataHostManagerImpl::TriggerDataAvailable(
@@ -554,6 +571,20 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     SetTriggerTimer(delay);
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void AttributionDataHostManagerImpl::OsSourceDataAvailable(
+    const GURL& registration_url) {
+  const ReceiverContext* context = GetReceiverContextForSource();
+  if (!context) {
+    return;
+  }
+
+  attribution_manager_->HandleOsSource(
+      registration_url, context->context_origin(), context->input_event(),
+      context->render_frame_id());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void AttributionDataHostManagerImpl::SetTriggerTimer(base::TimeDelta delay) {
   DCHECK(!delayed_triggers_.empty());

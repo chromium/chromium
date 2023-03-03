@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -127,7 +129,11 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
       absl::optional<network::TriggerAttestation> attestation) override;
+#if BUILDFLAG(IS_ANDROID)
+  void OsSourceDataAvailable(const GURL& registration_url) override;
+#endif
 
+  const ReceiverContext* GetReceiverContextForSource();
   void OnReceiverDisconnected();
   void OnSourceEligibleDataHostFinished(base::TimeTicks register_time);
 

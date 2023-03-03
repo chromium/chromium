@@ -10,6 +10,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -120,6 +122,10 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     trigger_data_.push_back(std::move(data));
     trigger_attestation_.push_back(std::move(attestation));
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void OsSourceDataAvailable(const KURL& registration_url) override {}
+#endif
 
   Vector<attribution_reporting::SourceRegistration> source_data_;
 

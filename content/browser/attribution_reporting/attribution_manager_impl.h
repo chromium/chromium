@@ -159,10 +159,16 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   attribution_reporting::mojom::OsSupport GetOsSupport() override;
 
 #if BUILDFLAG(IS_ANDROID)
+  void HandleOsSource(const GURL& registration_url,
+                      const url::Origin& top_level_origin,
+                      AttributionInputEvent,
+                      GlobalRenderFrameHostId render_frame_id) override;
+
   AttributionOsLevelManager* GetOsLevelManager() {
     return attribution_os_level_manager_.get();
   }
-#endif
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   friend class AttributionManagerImplTest;
@@ -250,7 +256,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 #if BUILDFLAG(IS_ANDROID)
   void OverrideOsLevelManagerForTesting(
       std::unique_ptr<AttributionOsLevelManager>);
-#endif
+  void ProcessNextOsEvent();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;
@@ -300,7 +307,10 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AttributionOsLevelManager> attribution_os_level_manager_;
-#endif
+
+  struct OsRegistration;
+  base::circular_deque<OsRegistration> pending_os_events_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };

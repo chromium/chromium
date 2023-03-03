@@ -14,6 +14,8 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
@@ -29,6 +31,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_input_event.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+#endif
 
 namespace content {
 
@@ -104,6 +112,16 @@ class MockAttributionManager : public AttributionManager {
               GetOsSupport,
               (),
               (override));
+
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void,
+              HandleOsSource,
+              (const GURL& registration_url,
+               const url::Origin& top_level_origin,
+               AttributionInputEvent,
+               GlobalRenderFrameHostId),
+              (override));
+#endif
 
   void AddObserver(AttributionObserver*) override;
   void RemoveObserver(AttributionObserver*) override;

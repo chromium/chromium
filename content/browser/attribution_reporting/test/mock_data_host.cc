@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -65,6 +67,10 @@ void MockDataHost::TriggerDataAvailable(
   }
   wait_loop_.Quit();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void MockDataHost::OsSourceDataAvailable(const GURL& registration_url) {}
+#endif
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {

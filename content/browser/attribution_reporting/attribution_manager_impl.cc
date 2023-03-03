@@ -77,8 +77,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 #endif
@@ -1140,11 +1142,95 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
 void AttributionManagerImpl::OverrideOsLevelManagerForTesting(
     std::unique_ptr<AttributionOsLevelManager> os_level_manager) {
   attribution_os_level_manager_ = std::move(os_level_manager);
 }
-#endif
+
+struct AttributionManagerImpl::OsRegistration {
+  GURL registration_url;
+  url::Origin top_level_origin;
+  AttributionInputEvent input_event;
+};
+
+void AttributionManagerImpl::HandleOsSource(
+    const GURL& registration_url,
+    const url::Origin& top_level_origin,
+    AttributionInputEvent input_event,
+    GlobalRenderFrameHostId render_frame_id) {
+  if (!attribution_os_level_manager_) {
+    return;
+  }
+
+  const auto registration_origin = url::Origin::Create(registration_url);
+  if (registration_origin.opaque()) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1420704): Support separate behavior on webview for
+  // allowing these.
+  if (!IsOperationAllowed(
+          storage_partition_.get(),
+          ContentBrowserClient::AttributionReportingOperation::kSource,
+          RenderFrameHost::FromID(render_frame_id),
+          /*source_origin=*/&top_level_origin,
+          /*destination_origin=*/nullptr,
+          /*reporting_origin=*/&registration_origin)) {
+    return;
+  }
+
+  const size_t size_before_push = pending_os_events_.size();
+
+  // Avoid unbounded memory growth with adversarial input.
+  bool allowed = size_before_push < max_pending_events_;
+  base::UmaHistogramBoolean("Conversions.EnqueueOsEventAllowed", allowed);
+  if (!allowed) {
+    return;
+  }
+
+  pending_os_events_.push_back(OsRegistration{
+      .registration_url = registration_url,
+      .top_level_origin = top_level_origin,
+      .input_event = std::move(input_event),
+  });
+
+  // Only process the new event if it is the only one in the queue. Otherwise,
+  // there's already an async cookie-check in progress.
+  if (size_before_push == 0) {
+    ProcessNextOsEvent();
+  }
+}
+
+void AttributionManagerImpl::ProcessNextOsEvent() {
+  DCHECK(!pending_os_events_.empty());
+
+  cookie_checker_->IsDebugCookieSet(
+      url::Origin::Create(pending_os_events_.front().registration_url),
+      base::BindOnce(
+          [](base::WeakPtr<AttributionManagerImpl> manager,
+             bool is_debug_key_allowed) {
+            if (!manager) {
+              return;
+            }
+
+            DCHECK(!manager->pending_os_events_.empty());
+
+            const auto& source = manager->pending_os_events_.front();
+
+            manager->attribution_os_level_manager_->RegisterAttributionSource(
+                source.registration_url, source.top_level_origin,
+                is_debug_key_allowed, source.input_event);
+
+            manager->pending_os_events_.pop_front();
+            if (!manager->pending_os_events_.empty()) {
+              manager->ProcessNextOsEvent();
+            }
+          },
+          weak_factory_.GetWeakPtr()));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 attribution_reporting::mojom::OsSupport AttributionManagerImpl::GetOsSupport() {
 #if BUILDFLAG(IS_ANDROID)

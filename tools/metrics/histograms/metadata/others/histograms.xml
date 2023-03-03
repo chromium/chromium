@@ -3604,6 +3604,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.EnqueueOsEventAllowed" enum="BooleanAllowed"
+    expires_after="M117">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often OS sources and triggers are allowed to be enqueued for
+    processing in the attribution manager. If the queue reaches a maximum size,
+    additional OS sources and triggers are dropped. Events are enqueued while
+    waiting for a previous debug-cookie check to complete. Only recorded on
+    Android.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ExtraReportDelay2" units="ms" expires_after="M117">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

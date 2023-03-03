@@ -23,6 +23,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -1870,6 +1872,25 @@ TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
+  const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
+  const GURL kRegistrationUrl("https://b.test/x");
+
+  EXPECT_CALL(mock_manager_,
+              HandleOsSource(kRegistrationUrl, *kTopLevelOrigin, _, kFrameId));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), kTopLevelOrigin,
+      /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
+      kFrameId);
+
+  data_host_remote->OsSourceDataAvailable(kRegistrationUrl);
+  data_host_remote.FlushForTesting();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace content
