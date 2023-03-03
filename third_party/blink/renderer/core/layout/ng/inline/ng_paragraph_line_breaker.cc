@@ -130,7 +130,13 @@ absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
   // Bisecting can't balance if there were floating objects, block-in-inline, or
   // forced line breaks.
   for (const NGInlineItem& item : items_data.items) {
-    if (item.IsForcedLineBreak() || item.Type() == NGInlineItem::kFloating ||
+    if (item.IsForcedLineBreak() ||
+        // Floats/exclusions require computing line heights, which is currently
+        // skipped during the bisect. See `LineBreakResults`.
+        item.Type() == NGInlineItem::kFloating ||
+        item.Type() == NGInlineItem::kInitialLetterBox ||
+        // Block-in-inline is similar to atomic inline for NG. It requires to
+        // bisect block-in-inline, before it and after it separately.
         item.Type() == NGInlineItem::kBlockInInline) {
       return absl::nullopt;
     }

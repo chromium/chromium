@@ -916,6 +916,7 @@ blink_core_tests_layout = [
   "ng/inline/ng_inline_node_test.cc",
   "ng/inline/ng_line_breaker_test.cc",
   "ng/inline/ng_offset_mapping_test.cc",
+  "ng/inline/ng_paragraph_line_breaker_test.cc",
   "ng/inline/ng_physical_line_box_fragment_test.cc",
   "ng/layout_ng_fieldset_test.cc",
   "ng/list/layout_ng_list_item_test.cc",
