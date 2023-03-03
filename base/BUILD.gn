@@ -1399,6 +1399,7 @@ component("base") {
       "fuchsia/file_utils.h",
       "fuchsia/filtered_service_directory.cc",
       "fuchsia/filtered_service_directory.h",
+      "fuchsia/fuchsia_component_connect.h",
       "fuchsia/fuchsia_logging.cc",
       "fuchsia/fuchsia_logging.h",
       "fuchsia/intl_profile_watcher.cc",
@@ -1467,13 +1468,16 @@ component("base") {
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner:fuchsia.component.runner_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl:fuchsia.intl_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_cpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.process.lifecycle:fuchsia.process.lifecycle_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/async",
+      "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_wire",
       "//third_party/fuchsia-sdk/sdk/pkg/sync",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/syslog_structured_backend",
@@ -1484,6 +1488,7 @@ component("base") {
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo:fuchsia.buildinfo_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hwinfo:fuchsia.hwinfo_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_cpp_hlcpp_conversion",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media:fuchsia.media_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/async-default",
@@ -2943,6 +2948,7 @@ if (is_fuchsia) {
     sources = [ "fuchsia/test.test-fidl" ]
   }
 
+  # TODO(crbug.com/1416553): remove this once all users are migrated to natural bindings.
   source_set("test_interface_impl") {
     testonly = true
     sources = [
@@ -2957,6 +2963,23 @@ if (is_fuchsia) {
       ":testfidl_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+  }
+
+  source_set("test_interface_natural_impl") {
+    testonly = true
+    public = [ "fuchsia/test_interface_natural_impl.h" ]
+    sources = [ "fuchsia/test_interface_natural_impl.cc" ]
+    deps = [
+      ":base",
+      "//testing/gtest",
+      "//third_party/fuchsia-sdk/sdk/pkg/async",
+    ]
+    public_deps = [
+      ":testfidl_cpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_cpp_common",
+      "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_wire",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
 
@@ -3823,6 +3846,8 @@ test("base_unittests") {
       "fuchsia/fuchsia_logging_unittest.cc",
       "fuchsia/intl_profile_watcher_unittest.cc",
       "fuchsia/mem_buffer_util_unittest.cc",
+      "fuchsia/scoped_natural_service_binding_unittest.cc",
+      "fuchsia/scoped_natural_service_publisher_unittest.cc",
       "fuchsia/scoped_service_binding_unittest.cc",
       "fuchsia/scoped_service_publisher_unittest.cc",
       "fuchsia/service_provider_impl_unittest.cc",
@@ -3836,16 +3861,18 @@ test("base_unittests") {
 
     deps += [
       ":test_interface_impl",
+      ":test_interface_natural_impl",
       ":test_log_listener_safe",
-      ":testfidl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo:fuchsia.buildinfo_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hwinfo:fuchsia.hwinfo_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl:fuchsia.intl_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger:fuchsia.logger_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_cpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys:fuchsia.sys_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/async",
       "//third_party/fuchsia-sdk/sdk/pkg/async-default",
+      "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]

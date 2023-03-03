@@ -5,6 +5,8 @@
 #ifndef BASE_FUCHSIA_PROCESS_CONTEXT_H_
 #define BASE_FUCHSIA_PROCESS_CONTEXT_H_
 
+#include <fidl/fuchsia.io/cpp/fidl.h>
+
 #include <memory>
 
 #include "base/base_export.h"
@@ -17,6 +19,13 @@ namespace base {
 
 // Returns default sys::ComponentContext for the current process.
 BASE_EXPORT sys::ComponentContext* ComponentContextForProcess();
+
+// Returns the ClientEnd for the default service directory in this process
+// `ComponentContextForProcess()->svc()`. This can be passed to
+// `component::ConnectAt` in order to connect a client to a service in this
+// directory.
+BASE_EXPORT fidl::UnownedClientEnd<fuchsia_io::Directory>
+BorrowIncomingServiceDirectoryForProcess();
 
 // Replaces the default sys::ComponentContext for the current process, and
 // returns the previously-active one.

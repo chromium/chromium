@@ -255,7 +255,10 @@ static_library("test_support") {
   }
 
   if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_cpp_hlcpp_conversion",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
     public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp" ]
     sources += [
       "../fuchsia/test_component_context_for_process.cc",

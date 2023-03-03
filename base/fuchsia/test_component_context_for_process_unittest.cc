@@ -4,12 +4,17 @@
 
 #include "base/fuchsia/test_component_context_for_process.h"
 
+#include <fidl/fuchsia.sys/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
+#include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
+#include "base/fuchsia/test_interface_impl.h"
+#include "base/fuchsia/test_interface_natural_impl.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/testfidl/cpp/fidl.h"
@@ -17,49 +22,43 @@
 
 namespace base {
 
-class TestComponentContextForProcessTest : public testing::Test,
-                                           public testfidl::TestInterface {
+class TestComponentContextForProcessTest : public testing::Test {
  public:
   TestComponentContextForProcessTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
-  bool HasTestInterface() {
-    return VerifyTestInterface(ComponentContextForProcess()
-                                   ->svc()
-                                   ->Connect<testfidl::TestInterface>());
+  bool CanConnectToTestInterfaceServiceHlcpp() {
+    auto test_interface_ptr =
+        ComponentContextForProcess()->svc()->Connect<testfidl::TestInterface>();
+    return VerifyTestInterface(test_interface_ptr) == ZX_OK;
   }
 
-  bool HasPublishedTestInterface() {
-    return VerifyTestInterface(
-        test_context_.published_services()->Connect<testfidl::TestInterface>());
+  bool CanConnectToTestInterfaceServiceNatural() {
+    auto client_end =
+        fuchsia_component::Connect<base_testfidl::TestInterface>();
+    EXPECT_TRUE(client_end.is_ok()) << client_end.status_string();
+    fidl::Client client(std::move(client_end.value()),
+                        async_get_default_dispatcher());
+    return VerifyTestInterface(client) == ZX_OK;
   }
 
-  // testfidl::TestInterface implementation.
-  void Add(int32_t a, int32_t b, AddCallback callback) override {
-    callback(a + b);
+  bool HasPublishedTestInterfaceHlcpp() {
+    auto test_interface_ptr =
+        test_context_.published_services()->Connect<testfidl::TestInterface>();
+    return VerifyTestInterface(test_interface_ptr) == ZX_OK;
+  }
+
+  bool HasPublishedTestInterfaceNatural() {
+    auto client_end =
+        fuchsia_component::ConnectAt<base_testfidl::TestInterface>(
+            test_context_.published_services_natural());
+    EXPECT_TRUE(client_end.is_ok()) << client_end.status_string();
+    fidl::Client client(std::move(client_end.value()),
+                        async_get_default_dispatcher());
+    return VerifyTestInterface(client) == ZX_OK;
   }
 
  protected:
-  bool VerifyTestInterface(testfidl::TestInterfacePtr test_interface) {
-    bool have_interface = false;
-    RunLoop wait_loop;
-    test_interface.set_error_handler([quit_loop = wait_loop.QuitClosure(),
-                                      &have_interface](zx_status_t status) {
-      ZX_CHECK(status == ZX_ERR_PEER_CLOSED, status);
-      have_interface = false;
-      quit_loop.Run();
-    });
-    test_interface->Add(
-        45, 6,
-        [quit_loop = wait_loop.QuitClosure(), &have_interface](int32_t result) {
-          EXPECT_EQ(result, 45 + 6);
-          have_interface = true;
-          quit_loop.Run();
-        });
-    wait_loop.Run();
-    return have_interface;
-  }
-
   const base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::TestComponentContextForProcess test_context_;
@@ -67,36 +66,41 @@ class TestComponentContextForProcessTest : public testing::Test,
 
 TEST_F(TestComponentContextForProcessTest, NoServices) {
   // No services should be available.
-  EXPECT_FALSE(HasTestInterface());
+  EXPECT_FALSE(CanConnectToTestInterfaceServiceHlcpp());
+  EXPECT_FALSE(CanConnectToTestInterfaceServiceNatural());
 }
 
 TEST_F(TestComponentContextForProcessTest, InjectTestInterface) {
+  TestInterfaceImpl test_interface_impl;
   // Publish a fake TestInterface for the process' ComponentContext to expose.
   base::ScopedServiceBinding<testfidl::TestInterface> service_binding(
-      test_context_.additional_services(), this);
+      test_context_.additional_services(), &test_interface_impl);
 
   // Verify that the TestInterface is accessible & usable.
-  EXPECT_TRUE(HasTestInterface());
+  EXPECT_TRUE(CanConnectToTestInterfaceServiceHlcpp());
+  EXPECT_TRUE(CanConnectToTestInterfaceServiceNatural());
 }
 
 TEST_F(TestComponentContextForProcessTest, PublishTestInterface) {
+  TestInterfaceImpl test_interface_impl;
   // Publish TestInterface to the process' outgoing-directory.
   base::ScopedServiceBinding<testfidl::TestInterface> service_binding(
-      ComponentContextForProcess()->outgoing().get(), this);
+      ComponentContextForProcess()->outgoing().get(), &test_interface_impl);
 
   // Attempt to use the TestInterface from the outgoing-directory.
-  EXPECT_TRUE(HasPublishedTestInterface());
+  EXPECT_TRUE(HasPublishedTestInterfaceHlcpp());
+  EXPECT_TRUE(HasPublishedTestInterfaceNatural());
 }
 
 TEST_F(TestComponentContextForProcessTest, ProvideSystemService) {
-  // Expose fuchsia.sys.Loader through the ComponentContext.
+  // Expose fuchsia.sys.Loader through the TestComponentContextForProcess.
   // This service was chosen because it is one of the ambient services in
-  // Fuchsia's hermetic environment for component tests (see
-  // https://fuchsia.dev/fuchsia-src/concepts/testing/test_component#ambient_services).
+  // Fuchsia's hermetic environment for component tests.
   const base::StringPiece kServiceNames[] = {::fuchsia::sys::Loader::Name_};
   test_context_.AddServices(kServiceNames);
 
-  // Connect to the Loader service via the process ComponentContext.
+  // Connect to the Loader service via the process
+  // TestComponentContextForProcess.
   RunLoop wait_loop;
   auto loader =
       ComponentContextForProcess()->svc()->Connect<::fuchsia::sys::Loader>();
@@ -107,9 +111,10 @@ TEST_F(TestComponentContextForProcessTest, ProvideSystemService) {
         quit_loop.Run();
       });
 
-  // Use the Loader to verify that it was the system service that was connected.
-  // Load the component containing this test since we know it exists.
-  // The URL cannot be obtained programmatically - see fxbug.dev/51490.
+  // Use the Loader to verify that the actual system service was connected. If
+  // it is connected, then calling `LoadUrl` for the current test component url
+  // will succeed. The URL cannot be obtained programmatically - see
+  // fxbug.dev/51490.
   const char kComponentUrl[] =
       "fuchsia-pkg://fuchsia.com/base_unittests#meta/base_unittests.cm";
   loader->LoadUrl(kComponentUrl, [quit_loop = wait_loop.QuitClosure(),
@@ -120,6 +125,40 @@ TEST_F(TestComponentContextForProcessTest, ProvideSystemService) {
     EXPECT_EQ(package->resolved_url, expected_path);
     quit_loop.Run();
   });
+  wait_loop.Run();
+}
+
+TEST_F(TestComponentContextForProcessTest, ProvideSystemServiceNatural) {
+  // Expose fuchsia.sys.Loader through the TestComponentContextForProcess.
+  // This service was chosen because it is one of the ambient services in
+  // Fuchsia's hermetic environment for component tests.
+  const base::StringPiece kServiceNames[] = {
+      fidl::DiscoverableProtocolName<fuchsia_sys::Loader>};
+  test_context_.AddServices(kServiceNames);
+
+  // Connect to the Loader service via the process
+  // TestComponentContextForProcess using natural bindings.
+  RunLoop wait_loop;
+  auto client_end = fuchsia_component::Connect<fuchsia_sys::Loader>();
+  EXPECT_TRUE(client_end.is_ok()) << client_end.status_string();
+  fidl::Client loader(std::move(client_end.value()),
+                      async_get_default_dispatcher());
+
+  // Use the Loader to verify that the actual system service was connected. If
+  // it is connected, then calling `LoadUrl` for the current test component url
+  // will succeed. The URL cannot be obtained programmatically - see
+  // fxbug.dev/51490.
+  const char kComponentUrl[] =
+      "fuchsia-pkg://fuchsia.com/base_unittests#meta/base_unittests.cm";
+  loader->LoadUrl({kComponentUrl})
+      .ThenExactlyOnce(
+          [quit_loop = wait_loop.QuitClosure(), expected_path = kComponentUrl](
+              const fidl::Result<fuchsia_sys::Loader::LoadUrl>& result) {
+            ASSERT_TRUE(result.is_ok()) << result.error_value().status_string();
+            ASSERT_TRUE(result->package());
+            EXPECT_EQ(result->package()->resolved_url(), expected_path);
+            quit_loop.Run();
+          });
   wait_loop.Run();
 }
 

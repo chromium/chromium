@@ -5,6 +5,8 @@
 #ifndef BASE_FUCHSIA_TEST_COMPONENT_CONTEXT_FOR_PROCESS_H_
 #define BASE_FUCHSIA_TEST_COMPONENT_CONTEXT_FOR_PROCESS_H_
 
+#include <fidl/fuchsia.io/cpp/fidl.h>
+
 #include <memory>
 
 #include "base/base_export.h"
@@ -101,11 +103,14 @@ class BASE_EXPORT TestComponentContextForProcess {
     return published_services_;
   }
 
+  fidl::UnownedClientEnd<fuchsia_io::Directory> published_services_natural();
+
  private:
   std::unique_ptr<sys::ComponentContext> old_context_;
 
   std::unique_ptr<FilteredServiceDirectory> context_services_;
   std::shared_ptr<sys::ServiceDirectory> published_services_;
+  fidl::ClientEnd<fuchsia_io::Directory> published_services_natural_;
 };
 
 }  // namespace base

@@ -28,35 +28,32 @@ class ScopedServicePublisherTest : public testing::Test {
   const base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
+  TestComponentContextForProcess test_context_;
   TestInterfaceImpl test_service_;
 };
 
 TEST_F(ScopedServicePublisherTest, OutgoingDirectory) {
-  // Replace the ComponentContext with an isolated instance for easy testing.
-  TestComponentContextForProcess test_context;
-
-  fidl::InterfacePtr<testfidl::TestInterface> client;
+  fidl::InterfacePtr<testfidl::TestInterface> client_a;
 
   {
     ScopedServicePublisher<testfidl::TestInterface> publisher(
         base::ComponentContextForProcess()->outgoing().get(),
         test_service_.bindings().GetHandler(&test_service_));
-    client =
-        test_context.published_services()->Connect<testfidl::TestInterface>();
-    EXPECT_EQ(VerifyTestInterface(client), ZX_OK);
+    client_a =
+        test_context_.published_services()->Connect<testfidl::TestInterface>();
+    EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
   }
 
   // Existing channels remain valid after the publisher goes out of scope.
-  EXPECT_EQ(VerifyTestInterface(client), ZX_OK);
+  EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
   // New connections attempts will be dropped.
-  client =
-      test_context.published_services()->Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(client), ZX_ERR_PEER_CLOSED);
+  auto client_b =
+      test_context_.published_services()->Connect<testfidl::TestInterface>();
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
 }
 
 TEST_F(ScopedServicePublisherTest, PseudoDir) {
-  // Replace the ComponentContext with an isolated instance for easy testing.
   vfs::PseudoDir directory;
   fidl::InterfaceHandle<fuchsia::io::Directory> directory_handle;
   directory.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
@@ -64,21 +61,21 @@ TEST_F(ScopedServicePublisherTest, PseudoDir) {
                   directory_handle.NewRequest().TakeChannel());
   sys::ServiceDirectory services(std::move(directory_handle));
 
-  fidl::InterfacePtr<testfidl::TestInterface> client;
+  fidl::InterfacePtr<testfidl::TestInterface> client_a;
 
   {
     ScopedServicePublisher<testfidl::TestInterface> publisher(
         &directory, test_service_.bindings().GetHandler(&test_service_));
-    client = services.Connect<testfidl::TestInterface>();
-    EXPECT_EQ(VerifyTestInterface(client), ZX_OK);
+    client_a = services.Connect<testfidl::TestInterface>();
+    EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
   }
 
   // Existing channels remain valid after the publisher goes out of scope.
-  EXPECT_EQ(VerifyTestInterface(client), ZX_OK);
+  EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
   // New connection attempts will be dropped.
-  client = services.Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(client), ZX_ERR_PEER_CLOSED);
+  auto client_b = services.Connect<testfidl::TestInterface>();
+  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
 }
 
 }  // namespace base
