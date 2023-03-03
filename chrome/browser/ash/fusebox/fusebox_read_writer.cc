@@ -84,6 +84,33 @@ ReadWriter::WriteTempFileResult WriteTempFile(
   return std::make_pair(std::move(scoped_fd), 0);
 }
 
+void SaveCallback2(base::ScopedFD scoped_fd,
+                   scoped_refptr<storage::FileSystemContext> fs_context,
+                   ReadWriter::Close2Callback callback,
+                   base::File::Error file_error) {
+  Close2ResponseProto response_proto;
+  if (file_error != base::File::Error::FILE_OK) {
+    response_proto.set_posix_error_code(FileErrorToErrno(file_error));
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+}
+
+void SaveCallback1(const std::string src_path,
+                   storage::FileSystemURL fs_url,
+                   base::ScopedFD scoped_fd,
+                   scoped_refptr<storage::FileSystemContext> fs_context,
+                   ReadWriter::Close2Callback callback,
+                   base::File::Error file_error) {
+  // Ignore file_error. We're essentially doing "/usr/bin/rm -f" instead
+  // of a bare "/usr/bin/rm".
+
+  fs_context->operation_runner()->CopyInForeignFile(
+      base::FilePath(src_path), fs_url,
+      base::BindOnce(&SaveCallback2, std::move(scoped_fd), fs_context,
+                     std::move(callback)));
+}
+
 }  // namespace
 
 ReadWriter::ReadWriter(const storage::FileSystemURL& fs_url,
@@ -137,22 +164,13 @@ void ReadWriter::Save() {
           ? base::StringPrintf("/proc/self/fd/%d", temp_file_.get())
           : "/dev/null";
 
-  constexpr auto outer_callback =
-      [](base::ScopedFD scoped_fd,
-         scoped_refptr<storage::FileSystemContext> fs_context,
-         Close2Callback callback, base::File::Error file_error) {
-        Close2ResponseProto response_proto;
-        if (file_error != base::File::Error::FILE_OK) {
-          response_proto.set_posix_error_code(FileErrorToErrno(file_error));
-        }
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), response_proto));
-      };
-
-  close2_fs_context_->operation_runner()->CopyInForeignFile(
-      base::FilePath(src_path), fs_url_,
-      base::BindOnce(outer_callback, std::move(temp_file_), close2_fs_context_,
-                     std::move(close2_callback_)));
+  // Delete the file if it already it exists, or a no-op if it doesn't. Either
+  // way, SaveCallback1 will then copy from src_path to fs_url_, before
+  // SaveCallback2 runs the close2_callback_.
+  close2_fs_context_->operation_runner()->RemoveFile(
+      fs_url_,
+      base::BindOnce(&SaveCallback1, src_path, fs_url_, std::move(temp_file_),
+                     close2_fs_context_, std::move(close2_callback_)));
 }
 
 void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
