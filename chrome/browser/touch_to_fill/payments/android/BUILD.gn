@@ -46,6 +46,7 @@ android_library("public_java") {
   deps = [
     "//base:jni_java",
     "//chrome/browser/autofill/android:java",
+    "//chrome/browser/touch_to_fill/common/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",

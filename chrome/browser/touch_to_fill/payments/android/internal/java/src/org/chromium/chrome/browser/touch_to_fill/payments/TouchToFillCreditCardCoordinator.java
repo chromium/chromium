@@ -17,6 +17,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,10 +34,12 @@ public class TouchToFillCreditCardCoordinator implements TouchToFillCreditCardCo
 
     @Override
     public void initialize(Context context, BottomSheetController sheetController,
-            TouchToFillCreditCardComponent.Delegate delegate) {
+            TouchToFillCreditCardComponent.Delegate delegate,
+            BottomSheetFocusHelper bottomSheetFocusHelper) {
         mTouchToFillCreditCardModel = createModel(mMediator);
 
-        mMediator.initialize(context, delegate, mTouchToFillCreditCardModel);
+        mMediator.initialize(
+                context, delegate, mTouchToFillCreditCardModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(mTouchToFillCreditCardModel,
                 new TouchToFillCreditCardView(context, sheetController));
     }

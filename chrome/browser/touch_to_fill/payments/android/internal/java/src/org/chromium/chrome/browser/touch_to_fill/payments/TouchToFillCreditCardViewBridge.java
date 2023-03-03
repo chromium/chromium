@@ -12,6 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -25,9 +26,11 @@ class TouchToFillCreditCardViewBridge {
     private final TouchToFillCreditCardComponent mComponent;
 
     private TouchToFillCreditCardViewBridge(TouchToFillCreditCardComponent.Delegate delegate,
-            Context context, BottomSheetController bottomSheetController) {
+            Context context, BottomSheetController bottomSheetController,
+            WindowAndroid windowAndroid) {
         mComponent = new TouchToFillCreditCardCoordinator();
-        mComponent.initialize(context, bottomSheetController, delegate);
+        mComponent.initialize(context, bottomSheetController, delegate,
+                new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
     }
 
     @CalledByNative
@@ -39,7 +42,8 @@ class TouchToFillCreditCardViewBridge {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return null;
-        return new TouchToFillCreditCardViewBridge(delegate, context, bottomSheetController);
+        return new TouchToFillCreditCardViewBridge(
+                delegate, context, bottomSheetController, windowAndroid);
     }
 
     @CalledByNative

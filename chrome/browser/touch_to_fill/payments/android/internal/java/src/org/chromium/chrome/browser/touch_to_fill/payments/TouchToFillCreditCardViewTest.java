@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -79,6 +80,8 @@ public class TouchToFillCreditCardViewTest {
     private TouchToFillCreditCardComponent.Delegate mDelegateMock;
     @Mock
     private Callback<Integer> mDismissCallback;
+    @Mock
+    private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetSupport;
@@ -96,8 +99,8 @@ public class TouchToFillCreditCardViewTest {
         mSheetSupport = new BottomSheetTestSupport(mBottomSheetController);
         runOnUiThreadBlocking(() -> {
             mCoordinator = new TouchToFillCreditCardCoordinator();
-            mCoordinator.initialize(
-                    mActivityTestRule.getActivity(), mBottomSheetController, mDelegateMock);
+            mCoordinator.initialize(mActivityTestRule.getActivity(), mBottomSheetController,
+                    mDelegateMock, mBottomSheetFocusHelper);
             mTouchToFillCreditCardModel =
                     new PropertyModel.Builder(TouchToFillCreditCardProperties.ALL_KEYS)
                             .with(VISIBLE, false)

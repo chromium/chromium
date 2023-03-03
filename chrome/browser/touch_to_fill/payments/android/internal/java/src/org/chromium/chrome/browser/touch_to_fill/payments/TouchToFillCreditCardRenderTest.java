@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -74,6 +76,8 @@ public class TouchToFillCreditCardRenderTest {
 
     @Mock
     private TouchToFillCreditCardComponent.Delegate mDelegateMock;
+    @Mock
+    private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     private static final CreditCard VISA = createCreditCard("Visa", "4111111111111111", "5",
             AutofillTestHelper.nextYear(), true, "Visa", "• • • • 1111", R.drawable.visa_card);
@@ -107,6 +111,7 @@ public class TouchToFillCreditCardRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController = mActivityTestRule.getActivity()
@@ -114,8 +119,8 @@ public class TouchToFillCreditCardRenderTest {
                                          .getBottomSheetController();
         runOnUiThreadBlocking(() -> {
             mCoordinator = new TouchToFillCreditCardCoordinator();
-            mCoordinator.initialize(
-                    mActivityTestRule.getActivity(), mBottomSheetController, mDelegateMock);
+            mCoordinator.initialize(mActivityTestRule.getActivity(), mBottomSheetController,
+                    mDelegateMock, mBottomSheetFocusHelper);
         });
     }
 

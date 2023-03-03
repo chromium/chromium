@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -71,13 +72,15 @@ class TouchToFillCreditCardMediator {
     private TouchToFillCreditCardComponent.Delegate mDelegate;
     private PropertyModel mModel;
     private List<CreditCard> mCards;
+    private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     void initialize(Context context, TouchToFillCreditCardComponent.Delegate delegate,
-            PropertyModel model) {
+            PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
         mContext = context;
         mDelegate = delegate;
         mModel = model;
+        mBottomSheetFocusHelper = bottomSheetFocusHelper;
     }
 
     void showSheet(CreditCard[] cards, boolean shouldShowScanCreditCard) {
@@ -101,6 +104,7 @@ class TouchToFillCreditCardMediator {
         sheetItems.add(0, buildHeader(hasOnlyLocalCards(cards)));
         sheetItems.add(buildFooter(shouldShowScanCreditCard));
 
+        mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
 
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, cards.length);
