@@ -1070,10 +1070,6 @@
       base_feature: "none",
     },
     {
-      name: "CSSTransitionDiscrete",
-      status: "test",
-    },
-    {
       // Support for tree-scoped [1] timeline names (e.g. produced by
       // scroll-timeline).
       //
