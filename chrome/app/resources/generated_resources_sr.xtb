@@ -3461,7 +3461,6 @@
 <translation id="4044612648082411741">Унесите лозинку за сертификат</translation>
 <translation id="4044708573046946214">Лозинка за закључавање екрана</translation>
 <translation id="404493185430269859">Подразумевани претраживач</translation>
-<translation id="4045180775310929593">Додајте белешку…</translation>
 <translation id="4046013316139505482">Ови додаци не морају да виде и мењају информације на овом сајту.</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -3675,6 +3674,7 @@
 <translation id="4259388776256904261">Ово може да потраје</translation>
 <translation id="4260182282978351200">Датотека <ph name="FILE_NAME" /> је можда опасна. Желите ли да је пошаљете у Google напредну заштиту ради скенирања? Притискајте Shift + F6 да бисте прешли на област траке са преузимањима.</translation>
 <translation id="4260699894265914672">Притисните тастер на тастатури да бисте прилагодили</translation>
+<translation id="4260722247480053581">Отвори у прозору без архивирања</translation>
 <translation id="4261429981378979799">Дозволе за додатке</translation>
 <translation id="4262004481148703251">Одбаци упозорење</translation>
 <translation id="4263223596040212967">Проверите распоред тастатуре и пробајте поново.</translation>
@@ -7799,6 +7799,7 @@
 <translation id="8025151549289123443">Закључани екран и пријављивање</translation>
 <translation id="8026334261755873520">Обришите податке прегледања</translation>
 <translation id="8026471514777758216">Сви ваши уређаји</translation>
+<translation id="8027581147000338959">Отвори у новом прозору</translation>
 <translation id="8028060951694135607">Microsoft опоравак кључа</translation>
 <translation id="8028803902702117856">Преузима се <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Величина</translation>

@@ -3478,7 +3478,6 @@
 <translation id="4044612648082411741">인증서 비밀번호를 입력하세요.</translation>
 <translation id="4044708573046946214">화면 잠금 비밀번호</translation>
 <translation id="404493185430269859">기본 검색엔진</translation>
-<translation id="4045180775310929593">메모 추가...</translation>
 <translation id="4046013316139505482">이 사이트의 정보를 확인하고 변경할 필요가 없는 확장 프로그램입니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="4047345532928475040">해당 없음</translation>
@@ -3690,6 +3689,7 @@
 <translation id="4259388776256904261">잠시만 기다려 주세요.</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 고급 보호 프로그램에 전송할까요? 다운로드바 영역으로 이동하려면 Shift+F6을 누르세요.</translation>
 <translation id="4260699894265914672">키보드 키를 눌러 맞춤설정하세요.</translation>
+<translation id="4260722247480053581">시크릿 창에서 열기</translation>
 <translation id="4261429981378979799">확장 프로그램 권한</translation>
 <translation id="4262004481148703251">경고 닫기</translation>
 <translation id="4263223596040212967">키보드 레이아웃을 확인한 다음 다시 시도해 주세요.</translation>
@@ -7812,6 +7812,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8025151549289123443">잠금 화면 및 로그인</translation>
 <translation id="8026334261755873520">인터넷 사용 기록 삭제</translation>
 <translation id="8026471514777758216">모든 기기</translation>
+<translation id="8027581147000338959">새 창에서 열기</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856"><ph name="SIZE" /> 다운로드 중, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">크기</translation>

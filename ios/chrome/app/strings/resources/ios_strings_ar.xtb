@@ -214,6 +214,7 @@
 <translation id="2500374554657206846">خيارات حفظ كلمة المرور</translation>
 <translation id="2523363575747517183">يحاول الموقع الإلكتروني هذا فتح تطبيق آخر بشكلٍ متكرر.</translation>
 <translation id="2529021024822217800">فتح الكل</translation>
+<translation id="2547458583188611426">المزامنة غير مفعَّلة. يجب إدخال عبارة المرور لبدء المزامنة.</translation>
 <translation id="2556092377360758201">بلا حماية (غير مُستحسَن)</translation>
 <translation id="2562041823070056534">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
 <translation id="2576499762020411840">‏استخدام كلمات المرور في حساب Google وحفظها</translation>
@@ -488,6 +489,7 @@
 <translation id="4536418791685807335">حاول تسجيل الدخول مرة أخرى.</translation>
 <translation id="4540780316273593836">حدث خطأٌ</translation>
 <translation id="457386861538956877">المزيد...</translation>
+<translation id="4587235830039045480">‏يمكنك حفظ كلمة المرور في حسابك على Google.</translation>
 <translation id="4587589328781138893">المواقع</translation>
 <translation id="4588014171431912783">ستتم استعادة إعدادات المزامنة استنادًا إلى آخر نسخة احتياطية. <ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">لوحة المفاتيح</translation>
@@ -656,6 +658,7 @@
 <translation id="5755162682436943950">تم تسجيل الخروج. يفتح هذا الزر مربّع حوار لتسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
 <translation id="5765456154762864099">القائمة ← الإعدادات ← المتصفِّح التلقائي</translation>
+<translation id="5777888488419460501">الحفظ في الحساب</translation>
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
 <translation id="5791632441210678828">زر الترتيب لخلاصة المتابعة</translation>
 <translation id="5802829331520313983">بدء الإعداد…</translation>
@@ -1038,6 +1041,7 @@
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>
 <translation id="8386068868580335421">إعادة ضبط</translation>
+<translation id="838867811594159347">إدخال عبارة المرور…</translation>
 <translation id="8393889347136007944">علامات التبويب التي لم يتم استخدامها لمدة <ph name="THRESHOLD" /> يوم</translation>
 <translation id="8407669440184693619">لم يتم العثور على كلمات مرور لهذا الموقع الإلكتروني</translation>
 <translation id="842017693807136194">تم تسجيل الدخول باستخدام</translation>
@@ -1109,6 +1113,7 @@
 <translation id="890565330728586731">رجوع</translation>
 <translation id="8909135823018751308">مشاركة…</translation>
 <translation id="8911759861431145525">انقر على "إضافة" ثم أدخِل معلوماتك.</translation>
+<translation id="891282356902782456">‏يتم حفظ كلمة المرور هذه على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google‏ (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">ميِّز النص على موقع إلكتروني.</translation>
 <translation id="8917490105272468696">نعم، أنا موافق</translation>
 <translation id="8928133177108699615">الإصدار المخصّص لأجهزة الكمبيوتر</translation>

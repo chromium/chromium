@@ -279,6 +279,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2429753432712299108">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Bevor du akzeptierst, überprüfe, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="243878895369688216">Gestern geöffnet</translation>
+<translation id="2440978926514840421">GIF aufgezeichnet</translation>
 <translation id="2441427462554639370">Die Aufnahme wurde aufgrund des sehr geringen Speicherplatzes beendet</translation>
 <translation id="24452542372838207">Benachrichtigung erweitern</translation>
 <translation id="2449089818483227734">Niedriger Akkustand</translation>
@@ -550,6 +551,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Termine werden geladen.</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3934456833412894880">Adaptives Laden ist aktiviert. Der Akku bleibt bei 80 %, um seine Lebensdauer zu verlängern. Er wird vollständig aufgeladen, wenn du einen vollen Akku brauchst.</translation>
+<translation id="3936620957945677513">Drücke die Eingabetaste, um an der Veranstaltung „<ph name="EVENT_SUMMARY" />“ teilzunehmen</translation>
 <translation id="3943857333388298514">Einfügen</translation>
 <translation id="394485226368336402">Audioeinstellungen</translation>
 <translation id="3945319193631853098">Zum Abschließen tippen</translation>

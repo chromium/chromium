@@ -3461,7 +3461,6 @@
 <translation id="4044612648082411741">輸入您的憑證密碼</translation>
 <translation id="4044708573046946214">螢幕鎖定密碼</translation>
 <translation id="404493185430269859">預設搜尋引擎</translation>
-<translation id="4045180775310929593">新增附註...</translation>
 <translation id="4046013316139505482">這些擴充功能不需要查看和變更這個網站上的資訊。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4047345532928475040">不適用</translation>
@@ -3675,6 +3674,7 @@
 <translation id="4259388776256904261">請稍待片刻</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危險內容。要傳送至 Google 進階保護進行掃描嗎？按下 Shift + F6 鍵即可返回下載內容列區域。</translation>
 <translation id="4260699894265914672">按下鍵盤按鍵即可自訂</translation>
+<translation id="4260722247480053581">在無痕式視窗中開啟</translation>
 <translation id="4261429981378979799">擴充功能權限</translation>
 <translation id="4262004481148703251">忽略警告</translation>
 <translation id="4263223596040212967">請檢查你的鍵盤配置，然後再試一次。</translation>
@@ -7792,6 +7792,7 @@
 <translation id="8025151549289123443">螢幕鎖定和登入</translation>
 <translation id="8026334261755873520">清除瀏覽資料</translation>
 <translation id="8026471514777758216">你的所有裝置</translation>
+<translation id="8027581147000338959">在新視窗中開啟</translation>
 <translation id="8028060951694135607">Microsoft 金鑰修復</translation>
 <translation id="8028803902702117856">正在下載 <ph name="FILE_NAME" />，檔案大小為 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>

@@ -2831,9 +2831,6 @@
 <translation id="3702518095257671450">遠端認證</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (單行欄位已淘汰，日後將遭到移除。請開始使用下方的多行文字方塊。)</translation>
 <translation id="3711895659073496551">暫停</translation>
-<translation id="3717409415785131989">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 就會顯示新版下載對話框 UI。
-
-      如果將這項政策設為停用，代表 <ph name="PRODUCT_NAME" /> 會繼續顯示舊版下載櫃 UI。</translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372668389978450673">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將允許從使用者管理工具新增使用者。
 
@@ -3789,12 +3786,6 @@
 
       如果某項政策不在清單中，且發生來源、範圍或層級衝突，系統就會套用優先順序最高的政策。</translation>
 <translation id="4646739075621507361">回報列印工作</translation>
-<translation id="4647870063570047503">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 在驗證伺服器憑證時將使用內建憑證驗證器和 Chrome Root Store 做為公開信任來源。
-如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 將使用系統憑證驗證器和系統根憑證。
-
-如果不設定這項政策，系統可能會使用 Chrome Root Store 或系統提供的根層級。
-
-我們計劃在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 113 版的 <ph name="PRODUCT_NAME" /> 中移除這項政策，屆時將停止支援平台提供的憑證驗證器和根層級。</translation>
 <translation id="4649395978608361979">本機印表機目的地</translation>
 <translation id="4650044303940238102">本機字型設定</translation>
 <translation id="4650759511838826572">停用網址通訊協定機制</translation>

@@ -3462,7 +3462,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4044612648082411741">Inserisci la password del certificato</translation>
 <translation id="4044708573046946214">Password del blocco schermo</translation>
 <translation id="404493185430269859">Motore di ricerca predefinito</translation>
-<translation id="4045180775310929593">Aggiungi nota…</translation>
 <translation id="4046013316139505482">Queste estensioni non devono vedere e modificare le informazioni su questo sito.</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -3676,6 +3675,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4259388776256904261">L'operazione potrebbe richiedere un po' di tempo</translation>
 <translation id="4260182282978351200">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviare alla protezione avanzata di Google per la scansione? Premi Maiusc+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="4260699894265914672">Premi un tasto della tastiera per personalizzarlo</translation>
+<translation id="4260722247480053581">Apri nella finestra di navigazione in incognito</translation>
 <translation id="4261429981378979799">Autorizzazioni per le estensioni</translation>
 <translation id="4262004481148703251">Ignora avviso</translation>
 <translation id="4263223596040212967">Controlla il layout della tastiera e riprova.</translation>
@@ -7793,6 +7793,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8025151549289123443">Schermata di blocco e accesso</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
 <translation id="8026471514777758216">Tutti i tuoi dispositivi</translation>
+<translation id="8027581147000338959">Apri in un'altra finestra</translation>
 <translation id="8028060951694135607">Recupero chiavi Microsoft</translation>
 <translation id="8028803902702117856">Download in corso di <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Dimensioni</translation>

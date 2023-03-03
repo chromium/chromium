@@ -125,9 +125,11 @@
 <translation id="1550406609415860283">អាចប្រើឧបករណ៍​បាន</translation>
 <translation id="1550523713251050646">ចុចសម្រាប់ជម្រើសជាច្រើនទៀត</translation>
 <translation id="1555130319947370107">ខៀវ</translation>
+<translation id="1576623706766186887">បង្រួម​នៅ​ពេល​កែវពង្រីក​ត្រូវ​បានបើក</translation>
 <translation id="1589090746204042747">ចូលប្រើសកម្មភាព​ទាំងអស់របស់អ្នកនៅក្នុង​រយៈពេលចូលប្រើនេះ</translation>
 <translation id="1610778689852195798">"ត្រឡប់វិញ"</translation>
 <translation id="1611993646327628135">បើក</translation>
+<translation id="1618835956950524778">រំលេច​ប៊ូតុង​កម្មវិធី​ចាប់ផ្ដើមនៅលើធ្នើរ</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1632985212731562677">អាចបិទ​ការប្រើប៊ូតុងចុច​នៅក្នុងការកំណត់ &gt; ភាពងាយស្រួល។</translation>
 <translation id="163517899691012366">ការ​ជូនដំណឹង​ត្រូ​វបានបិទ​នៅ​ពេល​មុខងារ​កុំរំខាន​ត្រូ​វបានបើក</translation>
@@ -149,6 +151,7 @@
 <translation id="1715293566947629045">កំពុងបិទកម្រងព័ត៌មាន។ សូមរង់ចាំមួយភ្លែត។</translation>
 <translation id="1719094688023114093">មុខងារអក្សររត់​ក្នុងពេលជាក់ស្ដែង​ត្រូវបានបើក។</translation>
 <translation id="1720011244392820496">បើក Wi-Fi Sync</translation>
+<translation id="1731815243805539470">ប្ដូរ​ទៅ​អ្នកប្រើប្រាស់​មុន</translation>
 <translation id="1733996486177697563">ប្ដូររវាងរចនាប័ទ្ម​ងងឹត និងរចនាប័ទ្ម​ភ្លឺ។ ចុចឱ្យជាប់នៅលើអេក្រង់ដើម រួចជ្រើសរើសផ្ទាំងរូបភាព និង​រចនាប័ទ្ម។</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" អាចមើលឃើញដោយឧបករណ៍ប៊្លូធូស។</translation>
 <translation id="174102739345480129">ហ្វឺត​ត្រូវបានបិទ។</translation>
@@ -194,6 +197,7 @@
 <translation id="1919743966458266018">ផ្លូវកាត់សម្រាប់បើកកម្មវិធីគ្រប់គ្រងភារកិច្ចត្រូវបានផ្លាស់ប្តូរ។ សូមប្រើ <ph name="NEW_SHORTCUT" /> ជំនួសឲ្យ <ph name="OLD_SHORTCUT" />។</translation>
 <translation id="1923539912171292317">ចុចដោយស្វ័យប្រវត្តិ</translation>
 <translation id="1928739107511554905">ដើម្បី​ទទួល​បាន​កំណែថ្មី សូម​ប្រើ​អេក្រង់ចុច ដើម្បី​ចាប់ផ្តើម Chromebook របស់អ្នក​ឡើងវិញ​ដោយប្រើក្តារចុច​ដែល​ភ្ជាប់​មក​ជាមួយ។</translation>
+<translation id="1948405482892809935">ប្ដូរ​ទៅ​អ្នកប្រើប្រាស់​បន្ទាប់</translation>
 <translation id="1951012854035635156">ជំនួយ​ការ</translation>
 <translation id="1954252331066828794">បានបញ្ចប់ការថតវីដេអូអេក្រង់</translation>
 <translation id="1957958912175573503">កំណត់​ភាសា​របស់អ្នក</translation>
@@ -306,6 +310,7 @@
 <translation id="2596078834055697711">ថត​រូបថត​អេក្រង់​វិនដូ</translation>
 <translation id="2598725286293895280">កម្មវិធី​ដែល​មិន​អាច​ប្រើ​នៅក្នុង​តុ</translation>
 <translation id="2607678425161541573">តម្រូវឱ្យ​ចូលគណនី​លើអ៊ីនធឺណិត</translation>
+<translation id="2612614436418177118">ផ្លាស់ទី​រូបកម្មវិធី​នៅក្នុង​ក្រឡាកម្មវិធី</translation>
 <translation id="2620016719323068571">ស្វែងរក <ph name="CATEGORY" /> ឯកសារ កម្មវិធី និងអ្វីៗជាច្រើនទៀត...</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="2621713457727696555">មាន​សុវត្ថិភាព</translation>
@@ -332,6 +337,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"លុប"</translation>
 <translation id="2750941250130734256">បានផ្ដាច់វិនដូ​សកម្ម។</translation>
+<translation id="2761723519669354964">បើក​ធាតុ​ដែលបាន​រំលេច​ពី​ធ្នើរ</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">ចាកចេញពីមុខងារថត</translation>
 <translation id="2791421900609674576">អ្នកនឹងមើលឃើញការណែនាំ ដើម្បីឱ្យអ្នកអាចបន្តត្រង់ចំណុចដែលអ្នកបានចាកចេញ។ អ្នកអាចចុចឱ្យជាប់ ដើម្បីដកការណែនាំចេញ។</translation>
@@ -369,6 +375,7 @@
 <translation id="2970920913501714344">ដំឡើង​កម្មវិធី កម្មវិធីបន្ថែម និងរចនាប័ទ្ម</translation>
 <translation id="2977598380246111477">លេខបន្ទាប់</translation>
 <translation id="2985148236010982088">មើលកម្មវិធីទាំងអស់</translation>
+<translation id="29859347674873492">បើក​ជំនួយ​នៅក្នុង​កម្មវិធីរុករក</translation>
 <translation id="2992327365391326550">ប៊ូតុងមីក្រូហ្វូនរបស់ឧបករណ៍ត្រូវបានបិទ។</translation>
 <translation id="2996462380875591307">បានបើក​កែវ​ពង្រីក​ដាក់​ខាង​លើ​បំផុត។ សូមចុច Ctrl+Search+D ម្តងទៀត​ដើម្បី​បិទវា។</translation>
 <translation id="3000461861112256445">សំឡេង​ម៉ូណូ</translation>
@@ -395,6 +402,7 @@
 <translation id="3100274880412651815">ច្រានចោលមុខងារថត</translation>
 <translation id="3105917916468784889">ថតអេក្រង់</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ប៊្លូធូស)</translation>
+<translation id="3113492864356515707">រំលេច​ធាតុ​ពីមុន​នៅលើ​ធ្នើរ</translation>
 <translation id="3120421559657122717">បិទឧបករណ៍ឬ?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ចាប់ផ្តើមធ្វើបច្ចុប្បន្នភាពឡើងវិញ</translation>
@@ -436,6 +444,7 @@
 <translation id="3340978935015468852">ការកំណត់</translation>
 <translation id="3341303451326249809">បាន​ថតរូបអេក្រង់</translation>
 <translation id="334252345105450327">ថតអេក្រង់</translation>
+<translation id="3349345708646875009">បើក​កម្មវិធីគ្រប់គ្រងកិច្ចការ</translation>
 <translation id="3351879221545518001">ឥឡូវនេះ អ្នកកំពុង​បញ្ជូន​អេក្រង់។</translation>
 <translation id="3364721542077212959">ឧបករណ៍ប៊ិច</translation>
 <translation id="3365977133351922112">ទូរសព្ទរបស់អ្នកនៅឆ្ងាយពេក។ សូមដាក់ទូរសព្ទរបស់អ្នកឱ្យជិតជាងនេះ។</translation>
@@ -450,6 +459,7 @@
 <translation id="3405101454990027959">បើក​សិទ្ធិចូលប្រើប្រាស់​មីក្រូហ្វូន</translation>
 <translation id="3410336247007142655">បង្ហាញការ​កំណត់​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="3413817803639110246">មិនទាន់មានអ្វីថ្មីនៅឡើយទេ</translation>
+<translation id="3423744722495840645">បិទ/បើក​កម្មវិធី​ចាប់ផ្ដើម</translation>
 <translation id="3428447136709161042">ផ្ដាច់​ពី <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">អូសពីស្ដាំ ដើម្បីថយក្រោយ</translation>
 <translation id="3431517721463707585">តុទី 14</translation>
@@ -514,6 +524,7 @@
 <translation id="3659814201068740063">នៅសល់​ប្រហែល <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)។
 សូម​ភ្ជាប់​ឧបករណ៍​របស់អ្នក​ទៅ​ថាមពល។</translation>
 <translation id="366222428570480733">អ្នកប្រើប្រាស់​ដែលគ្រប់គ្រង​ដោយ <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="367531336287639526">ជ្រើសរើស​រូបតំណាង​ដំបូង​​នៅ​ខាងឆ្វេង​នៃ​របារអាសយដ្ឋាន</translation>
 <translation id="36813544980941320">បណ្ដាញ Wi-Fi នឹងត្រូវបានចែករំលែក​រវាង​ទូរសព្ទរបស់អ្នក និង <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">គេហទំព័រ</translation>
 <translation id="3702809606464356667">កំពុងបង្ហាញ​វិនដូពី​តុបច្ចុប្បន្ន សូមចុចគ្រាប់ចុច​ព្រួញឡើងលើ ដើម្បីបង្ហាញ​វិនដូ​ពីតុទាំងអស់</translation>
@@ -575,6 +586,7 @@
 <translation id="4017989525502048489">ព្រួញឡាស៊ែរ</translation>
 <translation id="401993194061514265">មិន​អាច​ប្រើ​ហ្វឺត​បាន​ទេ។ បើក Screencast ឡើងវិញ។</translation>
 <translation id="4021716437419160885">រំកិលចុះក្រោម</translation>
+<translation id="4022497978915111141">ចាក់សោ​ឧបករណ៍</translation>
 <translation id="4024840464866786680">ប្រសិនបើអ្នកបានភ្លេចកូដ PIN និងពាក្យសម្ងាត់របស់អ្នក ឬបានផ្លាស់ប្ដូរពាក្យសម្ងាត់គណនី Google របស់អ្នកថ្មីៗនេះ សូមសាកល្បងស្ដារអ្នកប្រើប្រាស់នេះឡើងវិញ។</translation>
 <translation id="4028481283645788203">តម្រូវឱ្យបញ្ចូលពាក្យសម្ងាត់​សម្រាប់សុវត្ថិភាពបន្ថែម</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -777,6 +789,7 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> បានភ្ជាប់​ទៅទូរសព្ទថ្មី</translation>
 <translation id="5035389544768382859">បញ្ជាក់​កំណត់​រចនាសម្ព័ន្ធផ្ទាំងអេក្រង់</translation>
 <translation id="5042305953558921026">គ្រាប់​ចុច​មុខងារ​ទិដ្ឋ​ភាពរួម</translation>
+<translation id="5043679421800073804">ចុច​រូបតំណាង​ចុងក្រោយ​នៅ​លើ​ធ្នើរ</translation>
 <translation id="504465286040788597">កថាខណ្ឌមុន</translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="5078796286268621944">លេខសម្គាល់មិនត្រឹមត្រូវ</translation>
@@ -810,6 +823,7 @@
 <translation id="5253783950165989294">បានភ្ជាប់ជាមួយ​ឧបករណ៍ដែលមាន​ឈ្មោះថា <ph name="DEVICE_NAME" /> ថ្ម <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">មិន​មាន​តុ​ដែលបានរក្សាទុក​ទេ</translation>
 <translation id="5260676007519551770">តុទី 4</translation>
+<translation id="5278086053818066789">បិទ/បើក ChromeVox (ការអានអេក្រង់)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ស្នើឱ្យអ្នកយកចិត្តទុកដាក់។</translation>
 <translation id="5283198616748585639">បន្ថែម 1 នាទី</translation>
 <translation id="528468243742722775">បញ្ចប់</translation>
@@ -836,6 +850,7 @@
 <translation id="536019650977002321">អ្នក​គ្រប់គ្រង​របស់អ្នក​មិនអនុញ្ញាត​ការថតសំឡេង​ទេ។ សូមទាក់ទង​ទៅអ្នកគ្រប់គ្រង​របស់អ្នក ដើម្បីទទួលបានព័ត៌មានបន្ថែម។</translation>
 <translation id="5361524080961918551">ឯកសារ​នៃការនិយាយ​ជា​ភាសា<ph name="LANGUAGE" />ត្រូ​វបានទាញយក​មួយផ្នែក</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ចូលទៅកាន់ផ្ទាំងនេះ</translation>
+<translation id="5369717264580061086">មើល​ឯកសារ​សាកល្បង​នៅ​ក្នុងកម្មវិធី Files</translation>
 <translation id="5377367976106153749">បើក​សិទ្ធិ​ចូលប្រើប្រាស់​កាមេរ៉ាឬ?</translation>
 <translation id="5379115545237091094">ព្យាយាម​ច្រើនដងពេក</translation>
 <translation id="5391307769715781764">ជំនួស​តុ​ដែលបានរក្សាទុក​ឬ?</translation>
@@ -855,6 +870,8 @@
 <translation id="5465662442746197494">ត្រូវការជំនួយ?</translation>
 <translation id="547979256943495781">ធ្នើ​នៅខាង​ស្ដាំ</translation>
 <translation id="5491186829646618080">មាន​កំណែថ្មីនៃកម្មវិធី​បង្កប់</translation>
+<translation id="5503884284981862082">បិទ/បើក​ Google assistant</translation>
+<translation id="5506975627792768506">បិទ ឬ​បើក​កែវពង្រីក</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">អ្នកគ្រប់គ្រងរបស់អ្នកបានដកកម្រងព័ត៌មាន eSIM ចេញទាំងអស់ហើយ។ សូមទាក់ទងអ្នកគ្រប់គ្រងរបស់អ្នក ដើម្បីទទួលបានព័ត៌មានបន្ថែម។</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> កំពុងភ្ជាប់។</translation>
@@ -864,6 +881,7 @@
 <translation id="5537725057119320332">ខាស</translation>
 <translation id="5546397813406633847">ស្ដារអ្នកប្រើប្រាស់ឡើងវិញ</translation>
 <translation id="554893713779400387">បិទ/បើក​ការសរសេរតាមអាន</translation>
+<translation id="5551456515017410630">បិទ/បើក​ប្រតិទិន</translation>
 <translation id="5558091555391176027">បិទ/បើក​លទ្ធភាពមើលឃើញខ្ពស់​នៃការចែករំលែកនៅជិត</translation>
 <translation id="5560420195677022218">មើលកម្មវិធីលើទូរសព្ទរបស់អ្នកនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="556042886152191864">ប៊ូតុង</translation>
@@ -953,6 +971,7 @@
 <translation id="598882571027504733">ដើម្បី​ទទួលបាន​កំណែ​ថ្មី សូម​ចាប់ផ្តើម Chromebook របស់អ្នក​ឡើងវិញ​ដោយប្រើក្តារចុច​ដែល​ភ្ជាប់​មក​ជាមួយ។</translation>
 <translation id="6002179289567220515">អ្នក​បាន​ប្រើប្រាស់​ប៊ូតុងបិទបើកនៅលើឧបករណ៍ ដើម្បីបិទ​កាមេរ៉ា 1។ អ្នក​ក៏​អាច​បិទ​ការ​ចូលប្រើប្រាស់សម្រាប់​កាមេរ៉ា​ទាំងអស់​បាន​ដែរ។</translation>
 <translation id="6012623610530968780">ទំព័រ <ph name="SELECTED_PAGE" /> នៃ <ph name="TOTAL_PAGE_NUM" /></translation>
+<translation id="601304062528754300">រំលេច​ធាតុ​បន្ទាប់​នៅលើ​ធ្នើរ</translation>
 <translation id="6018164090099858612">កំពុង​ចាកចេញ​ពី​មុខងារឆ្លុះ</translation>
 <translation id="602001110135236999">រំកិលទៅ​ឆ្វេង</translation>
 <translation id="6022924867608035986">សម្អាត​អក្សរក្នុងប្រអប់ស្វែងរក</translation>
@@ -989,6 +1008,7 @@
 <translation id="615957422585914272">បង្ហាញក្តារចុចលើអេក្រង់</translation>
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6166852626429024716">ស្វែងរក​ឧបករណ៍ កម្មវិធី ការកំណត់ បណ្ដាញ​របស់អ្នក...</translation>
+<translation id="6168318496333165060">បើកកម្មវិធីវិភាគ</translation>
 <translation id="6179832488876878285">អ្នកអាចខ្ទាស់ឯកសារសំខាន់ៗរបស់អ្នកនៅទីនេះ។ សូមបើកកម្មវិធី Files ដើម្បីចាប់ផ្ដើម។</translation>
 <translation id="6182592640011875895">បើកតុ</translation>
 <translation id="619279033188484792">មើលរូបថត មេឌៀ និងការជូនដំណឹងថ្មីៗរបស់ទូរសព្ទអ្នកនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
@@ -996,12 +1016,14 @@
 <translation id="6193431488227440296">អ្នកអភិវឌ្ឍន៍</translation>
 <translation id="6200515304866777730">មិនអាច​ប្រើ​បាន​ដោយ​កម្មវិធី</translation>
 <translation id="6210042900243040400">ភ្ជាប់ <ph name="NAME" /> ដែលបាន​រក្សាទុកពីមុនទៅ <ph name="EMAIL" /></translation>
+<translation id="6213808132343683860">ថតវីដេអូអេក្រង់ ឬរូប​អេក្រង់​មួយ​ផ្នែក</translation>
 <translation id="6220928844947387476">ឥឡូវនេះអ្នកអាចថតខ្លួនអ្នក និងអេក្រង់របស់អ្នកក្នុងពេលតែមួយបាន</translation>
 <translation id="622484624075952240">ចុះក្រោម</translation>
 <translation id="623116199192908855">ភ្ជាប់​អេក្រង់​របស់​អ្នក​ពី Chromebook របស់​អ្នក</translation>
 <translation id="6231419273573514727">ប្រតិបត្តិការរបស់​ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រអាចមានកម្រិត</translation>
 <translation id="6232891689835436217">បច្ចុប្បន្ន <ph name="APP_NAME" /> កំពុងប្រើ​កាមេរ៉ា និងមីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6247728804802644171">បើក​ការ​ជូន​ដំណឹង</translation>
 <translation id="6254629735336163724">បាន​ចាក់សោ​ឱ្យ​ស្ថិត​ក្នុងទិសដៅផ្ដេក</translation>
 <translation id="6259254695169772643">ប្រើប៊ិច​របស់អ្នក​ដើម្បី​ជ្រើសរើស</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: កំពុងធ្វើសកម្មភាព...</translation>
@@ -1010,6 +1032,7 @@
 <translation id="6284232397434400372">បាន​ប្តូរ​កម្រិត​ច្បាស់</translation>
 <translation id="6288235558961782912">អាចបញ្ចូល <ph name="USER_EMAIL_ADDRESS" /> ឡើងវិញ​នៅពេលក្រោយ​ដោយមាន​ការអនុញ្ញាតពីមាតាបិតា។</translation>
 <translation id="6291221004442998378">មិន​កំពុង​សាក​ថ្មទេ</translation>
+<translation id="6309219492973062892">ចុចរូបធ្នើរ 1-8</translation>
 <translation id="6315170314923504164">សម្លេង</translation>
 <translation id="6330012934079202188">កំពុងបង្ហាញ​វិនដូពីតុ​ទាំងអស់ សូមចុច​គ្រាប់ចុច​ព្រួញឡើងលើ ដើម្បីបង្ហាញ​វិនដូពី​តុបច្ចុប្បន្ន</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> គឺជា​រយៈពេល​ចូលប្រើ​ដែល​ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
@@ -1105,7 +1128,9 @@
 <translation id="6786750046913594791">បិទថតឯកសារ</translation>
 <translation id="6787595647772650851">ស្ដារវគ្គចុងក្រោយ</translation>
 <translation id="6790428901817661496">លេង</translation>
+<translation id="679368458793552943">ពង្រីក​នៅ​ពេល​កែវពង្រីក​ត្រូ​វបានបើក</translation>
 <translation id="6801878137098616817">បានកែ​ថ្មីៗនេះ</translation>
+<translation id="6802196538183166658">បើក​ការកំណត់រហ័ស ដោយ​ជ្រើសរើស​ពេលវេលា</translation>
 <translation id="6802687695197837794">ការ​ធ្វើ​បែប​នេះ​ផ្ដល់​សិទ្ធិ​ចូលប្រើប្រាស់​ដល់ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ព្រមទាំង​​គ្រប់កម្មវិធី និង​គេហទំព័រ​ដែល​មាន​ការ​អនុញ្ញាត​ឱ្យ​ប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="6803622936009808957">មិនអាចឆ្លុះអេក្រង់ទេ ដោយសារមិនមានកម្រិតច្បាស់ដែលគាំទ្រត្រូវបានរកឃើញទេ។</translation>
 <translation id="6812232930908427253">មិនអាច​រក្សាទុក​តុ​បានទេ។ មានវិនដូ ឬផ្ទាំងច្រើនពេក។</translation>
@@ -1166,6 +1191,7 @@
 <translation id="7088960765736518739">មុខងារប្រើឧបករណ៍ចុចសម្រាប់ជនពិការ</translation>
 <translation id="7098053464892629930">ទាញយកកម្មវិធីសម្រាប់ <ph name="NAME" /> នៅលើ Google play ដើម្បីមើលមុខងារដែលអាចប្រើបានទាំងអស់</translation>
 <translation id="7098389117866926363">ឧបករណ៍ USB-C (រន្ធឆ្វេងផ្នែកខាងក្រោយ)</translation>
+<translation id="7100906357717321275">បង្ហាញ​ឯកសារ​ដែល​បានលាក់​នៅ​ក្នុង​កម្មវិធី Files</translation>
 <translation id="7106330611027933926">បង្ហាញរបារកិច្ចការ</translation>
 <translation id="7116969082764510092">តុទី 11</translation>
 <translation id="7118268675952955085">រូបថត​អេក្រង់</translation>
@@ -1211,6 +1237,7 @@
 <translation id="7384028040782072252">ចុចកណ្ដុរខាងស្ដាំ​ត្រង់ណាក៏បាន ដើម្បីតម្រៀបកម្មវិធី​របស់អ្នកឡើងវិញ</translation>
 <translation id="7386767620098596324">បិទ/បើក​ការតភ្ជាប់​បណ្ដាញ។ <ph name="STATE_TEXT" />។</translation>
 <translation id="7392563512730092880">អ្នកអាចរៀបចំ​នៅពេលក្រោយ​នៅក្នុងការកំណត់​បានជានិច្ច។</translation>
+<translation id="7401222354741467707">ថតវីដេអូអេក្រង់ ឬរូប​អេក្រង់​ពេញ</translation>
 <translation id="7405710164030118432">ដើម្បី​ដោះសោ​ឧបករណ៍ សូម​បញ្ចូល​លេខកូដ​ចូលប្រើប្រាស់​របស់​មាតាបិតា​សម្រាប់ Family Link របស់អ្នក</translation>
 <translation id="7406608787870898861">បញ្ចប់ការរៀបចំ​បណ្ដាញទូរសព្ទ​ចល័តរបស់អ្នក</translation>
 <translation id="740790383907119240">ផ្លូវកាត់​កម្មវិធី</translation>
@@ -1255,6 +1282,7 @@
 <translation id="761736749114493194">បិទ/បើកការរក្សាឱ្យនៅក្នុងកាមេរ៉ា​។ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងក្រោម</translation>
+<translation id="7638572816805275740">ថតវីដេអូអេក្រង់ ឬរូបអេក្រង់​របស់​វិនដូ</translation>
 <translation id="7642106959537987271">មុខងារ​បញ្ច្រាស​ពណ៌</translation>
 <translation id="7642647758716480637">បើក​ការកំណត់​សម្រាប់ <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ម្ចាស់)</translation>
@@ -1318,6 +1346,7 @@
 <translation id="7944023924886109030">មើល​ព្រឹត្តិការណ៍​ទាំងអស់​សម្រាប់​ថ្ងៃ​នេះ</translation>
 <translation id="7963992254934562106">ពី <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">ជ្រើសរើស​ថត...</translation>
+<translation id="797512352675305461">បិទ ឬ​បើក​កែវពង្រីកពេញអេក្រង់</translation>
 <translation id="7977927628060636163">កំពុង​ស្វែងរក​បណ្ដាញ​ទូរសព្ទ​ចល័ត...</translation>
 <translation id="7982789257301363584">បណ្តាញ</translation>
 <translation id="7984197416080286869">ព្យាយាមដោះសោ​តាមរយៈស្នាមម្រាមដៃច្រើនដងពេក</translation>
@@ -1341,9 +1370,11 @@
 <translation id="8091153018031979607">ចាប់ផ្ដើម​នៅ​ម៉ោង <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ការដំឡើងកំណែ​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8098591350844501178">បញ្ឈប់​ការបញ្ជូន​អេក្រង់ទៅ <ph name="RECEIVER_NAME" /></translation>
+<translation id="810637681351706236">ដកខ្ទាស់​កម្មវិធី​ពី​ធ្នើរ</translation>
 <translation id="8113423164597455979">បើក កម្មវិធីទាំងអស់</translation>
 <translation id="8113515504791187892">ប៊ូតុង​ជ្រើសរើស​ដើម្បី​អាន</translation>
 <translation id="8120151603115102514">ទូរសព្ទរបស់អ្នកមិនមានអេក្រង់ចាក់សោទេ។ ដើម្បីដោះសោ Chromebook របស់អ្នក សូមបញ្ចូលពាក្យសម្ងាត់។</translation>
+<translation id="8127095419621171197">បើក​កម្មវិធី​ម៉ាស៊ីនគិតលេខ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">អះអាង</translation>
 <translation id="8131994907636310308">បិទថូសតម្រៀប</translation>
@@ -1361,6 +1392,7 @@
 <translation id="8155628902202578800">បើក​ប្រអប់ព័ត៌មាន​សម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">កំពុង​ប្រើ <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">មើលរូបថត មេឌៀ ការជូនដំណឹង និងកម្មវិធីថ្មីៗលើទូរសព្ទរបស់អ្នកនៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
+<translation id="8185090165691050712">បិទ/បើក​ម៉ឺនុយសម្រាប់ប្ដូរ​ទំហំ​មុខងារ​ចាក់សោ</translation>
 <translation id="8192202700944119416">ការជូនដំណឹងត្រូវបាន​លាក់។</translation>
 <translation id="8196787716797768628">ប្រើចលនា​ ដើម្បី​ប្ដូររវាង​កម្មវិធីនានា និង​ធ្វើអន្តរកម្ម​ជាមួយ Chromebook របស់អ្នក​នៅក្នុង​មុខងារ​ថេប្លេត​បានយ៉ាងរហ័ស។</translation>
 <translation id="8200772114523450471">បន្ត</translation>
@@ -1369,6 +1401,7 @@
 <translation id="8214996719228530800">បណ្តាញ Canary</translation>
 <translation id="8219451629189078428">Chromebook របស់អ្នកត្រូវបន្តបើក និងភ្ជាប់ទៅថាមពលនៅអំឡុងពេលនេះ។ ត្រូវប្រាកដថា ខ្សែសាក ឬឆ្នាំងសាកត្រូវបានដោតត្រឹមត្រូវ ទាំងនៅលើ Chromebook របស់អ្នក និង​ព្រីភ្លើង។ សូមកុំបិទ Chromebook ​របស់អ្នក។</translation>
 <translation id="8230305195727960608">មុខងារ​បញ្ច្រាស​ពណ៌</translation>
+<translation id="8233140502441622270">បើក​កម្មវិធី​ផ្លូវកាត់​ក្ដារ​ចុច</translation>
 <translation id="8236042855478648955">ដល់​ពេល​សម្រាក​ហើយ</translation>
 <translation id="8246282815785366524">សូមស្វាគមន៍​សម្រាប់ការវិលត្រឡប់មកវិញ <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" /></translation>
@@ -1453,6 +1486,7 @@
 <translation id="8676770494376880701">ឆ្នាំងសាកដែលមានថាមពលទាបត្រូវបានភ្ជាប់</translation>
 <translation id="8683506306463609433">ការតាមដាន​ប្រតិបត្តិការ​កំពុងបើក​ដំណើរការ</translation>
 <translation id="8703634754197148428">ចាប់​ផ្តើម​ថត។ នៅពេលការថតបានចាប់ផ្ដើម សូមប្រើ Alt + Shift + L ដើម្បីចូលទៅកាន់ធ្នើរ ហើយរកមើលប៊ូតុងឈប់ថត</translation>
+<translation id="870917907284186124">បិទ/បើក​ការសរសេរ​តាមអាន (​បញ្ចូល​ដោយ​ប្រើ​សំឡេង​របស់​អ្នក)</translation>
 <translation id="8721053961083920564">បិទ/បើកកម្រិតសំឡេង។ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ថតពេញអេក្រង់</translation>
 <translation id="8731487213223706745">បញ្ចប់នៅម៉ោង <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1463,6 +1497,7 @@
 <translation id="8755498163081687682">ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ​របស់អ្នក៖ <ph name="ORIGIN_NAME" /> ចង់បញ្ជាក់​ថាជាអ្នក</translation>
 <translation id="875593634123171288">បង្ហាញ​ការកំណត់​ VPN</translation>
 <translation id="8759408218731716181">មិនអាចតំឡើងការចូលពីគណនីច្រើនទេ</translation>
+<translation id="8763883995157866248">ដាក់​ឧបករណ៍​នៅ​ក្នុង​មុខងារ​ដេក</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, កម្មវិធី​ដែលបាន​ដំឡើង ហើយ​បានទប់ស្កាត់</translation>
 <translation id="8785070478575117577">ភ្ជាប់​ទៅ <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1483,6 +1518,7 @@
 <translation id="8858369206579825206">ការគ្រប់គ្រង​ឯកជនភាព</translation>
 <translation id="8870509716567206129">កម្មវិធីមិនស្គាល់អេក្រង់បំបែកទេ។</translation>
 <translation id="8874184842967597500">មិនបានភ្ជាប់ទេ</translation>
+<translation id="8875021410787719674">ផ្លាស់ទី​រវាង​ជ្រុង​ខាងស្ដាំ​ផ្នែក​ខាងក្រោម កម្មវិធី​ចាប់ផ្ដើម របារអាសយដ្ឋាន របាចំណាំ គេហទំព័រ​ដែល​បានបើក និង​ការទាញយក</translation>
 <translation id="8876148469852588625">ព្រឹត្តិការណ៍ <ph name="EVENT_POSITION" /> នៃ <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">សូមពិនិត្យមើលការតភ្ជាប់របស់អ្នក</translation>
 <translation id="8877788021141246043">កំណត់​ការរំលឹក</translation>
@@ -1501,6 +1537,7 @@
 <translation id="8940956008527784070">ថ្មខ្សោយ (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">បាន​ភ្ជាប់ ប៉ុន្តែ​គ្មាន​អ៊ីនធឺណិត​</translation>
 <translation id="8951539504029375108">មានតែ​ឧបករណ៍ Thunderbolt មានការអនុញ្ញាតប៉ុណ្ណោះ ដែលត្រូវគ្នា​ជាមួយ Chromebook របស់អ្នក</translation>
+<translation id="8980862970816311842">ផ្លាស់ទីរូបកម្មវិធីចូល/ចេញពី​ថតនៅក្នុង​ក្រឡាកម្មវិធី</translation>
 <translation id="8982906748181120328">លទ្ធភាពមើលឃើញនៅជិត</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">កំពុងប្រើ <ph name="IME_NAME" /></translation>

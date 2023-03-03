@@ -212,6 +212,7 @@
 <translation id="2500374554657206846">Варыянты захавання пароля</translation>
 <translation id="2523363575747517183">Гэты сайт сістэматычна спрабуе адкрыць іншую праграму.</translation>
 <translation id="2529021024822217800">Адкрыць усе</translation>
+<translation id="2547458583188611426">Сінхранізацыя не працуе. Каб запусціць сінхранізацыю, увядзіце фразу-пароль.</translation>
 <translation id="2556092377360758201">Без абароны (не рэкамендуецца)</translation>
 <translation id="2562041823070056534">Ідзе адпраўка на прыладу "<ph name="DEVICE_NAME" />"...</translation>
 <translation id="2576499762020411840">Захоўваць паролі ва Уліковым запісе Google</translation>
@@ -486,6 +487,7 @@
 <translation id="4536418791685807335">Увайдзіце яшчэ раз.</translation>
 <translation id="4540780316273593836">Нешта пайшло не так</translation>
 <translation id="457386861538956877">Яшчэ...</translation>
+<translation id="4587235830039045480">Пароль будзе захаваны ў вашым Уліковым запісе Google</translation>
 <translation id="4587589328781138893">Сайты</translation>
 <translation id="4588014171431912783">Налады сінхранізацыі будуць адноўлены з апошняй рэзервовай копіі. <ph name="BEGIN_LINK" />Якія даныя можна сінхранізаваць<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавіятура</translation>
@@ -653,6 +655,7 @@
 <translation id="5755162682436943950">Выкананы выхад. Кнопка адкрывае дыялогавае акно, якое дазваляе ўвайсці ва ўліковы запіс і ўключыць сінхранізацыю.</translation>
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
 <translation id="5765456154762864099">Меню → Налады → Стандартны браўзер</translation>
+<translation id="5777888488419460501">Захаваць ва ўліковым запісе</translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="5791632441210678828">Кнопка для сартавання стужкі "Вы падпісаны".</translation>
 <translation id="5802829331520313983">Наладзіць…</translation>
@@ -1035,6 +1038,7 @@
 <translation id="8343993175958086504">Стварайце рэзервовыя копіі сваіх даных, каб іх можна было выкарыстоўваць на іншых прыладах.</translation>
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8386068868580335421">Скінуць</translation>
+<translation id="838867811594159347">Увесці фразу-пароль…</translation>
 <translation id="8393889347136007944">Укладкі, якія не выкарыстоўваліся на працягу <ph name="THRESHOLD" /> сут</translation>
 <translation id="8407669440184693619">Паролі для гэтага сайта не знойдзены</translation>
 <translation id="842017693807136194">Вы ўвайшлі праз</translation>
@@ -1106,6 +1110,7 @@
 <translation id="890565330728586731">Назад</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
 <translation id="8911759861431145525">Націсніце Add ("Дадаць") і ўвядзіце свае звесткі</translation>
+<translation id="891282356902782456">Гэты пароль захаваны толькі на дадзенай прыладзе Каб выкарыстоўваць пароль на іншых прыладах, захавайце яго ў сваім Уліковым запісе Google (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">Вылучыце тэкст на сайце</translation>
 <translation id="8917490105272468696">Так, я згаджаюся</translation>
 <translation id="8928133177108699615">Рэжым ПК</translation>

@@ -1552,9 +1552,9 @@
 <translation id="2335111415680198280">{0,plural, =1{关闭 # 个窗口}other{关闭 # 个窗口}}</translation>
 <translation id="2335122562899522968">该页用于设置 Cookie。</translation>
 <translation id="2336228925368920074">为所有标签页添加书签...</translation>
-<translation id="2336376423977300504">始终在关闭窗口时清除 Cookie</translation>
+<translation id="2336376423977300504">始终在关闭窗口时清除 Cookie 的网站</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">预加载 Chrome 认为您可能会访问的网页。为此，Chrome 可能会使用 Cookie（如果您允许使用 Cookie 的话），并通过 Google 加密和发送网页以在网站中隐藏您的身份。</translation>
+<translation id="2337236196941929873">预加载 Chrome 认为您可能会访问的网页。为此，Chrome 可能会使用 Cookie（如果您允许使用 Cookie 的话），并通过 Google 加密和发送网页以向网站隐藏您的身份。</translation>
 <translation id="2340239562261172947">无法安全地下载“<ph name="FILE_NAME" />”</translation>
 <translation id="2342180549977909852">您的孩子可以使用数字（PIN 码）代替密码来解锁此设备。如果想等到需要时再设置 PIN 码，到时请前往“设置”。</translation>
 <translation id="2342740338116612727">书签已添加</translation>
@@ -3453,7 +3453,6 @@
 <translation id="4044612648082411741">输入您的证书密码</translation>
 <translation id="4044708573046946214">屏幕锁定密码</translation>
 <translation id="404493185430269859">默认搜索引擎</translation>
-<translation id="4045180775310929593">添加备注…</translation>
 <translation id="4046013316139505482">这些扩展程序不需要查看和更改此网站上的信息。</translation>
 <translation id="4046123991198612571">下一曲</translation>
 <translation id="4047345532928475040">无</translation>
@@ -3666,6 +3665,7 @@
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？按 Shift+F6 可切换到“下载内容栏”区域。</translation>
 <translation id="4260699894265914672">按一个键盘按键即可自定义</translation>
+<translation id="4260722247480053581">在无痕式窗口中打开</translation>
 <translation id="4261429981378979799">扩展程序权限</translation>
 <translation id="4262004481148703251">关闭警告</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
@@ -7731,7 +7731,7 @@
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7978450511781612192">执行此操作会使您退出 Google 帐号。您的书签、历史记录、密码及其他设置将不再保持同步。</translation>
 <translation id="7980084013673500153">资源 ID：<ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">预加载网页，以便实现更快速的浏览和搜索</translation>
+<translation id="7981313251711023384">预加载网页，加快浏览和搜索速度</translation>
 <translation id="7981662863948574132">显示包含设备 EID 和二维码的弹出式窗口</translation>
 <translation id="7981670705071137488">之后，软件更新将在后台进行。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="7982083145464587921">请重新启动您的设备以修复此错误。</translation>
@@ -7779,6 +7779,7 @@
 <translation id="8025151549289123443">锁定屏幕和登录</translation>
 <translation id="8026334261755873520">清除浏览数据</translation>
 <translation id="8026471514777758216">使您的所有设备保持同步</translation>
+<translation id="8027581147000338959">在新窗口中打开</translation>
 <translation id="8028060951694135607">Microsoft 密钥恢复</translation>
 <translation id="8028803902702117856">正在下载“<ph name="FILE_NAME" />”，大小为 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>

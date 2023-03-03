@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Wybierz
           Aplikacje &gt; Ustawienia systemowe &gt; Sieć &gt; Zaawansowane &gt; Serwery proxy
           i usuń zaznaczenie wszelkich wybranych serwerów proxy.</translation>
+<translation id="8232971017369963250">Stworzenie przeglądarki Chrome było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Stworzenie przeglądarki Chrome było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

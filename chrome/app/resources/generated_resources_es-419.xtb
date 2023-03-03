@@ -3459,7 +3459,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4044612648082411741">Ingresar la contraseña del certificado</translation>
 <translation id="4044708573046946214">Contraseña de bloqueo de pantalla</translation>
 <translation id="404493185430269859">Motor de búsqueda predeterminado</translation>
-<translation id="4045180775310929593">Agregar nota...</translation>
 <translation id="4046013316139505482">Estas extensiones no necesitan ver ni cambiar información en este sitio.</translation>
 <translation id="4046123991198612571">Siguiente pista</translation>
 <translation id="4047345532928475040">No corresponde.</translation>
@@ -3673,6 +3672,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4259388776256904261">Esta acción puede demorar unos minutos</translation>
 <translation id="4260182282978351200">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo al Programa de Protección Avanzada de Google para que lo analicemos? Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4260699894265914672">Presiona una tecla del teclado para personalizarla</translation>
+<translation id="4260722247480053581">Abrir en una ventana de incógnito</translation>
 <translation id="4261429981378979799">Permisos de extensiones</translation>
 <translation id="4262004481148703251">Descartar advertencia</translation>
 <translation id="4263223596040212967">Comprueba el diseño de tu teclado y vuelve a intentarlo.</translation>
@@ -7793,6 +7793,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8025151549289123443">Pantalla de bloqueo y acceso</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8026471514777758216">Todos tus dispositivos</translation>
+<translation id="8027581147000338959">Abrir en una nueva ventana</translation>
 <translation id="8028060951694135607">Recuperación de claves de Microsoft</translation>
 <translation id="8028803902702117856">Descargando <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamaño</translation>

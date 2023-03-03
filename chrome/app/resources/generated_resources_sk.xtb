@@ -3464,7 +3464,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4044612648082411741">Zadajte heslo certifikátu</translation>
 <translation id="4044708573046946214">Heslo zámky obrazovky</translation>
 <translation id="404493185430269859">Predvolený vyhľadávač</translation>
-<translation id="4045180775310929593">Pridajte poznámku…</translation>
 <translation id="4046013316139505482">Tieto rozšírenia nepotrebujú zobrazovať a meniť informácie na tomto webe.</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4047345532928475040">Nepoužiteľné</translation>
@@ -3678,6 +3677,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4259388776256904261">Môže to chvíľu trvať</translation>
 <translation id="4260182282978351200">Súbor <ph name="FILE_NAME" /> môže byť nebezpečný. Chcete ho odoslať na kontrolu do rozšírenej ochrany Googlu? Stláčaním klávesov Shift + F6 prejdite do oblasti panela so stiahnutými súbormi.</translation>
 <translation id="4260699894265914672">Prispôsobte si ho stlačením klávesa na klávesnici</translation>
+<translation id="4260722247480053581">Otvoriť v okne inkognito</translation>
 <translation id="4261429981378979799">Povolenia rozšírení</translation>
 <translation id="4262004481148703251">Zavrieť varovanie</translation>
 <translation id="4263223596040212967">Skontrolujte svoje rozloženie klávesnice a skúste to znova.</translation>
@@ -7802,6 +7802,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8025151549289123443">Uzamknutá obrazovka a prihlásenie</translation>
 <translation id="8026334261755873520">Vymazať dáta prehliadania</translation>
 <translation id="8026471514777758216">Všetky vaše zariadenia</translation>
+<translation id="8027581147000338959">Otvoriť v novom okne</translation>
 <translation id="8028060951694135607">Obnovenie kľúčov spoločnosti Microsoft</translation>
 <translation id="8028803902702117856">Sťahuje sa <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Veľkosť</translation>

@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2364498172489649528">Tugadi</translation>
+<translation id="2367335866686097760">Tugma tayinlash: tugma</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Fikr va mulohaza hisobotini yuborish</translation>
 <translation id="2407209115954268704">SIM qulfi holati</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Avatar rasmi oʻzgardi</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
+<translation id="3211671540163313381">Tugma tayinlash: Strelkali tugmalar</translation>
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
+<translation id="3226657629376379887">Interfeys amallari menyusi</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
 <translation id="3275506277319227640"><ph name="DIRECTION" /> mahkamlash</translation>
@@ -616,6 +619,7 @@
 <translation id="650266656685499220">Albomlar yaratish uchun Google Photos sahifasini oching</translation>
 <translation id="6516990319416533844">Batareyaning quvvatlanish tezligini bilish uchun uni biroz muddat sarflang</translation>
 <translation id="6517239166834772319">Tanishuv</translation>
+<translation id="6526200165918397681">Mos fon rasmi</translation>
 <translation id="6527081081771465939">Notanish WiFi xavfsizlik protokoli</translation>
 <translation id="6535178685492749208">Siz internetga ulanmagansiz. Fikr-mulohaza keyinroq yuboriladi.</translation>
 <translation id="65587193855025101">Planshetli</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">Rasmlarsiz</translation>
 <translation id="8336739000755212683">Qurilmadagi hisob rasmini almashtirish</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
+<translation id="8351855506390808906">Tugma tayinlash: teginish nuqtasi</translation>
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>
 <translation id="8372477600026034341">Qoʻshimcha hostlar</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">Chap shift</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
 <translation id="9157515863513902090">Katta qismiga mahkamlash</translation>
+<translation id="9161276708550942948">probel</translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klaviatura ranglari fon rasmiga avtomatik moslanishi mumkin</translation>

@@ -558,6 +558,7 @@
 <translation id="1487335504823219454">Ενεργοποίηση - προσαρμοσμένες ρυθμίσεις</translation>
 <translation id="1493892686965953381">Αναμονή για <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Οι ιστότοποι μπορούν να ζητούν να χρησιμοποιήσουν τις γραμματοσειρές που είναι εγκατεστημένες στη συσκευή σας.</translation>
+<translation id="1494429729245089920">Η εικονική μηχανή "<ph name="VM_NAME" />" υπάρχει, αλλά δεν φαίνεται να είναι έγκυρη εικονική μηχανή <ph name="APP_NAME" />. Επικοινωνήστε με τον διαχειριστή.</translation>
 <translation id="1495677929897281669">Επιστροφή στην καρτέλα</translation>
 <translation id="1500297251995790841">Άγνωστη συσκευή [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Μάθετε περισσότερα σχετικά με τις μη υποστηριζόμενες Εφαρμογές Chrome</translation>
@@ -3477,7 +3478,6 @@
 <translation id="4044612648082411741">Εισαγάγετε τον κωδικό πρόσβασης του πιστοποιητικού σας</translation>
 <translation id="4044708573046946214">Κωδικός πρόσβασης κλειδώματος οθόνης</translation>
 <translation id="404493185430269859">Προεπιλεγμένη μηχανή αναζήτησης</translation>
-<translation id="4045180775310929593">Προσθήκη σημείωσης…</translation>
 <translation id="4046013316139505482">Αυτές οι επεκτάσεις δεν χρειάζεται να προβάλλουν και να αλλάζουν τις πληροφορίες σε αυτόν τον ιστότοπο.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
 <translation id="4047345532928475040">Μη Διαθέσιμο</translation>
@@ -3691,6 +3691,7 @@
 <translation id="4259388776256904261">Μπορεί να χρειαστεί λίγη ώρα</translation>
 <translation id="4260182282978351200">Το αρχείο <ph name="FILE_NAME" /> ενδέχεται να είναι επικίνδυνο. Αποστολή στη Σύνθετη προστασία Google για σάρωση; Πατήστε Shift+F6 για να μεταβείτε στη γραμμή λήψεων.</translation>
 <translation id="4260699894265914672">Πατήστε ένα πλήκτρο του πληκτρολογίου για προσαρμογή.</translation>
+<translation id="4260722247480053581">Άνοιγμα σε Παράθυρο για Ανώνυμη Περιήγηση</translation>
 <translation id="4261429981378979799">Άδειες επέκτασης</translation>
 <translation id="4262004481148703251">Παράβλεψη προειδοποίησης</translation>
 <translation id="4263223596040212967">Ελέγξτε τη διάταξη του πληκτρολογίου και δοκιμάστε ξανά.</translation>
@@ -7813,6 +7814,7 @@
 <translation id="8025151549289123443">Οθόνη κλειδώματος και σύνδεση</translation>
 <translation id="8026334261755873520">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="8026471514777758216">Όλες οι συσκευές σας</translation>
+<translation id="8027581147000338959">Άνοιγμα σε Νέο Παράθυρο</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856">Λήψη <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Μέγεθος</translation>

@@ -3480,7 +3480,6 @@
 <translation id="4044612648082411741">Введіть пароль сертифіката</translation>
 <translation id="4044708573046946214">Пароль розблокування екрана</translation>
 <translation id="404493185430269859">Пошукова система за умовчанням</translation>
-<translation id="4045180775310929593">Додайте примітку…</translation>
 <translation id="4046013316139505482">Зазначені розширення не можуть переглядати та змінювати інформацію на цьому сайті.</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="4047345532928475040">-</translation>
@@ -3694,6 +3693,7 @@
 <translation id="4259388776256904261">Це може зайняти якийсь час</translation>
 <translation id="4260182282978351200">Файл <ph name="FILE_NAME" /> може бути небезпечним. Надіслати його в Додатковий захист Google на перевірку? Натискайте Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4260699894265914672">Щоб налаштувати прив’язку, натисніть клавішу клавіатури</translation>
+<translation id="4260722247480053581">Відкрити в анонімному вікні</translation>
 <translation id="4261429981378979799">Дозволи розширення</translation>
 <translation id="4262004481148703251">Закрити попередження</translation>
 <translation id="4263223596040212967">Перевірте розкладку клавіатури й повторіть спробу.</translation>
@@ -7818,6 +7818,7 @@
 <translation id="8025151549289123443">Блокування екрана та вхід</translation>
 <translation id="8026334261755873520">Очистити історію</translation>
 <translation id="8026471514777758216">Доступ на всіх ваших пристроях</translation>
+<translation id="8027581147000338959">Відкрити в новому вікні</translation>
 <translation id="8028060951694135607">Відновлення ключів Microsoft</translation>
 <translation id="8028803902702117856">Завантаження <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Розмір</translation>

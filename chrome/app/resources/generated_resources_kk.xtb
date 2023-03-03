@@ -555,6 +555,7 @@
 <translation id="1487335504823219454">Қосу – пайдаланушылық параметрлер</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> күту…</translation>
 <translation id="1494349716233667318">Сайттар құрылғыңызда орнатылған қаріптерді пайдалануға рұқсат сұрай алады</translation>
+<translation id="1494429729245089920">"<ph name="VM_NAME" />" виртуалдық компьютері бар, бірақ жарамды <ph name="APP_NAME" /> виртуалдық компьютері болып көрінбейді. Әкімшіге хабарласыңыз.</translation>
 <translation id="1495677929897281669">Қойындыға оралу</translation>
 <translation id="1500297251995790841">Белгісіз құрылғы [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Қолдау көрсетілмейтін Chrome қолданбалары туралы толығырақ</translation>
@@ -3459,7 +3460,6 @@
 <translation id="4044612648082411741">Сертификат құпия сөзін енгізу</translation>
 <translation id="4044708573046946214">Экран құлпының құпия сөзі</translation>
 <translation id="404493185430269859">Әдепкі іздеу механизмі</translation>
-<translation id="4045180775310929593">Ескертпе қосу…</translation>
 <translation id="4046013316139505482">Бұл кеңейтімдерге осы сайттағы ақпаратты көрудің және өзгертудің қажеті жоқ.</translation>
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
 <translation id="4047345532928475040">Қолданылмайды</translation>
@@ -7789,6 +7789,7 @@
 <translation id="8025151549289123443">Құлыптаулы экран және кіру</translation>
 <translation id="8026334261755873520">Шолу деректерін өшіру</translation>
 <translation id="8026471514777758216">Барлық құрылғыңыз</translation>
+<translation id="8027581147000338959">Жаңа терезеден ашу</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" /> (<ph name="SIZE" />) жүктеп алынуда</translation>
 <translation id="8028993641010258682">Көлемі</translation>

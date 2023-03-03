@@ -3464,7 +3464,6 @@
 <translation id="4044612648082411741">Մուտքագրեք հավաստագրի գաղտնաբառը</translation>
 <translation id="4044708573046946214">Էկրանի կողպման գաղտնաբառ</translation>
 <translation id="404493185430269859">Կանխադրված որոնիչ</translation>
-<translation id="4045180775310929593">Ավելացրեք նշում…</translation>
 <translation id="4046013316139505482">Այս ընդլայնումներին անհրաժեշտ չէ տեսնել և փոխել այս կայքի տվյալները։</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="4047345532928475040">Կիրառելի չէ</translation>
@@ -7798,6 +7797,7 @@
 <translation id="8025151549289123443">Կողպէկրան և մուտք</translation>
 <translation id="8026334261755873520">Դիտարկումների տվյալների մաքրում</translation>
 <translation id="8026471514777758216">Ձեր բոլոր սարքերը</translation>
+<translation id="8027581147000338959">Բացել նոր պատուհանում</translation>
 <translation id="8028060951694135607">Microsoft-ի բանալիների վերականգնում</translation>
 <translation id="8028803902702117856">Ներբեռնվում է <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Չափ</translation>

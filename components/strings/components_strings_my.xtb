@@ -880,7 +880,6 @@
 <translation id="317878711435188021">ဤကိရိယာသုံးနေချိန်ကို သိလိုသည်</translation>
 <translation id="3180358318770512945">မိဘအုပ်ထိန်းမှု</translation>
 <translation id="3187306450550410410">လိုက်လျောညီထွေ အလုပ်စီစဉ်ပေးမှုများ</translation>
-<translation id="3187380004437786923">ပေးချေမှုများ စီမံရန်</translation>
 <translation id="3187472288455401631">ကြော်ငြာ တိုင်းတာအကဲဖြတ်ခြင်း</translation>
 <translation id="3190736958609431397">မစောင့်ကြည့်ရန်</translation>
 <translation id="319282854780294203">လူမှုကွန်ရက်များ</translation>
@@ -1440,7 +1439,6 @@
 <translation id="4522570452068850558">အသေးစိတ်များ</translation>
 <translation id="4524138615196389145">ယခုမှစ၍ WebAuthn ကို အသုံးပြု၍ သင့်ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုလိုက်ပါ</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> ကို ပိတ်ထားရန်</translation>
-<translation id="4524805452350978254">ကတ်များကို စီမံရန်</translation>
 <translation id="4526465106919207193">လူများနှင့် လူမှုအဖွဲ့အစည်း</translation>
 <translation id="4530347922939905757">မိုဘိုင်းမက်ဆေ့ဂျ်</translation>
 <translation id="4531477351494678589">ပကတိအသွင် ကတ်နံပါတ်-</translation>
@@ -2169,6 +2167,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ပရောက်စီ၊ firewall နှင့် လုံခြုံသော DNS စီစဉ်သတ်မှတ်မှုကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">ဘယ်ဘက်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
+<translation id="6367196786591004737">ထည့်သွင်းမှု ဖျက်ရန်</translation>
 <translation id="6370022303958842211">အကောင့်ဝင်ခြင်း (အောင်မြင်ခြင်းမရှိသည့် အကောင့်ဝင်ခြင်း အကြောင်းရင်းများ အပါအဝင်)၊ အကောင့်ထွက်ခြင်း၊ လော့ခ်ချခြင်းနှင့် လော့ခ်ဖွင့်ခြင်းများစသည့် စက်သို့ ဝင်သုံးခွင့် လုပ်ဆောင်ချက်များ</translation>
 <translation id="6374865374745447009">ဝင်းဒိုး စီမံခြင်း</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် ၁ ခု</translation>
@@ -2313,6 +2312,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">တယ်လီအစည်းအဝေးလုပ်ခြင်း</translation>
 <translation id="6753269504797312559">ပေါ်လစီတန်ဖိုး</translation>
+<translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ထည့်သွင်းမှု ဖျက်ရန်</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">သင့်စက်ပစ္စည်း အိပ်ပျော်သွားပါသည်။</translation>
 <translation id="6767985426384634228">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
@@ -2325,6 +2325,7 @@
 <translation id="678982761784843853">ကာကွယ်ထားသည့် အကြောင်းအရာ ID များ</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="679355240208270552">မူလရှာဖွေမှုကို မူဝါဒဖြင့် ဖွင့်မထား၍ လျစ်လျူရှုထားသည်။</translation>
+<translation id="6794049111359324414"><ph name="APP_NAME" /> အက်ပ်ကို WiFi ကွန်ရက်များ စနစ်ထည့်သွင်းခွင့်ပြုမလား။</translation>
 <translation id="6794951432696553238">ယခုမှစ၍ Windows Hello ကို အသုံးပြု၍ သင့်ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုလိုက်ပါ</translation>
 <translation id="6798460514924505775">Chou 3 စာအိတ်</translation>
 <translation id="6805030849054648206">B6/C4 စာအိတ်</translation>
@@ -3365,6 +3366,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" ပရိုဂရမ်ကို ပိတ်ကြည့်ပါ သို့မဟုတ် ဖယ်ရှားကြည့်ပါ&lt;/li&gt;
     &lt;li&gt;အခြားကွန်ရက်သို့ ချိတ်ဆက်ကြည့်ပါ&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">ဤအက်ပ်သည် WiFi ကွန်ရက်သစ်များ စနစ်ထည့်သွင်းခွင့် တောင်းဆိုနေသည်။ စနစ်ထည့်သွင်းပြီးနောက် သင်၏ <ph name="DEVICE_TYPE" /> သည် ပါဝင်သည့် WiFi ကွန်ရက်များကို အလိုအလျောက်ချိတ်ဆက်မည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay မှ</translation>
 </translationbundle>

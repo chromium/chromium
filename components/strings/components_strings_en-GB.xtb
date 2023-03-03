@@ -345,6 +345,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1733064249834771892">fonts</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Try contacting the system admin.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Signing in<ph name="END_LINK" /> to the network</translation>
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Enter a valid expiry month</translation>
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -878,7 +879,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="317878711435188021">Know when you're actively using this device</translation>
 <translation id="3180358318770512945">Parenting</translation>
 <translation id="3187306450550410410">Flexible work arrangements</translation>
-<translation id="3187380004437786923">Manage payments</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="319282854780294203">Social networks</translation>
@@ -1193,6 +1193,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3949601375789751990">Your browsing history appears here</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">No saved payment methods</translation>
+<translation id="3950574001630941635">Restart tutorial</translation>
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3958057596965527988">4.0 in x 4.0 in</translation>
 <translation id="3961148744525529027">Payment handler sheet is half-opened</translation>
@@ -1439,7 +1440,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4522570452068850558">Details</translation>
 <translation id="4524138615196389145">Confirm your cards faster by using WebAuthn from now on</translation>
 <translation id="45243788195988825">Block <ph name="TOPIC" /></translation>
-<translation id="4524805452350978254">Manage cards</translation>
 <translation id="4526465106919207193">People and society</translation>
 <translation id="4530347922939905757">Text message</translation>
 <translation id="4531477351494678589">Virtual card number:</translation>

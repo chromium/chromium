@@ -3464,7 +3464,6 @@
 <translation id="4044612648082411741">Введите пароль сертификата</translation>
 <translation id="4044708573046946214">Пароль для блокировки экрана</translation>
 <translation id="404493185430269859">Поисковая система по умолчанию</translation>
-<translation id="4045180775310929593">Напишите заметку…</translation>
 <translation id="4046013316139505482">Расширения, которым не требуется право на просмотр и изменение информации на этом сайте</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
 <translation id="4047345532928475040">Н/Д</translation>
@@ -3678,6 +3677,7 @@
 <translation id="4259388776256904261">Это может занять несколько минут…</translation>
 <translation id="4260182282978351200">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки с помощью Дополнительной защиты? Чтобы перейти к панели скачанных файлов, нажмите Shift + F6.</translation>
 <translation id="4260699894265914672">Чтобы выполнить настройку, нажмите на клавишу.</translation>
+<translation id="4260722247480053581">Открыть в режиме инкогнито</translation>
 <translation id="4261429981378979799">Разрешения для расширений</translation>
 <translation id="4262004481148703251">Закрыть</translation>
 <translation id="4263223596040212967">Проверьте раскладку клавиатуры и повторите попытку.</translation>
@@ -7804,6 +7804,7 @@
 <translation id="8025151549289123443">Блокировка экрана и вход</translation>
 <translation id="8026334261755873520">Очистить историю</translation>
 <translation id="8026471514777758216">Синхронизация данных на всех устройствах</translation>
+<translation id="8027581147000338959">Открыть в новом окне</translation>
 <translation id="8028060951694135607">Восстановление ключей Microsoft</translation>
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
 <translation id="8028993641010258682">Размер</translation>

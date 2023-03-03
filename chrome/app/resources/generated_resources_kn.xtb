@@ -3471,7 +3471,6 @@
 <translation id="4044612648082411741">ನಿಮ್ಮ ಪ್ರಮಾಣಪತ್ರ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="4044708573046946214">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="404493185430269859">ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
-<translation id="4045180775310929593">ಟಿಪ್ಪಣಿಯನ್ನು ಸೇರಿಸಿ...</translation>
 <translation id="4046013316139505482">ಈ ವಿಸ್ತರಣೆಗಳು ಈ ಸೈಟ್‌ನಲ್ಲಿನ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸುವುದು ಮತ್ತು ಬದಲಾಯಿಸುವುದು ಅಗತ್ಯವಿಲ್ಲ.</translation>
 <translation id="4046123991198612571">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="4047345532928475040">ಅನ್ವಯವಾಗುವುದಿಲ್ಲ</translation>
@@ -3685,6 +3684,7 @@
 <translation id="4259388776256904261">ಇದು ಸ್ವಲ್ಪ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" />, ಅಪಾಯಕಾರಿ ಫೈಲ್ ಆಗಿರಬಹುದು. ಸ್ಕ್ಯಾನಿಂಗ್‌ಗಾಗಿ, Google ಸುಧಾರಿತ ರಕ್ಷಣೆಗೆ ಕಳುಹಿಸಬೇಕೆ? ಡೌನ್‌ಲೋಡ್ ಪಟ್ಟಿಯ ಪ್ರದೇಶಕ್ಕೆ ಹೋಗಲು Shift+F6 ಒತ್ತಿ.</translation>
 <translation id="4260699894265914672">ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಕೀಬೋರ್ಡ್ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
+<translation id="4260722247480053581">ಅದೃಶ್ಯ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4261429981378979799">ವಿಸ್ತರಣೆ ಅನುಮತಿಗಳು</translation>
 <translation id="4262004481148703251">ಎಚ್ಚರಿಕೆಯನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="4263223596040212967">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ವಿನ್ಯಾಸವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -7806,6 +7806,7 @@
 <translation id="8025151549289123443">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಮಾಡಿ ಹಾಗೂ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="8026471514777758216">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳು</translation>
+<translation id="8027581147000338959">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ಗಾತ್ರ</translation>

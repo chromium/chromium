@@ -3460,7 +3460,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4044612648082411741">Sertifika şifrenizi girin</translation>
 <translation id="4044708573046946214">Ekran kilidi şifresi</translation>
 <translation id="404493185430269859">Varsayılan arama motoru</translation>
-<translation id="4045180775310929593">Not ekleyin...</translation>
 <translation id="4046013316139505482">Bu uzantıların bu sitedeki bilgileri görmesi ve değiştirmesi gerekmiyor.</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="4047345532928475040">YOK</translation>
@@ -3674,6 +3673,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4259388776256904261">Bu işlem biraz zaman alabilir</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> tehlikeli olabilir. Dosya taranmak üzere Google Gelişmiş Koruma'ya gönderilsin mi? İndirme çubuğu alanına gitmek için Üst Karakter+F6 tuşlarına basın.</translation>
 <translation id="4260699894265914672">Özelleştirmek istediğiniz klavye tuşuna basın</translation>
+<translation id="4260722247480053581">Gizli Pencere'de Aç</translation>
 <translation id="4261429981378979799">Uzantı izinleri</translation>
 <translation id="4262004481148703251">Uyarıyı kapat</translation>
 <translation id="4263223596040212967">Klavye düzeninizi kontrol edip tekrar deneyin.</translation>
@@ -7795,6 +7795,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8025151549289123443">Kilit ekranı ve oturum açma</translation>
 <translation id="8026334261755873520">Tarama verilerini temizle</translation>
 <translation id="8026471514777758216">Tüm cihazlarınız</translation>
+<translation id="8027581147000338959">Yeni Pencerede Aç</translation>
 <translation id="8028060951694135607">Microsoft Anahtar Kurtarma</translation>
 <translation id="8028803902702117856">İndiriliyor <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Boyut</translation>

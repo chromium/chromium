@@ -875,7 +875,6 @@
 <translation id="317878711435188021">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्छ भन्ने कुराको जानकारी</translation>
 <translation id="3180358318770512945">लालनपालन</translation>
 <translation id="3187306450550410410">पायक पर्ने समयमा काम गर्ने सुविधा</translation>
-<translation id="3187380004437786923">भुक्तानी व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन</translation>
 <translation id="3190736958609431397">ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="319282854780294203">सामाजिक सञ्जालहरू</translation>
@@ -1436,7 +1435,6 @@
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4524138615196389145">अब उप्रान्त WebAuthn प्रयोग गरी आफ्ना कार्डहरूको अझ छिटो पुष्टि गर्नुहोस्</translation>
 <translation id="45243788195988825"><ph name="TOPIC" /> ब्लक गर्नुहोस्</translation>
-<translation id="4524805452350978254">कार्डहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4526465106919207193">जनता तथा समाज</translation>
 <translation id="4530347922939905757">टेक्स्ट म्यासेज</translation>
 <translation id="4531477351494678589">भर्चुअल कार्ड नम्बर:</translation>
@@ -2166,6 +2164,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र सुरक्षित DNS कन्फिगुरेसनको जाँच गर्दै<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">बायाँपट्टि दुई स्टिच</translation>
+<translation id="6367196786591004737">हालेको जानकारी मेटाइयोस्</translation>
 <translation id="6370022303958842211">लग इन (यसअन्तर्गत लग इन नहुनुको कारण पनि समावेश हुन्छ), लग आउट, लक तथा अनलकलगायतका डिभाइस एक्सेससम्बन्धी कार्यहरू</translation>
 <translation id="6374865374745447009">विन्डो व्यवस्थापन</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' को १ परिणाम</translation>
@@ -2310,6 +2309,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेलिकन्फ्रेन्सिङ</translation>
 <translation id="6753269504797312559">नीति मूल्य</translation>
+<translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ले हाल्नुभएको जानकारी मेटाउनुहोस्</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">तपाईंको यन्त्र शयन अवस्थामा गयो।</translation>
 <translation id="6767985426384634228">ठेगाना बदल्ने हो?</translation>
@@ -2322,6 +2322,7 @@
 <translation id="678982761784843853">संरक्षित सामग्रीका ID</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="679355240208270552">डिफल्ट खोजलाई नीतिअनुसार असक्षम नपारिएको हुनाले बेवास्ता गरियो।</translation>
+<translation id="6794049111359324414"><ph name="APP_NAME" /> एपलाई WiFi नेटवर्कहरू सेटअप गर्ने अनुमति दिने हो?</translation>
 <translation id="6794951432696553238">अब उप्रान्त Windows Hello प्रयोग गरी आफ्ना कार्डहरू अझ छिटो पुष्टि गर्नुहोस्</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
@@ -3360,6 +3361,7 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" को स्थापना रद्द गरी हेर्नुहोस्‌&lt;/li&gt;
     &lt;li&gt;अर्को नेटवर्कमा जडान गरी हेर्नुहोस्&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">यो एपले नयाँ WiFi नेटवर्कहरू सेटअप गर्ने अनुमति मागिरहेको छ। सेटअप गर्ने प्रक्रिया पूरा भएपछि तपाईंको <ph name="DEVICE_TYPE" /> सहभागी WiFi नेटवर्कहरूमा स्वतः कनेक्ट हुने छ। <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay बाट</translation>
 </translationbundle>

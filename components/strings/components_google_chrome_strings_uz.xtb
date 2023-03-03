@@ -32,4 +32,6 @@ LAN sozlamalariga kirib,
 <translation id="8187289872471304532">Bu yerga o‘ting
           Dasturlar &gt; Tizim sozlamalari &gt; Tarmoq &gt; Qo‘shimcha &gt; Proksi
           va barcha proksi-serverlardan bayroqchalarni yechib qo‘ying.</translation>
+<translation id="8232971017369963250">Chrome paydo boʻlishida <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ochiq kodli dastur loyihasining katta oʻrni bor.</translation>
+<translation id="8279509328145658601">Chrome paydo boʻlishida boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dastur<ph name="END_LINK_OSS" /> taʼminotining katta oʻrni bor.</translation>
 </translationbundle>

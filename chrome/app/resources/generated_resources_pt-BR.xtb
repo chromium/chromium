@@ -559,6 +559,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1487335504823219454">Sincronização ativada - configurações personalizadas</translation>
 <translation id="1493892686965953381">Aguardando <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sites podem pedir para usar as fontes instaladas no dispositivo</translation>
+<translation id="1494429729245089920">A máquina virtual "<ph name="VM_NAME" />" existe, mas não parece ser válida para o app <ph name="APP_NAME" />. Entre em contato com o administrador.</translation>
 <translation id="1495677929897281669">Voltar à guia</translation>
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saiba mais sobre os apps do Chrome sem suporte</translation>
@@ -3479,7 +3480,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4044612648082411741">Digite a senha do certificado</translation>
 <translation id="4044708573046946214">Senha do bloqueio de tela</translation>
 <translation id="404493185430269859">Mecanismo de pesquisa padrão</translation>
-<translation id="4045180775310929593">Adicionar nota...</translation>
 <translation id="4046013316139505482">Estas extensões não precisam ver e mudar as informações neste site.</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -3693,6 +3693,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4259388776256904261">Isso pode demorar um pouco</translation>
 <translation id="4260182282978351200">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Enviar para verificação no Proteção Avançada do Google? Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4260699894265914672">Pressione uma tecla para personalizar</translation>
+<translation id="4260722247480053581">Abrir em uma janela anônima</translation>
 <translation id="4261429981378979799">Permissões das extensões</translation>
 <translation id="4262004481148703251">Dispensar aviso</translation>
 <translation id="4263223596040212967">Verifique o layout do seu teclado e tente novamente.</translation>
@@ -7817,6 +7818,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8025151549289123443">Tela de bloqueio e login</translation>
 <translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8026471514777758216">Todos os seus dispositivos</translation>
+<translation id="8027581147000338959">Abrir em uma nova janela</translation>
 <translation id="8028060951694135607">Recuperação de chave da Microsoft</translation>
 <translation id="8028803902702117856">Fazendo o download de <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamanho</translation>

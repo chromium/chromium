@@ -3460,7 +3460,6 @@
 <translation id="4044612648082411741">നിങ്ങളുടെ സർട്ടിഫിക്കറ്റ് പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="4044708573046946214">സ്‌ക്രീൻ ലോക്ക് പാസ്‌വേഡ്</translation>
 <translation id="404493185430269859">ഡിഫോൾട്ട് തിരയൽ യന്ത്രം</translation>
-<translation id="4045180775310929593">കുറിപ്പ് ചേർക്കുക...</translation>
 <translation id="4046013316139505482">ഈ വിപുലീകരണങ്ങൾക്ക് ഈ സൈറ്റിലെ വിവരങ്ങൾ കാണുകയും മാറ്റുകയും ചെയ്യേണ്ട ആവശ്യമില്ല.</translation>
 <translation id="4046123991198612571">അടുത്ത ട്രാക്ക്</translation>
 <translation id="4047345532928475040">N/A</translation>
@@ -3674,6 +3673,7 @@
 <translation id="4259388776256904261">ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> അപകടകരമായേക്കാം. സ്‌കാൻ ചെയ്യാൻ Google-ന്റെ വിപുലമായ പരിരക്ഷയിലേക്ക് അയയ്‌ക്കണോ? ഡൗൺലോഡ് വിവരങ്ങളുടെ ബാർ ഏരിയയിലേക്ക് പോകാൻ Shift+F6 അമർത്തുക.</translation>
 <translation id="4260699894265914672">ഇഷ്ടാനുസൃതമാക്കാൻ കീബോർഡ് കീ അമർത്തുക</translation>
+<translation id="4260722247480053581">വേഷ പ്രച്ഛന്ന വിന്‍ഡോയില്‍ തുറക്കുക</translation>
 <translation id="4261429981378979799">വിപുലീകരണ അനുമതികൾ</translation>
 <translation id="4262004481148703251">മുന്നറിയിപ്പ് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="4263223596040212967">നിങ്ങളുടെ കീബോർഡ് ലേഔട്ട് പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -7796,6 +7796,7 @@
 <translation id="8025151549289123443">ലോക്ക് സ്ക്രീനും സൈൻ ഇൻ ചെയ്യലും</translation>
 <translation id="8026334261755873520">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="8026471514777758216">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളും</translation>
+<translation id="8027581147000338959">പുതിയ വിന്‍ഡോയില്‍ തുറക്കുക</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856"><ph name="SIZE" /> ഡൗൺലോഡ് ചെയ്യുന്നു, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">വലുപ്പം</translation>

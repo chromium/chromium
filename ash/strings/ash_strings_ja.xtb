@@ -279,6 +279,7 @@
 <translation id="2429753432712299108">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。許可するにあたっては、このデバイスで次のパスキーが表示されることを確認してください: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="243878895369688216">昨日開いたファイル</translation>
+<translation id="2440978926514840421">GIF の録画が完了しました</translation>
 <translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
 <translation id="24452542372838207">通知を展開</translation>
 <translation id="2449089818483227734">バッテリー残量が少なくなっています</translation>
@@ -504,6 +505,11 @@
 <translation id="3633097874324966332">デバイスをペア設定するには、Bluetooth 設定を開いてください</translation>
 <translation id="3638400994746983214">プライバシー スクリーンを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新の期限が過ぎています</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />、
+        <ph name="START_TIME" /> から
+        <ph name="END_TIME" />、
+        <ph name="TIME_ZONE" />。選択すると、Google カレンダーで詳細を確認できます。</translation>
 <translation id="3659444876902283058">（<ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" /> 日目）</translation>
 <translation id="3659814201068740063">残り <ph name="TIME_LEFT" />（<ph name="PERCENTAGE" /> %）。
 デバイスを電源に接続してください。</translation>
@@ -1477,6 +1483,7 @@
 <translation id="8858369206579825206">プライバシー管理</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8874184842967597500">未接続</translation>
+<translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> 件中 <ph name="EVENT_POSITION" /> 件目の予定</translation>
 <translation id="8876661425082386199">接続を確認してください</translation>
 <translation id="8877788021141246043">リマインダーを設定して</translation>
 <translation id="8878886163241303700">画面を拡張しています</translation>

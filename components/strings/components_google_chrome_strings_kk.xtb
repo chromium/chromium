@@ -35,4 +35,6 @@
 <translation id="7230956101631259640">Қауіпсіз Chrome бетін көрудесіз</translation>
 <translation id="8187289872471304532">"Қолданбалар &gt; Жүйе параметрлері &gt; Желі &gt; Кеңейтілген &gt; Прокси серверлері" тармағына өтіп,
           таңдалған барлық прокси серверлерін таңдаудан алып тастаңыз.</translation>
+<translation id="8232971017369963250">Chrome браузері <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ашық кодты бағдарлама жобасы арқылы қолжетімді болады.</translation>
+<translation id="8279509328145658601">Сонымен қатар Chrome браузері басқа <ph name="BEGIN_LINK_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_OSS" /> арқылы қолжетімді болады.</translation>
 </translationbundle>

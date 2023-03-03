@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Accesați
           Applications (Aplicații) &gt; System Preferences (Preferințe de sistem) &gt; Network (Rețea) &gt; Advanced (Avansat) &gt; Proxies (Servere proxy)
           și debifați toate serverele proxy selectate.</translation>
+<translation id="8232971017369963250">Chrome există datorită proiectului open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome funcționează și datorită altor <ph name="BEGIN_LINK_OSS" />programe software open source<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

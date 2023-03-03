@@ -2892,9 +2892,6 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3702518095257671450">Atestado remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
 <translation id="3711895659073496551">Suspender</translation>
-<translation id="3717409415785131989">Se a política for ativada ou deixada sem definição, a nova IU de download em balão será mostrada no <ph name="PRODUCT_NAME" />.
-
-      Se a política for desativada, o <ph name="PRODUCT_NAME" /> vai continuar mostrando a antiga IU de download em estante.</translation>
 <translation id="3719826155360621982">Página inicial</translation>
 <translation id="372668389978450673">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.
 
@@ -3869,19 +3866,6 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 
       Se uma política não estiver na lista e houver um conflito entre origens, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="4646739075621507361">Informar trabalhos de impressão</translation>
-<translation id="4647870063570047503">Quando a política é ativada, o <ph name="PRODUCT_NAME" />
-verifica os certificados do servidor usando o verificador de certificados integrado,
-com a Chrome Root Store como fonte de confiança pública.
-
-Se a política for desativada, o <ph name="PRODUCT_NAME" />
-vai usar o verificador de certificados e os certificados raiz do sistema.
-
-Quando ela for deixada sem definição, a Chrome Root Store ou as raízes fornecidas pelo sistema
-poderão ser usadas.
-
-Essa política vai ser removida na versão 113 do <ph name="PRODUCT_NAME" />
-para <ph name="MS_WIN_NAME" /> e <ph name="MAC_OS_NAME" />.
-O suporte ao uso das raízes e do verificador de certificados disponibilizados pela plataforma também será removido nessa versão.</translation>
 <translation id="4649395978608361979">Destinos de impressoras locais</translation>
 <translation id="4650044303940238102">Configurações de fontes locais</translation>
 <translation id="4650759511838826572">Desativar esquemas do protocolo de URL</translation>
@@ -5988,6 +5972,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
 <translation id="6640748114867542396">Não permitir que extensões gerenciadas usem a API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Desativar o suporte a APIs para gráficos 3D</translation>
+<translation id="6644480111811011438">Esta política é fornecida como uma forma de desativar o recurso de conjuntos primários.
+
+                  Quando ela é deixada sem definição ou é ativada, os conjuntos primários ficam ativados.
+
+                  Quando ela é desativada, eles também ficam desativados.
+
+                  Essa política controla se o Chrome oferece suporte a integrações relacionadas a conjuntos primários.</translation>
 <translation id="6646912445796087001">Ativa ou desativa vários recursos do teclado na tela. Esta política entra em vigor somente quando a VirtualKeyboardEnabled é ativada.
 
       Se um recurso desta política for definido como verdadeiro, ele será ativado no teclado na tela.
@@ -7464,6 +7455,34 @@ Esta política não terá efeito quando a <ph name="SCREENSAVER_ENABLED_POLICY_N
 <translation id="8020222525161221827">Ativar a API Desk para o controle do Chrome OS de terceiros</translation>
 <translation id="802147957407376460">Girar tela em 0 graus</translation>
 <translation id="8021777486638359878">Considerar o usuário inativo enquanto o áudio toca</translation>
+<translation id="8022909529579794519">Essa configuração define qual navegador <ph name="LACROS_NAME" /> vai ser usado.
+
+Se a política for definida como <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />,
+o usuário poderá decidir qual navegador <ph name="LACROS_NAME" /> carregar: binário da
+partição <ph name="LACROS_ROOTFS_NAME" /> ou <ph name="LACROS_STATEFUL_NAME" />.
+Se o usuário não definir nenhuma preferência, o binário com a versão mais recente vai ser escolhido.
+
+Se a política for definida como <ph name="LACROS_SELECTION_ROOTFS_VALUE" />,
+o binário <ph name="LACROS_ROOTFS_NAME" /> do
+navegador <ph name="LACROS_NAME" /> sempre será carregado.
+
+Se ela for deixada sem definição, o padrão será <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> para usuários gerenciados por empresas e
+<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> para os não gerenciados.
+
+Mudar o valor da política poderá causar
+perda de dados do navegador <ph name="LACROS_NAME" /> se a nova versão dele
+for mais antiga que a atual. Por exemplo, se a
+política muda de <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />
+para <ph name="LACROS_SELECTION_ROOTFS_VALUE" />, e a primeira foi
+atualizada. Ou se o <ph name="PRODUCT_OS_NAME" /> foi
+atualizado junto com o navegador <ph name="LACROS_NAME" />
+<ph name="LACROS_ROOTFS_NAME" />, e
+<ph name="LACROS_STATEFUL_NAME" /> ainda não foi atualizado.
+Nessas situações, não há garantias de uma migração correta de dados.
+
+Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> ou <ph name="LACROS_SELECTION_ROOTFS_VALUE" />
+é uma opção segura. Trocar de <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> para <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />
+também é seguro.</translation>
 <translation id="80243978433618492">Não permite que parâmetros de URL sejam filtrados.</translation>
 <translation id="8025620823136567878">Os atalhos de teclados internacionais são associados o local das teclas, não ao glifo delas.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -8102,6 +8121,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 
           O valor da política precisa ser especificado em milissegundos.</translation>
 <translation id="859579553230883285">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site para os usuários.</translation>
+<translation id="8597758693275075382">Strings OEM da SMBIOS a serem transmitidas para a VM durante a instalação. O padrão é a lista vazia.</translation>
 <translation id="8598786284856179541">Ativar relatórios sobre informações de versão</translation>
 <translation id="859937827887158048">Não permitir downloads ponto a ponto de atualizações automáticas</translation>
 <translation id="8603454805657060638">Se a política for definida, o administrador poderá mudar o endereço MAC (controle de acesso de mídia) ao conectar um dispositivo à base. Quando uma base estiver conectada a alguns modelos de dispositivo, por padrão, o endereço MAC designado da base para o dispositivo ajudará a identificá-lo na Ethernet.
