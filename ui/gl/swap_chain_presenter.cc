@@ -208,6 +208,7 @@ struct IntelVpeExt {
   raw_ptr<void> param;
 };
 
+// Return true if VpSuperResolution has been set successfully.
 bool ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
                                   ID3D11VideoProcessor* video_processor,
                                   bool is_on_battery_power) {
@@ -264,7 +265,8 @@ bool ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   return !is_on_battery_power;
 }
 
-void ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
+// Return true if VpSuperResolution has been set successfully.
+bool ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
                                    ID3D11VideoProcessor* video_processor,
                                    bool is_on_battery_power) {
   TRACE_EVENT1("gpu", "ToggleNvidiaVpSuperResolution", "on",
@@ -290,11 +292,16 @@ void ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
       video_processor, 0, &kNvidiaPPEInterfaceGUID,
       sizeof(stream_extension_info), &stream_extension_info);
 
+  base::UmaHistogramSparse(is_on_battery_power
+                               ? "GPU.NvidiaVpSuperResolution.Off.SetStreamExt"
+                               : "GPU.NvidiaVpSuperResolution.On.SetStreamExt",
+                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
-    return;
+    return false;
   }
+  return !is_on_battery_power;
 }
 
 bool IsWithinMargin(int i, int j) {
@@ -1582,16 +1589,16 @@ bool SwapChainPresenter::VideoProcessorBlt(
       DCHECK(output_view_);
     }
 
-    bool use_intel_vp_super_resolution = false;
+    bool use_vp_super_resolution = false;
     if (!layer_tree_->disable_vp_super_resolution()) {
       if (gpu_vendor_id_ == 0x8086 &&
           base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
-        use_intel_vp_super_resolution = ToggleIntelVpSuperResolution(
+        use_vp_super_resolution = ToggleIntelVpSuperResolution(
             video_context.Get(), video_processor.Get(), is_on_battery_power_);
       }
       if (gpu_vendor_id_ == 0x10de &&
           base::FeatureList::IsEnabled(features::kNvidiaVpSuperResolution)) {
-        ToggleNvidiaVpSuperResolution(
+        use_vp_super_resolution = ToggleNvidiaVpSuperResolution(
             video_context.Get(), video_processor.Get(), is_on_battery_power_);
       }
     }
@@ -1599,9 +1606,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
     hr = video_context->VideoProcessorBlt(video_processor.Get(),
                                           output_view_.Get(), 0, 1, &stream);
     base::UmaHistogramSparse(
-        (use_intel_vp_super_resolution
-             ? "GPU.IntelVpSuperResolution.On.VideoProcessorBlt"
-             : "GPU.IntelVpSuperResolution.Off.VideoProcessorBlt"),
+        (use_vp_super_resolution
+             ? "GPU.VideoProcessorBlt.VpSuperResolution.On"
+             : "GPU.VideoProcessorBlt.VpSuperResolution.Off"),
         hr);
 
     if (FAILED(hr)) {

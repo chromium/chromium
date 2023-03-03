@@ -928,7 +928,6 @@ chromium-metrics-reviews@google.com.
     <variant name="On" summary="on"/>
   </token>
   <token key="Call">
-    <variant name="VideoProcessorBlt" summary="vpblt"/>
     <variant name="VpeFnMode" summary="mode"/>
     <variant name="VpeFnScaling" summary="scaling"/>
     <variant name="VpeFnVersion" summary="version"/>
@@ -1078,6 +1077,21 @@ chromium-metrics-reviews@google.com.
     same vsync. The delta is reported as a percentage of vsync interval. This
     can be recorded every time we present a frame.
   </summary>
+</histogram>
+
+<histogram name="GPU.NvidiaVpSuperResolution.{State}.SetStreamExt"
+    enum="Hresult" expires_after="2023-06-30">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records HRESULT in NvidiaVpSuperResolution. This metric is recorded every
+    frame when processing video streams in DirectComposition.
+  </summary>
+  <token key="State">
+    <variant name="Off" summary="off"/>
+    <variant name="On" summary="on"/>
+  </token>
 </histogram>
 
 <histogram name="GPU.OopRaster.GlyphCacheMiss"
@@ -1357,6 +1371,21 @@ chromium-metrics-reviews@google.com.
     there is single surface swap in the same vsync interval. Only reported for
     platforms supporting high resolution clocks.
   </summary>
+</histogram>
+
+<histogram name="GPU.VideoProcessorBlt.VpSuperResolution.{State}"
+    enum="Hresult" expires_after="2023-06-30">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records HRESULT for VideoProcessorBlt. This metric is recorded every frame
+    when processing video stream in DirectComposition.
+  </summary>
+  <token key="State">
+    <variant name="Off" summary="off"/>
+    <variant name="On" summary="on"/>
+  </token>
 </histogram>
 
 <histogram name="GPU.Vulkan.ExtMemoryBudgetSupported" units="BooleanSupported"
