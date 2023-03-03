@@ -71,6 +71,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -1976,10 +1977,10 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
       }
     }
 
-    submitted_form->LogQualityMetrics(
-        submitted_form->form_parsed_timestamp(), interaction_time,
-        submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
-        observed_submission, form_interaction_counts);
+    autofill_metrics::LogQualityMetrics(
+        *submitted_form, submitted_form->form_parsed_timestamp(),
+        interaction_time, submission_time, form_interactions_ukm_logger(),
+        did_show_suggestions_, observed_submission, form_interaction_counts);
 
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
