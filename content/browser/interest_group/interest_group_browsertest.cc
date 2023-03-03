@@ -4590,7 +4590,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
-    RunAdAuctionAuctionInvalidRequiredSellerCapabilitiesIngored) {
+    RunAdAuctionAuctionInvalidRequiredSellerCapabilitiesIgnored) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   AttachInterestGroupObserver();
@@ -4605,6 +4605,420 @@ IN_PROC_BROWSER_TEST_F(
                          https_server_->GetURL(
                              "a.test", "/interest_group/decision_logic.js"))));
   WaitForAccessObserved({});
+}
+
+// Run an auction with 2 interest groups. One of the interest groups will
+// satisfy the `requiredSellerCapabilities` of the auction config, and one will
+// not.
+//
+// The bid of the interest group satisfied the `requiredSellerCapabilities`
+// wins the auction, even though normally the other interest group would win,
+// because the other interest group was removed from the auction for failing to
+// satisfy the `requiredSellerCapabilities`.
+//
+// Both interest groups set an update URL, so after the auction, a post auction
+// interest group update occurs and succeeds for both groups. (This is so that
+// bidders can choose to make the groups that don't meet the
+// requiredSellerCapabilities update to then satisfy those conditions).
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RequiredSellerCapabilitiesWithPostAuctionUpdates) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad1_url =
+      https_server_->GetURL("c.test", "/echo?stop_bidding_after_win");
+  GURL ad2_url = https_server_->GetURL("c.test", "/echo?render_bikes");
+
+  constexpr char kUpdatePath[] = "/interest_group/update.json";
+  constexpr char kUpdateResponse[] = R"(
+{
+  "sellerCapabilities": {
+    "*": ["interest-group-counts", "latency-stats"]
+  }
+})";
+  network_responder_->RegisterNetworkResponse(kUpdatePath, kUpdateResponse);
+  GURL update_url = https_server_->GetURL("a.test", kUpdatePath);
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_stop_bidding_after_win.js"))
+              .SetAds({{{ad1_url, /*metadata=*/absl::nullopt}}})
+              .SetDailyUpdateUrl(update_url)
+              .Build()));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"bikes")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds({{{ad2_url, /*metadata=*/absl::nullopt}}})
+                    .SetDailyUpdateUrl(update_url)
+                    .SetAllSellerCapabilities(
+                        blink::SellerCapabilities::kInterestGroupCounts)
+                    .Build()));
+
+  // `ad2_url` wins, because "cars" is removed for not satisfying
+  // requiredSellerCapabilities.
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts'],
+                })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad2_url);
+
+  // A post-auction update occurs.
+  WaitForInterestGroupsSatisfying(
+      test_origin,
+      base::BindLambdaForTesting(
+          [](const std::vector<StorageInterestGroup>& groups) {
+            if (groups.size() != 2) {
+              return false;
+            }
+            for (const StorageInterestGroup& group : groups) {
+              if (group.interest_group.all_sellers_capabilities !=
+                  blink::SellerCapabilitiesType(
+                      blink::SellerCapabilities::kInterestGroupCounts,
+                      blink::SellerCapabilities::kLatencyStats)) {
+                return false;
+              }
+            }
+            return true;
+          }));
+
+  // `ad1_url` now wins, because "cars" satisfies requiredSellerCapabilities.
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts'],
+                })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad1_url);
+}
+
+// Like RequiredSellerCapabilitiesWithPostAuctionUpdates, but setting the
+// sellerCapabilities per-buyer instead of for all buyers.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RequiredSellerCapabilitiesWithPerBuyerCapabilities) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad1_url =
+      https_server_->GetURL("c.test", "/echo?stop_bidding_after_win");
+  GURL ad2_url = https_server_->GetURL("c.test", "/echo?render_bikes");
+
+  constexpr char kUpdatePath[] = "/interest_group/update.json";
+  std::string update_response =
+      base::StringPrintf(R"(
+{
+  "sellerCapabilities": {
+    "%s": ["interest-group-counts", "latency-stats"]
+  }
+})",
+                         test_origin.Serialize().c_str());
+  network_responder_->RegisterNetworkResponse(kUpdatePath, update_response);
+  GURL update_url = https_server_->GetURL("a.test", kUpdatePath);
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_stop_bidding_after_win.js"))
+              .SetAds({{{ad1_url, /*metadata=*/absl::nullopt}}})
+              .SetDailyUpdateUrl(update_url)
+              .Build()));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"bikes")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds({{{ad2_url, /*metadata=*/absl::nullopt}}})
+                    .SetDailyUpdateUrl(update_url)
+                    .SetSellerCapabilities(
+                        {{{test_origin,
+                           blink::SellerCapabilities::kInterestGroupCounts}}})
+                    .Build()));
+
+  // `ad2_url` wins, because "cars" is removed for not satisfying
+  // requiredSellerCapabilities.
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts'],
+                })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad2_url);
+
+  // A post-auction update occurs.
+  WaitForInterestGroupsSatisfying(
+      test_origin,
+      base::BindLambdaForTesting(
+          [&test_origin](const std::vector<StorageInterestGroup>& groups) {
+            if (groups.size() != 2) {
+              return false;
+            }
+            for (const StorageInterestGroup& group : groups) {
+              const auto& seller_capabilities =
+                  group.interest_group.seller_capabilities;
+              if (!seller_capabilities) {
+                return false;
+              }
+              auto it = seller_capabilities->find(test_origin);
+              if (it == seller_capabilities->end()) {
+                return false;
+              }
+              if (it->second !=
+                  blink::SellerCapabilitiesType(
+                      blink::SellerCapabilities::kInterestGroupCounts,
+                      blink::SellerCapabilities::kLatencyStats)) {
+                return false;
+              }
+            }
+            return true;
+          }));
+
+  // `ad1_url` now wins, because "cars" satisfies requiredSellerCapabilities.
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts'],
+                })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad1_url);
+}
+
+// Like RequiredSellerCapabilitiesWithPerBuyerCapabilities, but the per-seller
+// sellerCapabilities initially don't match the seller origin, so both interest
+// groups are removed from the auction.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RequiredSellerCapabilitiesWithPerBuyerCapabilitiesNoMatch) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  url::Origin other_origin =
+      url::Origin::Create(https_server_->GetURL("b.test", "/"));
+  GURL ad1_url =
+      https_server_->GetURL("c.test", "/echo?stop_bidding_after_win");
+  GURL ad2_url = https_server_->GetURL("c.test", "/echo?render_bikes");
+
+  constexpr char kUpdatePath[] = "/interest_group/update.json";
+  std::string update_response =
+      base::StringPrintf(R"(
+{
+  "sellerCapabilities": {
+    "%s": ["interest-group-counts", "latency-stats"]
+  }
+})",
+                         test_origin.Serialize().c_str());
+  network_responder_->RegisterNetworkResponse(kUpdatePath, update_response);
+  GURL update_url = https_server_->GetURL("a.test", kUpdatePath);
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_stop_bidding_after_win.js"))
+              .SetAds({{{ad1_url, /*metadata=*/absl::nullopt}}})
+              .SetDailyUpdateUrl(update_url)
+              .Build()));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"bikes")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds({{{ad2_url, /*metadata=*/absl::nullopt}}})
+                    .SetDailyUpdateUrl(update_url)
+                    .SetSellerCapabilities(
+                        {{{other_origin,
+                           blink::SellerCapabilities::kInterestGroupCounts}}})
+                    .Build()));
+
+  // There is no winner, because "cars" is removed for not satisfying
+  // requiredSellerCapabilities, and "bikes" is removed since it only grants
+  // "interest-group-counts" to `other_origin`, not seller `test_origin`.
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
+                         R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts'],
+                })",
+                         test_origin,
+                         https_server_->GetURL(
+                             "a.test", "/interest_group/decision_logic.js"))));
+
+  // A post-auction update occurs.
+  WaitForInterestGroupsSatisfying(
+      test_origin,
+      base::BindLambdaForTesting(
+          [&test_origin](const std::vector<StorageInterestGroup>& groups) {
+            if (groups.size() != 2) {
+              return false;
+            }
+            for (const StorageInterestGroup& group : groups) {
+              const auto& seller_capabilities =
+                  group.interest_group.seller_capabilities;
+              if (!seller_capabilities) {
+                return false;
+              }
+              auto it = seller_capabilities->find(test_origin);
+              if (it == seller_capabilities->end()) {
+                return false;
+              }
+              if (it->second !=
+                  blink::SellerCapabilitiesType(
+                      blink::SellerCapabilities::kInterestGroupCounts,
+                      blink::SellerCapabilities::kLatencyStats)) {
+                return false;
+              }
+            }
+            return true;
+          }));
+
+  // `ad1_url` now wins, because "cars" satisfies requiredSellerCapabilities.
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts'],
+                })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad1_url);
+}
+
+// Only some of the requiredSellerCapabilities are present, so the interest
+// group is still removed from the auction.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RequiredSellerCapabilitiesPartialMatch) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad1_url =
+      https_server_->GetURL("c.test", "/echo?stop_bidding_after_win");
+  GURL ad2_url = https_server_->GetURL("c.test", "/echo?render_bikes");
+
+  constexpr char kUpdatePath[] = "/interest_group/update.json";
+  constexpr char kUpdateResponse[] = R"(
+{
+  "sellerCapabilities": {
+    "*": ["interest-group-counts", "latency-stats"]
+  }
+})";
+  network_responder_->RegisterNetworkResponse(kUpdatePath, kUpdateResponse);
+  GURL update_url = https_server_->GetURL("a.test", kUpdatePath);
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test",
+                  "/interest_group/bidding_logic_stop_bidding_after_win.js"))
+              .SetAds({{{ad1_url, /*metadata=*/absl::nullopt}}})
+              .SetDailyUpdateUrl(update_url)
+              .SetAllSellerCapabilities(
+                  blink::SellerCapabilities::kInterestGroupCounts)
+              .Build()));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"bikes")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds({{{ad2_url, /*metadata=*/absl::nullopt}}})
+                    .SetDailyUpdateUrl(update_url)
+                    .SetAllSellerCapabilities(
+                        {blink::SellerCapabilities::kInterestGroupCounts,
+                         blink::SellerCapabilities::kLatencyStats})
+                    .Build()));
+
+  // `ad2_url` wins, because "cars" is removed for not satisfying
+  // requiredSellerCapabilities.
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts', 'latency-stats'],
+                })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad2_url);
+
+  // A post-auction update occurs.
+  WaitForInterestGroupsSatisfying(
+      test_origin,
+      base::BindLambdaForTesting(
+          [](const std::vector<StorageInterestGroup>& groups) {
+            if (groups.size() != 2) {
+              return false;
+            }
+            for (const StorageInterestGroup& group : groups) {
+              if (group.interest_group.all_sellers_capabilities !=
+                  blink::SellerCapabilitiesType(
+                      blink::SellerCapabilities::kInterestGroupCounts,
+                      blink::SellerCapabilities::kLatencyStats)) {
+                return false;
+              }
+            }
+            return true;
+          }));
+
+  // `ad1_url` now wins, because "cars" satisfies requiredSellerCapabilities.
+  RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    requiredSellerCapabilities: ['interest-group-counts'],
+                })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad1_url);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

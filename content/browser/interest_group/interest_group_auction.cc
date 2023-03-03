@@ -192,19 +192,27 @@ static const char* ScoreAdTraceEventName(const InterestGroupAuction::Bid& bid) {
   }
 }
 
+// Returns true iff `interest_group` grants `seller` all the capabilities in
+// `capabilities`.
+bool GroupSatisfiesAllCapabilities(const blink::InterestGroup& interest_group,
+                                   blink::SellerCapabilitiesType capabilities,
+                                   const url::Origin& seller) {
+  if (interest_group.seller_capabilities) {
+    auto it = interest_group.seller_capabilities->find(seller);
+    if (it != interest_group.seller_capabilities->end()) {
+      return it->second.HasAll(capabilities);
+    }
+  }
+  return interest_group.all_sellers_capabilities.HasAll(capabilities);
+}
+
 // Helper for ReportPaBuyersValueIfAllowed() -- returns true iff
 // `interest_group`'s seller capabilities has authorized `capability` for
 // `seller`.
 bool CanReportPaBuyersValue(const blink::InterestGroup& interest_group,
                             blink::SellerCapabilities capability,
                             const url::Origin& seller) {
-  if (interest_group.seller_capabilities) {
-    auto it = interest_group.seller_capabilities->find(seller);
-    if (it != interest_group.seller_capabilities->end()) {
-      return it->second.Has(capability);
-    }
-  }
-  return interest_group.all_sellers_capabilities.Has(capability);
+  return GroupSatisfiesAllCapabilities(interest_group, {capability}, seller);
 }
 
 // Helper for ReportPaBuyersValueIfAllowed() -- returns the bucket base
@@ -2324,8 +2332,16 @@ void InterestGroupAuction::OnInterestGroupRead(
                      }),
       interest_groups.end());
 
-  // If there are no interest groups with both a bidding script and ads,
-  // nothing else to do.
+  // Ignore interest groups that don't provide the requested seller
+  // capabilities.
+  base::EraseIf(interest_groups, [this](const StorageInterestGroup& bidder) {
+    return !GroupSatisfiesAllCapabilities(
+        bidder.interest_group,
+        config_->non_shared_params.required_seller_capabilities,
+        config_->seller);
+  });
+
+  // If there are no interest groups left, nothing else to do.
   if (interest_groups.empty()) {
     OnOneLoadCompleted();
     return;
