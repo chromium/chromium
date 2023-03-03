@@ -1313,8 +1313,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
           NGParagraphLineBreaker::AttemptParagraphBalancing(
               Node(), ConstraintSpace(), line_opportunity));
     }
+    absl::optional<NGLineLayoutOpportunity> saved_line_opportunity;
     if (const absl::optional<LayoutUnit>& balanced_available_width =
             context_->BalancedAvailableWidth()) {
+      saved_line_opportunity = line_opportunity;
       NGParagraphLineBreaker::PrepareForNextLine(*balanced_available_width,
                                                  &line_opportunity);
     }
@@ -1405,6 +1407,12 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       // Normally the last opportunity should fit the line, but arithmetic
       // overflow can lead to failures for all opportunities. Just let the line
       // to overflow in that case.
+    }
+
+    if (saved_line_opportunity) {
+      // Restore `line_opportunity` if `NGParagraphLineBreaker` updated it.
+      line_opportunity = *saved_line_opportunity;
+      line_info.SetAvailableWidth(line_opportunity.AvailableInlineSize());
     }
 
     PrepareBoxStates(line_info, break_token);
