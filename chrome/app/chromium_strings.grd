@@ -557,18 +557,6 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PASSWORDS_AUTHENTICATION_PROMPT_PREFIX" desc="Text shown in the beginning of the OS-level user authentication prompt before performing a seneitive operation such as show passwords in plain text.">
           Chromium is trying to <ph name="AUTHENTICATION_PURPOSE">$1<ex>show passwords</ex></ph>
         </message>
-        <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before revealing plaintext passwords on the password page.">
-          Chromium is trying to show passwords.
-        </message>
-        <message name="IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before copying plaintext passwords into the clipboard.">
-          Chromium is trying to copy passwords.
-        </message>
-        <message name="IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before editing plaintext passwords on the password page.">
-          Chromium is trying to edit passwords.
-        </message>
-        <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before exporting passwords to a file.">
-          Chromium wants to export your passwords.
-        </message>
       </if>
       <if expr="is_win">
         <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before revealing plaintext passwords on the password page.">

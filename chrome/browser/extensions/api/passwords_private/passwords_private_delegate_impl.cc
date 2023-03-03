@@ -487,9 +487,8 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
   AuthenticateUser(password_manager_util_win::GetMessageForLoginPrompt(purpose),
                    std::move(callback));
 #elif BUILDFLAG(IS_MAC)
-  AuthenticateUser(
-      password_manager_util_mac::GetMessageForBiometricLoginPrompt(purpose),
-      std::move(callback));
+  AuthenticateUser(password_manager_util_mac::GetMessageForLoginPrompt(purpose),
+                   std::move(callback));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsPasswordManagerSystemAuthenticationEnabled()) {
     password_manager_util_chromeos::AuthenticateUser(purpose,

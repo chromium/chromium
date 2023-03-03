@@ -147,7 +147,7 @@ void ItemsBubbleController::AuthenticateUserAndDisplayDetailsOf(
     base::OnceCallback<void(bool)> completion) {
   std::u16string message;
 #if BUILDFLAG(IS_MAC)
-  message = password_manager_util_mac::GetMessageForBiometricLoginPrompt(
+  message = password_manager_util_mac::GetMessageForLoginPrompt(
       password_manager::ReauthPurpose::VIEW_PASSWORD);
 #elif BUILDFLAG(IS_WIN)
   message = password_manager_util_win::GetMessageForLoginPrompt(
