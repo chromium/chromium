@@ -2533,32 +2533,42 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
 
   const int active_index = model->active_index();
 
-  // TODO(crbug.com/1411448): Investigate whether active index being kNoTab is
-  // expected or not. Remove DumpWithoutCrashing() when it is resolved.
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1411448): Investigate. Remove DumpWithoutCrashing() when it
+  // is resolved.
   if (!model->ContainsIndex(active_index)) {
     if (active_index == TabStripModel::kNoTab) {
       LOG(ERROR) << "TabStripModel of the browser tyring to attach to has no "
                     "active tab.";
+
+      // Avoid dumping too many times not to impact the performance as this may
+      // be called multiple times for each mouse drag.
+      static bool has_crash_reported_for_no_tab = false;
+      if (!has_crash_reported_for_no_tab) {
+        base::debug::DumpWithoutCrashing();
+        has_crash_reported_for_no_tab = true;
+      }
     } else {
       LOG(ERROR)
           << "TabStripModel of the browser trying to attach to has invalid "
           << "active index: " << active_index;
-    }
 
-    // Avoid dumping too many times not to impact the performance as this may be
-    // called multiple times for each mouse drag.
-    static bool has_crash_reported = false;
-    if (!has_crash_reported) {
-      base::debug::DumpWithoutCrashing();
-      has_crash_reported = true;
+      // Avoid dumping too many times not to impact the performance as this may
+      // be called multiple times for each mouse drag.
+      static bool has_crash_reported_for_invalid_index = false;
+      if (!has_crash_reported_for_invalid_index) {
+        base::debug::DumpWithoutCrashing();
+        has_crash_reported_for_invalid_index = true;
+      }
     }
     return false;
   }
+#endif  // BUILDFLAG(IS_MAC)
 
   if (model->IsTabBlocked(active_index)) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(USE_AURA)
 
   // We don't allow drops on windows that don't have tabstrips.
   if (!other_browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))
