@@ -17,6 +17,8 @@ extern const CGFloat kFakeLocationBarTopConstraint;
 
 extern const CGFloat kScrolledToTopOmniboxBottomMargin;
 
+extern const CGFloat kCenteredHintLabelSidePadding;
+
 extern const CGFloat kHintLabelHeightMargin;
 
 // The margin added to the fake omnibox to have at the right position.

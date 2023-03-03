@@ -186,3 +186,7 @@ bool ShouldShowPartialTranslateInIncognito() {
       kIOSEditMenuPartialTranslate,
       kIOSEditMenuPartialTranslateNoIncognitoParam, false);
 }
+
+BASE_FEATURE(kNewNTPOmniboxLayout,
+             "kNewNTPOmniboxLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
