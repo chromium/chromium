@@ -147,6 +147,10 @@ class RendererFreezerTest : public testing::Test {
     renderer_freezer_.reset();
   }
 
+  void SimulateRenderProcessHostCreated(content::RenderProcessHost* rph) {
+    renderer_freezer_->OnRenderProcessHostCreated(rph);
+  }
+
  protected:
   void Init() {
     renderer_freezer_ = std::make_unique<RendererFreezer>(
@@ -270,11 +274,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
     extensions::ProcessMap::Get(profile_)
         ->Insert(extension->id(), rph->GetID(), site_instance->GetId());
 
-    // Send the notification that the RenderProcessHost has been created.
-    content::NotificationService::current()->Notify(
-        content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-        content::Source<content::RenderProcessHost>(rph),
-        content::NotificationService::NoDetails());
+    SimulateRenderProcessHostCreated(rph);
   }
 
   // Owned by |profile_manager_|.
@@ -299,11 +299,7 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonExtensionRenderers) {
   content::RenderProcessHost* rph =
       rph_factory->CreateRenderProcessHost(profile_, site_instance.get());
 
-  // Send the notification that the RenderProcessHost has been created.
-  content::NotificationService::current()->Notify(
-      content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-      content::Source<content::RenderProcessHost>(rph),
-      content::NotificationService::NoDetails());
+  SimulateRenderProcessHostCreated(rph);
 
   EXPECT_EQ(kSetShouldFreezeRenderer, test_delegate_->GetActions());
 }
