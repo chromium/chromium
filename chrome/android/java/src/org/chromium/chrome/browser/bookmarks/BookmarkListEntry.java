@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.content.Context;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
@@ -125,10 +123,8 @@ public final class BookmarkListEntry {
      * @param title The title of the section header.
      * @param topPadding The top padding of the section header. Only impacts the padding when
      *         greater than 0.
-     * @param context The context to use.
      */
-    static BookmarkListEntry createSectionHeader(
-            CharSequence title, int topPadding, Context context) {
+    static BookmarkListEntry createSectionHeader(CharSequence title, int topPadding) {
         SectionHeaderData sectionHeaderData = new SectionHeaderData(title, topPadding);
         return new BookmarkListEntry(ViewType.SECTION_HEADER, null, sectionHeaderData);
     }
@@ -161,13 +157,5 @@ public final class BookmarkListEntry {
     @Nullable
     SectionHeaderData getSectionHeaderData() {
         return mSectionHeaderData;
-    }
-
-    /**
-     * Creates a chip list.
-     */
-    static BookmarkListEntry createChipList() {
-        return new BookmarkListEntry(
-                ViewType.TAG_CHIP_LIST, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);
     }
 }

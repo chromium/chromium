@@ -18,17 +18,6 @@ import java.util.List;
  */
 public interface BookmarkDelegate {
     /**
-     * Delegate used to open urls for main fragment on tablet.
-     */
-    interface BookmarkStateChangeListener {
-        /**
-         * Let the tab containing bookmark manager load the url and later handle UI updates.
-         * @param url The url to open in tab.
-         */
-        public void onBookmarkUiStateChange(String url);
-    }
-
-    /**
      * Returns whether the bookmarks UI will be shown in a dialog, instead of a NativePage. This is
      * typically true on phones and false on tablets, but not always, e.g. in multi-window mode or
      * after upgrading to the new bookmarks.
