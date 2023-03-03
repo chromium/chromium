@@ -52,7 +52,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/scoped_user_protocol_entry.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "components/variations/variations_associated_data.h"
@@ -348,8 +347,7 @@ class OpenSystemSettingsHelper {
 
   OpenSystemSettingsHelper(const wchar_t* const schemes[],
                            base::OnceClosure on_finished_callback)
-      : scoped_user_protocol_entry_(schemes[0]),
-        on_finished_callback_(std::move(on_finished_callback)) {
+      : on_finished_callback_(std::move(on_finished_callback)) {
     static const wchar_t kUrlAssociationFormat[] =
         L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\"
         L"%ls\\UserChoice";
@@ -421,10 +419,6 @@ class OpenSystemSettingsHelper {
 
   // Used to make sure only one instance is alive at the same time.
   static OpenSystemSettingsHelper* instance_;
-
-  // This is needed to make sure that Windows displays an entry for the scheme
-  // inside the "Choose default apps by protocol" settings page.
-  ScopedUserProtocolEntry scoped_user_protocol_entry_;
 
   // The function to call when the interaction with the system settings is
   // finished.
