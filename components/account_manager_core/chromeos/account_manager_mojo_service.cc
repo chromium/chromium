@@ -182,12 +182,15 @@ void AccountManagerMojoService::ReportAuthError(
     mojom::GoogleServiceAuthErrorPtr mojo_error) {
   absl::optional<account_manager::AccountKey> maybe_account_key =
       account_manager::FromMojoAccountKey(mojo_account_key);
-  DCHECK(maybe_account_key)
-      << "Can't unmarshal account of type: " << mojo_account_key->account_type;
+  if (!maybe_account_key) {
+    LOG(ERROR) << "Can't unmarshal account with id: " << mojo_account_key->id
+               << " and type: " << mojo_account_key->account_type;
+    return;
+  }
 
   absl::optional<GoogleServiceAuthError> maybe_error =
       account_manager::FromMojoGoogleServiceAuthError(mojo_error);
-  if (!maybe_error.has_value()) {
+  if (!maybe_error) {
     // Newer version of Lacros may have reported an error that older version of
     // Ash doesn't understand yet. Ignore such errors.
     LOG(ERROR) << "Can't unmarshal error with state: " << mojo_error->state;
