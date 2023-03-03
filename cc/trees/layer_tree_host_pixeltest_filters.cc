@@ -827,9 +827,9 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 
   background->AddChild(child);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
 #if defined(ARCH_CPU_ARM64)
-  // Windows, macOS, and Fuchsia on ARM64 has some pixels difference
+  // Windows, macOS, iOS and Fuchsia on ARM64 has some pixels difference
   // crbug.com/1029728, crbug.com/1048249, crbug.com/1128443
   float percentage_pixels_error = 1.f;
   float average_error_allowed_in_bad_pixels = 2.f;
@@ -853,7 +853,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
           .SetErrorPixelsPercentageLimit(percentage_pixels_error)
           .SetAvgAbsErrorLimit(average_error_allowed_in_bad_pixels)
           .SetAbsErrorLimit(error_allowed));
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
 
   RunPixelTest(background,
                base::FilePath(FILE_PATH_LITERAL("rotated_filter_.png"))
@@ -890,13 +890,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
     defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_OZONE)
 #if defined(ARCH_CPU_ARM64) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE))
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
   // crbug.com/1029728, crbug.com/1128443
   float percentage_pixels_error = 0.89f;
   float average_error_allowed_in_bad_pixels = 5.f;
   int error_allowed = 17;
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
   // There's a 1 pixel error on MacOS and ChromeOS
   float percentage_pixels_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
