@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -117,8 +118,15 @@ void SharingHubBubbleViewImpl::OnActionSelected(
   if (!controller_)
     return;
 
-  controller_->OnActionSelected(button->action_command_id(),
-                                button->action_name_for_metrics());
+  // The announcement has to happen here rather than in the button itself: the
+  // button doesn't know whether controller_ will be null, so it doesn't know
+  // whether the action will actually happen.
+  const SharingHubAction& action = button->action_info();
+  if (action.announcement_id) {
+    GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(action.announcement_id));
+  }
+  controller_->OnActionSelected(action);
 
   Hide();
 }

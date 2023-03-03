@@ -64,8 +64,7 @@ class SharingHubBubbleControllerDesktopImpl
   base::CallbackListSubscription RegisterPreviewImageChangedCallback(
       PreviewImageChangedCallback callback) override;
   base::WeakPtr<SharingHubBubbleController> GetWeakPtr() override;
-  void OnActionSelected(int command_id,
-                        std::string feature_name_for_metrics) override;
+  void OnActionSelected(const SharingHubAction& action) override;
   void OnBubbleClosed() override;
 
  protected:

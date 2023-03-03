@@ -38,8 +38,7 @@ class FakeSharingHubBubbleController : public SharingHubBubbleController {
       PreviewImageChangedCallback callback) override;
   base::WeakPtr<SharingHubBubbleController> GetWeakPtr() override;
 
-  MOCK_METHOD2(OnActionSelected,
-               void(int command_id, std::string feature_name_for_metrics));
+  MOCK_METHOD1(OnActionSelected, void(const SharingHubAction&));
   MOCK_METHOD0(OnBubbleClosed, void());
 
  private:

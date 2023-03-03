@@ -34,6 +34,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/vector_icons.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -43,11 +44,13 @@ namespace sharing_hub {
 SharingHubAction::SharingHubAction(int command_id,
                                    std::u16string title,
                                    const gfx::VectorIcon* icon,
-                                   std::string feature_name_for_metrics)
+                                   std::string feature_name_for_metrics,
+                                   int announcement_id)
     : command_id(command_id),
       title(title),
       icon(icon),
-      feature_name_for_metrics(feature_name_for_metrics) {}
+      feature_name_for_metrics(feature_name_for_metrics),
+      announcement_id(announcement_id) {}
 
 SharingHubAction::SharingHubAction(const SharingHubAction& src) = default;
 SharingHubAction& SharingHubAction::operator=(const SharingHubAction& src) =
@@ -102,45 +105,46 @@ void SharingHubModel::PopulateFirstPartyActions() {
 
   first_party_action_list_.emplace_back(
       IDC_COPY_URL, l10n_util::GetStringUTF16(IDS_SHARING_HUB_COPY_LINK_LABEL),
-      &kCopyIcon, "SharingHubDesktop.CopyURLSelected");
+      &kCopyIcon, "SharingHubDesktop.CopyURLSelected", IDS_LINK_COPIED);
 
   if (DesktopScreenshotsFeatureEnabled(context_)) {
     first_party_action_list_.emplace_back(
         IDC_SHARING_HUB_SCREENSHOT,
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL),
-        &kSharingHubScreenshotIcon, "SharingHubDesktop.ScreenshotSelected");
+        &kSharingHubScreenshotIcon, "SharingHubDesktop.ScreenshotSelected", 0);
   }
 
   first_party_action_list_.emplace_back(
       IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-      &kLaptopAndSmartphoneIcon, "SharingHubDesktop.SendTabToSelfSelected");
+      &kLaptopAndSmartphoneIcon, "SharingHubDesktop.SendTabToSelfSelected", 0);
 
   first_party_action_list_.emplace_back(
       IDC_QRCODE_GENERATOR,
       l10n_util::GetStringUTF16(IDS_SHARING_HUB_GENERATE_QR_CODE_LABEL),
-      &kQrcodeGeneratorIcon, "SharingHubDesktop.QRCodeSelected");
+      &kQrcodeGeneratorIcon, "SharingHubDesktop.QRCodeSelected", 0);
 
   if (media_router::MediaRouterEnabled(context_)) {
     first_party_action_list_.emplace_back(
         IDC_ROUTE_MEDIA,
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
-        &vector_icons::kMediaRouterIdleIcon, "SharingHubDesktop.CastSelected");
+        &vector_icons::kMediaRouterIdleIcon, "SharingHubDesktop.CastSelected",
+        0);
   }
 
   if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
     first_party_action_list_.emplace_back(
         IDC_FOLLOW, l10n_util::GetStringUTF16(IDS_SHARING_HUB_FOLLOW_LABEL),
-        &kAddIcon, "SharingHubDesktop.FollowSelected");
+        &kAddIcon, "SharingHubDesktop.FollowSelected", 0);
     first_party_action_list_.emplace_back(
         IDC_UNFOLLOW,
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_FOLLOWING_LABEL),
-        &views::kMenuCheckIcon, "SharingHubDesktop.UnfollowSelected");
+        &views::kMenuCheckIcon, "SharingHubDesktop.UnfollowSelected", 0);
   }
 
   first_party_action_list_.emplace_back(
       IDC_SAVE_PAGE, l10n_util::GetStringUTF16(IDS_SHARING_HUB_SAVE_PAGE_LABEL),
-      &kSavePageIcon, "SharingHubDesktop.SavePageSelected");
+      &kSavePageIcon, "SharingHubDesktop.SavePageSelected", 0);
 }
 
 bool SharingHubModel::DoShowSendTabToSelfForWebContents(

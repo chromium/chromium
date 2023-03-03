@@ -31,7 +31,8 @@ struct SharingHubAction {
   SharingHubAction(int command_id,
                    std::u16string title,
                    const gfx::VectorIcon* icon,
-                   std::string feature_name_for_metrics);
+                   std::string feature_name_for_metrics,
+                   int announcement_id);
   SharingHubAction(const SharingHubAction&);
   SharingHubAction& operator=(const SharingHubAction&);
   SharingHubAction(SharingHubAction&&);
@@ -41,6 +42,7 @@ struct SharingHubAction {
   std::u16string title;
   raw_ptr<const gfx::VectorIcon> icon;
   std::string feature_name_for_metrics;
+  int announcement_id;
 };
 
 // The Sharing Hub model contains a list of first and third party actions.
