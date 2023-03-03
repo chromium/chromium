@@ -164,10 +164,6 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest, IllegalStopThrowsDOMError) {
-  MakeTypicalCall("testIllegalStopThrowsDOMError();", kMediaRecorderHtmlFile);
-}
-
 IN_PROC_BROWSER_TEST_F(WebRtcMediaRecorderTest,
                        IllegalStartWhileRecordingThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInRecordingStateThrowsDOMError();",

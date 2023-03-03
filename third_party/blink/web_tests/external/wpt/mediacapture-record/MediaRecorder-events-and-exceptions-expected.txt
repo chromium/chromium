@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
-FAIL MediaRecorder events and exceptions Failed to execute 'stop' on 'MediaRecorder': The MediaRecorder's state is 'inactive'.
+FAIL MediaRecorder events and exceptions assert_throws_dom: recorder should throw() when starting with inactive stream function "function() {
+                        recorder.start();
+                      }" threw object "UnknownError: Failed to execute 'start' on 'MediaRecorder': The MediaRecorder cannot start becausethere are no audio or video tracks available." that is not a DOMException NotSupportedError: property "code" is equal to 0, expected 9
 Harness: the test ran to completion.
 
