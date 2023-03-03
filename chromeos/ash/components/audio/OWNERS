@@ -1,6 +1,8 @@
 hychao@chromium.org
 yuhsuan@chromium.org
 
+file://chrome/browser/ash/audio/OWNERS
+
 # For cros_audio_config*:
 per-file cros_audio_config*=ashleydp@google.com
 per-file cros_audio_config*=gavinwill@chromium.org
