@@ -6,13 +6,12 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/guest_view/renderer/guest_view_request.h"
-#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "ui/gfx/geometry/size.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-microtask-queue.h"
@@ -21,8 +20,11 @@
 namespace {
 
 using GuestViewContainerMap = std::map<int, guest_view::GuestViewContainer*>;
-static base::LazyInstance<GuestViewContainerMap>::DestructorAtExit
-    g_guest_view_container_map = LAZY_INSTANCE_INITIALIZER;
+
+GuestViewContainerMap& GetContainerMap() {
+  static base::NoDestructor<GuestViewContainerMap> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -33,6 +35,7 @@ class GuestViewContainer::RenderFrameLifetimeObserver
  public:
   RenderFrameLifetimeObserver(GuestViewContainer* container,
                               content::RenderFrame* render_frame);
+  ~RenderFrameLifetimeObserver() override = default;
 
   RenderFrameLifetimeObserver(const RenderFrameLifetimeObserver&) = delete;
   RenderFrameLifetimeObserver& operator=(const RenderFrameLifetimeObserver&) =
@@ -42,7 +45,7 @@ class GuestViewContainer::RenderFrameLifetimeObserver
   void OnDestruct() override;
 
  private:
-  GuestViewContainer* container_;
+  GuestViewContainer* const container_;
 };
 
 GuestViewContainer::RenderFrameLifetimeObserver::RenderFrameLifetimeObserver(
@@ -55,26 +58,25 @@ void GuestViewContainer::RenderFrameLifetimeObserver::OnDestruct() {
   container_->RenderFrameDestroyed();
 }
 
-GuestViewContainer::GuestViewContainer(content::RenderFrame* render_frame)
-    : element_instance_id_(guest_view::kInstanceIDNone),
-      render_frame_(render_frame),
-      in_destruction_(false),
-      destruction_isolate_(nullptr),
-      element_resize_isolate_(nullptr) {
-  render_frame_lifetime_observer_ =
-      std::make_unique<RenderFrameLifetimeObserver>(this, render_frame_);
+GuestViewContainer::GuestViewContainer(content::RenderFrame* render_frame,
+                                       int element_instance_id)
+    : element_instance_id_(element_instance_id),
+      render_frame_lifetime_observer_(
+          std::make_unique<RenderFrameLifetimeObserver>(this, render_frame)) {
+  DCHECK(!base::Contains(GetContainerMap(), element_instance_id));
+  GetContainerMap().insert(std::make_pair(element_instance_id, this));
 }
 
 GuestViewContainer::~GuestViewContainer() {
   // Note: Cleanups should be done in GuestViewContainer::Destroy(), not here.
+  DCHECK(in_destruction_);
 }
 
 // static.
 GuestViewContainer* GuestViewContainer::FromID(int element_instance_id) {
-  GuestViewContainerMap* guest_view_containers =
-      g_guest_view_container_map.Pointer();
-  auto it = guest_view_containers->find(element_instance_id);
-  return it == guest_view_containers->end() ? nullptr : it->second;
+  GuestViewContainerMap& guest_view_containers = GetContainerMap();
+  auto it = guest_view_containers.find(element_instance_id);
+  return it == guest_view_containers.end() ? nullptr : it->second;
 }
 
 // Right now a GuestViewContainer can be destroyed in one of the following
@@ -92,18 +94,14 @@ void GuestViewContainer::Destroy(bool embedder_frame_destroyed) {
 
   in_destruction_ = true;
 
-  // Give our derived class an opportunity to perform some cleanup prior to
-  // destruction.
-  OnDestroy(embedder_frame_destroyed);
-
   RunDestructionCallback(embedder_frame_destroyed);
 
   // Invalidate weak references to us to avoid late arriving tasks from running
   // during destruction
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (element_instance_id() != guest_view::kInstanceIDNone)
-    g_guest_view_container_map.Get().erase(element_instance_id());
+  DCHECK_NE(element_instance_id(), guest_view::kInstanceIDNone);
+  GetContainerMap().erase(element_instance_id());
 
   if (!embedder_frame_destroyed) {
     if (pending_response_)
@@ -129,8 +127,6 @@ void GuestViewContainer::RegisterDestructionCallback(
 }
 
 void GuestViewContainer::RenderFrameDestroyed() {
-  OnRenderFrameDestroyed();
-  render_frame_ = nullptr;
   Destroy(true /* embedder_frame_destroyed */);
 }
 
@@ -199,56 +195,6 @@ void GuestViewContainer::OnRequestAcknowledged(
 
   // Perform the subsequent request if one exists.
   PerformPendingRequest();
-}
-
-void GuestViewContainer::SetElementInstanceID(int element_instance_id) {
-  DCHECK_EQ(element_instance_id_, guest_view::kInstanceIDNone);
-  element_instance_id_ = element_instance_id;
-
-  DCHECK(!g_guest_view_container_map.Get().count(element_instance_id));
-  g_guest_view_container_map.Get().insert(
-      std::make_pair(element_instance_id, this));
-}
-
-void GuestViewContainer::RegisterElementResizeCallback(
-    v8::Local<v8::Function> callback,
-    v8::Isolate* isolate) {
-  element_resize_callback_.Reset(isolate, callback);
-  element_resize_isolate_ = isolate;
-}
-
-void GuestViewContainer::DidResizeElement(const gfx::Size& new_size) {
-  // Call the element resize callback, if one is registered.
-  if (element_resize_callback_.IsEmpty())
-    return;
-
-  render_frame_->GetTaskRunner(blink::TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&GuestViewContainer::CallElementResizeCallback,
-                                weak_ptr_factory_.GetWeakPtr(), new_size));
-}
-
-void GuestViewContainer::CallElementResizeCallback(
-    const gfx::Size& new_size) {
-  v8::HandleScope handle_scope(element_resize_isolate_);
-  v8::Local<v8::Function> callback = v8::Local<v8::Function>::New(
-      element_resize_isolate_, element_resize_callback_);
-  v8::Local<v8::Context> context;
-  if (!callback->GetCreationContext().ToLocal(&context))
-    return;
-
-  const int argc = 2;
-  v8::Local<v8::Value> argv[argc] = {
-      v8::Integer::New(element_resize_isolate_, new_size.width()),
-      v8::Integer::New(element_resize_isolate_, new_size.height())};
-
-  v8::Context::Scope context_scope(context);
-  v8::MicrotasksScope microtasks(element_resize_isolate_,
-                                 context->GetMicrotaskQueue(),
-                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
-
-  callback->Call(context, context->Global(), argc, argv)
-      .FromMaybe(v8::Local<v8::Value>());
 }
 
 }  // namespace guest_view
