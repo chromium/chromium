@@ -6,7 +6,6 @@
 
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,18 +44,6 @@
   DCHECK(!_settingsAreDismissed);
 
   _settingsAreDismissed = YES;
-}
-
-#pragma mark - PasswordCheckupConsumer
-
-- (void)setPasswordCheckupHomepageState:(PasswordCheckupHomepageState)state
-                 insecurePasswordCounts:
-                     (InsecurePasswordCounts)insecurePasswordCounts {
-  // TODO(crbug.com/1406540): Add method's body.
-}
-
-- (void)setAffiliatedGroupCount:(NSInteger)affiliatedGroupCount {
-  // TODO(crbug.com/1406540): Add method's body.
 }
 
 @end
