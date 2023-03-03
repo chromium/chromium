@@ -22,10 +22,10 @@ namespace shared_highlighting {
 TEST_F(ParsingUtilsTest, ParseRect) {
   CGRect expected_rect = CGRectMake(1, 2, 3, 4);
   base::Value rect_value = base::Value(base::Value::Type::DICT);
-  rect_value.SetDoubleKey("x", expected_rect.origin.x);
-  rect_value.SetDoubleKey("y", expected_rect.origin.y);
-  rect_value.SetDoubleKey("width", expected_rect.size.width);
-  rect_value.SetDoubleKey("height", expected_rect.size.height);
+  rect_value.GetDict().Set("x", expected_rect.origin.x);
+  rect_value.GetDict().Set("y", expected_rect.origin.y);
+  rect_value.GetDict().Set("width", expected_rect.size.width);
+  rect_value.GetDict().Set("height", expected_rect.size.height);
 
   absl::optional<CGRect> opt_rect = ParseRect(&rect_value);
   ASSERT_TRUE(opt_rect.has_value());
@@ -39,19 +39,19 @@ TEST_F(ParsingUtilsTest, ParseRect) {
   EXPECT_FALSE(ParseRect(&empty_dict_value).has_value());
 
   base::Value copied_value = rect_value.Clone();
-  copied_value.RemoveKey("x");
+  copied_value.GetDict().Remove("x");
   EXPECT_FALSE(ParseRect(&copied_value).has_value());
 
   copied_value = rect_value.Clone();
-  copied_value.RemoveKey("y");
+  copied_value.GetDict().Remove("y");
   EXPECT_FALSE(ParseRect(&copied_value).has_value());
 
   copied_value = rect_value.Clone();
-  copied_value.RemoveKey("width");
+  copied_value.GetDict().Remove("width");
   EXPECT_FALSE(ParseRect(&copied_value).has_value());
 
   copied_value = rect_value.Clone();
-  copied_value.RemoveKey("height");
+  copied_value.GetDict().Remove("height");
   EXPECT_FALSE(ParseRect(&copied_value).has_value());
 }
 

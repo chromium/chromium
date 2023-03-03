@@ -20,7 +20,7 @@ const CGFloat kCaretWidth = 4.0;
 namespace shared_highlighting {
 
 BOOL IsValidDictValue(const base::Value* value) {
-  return value && value->is_dict() && !value->DictEmpty();
+  return value && value->is_dict() && !value->GetDict().empty();
 }
 
 absl::optional<CGRect> ParseRect(const base::Value* value) {
