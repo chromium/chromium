@@ -4,11 +4,23 @@
 
 #include "sandbox/policy/linux/bpf_print_backend_policy_linux.h"
 
-namespace sandbox {
-namespace policy {
+#include "sandbox/linux/bpf_dsl/bpf_dsl.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
+
+namespace sandbox::policy {
 
 PrintBackendProcessPolicy::PrintBackendProcessPolicy() = default;
 PrintBackendProcessPolicy::~PrintBackendProcessPolicy() = default;
 
-}  // namespace policy
-}  // namespace sandbox
+bpf_dsl::ResultExpr PrintBackendProcessPolicy::EvaluateSyscall(
+    int sysno) const {
+  auto* sandbox_linux = SandboxLinux::GetInstance();
+  if (sandbox_linux->ShouldBrokerHandleSyscall(sysno)) {
+    return sandbox_linux->HandleViaBroker(sysno);
+  }
+
+  // TODO(crbug.com/1421088): write a better syscall filter.
+  return bpf_dsl::Allow();
+}
+
+}  // namespace sandbox::policy

@@ -88,6 +88,7 @@ if (enable_oop_printing && (is_linux || is_chromeos)) {
     configs += [ ":strict" ]
 
     deps = [
+      ":printing_base",
       "//base",
       "//printing/buildflags",
       "//sandbox/linux:sandbox_services",
