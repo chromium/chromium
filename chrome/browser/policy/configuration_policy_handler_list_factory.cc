@@ -864,6 +864,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKerberosEnabled,
     prefs::kKerberosEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kMandatoryExtensionsForIncognitoNavigation,
+    prefs::kMandatoryExtensionsForIncognitoNavigation,
+    base::Value::Type::LIST },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1399,7 +1402,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kShowTouchpadScrollScreenEnabled,
     ash::prefs::kShowTouchpadScrollScreenEnabled,
     base::Value::Type::BOOLEAN },
-
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

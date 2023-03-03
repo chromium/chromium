@@ -360,6 +360,7 @@ extern const char kDeskAPIThirdPartyAccessEnabled[];
 extern const char kDeskAPIThirdPartyAllowlist[];
 extern const char kForceMaximizeOnFirstRun[];
 extern const char kInsightsExtensionEnabled[];
+extern const char kMandatoryExtensionsForIncognitoNavigation[];
 extern const char kOOMKillsDailyCount[];
 extern const char kOOMKillsDailySample[];
 extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];

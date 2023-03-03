@@ -1104,6 +1104,11 @@ const char kSharedStorage[] = "shared_storage";
 // window size.
 const char kForceMaximizeOnFirstRun[] = "ui.force_maximize_on_first_run";
 
+// A list of extensions ids that have to be allowed to run in Incognito by the
+// user in order to use Incognito mode.
+const char kMandatoryExtensionsForIncognitoNavigation[] =
+    "mandatory_extensions_for_incognito_navigation";
+
 // Counter for reporting daily OOM kills count.
 const char kOOMKillsDailyCount[] = "oom_kills.daily_count";
 

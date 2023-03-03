@@ -1659,6 +1659,10 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kSendMouseEventsDisabledFormControlsEnabled, true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
+#endif
 }
 
 // static
