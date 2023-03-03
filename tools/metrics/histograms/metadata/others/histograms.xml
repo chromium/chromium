@@ -3211,23 +3211,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContextMenu.SelectedOptionAndroid.{LinkType}.NewTabOption"
-    enum="SelectedNewTabCreationOption" expires_after="M120">
-  <owner>meiliang@chromium.org</owner>
-  <owner>sbirch@chromium.org</owner>
-  <summary>
-    This records the order of the context menu item 'Open in new tab' and 'Open
-    in new tab in group' and the which item is selected. This is logged on
-    Android only. It is logged when user long pressed on {LinkType} and selected
-    either the 'Open in new tab' or the 'Open in new tab in group' item from the
-    context menu.
-  </summary>
-  <token key="LinkType">
-    <variant name="ImageLink" summary="an image link"/>
-    <variant name="Link" summary="a link"/>
-  </token>
-</histogram>
-
 <histogram name="ContextMenu.SelectedOptionAndroid{Type}"
     enum="ContextMenuOptionAndroid" expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->

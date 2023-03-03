@@ -629,15 +629,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileDownload.ContextMenu.SaveImage"
-    enum="ContextMenuSaveImage" expires_after="M85">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records various counts related to the save image context menu
-    option.
-  </summary>
-</histogram>
-
 <histogram name="MobileDownload.DownloadLaterPromptStatus"
     enum="DownloadLaterPromptStatus" expires_after="2023-02-06">
   <owner>shaktisahu@chromium.org</owner>

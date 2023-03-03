@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -184,122 +183,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int OPEN_IN_NEW_WINDOW = 40;
             int NUM_ENTRIES = 41;
         }
-
-        // Note: these values must match the ContextMenuSaveImage enum in enums.xml.
-        // Only add new values at the end, right before NUM_ENTRIES.
-        @IntDef({TypeSaveImage.LOADED, TypeSaveImage.NOT_DOWNLOADABLE,
-                TypeSaveImage.DISABLED_AND_IS_NOT_IMAGE_PARAM,
-                TypeSaveImage.DISABLED_AND_IS_IMAGE_PARAM, TypeSaveImage.SHOWN})
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface TypeSaveImage {
-            int LOADED = 0;
-            // int FETCHED_LOFI = 1; deprecated
-            int NOT_DOWNLOADABLE = 2;
-            int DISABLED_AND_IS_NOT_IMAGE_PARAM = 3;
-            int DISABLED_AND_IS_IMAGE_PARAM = 4;
-            int SHOWN = 5;
-            int NUM_ENTRIES = 6;
-        }
-
-        // This is used for recording the enum histogram:
-        //   * ContextMenu.SelectedOptionAndroid.ImageLink.NewTabOption
-        //   * ContextMenu.SelectedOptionAndroid.Link.NewTabOption
-        // OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB means the context menu shows the
-        //   'open in new tab' item before the 'open in new tab in group' item and the
-        //   'open in new tab' item is selected.
-        // OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP means the context menu shows the
-        //    'open in new tab' item before the 'open in new tab in group' item and the
-        //    'open in new tab in group' item is selected.
-        // OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB means the context menu shows the
-        //    'open in new tab in group' item before the 'open in new tab' item and the
-        //    'open in new tab' item is selected.
-        // OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP means the context menu
-        // shows the
-        //    'open in new tab in group' item before the 'open in new tab' item and the
-        //    'open in new tab in group' item is selected.
-        @IntDef({SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB,
-                SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP,
-                SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB,
-                SelectedNewTabCreationEnum
-                        .OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP})
-        @Retention(RetentionPolicy.SOURCE)
-        private @interface SelectedNewTabCreationEnum {
-            int OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB = 0;
-            int OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP = 1;
-            int OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB = 2;
-            int OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP = 3;
-
-            int NUM_ENTRIES = 4;
-        }
-
-        /**
-         * Records a histogram entry when the user selects an item from a context menu.
-         * @param params The ContextMenuParams describing the current context menu.
-         * @param action The action that the user selected (e.g. ACTION_SAVE_IMAGE).
-         */
-        static void record(WebContents webContents, ContextMenuParams params, @Action int action) {
-            String histogramName = String.format("ContextMenu.SelectedOptionAndroid.%s",
-                    ContextMenuUtils.getContextMenuTypeForHistogram(params));
-
-            // Record SharedHighlightingInteraction only for Shared Highlighting V2 menu options
-            // (share highlight, remove highlight and learn more).
-            if (params.getOpenedFromHighlight() && !params.isVideo() && !params.isImage()) {
-                assert histogramName.equals(
-                        "ContextMenu.SelectedOptionAndroid.SharedHighlightingInteraction");
-                if (action != Action.SHARE_HIGHLIGHT || action != Action.REMOVE_HIGHLIGHT
-                        || action != Action.LEARN_MORE) {
-                    histogramName = "ContextMenu.SelectedOptionAndroid.Link";
-                }
-            }
-
-            RecordHistogram.recordEnumeratedHistogram(histogramName, action, Action.NUM_ENTRIES);
-
-            if (params.isAnchor() && !params.isVideo() && !params.getOpenedFromHighlight()) {
-                if (params.isImage()) {
-                    assert histogramName.equals("ContextMenu.SelectedOptionAndroid.ImageLink");
-                } else {
-                    assert histogramName.equals("ContextMenu.SelectedOptionAndroid.Link");
-                }
-                tryToRecordGroupRelatedHistogram(histogramName, action);
-            }
-        }
-
-        private static void tryToRecordGroupRelatedHistogram(
-                String histogramName, @Action int action) {
-            if (TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()) return;
-
-            boolean openInGroupShownFirst =
-                    TabUiFeatureUtilities.showContextMenuOpenNewTabInGroupItemFirst();
-
-            @SelectedNewTabCreationEnum
-            int selectedNewTabCreationEnum =
-                    SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB;
-
-            if (action == Action.OPEN_IN_NEW_TAB) {
-                if (openInGroupShownFirst) {
-                    selectedNewTabCreationEnum =
-                            SelectedNewTabCreationEnum
-                                    .OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB;
-                }
-            } else if (action == Action.OPEN_IN_NEW_TAB_IN_GROUP) {
-                selectedNewTabCreationEnum = openInGroupShownFirst
-                        ? SelectedNewTabCreationEnum
-                                  .OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP
-                        : SelectedNewTabCreationEnum
-                                  .OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP;
-            }
-            RecordHistogram.recordEnumeratedHistogram(histogramName + ".NewTabOption",
-                    selectedNewTabCreationEnum, SelectedNewTabCreationEnum.NUM_ENTRIES);
-        }
-
-        /**
-         * Helper method to record MobileDownload.ContextMenu.SaveImage UMA
-         * @param type Type to record
-         */
-        static void recordSaveImageUma(int type) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "MobileDownload.ContextMenu.SaveImage", type, TypeSaveImage.NUM_ENTRIES);
-        }
     }
 
     /**
@@ -352,7 +235,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public List<Pair<Integer, ModelList>> buildContextMenu() {
-        boolean hasSaveImage = false;
         mShowEphemeralTabNewLabel = null;
 
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
@@ -459,7 +341,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             imageGroup.add(createListItem(Item.COPY_IMAGE));
             if (isSrcDownloadableScheme) {
                 imageGroup.add(createListItem(Item.SAVE_IMAGE));
-                hasSaveImage = true;
             }
 
             // If set, show 'Share Image' before 'Search with Google Lens'.
@@ -497,7 +378,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
             }
 
-            recordSaveImageContextMenuResult(isSrcDownloadableScheme);
             groupedItems.add(new Pair<>(R.string.contextmenu_image_title, imageGroup));
         }
 
@@ -547,17 +427,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             }
             if (groupedItems.isEmpty() && items.size() > 0) {
                 groupedItems.add(new Pair<>(R.string.contextmenu_link_title, items));
-            }
-        }
-
-        if (!groupedItems.isEmpty()
-                && BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            if (!hasSaveImage) {
-                ContextMenuUma.recordSaveImageUma(mParams.isImage()
-                                ? ContextMenuUma.TypeSaveImage.DISABLED_AND_IS_IMAGE_PARAM
-                                : ContextMenuUma.TypeSaveImage.DISABLED_AND_IS_NOT_IMAGE_PARAM);
-            } else {
-                ContextMenuUma.recordSaveImageUma(ContextMenuUma.TypeSaveImage.SHOWN);
             }
         }
 
@@ -917,26 +786,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     /**
-     * Record the UMA related to save image context menu option.
-     * @param isDownloadableScheme The image is downloadable.
-     */
-    private void recordSaveImageContextMenuResult(boolean isDownloadableScheme) {
-        if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            return;
-        }
-
-        ContextMenuUma.recordSaveImageUma(ContextMenuUma.TypeSaveImage.LOADED);
-
-        if (!isDownloadableScheme) {
-            ContextMenuUma.recordSaveImageUma(ContextMenuUma.TypeSaveImage.NOT_DOWNLOADABLE);
-        }
-    }
-
-    /**
      * Record a UMA ping and a UKM ping if enabled.
      */
     private void recordContextMenuSelection(int actionId) {
-        ContextMenuUma.record(mItemDelegate.getWebContents(), mParams, actionId);
         if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
             maybeRecordActionUkm("ContextMenuAndroid.Selected", actionId);
         }

@@ -19103,16 +19103,6 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="Read Later"/>
 </enum>
 
-<enum name="ContextMenuSaveImage">
-  <summary>Context menu type related to the save image option.</summary>
-  <int value="0" label="Loaded"/>
-  <int value="1" label="(DEPRECATED in M77) Image was fatched LoFi"/>
-  <int value="2" label="Not downloadable scheme"/>
-  <int value="3" label="No save image option and param is not image"/>
-  <int value="4" label="No save image option and param is image"/>
-  <int value="5" label="Save image option shown"/>
-</enum>
-
 <enum name="ContextMenuSaveLinkType">
   <obsolete>
     Removed in M103
@@ -92663,16 +92653,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="At least one segment default model missing metadata"/>
   <int value="15"
       label="At least one segment on demand tflite model execution failed"/>
-</enum>
-
-<enum name="SelectedNewTabCreationOption">
-  <int value="0" label="Open in new tab is first, selected open in new tab"/>
-  <int value="1"
-      label="Open in new tab is first, selected open new tab in group"/>
-  <int value="2"
-      label="Open new tab in group is first, selected open in new tab"/>
-  <int value="3"
-      label="Open new tab in group is first, selected open new tab in group"/>
 </enum>
 
 <enum name="SelectedTheme">

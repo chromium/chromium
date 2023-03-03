@@ -1146,8 +1146,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="ShoppingDomain"
       label="The context menu was shown for a link that its domain is on the
              Shopping domain allowlist in the Lens experiment."/>
-  <affected-histogram name="ContextMenu.SelectedOptionAndroid.Image"/>
-  <affected-histogram name="ContextMenu.SelectedOptionAndroid.ImageLink"/>
   <affected-histogram name="ContextMenu.Shown"/>
 </histogram_suffixes>
 
