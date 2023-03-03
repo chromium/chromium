@@ -1,75 +1,129 @@
 # [Web Apps](../README.md) - Testing
 
 
-Testing in WebAppProvider falls into 3 different categories.
-1. Unit tests (`*_unittest.cc` files), which are the most efficient.
-1. Browser tests (`*_browsertest.cc` files), which run the whole Chrome browser for each test. This makes them less efficient, but possible to test interactions between different parts of Chrome.
-   * Note: These are currently not being run on Mac CQ trybots (see https://crbug.com/1042757), but they are run on the waterfall.
-1. [Integration tests](../../ui/views/web_apps/README.md), which are a special kind of browser-test-based framework to test our critical user journeys.
+Please read [Testing In Chromium][13] for general guidance on writing tests in chromium.
 
-When creating features in this system, it will probably involve creating a mixture of all 3 of these test types.
+The following tests are expected for writing code in this system:
 
-Please read [Testing In Chromium](../../../../docs/testing/testing_in_chromium.md) for general guidance on writing tests in chromium.
+* Unit tests
+* Browser tests
+* Integration tests
 
-## Terminology
+### Known Issues
 
-### `Fake*` or `Test*` classes
-
-A class that starts with `Fake` or `Test` is meant to completely replace a component of the system. They should be inheriting from a base class (often pure virtual) and then implement a version of that component that will seem to be working correctly to other system components, but not actually do anything.
-
-An example is [fake_os_integration_manager.h](../test/fake_os_integration_manager.h), which pretends to successfully do install, update, and uninstall operations, but actually just does nothing.
-
-### `Mock*` classes
-
-A class that start with `Mock` is a [gmock](https://github.com/google/googletest/tree/HEAD/googlemock) version of the class. This allows the user to have complete control of exactly what that class does, verify it is called exactly as expected, etc. These tend to be much more powerful to use than a `Fake`, as you can easily specify every possible case you might want to check, like which arguments are called and the exact calling order of multiple functions, even across multiple mocks. The downside is that they require creating a mock class & learning how to use gmock.
-
-An example is [MockOsIntegrationManager](../os_integration_manager_unittest.cc) inside of the unittest file.
+- Unit tests currently cannot rely on `WebContents` functionality, as that is not built as part of unit test frameworks. Instead, they must use the `FakeWebAppUrlLoader` or `FakeWebAppDataRetriever` classes.
+  - Note: This should be fixed in early 2023. See [bug][1] to make it easier to install apps in unit tests that require a web contents and [bug][2] to improve the `WebContents` dependency and current helper classes to allow the WebAppProvider system to not directly depend on `WebContents`.
+- Installing web apps before the WebAppProvider system starts can be cumbersome.
+  - Browser tests can use the `PRE_` test functionality to set up any state.
+  - Unit tests must either load a static profile directory saved in the test data, or create a test-only way to explicitly delay the desired subsystem from starting.
 
 ## Unit tests
-Unit tests have the following benefits
-* are very efficient,
-* run on all relevant CQ trybots (while https://crbug.com/1042757 is not fixed), and
-* will always be supported by the [code coverage](../../../../docs/testing/code_coverage.md) framework.
 
-The downside is that it can be difficult to test interactions between different parts of our system in Chrome (which can range from blink with the [`ManifestFetcher`](https://source.chromium.org/search?q=ManifestFetcher) to the install dialog in [`PWAInstallView`](https://source.chromium.org/search?q=PWAInstallView)).
+Unit tests have the following benefits:
 
-Unit tests usually rely on "faking" or "mocking" out dependencies to allow one specific class to be tested, without requiring the entire WebAppProvider (and thus Profile, Sync Service, etc) to be fully running. This is accomplished by having major components:
-1. declare all public methods as `virtual` so that a `Fake`, `Test`, or `Mock` version of the class can be used instead, and
-1. accept all dependencies in their constructor or `SetSubsystems` method.
+* They are very efficient.
+* They run on all relevant CQ trybots.
+* They will always be supported by the [code coverage][8] framework.
 
-This allows a unittest to create a part of the WebAppProvider system that uses all mocked or faked dependencies, allowing easy testing.
+Unit tests are the fastest tests to execute and are expected to be used to test most cases, especially error cases. They are usually built on the `WebAppTest` base class, and use the `FakeWebAppProvider` to customize (or not) the [dependencies][3] of the `WebAppProvider` system.
 
+Notes
 
-### Tool: `FakeWebAppProvider`
-
-The [`FakeWebAppProvider`](../test/fake_web_app_provider.h) is basically a fake version of the WebAppProvider system, that uses the  [`WebAppProvider`](../web_app_provider.h) root class to set up subsystems and can be used to selectively set fake subsystems or shut them
-down on a per-demand basis to test system shutdown use-cases.
-
-Sometimes it may not be required to write/modify tests using the FakeWebAppProvider, especially if testing requires a state where
-the sync_bridge has not started yet. To that end, only the required dependencies for the [`WebAppRegistrar`](../web_app_registrar.h),
-[`WebAppSyncBridge`](../web_app_sync_bridge.h) and the [`FakeWebAppDatabaseFactory`](../test/fake_web_app_database_factory.h) is enough.
-See [`WebAppSyncBridgeUnitTest`](../web_app_sync_bridge_unittest.cc) for more info on how this can be done.
-
-### Common issues & solutions
-
-#### Dependency not passed in normally
-Sometimes classes have not used the dependency pattern, or rely on pulling things off of the `Profile` keyed services. This can be solved by
-1. Refactoring that class a little to have the dependency passed in the constructor / `SetSubsystems` method.
-1. There should be a way to register a keyed service factory on a given `Profile` to return what you want.
-1. If all else fails, use a browser test
+- UI elements do not work in unit tests, and the appropriate fakes must be used (see [External Dependencies][3]).
+- If one of the external dependencies of the system cannot be faked out yet or the feature is tightly coupled to this, then it might make sense to use a browser test instead (or make that dependency fake-able).
+- Please use the [`WebAppTest`][4] base class if possible.
 
 ## Browser tests
-Browser tests are much more expensive to run, as they basically run a fully functional browser with it's own profile directory. These tests are usually only created to test functionality that requires multiple parts of the system to be running or dependencies like the Sync service to be fully running and functional.
 
-Browsertest are great as integration tests, as they are almost completely running the full Chrome environment, with a real profile on disk. It is good practice to have browsertests be as true-to-user-action as possible, to make sure that as much of our stack is exercised.
+With improved web app test support, most of the components should using unittests to cover the detailed test cases.
 
-A good example set of browser tests is in [`web_app_browsertest.cc`](../../ui/web_applications/web_app_browsertest.cc).
+Creating an integration test (using the integration framework) should satisfy the need for end-to-end tests for major use-cases of your feature. However, you may need to create one due to:
 
-### Tool: `FakeWebAppProvider`
+- The unittest framework doesn’t support certain needs.
+- You need end-to-end test, but using integration test framework has too much overhead.
 
-The [`FakeWebAppProvider`](../test/fake_web_app_provider.h) is a nifty way to mock out pieces of the WebAppProvider system for a browser test. To use it, you put a [`FakeWebAppProviderCreator`](../test/fake_web_app_provider.h) in your test class, and give it a callback to create a `WebAppProvider` given a `Profile`. This allows you to create a [`FakeWebAppProvider`](../test/fake_web_app_provider.h) instead of the regular `WebAppProvider`, swapping out any part of the system.
+Browser tests are much more expensive to run, as they run a fully functional browser. These tests are usually only created to test functionality that requires multiple parts of the system to be running or dependencies like the Sync service to be fully running and functional. It is good practice to have browsertests be as true-to-user-action as possible, to make sure that as much of our stack is exercised.
 
-This means that all of the users of [`WebAppProvider::Get`](https://source.chromium.org/search?q=WebAppProvider::Get), [`WebAppProvider::GetForWebContents`](https://source.chromium.org/search?q=WebAppProvider::Get) (etc) will be talking to the `FakeWebAppProvider` that the test created. This is perfect for a browsertest, as it runs the full browser.
+An example set of browser tests are in [`web_app_browsertest.cc`][6]. Please use the [`WebAppControllerBrowserTest`][5] base class.
 
 ## Integration tests
-Due to the complexity of the WebApp feature space, a special testing framework was created to help list, minimize, and test all critical user journeys. See the [README.md here](../../ui/views/web_apps/README.md) about how to write these.
+
+We have a custom integration testing framework that we use due to the complexity of our use-cases. See [integration-testing-framework.md][7] for more information.
+
+**It is a good idea to think about your integration tests early & figure out your CUJs with the team. Having your CUJs and integration tests working early greatly speeds up development & launch time.**
+
+## Testing OS integration
+
+It is very common to test OS integration. By default, OS integration is suppressed if the test extends [`WebAppTest`][4]  or  [`WebAppControllerBrowserTest`][5].
+
+End-to-end OS integration testing is facilitated using the [`OsIntegrationTestOverride`][9]. If OS integration CAN be tested in an automated way, this class will do so. If not, the existence of this override will stub-out the OS integration at the lowest level to test as much of our code as possible.
+
+## `Fake*` classes
+
+A class that starts with `Fake` is meant to completely replace a component of the system. They inherit from a base class with virtual methods, and allow a test to specify custom behavior or checks. The component should seem to be working correctly to other system components, but with behavior that is defined by a test.
+
+The most common pattern here is that the Fake will by default appear to work correctly, and a test can either specify it to return custom results, fail in specific ways, or simply check that it was used in the correct way.
+
+An example is [fake_os_integration_manager.h][14], which pretends to successfully perform install, update, and uninstall operations on OS integration, but instead pretends to work and does simple bookkeeping for tests to check that it was called correctly.
+
+## `Mock*` classes
+
+A class that start with `Mock` is a [gmock][12] version of the class. This allows the user to have complete control of exactly what that class does, verify it is called exactly as expected, etc. These tend to be much more powerful to use than a `Fake`, as you can easily specify every possible case you might want to check, like which arguments are called and the exact calling order of multiple functions, even across multiple mocks. The downsides are:
+* Mocks end up being very verbose to use, often at the expense of test readiability.
+* Mocks require creating a mock class & learning how to use gmock.
+
+These are generally not preferred to a "Fake".
+
+## Tool: `FakeWebAppProvider`
+
+The [`FakeWebAppProvider`][11] is basically a fake version of the WebAppProvider system, that uses the  [`WebAppProvider`][10] root class to set up subsystems and can be used to selectively set fake subsystems or shut them
+down on a per-demand basis to test system shutdown use-cases.
+
+By default, the `FakeWebAppProvider` will NOT start the `WebAppProvider` system, and it must be manually done so. This is usually done by calling  [`AwaitStartWebAppProviderAndSubsystems`][15].
+
+## Common issue: Waiting
+
+Many operations that happen at higher levels that the commands / scheduling system in the WebAppProvider require that tests wait for async operations to complete.
+
+### Tabs & Browsers
+
+* `AllBrowserTabAddedWaiter` - Waits for a tab to be added anywhere (works for both app browser and regular browser).
+* `BrowserChangeObserver` - Waits for a browser to add or remove.
+
+### Navigation & Loading
+
+* `UrlLoadObserver` - Waits for given url to load anywhere.
+* `content::TestNavigationObserver` - Waits for a navigation anywhere or in given WebContents. See StartWatchingNewWebContents to watch all web contents.
+* `content::WebContentsObserver` - Can generally be used to wait for events on a given `content::WebContents`
+  * To wait for `onload` to complete in a page, the `::DocumentOnLoadCompletedInPrimaryMainFrame` can be used if `WebContents::IsDocumentOnLoadCompletedInPrimaryMainFrame()` returns false.
+
+### `WebAppProvider` commands
+
+[`WebAppCommandManager::AwaitAllCommandsCompleteForTesting`][16] will wait for all commands to complete. This will mostly handle all tasks in the `WebAppProvider`.
+
+## Common issue: External Dependency that isn't faked
+
+Sometimes classes use a dependency that either doesn't work or isn't fake-able in our system.
+
+1. Can you just not depend on that? The best way is to remove the dependency entirely if possible.
+1. If there is a way to easily fake the dependency that is already supported, then do that next.
+    - e.g. if it's a `KeyedService`, and the authors have a fake version you can use, then use that. See how it is used elsewhere.
+1. Create a new interface for this new external dependency, put it on the `WebAppProvider`, and create a fake for it so that you can test with it faked.
+1. If all else fails, use a browser test.
+
+[1]: https://b/269618710
+[2]: http://b/271124885
+[3]: README.md#external-dependencies
+[4]: https://source.chromium.org/search?q=web_app_test.h
+[5]: https://source.chromium.org/search?q=WebAppControllerBrowserTest
+[6]: https://source.chromium.org/search?q=web_app_browsertest.cc
+[7]: integration-testing-framework.md
+[8]: ../testing/code_coverage.md
+[9]: https://source.chromium.org/search?q=OsIntegrationTestOverride
+[10]: https://source.chromium.org/search?q=WebAppProvider
+[11]: https://source.chromium.org/search?q=FakeWebAppProvider
+[12]: https://github.com/google/googletest/tree/HEAD/googlemock
+[13]: ../testing/testing_in_chromium.md
+[14]: https://source.chromium.org/search?q=FakeOsIntegrationManager
+[15]: https://source.chromium.org/search?q=AwaitStartWebAppProviderAndSubsystems
+[16]: https://source.chromium.org/search?q=AwaitAllCommandsCompleteForTesting
