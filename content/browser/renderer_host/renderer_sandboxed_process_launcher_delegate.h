@@ -41,7 +41,7 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
                                               bool is_jit_disabled);
   // sandbox::policy::SandboxDelegate:
   std::string GetSandboxTag() override;
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
+  bool InitializeConfig(sandbox::TargetConfig* config) override;
   void PostSpawnTarget(base::ProcessHandle process) override;
   bool CetCompatible() override;
 

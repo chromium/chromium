@@ -811,7 +811,8 @@ std::unique_ptr<NavigationUIData> ContentBrowserClient::GetNavigationUIData(
 }
 
 #if BUILDFLAG(IS_WIN)
-bool ContentBrowserClient::PreSpawnChild(sandbox::TargetPolicy* policy,
+
+bool ContentBrowserClient::PreSpawnChild(sandbox::TargetConfig* config,
                                          sandbox::mojom::Sandbox sandbox_type,
                                          ChildSpawnFlags flags) {
   return true;

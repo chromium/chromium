@@ -24,6 +24,11 @@ bool SandboxedProcessLauncherDelegate::GetAppContainerId(
   return false;
 }
 
+bool SandboxedProcessLauncherDelegate::InitializeConfig(
+    sandbox::TargetConfig* config) {
+  return true;
+}
+
 bool SandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   return true;

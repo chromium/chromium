@@ -726,6 +726,11 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     if (result != SBOX_ALL_OK)
       return result;
   }
+
+  if (!delegate->InitializeConfig(config)) {
+    return SBOX_ERROR_DELEGATE_INITIALIZE_CONFIG;
+  }
+
   return SBOX_ALL_OK;
 }
 

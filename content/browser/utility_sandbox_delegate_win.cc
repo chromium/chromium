@@ -287,81 +287,89 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
          sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges;
 }
 
-bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
-    sandbox::TargetPolicy* policy) {
-  sandbox::TargetConfig* config = policy->GetConfig();
-  if (!config->IsConfigured()) {
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kAudio) {
-      if (!AudioPreSpawnTarget(config))
-        return false;
+bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
+    sandbox::TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kAudio) {
+    if (!AudioPreSpawnTarget(config)) {
+      return false;
     }
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
-      if (!NetworkPreSpawnTarget(config))
-        return false;
+  }
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
+    if (!NetworkPreSpawnTarget(config)) {
+      return false;
     }
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
-      if (!IconReaderPreSpawnTarget(config))
-        return false;
+  }
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
+    if (!IconReaderPreSpawnTarget(config)) {
+      return false;
     }
-
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing) {
-      if (!XrCompositingPreSpawnTarget(config, cmd_line_, sandbox_type_))
-        return false;
-    }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI) {
-      if (!ScreenAIPreSpawnTarget(config, sandbox_type_))
-        return false;
-    }
-#endif
-
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
-      auto result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-      config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-      result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                                     sandbox::USER_LIMITED);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-    }
-
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
-        sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
-      auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
-                                          sandbox::USER_UNPROTECTED);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-    }
-
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
-        sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit ||
-        sandbox_type_ == sandbox::mojom::Sandbox::kFileUtil) {
-      auto result =
-          sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-    }
-
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
-        sandbox_type_ == sandbox::mojom::Sandbox::kFileUtil) {
-      auto delayed_flags = config->GetDelayedProcessMitigations();
-      delayed_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-      auto result = config->SetDelayedProcessMitigations(delayed_flags);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-    }
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-    if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
-      if (!PrintBackendPreSpawnTarget(config))
-        return false;
-    }
-#endif
   }
 
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing) {
+    if (!XrCompositingPreSpawnTarget(config, cmd_line_, sandbox_type_)) {
+      return false;
+    }
+  }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI) {
+    if (!ScreenAIPreSpawnTarget(config, sandbox_type_)) {
+      return false;
+    }
+  }
+#endif
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
+    auto result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
+    }
+    config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+    result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                                   sandbox::USER_LIMITED);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
+    }
+  }
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
+    auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
+                                        sandbox::USER_UNPROTECTED);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
+    }
+  }
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kFileUtil) {
+    auto result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
+    }
+  }
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kFileUtil) {
+    auto delayed_flags = config->GetDelayedProcessMitigations();
+    delayed_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+    auto result = config->SetDelayedProcessMitigations(delayed_flags);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
+    }
+  }
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
+    if (!PrintBackendPreSpawnTarget(config)) {
+      return false;
+    }
+  }
+#endif
+
   return GetContentClient()->browser()->PreSpawnChild(
-      policy, sandbox_type_,
+      config, sandbox_type_,
       ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);
 }
 

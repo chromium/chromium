@@ -33,6 +33,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   std::string GetSandboxTag() override;
   bool DisableDefaultPolicy() override;
   bool GetAppContainerId(std::string* appcontainer_id) override;
+  bool InitializeConfig(sandbox::TargetConfig* config) override;
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
   void PostSpawnTarget(base::ProcessHandle process) override;
   bool ShouldUnsandboxedRunInJob() override;

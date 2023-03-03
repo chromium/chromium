@@ -90,39 +90,39 @@ std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {
       GetSandboxType());
 }
 
-bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
-    sandbox::TargetPolicy* policy) {
-  sandbox::TargetConfig* config = policy->GetConfig();
-  if (!config->IsConfigured()) {
-    sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(config);
+bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
+    sandbox::TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
 
-    ContentBrowserClient::AppContainerFlags ac_flags(
-        ContentBrowserClient::AppContainerFlags::kAppContainerFlagNone);
-    if (renderer_app_container_disabled_) {
-      ac_flags = ContentBrowserClient::AppContainerFlags::
-          kAppContainerFlagDisableAppContainer;
-    }
-    const std::wstring& sid =
-        GetContentClient()->browser()->GetAppContainerSidForSandboxType(
-            GetSandboxType(), ac_flags);
-    if (!sid.empty())
-      sandbox::policy::SandboxWin::AddAppContainerPolicy(config, sid.c_str());
+  sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(config);
 
-    // If the renderer process is protected by code integrity, more
-    // mitigations become available.
-    if (renderer_code_integrity_enabled_ && dynamic_code_can_be_disabled_) {
-      sandbox::MitigationFlags mitigation_flags =
-          config->GetDelayedProcessMitigations();
-      mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-      if (sandbox::SBOX_ALL_OK !=
-          config->SetDelayedProcessMitigations(mitigation_flags)) {
-        return false;
-      }
-    }
-
-    config->SetFilterEnvironment(base::FeatureList::IsEnabled(
-        sandbox::policy::features::kRendererFilterEnvironment));
+  ContentBrowserClient::AppContainerFlags ac_flags(
+      ContentBrowserClient::AppContainerFlags::kAppContainerFlagNone);
+  if (renderer_app_container_disabled_) {
+    ac_flags = ContentBrowserClient::AppContainerFlags::
+        kAppContainerFlagDisableAppContainer;
   }
+  const std::wstring& sid =
+      GetContentClient()->browser()->GetAppContainerSidForSandboxType(
+          GetSandboxType(), ac_flags);
+  if (!sid.empty()) {
+    sandbox::policy::SandboxWin::AddAppContainerPolicy(config, sid.c_str());
+  }
+
+  // If the renderer process is protected by code integrity, more
+  // mitigations become available.
+  if (renderer_code_integrity_enabled_ && dynamic_code_can_be_disabled_) {
+    sandbox::MitigationFlags mitigation_flags =
+        config->GetDelayedProcessMitigations();
+    mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+    if (sandbox::SBOX_ALL_OK !=
+        config->SetDelayedProcessMitigations(mitigation_flags)) {
+      return false;
+    }
+  }
+
+  config->SetFilterEnvironment(base::FeatureList::IsEnabled(
+      sandbox::policy::features::kRendererFilterEnvironment));
 
   ContentBrowserClient::ChildSpawnFlags flags(
       ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);
@@ -131,7 +131,7 @@ bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
         kChildSpawnFlagRendererCodeIntegrity;
   }
   return GetContentClient()->browser()->PreSpawnChild(
-      policy, sandbox::mojom::Sandbox::kRenderer, flags);
+      config, sandbox::mojom::Sandbox::kRenderer, flags);
 }
 
 void RendererSandboxedProcessLauncherDelegateWin::PostSpawnTarget(

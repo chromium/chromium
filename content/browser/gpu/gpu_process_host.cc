@@ -389,10 +389,8 @@ class GpuSandboxedProcessLauncherDelegate
   // which is USER_RESTRICTED breaks both the DirectX backend and the OpenGL
   // backend. Note that the GPU process is connected to the interactive
   // desktop.
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
-    sandbox::TargetConfig* config = policy->GetConfig();
-    if (config->IsConfigured())
-      return true;
+  bool InitializeConfig(sandbox::TargetConfig* config) override {
+    DCHECK(!config->IsConfigured());
 
     if (UseOpenGLRenderer()) {
       // Open GL path.

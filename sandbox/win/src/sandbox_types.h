@@ -166,6 +166,8 @@ enum ResultCode : int {
   SBOX_ERROR_FAILED_TO_FREEZE_CONFIG = 69,
   // Unable to obtain the environment in the broker process.
   SBOX_ERROR_CANNOT_OBTAIN_ENVIRONMENT = 70,
+  // Unable to initialize the target configuration.
+  SBOX_ERROR_DELEGATE_INITIALIZE_CONFIG = 71,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };

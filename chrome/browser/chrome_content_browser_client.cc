@@ -4678,9 +4678,10 @@ ChromeContentBrowserClient::GetLPACCapabilityNameForNetworkService() {
 // Other code should reside in the content layer. Changes to this function
 // should be reviewed by the security team.
 bool ChromeContentBrowserClient::PreSpawnChild(
-    sandbox::TargetPolicy* policy,
+    sandbox::TargetConfig* config,
     sandbox::mojom::Sandbox sandbox_type,
     ChildSpawnFlags flags) {
+  DCHECK(!config->IsConfigured());
 // Does not work under component build because all the component DLLs would need
 // to be manually added and maintained. Does not work under ASAN build because
 // ASAN has not yet fully initialized its instrumentation by the time the CIG
@@ -4743,10 +4744,6 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   if (!base::PathService::Get(base::FILE_EXE, &exe_path))
     return true;
   if (chrome::kBrowserProcessExecutableName != exe_path.BaseName().value())
-    return true;
-
-  sandbox::TargetConfig* config = policy->GetConfig();
-  if (config->IsConfigured())
     return true;
 
   sandbox::MitigationFlags mitigations = config->GetProcessMitigations();

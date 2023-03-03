@@ -168,7 +168,7 @@ struct ResourceRequest;
 
 namespace sandbox {
 class SandboxCompiler;
-class TargetPolicy;
+class TargetConfig;
 namespace mojom {
 enum class Sandbox;
 }  // namespace mojom
@@ -1378,11 +1378,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   };
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
-  // is launched. It gives the embedder a chance to add modify the sandbox
-  // policy. Returns false if child should not spawn.
-  // Only use this for embedder-specific policies, since the bulk of sandbox
-  // policies should go inside the relevant SandboxedProcessLauncherDelegate.
-  virtual bool PreSpawnChild(sandbox::TargetPolicy* policy,
+  // configuration is set. It gives the embedder a chance to modify the sandbox
+  // configuration. Returns false if configuration is invalid and the child
+  // should not spawn. Only use this for embedder-specific policies, since the
+  // bulk of sandbox policies should go inside the relevant
+  // SandboxedProcessLauncherDelegate.
+  virtual bool PreSpawnChild(sandbox::TargetConfig* config,
                              sandbox::mojom::Sandbox sandbox_type,
                              ChildSpawnFlags flags);
 
