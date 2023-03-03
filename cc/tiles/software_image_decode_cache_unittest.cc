@@ -2073,5 +2073,48 @@ TEST_F(SoftwareImageDecodeCacheTest, HdrDecodeToSdr) {
   cache_.DrawWithImageFinished(draw_image, decoded_image);
 }
 
+TEST_F(SoftwareImageDecodeCacheTest, ReduceCacheOnUnrefWithTasks) {
+  bool is_decomposable = true;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
+
+  for (size_t i = 0; i < 2 * cache_.GetMaxNumCacheEntriesForTesting(); ++i) {
+    PaintImage paint_image = CreatePaintImage(100, 100);
+    DrawImage draw_image(
+        paint_image, false,
+        SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+        CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
+        PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+    ImageDecodeCache::TaskResult result = cache_.GetTaskForImageAndRef(
+        cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+    EXPECT_TRUE(result.need_unref);
+    EXPECT_TRUE(result.task);
+    TestTileTaskRunner::ProcessTask(result.task.get());
+    cache_.UnrefImage(draw_image);
+  }
+
+  EXPECT_EQ(cache_.GetNumCacheEntriesForTesting(),
+            cache_.GetMaxNumCacheEntriesForTesting());
+}
+
+TEST_F(SoftwareImageDecodeCacheTest, ReduceCacheOnUnrefWithDraw) {
+  bool is_decomposable = true;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
+
+  for (size_t i = 0; i < 2 * cache_.GetMaxNumCacheEntriesForTesting(); ++i) {
+    PaintImage paint_image = CreatePaintImage(100, 100);
+    DrawImage draw_image(
+        paint_image, false,
+        SkIRect::MakeWH(paint_image.width(), paint_image.height()), quality,
+        CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
+        PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+    DecodedDrawImage decoded_image = cache_.GetDecodedImageForDraw(draw_image);
+    cache_.DrawWithImageFinished(draw_image, decoded_image);
+  }
+
+  EXPECT_EQ(cache_.GetNumCacheEntriesForTesting(),
+            cache_.GetMaxNumCacheEntriesForTesting());
+}
+
 }  // namespace
 }  // namespace cc
