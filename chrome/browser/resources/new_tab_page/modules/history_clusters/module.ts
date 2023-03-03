@@ -52,11 +52,13 @@ export class HistoryClustersModuleElement extends I18nMixin
 
       /** The cluster displayed by this element. */
       cluster: Object,
+      searchResultPage: Object,
     };
   }
 
   cluster: Cluster;
   layoutType: HistoryClusterLayoutType;
+  searchResultPage: URLVisit;
 
   private isLayout_(type: HistoryClusterLayoutType): boolean {
     return type === this.layoutType;
@@ -77,6 +79,25 @@ function recordSelectedLayout(option: HistoryClusterLayoutType) {
       Object.keys(HistoryClusterLayoutType).length);
 }
 
+function processLayoutVisits(
+    visits: URLVisit[], numVisits: number, numImageVisits: number): URLVisit[] {
+  const result: URLVisit[] = Array<URLVisit>(numVisits);
+  let currentImageIdx = 0;
+  let currentVisitIdx = numImageVisits;
+  for (let i = 0; i < visits.length; i++) {
+    if (currentImageIdx < numImageVisits && visits[i].hasUrlKeyedImage) {
+      result[currentImageIdx] = visits[i];
+      currentImageIdx++;
+    } else if (currentVisitIdx < numVisits) {
+      result[currentVisitIdx] = visits[i];
+      currentVisitIdx++;
+    } else {
+      break;
+    }
+  }
+  return result;
+}
+
 async function createElement(): Promise<HistoryClustersModuleElement|null> {
   const data =
       await HistoryClustersProxyImpl.getInstance().handler.getCluster();
@@ -89,17 +110,17 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
 
   const element = new HistoryClustersModuleElement();
   element.cluster = data.cluster!;
+  // Pull out the SRP to be used in the header and to open the cluster
+  // in tab group.
+  element.searchResultPage = data.cluster!.visits[0];
 
-  // History cluster visits include a visit entry for the SRP, which is intended
-  // to be used for the module header's title and for opening the cluster in a
-  // tab group.
-  const visits = element.cluster.visits;
+  // History cluster visits minus the SRP that is included, since the SRP
+  // isn't used in the layout.
+  const visits = element.cluster.visits.slice(1);
   // Count number of visits with images.
   const imageCount =
       visits.filter((visit: URLVisit) => visit.hasUrlKeyedImage).length;
-  // We subtract the SRP from the visit count to get the actual number of
-  // visits that are eligible for layout selection.
-  const visitCount = visits.length - 1;
+  const visitCount = visits.length;
 
   // Calculate which layout to use.
   if (imageCount >= LAYOUT_3_MIN_IMAGE_VISITS) {
@@ -108,15 +129,21 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
     // visits for layout 3.
     if (visitCount >= LAYOUT_3_MIN_VISITS) {
       element.layoutType = HistoryClusterLayoutType.LAYOUT_3;
+      element.cluster.visits = processLayoutVisits(
+          visits, LAYOUT_3_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS);
     } else {
       // If we have enough image visits, we have enough total visits
       // for layout 1, since all visits shown are image visits.
       element.layoutType = HistoryClusterLayoutType.LAYOUT_1;
+      element.cluster.visits = processLayoutVisits(
+          visits, LAYOUT_1_MIN_VISITS, LAYOUT_1_MIN_IMAGE_VISITS);
     }
   } else if (
       imageCount === LAYOUT_2_MIN_IMAGE_VISITS &&
       visitCount >= LAYOUT_2_MIN_VISITS) {
     element.layoutType = HistoryClusterLayoutType.LAYOUT_2;
+    element.cluster.visits = processLayoutVisits(
+        visits, LAYOUT_2_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS);
   } else {
     // If the data doesn't fit any layout, don't show the module.
     recordSelectedLayout(HistoryClusterLayoutType.NONE);

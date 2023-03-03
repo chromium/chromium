@@ -70,10 +70,10 @@
   <template is="dom-if" if="[[isLayout_(1, layoutType)]]" restamp>
     <div id="layout1" class="layout">
       <ntp-history-clusters-tile class="main-tile" large-format
-                           visit="[[cluster.visits.1]]">
+                           visit="[[cluster.visits.0]]">
       </ntp-history-clusters-tile>
       <ntp-history-clusters-tile class="secondary-tile" medium-format
-                           visit="[[cluster.visits.2]]">
+                           visit="[[cluster.visits.1]]">
       </ntp-history-clusters-tile>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
                                related-searches="[[cluster.relatedSearches]]">
@@ -83,14 +83,14 @@
   <template is="dom-if" if="[[isLayout_(2, layoutType)]]" restamp>
     <div id="layout2" class="layout">
       <ntp-history-clusters-tile class="main-tile" large-format
-                           visit="[[cluster.visits.1]]">
+                           visit="[[cluster.visits.0]]">
       </ntp-history-clusters-tile>
       <div class="small-tiles">
         <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.2]]">
+                                 visit="[[cluster.visits.1]]">
         </ntp-history-clusters-tile>
         <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.3]]">
+                                 visit="[[cluster.visits.2]]">
         </ntp-history-clusters-tile>
       </div>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
@@ -102,18 +102,18 @@
     <div id="layout3" class="layout">
       <div class="main-tile">
         <ntp-history-clusters-tile medium-format
-                           visit="[[cluster.visits.1]]">
+                           visit="[[cluster.visits.0]]">
         </ntp-history-clusters-tile>
         <ntp-history-clusters-tile medium-format
-                             visit="[[cluster.visits.2]]">
+                             visit="[[cluster.visits.1]]">
         </ntp-history-clusters-tile>
       </div>
       <div class="small-tiles">
         <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.3]]">
+                                 visit="[[cluster.visits.2]]">
         </ntp-history-clusters-tile>
         <ntp-history-clusters-tile small-format
-                                 visit="[[cluster.visits.4]]">
+                                 visit="[[cluster.visits.3]]">
         </ntp-history-clusters-tile>
       </div>
       <ntp-history-clusters-suggest-tile class="related-searches-tile"
