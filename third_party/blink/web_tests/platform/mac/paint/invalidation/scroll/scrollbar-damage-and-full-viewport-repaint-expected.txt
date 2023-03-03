@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "LayoutNGView #document",
       "bounds": [1000, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -21,7 +21,6 @@
       "name": "LayoutNGBlockFlow DIV id='container'",
       "position": [1, 1],
       "bounds": [2000, 2000],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -43,7 +42,6 @@
       "name": "Scroll corner of LayoutNGBlockFlow DIV id='container'",
       "position": [186, 186],
       "bounds": [15, 15],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 15, 15]
       ],

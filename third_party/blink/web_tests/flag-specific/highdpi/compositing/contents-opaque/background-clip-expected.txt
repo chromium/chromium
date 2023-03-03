@@ -16,14 +16,12 @@
     {
       "name": "LayoutNGBlockFlow DIV class='box composited padding-clip'",
       "bounds": [149, 149],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow DIV class='box composited content-clip'",
       "bounds": [149, 149],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 3
     }

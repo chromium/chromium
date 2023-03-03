@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "LayoutNGView #document",
       "bounds": [785, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -9,7 +9,6 @@
     {
       "name": "LayoutNGBlockFlow HTML",
       "bounds": [785, 3700],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {

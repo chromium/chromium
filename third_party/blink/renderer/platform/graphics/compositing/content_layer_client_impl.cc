@@ -141,6 +141,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_picture_layer_->SetContentsOpaqueForText(
+        cc_display_item_list_->has_draw_text_ops() &&
         pending_layer.TextKnownToBeOnOpaqueBackground());
   }
 }

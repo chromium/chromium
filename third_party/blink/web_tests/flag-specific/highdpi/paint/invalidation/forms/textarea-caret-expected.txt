@@ -20,7 +20,6 @@
       "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [225, 7],
       "bounds": [44, 44],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 44, 44]
       ],
@@ -57,7 +56,6 @@
       "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [-3, -3],
       "bounds": [276, 58],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 276, 58]
       ],

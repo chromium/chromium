@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -9,56 +9,48 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='vertical' class='content'",
       "bounds": [10, 10],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='horizontal' class='content'",
       "bounds": [10, 10],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='both' class='content'",
       "bounds": [10, 10],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='corner' class='container'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 4
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='content'",
       "bounds": [10, 10],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 4
     }

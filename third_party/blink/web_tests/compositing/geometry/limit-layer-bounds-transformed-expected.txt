@@ -2,7 +2,7 @@ Text here
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,7 +10,6 @@ Text here
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='compositing'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
@@ -18,7 +17,6 @@ Text here
       "name": "LayoutNGBlockFlow (positioned) DIV class='indicator'",
       "position": [0, 8],
       "bounds": [350, 142],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#008000"
     }
   ],

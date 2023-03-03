@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -19,8 +19,7 @@
     {
       "name": "LayoutNGTextControlSingleLine INPUT id='target'",
       "position": [8, 8],
-      "bounds": [109, 112],
-      "contentsOpaqueForText": true
+      "bounds": [109, 112]
     }
   ],
   "transforms": [

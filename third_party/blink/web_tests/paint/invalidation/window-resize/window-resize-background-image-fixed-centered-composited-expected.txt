@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "LayoutNGView #document",
       "bounds": [600, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -12,7 +12,6 @@
     {
       "name": "LayoutNGBlockFlow HTML",
       "bounds": [600, 8],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -20,7 +19,7 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "LayoutNGView #document",
       "bounds": [400, 250],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -31,7 +30,6 @@
     {
       "name": "LayoutNGBlockFlow HTML",
       "bounds": [400, 8],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -39,7 +37,7 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "LayoutNGView #document",
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -50,7 +48,6 @@
     {
       "name": "LayoutNGBlockFlow HTML",
       "bounds": [400, 8],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -58,7 +55,7 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -69,7 +66,6 @@
     {
       "name": "LayoutNGBlockFlow HTML",
       "bounds": [800, 8],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]

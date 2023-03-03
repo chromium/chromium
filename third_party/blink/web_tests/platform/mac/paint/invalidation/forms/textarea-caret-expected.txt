@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -20,7 +20,6 @@
       "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [150, 5],
       "bounds": [30, 30],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 30, 30]
       ],
@@ -57,7 +56,6 @@
       "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [-1, -1],
       "bounds": [183, 38],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 183, 38]
       ],

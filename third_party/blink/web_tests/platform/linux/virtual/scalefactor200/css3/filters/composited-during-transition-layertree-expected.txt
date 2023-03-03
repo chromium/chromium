@@ -5,7 +5,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [1600, 1200],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -13,50 +13,42 @@
     {
       "name": "LayoutImage IMG id='grayscale-box'",
       "bounds": [320, 180],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
       "name": "LayoutImage IMG id='sepia-box'",
       "position": [404, 36],
-      "bounds": [320, 180],
-      "contentsOpaqueForText": true
+      "bounds": [320, 180]
     },
     {
       "name": "LayoutImage IMG id='saturate-box'",
       "bounds": [320, 180],
-      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
       "name": "LayoutImage IMG id='huerotate-box'",
       "position": [404, 264],
-      "bounds": [320, 180],
-      "contentsOpaqueForText": true
+      "bounds": [320, 180]
     },
     {
       "name": "LayoutImage IMG id='invert-box'",
       "bounds": [320, 180],
-      "contentsOpaqueForText": true,
       "transform": 3
     },
     {
       "name": "LayoutImage IMG id='opacity-box'",
       "position": [404, 492],
-      "bounds": [320, 180],
-      "contentsOpaqueForText": true
+      "bounds": [320, 180]
     },
     {
       "name": "LayoutImage IMG id='brightness-box'",
       "bounds": [320, 180],
-      "contentsOpaqueForText": true,
       "transform": 4
     },
     {
       "name": "LayoutImage IMG id='contrast-box'",
       "position": [404, 720],
-      "bounds": [320, 180],
-      "contentsOpaqueForText": true
+      "bounds": [320, 180]
     }
   ],
   "transforms": [

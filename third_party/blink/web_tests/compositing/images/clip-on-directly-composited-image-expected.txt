@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,7 +10,6 @@
       "name": "LayoutImage (positioned) IMG class='composited'",
       "position": [10, 10],
       "bounds": [140, 140],
-      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

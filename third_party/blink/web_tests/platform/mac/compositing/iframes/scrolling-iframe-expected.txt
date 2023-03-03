@@ -38,14 +38,12 @@
       "name": "Scroll corner of LayoutNGView #document",
       "position": [285, 135],
       "bounds": [15, 15],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='overlay'",
       "position": [5, 5],
       "bounds": [50, 50],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00000033"
     }
   ],

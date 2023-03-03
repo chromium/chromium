@@ -10,7 +10,6 @@
       "name": "LayoutIFrame IFRAME id='iframe' class='composited'",
       "position": [-30, -30],
       "bounds": [390, 240],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {

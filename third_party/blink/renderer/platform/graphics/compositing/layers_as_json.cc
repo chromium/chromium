@@ -7,6 +7,7 @@
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/content_layer_client_impl.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -152,7 +153,7 @@ int LayersAsJSON::AddTransformJSON(
 
 void LayersAsJSON::AddLayer(const cc::Layer& layer,
                             const TransformPaintPropertyNode& transform,
-                            const LayerAsJSONClient* json_client) {
+                            const ContentLayerClientImpl* layer_client) {
   if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.draws_content()) {
     std::string debug_name = layer.DebugName();
     if (debug_name == "LayoutNGView #document" ||
@@ -163,8 +164,8 @@ void LayersAsJSON::AddLayer(const cc::Layer& layer,
   }
 
   auto layer_json = CCLayerAsJSON(layer, flags_);
-  if (json_client) {
-    json_client->AppendAdditionalInfoAsJSON(flags_, layer, *(layer_json.get()));
+  if (layer_client) {
+    layer_client->AppendAdditionalInfoAsJSON(flags_, layer, *layer_json);
   }
   int transform_id = AddTransformJSON(transform);
   if (transform_id)

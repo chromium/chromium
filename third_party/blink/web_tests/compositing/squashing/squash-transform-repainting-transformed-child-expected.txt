@@ -2,7 +2,7 @@ CASE 1, original layer tree
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -17,8 +17,7 @@ CASE 1, original layer tree
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [4, 4],
-      "bounds": [146, 146],
-      "contentsOpaqueForText": true
+      "bounds": [146, 146]
     }
   ],
   "transforms": [
@@ -38,7 +37,7 @@ CASE 2, hovering over the outer div
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -54,7 +53,6 @@ CASE 2, hovering over the outer div
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [4, 4],
       "bounds": [146, 146],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 132, 132]
       ]
@@ -77,7 +75,7 @@ CASE 3, hovering over the inner div
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -93,7 +91,6 @@ CASE 3, hovering over the inner div
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [4, 4],
       "bounds": [146, 146],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [46, 46, 100, 100]
       ]

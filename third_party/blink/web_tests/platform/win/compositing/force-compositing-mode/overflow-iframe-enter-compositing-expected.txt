@@ -9,7 +9,6 @@
     {
       "name": "LayoutNGBlockFlow HTML",
       "bounds": [508, 516],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },

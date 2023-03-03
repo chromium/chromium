@@ -31,7 +31,6 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='overlay'",
       "position": [5, 5],
       "bounds": [150, 150],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00000099"
     }
   ],

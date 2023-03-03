@@ -15,7 +15,6 @@
     {
       "name": "LayoutNGBlockFlow DIV id='target'",
       "bounds": [200, 200],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00800080",
       "invalidations": [
         [0, 0, 200, 200]

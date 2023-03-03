@@ -10,7 +10,6 @@
       "name": "LayoutIFrame IFRAME",
       "position": [-30, -30],
       "bounds": [390, 240],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
