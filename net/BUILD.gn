@@ -53,7 +53,8 @@ enable_python_utils =
 
 # Platforms that cannot use python_utils (like Android but see full
 # list above) will instead use a remote server.
-use_remote_test_server = !enable_python_utils && enable_websockets
+use_remote_test_server =
+    !enable_python_utils && (enable_websockets || (is_cronet_build && !is_ios))
 
 # Whether //net should use an external GSSAPI library for implementing HTTP
 # Negotiate authentication. All platforms for which use_kerberos is true should
@@ -2040,7 +2041,7 @@ static_library("test_support") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (enable_websockets) {
+  if (enable_websockets || (is_cronet_build && !is_ios)) {
     sources += [
       "test/spawned_test_server/base_test_server.cc",
       "test/spawned_test_server/base_test_server.h",
