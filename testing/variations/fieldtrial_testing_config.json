@@ -8743,15 +8743,17 @@
         {
             "platforms": [
                 "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_230303",
                     "enable_features": [
-                        "PageInfoAboutThisSiteMoreInfo"
+                        "PageInfoAboutThisSiteMoreInfo",
+                        "PageInfoAboutThisSiteNonEn"
                     ]
                 }
             ]
@@ -8760,16 +8762,11 @@
     "PageInfoAboutThisSitePFINGS": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_230303",
                     "enable_features": [
                         "PageInfoAboutThisSiteNonEn"
                     ]
