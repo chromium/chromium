@@ -278,6 +278,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8Database_Transaction_Method,
           WebFeature::kV8Database_ReadTransaction_Method,
           WebFeature::kV8SQLTransaction_ExecuteSql_Method,
+          WebFeature::kMediaStreamOnActive,
+          WebFeature::kMediaStreamOnInactive,
       }));
   return *opt_in_features;
 }
