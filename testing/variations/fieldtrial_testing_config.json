@@ -9762,6 +9762,7 @@
                         "BrowsingTopics",
                         "BrowsingTopicsXHR",
                         "FencedFrames",
+                        "FencedFramesAPIChanges",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
                         "PrivacySandboxSettings3",
