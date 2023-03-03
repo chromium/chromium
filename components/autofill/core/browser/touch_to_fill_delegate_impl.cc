@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -13,6 +14,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
@@ -97,14 +99,19 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
     return {TriggerOutcome::kCannotShowAutofillUi, {}};
   }
 
-  // Create a vector of credit card objects from the vector of pointers to
-  // credit cards.
-  std::vector<CreditCard> cards_array;
-  cards_array.reserve(cards_to_suggest.size());
+  // If the card is enrolled into virtual card number, create a copy of the
+  // card with `CreditCard::VIRTUAL_CARD` as the record type, and insert it
+  // before the actual card.
+  std::vector<autofill::CreditCard> real_and_virtual_cards;
   for (const CreditCard* card : cards_to_suggest) {
-    cards_array.push_back(*card);
+    if (card->virtual_card_enrollment_state() == CreditCard::ENROLLED &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
+      real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(*card));
+    }
+    real_and_virtual_cards.push_back(*card);
   }
-  return {TriggerOutcome::kShown, std::move(cards_array)};
+  return {TriggerOutcome::kShown, std::move(real_and_virtual_cards)};
 }
 
 void TouchToFillDelegateImpl::SetShouldSuppressKeyboard(bool suppress) {

@@ -94,6 +94,19 @@ class CreditCard : public AutofillDataModel {
     NETWORK = 2,
   };
 
+  // Creates a copy of the passed in credit card, and sets its `record_type` to
+  // `CreditCard::VIRTUAL_CARD`. This is used to differentiate virtual cards
+  // from their real counterpart on the UI layer.
+  static CreditCard CreateVirtualCard(const CreditCard& card);
+
+  // Creates a copy of the passed in credit card, and sets its `record_type` to
+  // `CreditCard::VIRTUAL_CARD`. This is used to differentiate virtual cards
+  // from their real counterpart on the UI layer. In addition, a suffix is added
+  // to the guid which also helps differentiate the virtual card from their real
+  // counterpart.
+  static std::unique_ptr<CreditCard> CreateVirtualCardWithGuidSuffix(
+      const CreditCard& card);
+
   CreditCard(const std::string& guid, const std::string& origin);
 
   // Creates a server card. The type must be MASKED_SERVER_CARD or
@@ -373,10 +386,6 @@ class CreditCard : public AutofillDataModel {
 
   // Should be used ONLY by tests.
   std::u16string NicknameAndLastFourDigitsForTesting() const;
-
-  // Static method to help create a virtual card from an existing `CreditCard`
-  // object.
-  static std::unique_ptr<CreditCard> CreateVirtualCard(const CreditCard& card);
 
   VirtualCardEnrollmentState virtual_card_enrollment_state() const {
     return virtual_card_enrollment_state_;
