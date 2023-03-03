@@ -194,9 +194,13 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #if BUILDFLAG(IS_MAC)
     {"biometricAuthenticaionForFillingLabel",
      IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
+    {"biometricAuthenticaionForFillingSublabel",
+     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_MAC},
 #elif BUILDFLAG(IS_WIN)
     {"biometricAuthenticaionForFillingLabel",
      IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
+    {"biometricAuthenticaionForFillingSublabel",
+     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_WIN},
 #endif
   };
   for (const auto& str : kStrings)
