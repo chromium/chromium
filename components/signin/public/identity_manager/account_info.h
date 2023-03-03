@@ -98,6 +98,16 @@ bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);
 bool operator!=(const CoreAccountInfo& l, const CoreAccountInfo& r);
 std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account);
 
+// Comparing `AccountInfo`s is likely a mistake. You should compare either
+// `CoreAccountId` or `CoreAccountInfo` instead:
+//
+//   AccountInfo l, r;
+//   // if (l == r) {
+//   if (l.account_id == r.account_id) {}
+//
+bool operator==(const AccountInfo& l, const AccountInfo& r) = delete;
+bool operator!=(const AccountInfo& l, const AccountInfo& r) = delete;
+
 #if BUILDFLAG(IS_ANDROID)
 // Constructs a Java CoreAccountInfo from the provided C++ CoreAccountInfo
 base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountInfo(

@@ -62,6 +62,10 @@ class MockDiceWebSigninInterceptorDelegate
       override {}
 };
 
+MATCHER_P(HasSameAccountIdAs, other, "") {
+  return arg.account_id == other.account_id;
+}
+
 // Matches BubbleParameters fields excepting the color. This is useful in the
 // test because the color is randomly generated.
 testing::Matcher<const DiceWebSigninInterceptor::Delegate::BubbleParameters&>
@@ -75,11 +79,11 @@ MatchBubbleParameters(
       testing::Field("intercepted_account",
                      &DiceWebSigninInterceptor::Delegate::BubbleParameters::
                          intercepted_account,
-                     parameters.intercepted_account),
+                     HasSameAccountIdAs(parameters.intercepted_account)),
       testing::Field("primary_account",
                      &DiceWebSigninInterceptor::Delegate::BubbleParameters::
                          primary_account,
-                     parameters.primary_account),
+                     HasSameAccountIdAs(parameters.primary_account)),
       testing::Field("show_link_data_option",
                      &DiceWebSigninInterceptor::Delegate::BubbleParameters::
                          show_link_data_option,
