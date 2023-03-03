@@ -5879,12 +5879,7 @@
   {
     "name": "private-network-access-respect-preflight-results",
     "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 113
-  },
-  {
-    "name": "private-network-access-send-preflights",
-    "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "private-state-tokens",
