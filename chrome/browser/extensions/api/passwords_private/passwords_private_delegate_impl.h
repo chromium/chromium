@@ -204,7 +204,8 @@ class PasswordsPrivateDelegateImpl
   // Invokes PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout().
   void OsReauthTimeoutCall();
 
-  void AuthenticateWithBiometrics(
+  // Authenticate the user using os-authentication.
+  void AuthenticateUser(
       const std::u16string& message,
       password_manager::PasswordAccessAuthenticator::AuthResultCallback
           callback);
@@ -254,8 +255,8 @@ class PasswordsPrivateDelegateImpl
   // NativeWindow for the window where the API was called.
   raw_ptr<content::WebContents> web_contents_;
 
-  // Biometric authenticator used to authenticate user on Mac in settings.
-  scoped_refptr<device_reauth::DeviceAuthenticator> biometric_authenticator_;
+  // Device authenticator used to authenticate users in settings.
+  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
 };
