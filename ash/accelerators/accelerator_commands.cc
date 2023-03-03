@@ -101,14 +101,6 @@
 // Keep the functions in this file in alphabetical order.
 namespace ash {
 
-const char kAccessibilityHighContrastShortcut[] =
-    "Accessibility.Shortcuts.CrosHighContrast";
-const char kAccessibilitySpokenFeedbackShortcut[] =
-    "Accessibility.Shortcuts.CrosSpokenFeedback";
-const char kAccessibilityScreenMagnifierShortcut[] =
-    "Accessibility.Shortcuts.CrosScreenMagnifier";
-const char kAccessibilityDockedMagnifierShortcut[] =
-    "Accessibility.Shortcuts.CrosDockedMagnifier";
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
 const char kAccelActivateDeskByIndex[] = "Ash.Accelerators.ActivateDeskByIndex";
@@ -1216,9 +1208,6 @@ void ToggleDockedMagnifier() {
   const bool is_shortcut_enabled =
       IsAccessibilityShortcutEnabled(prefs::kDockedMagnifierEnabled);
 
-  base::UmaHistogramBoolean(kAccessibilityDockedMagnifierShortcut,
-                            is_shortcut_enabled);
-
   Shell* shell = Shell::Get();
 
   RemoveDockedMagnifierNotification();
@@ -1287,9 +1276,6 @@ void ToggleFullscreenMagnifier() {
   const bool is_shortcut_enabled = IsAccessibilityShortcutEnabled(
       prefs::kAccessibilityScreenMagnifierEnabled);
 
-  base::UmaHistogramBoolean(kAccessibilityScreenMagnifierShortcut,
-                            is_shortcut_enabled);
-
   Shell* shell = Shell::Get();
 
   RemoveFullscreenMagnifierNotification();
@@ -1337,9 +1323,6 @@ void ToggleHighContrast() {
   const bool is_shortcut_enabled =
       IsAccessibilityShortcutEnabled(prefs::kAccessibilityHighContrastEnabled);
 
-  base::UmaHistogramBoolean(kAccessibilityHighContrastShortcut,
-                            is_shortcut_enabled);
-
   Shell* shell = Shell::Get();
 
   RemoveHighContrastNotification();
@@ -1375,9 +1358,6 @@ void ToggleHighContrast() {
 void ToggleSpokenFeedback() {
   const bool is_shortcut_enabled = IsAccessibilityShortcutEnabled(
       prefs::kAccessibilitySpokenFeedbackEnabled);
-
-  base::UmaHistogramBoolean(kAccessibilitySpokenFeedbackShortcut,
-                            is_shortcut_enabled);
 
   Shell* shell = Shell::Get();
   const bool old_value =
