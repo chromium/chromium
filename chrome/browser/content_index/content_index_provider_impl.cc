@@ -310,7 +310,6 @@ void ContentIndexProviderImpl::GetAllItems(MultipleItemCallback callback) {
 void ContentIndexProviderImpl::DidGetAllEntriesAcrossStorageParitions(
     std::unique_ptr<OfflineItemList> item_list,
     MultipleItemCallback callback) {
-  ContentIndexMetrics::RecordContentIndexEntries(item_list->size());
   std::move(callback).Run(*item_list);
 }
 

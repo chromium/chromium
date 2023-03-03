@@ -293,14 +293,6 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, UserDeletedEntryDispatchesEvent) {
 
 // TODO(crbug.com/1080922): flaky.
 IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
-  // Inititally there is no content.
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(GetAllItems().empty());
-    histogram_tester.ExpectUniqueSample("ContentIndex.NumEntriesAvailable", 0,
-                                        1);
-  }
-
   // Record that two articles were added.
   {
     base::HistogramTester histogram_tester;
@@ -323,22 +315,11 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
       run_loop.Run();
     }
 
-    histogram_tester.ExpectBucketCount(
-        "ContentIndex.ContentAdded", blink::mojom::ContentCategory::ARTICLE, 2);
-
     EXPECT_EQ(
         ukm_recorder
             .GetEntriesByName(ukm::builders::ContentIndex_Added::kEntryName)
             .size(),
         2u);
-  }
-
-  // Querying the items should record that there are 2 entries available.
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_EQ(GetAllItems().size(), 2u);
-    histogram_tester.ExpectUniqueSample("ContentIndex.NumEntriesAvailable", 2,
-                                        1);
   }
 
   // User deletion will dispatch an event.
@@ -382,10 +363,6 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
     base::RunLoop run_loop;
     SetTabChangeQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
-
-    histogram_tester.ExpectBucketCount("ContentIndex.ContentOpened",
-                                       blink::mojom::ContentCategory::ARTICLE,
-                                       1);
 
     EXPECT_EQ(
         ukm_recorder
