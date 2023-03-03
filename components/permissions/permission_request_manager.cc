@@ -683,6 +683,11 @@ PermissionRequestManager::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+content::WebContents* PermissionRequestManager::GetAssociatedWebContents() {
+  content::WebContents& web_contents = GetWebContents();
+  return &web_contents;
+}
+
 bool PermissionRequestManager::RecreateView() {
   view_ = view_factory_.Run(web_contents(), this);
   if (!view_) {

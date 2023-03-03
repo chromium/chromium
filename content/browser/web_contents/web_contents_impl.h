@@ -583,6 +583,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   void AboutToBeDiscarded(WebContents* new_contents) override;
 
+  [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope()
+      override;
+
   // RenderFrameHostDelegate ---------------------------------------------------
   bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
                          const IPC::Message& message) override;
@@ -1893,6 +1896,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // SetHasPictureInPictureDocument().
   void SetHasPictureInPictureCommon(bool has_picture_in_picture);
 
+  // A scope that disallows custom cursors has expired.
+  void DisallowCustomCursorScopeExpired();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2364,6 +2370,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // either DevTools is opened and consults this value or when a non-prerendered
   // navigation commits in the primary main frame.
   bool last_navigation_was_prerender_activation_for_devtools_ = false;
+
+  // Counts the number of open scopes that disallow custom cursors in this web
+  // contents. Custom cursors are allowed if this is 0.
+  int disallow_custom_cursor_scope_count_ = 0;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

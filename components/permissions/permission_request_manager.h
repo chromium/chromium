@@ -20,6 +20,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -173,6 +174,7 @@ class PermissionRequestManager
   void SetManageClicked() override;
   void SetLearnMoreClicked() override;
   base::WeakPtr<PermissionPrompt::Delegate> GetWeakPtr() override;
+  content::WebContents* GetAssociatedWebContents() override;
   bool RecreateView() override;
 
   void set_manage_clicked() { did_click_manage_ = true; }

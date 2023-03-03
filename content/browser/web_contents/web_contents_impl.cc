@@ -80,6 +80,7 @@
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
+#include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -2210,6 +2211,10 @@ void WebContentsImpl::SetHasPictureInPictureCommon(
   // visible pages.
   if (visibility_ != Visibility::VISIBLE)
     UpdateVisibilityAndNotifyPageAndView(visibility_);
+}
+
+void WebContentsImpl::DisallowCustomCursorScopeExpired() {
+  --disallow_custom_cursor_scope_count_;
 }
 
 void WebContentsImpl::SetHasPictureInPictureVideo(
@@ -9629,10 +9634,19 @@ void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {
                              new_contents);
 }
 
+base::ScopedClosureRunner WebContentsImpl::CreateDisallowCustomCursorScope() {
+  CursorManager* manager = GetPrimaryMainFrame()
+                               ->GetRenderWidgetHost()
+                               ->GetRenderWidgetHostViewBase()
+                               ->GetCursorManager();
+  return manager->CreateDisallowCustomCursorScope();
+}
+
 bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,
                                          PrerenderFinalStatus final_status) {
-  if (!frame_tree_node)
+  if (!frame_tree_node) {
     return false;
+  }
 
   DCHECK_EQ(this, FromFrameTreeNode(frame_tree_node));
 

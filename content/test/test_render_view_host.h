@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
+#include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -127,6 +128,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
   ui::Compositor* GetCompositor() override;
+  CursorManager* GetCursorManager() override;
 
   bool is_showing() const { return is_showing_; }
   bool is_occluded() const { return is_occluded_; }
@@ -189,6 +191,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   absl::optional<DisplayFeature> display_feature_;
 
   raw_ptr<ui::Compositor> compositor_ = nullptr;
+
+  CursorManager cursor_manager_;
 };
 
 // TestRenderWidgetHostViewChildFrame -----------------------------------------

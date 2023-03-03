@@ -46,6 +46,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -1391,6 +1392,12 @@ class WebContents : public PageNavigator,
       PreloadingAttempt* preloading_attempt,
       absl::optional<base::RepeatingCallback<bool(const GURL&)>>
           url_match_predicate = absl::nullopt) = 0;
+
+  // Returns a scope object that needs to be owned by caller in order to
+  // disallow custom cursors. Custom cursors are diallowed in this web contents
+  // for as long as any of the returned |ScopedClosureRunner| objects is alive.
+  [[nodiscard]] virtual base::ScopedClosureRunner
+  CreateDisallowCustomCursorScope() = 0;
 
  private:
   // This interface should only be implemented inside content.

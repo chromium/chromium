@@ -73,6 +73,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
     return weak_factory_.GetWeakPtr();
   }
 
+  content::WebContents* GetAssociatedWebContents() override { return nullptr; }
+
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
   std::vector<permissions::PermissionRequest*> raw_requests_;

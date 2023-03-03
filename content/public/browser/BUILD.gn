@@ -533,6 +533,7 @@ source_set("browser_sources") {
     "//ui/accessibility",
     "//ui/base",
     "//ui/base/clipboard",
+    "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/events",
     "//ui/gl",
     "//ui/shell_dialogs",

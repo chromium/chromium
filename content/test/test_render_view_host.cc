@@ -50,7 +50,10 @@
 namespace content {
 
 TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
-    : RenderWidgetHostViewBase(rwh), is_showing_(false), is_occluded_(false) {
+    : RenderWidgetHostViewBase(rwh),
+      is_showing_(false),
+      is_occluded_(false),
+      cursor_manager_(this) {
 #if BUILDFLAG(IS_ANDROID)
   frame_sink_id_ = AllocateFrameSinkId();
   GetHostFrameSinkManager()->RegisterFrameSinkId(
@@ -322,6 +325,10 @@ absl::optional<DisplayFeature> TestRenderWidgetHostView::GetDisplayFeature() {
 
 ui::Compositor* TestRenderWidgetHostView::GetCompositor() {
   return compositor_;
+}
+
+CursorManager* TestRenderWidgetHostView::GetCursorManager() {
+  return &cursor_manager_;
 }
 
 TestRenderWidgetHostViewChildFrame::TestRenderWidgetHostViewChildFrame(

@@ -167,6 +167,8 @@ static_library("test_support") {
     "../public/test/content_mock_cert_verifier.h",
     "../public/test/content_test_suite_base.cc",
     "../public/test/content_test_suite_base.h",
+    "../public/test/cursor_utils.cc",
+    "../public/test/cursor_utils.h",
     "../public/test/download_test_observer.cc",
     "../public/test/download_test_observer.h",
     "../public/test/embedded_worker_instance_test_harness.cc",

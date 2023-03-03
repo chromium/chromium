@@ -328,8 +328,6 @@ PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;
 void PermissionPromptBubbleView::Show() {
   DCHECK(browser_->window());
 
-  // Set |parent_window| because some valid anchors can become hidden.
-  DCHECK(browser_->window());
   UpdateAnchorPosition();
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);

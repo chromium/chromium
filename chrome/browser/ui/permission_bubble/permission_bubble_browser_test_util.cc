@@ -61,6 +61,11 @@ bool TestPermissionBubbleViewDelegate::RecreateView() {
   return false;
 }
 
+content::WebContents*
+TestPermissionBubbleViewDelegate::GetAssociatedWebContents() {
+  return nullptr;
+}
+
 base::WeakPtr<permissions::PermissionPrompt::Delegate>
 TestPermissionBubbleViewDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
