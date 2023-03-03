@@ -258,11 +258,25 @@ void PPAPIDownloadRequest::SendRequest() {
           "from dangerous sites' under Privacy. This feature is enabled by "
           "default."
         chrome_policy {
+          subProto1 {
+            RealTimeDownloadProtectionRequestAllowed {
+              RealTimeDownloadProtectionRequestAllowed: false
+            }
+          }
+        }
+        chrome_policy {
+          SafeBrowsingProtectionLevel {
+            policy_options {mode: MANDATORY}
+            SafeBrowsingProtectionLevel: 0
+          }
+        }
+        chrome_policy {
           SafeBrowsingEnabled {
             policy_options {mode: MANDATORY}
             SafeBrowsingEnabled: false
           }
         }
+        deprecated_policies: "SafeBrowsingEnabled"
       })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GetDownloadRequestUrl();

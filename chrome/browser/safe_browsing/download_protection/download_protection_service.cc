@@ -234,6 +234,9 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       settings.has_value() &&
       settings.value().block_until_verdict ==
           enterprise_connectors::BlockUntilVerdict::kNoBlock;
+  bool real_time_download_protection_request_allowed =
+      profile &&
+      IsRealTimeDownloadProtectionRequestAllowed(*profile->GetPrefs());
 
   if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
       base::FeatureList::IsEnabled(
@@ -253,14 +256,15 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     return true;
   }
 
-  if (safe_browsing_enabled) {
+  if (safe_browsing_enabled && real_time_download_protection_request_allowed) {
     CheckClientDownload(item, std::move(callback));
     return true;
   }
 
   if (settings.has_value()) {
     DCHECK(report_only_scan);
-    DCHECK(!safe_browsing_enabled);
+    DCHECK(!safe_browsing_enabled ||
+           !real_time_download_protection_request_allowed);
     // Since this branch implies that Safe Browsing is disabled, the pre-deep
     // scanning DownloadCheckResult is considered UNKNOWN.
     UploadForDeepScanning(item, std::move(callback),

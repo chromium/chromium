@@ -139,6 +139,12 @@ extern const char kExtensionTelemetryConfig[];
 // Telemetry Service's file processor.
 extern const char kExtensionTelemetryFileData[];
 
+// A boolean indicating if Real Time File Download Protection requests are
+// allowed to be sent to Google by policy. If false, no ClientDownloadRequest
+// will be sent to Safe Browsing regardless of Safe Browsing Protection Level.
+// If true, follow Safe Browsing Protection Level.
+extern const char kRealTimeDownloadProtectionRequestAllowedByPolicy[];
+
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -247,6 +253,12 @@ bool IsExtendedReportingPolicyManaged(const PrefService& prefs);
 // either the SafeBrowsingEnabled policy(legacy) or the
 // SafeBrowsingProtectionLevel policy(new).
 bool IsSafeBrowsingPolicyManaged(const PrefService& prefs);
+
+// Returns whether Safe Browsing Real Time Download Protection request uploads
+// are allowed for the user. If this returns false, Download Protection
+// request uploads are disabled. Otherwise, Download Protection will depend on
+// other Safe Browsing settings.
+bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs);
 
 // Updates UMA metrics about Safe Browsing Extended Reporting states.
 void RecordExtendedReportingMetrics(const PrefService& prefs);

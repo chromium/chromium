@@ -32920,6 +32920,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1081" label="DeviceSystemAecEnabled"/>
   <int value="1082" label="HttpAllowlist"/>
   <int value="1083" label="HttpsUpgradeEnabled"/>
+  <int value="1084" label="RealTimeDownloadProtectionRequestAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

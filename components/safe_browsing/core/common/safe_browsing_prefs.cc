@@ -118,6 +118,8 @@ const char kExtensionTelemetryConfig[] =
     "safebrowsing.extension_telemetry_configuration";
 const char kExtensionTelemetryFileData[] =
     "safebrowsing.extension_telemetry_file_data";
+const char kRealTimeDownloadProtectionRequestAllowedByPolicy[] =
+    "safebrowsing.real_time_download_protection_request_allowed_by_policy";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -187,6 +189,11 @@ bool IsSafeBrowsingPolicyManaged(const PrefService& prefs) {
          prefs.IsManagedPreference(prefs::kSafeBrowsingEnhanced);
 }
 
+bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs) {
+  return prefs.GetBoolean(
+      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
+}
+
 void RecordExtendedReportingMetrics(const PrefService& prefs) {
   // This metric tracks the extended browsing opt-in based on whichever setting
   // the user is currently seeing. It tells us whether extended reporting is
@@ -242,6 +249,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    base::Value::Dict());
   registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData,
                                    base::Value::Dict());
+  registry->RegisterBooleanPref(
+      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
@@ -348,6 +357,11 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
   }
   preferences_list.Append(login_urls);
   preferences_list.Append(prefs::kPasswordProtectionLoginURLs);
+
+  preferences_list.Append(prefs->GetBoolean(
+      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy));
+  preferences_list.Append(
+      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy);
   return preferences_list;
 }
 

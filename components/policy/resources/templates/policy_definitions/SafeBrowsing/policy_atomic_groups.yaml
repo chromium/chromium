@@ -11,3 +11,4 @@ SafeBrowsing:
   - SafeBrowsingExtendedReportingEnabled
   - SafeBrowsingProtectionLevel
   - SafeBrowsingAllowlistDomains
+  - RealTimeDownloadProtectionRequestAllowed

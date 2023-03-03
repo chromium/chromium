@@ -45,7 +45,7 @@ Refer to README.md for content description and update process.
  <item id="chrome_cleanup_report" added_in_milestone="70" content_hash_code="07c84618" os_list="windows" file_path="chrome/chrome_cleaner/logging/cleaner_logging_service.cc" />
  <item id="chrome_feedback_report_app" added_in_milestone="62" content_hash_code="04bf864a" os_list="linux,windows,chromeos,android" file_path="components/feedback/feedback_uploader.cc" />
  <item id="chrome_variations_service" added_in_milestone="62" content_hash_code="00f59481" os_list="linux,windows,chromeos,android" file_path="components/variations/service/variations_service.cc" />
- <item id="client_download_request" added_in_milestone="62" content_hash_code="04bc89c5" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc" />
+ <item id="client_download_request" added_in_milestone="62" content_hash_code="0661a769" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc" />
  <item id="content_hash_verification_job" added_in_milestone="62" content_hash_code="079fc9db" os_list="linux,windows,chromeos" file_path="extensions/browser/content_hash_fetcher.cc" />
  <item id="content_suggestion_get_favicon" added_in_milestone="62" content_hash_code="0800f6e5" os_list="linux,windows,chromeos,android" file_path="components/ntp_snippets/content_suggestions_service.cc" />
  <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="06a4170c" os_list="linux,windows,android,chromeos" file_path="content/browser/attribution_reporting/attribution_report_network_sender.cc" />
@@ -171,7 +171,7 @@ Refer to README.md for content description and update process.
  <item id="photos_service" added_in_milestone="94" content_hash_code="0573af72" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/photos/photos_service.cc" />
  <item id="popular_sites_fetch" added_in_milestone="62" content_hash_code="00697083" os_list="linux,windows,chromeos,android" file_path="components/ntp_tiles/popular_sites_impl.cc" />
  <item id="port_forwarding_controller_socket" added_in_milestone="65" content_hash_code="074810e4" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/port_forwarding_controller.cc" />
- <item id="ppapi_download_request" added_in_milestone="62" content_hash_code="07d4e067" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc" />
+ <item id="ppapi_download_request" added_in_milestone="62" content_hash_code="04e5f4df" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc" />
  <item id="predictive_prefetch" added_in_milestone="85" content_hash_code="00ebd1fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/predictors/prefetch_manager.cc" />
  <item id="prefetch_download" added_in_milestone="62" content_hash_code="0146e99e" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/prefetch_downloader_impl.cc" />
  <item id="prefetch_proxy_probe" added_in_milestone="88" content_hash_code="001d245d" os_list="windows,chromeos,android,linux" file_path="chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc" />
