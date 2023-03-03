@@ -80,6 +80,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
       base::WeakPtr<WebContentsAccessibilityAndroid> wcax) {
     web_contents_accessibility_ = std::move(wcax);
   }
+  void ResetWebContentsAccessibility();
 
   // State properties defined from Java-side code.
   bool ShouldAllowImageDescriptions();

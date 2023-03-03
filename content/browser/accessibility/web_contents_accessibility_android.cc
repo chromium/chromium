@@ -220,9 +220,9 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
       frame_info_initialized_(false) {
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_snapshot(
       reinterpret_cast<ui::AXTreeUpdate*>(ax_tree_update_ptr));
-  manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
+  snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
       *ax_tree_snapshot, GetWeakPtr(), nullptr);
-  manager_->BuildAXTreeHitTestCache();
+  snapshot_root_manager_->BuildAXTreeHitTestCache();
   connector_ = nullptr;
 
   BrowserAccessibilityStateImplAndroid* accessibility_state =
@@ -268,8 +268,57 @@ void WebContentsAccessibilityAndroid::DeleteEarly(JNIEnv* env) {
   }
 }
 
-void WebContentsAccessibilityAndroid::UnInitialize(JNIEnv* env) {
-  // TODO(jacklynch): Implement teardown of native accessibility
+void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
+    JNIEnv* env) {
+  // This method should only be called if the Auto-Disable feature is enabled.
+  DCHECK(base::FeatureList::IsEnabled(::features::kAutoDisableAccessibilityV2));
+
+  // This method should only be called when |snapshot_root_manager_| is null,
+  // which means this instance was constructed via a web contents and not an
+  // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
+  DCHECK(!snapshot_root_manager_);
+
+  // To disable the renderer, the root manager should already be connected to
+  // this instance, and we need to reset the weak pointer it has to |this|.
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  DCHECK(root_manager);
+  root_manager->ResetWebContentsAccessibility();
+
+  // The local cache of Java strings can be cleared, and we should clear the web
+  // contents reference since the web contents can be different by the time the
+  // Java-side code decides to re-enable renderer accessibility (if ever), and
+  // it can provide the web contents object again, as is done for construction.
+  // The Connector should continue to live, since we want the RFHI to still
+  // have access to this object for possible re-enables, or frame notifications.
+  common_string_cache_.clear();
+  web_contents_ = nullptr;
+}
+
+void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jweb_contents) {
+  // This method should only be called if the Auto-Disable feature is enabled.
+  DCHECK(base::FeatureList::IsEnabled(::features::kAutoDisableAccessibilityV2));
+
+  // This method should only be called when |snapshot_root_manager_| is null,
+  // which means this instance was constructed via a web contents and not an
+  // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
+  DCHECK(!snapshot_root_manager_);
+
+  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);
+
+  // A request to re-enable renderer accessibility implies AT use on the
+  // Java-side, so we need to set the root manager's reference to |this| to
+  // rebuild the C++ -> Java bridge.
+  DCHECK(!web_contents_);
+  web_contents_ = static_cast<WebContentsImpl*>(web_contents);
+
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  DCHECK(root_manager);
+  root_manager->set_web_contents_accessibility(GetWeakPtr());
 }
 
 jboolean WebContentsAccessibilityAndroid::IsRootManagerConnected(JNIEnv* env) {
@@ -1440,8 +1489,8 @@ jboolean WebContentsAccessibilityAndroid::GetImageData(
 
 BrowserAccessibilityManagerAndroid*
 WebContentsAccessibilityAndroid::GetRootBrowserAccessibilityManager() {
-  if (manager_) {
-    return manager_.get();
+  if (snapshot_root_manager_) {
+    return snapshot_root_manager_.get();
   }
 
   return static_cast<BrowserAccessibilityManagerAndroid*>(

@@ -579,12 +579,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
     }
 
-    private void unInitialize() {
-        if (mNativeObj != 0) {
-            WebContentsAccessibilityImplJni.get().unInitialize(mNativeObj);
-        }
-    }
-
     private void refreshNativeState() {
         try (TraceEvent te = TraceEvent.scoped("WebContentsAccessibilityImpl.refreshNativeState")) {
             if (!isNativeInitialized()) return;
@@ -1799,6 +1793,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void connectInstanceToRootManager(long nativeWebContentsAccessibilityAndroid);
         void setBrowserAXMode(WebContentsAccessibilityImpl caller, boolean screenReaderMode,
                 boolean isAccessibilityEnabled);
+        void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);
+        void reEnableRendererAccessibility(
+                long nativeWebContentsAccessibilityAndroid, WebContents webContents);
 
         void deleteEarly(long nativeWebContentsAccessibilityAndroid);
         void onAutofillPopupDisplayed(long nativeWebContentsAccessibilityAndroid);
@@ -1861,6 +1858,5 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 long nativeWebContentsAccessibilityAndroid, float x, float y);
         boolean getImageData(long nativeWebContentsAccessibilityAndroid,
                 AccessibilityNodeInfoCompat info, int id, boolean hasSentPreviousRequest);
-        void unInitialize(long nativeWebContentsAccessibilityAndroid);
     }
 }
