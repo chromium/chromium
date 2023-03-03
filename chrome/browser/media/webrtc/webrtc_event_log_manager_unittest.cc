@@ -4008,18 +4008,17 @@ std::unique_ptr<user_manager::ScopedUserManager>
 WebRtcEventLogManagerTestPolicy::GetScopedUserManager(
     user_manager::UserType user_type) {
   const AccountId kAccountId = AccountId::FromUserEmailGaiaId("name", "id");
-  auto mock_user_manager =
-      std::make_unique<testing::NiceMock<ash::FakeChromeUserManager>>();
+  auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
   // On Chrome OS, there are different user types, some of which can be
   // affiliated with the device if the device is enterprise-enrolled, i.e. the
   // logged in account belongs to the org that owns the device. For our
   // purposes here, affiliation does not matter for the determination of the
   // policy default, so we can set it to false here. We do not need a user
   // to profile mapping either, so profile can be a nullptr.
-  mock_user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
       kAccountId, /*is_affiliated*/ false, user_type, /*profile*/ nullptr);
   return std::make_unique<user_manager::ScopedUserManager>(
-      std::move(mock_user_manager));
+      std::move(fake_user_manager));
 }
 #endif
 
