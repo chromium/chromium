@@ -1410,6 +1410,21 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.AutoRepeatUsage" units="key_event"
+    expires_after="2024-01-05">
+  <owner>dpad@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records a hash of a keycode + modifier keys pressed everytime a user event
+    is repeated due to auto repeat. This also includes events which are
+    suppressed by downstream system such as the diacritics menu or wayland.
+
+    See `RecordAutoRepeatUsageMetric` in
+    //ui/chromeos/events/event_rewriter_chromeos.cc for information on how to
+    decode the values.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.EventRewriter.KeyRewriteLatency"
     units="microseconds" expires_after="2024-01-05">
   <owner>wangdanny@chromium.org</owner>
