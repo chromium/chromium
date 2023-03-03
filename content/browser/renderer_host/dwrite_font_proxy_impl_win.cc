@@ -60,6 +60,10 @@ struct RequiredFontStyle {
   DWRITE_FONT_STYLE required_style;
 };
 
+// Used in tests to allow a known font to masquerade as a locally installed
+// font. Usually this is the Ahem.ttf font. Leaked at shutdown.
+std::vector<base::FilePath>* g_sideloaded_fonts = nullptr;
+
 const RequiredFontStyle kRequiredStyles[] = {
     // The regular version of Gill Sans is actually in the Gill Sans MT family,
     // and the Gill Sans family typically contains just the ultra-bold styles.
@@ -113,6 +117,73 @@ bool CheckRequiredStylesPresent(IDWriteFontCollection* collection,
   return true;
 }
 
+HRESULT GetLocalFontCollection(mswr::ComPtr<IDWriteFactory3>& factory,
+                               IDWriteFontCollection** collection) {
+  if (!g_sideloaded_fonts) {
+    // Normal path - use the system's font collection with no sideloading.
+    return factory->GetSystemFontCollection(collection);
+  }
+  // If sideloading - build a font set with sideloads then add the system font
+  // collection.
+  mswr::ComPtr<IDWriteFontSetBuilder> font_set_builder;
+  HRESULT hr = factory->CreateFontSetBuilder(&font_set_builder);
+  if (!SUCCEEDED(hr)) {
+    return hr;
+  }
+  for (auto& path : *g_sideloaded_fonts) {
+    mswr::ComPtr<IDWriteFontFile> font_file;
+    hr = factory->CreateFontFileReference(path.value().c_str(), nullptr,
+                                          &font_file);
+    if (!SUCCEEDED(hr)) {
+      return hr;
+    }
+    BOOL supported;
+    DWRITE_FONT_FILE_TYPE file_type;
+    UINT32 n_fonts;
+    hr = font_file->Analyze(&supported, &file_type, nullptr, &n_fonts);
+    if (!SUCCEEDED(hr)) {
+      return hr;
+    }
+    for (UINT32 font_index = 0; font_index < n_fonts; ++font_index) {
+      mswr::ComPtr<IDWriteFontFaceReference> font_face;
+      hr = factory->CreateFontFaceReference(font_file.Get(), font_index,
+                                            DWRITE_FONT_SIMULATIONS_NONE,
+                                            &font_face);
+      if (!SUCCEEDED(hr)) {
+        return hr;
+      }
+      hr = font_set_builder->AddFontFaceReference(font_face.Get());
+      if (!SUCCEEDED(hr)) {
+        return hr;
+      }
+    }
+  }
+  // Now add the system fonts.
+  mswr::ComPtr<IDWriteFontSet> system_font_set;
+  hr = factory->GetSystemFontSet(&system_font_set);
+  if (!SUCCEEDED(hr)) {
+    return hr;
+  }
+  hr = font_set_builder->AddFontSet(system_font_set.Get());
+  if (!SUCCEEDED(hr)) {
+    return hr;
+  }
+  // Make the set.
+  mswr::ComPtr<IDWriteFontSet> font_set;
+  hr = font_set_builder->CreateFontSet(&font_set);
+  if (!SUCCEEDED(hr)) {
+    return hr;
+  }
+  // Make the collection.
+  mswr::ComPtr<IDWriteFontCollection1> collection1;
+  hr = factory->CreateFontCollectionFromFontSet(font_set.Get(), &collection1);
+  if (!SUCCEEDED(hr)) {
+    return hr;
+  }
+  hr = collection1->QueryInterface(collection);
+  return hr;
+}
+
 }  // namespace
 
 DWriteFontProxyImpl::DWriteFontProxyImpl()
@@ -125,6 +196,15 @@ void DWriteFontProxyImpl::Create(
     mojo::PendingReceiver<blink::mojom::DWriteFontProxy> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<DWriteFontProxyImpl>(),
                               std::move(receiver));
+}
+
+// static
+void DWriteFontProxyImpl::SideLoadFontForTesting(base::FilePath path) {
+  if (!g_sideloaded_fonts) {
+    // Note: this list is leaked.
+    g_sideloaded_fonts = new std::vector<base::FilePath>();
+  }
+  g_sideloaded_fonts->push_back(path);
 }
 
 void DWriteFontProxyImpl::SetWindowsFontsPathForTesting(std::u16string path) {
@@ -401,8 +481,15 @@ void DWriteFontProxyImpl::MatchUniqueFont(
   // We must not get here if this version of DWrite can't handle performing the
   // search.
   DCHECK(factory3_.Get());
+  DCHECK(collection_);
+  Microsoft::WRL::ComPtr<IDWriteFontCollection1> collection1;
+  HRESULT hr = collection_.As(&collection1);
+  if (FAILED(hr)) {
+    return;
+  }
+  // In non-testing cases this is identical to factory3_->GetSystemFontSet().
   mswr::ComPtr<IDWriteFontSet> system_font_set;
-  HRESULT hr = factory3_->GetSystemFontSet(&system_font_set);
+  hr = collection1->GetFontSet(&system_font_set);
   if (FAILED(hr))
     return;
 
@@ -545,7 +632,9 @@ void DWriteFontProxyImpl::InitializeDirectWrite() {
   factory_.As<IDWriteFactory3>(&factory3_);
   DCHECK(factory3_);
 
-  HRESULT hr = factory_->GetSystemFontCollection(&collection_);
+  // Normally identical to factory_->GetSystemFontCollection() unless a
+  // sideloaded font has been added using SideLoadFontForTesting().
+  HRESULT hr = GetLocalFontCollection(factory3_, &collection_);
   DCHECK(SUCCEEDED(hr));
 
   if (!collection_) {
