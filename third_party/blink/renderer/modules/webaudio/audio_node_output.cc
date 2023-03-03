@@ -41,9 +41,15 @@ AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
       number_of_channels_(number_of_channels),
       desired_number_of_channels_(number_of_channels) {
   DCHECK_LE(number_of_channels, BaseAudioContext::MaxNumberOfChannels());
+  // See RUN-597; for deterministic iteration of AudioNodeOutput sets in audio_summing_junction.
+  recordreplay::RegisterPointer("AudioNodeOutput", this);
 
   internal_bus_ = AudioBus::Create(
       number_of_channels, GetDeferredTaskHandler().RenderQuantumFrames());
+}
+
+AudioNodeOutput::~AudioNodeOutput() {
+  recordreplay::UnregisterPointer(this);
 }
 
 void AudioNodeOutput::Dispose() {
