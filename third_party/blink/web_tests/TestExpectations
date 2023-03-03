@@ -6195,7 +6195,7 @@ crbug.com/1370307 external/wpt/encoding-detection/el-windows-1253-late.tentative
 crbug.com/1370307 external/wpt/encoding-detection/fa-windows-1256-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/fi-windows-1252-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/he-ISO-8859-8-late.tentative.html [ Failure Pass ]
-crbug.com/1370307 external/wpt/encoding-detection/he-windows-1255-late.tentative.html [ Failure Pass ]
+crbug.com/1370307 [ Release Win ] external/wpt/encoding-detection/he-windows-1255-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/ja-EUC-JP-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/ja-half-width-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/ja-ISO-2022-JP-late.tentative.html [ Failure Pass ]
