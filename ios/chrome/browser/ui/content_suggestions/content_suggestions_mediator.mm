@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
+#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/ntp_tile.h"
@@ -223,7 +224,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)reloadAllData {
-  BOOL isTileAblationComplete = [self isTileAblationComplete];
   if (!self.consumer) {
     return;
   }
@@ -231,12 +231,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count] &&
-      (!ShouldHideMostVisited() || isTileAblationComplete)) {
+  if ([self.mostVisitedItems count] && ![self shouldHideMVTForTileAblation]) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
   if (!ShouldHideShortcutsForTrendingQueries() &&
-      (!ShouldHideShortcuts() || isTileAblationComplete)) {
+      ![self shouldHideShortcutsForTileAblation]) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsTrendingQueriesModuleEnabled()) {
@@ -483,7 +482,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
-  if (ShouldHideMostVisited() && ![self isTileAblationComplete]) {
+  if ([self shouldHideMVTForTileAblation]) {
     return;
   }
 
@@ -533,7 +532,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if (ShouldHideMostVisited() && ![self isTileAblationComplete]) {
+  if ([self shouldHideMVTForTileAblation]) {
     return;
   }
   self.mostVisitedItems = self.freshMostVisitedItems;
@@ -695,6 +694,33 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     return YES;
   }
   return NO;
+}
+
+// Returns whether the shortcut tiles should be hidden for the tile ablation
+// experiment.
+- (BOOL)shouldHideShortcutsForTileAblation {
+  if ([self isTileAblationComplete]) {
+    return NO;
+  }
+  ntp_tiles::NewTabPageRetentionExperimentBehavior behavior =
+      ntp_tiles::GetNewTabPageRetentionExperimentType();
+  return behavior ==
+         ntp_tiles::NewTabPageRetentionExperimentBehavior::kTileAblationHideAll;
+}
+
+// Returns whether the MVT tiles should be hidden for the tile ablation
+// experiment.
+- (BOOL)shouldHideMVTForTileAblation {
+  if ([self isTileAblationComplete]) {
+    return NO;
+  }
+  ntp_tiles::NewTabPageRetentionExperimentBehavior behavior =
+      ntp_tiles::GetNewTabPageRetentionExperimentType();
+
+  return behavior == ntp_tiles::NewTabPageRetentionExperimentBehavior::
+                         kTileAblationHideAll ||
+         behavior == ntp_tiles::NewTabPageRetentionExperimentBehavior::
+                         kTileAblationHideMVTOnly;
 }
 
 #pragma mark - Properties

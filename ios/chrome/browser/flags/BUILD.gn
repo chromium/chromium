@@ -71,7 +71,6 @@ source_set("flags") {
     "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
-    "//ios/chrome/browser/ui/content_suggestions:field_trial",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/download:features",
     "//ios/chrome/browser/ui/first_run:field_trial",
@@ -132,7 +131,6 @@ source_set("client_side") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/paths",
-    "//ios/chrome/browser/ui/content_suggestions:field_trial",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/ntp:field_trial",
   ]

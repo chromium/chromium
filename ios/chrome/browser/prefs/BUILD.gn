@@ -101,7 +101,6 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/content_suggestions",
-    "//ios/chrome/browser/ui/content_suggestions:field_trial",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/ntp:field_trial",
