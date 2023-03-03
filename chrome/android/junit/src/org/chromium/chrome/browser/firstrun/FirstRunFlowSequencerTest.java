@@ -49,6 +49,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
+@CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
 public class FirstRunFlowSequencerTest {
     private static final String ADULT_ACCOUNT_NAME = "adult.account@gmail.com";
     private static final String CHILD_ACCOUNT_NAME =
@@ -82,6 +83,7 @@ public class FirstRunFlowSequencerTest {
             return isSyncAllowed;
         }
 
+        // TODO(https://crbug.com/1409385): Delete this method after launch is complete.
         @Override
         public boolean shouldSkipFirstUseHints(Activity activity) {
             return shouldSkipFirstUseHints;
@@ -123,6 +125,7 @@ public class FirstRunFlowSequencerTest {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(Profile.getLastUsedRegularProfile()))
                 .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
 
         mActivityController = Robolectric.buildActivity(Activity.class);
@@ -140,29 +143,9 @@ public class FirstRunFlowSequencerTest {
 
     @Test
     @Feature({"FirstRun"})
-    public void testStandardFlowTosNotSeen() {
-        mDelegate.isSyncAllowed = true;
-        mDelegate.shouldSkipFirstUseHints = false;
-
-        TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
-        sequencer.start();
-
-        verifyNumberOfAccountsRecorded(0);
-        assertTrue(sequencer.calledOnFlowIsKnown);
-
-        Bundle bundle = sequencer.returnedBundle;
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
-        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
-        assertEquals(3, bundle.size());
-    }
-
-    @Test
-    @Feature({"FirstRun"})
-    public void testStandardFlowOneChildAccount() {
+    public void testFlowOneChildAccount() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         mDelegate.isSyncAllowed = true;
-        mDelegate.shouldSkipFirstUseHints = false;
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
         sequencer.start();
@@ -179,9 +162,8 @@ public class FirstRunFlowSequencerTest {
 
     @Test
     @Feature({"FirstRun"})
-    public void testStandardFlowShowSearchEnginePage() {
+    public void testFlowShowSearchEnginePage() {
         mDelegate.isSyncAllowed = true;
-        mDelegate.shouldSkipFirstUseHints = false;
         mDelegate.shouldShowSearchEnginePage = true;
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
@@ -191,7 +173,7 @@ public class FirstRunFlowSequencerTest {
         assertTrue(sequencer.calledOnFlowIsKnown);
 
         Bundle bundle = sequencer.returnedBundle;
-        assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
+        assertFalse(bundle.getBoolean(FirstRunActivityBase.SHOW_SYNC_CONSENT_PAGE));
         assertTrue(bundle.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
         assertFalse(bundle.getBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT));
         assertEquals(3, bundle.size());
@@ -199,11 +181,8 @@ public class FirstRunFlowSequencerTest {
 
     @Test
     @Feature({"FirstRun"})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testFlowHideSyncConsentPageWhenUserIsNotSignedIn() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
         mDelegate.isSyncAllowed = true;
-        mDelegate.shouldSkipFirstUseHints = false;
         mDelegate.shouldShowSearchEnginePage = false;
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
@@ -220,12 +199,10 @@ public class FirstRunFlowSequencerTest {
 
     @Test
     @Feature({"FirstRun"})
-    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
     public void testFlowShowSyncConsentPageWhenUserIsSignedIn() {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         mDelegate.isSyncAllowed = true;
-        mDelegate.shouldSkipFirstUseHints = false;
         mDelegate.shouldShowSearchEnginePage = false;
 
         TestFirstRunFlowSequencer sequencer = new TestFirstRunFlowSequencer(mActivity);
