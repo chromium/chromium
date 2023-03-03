@@ -33,13 +33,9 @@ const slotInput = process.env.INPUT_SLOT;
 console.log("Slot", slotInput);
 const slot = slotInput ? +slotInput : undefined;
 
-const runStaticTestsInput = process.env.INPUT_RUN_STATIC_TESTS;
-console.log("RunStaticTests", runStaticTestsInput);
-const runStaticTests = runStaticTestsInput == "true";
-
 const numStaticTestsInput = process.env.INPUT_NUM_STATIC_TESTS;
 console.log("NumStaticTests", numStaticTestsInput);
-const numStaticTests = numStaticTestsInput ? +numStaticTestsInput : undefined;
+const numStaticTests = numStaticTestsInput ? +numStaticTestsInput : 30;
 
 const runTestSuitesInput = process.env.INPUT_RUN_TEST_SUITES;
 console.log("RunTestSuites", runTestSuitesInput);
@@ -90,7 +86,7 @@ function platformTasks(platform) {
 
   const tasks = [buildTask];
 
-  if (runStaticTests) {
+  if (numStaticTests) {
     const testStaticTask = newTask(
       `Chromium Static Tests ${platform}`,
       {

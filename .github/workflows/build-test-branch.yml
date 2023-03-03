@@ -27,13 +27,9 @@ on:
       slot:
         description: "Checked out repository slot to use"
         required: false
-      run_static_tests:
-        description: "Run static tests"
-        type: boolean
-        required: false
-        default: "true"
       num_static_tests:
         description: "Number of static tests to run"
+        default: "30"
         required: false
       run_test_suites:
         description: "Run test suites"
@@ -74,7 +70,6 @@ jobs:
           INPUT_DRIVER_REVISION: ${{ github.event.inputs.driver_revision }}
           INPUT_CLOBBER: ${{ github.event.inputs.clobber }}
           INPUT_SLOT: ${{ github.event.inputs.slot }}
-          INPUT_RUN_STATIC_TESTS: ${{ github.event.inputs.run_static_tests }}
           INPUT_NUM_STATIC_TESTS: ${{ github.event.inputs.num_static_tests }}
           INPUT_RUN_TEST_SUITES: ${{ github.event.inputs.run_test_suites }}
           INPUT_TEST_SUITES_FILTER: ${{ github.event.inputs.test_suites_filter }}
