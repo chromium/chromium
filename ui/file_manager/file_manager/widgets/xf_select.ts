@@ -8,7 +8,7 @@
  * @suppress{missingProperties}
  */
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {css, CSSResultGroup, customElement, html, property, query, state, XfBase} from './xf_base.js';
@@ -176,6 +176,8 @@ export class XfSelect extends XfBase {
               @click=${() => this.onOptionSelected_(index)}
               ?selected=${this.selectedOption_!.value === option.value}>
             ${option.text}
+            <div class='dropdown-filler'></div>
+            <div slot='suffix-icon' class='selected-icon'></div>
           </cr-button>`)}
       </cr-action-menu>`;
   }
@@ -260,7 +262,8 @@ export class XfSelect extends XfBase {
     if (!this.optionsVisible_) {
       const element: HTMLElement = this.$toggleDropdownButton_!;
       const top = element.offsetTop + element.offsetHeight + 8;
-      this.$optionsMenu_!.showAt(element, {top: top});
+      this.$optionsMenu_!.showAt(
+          element, {top: top, anchorAlignmentX: AnchorAlignment.AFTER_START});
       this.optionsVisible_ = true;
     }
   }
@@ -367,6 +370,18 @@ function getCSS(): CSSResultGroup {
     }
     cr-button.dropdown-item-end {
       justify-content: end;
+    }
+    div.dropdown-filler {
+      flex-grow: 1;
+    }
+    div.selected-icon {
+      background: url(/foreground/images/common/ic_selected.svg) no-repeat;
+      min-height: 20px;
+      min-width: 20px;
+      visibility: hidden;
+    }
+    cr-button[selected] div.selected-icon {
+      visibility: visible;
     }
   `;
 }
