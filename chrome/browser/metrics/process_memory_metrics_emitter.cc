@@ -37,6 +37,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/mojo/mojom/cdm_service.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -48,6 +49,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
 #include "base/android/meminfo_dump_provider.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "media/mojo/mojom/media_foundation_service.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1291,6 +1296,14 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         HistogramProcessType ptype;
         if (pmd.pid() == content::GetProcessIdForAudioService()) {
           ptype = HistogramProcessType::kAudioService;
+        } else if (pmd.service_name() ==
+                   media::mojom::CdmServiceBroker::Name_) {
+          ptype = HistogramProcessType::kCdmService;
+#if BUILDFLAG(IS_WIN)
+        } else if (pmd.service_name() ==
+                   media::mojom::MediaFoundationServiceBroker::Name_) {
+          ptype = HistogramProcessType::kMediaFoundationService;
+#endif
         } else if (pmd.service_name() ==
                    network::mojom::NetworkService::Name_) {
           ptype = HistogramProcessType::kNetworkService;

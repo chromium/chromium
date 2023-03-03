@@ -17,10 +17,15 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "media/mojo/mojom/cdm_service.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "media/mojo/mojom/media_foundation_service.mojom.h"
+#endif
 
 using GlobalMemoryDump = memory_instrumentation::GlobalMemoryDump;
 using GlobalMemoryDumpPtr = memory_instrumentation::mojom::GlobalMemoryDumpPtr;
@@ -438,6 +443,26 @@ MetricMap GetExpectedAudioServiceMetrics() {
   });
 }
 
+MetricMap GetExpectedCdmServiceMetrics() {
+  return MetricMap({
+    {"ProcessType", static_cast<int64_t>(ProcessType::UTILITY)},
+        {"Resident", 11}, {"PrivateMemoryFootprint", 21},
+        {"SharedMemoryFootprint", 31},
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+        {"PrivateSwapFootprint", 41},
+#endif
+  });
+}
+
+#if BUILDFLAG(IS_WIN)
+MetricMap GetExpectedMediaFoundationServiceMetrics() {
+  return MetricMap({{"ProcessType", static_cast<int64_t>(ProcessType::UTILITY)},
+                    {"Resident", 12},
+                    {"PrivateMemoryFootprint", 22},
+                    {"SharedMemoryFootprint", 32}});
+}
+#endif
+
 MetricMap GetExpectedPaintPreviewCompositorMetrics() {
   return MetricMap({
     {"ProcessType", static_cast<int64_t>(ProcessType::UTILITY)},
@@ -460,9 +485,19 @@ void PopulateMetrics(GlobalMemoryDumpPtr& global_dump,
     case HistogramProcessType::kBrowser:
       PopulateBrowserMetrics(global_dump, metrics_mb);
       return;
+    case HistogramProcessType::kCdmService:
+      PopulateUtilityMetrics(global_dump, metrics_mb,
+                             media::mojom::CdmServiceBroker::Name_);
+      return;
     case HistogramProcessType::kGpu:
       PopulateGpuMetrics(global_dump, metrics_mb);
       return;
+#if BUILDFLAG(IS_WIN)
+    case HistogramProcessType::kMediaFoundationService:
+      PopulateUtilityMetrics(global_dump, metrics_mb,
+                             media::mojom::MediaFoundationServiceBroker::Name_);
+      return;
+#endif
     case HistogramProcessType::kPaintPreviewCompositor:
       PopulateUtilityMetrics(
           global_dump, metrics_mb,
@@ -487,8 +522,14 @@ MetricMap GetExpectedProcessMetrics(HistogramProcessType ptype) {
       return GetExpectedAudioServiceMetrics();
     case HistogramProcessType::kBrowser:
       return GetExpectedBrowserMetrics();
+    case HistogramProcessType::kCdmService:
+      return GetExpectedCdmServiceMetrics();
     case HistogramProcessType::kGpu:
       return GetExpectedGpuMetrics();
+#if BUILDFLAG(IS_WIN)
+    case HistogramProcessType::kMediaFoundationService:
+      return GetExpectedMediaFoundationServiceMetrics();
+#endif
     case HistogramProcessType::kPaintPreviewCompositor:
       return GetExpectedPaintPreviewCompositorMetrics();
     case HistogramProcessType::kRenderer:
@@ -627,11 +668,15 @@ TEST_P(ProcessMemoryMetricsEmitterTest, CollectsSingleProcessUKMs) {
 INSTANTIATE_TEST_SUITE_P(
     SinglePtype,
     ProcessMemoryMetricsEmitterTest,
-    testing::Values(HistogramProcessType::kBrowser,
-                    HistogramProcessType::kRenderer,
+    testing::Values(HistogramProcessType::kAudioService,
+                    HistogramProcessType::kBrowser,
+                    HistogramProcessType::kCdmService,
                     HistogramProcessType::kGpu,
+#if BUILDFLAG(IS_WIN)
+                    HistogramProcessType::kMediaFoundationService,
+#endif
                     HistogramProcessType::kPaintPreviewCompositor,
-                    HistogramProcessType::kAudioService));
+                    HistogramProcessType::kRenderer));
 
 TEST_F(ProcessMemoryMetricsEmitterTest, CollectsExtensionProcessUKMs) {
   MetricMap expected_metrics = GetExpectedRendererMetrics();
@@ -659,8 +704,10 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsSingleDump) {
       HistogramProcessType::kRenderer,
       HistogramProcessType::kGpu,
       HistogramProcessType::kAudioService,
+      HistogramProcessType::kCdmService,
       HistogramProcessType::kPaintPreviewCompositor,
       HistogramProcessType::kPaintPreviewCompositor,
+      HistogramProcessType::kCdmService,
       HistogramProcessType::kAudioService,
       HistogramProcessType::kGpu,
       HistogramProcessType::kRenderer,
@@ -690,11 +737,11 @@ TEST_F(ProcessMemoryMetricsEmitterTest, CollectsManyProcessUKMsManyDumps) {
       {HistogramProcessType::kBrowser, HistogramProcessType::kRenderer,
        HistogramProcessType::kGpu,
        HistogramProcessType::kPaintPreviewCompositor,
-       HistogramProcessType::kAudioService},
+       HistogramProcessType::kCdmService, HistogramProcessType::kAudioService},
       {HistogramProcessType::kBrowser, HistogramProcessType::kRenderer,
        HistogramProcessType::kGpu,
        HistogramProcessType::kPaintPreviewCompositor,
-       HistogramProcessType::kAudioService},
+       HistogramProcessType::kCdmService, HistogramProcessType::kAudioService},
   };
 
   std::vector<MetricMap> entries_metrics;

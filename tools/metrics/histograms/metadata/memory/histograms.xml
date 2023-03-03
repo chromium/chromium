@@ -52,6 +52,14 @@ chromium-metrics-reviews@google.com.
     <owner>tguilbert@chromium.org</owner>
     <owner>webrtc-audio-uma@google.com</owner>
   </variant>
+  <variant name="CdmService">
+    <owner>xhwang@chromium.org</owner>
+    <owner>media-dev@chromium.org</owner>
+  </variant>
+  <variant name="MediaFoundationService">
+    <owner>xhwang@chromium.org</owner>
+    <owner>media-dev@chromium.org</owner>
+  </variant>
   <variant name="PaintPreviewCompositor">
     <owner>ckitagawa@chromium.org</owner>
     <owner>fredmello@chromium.org</owner>
