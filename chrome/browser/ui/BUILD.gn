@@ -2933,6 +2933,8 @@ static_library("ui") {
       "webui/ash/onc_import_message_handler.h",
       "webui/ash/parent_access/parent_access_dialog.cc",
       "webui/ash/parent_access/parent_access_dialog.h",
+      "webui/ash/parent_access/parent_access_metrics_utils.cc",
+      "webui/ash/parent_access/parent_access_metrics_utils.h",
       "webui/ash/parent_access/parent_access_state_tracker.cc",
       "webui/ash/parent_access/parent_access_state_tracker.h",
       "webui/ash/parent_access/parent_access_ui.cc",

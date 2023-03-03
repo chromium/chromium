@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
@@ -346,15 +347,15 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
 
   // Verify that metrics were recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessDialogProvider::
-          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
-              absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetShowDialogErrorHistogramBase,
+          absl::nullopt),
       ParentAccessDialogProvider::ShowErrorType::kAlreadyVisible, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessDialogProvider::
-          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
-              parent_access_ui::mojom::ParentAccessParams::FlowType::
-                  kWebsiteAccess),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetShowDialogErrorHistogramBase,
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
       ParentAccessDialogProvider::ShowErrorType::kAlreadyVisible, 1);
 }
 
@@ -381,15 +382,15 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
 
   // Verify that metrics were recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessDialogProvider::
-          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
-              absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetShowDialogErrorHistogramBase,
+          absl::nullopt),
       ParentAccessDialogProvider::ShowErrorType::kNotAChildUser, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessDialogProvider::
-          GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
-              parent_access_ui::mojom::ParentAccessParams::FlowType::
-                  kWebsiteAccess),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetShowDialogErrorHistogramBase,
+          parent_access_ui::mojom::ParentAccessParams::FlowType::
+              kWebsiteAccess),
       ParentAccessDialogProvider::ShowErrorType::kNotAChildUser, 1);
 }
 

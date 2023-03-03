@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUI;
@@ -65,11 +64,6 @@ class ParentAccessUIHandlerImpl
   const kids::platform::parentaccess::client::proto::ParentAccessToken*
   GetParentAccessTokenForTest();
 
-  // Returns the name of parent access widget error histogram for a flow type.
-  static std::string GetParentAccessWidgetErrorHistogramForFlowType(
-      absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
-          flow_type);
-
   // Used for metrics. These values are logged to UMA. Entries should not be
   // renumbered and numeric values should never be reused. Please keep in sync
   // with "FamilyLinkUserParentAccessWidgetError" in
@@ -112,7 +106,6 @@ class ParentAccessUIHandlerImpl
 
   base::WeakPtrFactory<ParentAccessUIHandlerImpl> weak_ptr_factory_{this};
 };
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_UI_HANDLER_IMPL_H_
