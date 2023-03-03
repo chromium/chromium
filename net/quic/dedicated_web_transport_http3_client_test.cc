@@ -99,7 +99,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
     quic::QuicEnableVersion(quic::ParsedQuicVersion::RFCv1());
     origin_ = url::Origin::Create(GURL{"https://example.org"});
     anonymization_key_ =
-        NetworkAnonymizationKey(SchemefulSite(origin_), SchemefulSite(origin_));
+        NetworkAnonymizationKey::CreateSameSite(SchemefulSite(origin_));
 
     URLRequestContextBuilder builder;
     builder.set_proxy_resolution_service(

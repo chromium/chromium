@@ -700,8 +700,8 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
 TEST_F(ContextHostResolverTest, ResultsAddedToCacheWithNetworkIsolationKey) {
   const SchemefulSite kSite(GURL("https://origin.test/"));
   const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey(
-      kSite, kSite, /*is_cross_site=*/false);
+  auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

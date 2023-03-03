@@ -189,7 +189,8 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
 TEST_F(ThroughputAnalyzerTest,
        MAYBE_MaximumRequestsWithNetworkAnonymizationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
   const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const GURL kUrl = GURL("http://foo.test/test.html");
   const url::Origin kSiteOrigin = url::Origin::Create(kSite.GetURL());

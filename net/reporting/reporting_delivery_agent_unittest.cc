@@ -120,10 +120,9 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const base::UnguessableToken kDocumentReportingSource_ =
       base::UnguessableToken::Create();
   const NetworkAnonymizationKey kNik_ =
-      NetworkAnonymizationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
+      NetworkAnonymizationKey::CreateSameSite(SchemefulSite(kOrigin_));
   const NetworkAnonymizationKey kOtherNik_ =
-      NetworkAnonymizationKey(SchemefulSite(kOtherOrigin_),
-                              SchemefulSite(kOtherOrigin_));
+      NetworkAnonymizationKey::CreateSameSite(SchemefulSite(kOtherOrigin_));
   const IsolationInfo kIsolationInfo_ =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                             kOrigin_,

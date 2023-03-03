@@ -189,9 +189,10 @@ class SendTestReportsAtNavigationFinishObserver : public WebContentsObserver {
     // Queue reports using transient reporting sources. These sources should be
     // marked as expired now so we expect no reports being sent out.
     for (const base::UnguessableToken& reporting_source : reporting_sources_) {
-      network_context->QueueReport("type", "default", url_, reporting_source,
-                                   net::NetworkAnonymizationKey(site, site),
-                                   "Mozilla/1.0", base::Value::Dict());
+      network_context->QueueReport(
+          "type", "default", url_, reporting_source,
+          net::NetworkAnonymizationKey::CreateSameSite(site), "Mozilla/1.0",
+          base::Value::Dict());
     }
   }
 

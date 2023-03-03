@@ -188,7 +188,8 @@ class HostResolverMojoTest : public testing::Test {
 TEST_F(HostResolverMojoTest, Basic) {
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://not-example.com/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   std::vector<net::IPAddress> addresses;
   net::IPAddress address(1, 2, 3, 4);
@@ -232,7 +233,8 @@ TEST_F(HostResolverMojoTest, ResolveCachedResult) {
 TEST_F(HostResolverMojoTest, ResolveCachedResultWithNetworkAnonymizationKey) {
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://not-example.com/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   std::vector<net::IPAddress> addresses1;
   net::IPAddress address1(1, 2, 3, 4);

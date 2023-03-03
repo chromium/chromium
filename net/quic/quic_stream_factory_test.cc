@@ -625,7 +625,8 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     const SchemefulSite kSite1(GURL("https://foo.test/"));
     const SchemefulSite kSite2(GURL("https://bar.test/"));
 
-    NetworkAnonymizationKey network_anonymization_key1(kSite1, kSite1);
+    const auto network_anonymization_key1 =
+        NetworkAnonymizationKey::CreateSameSite(kSite1);
     quic::QuicServerId quic_server_id1(
         kDefaultServerHostName, kDefaultServerPort, PRIVACY_MODE_DISABLED);
 
@@ -633,7 +634,8 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     quic::QuicServerId quic_server_id2;
 
     if (vary_network_anonymization_key) {
-      network_anonymization_key2 = NetworkAnonymizationKey(kSite2, kSite2);
+      network_anonymization_key2 =
+          NetworkAnonymizationKey::CreateSameSite(kSite2);
       quic_server_id2 = quic_server_id1;
     } else {
       network_anonymization_key2 = network_anonymization_key1;
@@ -1321,8 +1323,10 @@ TEST_P(QuicStreamFactoryTest, CachedInitialRtt) {
 TEST_P(QuicStreamFactoryTest, CachedInitialRttWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -1498,8 +1502,10 @@ TEST_P(QuicStreamFactoryTest, GoAway) {
 TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
       kNetworkAnonymizationKey1, kNetworkAnonymizationKey2,
@@ -11879,13 +11885,16 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCache) {
       {features::kPartitionHttpServerPropertiesByNetworkIsolationKey});
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
 
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   const SchemefulSite kSite3(GURL("https://baz.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey3(kSite3, kSite3);
+  const auto kNetworkAnonymizationKey3 =
+      NetworkAnonymizationKey::CreateSameSite(kSite3);
 
   Initialize();
 
@@ -11936,13 +11945,16 @@ TEST_P(QuicStreamFactoryTest,
       {});
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
 
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   const SchemefulSite kSite3(GURL("https://baz.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey3(kSite3, kSite3);
+  const auto kNetworkAnonymizationKey3 =
+      NetworkAnonymizationKey::CreateSameSite(kSite3);
 
   Initialize();
 
@@ -12031,7 +12043,8 @@ TEST_P(QuicStreamFactoryTest, CryptoConfigCacheMRUWithNetworkAnonymizationKey) {
   std::vector<NetworkAnonymizationKey> network_anonymization_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_anonymization_keys.emplace_back(site, site);
+    network_anonymization_keys.emplace_back(
+        NetworkAnonymizationKey::CreateSameSite(site));
 
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
         QuicStreamFactoryPeer::GetCryptoConfig(factory_.get(),
@@ -12100,7 +12113,8 @@ TEST_P(QuicStreamFactoryTest,
   std::vector<NetworkAnonymizationKey> network_anonymization_keys;
   for (int i = 0; i < kNumSessionsToMake; ++i) {
     SchemefulSite site(GURL(base::StringPrintf("https://foo%i.test/", i)));
-    network_anonymization_keys.emplace_back(site, site);
+    network_anonymization_keys.emplace_back(
+        NetworkAnonymizationKey::CreateSameSite(site));
   }
 
   const quic::QuicServerId kQuicServerId(
@@ -13207,7 +13221,8 @@ TEST_P(QuicStreamFactoryTest, HostResolverRequestReprioritizedOnSetPriority) {
 TEST_P(QuicStreamFactoryTest, HostResolverUsesParams) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features

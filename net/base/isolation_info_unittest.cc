@@ -111,10 +111,9 @@ TEST_F(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
   // Triple-keyed IsolationInfo + double-keyed + cross site bit
   // NetworkAnonymizationKey case.
   EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
-  EXPECT_EQ(isolation_info.network_anonymization_key().GetIsCrossSite(), true);
-  EXPECT_EQ(
-      same_site_isolation_info.network_anonymization_key().GetIsCrossSite(),
-      false);
+  EXPECT_TRUE(isolation_info.network_anonymization_key().IsCrossSite());
+  EXPECT_TRUE(
+      same_site_isolation_info.network_anonymization_key().IsSameSite());
 }
 
 // A 2.5-keyed NAK created with two identical opaque origins should be
@@ -128,13 +127,13 @@ TEST_F(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfoOpaque) {
       isolation_info.CreateNetworkAnonymizationKeyForIsolationInfo(
           opaque, opaque, &kNonce1);
 
-  EXPECT_FALSE(nak.GetIsCrossSite().value());
+  EXPECT_TRUE(nak.IsSameSite());
 
   url::Origin opaque2;
   nak = isolation_info.CreateNetworkAnonymizationKeyForIsolationInfo(
       opaque, opaque2, &kNonce1);
 
-  EXPECT_TRUE(nak.GetIsCrossSite().value());
+  EXPECT_TRUE(nak.IsCrossSite());
 }
 
 TEST_F(IsolationInfoTest, RequestTypeMainFrame) {

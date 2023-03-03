@@ -281,7 +281,8 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
 TEST_F(ProxyResolverImplTest, GetProxyForUrlWithNetworkAnonymizationKey) {
   const net::SchemefulSite kSite(
       net::SchemefulSite(GURL("https://site.test/")));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   mojo::PendingRemote<mojom::ProxyResolverRequestClient> remote_client;
   TestRequestClient client(remote_client.InitWithNewPipeAndPassReceiver());

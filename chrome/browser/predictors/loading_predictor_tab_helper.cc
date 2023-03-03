@@ -499,8 +499,9 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
   PreconnectPrediction prediction;
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
   net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
-  net::NetworkAnonymizationKey network_anonymization_key(main_frame_site,
-                                                         main_frame_site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(main_frame_site);
+
   std::set<url::Origin> predicted_origins;
   std::vector<GURL> predicted_subresources;
   const auto lp_metadata = metadata.loading_predictor_metadata();

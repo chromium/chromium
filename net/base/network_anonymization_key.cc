@@ -16,23 +16,20 @@ namespace net {
 
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const SchemefulSite& top_frame_site,
-    const absl::optional<SchemefulSite>& frame_site,
-    const absl::optional<bool> is_cross_site,
-    const absl::optional<base::UnguessableToken> nonce)
+    bool is_cross_site,
+    absl::optional<base::UnguessableToken> nonce)
     : top_frame_site_(top_frame_site),
       is_cross_site_(is_cross_site),
       nonce_(nonce) {
   DCHECK(top_frame_site_.has_value());
-  // If `is_cross_site` is enabled but the value is not populated, and we have
-  // the information to calculate it, do calculate it.
-  if (!is_cross_site_.has_value() && frame_site.has_value()) {
-    is_cross_site_ = frame_site.value() != top_frame_site_.value();
-  }
+}
 
-  // `is_cross_site_` must be populated.
-  // TODO(crbug.com/1407287): update constructor signature so this is not
-  // optional.
-  DCHECK(is_cross_site_.has_value());
+NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromFrameSite(
+    const SchemefulSite& top_frame_site,
+    const SchemefulSite& frame_site,
+    absl::optional<base::UnguessableToken> nonce) {
+  bool is_cross_site = top_frame_site != frame_site;
+  return NetworkAnonymizationKey(top_frame_site, is_cross_site, nonce);
 }
 
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
@@ -45,17 +42,15 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
   if (!network_isolation_key.IsFullyPopulated()) {
     return NetworkAnonymizationKey();
   }
-
-  // Determine is_cross_site based on the NIK's triple-key
-  bool nak_is_cross_site = network_isolation_key.GetTopFrameSite().value() !=
-                           network_isolation_key.GetFrameSite().value();
-
-  return NetworkAnonymizationKey(
-      network_isolation_key.GetTopFrameSite().value(), absl::nullopt,
-      nak_is_cross_site, network_isolation_key.GetNonce());
+  return CreateFromFrameSite(network_isolation_key.GetTopFrameSite().value(),
+                             network_isolation_key.GetFrameSite().value(),
+                             network_isolation_key.GetNonce());
 }
 
-NetworkAnonymizationKey::NetworkAnonymizationKey() = default;
+NetworkAnonymizationKey::NetworkAnonymizationKey()
+    : top_frame_site_(absl::nullopt),
+      is_cross_site_(false),
+      nonce_(absl::nullopt) {}
 
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const NetworkAnonymizationKey& network_anonymization_key) = default;
@@ -73,8 +68,7 @@ NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(
 
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
   SchemefulSite site_with_opaque_origin;
-  return NetworkAnonymizationKey(site_with_opaque_origin,
-                                 site_with_opaque_origin, false);
+  return NetworkAnonymizationKey(site_with_opaque_origin, false);
 }
 
 std::string NetworkAnonymizationKey::ToDebugString() const {
@@ -83,7 +77,7 @@ std::string NetworkAnonymizationKey::ToDebugString() const {
   }
 
   std::string str = GetSiteDebugString(top_frame_site_);
-  str += GetIsCrossSite().value() ? " cross_site" : " same_site";
+  str += IsCrossSite() ? " cross_site" : " same_site";
 
   // Currently, if the NAK has a nonce it will be marked transient. For debug
   // purposes we will print the value but if called via
@@ -100,7 +94,7 @@ bool NetworkAnonymizationKey::IsEmpty() const {
 }
 
 bool NetworkAnonymizationKey::IsFullyPopulated() const {
-  return top_frame_site_.has_value() && is_cross_site_.has_value();
+  return top_frame_site_.has_value();
 }
 
 bool NetworkAnonymizationKey::IsTransient() const {
@@ -108,10 +102,6 @@ bool NetworkAnonymizationKey::IsTransient() const {
     return true;
 
   return top_frame_site_->opaque() || nonce_.has_value();
-}
-
-absl::optional<bool> NetworkAnonymizationKey::GetIsCrossSite() const {
-  return is_cross_site_;
 }
 
 bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
@@ -130,8 +120,7 @@ bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
   base::Value::List list;
   list.Append(std::move(top_frame_value).value());
 
-  const absl::optional<bool> is_cross_site = GetIsCrossSite();
-  list.Append(is_cross_site.value());
+  list.Append(IsCrossSite());
 
   *out_value = base::Value(std::move(list));
   return true;
@@ -140,8 +129,9 @@ bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
 bool NetworkAnonymizationKey::FromValue(
     const base::Value& value,
     NetworkAnonymizationKey* network_anonymization_key) {
-  if (!value.is_list())
+  if (!value.is_list()) {
     return false;
+  }
 
   const base::Value::List& list = value.GetList();
   if (list.empty()) {
@@ -161,14 +151,10 @@ bool NetworkAnonymizationKey::FromValue(
     return false;
   }
 
-  absl::optional<SchemefulSite> frame_site = absl::nullopt;
-  absl::optional<bool> is_cross_site = absl::nullopt;
-
-  is_cross_site = list[1].GetBool();
+  bool is_cross_site = list[1].GetBool();
 
   *network_anonymization_key =
-      NetworkAnonymizationKey(std::move(top_frame_site.value()),
-                              std::move(frame_site), std::move(is_cross_site));
+      NetworkAnonymizationKey(top_frame_site.value(), is_cross_site);
   return true;
 }
 

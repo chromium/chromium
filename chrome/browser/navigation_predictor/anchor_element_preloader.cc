@@ -112,8 +112,8 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown);
 
   net::SchemefulSite schemeful_site(target);
-  net::NetworkAnonymizationKey network_anonymization_key(schemeful_site,
-                                                         schemeful_site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(schemeful_site);
   loading_predictor->PreconnectURLIfAllowed(target, /*allow_credentials=*/true,
                                             network_anonymization_key);
 }

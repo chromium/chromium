@@ -23,8 +23,7 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
   cross_site.network_isolation_key =
       NetworkIsolationKey(kTestSiteA, kTestSiteB);
   cross_site.network_anonymization_key =
-      NetworkAnonymizationKey(kTestSiteA, kTestSiteB, true);
-
+      NetworkAnonymizationKey::CreateCrossSite(kTestSiteA);
   EXPECT_TRUE(cross_site.IsConsistent());
 }
 }  // namespace net

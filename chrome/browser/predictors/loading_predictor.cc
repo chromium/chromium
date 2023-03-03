@@ -58,9 +58,9 @@ bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
   } else if (!initial_origin.opaque() &&
              (initial_origin.scheme() == url::kHttpScheme ||
               initial_origin.scheme() == url::kHttpsScheme)) {
-    prediction->requests.emplace(
-        prediction->requests.begin(), initial_origin, kMinSockets,
-        net::NetworkAnonymizationKey(net::SchemefulSite(initial_origin),
+    prediction->requests.emplace(prediction->requests.begin(), initial_origin,
+                                 kMinSockets,
+                                 net::NetworkAnonymizationKey::CreateSameSite(
                                      net::SchemefulSite(initial_origin)));
   }
 
@@ -322,7 +322,8 @@ void LoadingPredictor::HandleOmniboxHint(const GURL& url, bool preconnectable) {
   bool is_new_origin = origin != last_omnibox_origin_;
   last_omnibox_origin_ = origin;
   net::SchemefulSite site = net::SchemefulSite(origin);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   base::TimeTicks now = base::TimeTicks::Now();
   if (preconnectable) {
     if (is_new_origin || now - last_omnibox_preconnect_time_ >=

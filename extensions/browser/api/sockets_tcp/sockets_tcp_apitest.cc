@@ -112,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
   // Cache only lookup.
   params->source = net::HostResolverSource::LOCAL_ONLY;
   net::SchemefulSite site = net::SchemefulSite(test_extension->url());
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   network::DnsLookupResult result1 =
       network::BlockingDnsLookup(network_context, host_port_pair,
                                  std::move(params), network_anonymization_key);

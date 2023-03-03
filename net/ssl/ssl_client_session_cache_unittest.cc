@@ -429,7 +429,7 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
   key2.server = HostPortPair("a.test", 443);
   key2.dest_ip_addr = IPAddress::IPv4Localhost();
   key2.network_anonymization_key =
-      NetworkAnonymizationKey(kSiteB, kSiteB, /*is_cross_site=*/false);
+      NetworkAnonymizationKey::CreateSameSite(kSiteB);
   key2.privacy_mode = PRIVACY_MODE_ENABLED;
   auto session2 = NewSSLSession();
   cache.Insert(key2, bssl::UpRef(session2));
@@ -447,7 +447,7 @@ TEST_F(SSLClientSessionCacheTest, FlushForServer) {
   SSLClientSessionCache::Key key5;
   key5.server = HostPortPair("b.test", 443);
   key5.network_anonymization_key =
-      NetworkAnonymizationKey(kSiteA, kSiteA, /*is_cross_site=*/false);
+      NetworkAnonymizationKey::CreateSameSite(kSiteA);
   auto session5 = NewSSLSession();
   cache.Insert(key5, bssl::UpRef(session5));
 

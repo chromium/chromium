@@ -96,9 +96,11 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
     test_clock_.Advance(base::Seconds(12345));
 
     SchemefulSite site1(GURL("https://foo.test/"));
-    network_anonymization_key1_ = NetworkAnonymizationKey(site1, site1);
+    network_anonymization_key1_ =
+        NetworkAnonymizationKey::CreateSameSite(site1);
     SchemefulSite site2(GURL("https://bar.test/"));
-    network_anonymization_key2_ = NetworkAnonymizationKey(site2, site2);
+    network_anonymization_key2_ =
+        NetworkAnonymizationKey::CreateSameSite(site2);
   }
 
   // This is a little awkward, but need to create and configure the

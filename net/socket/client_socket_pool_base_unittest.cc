@@ -859,8 +859,8 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
   const SchemefulSite kSiteA(GURL("http://a.test/"));
   const SchemefulSite kSiteB(GURL("http://b.test/"));
   const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
-      NetworkAnonymizationKey(kSiteA, kSiteA, /*is_cross_site=*/false),
-      NetworkAnonymizationKey(kSiteB, kSiteB, /*is_cross_site=*/false),
+      NetworkAnonymizationKey::CreateSameSite(kSiteA),
+      NetworkAnonymizationKey::CreateSameSite(kSiteB),
   };
 
   const SecureDnsPolicy kSecureDnsPolicys[] = {SecureDnsPolicy::kAllow,
@@ -5743,8 +5743,8 @@ class ClientSocketPoolBaseRefreshTest
     // Note this GroupId will match GetGroupId() unless
     // kPartitionConnectionsByNetworkAnonymizationKey is enabled.
     const SchemefulSite kSite(GURL("https://b/"));
-    const NetworkAnonymizationKey kNetworkAnonymizationKey(
-        kSite, kSite, /*is_cross_site=*/false);
+    const auto kNetworkAnonymizationKey =
+        NetworkAnonymizationKey::CreateSameSite(kSite);
     return TestGroupId("a", 443, url::kHttpsScheme,
                        PrivacyMode::PRIVACY_MODE_DISABLED,
                        kNetworkAnonymizationKey);

@@ -959,7 +959,8 @@ TEST_F(HostResolverTest, Failure_Async) {
 TEST_F(HostResolverTest, NetworkAnonymizationKey) {
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://foo.test/"));
-  const net::NetworkAnonymizationKey kNetworkIsolationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   auto inner_resolver = std::make_unique<net::MockHostResolver>();
   inner_resolver->rules()->AddRule("nik.test", "1.2.3.4");
@@ -977,7 +978,7 @@ TEST_F(HostResolverTest, NetworkAnonymizationKey) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("nik.test", 160)),
-                       kNetworkIsolationKey, std::move(optional_parameters),
+                       kNetworkAnonymizationKey, std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
 
@@ -985,7 +986,7 @@ TEST_F(HostResolverTest, NetworkAnonymizationKey) {
   EXPECT_THAT(response_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
-  EXPECT_EQ(kNetworkIsolationKey,
+  EXPECT_EQ(kNetworkAnonymizationKey,
             inner_resolver->last_request_network_anonymization_key());
 }
 

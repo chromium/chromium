@@ -82,7 +82,7 @@ LoadingPredictorConfig CreateConfig() {
 net::NetworkAnonymizationKey CreateNetworkanonymization_key(
     const GURL& main_frame_url) {
   net::SchemefulSite site = net::SchemefulSite(main_frame_url);
-  return net::NetworkAnonymizationKey(site, site);
+  return net::NetworkAnonymizationKey::CreateSameSite(site);
 }
 
 NavigationId GetNextId() {
@@ -333,9 +333,10 @@ TEST_F(LoadingPredictorPreconnectTest, TestHandleOmniboxHint) {
 
   const GURL preresolve_suggestion = GURL("http://en.wikipedia.org/wiki/main");
   net::SchemefulSite site = net::SchemefulSite(preresolve_suggestion);
-  EXPECT_CALL(*mock_preconnect_manager_,
-              StartPreresolveHost(preresolve_suggestion,
-                                  net::NetworkAnonymizationKey(site, site)));
+  EXPECT_CALL(
+      *mock_preconnect_manager_,
+      StartPreresolveHost(preresolve_suggestion,
+                          net::NetworkAnonymizationKey::CreateSameSite(site)));
   predictor_->PrepareForPageLoad(preresolve_suggestion, HintOrigin::OMNIBOX,
                                  false);
   // The second suggestions should be filtered out as well.

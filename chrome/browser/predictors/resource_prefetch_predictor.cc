@@ -221,9 +221,9 @@ bool ResourcePrefetchPredictor::GetRedirectEndpointsForPreconnect(
     // Set network anonymization key same as the origin of the redirect target.
     if (prediction) {
       prediction->requests.emplace_back(
-          redirect_origin, 1 /* num_scokets */,
-          net::NetworkAnonymizationKey(net::SchemefulSite(redirect_origin),
-                                       net::SchemefulSite(redirect_origin)));
+          redirect_origin, 1 /* num_sockets */,
+          net::NetworkAnonymizationKey::CreateSameSite(
+              net::SchemefulSite(redirect_origin)));
     }
     at_least_one_redirect_endpoint_added = true;
   }
@@ -348,8 +348,8 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
     prediction->is_redirected = (redirect_origin != url_origin);
   }
   net::SchemefulSite redirect_site = net::SchemefulSite(redirect_origin);
-  net::NetworkAnonymizationKey network_anonymization_key(redirect_site,
-                                                         redirect_site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(redirect_site);
 
   for (const OriginStat& origin : data.origins()) {
     float confidence = static_cast<float>(origin.number_of_hits()) /

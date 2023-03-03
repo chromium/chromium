@@ -41,7 +41,7 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                         std::move(host_port_pair)),
-                    net::NetworkAnonymizationKey(site, site), nullptr,
+                    net::NetworkAnonymizationKey::CreateSameSite(site), nullptr,
                     receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &DnsResolveFunction::OnComplete, base::Unretained(this),

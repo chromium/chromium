@@ -500,8 +500,7 @@ void PrefetchService::StartProxyLookupCheck(
 
   // Start proxy check for this prefetch, and give ownership of the
   // |ProxyLookupClientImpl| to |prefetch_container|.
-  net::NetworkAnonymizationKey network_anonymization_key(
-      net::SchemefulSite(prefetch_container->GetURL()),
+  auto network_anonymization_key = net::NetworkAnonymizationKey::CreateSameSite(
       net::SchemefulSite(prefetch_container->GetURL()));
   prefetch_container->TakeProxyLookupClient(
       std::make_unique<ProxyLookupClientImpl>(

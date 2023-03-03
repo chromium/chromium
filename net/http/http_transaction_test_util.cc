@@ -210,7 +210,7 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   load_flags = t.load_flags;
   SchemefulSite site(url);
   network_isolation_key = NetworkIsolationKey(site, site);
-  network_anonymization_key = NetworkAnonymizationKey(site, site);
+  network_anonymization_key = NetworkAnonymizationKey::CreateSameSite(site);
   fps_cache_filter = t.fps_cache_filter;
   browser_run_id = t.browser_run_id;
 }

@@ -515,8 +515,10 @@ TEST_F(ReportingEndpointManagerTest, ZeroWeights) {
 TEST_F(ReportingEndpointManagerTest, NetworkAnonymizationKey) {
   const SchemefulSite kSite2(GURL("https://origin2/"));
 
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite, kSite);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   const ReportingEndpointGroupKey kGroupKey1(kNetworkAnonymizationKey1, kOrigin,
                                              kGroup);
   const ReportingEndpointGroupKey kGroupKey2(kNetworkAnonymizationKey2, kOrigin,
@@ -561,8 +563,10 @@ TEST_F(ReportingEndpointManagerTest,
        NetworkAnonymizationKeyWithMultipleEndpoints) {
   const SchemefulSite kSite2(GURL("https://origin2/"));
 
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite, kSite);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   const ReportingEndpointGroupKey kGroupKey1(kNetworkAnonymizationKey1, kOrigin,
                                              kGroup);
   const ReportingEndpointGroupKey kGroupKey2(kNetworkAnonymizationKey2, kOrigin,
@@ -639,7 +643,8 @@ TEST_F(ReportingEndpointManagerTest, CacheEviction) {
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey));
 
   // Add another endpoint with a different NetworkAnonymizationKey;
-  const NetworkAnonymizationKey kDifferentNetworkAnonymizationKey(kSite, kSite);
+  const auto kDifferentNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
   const ReportingEndpointGroupKey kDifferentGroupKey(
       kDifferentNetworkAnonymizationKey, kOrigin, kGroup);
   SetEndpoint(kEndpoint, ReportingEndpoint::EndpointInfo::kDefaultPriority,

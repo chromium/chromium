@@ -23,12 +23,12 @@ TEST(NetworkAnonymizationKeyMojomTraitsTest,
   std::vector<net::NetworkAnonymizationKey> keys = {
       net::NetworkAnonymizationKey(),
       net::NetworkAnonymizationKey::CreateTransient(),
-      net::NetworkAnonymizationKey(net::SchemefulSite(GURL("http://a.test/")),
-                                   /*frame_site=*/absl::nullopt,
-                                   /*is_cross_site=*/true, token),
-      net::NetworkAnonymizationKey(net::SchemefulSite(GURL("http://a.test/")),
-                                   /*frame_site=*/absl::nullopt,
-                                   /*is_cross_site=*/true)};
+      net::NetworkAnonymizationKey::CreateFromParts(
+          net::SchemefulSite(GURL("http://a.test/")), /*is_cross_site=*/true,
+          token),
+      net::NetworkAnonymizationKey::CreateCrossSite(
+          net::SchemefulSite(GURL("http://a.test/"))),
+  };
   for (auto& original : keys) {
     SCOPED_TRACE(original.ToDebugString());
     net::NetworkAnonymizationKey copied;

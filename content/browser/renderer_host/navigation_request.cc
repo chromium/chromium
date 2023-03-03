@@ -2517,7 +2517,7 @@ void NavigationRequest::BeginNavigationImpl() {
       const net::SchemefulSite site = net::SchemefulSite(origin);
       coop_status_.EnforceCOOP(
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
-          origin, net::NetworkAnonymizationKey(site, site));
+          origin, net::NetworkAnonymizationKey::CreateSameSite(site));
 
       if (auto result =
               frame_tree_node_->render_manager()->GetFrameHostForNavigation(

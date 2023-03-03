@@ -3149,7 +3149,7 @@ TEST_P(SSLClientSocketVersionTest,
   // sharding is disabled.
   const SchemefulSite kSiteA(GURL("https://a.test"));
   ssl_config.network_anonymization_key =
-      NetworkAnonymizationKey(kSiteA, kSiteA, /*is_cross_site=*/false);
+      NetworkAnonymizationKey::CreateSameSite(kSiteA);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3159,7 +3159,7 @@ TEST_P(SSLClientSocketVersionTest,
 
   const SchemefulSite kSiteB(GURL("https://a.test"));
   ssl_config.network_anonymization_key =
-      NetworkAnonymizationKey(kSiteB, kSiteB, /*is_cross_site=*/false);
+      NetworkAnonymizationKey::CreateSameSite(kSiteB);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
@@ -3178,10 +3178,10 @@ TEST_P(SSLClientSocketVersionTest,
 
   const SchemefulSite kSiteA(GURL("https://a.test"));
   const SchemefulSite kSiteB(GURL("https://b.test"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKeyA(
-      kSiteA, kSiteA, /*is_cross_site=*/false);
-  const NetworkAnonymizationKey kNetworkAnonymizationKeyB(
-      kSiteB, kSiteB, /*is_cross_site=*/false);
+  const auto kNetworkAnonymizationKeyA =
+      NetworkAnonymizationKey::CreateSameSite(kSiteA);
+  const auto kNetworkAnonymizationKeyB =
+      NetworkAnonymizationKey::CreateSameSite(kSiteB);
 
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));

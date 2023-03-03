@@ -1022,12 +1022,14 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
 TEST_F(ProxyResolverV8TracingTest, NetworkAnonymizationKey) {
   const net::SchemefulSite kSite1 =
       net::SchemefulSite(GURL("https://foo.test/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
   const net::IPAddress kIPAddress1(1, 2, 3, 4);
 
   const net::SchemefulSite kSite2 =
       net::SchemefulSite(GURL("https://bar.test/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
   const net::IPAddress kIPAddress2(5, 6, 7, 8);
 
   const char kHost[] = "host.test";
@@ -1074,7 +1076,8 @@ TEST_F(ProxyResolverV8TracingTest, NetworkAnonymizationKey) {
 TEST_F(ProxyResolverV8TracingTest, MyIPAddressWithNetworkAnonymizationKey) {
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://foo.test/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   MockProxyHostResolver host_resolver;
   MockBindings mock_bindings(&host_resolver);

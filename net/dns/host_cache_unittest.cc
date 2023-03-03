@@ -282,9 +282,11 @@ TEST(HostCacheTest, NetworkAnonymizationKey) {
   const base::TimeDelta kTTL = base::Seconds(10);
 
   const SchemefulSite kSite1(GURL("https://site1.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://site2.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   HostCache::Key key1(kHost, DnsQueryType::UNSPECIFIED, 0,
                       HostResolverSource::ANY, kNetworkAnonymizationKey1);
@@ -1586,10 +1588,11 @@ TEST(HostCacheTest, SerializeAndDeserializeWithNetworkAnonymizationKey) {
       url::SchemeHostPort(url::kHttpsScheme, "hostname.test", 443);
   const base::TimeDelta kTTL = base::Seconds(10);
   const SchemefulSite kSite(GURL("https://site.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
   const SchemefulSite kOpaqueSite;
-  const NetworkAnonymizationKey kOpaqueNetworkAnonymizationKey(kOpaqueSite,
-                                                               kOpaqueSite);
+  const auto kOpaqueNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kOpaqueSite);
 
   HostCache::Key key1(kHost, DnsQueryType::UNSPECIFIED, 0,
                       HostResolverSource::ANY, kNetworkAnonymizationKey);

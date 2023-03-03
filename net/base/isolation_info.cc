@@ -174,7 +174,7 @@ IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
       network_anonymization_key.GetTopFrameSite()->site_as_origin_;
 
   absl::optional<url::Origin> frame_origin;
-  if (network_anonymization_key.GetIsCrossSite().value()) {
+  if (network_anonymization_key.IsCrossSite()) {
     // If we know that the origin is cross site to the top level site, create an
     // empty origin to use as the frame origin for the isolation info. This
     // should be cross site with the top level origin.
@@ -356,19 +356,10 @@ IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
     return NetworkAnonymizationKey();
   }
   SchemefulSite top_frame_site(*top_frame_origin);
+  SchemefulSite frame_site(*frame_origin);
 
-  bool nak_is_cross_site;
-  if (frame_origin) {
-    SchemefulSite frame_site(*frame_origin);
-    nak_is_cross_site = frame_site != top_frame_site;
-  } else {
-    // If we are unable to determine if the frame is cross site we should create
-    // it as cross site.
-    nak_is_cross_site = true;
-  }
-
-  return NetworkAnonymizationKey(
-      top_frame_site, absl::nullopt, absl::make_optional(nak_is_cross_site),
+  return NetworkAnonymizationKey::CreateFromFrameSite(
+      top_frame_site, frame_site,
       nonce ? absl::make_optional(*nonce) : absl::nullopt);
 }
 

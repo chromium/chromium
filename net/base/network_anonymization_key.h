@@ -31,9 +31,11 @@ namespace net {
 // In order to separate first and third party context from each other this field
 // will always be populated.
 
-// `is_cross_site` is used with the `top_frame_site` to create a partition key
-// that separates the `top_frame_site`s first party partition from any
-// cross-site iframes.
+// `is_cross_site` indicates whether the key is cross-site or same-site. A
+// same-site key indicates that he schemeful site of the top frame and the frame
+// are the same. Intermediary frames between the two may be cross-site to them.
+// The effect of this property is to partition first-party and third-party
+// resources within a given `top_frame_site`.
 
 // The following show how the `is_cross_site` boolean is populated for the
 // innermost frame in the chain.
@@ -54,14 +56,6 @@ namespace net {
 
 class NET_EXPORT NetworkAnonymizationKey {
  public:
-  // TODO(crbug/1372123): Consider having the constructor not pass
-  // `is_cross_site` since this may be unnecessary and confusing to consumers.
-  NetworkAnonymizationKey(
-      const SchemefulSite& top_frame_site,
-      const absl::optional<SchemefulSite>& frame_site = absl::nullopt,
-      const absl::optional<bool> is_cross_site = absl::nullopt,
-      const absl::optional<base::UnguessableToken> nonce = absl::nullopt);
-
   // Construct an empty key.
   NetworkAnonymizationKey();
 
@@ -93,11 +87,42 @@ class NET_EXPORT NetworkAnonymizationKey {
            std::tie(other.top_frame_site_, other.is_cross_site_, other.nonce_);
   }
 
-  // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
-  // possible because a NetworkIsolationKey must always be more granular
-  // than a NetworkAnonymizationKey.
+  // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
+  // same-site (see comment on the class, above) and has no nonce.
+  static NetworkAnonymizationKey CreateSameSite(
+      const SchemefulSite& top_frame_site) {
+    return NetworkAnonymizationKey(top_frame_site, false, absl::nullopt);
+  }
+
+  // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
+  // cross-site (see comment on the class, above) and has no nonce.
+  static NetworkAnonymizationKey CreateCrossSite(
+      const SchemefulSite& top_frame_site) {
+    return NetworkAnonymizationKey(top_frame_site, true, absl::nullopt);
+  }
+
+  // Create a `NetworkAnonymizationKey` from a `top_frame_site` and
+  // `frame_site`. This calculates is_cross_site on the basis of those two
+  // sites.
+  static NetworkAnonymizationKey CreateFromFrameSite(
+      const SchemefulSite& top_frame_site,
+      const SchemefulSite& frame_site,
+      absl::optional<base::UnguessableToken> nonce = absl::nullopt);
+
+  // Creates a `NetworkAnonymizationKey` from a `NetworkIsolationKey`. This is
+  // possible because a `NetworkIsolationKey` must always be more granular
+  // than a `NetworkAnonymizationKey`.
   static NetworkAnonymizationKey CreateFromNetworkIsolationKey(
       const net::NetworkIsolationKey& network_isolation_key);
+
+  // Creates a `NetworkAnonymizationKey` from its constituent parts. This
+  // is intended to be used to build a NAK from Mojo, and for tests.
+  static NetworkAnonymizationKey CreateFromParts(
+      const SchemefulSite& top_frame_site,
+      bool is_cross_site,
+      absl::optional<base::UnguessableToken> nonce = absl::nullopt) {
+    return NetworkAnonymizationKey(top_frame_site, is_cross_site, nonce);
+  }
 
   // TODO(crbug/1372769)
   // Intended for temporary use in locations that should be using main frame and
@@ -109,8 +134,7 @@ class NET_EXPORT NetworkAnonymizationKey {
       const url::Origin& incorrectly_used_frame_origin) {
     net::SchemefulSite incorrectly_used_frame_site =
         net::SchemefulSite(incorrectly_used_frame_origin);
-    return NetworkAnonymizationKey(incorrectly_used_frame_site,
-                                   incorrectly_used_frame_site);
+    return NetworkAnonymizationKey(incorrectly_used_frame_site, false);
   }
 
   // Creates a transient non-empty NetworkAnonymizationKey by creating an opaque
@@ -138,7 +162,9 @@ class NET_EXPORT NetworkAnonymizationKey {
     return top_frame_site_;
   }
 
-  absl::optional<bool> GetIsCrossSite() const;
+  bool IsCrossSite() const { return is_cross_site_; }
+
+  bool IsSameSite() const { return !IsCrossSite(); }
 
   const absl::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
@@ -156,6 +182,11 @@ class NET_EXPORT NetworkAnonymizationKey {
       NetworkAnonymizationKey* out_network_anonymization_key);
 
  private:
+  NetworkAnonymizationKey(
+      const SchemefulSite& top_frame_site,
+      bool is_cross_site,
+      absl::optional<base::UnguessableToken> nonce = absl::nullopt);
+
   std::string GetSiteDebugString(
       const absl::optional<SchemefulSite>& site) const;
 
@@ -167,7 +198,8 @@ class NET_EXPORT NetworkAnonymizationKey {
   absl::optional<SchemefulSite> top_frame_site_;
 
   // True if the frame site is cross site when compared to the top frame site.
-  absl::optional<bool> is_cross_site_;
+  // This is always false for a non-fully-populated NAK.
+  bool is_cross_site_;
 
   // for non-opaque origins.
   absl::optional<base::UnguessableToken> nonce_;

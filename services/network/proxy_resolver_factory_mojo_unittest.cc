@@ -945,7 +945,8 @@ TEST_F(ProxyResolverFactoryMojoTest,
        GetProxyForURL_DnsRequestWithNetworkAnonymizationKey) {
   net::SchemefulSite kSite =
       net::SchemefulSite(url::Origin::Create(GURL("https://origin.test/")));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
   const GURL kUrl(kExampleUrl);
 
   mock_proxy_resolver_.AddGetProxyAction(

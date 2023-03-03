@@ -340,9 +340,11 @@ TEST(HttpAuthCacheTest, SeparateByTarget) {
 // true.
 TEST(HttpAuthCacheTest, SeparateServersByNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  auto kNetworkAnonymizationKey1 =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  auto kNetworkAnonymizationKey2 =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   url::SchemeHostPort kSchemeHostPort(GURL("http://www.google.com"));
   const char kPath[] = "/";
@@ -446,9 +448,11 @@ TEST(HttpAuthCacheTest, SeparateServersByNetworkAnonymizationKey) {
 // |key_entries_by_network_anonymization_key| is set to true.
 TEST(HttpAuthCacheTest, NeverSeparateProxiesByNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  auto kNetworkAnonymizationKey1 =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  auto kNetworkAnonymizationKey2 =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   url::SchemeHostPort kSchemeHostPort(GURL("http://www.google.com"));
   const char kPath[] = "/";

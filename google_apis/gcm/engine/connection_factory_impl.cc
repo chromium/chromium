@@ -366,9 +366,8 @@ void ConnectionFactoryImpl::StartConnection() {
   // will be the same for all callers, and will allow pooling all connections to
   // GCM in one socket connection, if an H2 or QUIC proxy is in use.
   auto site = net::SchemefulSite(current_endpoint);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   socket_factory_->CreateProxyResolvingSocket(
-      current_endpoint, std::move(network_anonymization_key),
+      current_endpoint, net::NetworkAnonymizationKey::CreateSameSite(site),
       std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,

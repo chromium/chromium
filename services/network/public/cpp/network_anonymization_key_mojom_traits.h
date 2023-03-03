@@ -29,7 +29,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
 
   static bool is_cross_site(const net::NetworkAnonymizationKey& input) {
-    return input.GetIsCrossSite().value_or(false);
+    return input.IsCrossSite();
   }
 
   static const absl::optional<base::UnguessableToken>& nonce(

@@ -92,7 +92,7 @@ class FakePrefetchManagerDelegate
 net::NetworkAnonymizationKey CreateNetworkIsolationKey(
     const GURL& main_frame_url) {
   net::SchemefulSite site = net::SchemefulSite(main_frame_url);
-  return net::NetworkAnonymizationKey(site, site);
+  return net::NetworkAnonymizationKey::CreateSameSite(site);
 }
 
 PrefetchRequest CreateScriptRequest(const GURL& url,

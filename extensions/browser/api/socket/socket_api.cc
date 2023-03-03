@@ -224,8 +224,7 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   // Intentionally using a HostPortPair because scheme isn't specified.
   host_resolver_->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
-      net::NetworkAnonymizationKey(net::SchemefulSite(origin),
-                                   net::SchemefulSite(origin)),
+      net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(origin)),
       std::move(params), receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &SocketExtensionWithDnsLookupFunction::OnComplete, base::Unretained(this),

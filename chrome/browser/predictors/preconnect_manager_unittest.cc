@@ -183,7 +183,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 net::NetworkAnonymizationKey CreateNetworkAnonymizationKey(
     const GURL& main_frame_url) {
   net::SchemefulSite site = net::SchemefulSite(main_frame_url);
-  return net::NetworkAnonymizationKey(site, site);
+  return net::NetworkAnonymizationKey::CreateSameSite(site);
 }
 
 }  // namespace
@@ -926,8 +926,8 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
   bool allow_credentials = false;
   net::SchemefulSite requesting_site =
       net::SchemefulSite(GURL("http://foo.test"));
-  net::NetworkAnonymizationKey network_anonymization_key(requesting_site,
-                                                         requesting_site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(requesting_site);
 
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
   preconnect_manager_->StartPreconnectUrl(url, allow_credentials,

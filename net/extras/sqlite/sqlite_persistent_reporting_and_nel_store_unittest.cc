@@ -237,12 +237,12 @@ class SQLitePersistentReportingAndNelStoreTest
   // Use origins distinct from those used in origin fields of keys, to avoid any
   // risk of tests passing due to comparing origins that are the same but come
   // from different sources.
-  const NetworkAnonymizationKey kNak1_ = NetworkAnonymizationKey(
-      SchemefulSite(GURL("https://top-frame-origin-nik1.test")),
-      SchemefulSite(GURL("https://frame-origin-nik1.test")));
-  const NetworkAnonymizationKey kNak2_ = NetworkAnonymizationKey(
-      SchemefulSite(GURL("https://top-frame-origin-nik2.test")),
-      SchemefulSite(GURL("https://frame-origin-nik2.test")));
+  const NetworkAnonymizationKey kNak1_ =
+      NetworkAnonymizationKey::CreateCrossSite(
+          SchemefulSite(GURL("https://top-frame-origin-nik1.test")));
+  const NetworkAnonymizationKey kNak2_ =
+      NetworkAnonymizationKey::CreateCrossSite(
+          SchemefulSite(GURL("https://top-frame-origin-nik2.test")));
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<SQLitePersistentReportingAndNelStore> store_;
