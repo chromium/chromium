@@ -26,6 +26,9 @@ class JavaScriptFeatureManager : public base::SupportsUserData::Data {
  public:
   ~JavaScriptFeatureManager() override;
 
+  JavaScriptFeatureManager(const JavaScriptFeatureManager&) = delete;
+  JavaScriptFeatureManager& operator=(const JavaScriptFeatureManager&) = delete;
+
   // Returns the JavaScriptFeatureManager associated with `browser_state`.
   // If a JavaScriptFeatureManager does not already exist, one will be created
   // and associated with `browser_state`. `browser_state` must not be null.
@@ -48,8 +51,11 @@ class JavaScriptFeatureManager : public base::SupportsUserData::Data {
   // has not be added to the associated `browser_state_`.
   JavaScriptContentWorld* GetContentWorldForFeature(JavaScriptFeature* feature);
 
-  JavaScriptFeatureManager(const JavaScriptFeatureManager&) = delete;
-  JavaScriptFeatureManager& operator=(const JavaScriptFeatureManager&) = delete;
+  // Returns a list of all the content worlds used by features.
+  std::vector<JavaScriptContentWorld*> GetAllContentWorlds();
+
+  // Returns a list of all the content worlds enum values used by features.
+  std::vector<ContentWorld> GetAllContentWorldEnums();
 
  private:
   JavaScriptFeatureManager(BrowserState* browser_state);

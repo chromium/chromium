@@ -31,6 +31,8 @@ class WebFramesManagerImpl : public WebFramesManager {
   // associated web frames. If the frame manager does not contain a frame with
   // `frame_id`, operation is a no-op.
   void RemoveFrameWithId(const std::string& frame_id);
+  // Removes all the associated web frames.
+  void RemoveAllWebFrames();
 
   // WebFramesManager overrides.
   void AddObserver(Observer* observer) override;

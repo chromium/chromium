@@ -80,13 +80,25 @@ void JavaScriptFeatureManager::ConfigureFeatures(
 
 JavaScriptContentWorld* JavaScriptFeatureManager::GetContentWorldForFeature(
     JavaScriptFeature* feature) {
-  if (isolated_world_ && isolated_world_->HasFeature(feature)) {
+  if (isolated_world_->HasFeature(feature)) {
     return isolated_world_.get();
   }
   if (page_content_world_->HasFeature(feature)) {
     return page_content_world_.get();
   }
   return nullptr;
+}
+
+std::vector<JavaScriptContentWorld*>
+JavaScriptFeatureManager::GetAllContentWorlds() {
+  return {isolated_world_.get(), page_content_world_.get()};
+}
+
+std::vector<ContentWorld> JavaScriptFeatureManager::GetAllContentWorldEnums() {
+  // Return these from WKContentWorld directly instead of from
+  // JavaScriptContentWorld instances because JavaScriptContentWorld are not
+  // created until after `ConfigureFeatures`.
+  return {ContentWorld::kPageContentWorld, ContentWorld::kIsolatedWorld};
 }
 
 }  // namespace web

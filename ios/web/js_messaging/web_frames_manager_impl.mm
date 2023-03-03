@@ -68,6 +68,16 @@ void WebFramesManagerImpl::RemoveFrameWithId(const std::string& frame_id) {
   web_frames_.erase(frame_id);
 }
 
+void WebFramesManagerImpl::RemoveAllWebFrames() {
+  std::set<std::string> frame_ids;
+  for (const auto& it : web_frames_) {
+    frame_ids.insert(it.first);
+  }
+  for (std::string frame_id : frame_ids) {
+    RemoveFrameWithId(frame_id);
+  }
+}
+
 #pragma mark - WebFramesManager
 
 void WebFramesManagerImpl::AddObserver(Observer* observer) {
