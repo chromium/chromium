@@ -9,5 +9,6 @@ PASS target7
 PASS target8
 PASS target9
 PASS target10
+PASS target11
 Harness: the test ran to completion.
 

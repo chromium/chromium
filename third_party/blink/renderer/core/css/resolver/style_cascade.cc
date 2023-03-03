@@ -816,7 +816,8 @@ StyleCascade::TokenSequence::BuildVariableData() {
   // even though we should.
   return CSSVariableData::Create(
       CSSTokenizedValue{CSSParserTokenRange{tokens_}, StringView{}},
-      is_animation_tainted_, /*needs_variable_resolution=*/false);
+      is_animation_tainted_,
+      /*needs_variable_resolution=*/false);
 }
 
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
@@ -972,10 +973,13 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     HeapVector<CSSPropertyValue, 64> parsed_properties;
     const bool important = false;
 
-    if (!CSSPropertyParser::ParseValue(
-            shorthand_property_id, important, sequence.TokenRange(),
-            shorthand_value->ParserContext(), parsed_properties,
-            StyleRule::RuleType::kStyle)) {
+    // NOTE: We don't actually need any original text here, since we're
+    // not storing it in a custom property anywhere.
+    if (!CSSPropertyParser::ParseValue(shorthand_property_id, important,
+                                       {sequence.TokenRange(), StringView()},
+                                       shorthand_value->ParserContext(),
+                                       parsed_properties,
+                                       StyleRule::RuleType::kStyle)) {
       return cssvalue::CSSUnsetValue::Create();
     }
 

@@ -46,6 +46,7 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   }
 
   const AtomicString& BackingString() const { return backing_string_; }
+  const String& OriginalText() const { return original_text_; }
 
   String Serialize() const;
 

@@ -14,7 +14,7 @@ void CSSVariableReferenceValue::TraceAfterDispatch(
 
 String CSSVariableReferenceValue::CustomCSSText() const {
   // We may want to consider caching this value.
-  return data_->TokenRange().Serialize();
+  return data_->Serialize();
 }
 
 }  // namespace blink

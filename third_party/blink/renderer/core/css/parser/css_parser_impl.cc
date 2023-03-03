@@ -2118,9 +2118,8 @@ void CSSParserImpl::ConsumeDeclarationValue(
     CSSPropertyID unresolved_property,
     bool important,
     StyleRule::RuleType rule_type) {
-  CSSPropertyParser::ParseValue(unresolved_property, important,
-                                tokenized_value.range, context_,
-                                parsed_properties_, rule_type);
+  CSSPropertyParser::ParseValue(unresolved_property, important, tokenized_value,
+                                context_, parsed_properties_, rule_type);
 }
 
 CSSTokenizedValue CSSParserImpl::ConsumeValue(CSSParserTokenStream& stream) {
