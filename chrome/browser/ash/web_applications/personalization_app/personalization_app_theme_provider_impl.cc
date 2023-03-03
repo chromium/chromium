@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_theme_provider_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/shell.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::personalization_app {
@@ -31,7 +31,7 @@ PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
-  if (ash::features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     color_palette_controller_ = ColorPaletteController::Create();
   }
 }
@@ -69,7 +69,7 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   }
   // Call once to get the initial status.
   NotifyColorModeAutoScheduleChanged();
-  if (ash::features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     OnStaticColorChanged();
     OnColorSchemeChanged();
     if (!pref_change_registrar_.IsObserved(
@@ -168,7 +168,7 @@ void PersonalizationAppThemeProviderImpl::NotifyColorModeAutoScheduleChanged() {
 
 void PersonalizationAppThemeProviderImpl::GetColorScheme(
     GetColorSchemeCallback callback) {
-  if (!ash::features::IsJellyEnabled()) {
+  if (!chromeos::features::IsJellyEnabled()) {
     theme_receiver_.ReportBadMessage(
         "Cannot call GetColorScheme without Jelly enabled.");
     return;
@@ -179,7 +179,7 @@ void PersonalizationAppThemeProviderImpl::GetColorScheme(
 
 void PersonalizationAppThemeProviderImpl::SetColorScheme(
     ColorScheme color_scheme) {
-  if (!ash::features::IsJellyEnabled()) {
+  if (!chromeos::features::IsJellyEnabled()) {
     theme_receiver_.ReportBadMessage(
         "Cannot call SetColorScheme without Jelly enabled.");
     return;
@@ -190,7 +190,7 @@ void PersonalizationAppThemeProviderImpl::SetColorScheme(
 
 void PersonalizationAppThemeProviderImpl::GetStaticColor(
     GetStaticColorCallback callback) {
-  if (!ash::features::IsJellyEnabled()) {
+  if (!chromeos::features::IsJellyEnabled()) {
     theme_receiver_.ReportBadMessage(
         "Cannot call GetStaticColor without Jelly enabled.");
     return;
@@ -200,7 +200,7 @@ void PersonalizationAppThemeProviderImpl::GetStaticColor(
 }
 
 void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
-  if (!ash::features::IsJellyEnabled()) {
+  if (!chromeos::features::IsJellyEnabled()) {
     theme_receiver_.ReportBadMessage(
         "Cannot call SetStaticColor without Jelly enabled.");
     return;
