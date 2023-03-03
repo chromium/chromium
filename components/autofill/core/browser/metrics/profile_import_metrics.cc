@@ -103,12 +103,6 @@ void LogNewProfileImportDecision(
                                 decision);
 }
 
-void LogNewProfileWithIgnoredCountryImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.NewProfileWithIgnoredCountryDecision", decision);
-}
-
 void LogNewProfileNumberOfAutocompleteUnrecognizedFields(int count) {
   base::UmaHistogramExactLinear(
       "Autofill.ProfileImport.NewProfileNumberOfAutocompleteUnrecognizedFields",
@@ -119,13 +113,6 @@ void LogProfileUpdateImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
                                 decision);
-}
-
-void LogProfileUpdateWithIgnoredCountryImportDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ProfileImport.UpdateProfileWithIgnoredCountryDecision",
-      decision);
 }
 
 void LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(int count) {

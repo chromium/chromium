@@ -545,21 +545,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
         candidate_profile.SetInfoWithVerificationStatus(
             field_type, value, page_language, VerificationStatus::kObserved);
       }
-      // Check if the country code was still not determined correctly.
-      if (!candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
-        has_invalid_country = true;
-        // If AutofillIgnoreInvalidCountryOnImport is enable, we cannot just
-        // set `has_invalid_country` to false, because the flag is used to
-        // collect metrics further down.
-        import_metadata.did_ignore_invalid_country =
-            base::FeatureList::IsEnabled(
-                features::kAutofillIgnoreInvalidCountryOnImport);
-        if (!import_metadata.did_ignore_invalid_country) {
-          LOG_AF(import_log_buffer)
-              << LogMessage::kImportAddressProfileFromFormFailed
-              << "Missing country." << CTag{};
-        }
-      }
+      has_invalid_country = has_invalid_country ||
+                            !candidate_profile.HasRawInfo(ADDRESS_HOME_COUNTRY);
     }
 
     if (FieldTypeGroupToFormType(field_type.group()) ==
@@ -579,15 +566,11 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       GetPredictedCountryCode(candidate_profile, variation_country_code,
                               app_locale_, import_log_buffer);
 
-  bool should_complement_country =
-      !has_invalid_country || import_metadata.did_ignore_invalid_country;
-
   // When setting a phone number, the region is deduced from the profile's
   // country or the app locale. For the `variation_country_code` to take
   // precedence over the app locale, country code complemention needs to happen
   // before `SetPhoneNumber()`.
   import_metadata.did_complement_country =
-      should_complement_country &&
       ComplementCountry(candidate_profile, predicted_country_code);
 
   if (!SetPhoneNumber(candidate_profile, combined_phone)) {
@@ -609,8 +592,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // `IsValidLearnableProfile()` goes first to collect metrics.
   bool has_invalid_information =
       !IsValidLearnableProfile(candidate_profile, import_log_buffer) ||
-      has_multiple_distinct_email_addresses || has_invalid_field_types ||
-      (has_invalid_country && !import_metadata.did_ignore_invalid_country);
+      has_multiple_distinct_email_addresses || has_invalid_field_types;
 
   // Profiles with valid information qualify for multi-step imports.
   // This requires the profile to be finalized to apply the merging logic.

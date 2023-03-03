@@ -437,10 +437,6 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     autofill_metrics::LogNewProfileImportDecision(user_decision_);
-    if (import_metadata_.did_ignore_invalid_country) {
-      autofill_metrics::LogNewProfileWithIgnoredCountryImportDecision(
-          user_decision_);
-    }
     autofill_metrics::LogNewProfileNumberOfAutocompleteUnrecognizedFields(
         import_metadata_.num_autocomplete_unrecognized_fields);
 
@@ -465,13 +461,6 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
       autofill_metrics::LogProfileUpdateAffectedType(difference.type,
                                                      user_decision_);
     }
-    // Ignoring an invalid country made the update possible, so this should be
-    // logged in any case.
-    if (import_metadata_.did_ignore_invalid_country) {
-      autofill_metrics::LogProfileUpdateWithIgnoredCountryImportDecision(
-          user_decision_);
-    }
-
     autofill_metrics::LogUpdateProfileNumberOfAffectedFields(
         merge_difference.size(), user_decision_);
     LogUkmMetrics(num_edited_fields);

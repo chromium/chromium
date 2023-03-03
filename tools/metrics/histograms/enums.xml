@@ -6171,15 +6171,22 @@ others/histograms.xml -->
   <int value="9" label="ZIP requirement: Violated"/>
   <int value="10" label="Valid email: Fulfilled"/>
   <int value="11" label="Valid email: Violated"/>
-  <int value="12" label="Valid country: Fulfilled"/>
-  <int value="13" label="Valid country: Violated"/>
+  <int value="12"
+      label="Valid country: Fulfilled (Since 113 no longer required, but
+             still emitted)"/>
+  <int value="13"
+      label="Valid country: Violated (Since 113 no longer required, but still
+             emitted)"/>
   <int value="14" label="Valid state: Fulfilled"/>
   <int value="15" label="Valid state: Violated"/>
   <int value="16" label="Valid ZIP: Fulfilled"/>
   <int value="17" label="Valid ZIP: Violated"/>
   <int value="18"
-      label="Valid phone: Fulfilled (Since 107 no longer required)"/>
-  <int value="19" label="Valid phone: Violated (Since 107 no longer required)"/>
+      label="Valid phone: Fulfilled (Since 107 no longer required. Replaced
+             by Autofill.ProfileImport.PhoneNumberParsed)"/>
+  <int value="19"
+      label="Valid phone: Violated (Since 107 no longer required. Replaced by
+             Autofill.ProfileImport.PhoneNumberParsed)"/>
   <int value="20" label="Overall: Fulfilled"/>
   <int value="21" label="Overall: Violated"/>
   <int value="22" label="Line1 requirement: Fulfilled"/>
