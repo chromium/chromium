@@ -71,7 +71,6 @@ source_set("unit_tests") {
     "browsing_topics_state_unittest.cc",
     "epoch_topics_unittest.cc",
     "topic_and_domains_unittest.cc",
-    "util_unittest.cc",
   ]
 
   deps = [
