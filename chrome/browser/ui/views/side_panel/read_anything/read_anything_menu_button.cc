@@ -27,6 +27,7 @@ ReadAnythingMenuButton::ReadAnythingMenuButton(
   SetIcon(icon, kIconSize, gfx::kPlaceholderColor);
   SetAccessibleName(tooltip);
   SetTooltipText(tooltip);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
   SetMenuModel(menu_model);
   if (menu_model_)
     menu_model_->SetCallback(std::move(callback));
