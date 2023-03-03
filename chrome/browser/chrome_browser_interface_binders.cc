@@ -961,7 +961,7 @@ void PopulateChromeWebUIFrameBinders(
       TabStripUI,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      ash::personalization_app::PersonalizationAppUI,
+      ash::OobeUI, ash::personalization_app::PersonalizationAppUI,
       ash::settings::OSSettingsUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI>(map);

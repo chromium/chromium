@@ -8,6 +8,7 @@ import './components/common_styles/oobe_flex_layout_styles.css.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {$} from '//resources/ash/common/util.js';
+import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.js';
@@ -84,6 +85,16 @@ function initializeOobe() {
   }
   document.removeEventListener('DOMContentLoaded', initializeOobe);
 
+  const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
+  if (isOobeJellyEnabled) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '//theme/colors.css?sets=legacy,sys';
+    document.head.appendChild(link);
+    document.body.classList.add('jelly-enabled');
+    startColorChangeUpdater();
+  }
+
   // Initialize the on-screen debugger if present.
   if (OobeDebugger.DebuggerUI) {
     OobeDebugger.DebuggerUI.getInstance().register(document.body);
@@ -136,8 +147,8 @@ function initializeOobe() {
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeOobe);
-      } else {
-        initializeOobe();
+      document.addEventListener('DOMContentLoaded', initializeOobe);
+    } else {
+      initializeOobe();
     }
 })();

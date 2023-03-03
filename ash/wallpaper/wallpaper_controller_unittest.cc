@@ -1034,7 +1034,7 @@ TEST_F(WallpaperControllerTest, ShouldCalculateColorsBasedOnSessionState) {
   EXPECT_FALSE(ShouldCalculateColors());
 
   SetSessionState(SessionState::OOBE);
-  EXPECT_FALSE(ShouldCalculateColors());
+  EXPECT_TRUE(ShouldCalculateColors());
 
   SetSessionState(SessionState::LOGIN_PRIMARY);
   EXPECT_FALSE(ShouldCalculateColors());

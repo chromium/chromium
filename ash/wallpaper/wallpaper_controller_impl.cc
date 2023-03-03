@@ -2652,9 +2652,11 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
 }
 
 bool WallpaperControllerImpl::ShouldCalculateColors() const {
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
   gfx::ImageSkia image = GetWallpaper();
-  return Shell::Get()->session_controller()->GetSessionState() ==
-             session_manager::SessionState::ACTIVE &&
+  return (session_state == session_manager::SessionState::ACTIVE ||
+          session_state == session_manager::SessionState::OOBE) &&
          !image.isNull();
 }
 

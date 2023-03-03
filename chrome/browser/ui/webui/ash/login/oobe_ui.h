@@ -21,6 +21,11 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace content {
 class WebUIDataSource;
@@ -146,6 +151,11 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
 
+  // Binds to the Jelly dynamic color Mojo
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
   static void AddOobeComponents(content::WebUIDataSource* source);
 
   bool ready() const { return ready_; }
@@ -175,6 +185,8 @@ class OobeUI : public ui::MojoWebUIController {
   std::vector<BaseWebUIHandler*> webui_handlers_;       // Non-owning pointers.
   std::vector<BaseWebUIHandler*> webui_only_handlers_;  // Non-owning pointers.
   std::vector<BaseScreenHandler*> screen_handlers_;     // Non-owning pointers.
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   std::unique_ptr<ErrorScreen> error_screen_;
 
