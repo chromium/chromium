@@ -2475,6 +2475,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   wtf_size_t first_fragment_item_index_ = 0u;
 
   Member<LayoutBoxRareData> rare_data_;
+
+  FRIEND_TEST_ALL_PREFIXES(LayoutMultiColumnSetTest, ScrollAnchroingCrash);
 };
 
 template <>

@@ -787,6 +787,8 @@ void LayoutMultiColumnSet::UpdateGeometry() {
   logical_size.inline_size =
       content_size.ConvertToLogical(writing_mode).inline_size;
 
+  // TODO(layout-dev): Ideally we should not depend on the layout tree structure
+  // because it may be different from the tree for the physical fragments.
   const auto* previous_placeholder =
       DynamicTo<LayoutMultiColumnSpannerPlaceholder>(PreviousSibling());
   bool seen_previous_placeholder = !previous_placeholder;
@@ -796,6 +798,9 @@ void LayoutMultiColumnSet::UpdateGeometry() {
   // Skip until a column box after previous_placeholder.
   for (; iter.IsValid(); iter.NextChild()) {
     if (!iter->IsFragmentainerBox()) {
+      if (iter->IsLayoutObjectDestroyedOrMoved()) {
+        continue;
+      }
       const auto* child_box = To<LayoutBox>(iter->GetLayoutObject());
       if (child_box->IsColumnSpanAll()) {
         if (seen_previous_placeholder) {
