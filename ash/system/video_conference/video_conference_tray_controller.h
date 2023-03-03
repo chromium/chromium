@@ -8,10 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
-#include "base/auto_reset.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -146,9 +144,6 @@ class ASH_EXPORT VideoConferenceTrayController
   }
 
  private:
-  // Callback for `tray_hide_delay_timer_`.
-  void SetTraysVisibilityAfterDelayHiding();
-
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.
   VideoConferenceMediaState state_;
@@ -166,15 +161,6 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // The last time speak-on-mute notification showed.
   absl::optional<base::TimeTicks> last_speak_on_mute_notification_time_;
-
-  // Timer to delay hiding all the VC trays for 12 seconds.
-  base::OneShotTimer tray_hide_delay_timer_;
-
-  // These are used to cache the old state of camera/microphone permissions.
-  // When the timer is running, we will use these old states to display the
-  // icons accordingly.
-  bool camera_permission_during_timer_ = false;
-  bool microphone_permission_during_timer_ = false;
 
   bool initialized_ = false;
 

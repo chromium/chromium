@@ -725,14 +725,9 @@ TEST_P(UnifiedSystemTrayTest,
   // switch and the VC tray is visible.
   EXPECT_FALSE(IsMicrophoneMuteToastShown());
 
+  // Make the VC tray not-visible and toggle again, now the toast is visible.
   state.has_media_app = false;
   fake_video_conference_tray_controller()->UpdateWithMediaState(state);
-
-  // Wait until the delay is completed, the VC tray should be visible now.
-  task_environment()->FastForwardBy(base::Seconds(12));
-  ASSERT_FALSE(vc_tray->GetVisible());
-
-  // Toggle again, now the toast is visible.
   ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
       !cras_audio_handler->IsInputMuted());
   EXPECT_TRUE(IsMicrophoneMuteToastShown());

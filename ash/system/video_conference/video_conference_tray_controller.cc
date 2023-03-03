@@ -23,9 +23,6 @@
 namespace ash {
 
 namespace {
-// Delay time of hiding the tray.
-constexpr base::TimeDelta kHideTrayDelay = base::Seconds(12);
-
 // The ID for the "Speak-on-mute detected" toast.
 constexpr char kVideoConferenceTraySpeakOnMuteDetectedId[] =
     "video_conference_tray_toast_ids.speak_on_mute_detected";
@@ -73,18 +70,15 @@ void VideoConferenceTrayController::RemoveObserver(Observer* observer) {
 }
 
 bool VideoConferenceTrayController::ShouldShowTray() const {
-  return tray_hide_delay_timer_.IsRunning() ? true : state_.has_media_app;
+  return state_.has_media_app;
 }
 
 bool VideoConferenceTrayController::GetHasCameraPermissions() const {
-  return tray_hide_delay_timer_.IsRunning() ? camera_permission_during_timer_
-                                            : state_.has_camera_permission;
+  return state_.has_camera_permission;
 }
 
 bool VideoConferenceTrayController::GetHasMicrophonePermissions() const {
-  return tray_hide_delay_timer_.IsRunning()
-             ? microphone_permission_during_timer_
-             : state_.has_microphone_permission;
+  return state_.has_microphone_permission;
 }
 
 bool VideoConferenceTrayController::IsCapturingScreen() const {
@@ -161,25 +155,6 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   state_ = state;
 
   if (state_.has_media_app != old_state.has_media_app) {
-    // Reset any on-going timer run.
-    tray_hide_delay_timer_.Stop();
-
-    if (!state_.has_media_app) {
-      camera_permission_during_timer_ = old_state.has_camera_permission;
-      microphone_permission_during_timer_ = old_state.has_microphone_permission;
-
-      // Triggers the timer for delay hiding all the trays. Note that this
-      // should be called before `OnCameraPermissionStateChange()` and
-      // `OnMicrophonePermissionStateChange()`, since in `VideoConferenceTray`
-      // we preserve the state of camera/microphone permission for 12s before
-      // hiding the tray.
-      tray_hide_delay_timer_.Start(
-          FROM_HERE, kHideTrayDelay,
-          base::BindOnce(&VideoConferenceTrayController::
-                             SetTraysVisibilityAfterDelayHiding,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-
     for (auto& observer : observer_list_) {
       observer.OnHasMediaAppStateChange();
     }
@@ -218,20 +193,6 @@ void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
   // TODO(b/249828245): Implement logic to handle this.
-}
-
-void VideoConferenceTrayController::SetTraysVisibilityAfterDelayHiding() {
-  for (auto* root_window_controller :
-       Shell::Get()->GetAllRootWindowControllers()) {
-    DCHECK(root_window_controller);
-    DCHECK(root_window_controller->GetStatusAreaWidget());
-
-    auto* tray =
-        root_window_controller->GetStatusAreaWidget()->video_conference_tray();
-
-    DCHECK(tray);
-    tray->UpdateTrayAndIconsState();
-  }
 }
 
 }  // namespace ash

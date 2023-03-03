@@ -17,23 +17,14 @@
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/time/time.h"
-
-namespace {
-constexpr base::TimeDelta kHideTrayDelay = base::Seconds(12);
-}  // namespace
 
 namespace ash {
 
 class VideoConferenceTrayTest : public AshTestBase {
  public:
-  VideoConferenceTrayTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
+  VideoConferenceTrayTest() = default;
   VideoConferenceTrayTest(const VideoConferenceTrayTest&) = delete;
   VideoConferenceTrayTest& operator=(const VideoConferenceTrayTest&) = delete;
-
   ~VideoConferenceTrayTest() override = default;
 
   // AshTestBase:
@@ -174,8 +165,8 @@ TEST_F(VideoConferenceTrayTest, ToggleBubbleButtonRotation) {
             video_conference_tray()->GetRotationValueForToggleBubbleButton());
 }
 
-TEST_F(VideoConferenceTrayTest, TrayVisibilityAndDelay) {
-  // We only show the tray when there is any running media app(s).
+TEST_F(VideoConferenceTrayTest, TrayVisibility) {
+  // We only show the tray when there are any running media app(s).
   VideoConferenceMediaState state;
   state.has_media_app = true;
   state.has_camera_permission = true;
@@ -185,25 +176,23 @@ TEST_F(VideoConferenceTrayTest, TrayVisibilityAndDelay) {
   EXPECT_TRUE(audio_icon()->GetVisible());
   EXPECT_TRUE(camera_icon()->GetVisible());
 
-  state.has_media_app = false;
-  state.has_camera_permission = false;
-  state.has_microphone_permission = false;
-  controller()->UpdateWithMediaState(state);
-
   // At first, the tray, as well as audio and camera icons should still be
   // visible.
   EXPECT_TRUE(video_conference_tray()->GetVisible());
   EXPECT_TRUE(audio_icon()->GetVisible());
   EXPECT_TRUE(camera_icon()->GetVisible());
 
-  // After `kHideTrayDelay`, the tray and icons should be hidden.
-  task_environment()->FastForwardBy(kHideTrayDelay);
+  state.has_media_app = false;
+  state.has_camera_permission = false;
+  state.has_microphone_permission = false;
+  controller()->UpdateWithMediaState(state);
+
   EXPECT_FALSE(video_conference_tray()->GetVisible());
   EXPECT_FALSE(audio_icon()->GetVisible());
   EXPECT_FALSE(camera_icon()->GetVisible());
 }
 
-TEST_F(VideoConferenceTrayTest, TrayVisibilityAndDelayOnSecondaryDisplay) {
+TEST_F(VideoConferenceTrayTest, TrayVisibilityOnSecondaryDisplay) {
   UpdateDisplay("800x700,800x700");
 
   VideoConferenceMediaState state;
@@ -224,60 +213,9 @@ TEST_F(VideoConferenceTrayTest, TrayVisibilityAndDelayOnSecondaryDisplay) {
   state.has_microphone_permission = false;
   controller()->UpdateWithMediaState(state);
 
-  // At first, the tray, as well as audio and camera icons should still be
-  // visible.
-  EXPECT_TRUE(GetSecondaryVideoConferenceTray()->GetVisible());
-  EXPECT_TRUE(audio_icon->GetVisible());
-  EXPECT_TRUE(camera_icon->GetVisible());
-
-  // After `kHideTrayDelay`, the tray and icons should be hidden.
-  task_environment()->FastForwardBy(kHideTrayDelay);
   EXPECT_FALSE(GetSecondaryVideoConferenceTray()->GetVisible());
   EXPECT_FALSE(audio_icon->GetVisible());
   EXPECT_FALSE(camera_icon->GetVisible());
-}
-
-TEST_F(VideoConferenceTrayTest,
-       TrayVisibilityAndDelayOnSecondaryDisplayMidAdded) {
-  // Shows and then hides the tray to trigger the hide delay.
-  VideoConferenceMediaState state;
-  state.has_media_app = true;
-  state.has_camera_permission = true;
-  state.has_microphone_permission = true;
-  controller()->UpdateWithMediaState(state);
-
-  state.has_media_app = false;
-  state.has_camera_permission = false;
-  state.has_microphone_permission = false;
-  controller()->UpdateWithMediaState(state);
-
-  // Updates the display in the middle of the timer delay.
-  task_environment()->FastForwardBy(base::Seconds(4));
-  UpdateDisplay("800x700,800x700");
-
-  auto* secondary_audio_icon = GetSecondaryVideoConferenceTray()->audio_icon();
-  auto* secondary_camera_icon =
-      GetSecondaryVideoConferenceTray()->camera_icon();
-
-  // The tray and icons in both display should show up.
-  EXPECT_TRUE(video_conference_tray()->GetVisible());
-  EXPECT_TRUE(audio_icon()->GetVisible());
-  EXPECT_TRUE(camera_icon()->GetVisible());
-
-  EXPECT_TRUE(GetSecondaryVideoConferenceTray()->GetVisible());
-  EXPECT_TRUE(secondary_audio_icon->GetVisible());
-  EXPECT_TRUE(secondary_camera_icon->GetVisible());
-
-  // After `kHideTrayDelay`, all of them should be hidden.
-  task_environment()->FastForwardBy(kHideTrayDelay - base::Seconds(4));
-
-  EXPECT_FALSE(video_conference_tray()->GetVisible());
-  EXPECT_FALSE(audio_icon()->GetVisible());
-  EXPECT_FALSE(camera_icon()->GetVisible());
-
-  EXPECT_FALSE(GetSecondaryVideoConferenceTray()->GetVisible());
-  EXPECT_FALSE(secondary_audio_icon->GetVisible());
-  EXPECT_FALSE(secondary_camera_icon->GetVisible());
 }
 
 TEST_F(VideoConferenceTrayTest, CameraButtonVisibility) {
