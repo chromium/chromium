@@ -10,11 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/time/time.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -22,13 +20,6 @@
 #include "dbus/util.h"
 
 namespace dbus {
-
-namespace {
-
-// Used for success ratio histograms. 1 for success, 0 for failure.
-const int kSuccessRatioHistogramMaxValue = 2;
-
-}  // namespace
 
 ExportedObject::ExportedObject(Bus* bus,
                                const ObjectPath& object_path)
@@ -122,18 +113,17 @@ void ExportedObject::SendSignal(Signal* signal) {
   DBusMessage* signal_message = signal->raw_message();
   dbus_message_ref(signal_message);
 
-  const base::TimeTicks start_time = base::TimeTicks::Now();
   if (bus_->GetDBusTaskRunner()->RunsTasksInCurrentSequence()) {
     // The Chrome OS power manager doesn't use a dedicated TaskRunner for
     // sending DBus messages.  Sending signals asynchronously can cause an
     // inversion in the message order if the power manager calls
     // ObjectProxy::CallMethodAndBlock() before going back to the top level of
     // the MessageLoop: crbug.com/472361.
-    SendSignalInternal(start_time, signal_message);
+    SendSignalInternal(signal_message);
   } else {
     bus_->GetDBusTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ExportedObject::SendSignalInternal, this,
-                                  start_time, signal_message));
+                                  signal_message));
   }
 }
 
@@ -194,16 +184,10 @@ void ExportedObject::OnUnexported(OnExportedCallback on_unexported_callback,
   std::move(on_unexported_callback).Run(interface_name, method_name, success);
 }
 
-void ExportedObject::SendSignalInternal(base::TimeTicks start_time,
-                                        DBusMessage* signal_message) {
+void ExportedObject::SendSignalInternal(DBusMessage* signal_message) {
   uint32_t serial = 0;
   bus_->Send(signal_message, &serial);
   dbus_message_unref(signal_message);
-  // Record time spent to send the the signal. This is not accurate as the
-  // signal will actually be sent from the next run of the message loop,
-  // but we can at least tell the number of signals sent.
-  UMA_HISTOGRAM_TIMES("DBus.SignalSendTime",
-                      base::TimeTicks::Now() - start_time);
 }
 
 bool ExportedObject::Register() {
@@ -264,19 +248,16 @@ DBusHandlerResult ExportedObject::HandleMessage(
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
 
-  const base::TimeTicks start_time = base::TimeTicks::Now();
   if (bus_->HasDBusThread()) {
     // Post a task to run the method in the origin thread.
     bus_->GetOriginTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ExportedObject::RunMethod, this, iter->second,
-                       std::move(method_call), start_time));
+        FROM_HERE, base::BindOnce(&ExportedObject::RunMethod, this,
+                                  iter->second, std::move(method_call)));
   } else {
     // If the D-Bus thread is not used, just call the method directly.
     MethodCall* method = method_call.get();
-    iter->second.Run(
-        method, base::BindOnce(&ExportedObject::SendResponse, this, start_time,
-                               std::move(method_call)));
+    iter->second.Run(method, base::BindOnce(&ExportedObject::SendResponse, this,
+                                            std::move(method_call)));
   }
 
   // It's valid to say HANDLED here, and send a method response at a later
@@ -285,38 +266,29 @@ DBusHandlerResult ExportedObject::HandleMessage(
 }
 
 void ExportedObject::RunMethod(const MethodCallCallback& method_call_callback,
-                               std::unique_ptr<MethodCall> method_call,
-                               base::TimeTicks start_time) {
+                               std::unique_ptr<MethodCall> method_call) {
   bus_->AssertOnOriginThread();
   MethodCall* method = method_call.get();
-  method_call_callback.Run(
-      method, base::BindOnce(&ExportedObject::SendResponse, this, start_time,
-                             std::move(method_call)));
+  method_call_callback.Run(method,
+                           base::BindOnce(&ExportedObject::SendResponse, this,
+                                          std::move(method_call)));
 }
 
-void ExportedObject::SendResponse(base::TimeTicks start_time,
-                                  std::unique_ptr<MethodCall> method_call,
+void ExportedObject::SendResponse(std::unique_ptr<MethodCall> method_call,
                                   std::unique_ptr<Response> response) {
   DCHECK(method_call);
   if (bus_->HasDBusThread()) {
     bus_->GetDBusTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ExportedObject::OnMethodCompleted, this,
-                                  std::move(method_call), std::move(response),
-                                  start_time));
+                                  std::move(method_call), std::move(response)));
   } else {
-    OnMethodCompleted(std::move(method_call), std::move(response), start_time);
+    OnMethodCompleted(std::move(method_call), std::move(response));
   }
 }
 
 void ExportedObject::OnMethodCompleted(std::unique_ptr<MethodCall> method_call,
-                                       std::unique_ptr<Response> response,
-                                       base::TimeTicks start_time) {
+                                       std::unique_ptr<Response> response) {
   bus_->AssertOnDBusThread();
-
-  // Record if the method call is successful, or not. 1 if successful.
-  UMA_HISTOGRAM_ENUMERATION("DBus.ExportedMethodHandleSuccess",
-                            response ? 1 : 0,
-                            kSuccessRatioHistogramMaxValue);
 
   // Check if the bus is still connected. If the method takes long to
   // complete, the bus may be shut down meanwhile.
@@ -334,10 +306,6 @@ void ExportedObject::OnMethodCompleted(std::unique_ptr<MethodCall> method_call,
 
   // The method call was successful.
   bus_->Send(response->raw_message(), nullptr);
-
-  // Record time spent to handle the the method call. Don't include failures.
-  UMA_HISTOGRAM_TIMES("DBus.ExportedMethodHandleTime",
-                      base::TimeTicks::Now() - start_time);
 }
 
 void ExportedObject::OnUnregistered(DBusConnection* connection) {

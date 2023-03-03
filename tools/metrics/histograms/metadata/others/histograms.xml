@@ -4433,6 +4433,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DBus.ExportedMethodHandleSuccess" enum="BooleanSuccess"
     expires_after="M85">
+  <obsolete>
+    Kept to view historical data.
+  </obsolete>
   <owner>satorux@chromium.org</owner>
   <summary>
     Whether a call to a D-Bus exported method is handled successfully.
@@ -4441,6 +4444,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DBus.ExportedMethodHandleTime" units="microseconds"
     expires_after="M77">
+  <obsolete>
+    Kept to view historical data.
+  </obsolete>
   <owner>satorux@chromium.org</owner>
   <summary>
     The time spent for handling a call to a D-Bus exported method.
@@ -4466,6 +4472,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DBus.SyncMethodCallTime" units="microseconds"
     expires_after="2020-02-16">
+  <obsolete>
+    Kept to view historical data.
+  </obsolete>
   <owner>satorux@chromium.org</owner>
   <summary>The time spent for a synchronous D-Bus method call.</summary>
 </histogram>
