@@ -81,7 +81,7 @@ public class BookmarkOpenerTest {
     }
 
     private void openBookmarkManager() {
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
 
         if (mActivityTestRule.getActivity().isTablet()) {
             mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);

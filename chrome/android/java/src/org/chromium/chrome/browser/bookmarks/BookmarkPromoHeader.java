@@ -243,7 +243,7 @@ public class BookmarkPromoHeader implements SyncService.SyncStateChangedListener
      * @param promoState The promo state to which the header will be set to.
      */
     @VisibleForTesting
-    public static void forcePromoStateForTests(@Nullable @SyncPromoState Integer promoState) {
+    public static void forcePromoStateForTesting(@Nullable @SyncPromoState Integer promoState) {
         sPromoStateForTests = promoState;
     }
 }

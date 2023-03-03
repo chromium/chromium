@@ -89,7 +89,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
     }
 
@@ -98,7 +98,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         SyncConsentActivityLauncherImpl.setLauncherForTest(null);
-        BookmarkPromoHeader.forcePromoStateForTests(null);
+        BookmarkPromoHeader.forcePromoStateForTesting(null);
     }
 
     @Test

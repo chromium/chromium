@@ -245,7 +245,7 @@ public class ReadingListTest {
     public void testReadingListItemMenuItems() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         openReadingList();
@@ -273,7 +273,7 @@ public class ReadingListTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mBookmarkModel.setReadStatusForReadingList(mTestUrlA, /*read=*/true); });
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         openReadingList();
@@ -299,7 +299,7 @@ public class ReadingListTest {
     @DisabledTest(message = "https://crbug.com/1231219")
     public void testSearchReadingList_Deletion() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
 
         openBookmarkManager();
         openRootFolder();
@@ -323,7 +323,7 @@ public class ReadingListTest {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testReadingListEmptyView() throws Exception {
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         openReadingList();
@@ -343,7 +343,7 @@ public class ReadingListTest {
     public void testReadingListOpenInRegularTab() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         openReadingList();
@@ -375,7 +375,7 @@ public class ReadingListTest {
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /*incognito=*/true);
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         openReadingList();
@@ -409,7 +409,7 @@ public class ReadingListTest {
     @Test
     @SmallTest
     public void testReadingListFolderShown() throws Exception {
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
 
@@ -427,7 +427,7 @@ public class ReadingListTest {
     public void testReadingListFolderShownOneUnreadPage() throws Exception {
         addReadingListBookmark("a", new GURL("https://a.com/reading_list_0"));
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         onView(withText("Reading list")).check(matches(isDisplayed()));
@@ -440,7 +440,7 @@ public class ReadingListTest {
         addReadingListBookmark("a", new GURL("https://a.com/reading_list_0"));
         addReadingListBookmark("b", new GURL("https://a.com/reading_list_1"));
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
 
@@ -453,7 +453,7 @@ public class ReadingListTest {
     public void testReadingListItemsInSelectionMode() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         openReadingList();
@@ -492,7 +492,7 @@ public class ReadingListTest {
     public void testReadingListItemsInSelectionMode_SearchMode() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         openRootFolder();
         openReadingList();

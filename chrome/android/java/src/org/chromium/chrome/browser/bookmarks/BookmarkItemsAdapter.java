@@ -470,11 +470,6 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         mTopLevelFolders.addAll(BookmarkUtils.populateTopLevelFolders(mDelegate.getModel()));
     }
 
-    @VisibleForTesting
-    public BookmarkDelegate getDelegateForTesting() {
-        return mDelegate;
-    }
-
     @Override
     protected void setOrder(List<BookmarkListEntry> listEntries) {
         assert !topLevelFoldersShowing() : "Cannot reorder top-level folders!";
@@ -565,12 +560,6 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         return mCurrentFolder.equals(mDelegate.getModel().getRootFolderId());
     }
 
-    @VisibleForTesting
-    public void simulateSignInForTests() {
-        mSyncStateChangedListener.syncStateChanged();
-        mBookmarkUiObserver.onFolderStateSet(mCurrentFolder);
-    }
-
     /**
      * Scroll the bookmarks list such that bookmarkId is shown in the view, and highlight it.
      *
@@ -588,5 +577,16 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
      */
     private void clearHighlight() {
         mHighlightedBookmark = null;
+    }
+
+    @VisibleForTesting
+    BookmarkDelegate getDelegateForTesting() {
+        return mDelegate;
+    }
+
+    @VisibleForTesting
+    public void simulateSignInForTesting() {
+        mSyncStateChangedListener.syncStateChanged();
+        mBookmarkUiObserver.onFolderStateSet(mCurrentFolder);
     }
 }

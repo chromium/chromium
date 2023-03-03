@@ -354,7 +354,7 @@ public abstract class BookmarkRow
     }
 
     @VisibleForTesting
-    public View getDragHandleViewForTests() {
+    public View getDragHandleViewForTesting() {
         return mDragHandle;
     }
 }
