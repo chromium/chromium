@@ -5072,18 +5072,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.ShelfAlignmentOverTime" enum="ShelfAlignmentValue"
-    expires_after="2020-11-22">
-  <owner>kuscher@google.com</owner>
-  <summary>
-    The current state of the shelf (alignment) tracked over time by logging on a
-    regular basis (30 minutes), this is used instead of log in or shelf usage to
-    track users that do not lock/unlock or log in frequently and use a small
-    number of browser instances or otherwise infrequently interact with the
-    shelf launcher.
-  </summary>
-</histogram>
-
 <histogram name="Ash.ShelfAlignmentUsage" enum="ShelfAlignmentValue"
     expires_after="never">
 <!-- expires-never: Monitors core shelf behavior/usage (the shelf alignment) -->

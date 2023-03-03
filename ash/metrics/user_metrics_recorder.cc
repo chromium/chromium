@@ -184,20 +184,6 @@ void UserMetricsRecorder::OnShellShuttingDown() {
 }
 
 void UserMetricsRecorder::RecordPeriodicMetrics() {
-  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
-  // TODO(bruthig): Investigating whether the check for |manager| is necessary
-  // and add tests if it is.
-  if (shelf) {
-    // TODO(bruthig): Consider tracking the time spent in each alignment.
-    UMA_HISTOGRAM_ENUMERATION("Ash.ShelfAlignmentOverTime",
-                              static_cast<ShelfAlignmentUmaEnumValue>(
-                                  shelf->SelectValueForShelfAlignment(
-                                      SHELF_ALIGNMENT_UMA_ENUM_VALUE_BOTTOM,
-                                      SHELF_ALIGNMENT_UMA_ENUM_VALUE_LEFT,
-                                      SHELF_ALIGNMENT_UMA_ENUM_VALUE_RIGHT)),
-                              SHELF_ALIGNMENT_UMA_ENUM_VALUE_COUNT);
-  }
-
   if (IsUserInActiveDesktopEnvironment()) {
     RecordShelfItemCounts();
     RecordPeriodicAppListMetrics();
