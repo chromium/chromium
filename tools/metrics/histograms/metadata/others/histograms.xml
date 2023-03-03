@@ -413,15 +413,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ActivityTracker.CollectCrash.Status"
-    enum="ActivityTrackerCollectStatus" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    Status for the collection of a stability debug file. Logged each time a
-    debug file collection attempt is made from the crash handler.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.Auction.AbortTime" units="ms"
     expires_after="2023-07-31">
   <owner>mmenke@chromium.org</owner>
