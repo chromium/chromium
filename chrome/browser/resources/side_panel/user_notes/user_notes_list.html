@@ -49,17 +49,19 @@
   }
 </style>
 
-<div id="heading">
-  <cr-button id="allNotesButton" on-click="onAllNotesClick_">
-    <iron-icon icon="cr:arrow-back"></iron-icon>
-    $i18n{allNotes}
-  </cr-button>
-  <cr-button id="sortButton" aria-label="$i18n{sortMenuAriaLabel}"
-      on-click="onShowSortMenuClicked_">
-    [[getSortLabel_(activeSortIndex_)]]
-    <iron-icon icon="sp:filter-list"></iron-icon>
-  </cr-button>
-</div>
+<template is="dom-if" if="[[!firstNoteCreation]]">
+  <div id="heading">
+    <cr-button id="allNotesButton" on-click="onAllNotesClick_">
+      <iron-icon icon="cr:arrow-back"></iron-icon>
+      $i18n{allNotes}
+    </cr-button>
+    <cr-button id="sortButton" aria-label="$i18n{sortMenuAriaLabel}"
+        on-click="onShowSortMenuClicked_">
+      [[getSortLabel_(activeSortIndex_)]]
+      <iron-icon icon="sp:filter-list"></iron-icon>
+    </cr-button>
+  </div>
+</template>
 <template id="notesList" is="dom-repeat" items="[[notes]]"
     sort="sortByModificationTime_">
   <user-note note="[[item]]" start-note-creation="{{startNoteCreation}}">

@@ -5,6 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://user-notes-side-panel.top-chrome/app.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {UserNotesAppElement} from 'chrome://user-notes-side-panel.top-chrome/app.js';
 import {UserNoteElement} from 'chrome://user-notes-side-panel.top-chrome/user_note.js';
 import {Note, NoteOverview} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
@@ -78,14 +79,14 @@ suite('UserNotesAppTest', () => {
     await flushTasks();
   });
 
-  test('refresh notes when url changes', async () => {
-    let notesElements = queryNotes();
+  test('refresh notes ui when url changes', async () => {
+    const notesElements = queryNotes();
     assertEquals(notesElements.length, 3);
     testProxy.setNotes([]);
     testProxy.getCallbackRouterRemote().currentTabUrlChanged(false);
     await flushTasks();
-    notesElements = queryNotes();
-    assertEquals(notesElements.length, 1);
+    const overviewElements = queryNoteOverviews();
+    assertEquals(overviewElements.length, 2);
   });
 
   test('toggle from page notes to note overview', async () => {
@@ -141,5 +142,74 @@ suite('UserNotesAppTest', () => {
     noteOverviewsElement =
         userNotesApp.shadowRoot!.querySelector('user-note-overviews-list');
     assertEquals(false, isVisible(noteOverviewsElement));
+  });
+
+  test('overviews shown when there are no notes for current tab', async () => {
+    testProxy.setNotes([]);
+    testProxy.setNoteOverviews([{
+      url: {url: 'www.foo.com'},
+      title: 'second note overview title',
+      text: 'sample second note text',
+      numNotes: 1,
+      isCurrentTab: false,
+      lastModificationTime: {internalValue: 20n},
+    }]);
+    testProxy.getCallbackRouterRemote().notesChanged();
+    await flushTasks();
+    // Verify notes are not found and note overviews are.
+    const notesListElement =
+        userNotesApp.shadowRoot!.querySelector('user-notes-list');
+    assertEquals(false, isVisible(notesListElement));
+    const noteOverviewsElement =
+        userNotesApp.shadowRoot!.querySelector('user-note-overviews-list');
+    assertEquals(true, isVisible(noteOverviewsElement));
+  });
+
+  test('empty state visible when no notes exist', async () => {
+    testProxy.setNotes([]);
+    testProxy.setNoteOverviews([]);
+    testProxy.getCallbackRouterRemote().notesChanged();
+    await flushTasks();
+    const emptyStateElement =
+        userNotesApp.shadowRoot!.querySelector('sp-empty-state');
+    assertEquals(true, isVisible(emptyStateElement));
+    const addButtonElement =
+        userNotesApp.shadowRoot!.querySelector('cr-button');
+    assertEquals(true, isVisible(addButtonElement));
+  });
+
+  test('add button from empty state moves to notes list', async () => {
+    testProxy.setNotes([]);
+    testProxy.setNoteOverviews([]);
+    testProxy.getCallbackRouterRemote().notesChanged();
+    await flushTasks();
+    const addButtonElement =
+        userNotesApp.shadowRoot!.querySelector('cr-button');
+    addButtonElement!.click();
+    await flushTasks();
+    // The notes list should be visible with with one null element and the add
+    // button should no longer be visible.
+    const notesListElement =
+        userNotesApp.shadowRoot!.querySelector('user-notes-list')!.shadowRoot!
+            .querySelector('user-note');
+    assertEquals(true, isVisible(notesListElement));
+    const notesElements = queryNotes();
+    assertEquals(notesElements.length, 1);
+    assertEquals(notesElements[0]!.note, null);
+    assertEquals(false, isVisible(addButtonElement));
+  });
+
+  test('guest mode state visible when in guest mode', async () => {
+    loadTimeData.overrideValues({guestMode: true});
+    testProxy.setNotes([]);
+    testProxy.setNoteOverviews([]);
+    testProxy.getCallbackRouterRemote().notesChanged();
+    await flushTasks();
+    const guestModeStateElement =
+        userNotesApp.shadowRoot!.querySelector('sp-empty-state');
+    assertEquals(true, isVisible(guestModeStateElement));
+    const addButtonElement =
+        userNotesApp.shadowRoot!.querySelector('cr-button');
+    assertEquals(false, isVisible(addButtonElement));
   });
 });

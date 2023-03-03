@@ -45,6 +45,10 @@ export class UserNotesListElement extends PolymerElement {
       startNoteCreation: {
         type: Boolean,
         notify: true,
+      },
+
+      firstNoteCreation: {
+        type: Boolean,
         value: false,
       },
 
@@ -67,6 +71,7 @@ export class UserNotesListElement extends PolymerElement {
 
   notes: Array<(Note | null)>;
   startNoteCreation: boolean;
+  firstNoteCreation: boolean;
   private activeSortIndex_: number;
   private sortTypes_: string[];
   private userNotesApi_: UserNotesApiProxy =

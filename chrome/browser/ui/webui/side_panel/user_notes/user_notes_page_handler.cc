@@ -126,16 +126,22 @@ UserNotesPageHandler::UserNotesPageHandler(
       service_(PowerBookmarkServiceFactory::GetForBrowserContext(profile_)),
       browser_(browser),
       user_notes_ui_(user_notes_ui) {
+  if (!UserNotesController::IsUserNotesSupported(profile_)) {
+    return;
+  }
+
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
   if (bookmark_model) {
     bookmark_model_ = bookmark_model->AsWeakPtr();
   }
+
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kUserNotesSortByNewest,
       base::BindRepeating(&UserNotesPageHandler::OnSortByNewestPrefChanged,
                           base::Unretained(this)));
+
   service_->AddObserver(this);
   DCHECK(browser_);
   browser_->tab_strip_model()->AddObserver(this);
@@ -147,6 +153,9 @@ UserNotesPageHandler::UserNotesPageHandler(
 }
 
 UserNotesPageHandler::~UserNotesPageHandler() {
+  if (!UserNotesController::IsUserNotesSupported(profile_)) {
+    return;
+  }
   service_->RemoveObserver(this);
   browser_->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);

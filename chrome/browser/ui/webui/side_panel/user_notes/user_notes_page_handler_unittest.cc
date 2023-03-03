@@ -17,6 +17,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
+#include "components/user_notes/user_notes_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -61,7 +62,8 @@ struct Note {
 class UserNotesPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    features_.InitAndEnableFeature(power_bookmarks::kPowerBookmarkBackend);
+    features_.InitWithFeatures(
+        {user_notes::kUserNotes, power_bookmarks::kPowerBookmarkBackend}, {});
     BrowserWithTestWindowTest::SetUp();
     BookmarkModelFactory::GetInstance()->SetTestingFactory(
         profile(), BookmarkModelFactory::GetDefaultFactory());

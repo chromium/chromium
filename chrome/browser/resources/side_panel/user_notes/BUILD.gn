@@ -9,7 +9,11 @@ assert(!is_android)
 build_webui("build") {
   grd_prefix = "side_panel_user_notes"
 
-  static_files = [ "user_notes.html" ]
+  static_files = [
+    "images/user_notes_empty.svg",
+    "images/user_notes_empty_dark.svg",
+    "user_notes.html",
+  ]
 
   web_component_files = [
     "app.ts",

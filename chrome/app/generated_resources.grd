@@ -7579,7 +7579,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Notes
       </message>
       <message name="IDS_ADD_NEW_USER_NOTE_PLACEHOLDER_TEXT" desc="Placeholder for textarea, where users can add a new user note.">
-        Add note...
+        Add a note
       </message>
       <message name="IDS_USER_NOTES_SORT_MENU_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the button which opens the sort menu in the user notes side panel.">
         Order
@@ -7604,6 +7604,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_USER_NOTES_MENU_OPEN_IN_INCOGNITO" desc="Menu description for opening a page with notes in an incognito window.">
         Open in Incognito Window
+      </message>
+      <message name="IDS_USER_NOTES_EMPTY_STATE_TITLE" desc="Title for the user notes side panel empty state">
+        Add Notes About This Page
+      </message>
+      <message name="IDS_USER_NOTES_EMPTY_STATE_BODY" desc="Body text for the user notes side panel empty state">
+        Add a note or thought about this page to revisit later.
+      </message>
+      <message name="IDS_USER_NOTES_EMPTY_STATE_TITLE_GUEST" desc="Title for the user notes side panel empty state in guest mode">
+        Not Available in Guest Mode
+      </message>
+      <message name="IDS_USER_NOTES_EMPTY_STATE_BODY_GUEST" desc="Body text for the user notes side panel empty state in guest mode">
+        Log in as another user to view and take notes on this page.
       </message>
 
       <!-- Feed button and menu -->
