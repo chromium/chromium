@@ -1293,10 +1293,8 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- Critical Notification bubble -->
-      <message name="IDS_CRITICAL_NOTIFICATION_TITLE" desc="The title for a bubble that appears when there is a critical update and Chrome must restart to install it. It counts down from # seconds and then Chrome automatically restarts.">
-        {SECONDS, plural,
-         =1 {Google Chrome will restart in 1 second}
-         other {Google Chrome will restart in # seconds}}
+      <message name="IDS_CRITICAL_NOTIFICATION_TITLE" desc="The title for a bubble that appears when there is a critical update and Chrome must restart to install it. It counts down a timer and then Chrome automatically restarts.">
+        Google Chrome will restart in <ph name="REMAINING_TIME">$1<ex>1 minute, 7 seconds</ex></ph>
       </message>
       <message name="IDS_CRITICAL_NOTIFICATION_TITLE_ALTERNATE" desc="The title for a bubble that appears when there is a critical update and Chrome must restart to install it. The title was previously countng down to an automatic restart and now it has finished. Will only be seen if a web page stops the shutdown process.">
         Please restart Chrome now

@@ -87,5 +87,3 @@ ZoomBubbleDialogTest.*
 #
 # # TODO(crbug.com/xxx): Fix xyz and re-enable.
 # -MyTestSuite.InvokeUi_MyTestCase
-
--OutdatedUpgradeBubbleTest.InvokeUi_Critical

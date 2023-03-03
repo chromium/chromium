@@ -188,8 +188,8 @@ std::u16string TimeFormatWithPattern(const Time& time, const char* pattern) {
   return TimeFormat(&formatter, time);
 }
 
-bool TimeDurationFormat(const TimeDelta time,
-                        const DurationFormatWidth width,
+bool TimeDurationFormat(TimeDelta time,
+                        DurationFormatWidth width,
                         std::u16string* out) {
   DCHECK(out);
   UErrorCode status = U_ZERO_ERROR;
@@ -229,8 +229,8 @@ bool TimeDurationFormat(const TimeDelta time,
   return true;
 }
 
-bool TimeDurationFormatWithSeconds(const TimeDelta time,
-                                   const DurationFormatWidth width,
+bool TimeDurationFormatWithSeconds(TimeDelta time,
+                                   DurationFormatWidth width,
                                    std::u16string* out) {
   DCHECK(out);
   UErrorCode status = U_ZERO_ERROR;
