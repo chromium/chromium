@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -19,20 +19,20 @@ MockMediaStreamVideoSink::~MockMediaStreamVideoSink() {}
 
 blink::VideoCaptureDeliverFrameCB
 MockMediaStreamVideoSink::GetDeliverFrameCB() {
-  return media::BindToCurrentLoop(
+  return base::BindPostTaskToCurrentDefault(
       WTF::BindRepeating(&MockMediaStreamVideoSink::DeliverVideoFrame,
                          weak_factory_.GetWeakPtr()));
 }
 
 EncodedVideoFrameCB MockMediaStreamVideoSink::GetDeliverEncodedVideoFrameCB() {
-  return media::BindToCurrentLoop(
+  return base::BindPostTaskToCurrentDefault(
       WTF::BindRepeating(&MockMediaStreamVideoSink::DeliverEncodedVideoFrame,
                          weak_factory_.GetWeakPtr()));
 }
 
 VideoCaptureNotifyFrameDroppedCB
 MockMediaStreamVideoSink::GetNotifyFrameDroppedCB() {
-  return media::BindToCurrentLoop(
+  return base::BindPostTaskToCurrentDefault(
       WTF::BindRepeating(&MockMediaStreamVideoSink::NotifyFrameDropped,
                          weak_factory_.GetWeakPtr()));
 }

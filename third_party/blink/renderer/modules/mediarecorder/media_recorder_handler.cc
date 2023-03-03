@@ -10,10 +10,10 @@
 
 #include "base/logging.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -298,15 +298,16 @@ bool MediaRecorderHandler::Start(int timeslice) {
     MediaStreamVideoTrack* const video_track =
         static_cast<MediaStreamVideoTrack*>(
             video_tracks_[0]->GetPlatformTrack());
-    base::OnceClosure on_track_source_changed_cb = media::BindToCurrentLoop(
-        WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
-                      WrapWeakPersistent(this)));
+    base::OnceClosure on_track_source_changed_cb =
+        base::BindPostTaskToCurrentDefault(
+            WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
+                          WrapWeakPersistent(this)));
     const bool use_encoded_source_output =
         video_track->source() != nullptr &&
         video_track->source()->SupportsEncodedOutput();
     if (passthrough_enabled_ && use_encoded_source_output) {
       const VideoTrackRecorder::OnEncodedVideoCB on_passthrough_video_cb =
-          media::BindToCurrentLoop(
+          base::BindPostTaskToCurrentDefault(
               WTF::BindRepeating(&MediaRecorderHandler::OnPassthroughVideo,
                                  WrapWeakPersistent(this)));
       video_recorders_.emplace_back(
@@ -315,9 +316,9 @@ bool MediaRecorderHandler::Start(int timeslice) {
               std::move(on_track_source_changed_cb)));
     } else {
       const VideoTrackRecorder::OnEncodedVideoCB on_encoded_video_cb =
-          media::BindToCurrentLoop(WTF::BindRepeating(
+          base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
               &MediaRecorderHandler::OnEncodedVideo, WrapWeakPersistent(this)));
-      auto on_video_error_cb = media::BindToCurrentLoop(
+      auto on_video_error_cb = base::BindPostTaskToCurrentDefault(
           WTF::BindOnce(&MediaRecorderHandler::OnVideoEncodingError,
                         WrapWeakPersistent(this)));
       video_recorders_.emplace_back(std::make_unique<VideoTrackRecorderImpl>(
@@ -338,11 +339,12 @@ bool MediaRecorderHandler::Start(int timeslice) {
     UpdateTrackLiveAndEnabled(*audio_tracks_[0], /*is_video=*/false);
 
     const AudioTrackRecorder::OnEncodedAudioCB on_encoded_audio_cb =
-        media::BindToCurrentLoop(WTF::BindRepeating(
+        base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
             &MediaRecorderHandler::OnEncodedAudio, WrapWeakPersistent(this)));
-    base::OnceClosure on_track_source_changed_cb = media::BindToCurrentLoop(
-        WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
-                      WrapWeakPersistent(this)));
+    base::OnceClosure on_track_source_changed_cb =
+        base::BindPostTaskToCurrentDefault(
+            WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
+                          WrapWeakPersistent(this)));
     audio_recorders_.emplace_back(std::make_unique<AudioTrackRecorder>(
         audio_codec_id_, audio_tracks_[0], std::move(on_encoded_audio_cb),
         std::move(on_track_source_changed_cb), audio_bits_per_second_,

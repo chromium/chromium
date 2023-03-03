@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -2827,7 +2828,7 @@ void WebMediaPlayerImpl::StartPipeline() {
       FROM_HERE,
       base::BindOnce(&VideoFrameCompositor::SetOnNewProcessedFrameCallback,
                      base::Unretained(compositor_.get()),
-                     media::BindToCurrentLoop(base::BindOnce(
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &WebMediaPlayerImpl::OnFirstFrame, weak_this_))));
 
   // base::Unretained(this) is safe here, since |CreateDemuxer| calls the bound
@@ -3442,7 +3443,7 @@ void WebMediaPlayerImpl::RequestVideoFrameCallback() {
   }
 
   compositor_->SetOnFramePresentedCallback(
-      media::BindToCurrentLoop(base::BindOnce(
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
           &WebMediaPlayerImpl::OnNewFramePresentedCallback, weak_this_)));
 }
 

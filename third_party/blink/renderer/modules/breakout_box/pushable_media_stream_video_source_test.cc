@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -132,7 +132,7 @@ TEST_F(PushableMediaStreamVideoSourceTest, FramesPropagateToSink) {
   gfx::Size natural_size;
   FakeMediaStreamVideoSink fake_sink(
       &capture_time, &metadata, &natural_size,
-      media::BindToCurrentLoop(run_loop.QuitClosure()));
+      base::BindPostTaskToCurrentDefault(run_loop.QuitClosure()));
   fake_sink.ConnectToTrack(track);
   const scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(100, 50));

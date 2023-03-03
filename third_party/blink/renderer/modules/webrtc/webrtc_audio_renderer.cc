@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -308,7 +309,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
   if (web_frame.Client()) {
     speech_recognition_client_ =
         web_frame.Client()->CreateSpeechRecognitionClient(
-            media::BindToCurrentLoop(
+            base::BindPostTaskToCurrentDefault(
                 ConvertToBaseOnceCallback(CrossThreadBindOnce(
                     &WebRtcAudioRenderer::EnableSpeechRecognition,
                     weak_factory_.GetWeakPtr()))));

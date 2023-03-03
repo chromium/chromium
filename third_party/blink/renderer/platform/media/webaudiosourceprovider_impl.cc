@@ -13,10 +13,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/thread_annotations.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -148,7 +148,7 @@ void WebAudioSourceProviderImpl::SetClient(
     // The client will now take control by calling provideInput() periodically.
     client_ = client;
 
-    set_format_cb_ = media::BindToCurrentLoop(WTF::BindRepeating(
+    set_format_cb_ = base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
         &WebAudioSourceProviderImpl::OnSetFormat, weak_factory_.GetWeakPtr()));
 
     // If |tee_filter_| is Initialize()d - then run |set_format_cb_| to send
@@ -300,7 +300,7 @@ void WebAudioSourceProviderImpl::GetOutputDeviceInfoAsync(
   // Just return empty hardware parameters. When a |client_| is attached, the
   // underlying audio renderer will prefer the media parameters. See
   // IsOptimizedForHardwareParameters() for more details.
-  media::BindToCurrentLoop(
+  base::BindPostTaskToCurrentDefault(
       WTF::BindOnce(std::move(info_cb),
                     media::OutputDeviceInfo(media::OUTPUT_DEVICE_STATUS_OK)))
       .Run();

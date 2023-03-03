@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
@@ -26,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
@@ -1153,7 +1153,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   webrtc::EncodedImage image;
   image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
       static_cast<uint8_t*>(output_mapping_memory), metadata.payload_size_bytes,
-      media::BindToCurrentLoop(
+      base::BindPostTaskToCurrentDefault(
           base::BindOnce(&RTCVideoEncoder::Impl::BitstreamBufferAvailable,
                          weak_this_, bitstream_buffer_id))));
   auto encoded_size = metadata.encoded_size.value_or(input_visible_size_);
@@ -1490,8 +1490,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
       frame->BackWithSharedMemory(&region);
 
       input_buffers_free_.pop_back();
-      frame->AddDestructionObserver(media::BindToCurrentLoop(WTF::BindOnce(
-          &RTCVideoEncoder::Impl::InputBufferReleased, weak_this_, index)));
+      frame->AddDestructionObserver(
+          base::BindPostTaskToCurrentDefault(WTF::BindOnce(
+              &RTCVideoEncoder::Impl::InputBufferReleased, weak_this_, index)));
     }
   }
 
@@ -1708,8 +1709,9 @@ int32_t RTCVideoEncoder::InitEncode(
   Impl::UpdateEncoderInfoCallback update_encoder_info_callback =
       base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo,
                           base::Unretained(this));
-  base::RepeatingClosure execute_software_fallback = media::BindToCurrentLoop(
-      base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
+  base::RepeatingClosure execute_software_fallback =
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
 
   impl_ = std::make_unique<Impl>(
       gpu_factories_, ProfileToWebRtcVideoCodecType(profile_),

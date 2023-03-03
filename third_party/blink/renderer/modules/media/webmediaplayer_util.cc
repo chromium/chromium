@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/media_log.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -147,7 +147,7 @@ void ReportMetrics(WebMediaPlayer::LoadType load_type,
 
 media::OutputDeviceStatusCB ConvertToOutputDeviceStatusCB(
     WebSetSinkIdCompleteCallback callback) {
-  return media::BindToCurrentLoop(
+  return base::BindPostTaskToCurrentDefault(
       WTF::BindOnce(RunSetSinkIdCallback, std::move(callback)));
 }
 

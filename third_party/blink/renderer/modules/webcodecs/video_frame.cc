@@ -12,9 +12,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -707,8 +707,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
     // The sync token needs to be updated when |frame| is released, but
     // AcceleratedStaticBitmapImage::UpdateSyncToken() is not thread-safe.
-    auto release_cb =
-        media::BindToCurrentLoop(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+    auto release_cb = base::BindPostTaskToCurrentDefault(
+        ConvertToBaseOnceCallback(CrossThreadBindOnce(
             [](scoped_refptr<Image> image, const gpu::SyncToken& sync_token) {
               static_cast<StaticBitmapImage*>(image.get())
                   ->UpdateSyncToken(sync_token);

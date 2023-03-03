@@ -50,6 +50,14 @@ specific_include_rules = {
     "+base/win/scoped_com_initializer.h",
     "+media/gpu/windows/mf_audio_encoder.h",
   ],
+  "background_readback\.cc": [
+    # TODO(crbug.com/1198375): Remove this temporary exception after migration.
+    "+base/task/bind_post_task.h",
+  ],
+  "video_frame\.cc": [
+    # TODO(crbug.com/1198375): Remove this temporary exception after migration.
+    "+base/task/bind_post_task.h",
+  ],
   "video_frame_test\.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
