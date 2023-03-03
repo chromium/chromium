@@ -461,6 +461,7 @@ TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
           false);
   session_info->remote_playback_metadata = std::move(remote_playback_metadata);
   item().MediaSessionInfoChanged(std::move(session_info));
+  item().UpdateDeviceName("device_friendly_name");
 
   EXPECT_EQ(u"source_title \xB7 device_friendly_name",
             item().GetSessionMetadata().source_title);

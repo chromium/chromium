@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -67,6 +68,16 @@ void MaybeReportCastingSource(MediaCastMode cast_mode,
     base::UmaHistogramSparse("MediaRouter.Source.CastingSource", cast_mode);
 }
 
+const CastModeSet CreateMediaCastModeSet(const MediaCastMode& cast_mode) {
+  if (base::FeatureList::IsEnabled(
+          media_router::kFallbackToAudioTabMirroring)) {
+    // On sinks that do not support remote playback or presentation, we allow
+    // falling back to tab mirroring.
+    return {cast_mode, MediaCastMode::TAB_MIRROR};
+  }
+  return {cast_mode};
+}
+
 }  // namespace
 
 MediaRouterUI::MediaRouterUI(
@@ -97,8 +108,8 @@ std::unique_ptr<MediaRouterUI> MediaRouterUI::CreateMediaRouterUI(
 
 std::unique_ptr<MediaRouterUI> MediaRouterUI::CreateWithDefaultMediaSource(
     content::WebContents* initiator) {
-  return CreateMediaRouterUI(
-      MediaRouterUIParameters({MediaCastMode::PRESENTATION}, initiator));
+  return CreateMediaRouterUI(MediaRouterUIParameters(
+      CreateMediaCastModeSet(MediaCastMode::PRESENTATION), initiator));
 }
 
 // static
@@ -118,7 +129,8 @@ MediaRouterUI::CreateWithStartPresentationContext(
     std::unique_ptr<StartPresentationContext> context) {
   DCHECK(context) << "context must not be null!";
   return CreateMediaRouterUI(MediaRouterUIParameters(
-      {MediaCastMode::PRESENTATION}, initiator, std::move(context)));
+      CreateMediaCastModeSet(MediaCastMode::PRESENTATION), initiator,
+      std::move(context)));
 }
 
 // static
@@ -141,9 +153,9 @@ MediaRouterUI::CreateWithMediaSessionRemotePlayback(
     media::AudioCodec audio_codec) {
   DCHECK(video_codec != media::VideoCodec::kUnknown) << "Unknown video codec.";
   DCHECK(audio_codec != media::AudioCodec::kUnknown) << "Unknown audio codec.";
-  return CreateMediaRouterUI(
-      MediaRouterUIParameters({MediaCastMode::REMOTE_PLAYBACK}, initiator,
-                              nullptr, video_codec, audio_codec));
+  return CreateMediaRouterUI(MediaRouterUIParameters(
+      CreateMediaCastModeSet(MediaCastMode::REMOTE_PLAYBACK), initiator,
+      nullptr, video_codec, audio_codec));
 }
 
 void MediaRouterUI::DetachFromMediaRouteStarter() {
@@ -555,6 +567,12 @@ void MediaRouterUI::OnRouteResponseReceived(
   }
 
   current_route_request_.reset();
+  if (result.result_code() == mojom::RouteRequestResultCode::OK) {
+    for (CastDialogController::Observer& observer : observers_) {
+      observer.OnCastingStarted();
+    }
+  }
+
   if (result.result_code() == mojom::RouteRequestResultCode::OK &&
       cast_mode == TAB_MIRROR && !base::TimeTicks::IsHighResolution()) {
     // When tab mirroring on a device without a high resolution clock, the audio

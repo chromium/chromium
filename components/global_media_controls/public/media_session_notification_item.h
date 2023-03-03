@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   // top frame.
   void UpdatePresentationRequestOrigin(const url::Origin& origin);
 
+  // Called during the creation of the footer view to show / set sink name if
+  // there is an active casting session associated with `this` media item.
+  void UpdateDeviceName(const absl::optional<std::string>& device_name);
+
   // media_session::mojom::MediaControllerImageObserver:
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
@@ -195,6 +199,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   // top frame. So, in case of having a presentation request, this field is set
   // to hold the origin of that presentation request.
   absl::optional<url::Origin> optional_presentation_request_origin_;
+
+  // This name is used when the playback is happening on a non-default playback
+  // device.
+  absl::optional<std::string> device_name_;
 
   base::flat_set<media_session::mojom::MediaSessionAction> session_actions_;
 

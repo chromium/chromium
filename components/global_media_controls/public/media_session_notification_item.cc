@@ -138,6 +138,14 @@ void MediaSessionNotificationItem::MediaSessionPositionChanged(
   }
 }
 
+void MediaSessionNotificationItem::UpdateDeviceName(
+    const absl::optional<std::string>& device_name) {
+  device_name_ = device_name;
+  if (view_ && !frozen_) {
+    view_->UpdateWithMediaMetadata(GetSessionMetadata());
+  }
+}
+
 void MediaSessionNotificationItem::UpdatePresentationRequestOrigin(
     const url::Origin& origin) {
   if (!media_message_center::IsOriginGoodForDisplay(origin)) {
@@ -324,19 +332,15 @@ media_session::MediaMetadata MediaSessionNotificationItem::GetSessionMetadata()
         optional_presentation_request_origin_.value());
   }
 
-  if (GetRemotePlaybackStarted(session_info_)) {
-    absl::optional<std::string> receiver_name =
-        session_info_->remote_playback_metadata->remoting_device_friendly_name;
+  if (device_name_) {
     std::string source_title = base::UTF16ToUTF8(data.source_title);
     const char kSeparator[] = " \xC2\xB7 ";  // "Middle dot" character.
-    if (!receiver_name) {
-      data.source_title = base::UTF8ToUTF16(source_title);
-    } else if (base::i18n::IsRTL()) {
+    if (base::i18n::IsRTL()) {
       data.source_title =
-          base::UTF8ToUTF16(receiver_name.value() + kSeparator + source_title);
+          base::UTF8ToUTF16(device_name_.value() + kSeparator + source_title);
     } else {
       data.source_title =
-          base::UTF8ToUTF16(source_title + kSeparator + receiver_name.value());
+          base::UTF8ToUTF16(source_title + kSeparator + device_name_.value());
     }
   }
   return data;

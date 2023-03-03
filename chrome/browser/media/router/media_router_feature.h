@@ -52,6 +52,10 @@ BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 // terminating any existing session on the same sink.
 BASE_DECLARE_FEATURE(kStartCastSessionWithoutTerminating);
 
+// If enabled, sinks that do not support presentation or remote playback, will
+// fall back to audio tab mirroring when casting from the Global Media Controls.
+BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
+
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

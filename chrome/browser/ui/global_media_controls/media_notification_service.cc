@@ -25,8 +25,10 @@
 #include "components/global_media_controls/public/media_item_producer.h"
 #include "components/global_media_controls/public/media_item_ui.h"
 #include "components/media_message_center/media_notification_item.h"
+#include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
@@ -257,11 +259,14 @@ void MediaNotificationService::OnStartPresentationContextCreated(
     return;
   }
 
-  // If there exists a cast notification associated with |web_contents|,
-  // delete |context| because users should not start a new presentation at
-  // this time.
+  // If there exists a cast notification / tab mirroring session associated with
+  // `web_contents`, delete `context` because users should not start a new
+  // presentation at this time.
   if (HasCastNotificationsForWebContents(web_contents)) {
     CancelRequest(std::move(context), "A presentation has already started.");
+  } else if (HasTabMirroringSessionForWebContents(web_contents)) {
+    CancelRequest(std::move(context),
+                  "A tab mirroring session has already started.");
   } else if (HasActiveControllableSessionForWebContents(web_contents)) {
     // If there exists a media session notification associated with
     // |web_contents|, hold onto the context for later use.
@@ -374,9 +379,12 @@ void MediaNotificationService::CreateCastDeviceListHost(
                 weak_ptr_factory_.GetWeakPtr(), session_id.value())
           : base::DoNothing();
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<CastDeviceListHost>(std::move(dialog_controller),
-                                           std::move(client_remote),
-                                           std::move(media_remoting_callback_)),
+      std::make_unique<CastDeviceListHost>(
+          std::move(dialog_controller), std::move(client_remote),
+          std::move(media_remoting_callback_),
+          base::BindRepeating(
+              &global_media_controls::MediaItemManager::HideDialog,
+              item_manager_->GetWeakPtr())),
       std::move(host_receiver));
 }
 
@@ -390,6 +398,31 @@ bool MediaNotificationService::HasCastNotificationsForWebContents(
   return !media_router::WebContentsPresentationManager::Get(web_contents)
               ->GetMediaRoutes()
               .empty();
+}
+
+bool MediaNotificationService::HasTabMirroringSessionForWebContents(
+    content::WebContents* web_contents) const {
+  if (!base::FeatureList::IsEnabled(
+          media_router::kFallbackToAudioTabMirroring)) {
+    return false;
+  }
+
+  // Return true if there exists a tab mirroring session associated with
+  // `web_contents`.
+  const int item_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents).id();
+  for (const auto& route :
+       media_router::MediaRouterFactory::GetApiForBrowserContext(
+           web_contents->GetBrowserContext())
+           ->GetCurrentRoutes()) {
+    media_router::MediaSource media_source = route.media_source();
+    if (media_source.IsTabMirroringSource() &&
+        media_source.TabId().has_value() &&
+        media_source.TabId().value() == item_tab_id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool MediaNotificationService::HasActiveControllableSessionForWebContents(

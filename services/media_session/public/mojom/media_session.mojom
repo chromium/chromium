@@ -136,6 +136,8 @@ struct RemotePlaybackMetadata {
   string audio_codec;
   bool remote_playback_disabled;
   [MinVersion=17] bool remote_playback_started;
+  // TODO(crbug.com/1420103): `remoting_device_friendly_name` is no longer
+  // needed, to be removed.
   [MinVersion=17] string? remoting_device_friendly_name;
   [MinVersion=18] bool is_encrypted_media;
 };

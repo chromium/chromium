@@ -50,6 +50,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManagerImpl
   bool HasActiveItems() override;
   bool HasFrozenItems() override;
   bool HasOpenDialog() override;
+  base::WeakPtr<MediaItemManager> GetWeakPtr() override;
 
  private:
   // Called to display an item in an existing dialog.

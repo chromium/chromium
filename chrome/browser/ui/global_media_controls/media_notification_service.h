@@ -137,6 +137,10 @@ class MediaNotificationService
   bool HasCastNotificationsForWebContents(
       content::WebContents* web_contents) const;
 
+  // True if there is tab mirroring session associated with `web_contents`.
+  bool HasTabMirroringSessionForWebContents(
+      content::WebContents* web_contents) const;
+
   bool HasActiveControllableSessionForWebContents(
       content::WebContents* web_contents) const;
 

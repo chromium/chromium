@@ -25,7 +25,8 @@ class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
       std::unique_ptr<media_router::CastDialogController> dialog_controller,
       mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
           observer,
-      MediaRemotingCallback media_remoting_callback);
+      MediaRemotingCallback media_remoting_callback,
+      base::RepeatingClosure hide_dialog_callback);
   ~CastDeviceListHost() override;
 
   // mojom::DeviceListHost:
@@ -33,6 +34,7 @@ class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
 
   // media_router::CastDialogController::Observer:
   void OnModelUpdated(const media_router::CastDialogModel& model) override;
+  void OnCastingStarted() override;
 
  private:
   void StartCasting(const media_router::UIMediaSink& sink);
@@ -43,6 +45,8 @@ class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
   std::vector<media_router::UIMediaSink> sinks_;
   // Called whenever a Media Remoting session is starting.
   MediaRemotingCallback media_remoting_callback_;
+  // Called whenever a tab mirroring session starts.
+  base::RepeatingClosure hide_dialog_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_DEVICE_LIST_HOST_H_

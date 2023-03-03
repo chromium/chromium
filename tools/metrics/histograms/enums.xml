@@ -47888,6 +47888,7 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="GlobalMediaControlsCastMode">
   <int value="0" label="Presentation"/>
   <int value="1" label="Remote Playback"/>
+  <int value="2" label="Tab Mirroring"/>
 </enum>
 
 <enum name="GlobalMediaControlsDismissReason">

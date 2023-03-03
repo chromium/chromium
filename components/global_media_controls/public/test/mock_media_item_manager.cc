@@ -11,5 +11,9 @@ MockMediaItemManager::MockMediaItemManager() = default;
 
 MockMediaItemManager::~MockMediaItemManager() = default;
 
+base::WeakPtr<MediaItemManager> MockMediaItemManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace test
 }  // namespace global_media_controls
