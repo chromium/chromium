@@ -472,7 +472,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     if (Oobe.getInstance().currentScreen.id != 'gaia-signin') {
       return;
     }
-    this.loadingTimer_ = undefined;
+    this.clearLoadingTimer_();
     chrome.send('showLoadingTimeoutError');
   }
 
