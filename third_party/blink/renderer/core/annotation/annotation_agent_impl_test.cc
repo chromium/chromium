@@ -737,4 +737,54 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewWithDirtyLayout) {
             1000);
 }
 
+// Degenerate case but make sure it doesn't crash. This constructs a
+// RangeInFlatTree that isn't collapsed but turns into a collapsed
+// EphmemeralRangeInFlatTree.
+TEST_F(AnnotationAgentImplTest, ScrollIntoViewCollapsedRange) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        position: absolute;
+        top: 2000px;
+      }
+    </style>
+    <p id='text'>a</p>
+
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* element_text = GetDocument().getElementById("text");
+
+  const auto& range_start =
+      Position(element_text->firstChild(), PositionAnchorType::kBeforeAnchor);
+  const auto& range_end = Position(element_text, 0);
+
+  RangeInFlatTree* range = MakeGarbageCollected<RangeInFlatTree>(
+      ToPositionInFlatTree(range_start), ToPositionInFlatTree(range_end));
+
+  // TODO(bokan): Is this an editing bug?
+  ASSERT_FALSE(range->IsCollapsed());
+  ASSERT_TRUE(range->ToEphemeralRange().IsCollapsed());
+
+  auto* agent = CreateAgentForRange(range);
+  ASSERT_TRUE(agent);
+
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host;
+  host.BindToAgent(*agent);
+  agent->Attach();
+
+  // Ensure calling ScrollIntoView doesn't crash.
+  host.agent_->ScrollIntoView();
+  host.FlushForTesting();
+  EXPECT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset().y(),
+            0);
+}
+
 }  // namespace blink
