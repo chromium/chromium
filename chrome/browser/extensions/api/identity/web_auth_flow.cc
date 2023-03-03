@@ -9,11 +9,14 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -97,17 +100,27 @@ BASE_FEATURE(kPersistentStorageForWebAuthFlow,
              "PersistentStorageForWebAuthFlow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-WebAuthFlow::WebAuthFlow(Delegate* delegate,
-                         Profile* profile,
-                         const GURL& provider_url,
-                         Mode mode,
-                         Partition partition)
+WebAuthFlow::WebAuthFlow(
+    Delegate* delegate,
+    Profile* profile,
+    const GURL& provider_url,
+    Mode mode,
+    Partition partition,
+    AbortOnLoad abort_on_load_for_non_interactive,
+    absl::optional<base::TimeDelta> timeout_for_non_interactive)
     : delegate_(delegate),
       profile_(profile),
       provider_url_(provider_url),
       mode_(mode),
-      partition_(partition) {
+      partition_(partition),
+      abort_on_load_for_non_interactive_(abort_on_load_for_non_interactive),
+      timeout_for_non_interactive_(timeout_for_non_interactive),
+      non_interactive_timeout_timer_(std::make_unique<base::OneShotTimer>()) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "WebAuthFlow", this);
+  if (timeout_for_non_interactive_) {
+    DCHECK_GE(*timeout_for_non_interactive_, base::TimeDelta());
+    DCHECK_LE(*timeout_for_non_interactive_, base::Minutes(1));
+  }
 }
 
 WebAuthFlow::~WebAuthFlow() {
@@ -132,6 +145,14 @@ WebAuthFlow::~WebAuthFlow() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("identity", "WebAuthFlow", this);
 }
 
+void WebAuthFlow::SetClockForTesting(
+    const base::TickClock* tick_clock,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  non_interactive_timeout_timer_ =
+      std::make_unique<base::OneShotTimer>(tick_clock);
+  non_interactive_timeout_timer_->SetTaskRunner(task_runner);
+}
+
 void WebAuthFlow::Start() {
   DCHECK(profile_);
   DCHECK(!profile_->IsOffTheRecord());
@@ -145,6 +166,8 @@ void WebAuthFlow::Start() {
 
     content::NavigationController::LoadURLParams load_params(provider_url_);
     web_contents_->GetController().LoadURLWithParams(load_params);
+
+    MaybeStartTimeout();
     return;
   }
 
@@ -182,6 +205,8 @@ void WebAuthFlow::Start() {
 
   EventRouter::Get(profile_)->DispatchEventWithLazyListener(
       extension_misc::kIdentityApiUiAppId, std::move(event));
+
+  MaybeStartTimeout();
 }
 
 void WebAuthFlow::DetachDelegateAndDelete() {
@@ -268,14 +293,22 @@ bool WebAuthFlow::IsDisplayingAuthPageInTab() const {
 }
 
 void WebAuthFlow::BeforeUrlLoaded(const GURL& url) {
-  if (delegate_ && IsObservingProviderWebContents())
+  if (delegate_ && IsObservingProviderWebContents()) {
     delegate_->OnAuthFlowURLChange(url);
+  }
 }
 
 void WebAuthFlow::AfterUrlLoaded() {
+  initial_url_loaded_ = true;
   if (delegate_ && IsObservingProviderWebContents() &&
       mode_ == WebAuthFlow::SILENT) {
-    delegate_->OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED);
+    if (abort_on_load_for_non_interactive_ == AbortOnLoad::kYes) {
+      non_interactive_timeout_timer_->Stop();
+      delegate_->OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED);
+    } else {
+      // Wait for timeout.
+    }
+    return;
   }
 
   // If `web_contents_` is nullptr, this means that the interactive tab has
@@ -306,6 +339,33 @@ void WebAuthFlow::AfterUrlLoaded() {
     if (info_bar_parameters_.should_show) {
       DisplayInfoBar();
     }
+  }
+}
+
+void WebAuthFlow::MaybeStartTimeout() {
+  if (mode_ != WebAuthFlow::SILENT) {
+    // Only applies to non-interactive flows.
+    return;
+  }
+  if (abort_on_load_for_non_interactive_ == AbortOnLoad::kYes &&
+      !timeout_for_non_interactive_) {
+    // Preserve previous behaviour: no timeout if aborting on load and timeout
+    // value is not specified.
+    return;
+  }
+  // `base::Unretained(this)` is safe because `this` owns
+  // `non_interactive_timeout_timer_`.
+  non_interactive_timeout_timer_->Start(
+      FROM_HERE,
+      timeout_for_non_interactive_.value_or(kNonInteractiveMaxTimeout),
+      base::BindOnce(&WebAuthFlow::OnTimeout, base::Unretained(this)));
+}
+
+void WebAuthFlow::OnTimeout() {
+  if (delegate_) {
+    delegate_->OnAuthFlowFailure(initial_url_loaded_
+                                     ? WebAuthFlow::INTERACTION_REQUIRED
+                                     : WebAuthFlow::TIMED_OUT);
   }
 }
 

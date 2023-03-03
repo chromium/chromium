@@ -10,14 +10,20 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 class Profile;
-class WebAuthFlowTest;
+
+namespace base {
+class OneShotTimer;
+class TickClock;
+}  // namespace base
 
 namespace content {
 class StoragePartition;
@@ -65,8 +71,18 @@ class WebAuthFlow : public content::WebContentsObserver,
     WINDOW_CLOSED,         // Window closed by user (app or tab).
     INTERACTION_REQUIRED,  // Non-redirect page load in silent mode.
     LOAD_FAILED,
-    USER_NAVIGATED_AWAY  // The user navigated away from the auth page.
+    USER_NAVIGATED_AWAY,  // The user navigated away from the auth page.
+    TIMED_OUT
   };
+
+  enum class AbortOnLoad {
+    kYes,
+    kNo,
+  };
+
+  // Maximum time on the total `WebAuthFlow` execution in silent node. This is
+  // the default if timeout is not specified.
+  static constexpr base::TimeDelta kNonInteractiveMaxTimeout = base::Minutes(1);
 
   class Delegate {
    public:
@@ -88,17 +104,24 @@ class WebAuthFlow : public content::WebContentsObserver,
   };
 
   // Creates an instance with the given parameters.
-  // Caller owns |delegate|.
+  // Caller owns `delegate`.
   WebAuthFlow(Delegate* delegate,
               Profile* profile,
               const GURL& provider_url,
               Mode mode,
-              Partition partition);
+              Partition partition,
+              AbortOnLoad abort_on_load_for_non_interactive = AbortOnLoad::kYes,
+              absl::optional<base::TimeDelta> timeout_for_non_interactive =
+                  absl::nullopt);
 
   WebAuthFlow(const WebAuthFlow&) = delete;
   WebAuthFlow& operator=(const WebAuthFlow&) = delete;
 
   ~WebAuthFlow() override;
+
+  // Testing clock used to test the effect of load timeout.
+  void SetClockForTesting(const base::TickClock* clock,
+                          scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Starts the flow.
   virtual void Start();
@@ -127,8 +150,6 @@ class WebAuthFlow : public content::WebContentsObserver,
   base::WeakPtr<WebAuthFlowInfoBarDelegate> GetInfoBarDelegateForTesting();
 
  private:
-  friend class ::WebAuthFlowTest;
-
   // ::AppWindowRegistry::Observer implementation.
   void OnAppWindowAdded(AppWindow* app_window) override;
   void OnAppWindowRemoved(AppWindow* app_window) override;
@@ -150,6 +171,9 @@ class WebAuthFlow : public content::WebContentsObserver,
 
   void BeforeUrlLoaded(const GURL& url);
   void AfterUrlLoaded();
+
+  void MaybeStartTimeout();
+  void OnTimeout();
 
   bool IsObservingProviderWebContents() const;
 
@@ -191,6 +215,13 @@ class WebAuthFlow : public content::WebContentsObserver,
   // WeakPtr to the info bar delegate attached to the auth tab when opened. Used
   // to close the info bar when closing the flow if still valid.
   base::WeakPtr<WebAuthFlowInfoBarDelegate> info_bar_delegate_ = nullptr;
+
+  const AbortOnLoad abort_on_load_for_non_interactive_;
+  const absl::optional<base::TimeDelta> timeout_for_non_interactive_;
+  std::unique_ptr<base::OneShotTimer> non_interactive_timeout_timer_;
+  // Flag indicating that the initial URL was successfully loaded. Influences
+  // the error code when the flow times out.
+  bool initial_url_loaded_ = false;
 };
 
 }  // namespace extensions

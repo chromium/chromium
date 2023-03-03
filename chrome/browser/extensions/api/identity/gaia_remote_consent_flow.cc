@@ -176,6 +176,7 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
       gaia_failure = GaiaRemoteConsentFlow::USER_NAVIGATED_AWAY;
       break;
     case WebAuthFlow::LOAD_FAILED:
+    case WebAuthFlow::TIMED_OUT:
       gaia_failure = GaiaRemoteConsentFlow::LOAD_FAILED;
       break;
     case WebAuthFlow::INTERACTION_REQUIRED:

@@ -77,16 +77,38 @@ namespace identity {
     // Whether to launch auth flow in interactive mode.
     //
     // Since some auth flows may immediately redirect to a result URL,
-    // <code>launchWebAuthFlow</code> hides its web view until the
-    // first navigation either redirects to the final URL, or finishes
-    // loading a page meant to be displayed.
+    // <code>launchWebAuthFlow</code> hides its web view until the first
+    // navigation either redirects to the final URL, or finishes loading a page
+    // meant to be displayed.
     //
-    // If the interactive flag is <code>true</code>, the window will
-    // be displayed when a page load completes. If the flag is
-    // <code>false</code> or omitted, <code>launchWebAuthFlow</code>
-    // will return with an error if the initial navigation does not
-    // complete the flow.
+    // If the <code>interactive</code> flag is <code>true</code>, the window
+    // will be displayed when a page load completes. If the flag is
+    // <code>false</code> or omitted, <code>launchWebAuthFlow</code> will return
+    // with an error if the initial navigation does not complete the flow.
+    //
+    // For flows that use JavaScript for redirection,
+    // <code>abortOnLoadForNonInteractive</code> can be set to <code>false</code>
+    // in combination with setting <code>timeoutMsForNonInteractive</code> to give
+    // the page a chance to perform any redirects.
     boolean? interactive;
+
+    // Whether to terminate <code>launchWebAuthFlow</code> for non-interactive
+    // requests after the page loads. This parameter does not affect interactive
+    // flows.
+    //
+    // When set to <code>true</code> (default) the flow will terminate
+    // immediately after the page loads. When set to <code>false</code>, the
+    // flow will only terminate after the
+    // <code>timeoutMsForNonInteractive</code> passes. This is useful for
+    // identity providers that use JavaScript to perform redirections after the
+    // page loads.
+    boolean? abortOnLoadForNonInteractive;
+
+    // The maximum amount of time, in miliseconds,
+    // <code>launchWebAuthFlow</code> is allowed to run in non-interactive mode
+    // in total. Only has an effect if <code>interactive</code> is
+    // <code>false</code>.
+    long? timeoutMsForNonInteractive;
   };
 
   dictionary GetAuthTokenResult {

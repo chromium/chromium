@@ -5,9 +5,12 @@
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -52,13 +55,18 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
     DCHECK(web_auth_flow_);
     // Delete the web auth flow (uses DeleteSoon).
     web_auth_flow_.release()->DetachDelegateAndDelete();
-    base::RunLoop().RunUntilIdle();
   }
 
   void TearDownOnMainThread() override {
+    // Ensures any timer tasks finish.
+    timeout_task_runner_->RunUntilIdle();
     if (web_auth_flow_) {
       DeleteWebAuthFlow();
     }
+    // Ensures `web_auth_flow_` is deleted before teardown. This cannot be run
+    // in |DeleteWebAuthFlow| as it can be called from `timeout_task_runner_`'s
+    // loop.
+    base::RunLoop().RunUntilIdle();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -66,12 +74,21 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
       const GURL& url,
       WebAuthFlow::Partition partition = WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
       WebAuthFlow::Mode mode = WebAuthFlow::Mode::INTERACTIVE,
-      Profile* profile = nullptr) {
+      Profile* profile = nullptr,
+      WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive =
+          WebAuthFlow::AbortOnLoad::kYes,
+      absl::optional<base::TimeDelta> timeout_for_non_interactive =
+          absl::nullopt) {
     if (!profile)
       profile = browser()->profile();
 
     web_auth_flow_ = std::make_unique<WebAuthFlow>(
-        &mock_web_auth_flow_delegate_, profile, url, mode, partition);
+        &mock_web_auth_flow_delegate_, profile, url, mode, partition,
+        abort_on_load_for_non_interactive, timeout_for_non_interactive);
+
+    timeout_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    web_auth_flow_->SetClockForTesting(timeout_task_runner_->GetMockTickClock(),
+                                       timeout_task_runner_);
     web_auth_flow_->Start();
   }
 
@@ -86,9 +103,14 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
 
   MockWebAuthFlowDelegate& mock() { return mock_web_auth_flow_delegate_; }
 
+  scoped_refptr<base::TestMockTimeTaskRunner> timeout_task_runner() {
+    return timeout_task_runner_;
+  }
+
  private:
   std::unique_ptr<WebAuthFlow> web_auth_flow_;
   MockWebAuthFlowDelegate mock_web_auth_flow_delegate_;
+  scoped_refptr<base::TestMockTimeTaskRunner> timeout_task_runner_;
 };
 
 class WebAuthFlowInBrowserTabParamBrowserTest
@@ -101,6 +123,18 @@ class WebAuthFlowInBrowserTabParamBrowserTest
   }
 
   bool use_tab_feature_enabled() { return GetParam(); }
+
+  bool JsRedirectToUrl(const GURL& url) {
+    content::TestNavigationObserver redirect_observer(url);
+    redirect_observer.WatchExistingWebContents();
+    const std::string script =
+        base::StringPrintf("window.location.href = '%s'", url.spec().c_str());
+    bool result = content::ExecJs(web_contents(), script);
+    if (result) {
+      redirect_observer.Wait();
+    }
+    return result;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -136,6 +170,223 @@ IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
   StartWebAuthFlow(error_url);
 
   navigation_observer.WaitForNavigationFinished();
+}
+
+// Tests that the flow launched in silent mode with default parameters will
+// terminate immediately with the "interacation required" error if the page
+// loads and does not navigate to the redirect URL.
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowFailureCalledInteractionRequired) {
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // The delegate method OnAuthFlowURLChange should be called
+  // by DidStartNavigation.
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // In SILENT mode, DidStopLoading() will force the auth flow to fail if it has
+  // not already redirected, because we did not specify a timeout.
+  EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED));
+  StartWebAuthFlow(auth_url, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::SILENT);
+
+  navigation_observer.Wait();
+}
+
+// Tests that the flow launched in silent mode with
+// `abortOnLoadForNonInteractive` set to `false` will terminate with the
+// "interaction required" after a specified timeout if the page loads and does
+// not navigate to the redirect URL.
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowInteractionRequiredWithTimeout) {
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // The delegate method OnAuthFlowURLChange should be called
+  // by DidStartNavigation.
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // In SILENT mode, DidStopLoading() will wait for our specified 50ms timeout
+  // before calling OnAuthFlowFailure.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  StartWebAuthFlow(auth_url, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::SILENT, /*profile=*/nullptr,
+                   WebAuthFlow::AbortOnLoad::kNo,
+                   /*timeout_for_non_interactive=*/base::Milliseconds(50));
+  navigation_observer.Wait();
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Increment the time by 40ms - nothing should happen.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(40));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Now we exceed our 50ms limit and expect a failure.
+  EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED));
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(20));
+}
+
+// Tests that the flow launched in silent mode with
+// `abortOnLoadForNonInteractive` set to `false` will terminate with the
+// "interaction required" error after a default timeout if the page loads and
+// does not navigate to the redirect URL.
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowInteractionRequiredWithDefaultTimeout) {
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // The delegate method OnAuthFlowURLChange should be called
+  // by DidStartNavigation.
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // In SILENT mode, DidStopLoading() will wait for the default 1 minute timeout
+  // before calling OnAuthFlowFailure.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  StartWebAuthFlow(auth_url, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::SILENT, /*profile=*/nullptr,
+                   WebAuthFlow::AbortOnLoad::kNo);
+  navigation_observer.Wait();
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Increment the time by 59s - nothing should happen.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  timeout_task_runner()->FastForwardBy(base::Seconds(59));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Now we exceed the 1 minute default limit and expect a failure.
+  // The error is "interaction required" when the flow times out when the page
+  // has already loaded.
+  EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED));
+  timeout_task_runner()->FastForwardBy(base::Seconds(2));
+}
+
+// Tests that the flow launched in silent mode with `timeoutMsForNonInteractive`
+// set will terminate with the "timed out" error after a timeout if the page
+// fails to load (distinct from the flow failing to navigate to the redirect URL
+// in time).
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowPageLoadTimeout) {
+  const GURL auth_url = embedded_test_server()->GetURL("/hung-after-headers");
+
+  // The delegate method OnAuthFlowURLChange should be called
+  // by DidStartNavigation.
+  base::RunLoop run_loop;
+  ON_CALL(mock(), OnAuthFlowURLChange(testing::_))
+      .WillByDefault([&run_loop](const GURL& url) { run_loop.Quit(); });
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // In SILENT mode, DidStopLoading() will wait for our specified 50ms timeout
+  // before calling OnAuthFlowFailure.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  StartWebAuthFlow(auth_url, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::SILENT, /*profile=*/nullptr,
+                   WebAuthFlow::AbortOnLoad::kYes,
+                   /*timeout_for_non_interactive=*/base::Milliseconds(50));
+  // Wait for navigation to the failing page to start first.
+  run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Increment the time by 40ms - nothing should happen.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(40));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Now we exceed our 50ms limit and expect a failure. The error is "load
+  // timed out" when the flow times out while the page is still loading.
+  EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::TIMED_OUT));
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(20));
+}
+
+// Tests that the flow launched in silent mode with
+// `abortOnLoadForNonInteractive` set to `false` and
+// `timeoutMsForNonInteractive` set will succeed if it navigates to the redirect
+// URL before the timeout.
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowRedirectBeforeTimeout) {
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // The delegate method OnAuthFlowURLChange should be called
+  // by DidStartNavigation.
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // In SILENT mode, DidStopLoading() will wait for our specified 50ms timeout
+  // before calling OnAuthFlowFailure.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  StartWebAuthFlow(auth_url, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::SILENT, /*profile=*/nullptr,
+                   WebAuthFlow::AbortOnLoad::kNo,
+                   /*timeout_for_non_interactive=*/base::Milliseconds(50));
+
+  navigation_observer.Wait();
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Increment the time by 40ms - nothing should happen.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(40));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Redirect after page load and check we get OnAuthFlowURLChange.
+  const GURL redirect_url = embedded_test_server()->GetURL("/title2.html");
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(redirect_url));
+  EXPECT_TRUE(JsRedirectToUrl(redirect_url));
+}
+
+// Tests that the loaded auth page can redirect multiple times and fails only
+// after the timeout.
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInBrowserTabParamBrowserTest,
+                       OnAuthFlowMultipleRedirects) {
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // The delegate method OnAuthFlowURLChange should be called
+  // by DidStartNavigation.
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // In SILENT mode, DidStopLoading() will wait for our specified 50ms timeout
+  // before calling OnAuthFlowFailure.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  StartWebAuthFlow(auth_url, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::SILENT, /*profile=*/nullptr,
+                   WebAuthFlow::AbortOnLoad::kNo,
+                   /*timeout_for_non_interactive=*/base::Milliseconds(50));
+
+  navigation_observer.Wait();
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Increment the time by 10ms - nothing should happen.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(10));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Redirect after page load and check we get OnAuthFlowURLChange.
+  const GURL redirect_url = embedded_test_server()->GetURL("/title2.html");
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(redirect_url));
+  EXPECT_TRUE(JsRedirectToUrl(redirect_url));
+
+  // Increment the time by 10ms - nothing should happen.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(10));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Redirect after 2nd page load and check we get OnAuthFlowURLChange.
+  const GURL redirect_url2 = embedded_test_server()->GetURL("/title3.html");
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(redirect_url2));
+  EXPECT_TRUE(JsRedirectToUrl(redirect_url2));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Increment the time by 10ms - nothing should happen.
+  EXPECT_CALL(mock(), OnAuthFlowFailure).Times(0);
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(10));
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Now we exceed our 50ms limit and expect a failure.
+  EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED));
+  timeout_task_runner()->FastForwardBy(base::Milliseconds(30));
 }
 
 INSTANTIATE_TEST_SUITE_P(
