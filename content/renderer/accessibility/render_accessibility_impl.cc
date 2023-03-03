@@ -891,6 +891,10 @@ int RenderAccessibilityImpl::GenerateAXID() {
   return ax_context_->GenerateAXID();
 }
 
+ui::AXMode RenderAccessibilityImpl::GetAXMode() const {
+  return accessibility_mode_;
+}
+
 ui::AXTreeID RenderAccessibilityImpl::GetTreeIDForPluginHost() const {
   DCHECK(render_frame_) << "A plugin tree should be under active construction "
                            "only while this render frame is alive.";

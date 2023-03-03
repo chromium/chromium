@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 
 class RenderViewContextMenuProxy;

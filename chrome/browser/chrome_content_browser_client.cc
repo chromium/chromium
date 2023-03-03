@@ -457,10 +457,6 @@
 #include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/accessibility/accessibility_features.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/debug/leak_annotations.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
@@ -691,7 +687,14 @@
 #endif  // defined(_WINDOWS_)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) || !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/accessibility/accessibility_features.h"
 #endif
 
 using blink::mojom::EffectiveConnectionType;
@@ -6795,14 +6798,30 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
 ui::AXMode ChromeContentBrowserClient::GetAXModeForBrowserContext(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto* service = AccessibilityLabelsServiceFactory::GetForProfile(profile);
-  if (service)
-    return service->GetAXMode();
-  // No AccessibilityLabelsService.  Return the current accessibility mode.
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-  // kLabelImages should only be set if there's an AccessibilityLabelsService.
-  DCHECK(!ax_mode.has_mode(ui::AXMode::kLabelImages));
+
+  // TODO(accessibility): Dynamically create AccessibilityLabelsService and
+  // destroy it when unused.
+  auto* labels_service =
+      AccessibilityLabelsServiceFactory::GetForProfile(profile);
+  if (labels_service && labels_service->IsEnabled()) {
+    ax_mode.set_mode(ui::AXMode::kLabelImages, true);
+  }
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsPdfOcrEnabled() &&
+      accessibility_state_utils::IsScreenReaderEnabled()) {
+    // PdfOcrController will be created when the user turns on a screen reader
+    // before or even after starting the browser.
+    auto* pdf_ocr_controller =
+        screen_ai::PdfOcrControllerFactory::GetForProfile(profile);
+    if (pdf_ocr_controller && pdf_ocr_controller->IsEnabled()) {
+      ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
+    }
+    // TODO(crbug.com/1393069): Destroy PdfOcrController when unused (i.e.
+    // when a screen reader gets turned off later).
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   return ax_mode;
 }
 

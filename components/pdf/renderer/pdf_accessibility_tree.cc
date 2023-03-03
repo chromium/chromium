@@ -1242,9 +1242,9 @@ PdfAccessibilityTree::PdfAccessibilityTree(
         GetRenderAccessibilityIfEnabled();
     // PdfAccessibilityTree is created even when accessibility services are not
     // enabled and we rely on them to use PdfOcr service.
-    // TODO(crbug.com/1278249): Need to create a PdfOcr service only when PDF
-    // OCR is turned on.
-    if (render_accessibility) {
+    if (render_accessibility &&
+        render_accessibility->GetAXMode().has_mode(ui::AXMode::kPDFOcr)) {
+      VLOG(2) << "Creating OCR service.";
       ocr_service_ = std::make_unique<PdfOcrService>(
           render_accessibility->GetTreeIDForPluginHost(), *render_frame);
     }

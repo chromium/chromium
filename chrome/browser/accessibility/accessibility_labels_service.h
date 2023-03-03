@@ -13,10 +13,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
-#include "ui/accessibility/ax_mode.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/base/network_change_notifier.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #endif
 
@@ -59,7 +59,7 @@ class AccessibilityLabelsService
 
   void Init();
 
-  ui::AXMode GetAXMode();
+  bool IsEnabled();
 
   void EnableLabelsServiceOnce();
 

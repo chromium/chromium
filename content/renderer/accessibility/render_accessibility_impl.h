@@ -97,6 +97,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // RenderAccessibility implementation.
   bool HasActiveDocument() const override;
   int GenerateAXID() override;
+  ui::AXMode GetAXMode() const override;
   ui::AXTreeID GetTreeIDForPluginHost() const override;
   void SetPluginTreeSource(PluginAXTreeSource* source) override;
   void OnPluginRootNodeUpdated() override;

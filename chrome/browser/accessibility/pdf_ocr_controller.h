@@ -1,0 +1,54 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ACCESSIBILITY_PDF_OCR_CONTROLLER_H_
+#define CHROME_BROWSER_ACCESSIBILITY_PDF_OCR_CONTROLLER_H_
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class Profile;
+
+namespace content {
+class WebContents;
+}
+
+namespace screen_ai {
+
+class PdfOcrControllerFactory;
+
+// Manages the PDF OCR feature that extracts text from an inaccessible PDF.
+// Observes changes in the per-profile preference and updates the accessibility
+// mode of WebContents when it changes, provided its feature flag is enabled.
+class PdfOcrController : public KeyedService {
+ public:
+  PdfOcrController(const PdfOcrController&) = delete;
+  PdfOcrController& operator=(const PdfOcrController&) = delete;
+  ~PdfOcrController() override;
+
+  // Return true if the PDF OCR pref is true; false otherwise.
+  bool IsEnabled() const;
+  // Run PDF OCR only once regardless of the PDF OCR pref value. This function
+  // doesn't update the PDF OCR pref value.
+  void RunPdfOcrOnlyOnce(content::WebContents* web_contents);
+
+ private:
+  friend class PdfOcrControllerFactory;
+
+  explicit PdfOcrController(Profile* profile);
+
+  void OnPdfOcrAlwaysActiveChanged();
+
+  // PdfOcrController will be created via PdfOcrControllerFactory on this
+  // profile and then destroyed before the profile gets destroyed.
+  raw_ptr<Profile> profile_;
+  PrefChangeRegistrar pref_change_registrar_;
+  base::WeakPtrFactory<PdfOcrController> weak_ptr_factory_{this};
+};
+
+}  // namespace screen_ai
+
+#endif  // CHROME_BROWSER_ACCESSIBILITY_PDF_OCR_CONTROLLER_H_
