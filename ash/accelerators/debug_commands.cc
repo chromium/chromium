@@ -36,6 +36,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/display/manager/display_manager.h"
@@ -132,7 +133,7 @@ void HandleToggleDarkMode() {
 }
 
 void HandleToggleDynamicColor() {
-  if (!ash::features::IsJellyEnabled()) {
+  if (!chromeos::features::IsJellyEnabled()) {
     // Only toggle colors when Dynamic Colors are enabled.
     return;
   }
