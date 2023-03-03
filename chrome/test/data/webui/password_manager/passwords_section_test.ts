@@ -326,4 +326,61 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!addDialog);
     assertTrue(addDialog.$.dialog.open);
   });
+
+  test('move passwords label shown', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [createPasswordEntry(
+          {username: 'user', id: 0, inProfileStore: true})],
+    })];
+
+    const section = await createPasswordsSection();
+
+    assertFalse(section.$.movePasswords.hidden);
+
+    // Assert that password section subscribed as a listener to opt in state and
+    // opt out from account storage.
+    assertTrue(!!passwordManager.listeners.accountStorageOptInStateListener);
+    passwordManager.data.isOptedInAccountStorage = false;
+    passwordManager.listeners.accountStorageOptInStateListener(false);
+    await flushTasks();
+
+    // Now move passwords option is hidden.
+    assertTrue(section.$.movePasswords.hidden);
+  });
+
+  test('move passwords label hidden if no passwords to move', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [createPasswordEntry(
+          {username: 'user', id: 0, inAccountStore: true})],
+    })];
+
+    const section = await createPasswordsSection();
+
+    assertTrue(section.$.movePasswords.hidden);
+
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'test.com',
+        credentials: [createPasswordEntry(
+            {username: 'user', id: 0, inAccountStore: true})],
+      }),
+      createCredentialGroup({
+        name: 'test.org',
+        credentials: [createPasswordEntry(
+            {username: 'user', id: 1, inProfileStore: true})],
+      }),
+    ];
+    // Assert that password section listens to passwords update and invoke
+    // an update.
+    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
+    passwordManager.listeners.savedPasswordListChangedListener([]);
+    await flushTasks();
+
+    // Now move passwords option is visible.
+    assertFalse(section.$.movePasswords.hidden);
+  });
 });

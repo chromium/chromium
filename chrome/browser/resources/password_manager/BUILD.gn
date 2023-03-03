@@ -53,6 +53,7 @@ build_webui("build") {
     "router.ts",
     "searchable_label.ts",
     "show_password_mixin.ts",
+    "user_utils_mixin.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

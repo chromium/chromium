@@ -289,6 +289,8 @@ void AddPluralStrings(content::WebUI* web_ui) {
       "weakPasswords", IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString(
       "searchResults", IDS_PASSWORD_MANAGER_UI_SEARCH_RESULT);
+  plural_string_handler->AddLocalizedString(
+      "movePasswords", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TO_ACCOUNT);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 

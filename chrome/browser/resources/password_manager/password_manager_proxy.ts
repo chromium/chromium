@@ -9,6 +9,8 @@
 
 export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
+export type AccountStorageOptInStateChangedListener = (optInState: boolean) =>
+    void;
 export type CredentialsChangedListener =
     (credentials: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordCheckStatusChangedListener =
@@ -264,6 +266,24 @@ export interface PasswordManagerProxy {
    * Requests extension of authentication validity.
    */
   extendAuthValidity(): void;
+
+  /**
+   * Add an observer to the account storage opt-in state.
+   */
+  addAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener): void;
+
+  /**
+   * Remove an observer to the account storage opt-in state.
+   */
+  removeAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener): void;
+
+  /**
+   * Requests the account-storage opt-in state of the current user.
+   * @return A promise that resolves to the opt-in state.
+   */
+  isOptedInForAccountStorage(): Promise<boolean>;
 }
 
 /**
@@ -432,6 +452,22 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   extendAuthValidity() {
     chrome.passwordsPrivate.extendAuthValidity();
+  }
+
+  addAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageOptInStateChanged.addListener(
+        listener);
+  }
+
+  removeAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageOptInStateChanged.removeListener(
+        listener);
+  }
+
+  isOptedInForAccountStorage() {
+    return chrome.passwordsPrivate.isOptedInForAccountStorage();
   }
 
   static getInstance(): PasswordManagerProxy {
