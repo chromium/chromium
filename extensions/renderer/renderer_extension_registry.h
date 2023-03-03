@@ -57,22 +57,21 @@ class RendererExtensionRegistry {
   ExtensionIdSet GetIDs() const;
   bool ExtensionBindingsAllowed(const GURL& url) const;
 
-  // Activation sequence-related methods.
+  // Activation token-related methods.
   //
-  // Sets the activation sequence for a Service Worker based |extension|.
-  void SetWorkerActivationSequence(
-      const scoped_refptr<const Extension>& extension,
-      base::UnguessableToken worker_activation_sequence);
-  // Returns the current activation sequence for worker based extension with
+  // Sets the activation token for a Service Worker based |extension|.
+  void SetWorkerActivationToken(const scoped_refptr<const Extension>& extension,
+                                base::UnguessableToken worker_activation_token);
+  // Returns the current activation token for worker based extension with
   // |extension_id|. Returns absl::nullopt otherwise.
-  absl::optional<base::UnguessableToken> GetWorkerActivationSequence(
+  absl::optional<base::UnguessableToken> GetWorkerActivationToken(
       const ExtensionId& extension_id) const;
 
  private:
   ExtensionSet extensions_;
 
-  // Maps extension id to activation sequence, for worker based extensions.
-  std::map<ExtensionId, base::UnguessableToken> worker_activation_sequences_;
+  // Maps extension id to activation token, for worker based extensions.
+  std::map<ExtensionId, base::UnguessableToken> worker_activation_tokens_;
 
   mutable base::Lock lock_;
 };

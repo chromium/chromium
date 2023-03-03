@@ -95,25 +95,26 @@ bool RendererExtensionRegistry::ExtensionBindingsAllowed(
   return extensions_.ExtensionBindingsAllowed(url);
 }
 
-void RendererExtensionRegistry::SetWorkerActivationSequence(
+void RendererExtensionRegistry::SetWorkerActivationToken(
     const scoped_refptr<const Extension>& extension,
-    base::UnguessableToken worker_activation_sequence) {
+    base::UnguessableToken worker_activation_token) {
   DCHECK(content::RenderThread::Get());
   DCHECK(Contains(extension->id()));
   DCHECK(BackgroundInfo::IsServiceWorkerBased(extension.get()));
 
   base::AutoLock lock(lock_);
-  worker_activation_sequences_[extension->id()] =
-      std::move(worker_activation_sequence);
+  worker_activation_tokens_[extension->id()] =
+      std::move(worker_activation_token);
 }
 
 absl::optional<base::UnguessableToken>
-RendererExtensionRegistry::GetWorkerActivationSequence(
+RendererExtensionRegistry::GetWorkerActivationToken(
     const ExtensionId& extension_id) const {
   base::AutoLock lock(lock_);
-  auto iter = worker_activation_sequences_.find(extension_id);
-  if (iter == worker_activation_sequences_.end())
+  auto iter = worker_activation_tokens_.find(extension_id);
+  if (iter == worker_activation_tokens_.end()) {
     return absl::nullopt;
+  }
   return iter->second;
 }
 
