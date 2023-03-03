@@ -162,8 +162,6 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
   base::circular_deque<SendingActivity> sending_activities_;
   base::circular_deque<DecryptionFailureActivity>
       decryption_failure_activities_;
-
-  base::TimeTicks last_connection_initiation_time_;
 };
 
 }  // namespace gcm

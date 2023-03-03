@@ -145,15 +145,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="GCM.IncomingSendErrors" units="messages" expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Number of SEND_ERROR messages received from Google Cloud Messaging. Recorded
-    when processing the received message.
-  </summary>
-</histogram>
-
 <histogram name="GCM.LoadStatus" enum="GCMLoadStatus" expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
@@ -263,16 +254,6 @@ chromium-metrics-reviews@google.com.
   <owner>peter@chromium.org</owner>
   <summary>
     Number of registrations restored from the persistent store at startup.
-  </summary>
-</histogram>
-
-<histogram name="GCM.SendMessageStatus" enum="GCMSendMessageStatus"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result of sending an upstream message through Google Cloud Messaging.
-    Recorded when the message has either been queued, sent, or has been dropped
-    because it expired or an error happened.
   </summary>
 </histogram>
 
