@@ -946,11 +946,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
 // with parameterized tests).
 #if !defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
-  // TODO: (b/270609503) test the revapmped power button.
-  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
-    return;
-  }
-
   EnableChromeVox();
 
   sm_.Call([this]() {
@@ -959,6 +954,31 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
       "center.");
+
+  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
+    // Settings button.
+    sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+    sm_.ExpectSpeech("Settings");
+    sm_.ExpectSpeech("Button");
+
+    // Battery indicator.
+    sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+    sm_.ExpectSpeech("Battery");
+
+    // Avatar button. Disabled for guest account.
+    if (GetParam() != kTestAsGuestUser) {
+      sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+      sm_.ExpectSpeech("Button");
+    }
+
+    // Shutdown button.
+    sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+    sm_.ExpectSpeech("Shut down");
+    sm_.ExpectSpeech("Button");
+
+    sm_.Replay();
+    return;
+  }
 
   // Avatar button. Disabled for guest account.
   if (GetParam() != kTestAsGuestUser) {
