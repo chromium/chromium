@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 declare_args() {
   # Enables building a development / debugging binary.
   enable_qr_print = false
@@ -34,4 +36,9 @@ if (enable_qr_print) {
     sources = [ "qr_print.cc" ]
     deps = [ ":qr_code_generator" ]
   }
+}
+
+fuzzer_test("qr_code_generator_fuzzer") {
+  sources = [ "qr_code_generator_fuzzer.cc" ]
+  deps = [ ":qr_code_generator" ]
 }
