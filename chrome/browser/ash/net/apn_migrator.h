@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // Finishes the migration process for networks that require managed properties
   // fields.
   void OnGetManagedProperties(std::string iccid,
+                              std::string guid,
                               const std::string& service_path,
                               absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);

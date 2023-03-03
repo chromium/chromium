@@ -76,6 +76,8 @@ void ApnMigrator::NetworkListChanged() {
     }
 
     if (!has_network_been_migrated) {
+      NET_LOG(DEBUG) << "Network has not been migrated, attempting to migrate: "
+                     << network->iccid();
       MigrateNetwork(*network);
       continue;
     }
@@ -86,7 +88,6 @@ void ApnMigrator::NetworkListChanged() {
       SetShillUserApnListForNetwork(*network, custom_apn_list);
       continue;
     }
-
     base::Value::List empty_user_apn_list;
     SetShillUserApnListForNetwork(*network, &empty_user_apn_list);
   }
@@ -108,6 +109,9 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   // Return early if the network is already in the process of being migrated.
   if (iccids_in_migration_.find(network.iccid()) !=
       iccids_in_migration_.end()) {
+    NET_LOG(DEBUG) << "Attempting to migrate network that already has a "
+                   << "migration in progress, returning early: "
+                   << network.iccid();
     return;
   }
   DCHECK(!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
@@ -120,6 +124,9 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   // If the pre-revamp APN list is empty, set the revamp list as empty and
   // finish the migration.
   if (!custom_apn_list || custom_apn_list->empty()) {
+    NET_LOG(EVENT) << "Pre-revamp APN list is empty, sending empty list to "
+                      "Shill and marking as migrated: "
+                   << network.iccid();
     base::Value::List empty_apn_list;
     SetShillUserApnListForNetwork(network, &empty_apn_list);
     managed_cellular_pref_handler_->AddApnMigratedIccid(network.iccid());
@@ -132,19 +139,67 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   // be attempted to be migrated again while these properties are being fetched.
   iccids_in_migration_.emplace(network.iccid());
 
+  NET_LOG(EVENT) << "Fetching managed properties for network: "
+                 << network.iccid();
   network_configuration_handler_->GetManagedProperties(
       LoginState::Get()->primary_user_hash(), network.path(),
       base::BindOnce(&ApnMigrator::OnGetManagedProperties,
-                     weak_factory_.GetWeakPtr(), network.iccid()));
+                     weak_factory_.GetWeakPtr(), network.iccid(),
+                     network.guid()));
 }
 
 void ApnMigrator::OnGetManagedProperties(
     std::string iccid,
+    std::string guid,
     const std::string& service_path,
     absl::optional<base::Value::Dict> properties,
     absl::optional<std::string> error) {
-  // TODO(b/162365553): Implement this case: Network with custom APNs needs to
-  // be migrated.
+  if (error.has_value()) {
+    NET_LOG(ERROR) << "Error fetching managed properties for " << iccid
+                   << ", error: " << error.value();
+    iccids_in_migration_.erase(iccid);
+    return;
+  }
+
+  if (!properties) {
+    NET_LOG(ERROR) << "Error fetching managed properties for " << iccid;
+    iccids_in_migration_.erase(iccid);
+    return;
+  }
+
+  const NetworkState* network =
+      network_state_handler_->GetNetworkStateFromGuid(guid);
+  if (!network) {
+    NET_LOG(ERROR) << "Network no longer exists: " << guid;
+    iccids_in_migration_.erase(iccid);
+    return;
+  }
+
+  // Get the pre-revamp APN list.
+  const base::Value::List* custom_apn_list =
+      network_metadata_store_->GetPreRevampCustomApnList(guid);
+
+  // At this point, the pre-revamp APN list should not be empty. However, there
+  // could be the case where the custom APN list was cleared during the
+  // GetManagedProperties() call. If so, set the revamp list as empty and finish
+  // the migration.
+  if (!custom_apn_list || custom_apn_list->empty()) {
+    NET_LOG(EVENT) << "Custom APN list cleared during GetManagedProperties() "
+                   << "call, setting Shill with empty list for network: "
+                   << guid;
+    base::Value::List empty_apn_list;
+    SetShillUserApnListForNetwork(*network, &empty_apn_list);
+    managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
+    iccids_in_migration_.erase(iccid);
+    return;
+  }
+
+  if (network->IsManagedByPolicy()) {
+    // TODO(b/162365553): Implement this case.
+  } else {
+    // TODO(b/162365553): Implement this case.
+  }
+
   managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
   iccids_in_migration_.erase(iccid);
 }
