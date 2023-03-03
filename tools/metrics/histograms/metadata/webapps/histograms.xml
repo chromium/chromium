@@ -173,6 +173,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.AmbientBadge.Click" enum="InstallAmbientBadgeAppType"
+    expires_after="2023-12-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    On mobile, an install ambient badge may automatically shows to promote an
+    application related to the current website when the site meets all install
+    criteria. When the ambient badge was clicked by the user and displaying the
+    app banner UI, record the type of the app (native app or web app).
+  </summary>
+</histogram>
+
+<histogram name="Webapp.AmbientBadge.Dismiss" enum="InstallAmbientBadgeAppType"
+    expires_after="2023-12-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    On mobile, an install ambient badge may automatically shows to promote an
+    application related to the current website when the site meets all install
+    criteria. When the ambient badge was explictly dismissed by the user, record
+    the type of the app (native app or web app).
+  </summary>
+</histogram>
+
+<histogram name="Webapp.AmbientBadge.Display" enum="InstallAmbientBadgeAppType"
+    expires_after="2023-12-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    On mobile, an install ambient badge may automatically shows to promote an
+    application related to the current website when the site meets all install
+    criteria. When an ambient badge was shown, record the type of the app
+    (native app or web app).
+  </summary>
+</histogram>
+
+<histogram name="Webapp.AmbientBadge.Messages.DismissReason"
+    enum="MessageDismissReason" expires_after="2023-12-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    On mobile, an install ambient badge may automatically shows to promote an
+    application related to the current website when the site meets all install
+    criteria. When a message UI style ambient badge was dismissed for any
+    reason, record the dismiss reason.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.AppIdentityDialog.AlreadyApproved"
     enum="AppIdentityDisplayMetric" expires_after="2024-01-15">
   <owner>finnur@chromium.org</owner>
