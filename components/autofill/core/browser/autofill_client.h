@@ -674,7 +674,7 @@ class AutofillClient : public RiskDataLoader {
   // returns true.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard* const> cards_to_suggest) = 0;
+      base::span<const autofill::CreditCard> cards_to_suggest) = 0;
 
   // Hides the Touch To Fill surface for filling credit card information
   // if one is currently shown. Should be called only if

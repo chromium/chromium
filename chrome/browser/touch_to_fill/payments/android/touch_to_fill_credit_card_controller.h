@@ -39,7 +39,7 @@ class TouchToFillCreditCardController
   // was successfully shown.
   bool Show(std::unique_ptr<TouchToFillCreditCardView> view,
             base::WeakPtr<TouchToFillDelegate> delegate,
-            base::span<const autofill::CreditCard* const> cards_to_suggest);
+            base::span<const autofill::CreditCard> cards_to_suggest);
 
   // Hides the surface if it is currently shown.
   void Hide();

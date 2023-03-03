@@ -369,7 +369,7 @@ class TestAutofillClientTemplate : public T {
 
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard* const> cards_to_suggest) override {
+      base::span<const autofill::CreditCard> cards_to_suggest) override {
     return false;
   }
 

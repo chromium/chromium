@@ -134,13 +134,13 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate,
 
   struct DryRunResult {
     DryRunResult(TriggerOutcome outcome,
-                 std::vector<CreditCard*> cards_to_suggest);
+                 std::vector<CreditCard> cards_to_suggest);
     DryRunResult(DryRunResult&&);
     DryRunResult& operator=(DryRunResult&&);
     ~DryRunResult();
 
     TriggerOutcome outcome;
-    std::vector<CreditCard*> cards_to_suggest;
+    std::vector<CreditCard> cards_to_suggest;
   };
 
   // Checks all preconditions for showing the TTF, that is, for calling

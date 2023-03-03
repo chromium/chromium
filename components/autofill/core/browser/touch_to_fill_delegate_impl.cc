@@ -19,7 +19,7 @@ namespace autofill {
 
 TouchToFillDelegateImpl::DryRunResult::DryRunResult(
     TriggerOutcome outcome,
-    std::vector<CreditCard*> cards_to_suggest)
+    std::vector<CreditCard> cards_to_suggest)
     : outcome(outcome), cards_to_suggest(std::move(cards_to_suggest)) {}
 
 TouchToFillDelegateImpl::DryRunResult::DryRunResult(DryRunResult&&) = default;
@@ -96,7 +96,15 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
   if (!manager_->CanShowAutofillUi()) {
     return {TriggerOutcome::kCannotShowAutofillUi, {}};
   }
-  return {TriggerOutcome::kShown, std::move(cards_to_suggest)};
+
+  // Create a vector of credit card objects from the vector of pointers to
+  // credit cards.
+  std::vector<CreditCard> cards_array;
+  cards_array.reserve(cards_to_suggest.size());
+  for (const CreditCard* card : cards_to_suggest) {
+    cards_array.push_back(*card);
+  }
+  return {TriggerOutcome::kShown, std::move(cards_array)};
 }
 
 void TouchToFillDelegateImpl::SetShouldSuppressKeyboard(bool suppress) {
