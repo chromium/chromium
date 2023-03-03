@@ -178,8 +178,6 @@ bool IsSvcSupported(IMFActivate* activate) {
   // More info: https://crbug.com/1253748
   return false;
 #else
-  // crbug.com/1350257
-  TRACE_EVENT0("catan_investigation", "IsSvcSupported");
   Microsoft::WRL::ComPtr<IMFTransform> encoder;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
   HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));

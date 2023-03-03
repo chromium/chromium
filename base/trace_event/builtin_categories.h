@@ -60,7 +60,6 @@
   X("cast.mdns")                                                         \
   X("cast.mdns.socket")                                                  \
   X("cast.stream")                                                       \
-  X("catan_investigation")                                               \
   X("cc")                                                                \
   X("cc.debug")                                                          \
   X("cdp.perf")                                                          \
