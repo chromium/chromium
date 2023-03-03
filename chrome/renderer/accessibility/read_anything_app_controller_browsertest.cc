@@ -53,6 +53,8 @@ class MockReadAnythingPageHandler : public read_anything::mojom::PageHandler {
   mojo::Receiver<read_anything::mojom::PageHandler> receiver_{this};
 };
 
+// TODO(b/1266555): Surface private members needed for tests from the
+// controller more consistently.
 class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
  public:
   ReadAnythingAppControllerTest() = default;
@@ -157,7 +159,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   int EndOffset() { return controller_->EndOffset(); }
 
   bool DisplayNodeIdsContains(ui::AXNodeID ax_node_id) {
-    return base::Contains(controller_->display_node_ids_, ax_node_id);
+    return base::Contains(controller_->model_.display_node_ids(), ax_node_id);
   }
 
   std::string FontName() { return controller_->FontName(); }

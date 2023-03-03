@@ -221,19 +221,22 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
   snapshot.has_tree_data = true;
   snapshot.tree_data = ax_tree_data;
   gin::Dictionary v8_snapshot_dict(isolate);
-  if (!gin::ConvertFromV8(isolate, v8_snapshot_lite, &v8_snapshot_dict))
+  if (!gin::ConvertFromV8(isolate, v8_snapshot_lite, &v8_snapshot_dict)) {
     return snapshot;
+  }
   SetAXTreeUpdateRootId(isolate, &v8_snapshot_dict, &snapshot);
 
   v8::Local<v8::Value> v8_nodes;
   v8_snapshot_dict.Get("nodes", &v8_nodes);
   std::vector<v8::Local<v8::Value>> v8_nodes_vector;
-  if (!gin::ConvertFromV8(isolate, v8_nodes, &v8_nodes_vector))
+  if (!gin::ConvertFromV8(isolate, v8_nodes, &v8_nodes_vector)) {
     return snapshot;
+  }
   for (v8::Local<v8::Value> v8_node : v8_nodes_vector) {
     gin::Dictionary v8_node_dict(isolate);
-    if (!gin::ConvertFromV8(isolate, v8_node, &v8_node_dict))
+    if (!gin::ConvertFromV8(isolate, v8_node, &v8_node_dict)) {
       continue;
+    }
     ui::AXNodeData ax_node_data;
     SetAXNodeDataId(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataRole(isolate, &v8_node_dict, &ax_node_data);
@@ -250,8 +253,9 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
   v8::Local<v8::Value> v8_selection;
   v8_snapshot_dict.Get("selection", &v8_selection);
   gin::Dictionary v8_selection_dict(isolate);
-  if (!gin::ConvertFromV8(isolate, v8_selection, &v8_selection_dict))
+  if (!gin::ConvertFromV8(isolate, v8_selection, &v8_selection_dict)) {
     return snapshot;
+  }
   SetSelectionAnchorObjectId(isolate, &v8_selection_dict, &snapshot.tree_data);
   SetSelectionFocusObjectId(isolate, &v8_selection_dict, &snapshot.tree_data);
   SetSelectionAnchorOffset(isolate, &v8_selection_dict, &snapshot.tree_data);
@@ -273,8 +277,9 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
       render_frame->GetWebFrame()->MainWorldScriptContext();
-  if (context.IsEmpty())
+  if (context.IsEmpty()) {
     return nullptr;
+  }
   v8::MicrotasksScope microtask_scope(isolate, context->GetMicrotaskQueue(),
                                       v8::MicrotasksScope::kDoNotRunMicrotasks);
 
@@ -284,8 +289,9 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
       new ReadAnythingAppController(render_frame);
   gin::Handle<ReadAnythingAppController> handle =
       gin::CreateHandle(isolate, controller);
-  if (handle.IsEmpty())
+  if (handle.IsEmpty()) {
     return nullptr;
+  }
 
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
@@ -436,9 +442,10 @@ void ReadAnythingAppController::OnAtomicUpdateFinished(
         break;
       case NODE_REPARENTED:
       case SUBTREE_REPARENTED:
-        if (base::Contains(content_node_ids_, change.node->id())) {
+        if (base::Contains(model_.content_node_ids(), change.node->id())) {
           need_to_distill = true;
-        } else if (base::Contains(display_node_ids_, change.node->id())) {
+        } else if (base::Contains(model_.display_node_ids(),
+                                  change.node->id())) {
           need_to_draw = true;
         }
         break;
@@ -469,9 +476,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Reset state.
-  display_node_ids_.clear();
-  model_.Reset();
-  content_node_ids_ = content_node_ids;
+  model_.Reset(content_node_ids);
 
   // Return early if any of the following scenarios occurred while waiting for
   // distillation to complete:
@@ -488,7 +493,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     return;
   }
   model_.ResetSelection();
-  if (!content_node_ids_.empty()) {
+  if (!model_.content_node_ids().empty()) {
     // If there are content_node_ids, this means the AXTree was successfully
     // distilled. Post-process in preparation to display the distilled content.
     PostProcessDistillableAXTree();
@@ -555,7 +560,7 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
       start_node->GetAncestorsCrossingTreeBoundaryAsQueue();
   while (!ancestors.empty()) {
     ui::AXNodeID ancestor_id = ancestors.front()->id();
-    display_node_ids_.insert(ancestor_id);
+    model_.InsertDisplayNode(ancestor_id);
     ancestors.pop();
   }
 
@@ -566,18 +571,18 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
   DCHECK(!end_node->IsIgnored());
   while (next_node != end_node) {
     next_node = next_node->GetNextUnignoredInTreeOrder();
-    display_node_ids_.insert(next_node->id());
+    model_.InsertDisplayNode(next_node->id());
   }
 }
 
 void ReadAnythingAppController::PostProcessDistillableAXTree() {
-  DCHECK(!content_node_ids_.empty());
+  DCHECK(!model_.content_node_ids().empty());
 
   // Display nodes are the nodes which will be displayed by the rendering
   // algorithm of Read Anything app.ts. We wish to create a subtree which
   // stretches down from tree root to every content node and includes the
   // descendants of each content node.
-  for (auto content_node_id : content_node_ids_) {
+  for (auto content_node_id : model_.content_node_ids()) {
     ui::AXNode* content_node = GetAXNode(content_node_id);
     // TODO(crbug.com/1266555): If content_node_id is from a child tree of the
     // active ax tree, GetAXNode will return nullptr. Fix GetAXNode to harvest
@@ -592,8 +597,8 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
 
     // Add all ancestor ids, including the content node itself, which is the
     // first ancestor in the queue. Exit the loop early if an ancestor is
-    // already in display_node_ids_; this means that all of the remaining
-    // ancestors in the queue are also already in display_node_ids.
+    // already in model_.display_node_ids(); this means that all of the
+    // remaining ancestors in the queue are also already in display_node_ids.
     // IsNodeIgnoredForReadAnything removes control nodes from display_node_ids,
     // which is used by GetChildren(). This effectively prunes the tree at the
     // control node. For example, a button and its static text inside will be
@@ -602,11 +607,12 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
         content_node->GetAncestorsCrossingTreeBoundaryAsQueue();
     while (!ancestors.empty()) {
       ui::AXNodeID ancestor_id = ancestors.front()->id();
-      if (base::Contains(display_node_ids_, ancestor_id))
+      if (base::Contains(model_.display_node_ids(), ancestor_id)) {
         break;
+      }
       ancestors.pop();
       if (!IsNodeIgnoredForReadAnything(ancestor_id)) {
-        display_node_ids_.insert(ancestor_id);
+        model_.InsertDisplayNode(ancestor_id);
       }
     }
 
@@ -614,12 +620,13 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
     ui::AXNode* next_node = content_node;
     ui::AXNode* deepest_last_child =
         content_node->GetDeepestLastUnignoredChild();
-    if (!deepest_last_child)
+    if (!deepest_last_child) {
       continue;
+    }
     while (next_node != deepest_last_child) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
       if (!IsNodeIgnoredForReadAnything(next_node->id())) {
-        display_node_ids_.insert(next_node->id());
+        model_.InsertDisplayNode(next_node->id());
       }
     }
   }
@@ -729,7 +736,7 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
   DCHECK(ax_node);
   for (auto it = ax_node->UnignoredChildrenBegin();
        it != ax_node->UnignoredChildrenEnd(); ++it) {
-    if (base::Contains(display_node_ids_, it->id())) {
+    if (base::Contains(model_.display_node_ids(), it->id())) {
       child_ids.push_back(it->id());
     }
   }
@@ -751,8 +758,9 @@ std::string ReadAnythingAppController::GetLanguage(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (NodeIsContentNode(ax_node_id))
+  if (NodeIsContentNode(ax_node_id)) {
     return ax_node->GetLanguage();
+  }
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
 }
 
@@ -766,8 +774,9 @@ std::string ReadAnythingAppController::GetTextContent(
 std::string ReadAnythingAppController::GetTextDirection(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
+  if (!ax_node) {
     return std::string();
+  }
 
   auto text_direction = static_cast<ax::mojom::WritingDirection>(
       ax_node->GetIntAttribute(ax::mojom::IntAttribute::kTextDirection));
@@ -919,5 +928,5 @@ ui::AXNode* ReadAnythingAppController::GetAXNode(
 
 bool ReadAnythingAppController::NodeIsContentNode(
     ui::AXNodeID ax_node_id) const {
-  return base::Contains(content_node_ids_, ax_node_id);
+  return base::Contains(model_.content_node_ids(), ax_node_id);
 }

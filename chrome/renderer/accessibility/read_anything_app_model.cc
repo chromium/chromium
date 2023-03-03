@@ -21,7 +21,14 @@ void ReadAnythingAppModel::OnThemeChanged(
   foreground_color_ = new_theme->foreground_color;
 }
 
-void ReadAnythingAppModel::Reset() {
+void ReadAnythingAppModel::InsertDisplayNode(ui::AXNodeID node) {
+  display_node_ids_.insert(node);
+}
+
+void ReadAnythingAppModel::Reset(
+    const std::vector<ui::AXNodeID>& content_node_ids) {
+  content_node_ids_ = content_node_ids;
+  display_node_ids_.clear();
   start_node_id_ = ui::kInvalidAXNodeID;
   end_node_id_ = ui::kInvalidAXNodeID;
   start_offset_ = -1;
