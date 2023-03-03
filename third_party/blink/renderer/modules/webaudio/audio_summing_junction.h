@@ -75,7 +75,7 @@ class AudioSummingJunction {
   // These raw pointers are safe. Owner AudioNodes of these AudioNodeOutputs
   // manage their lifetime, and AudioNode::dispose() disconnects all of
   // connections.
-  HashSet<AudioNodeOutput*> outputs_;
+  HashSet<AudioNodeOutput*, WTF::MemberHashRecordReplayRegisteredPointerId<AudioNodeOutput>> outputs_;
 
   // `rendering_outputs_` is a copy of `outputs_` which will never be modified
   // during the graph rendering on the audio thread.  This is the list which

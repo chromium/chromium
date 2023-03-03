@@ -94,7 +94,7 @@ class MODULES_EXPORT AudioNodeInput final : public AudioSummingJunction {
   // These raw pointers are safe. Owner AudioNodes of these AudioNodeOutputs
   // manage their lifetime, and AudioNode::dispose() disconnects all of
   // connections.
-  HashSet<AudioNodeOutput*> disabled_outputs_;
+  HashSet<AudioNodeOutput*, WTF::MemberHashRecordReplayRegisteredPointerId<AudioNodeOutput>> disabled_outputs_;
 
   // Called from context's audio thread.
   scoped_refptr<AudioBus> InternalSummingBus();

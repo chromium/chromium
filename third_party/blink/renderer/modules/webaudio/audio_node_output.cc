@@ -41,6 +41,7 @@ AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
       number_of_channels_(number_of_channels),
       desired_number_of_channels_(number_of_channels) {
   DCHECK_LE(number_of_channels, BaseAudioContext::MaxNumberOfChannels());
+  recordreplay::RegisterPointer("AudioNodeOutput", this);
 
   internal_bus_ = AudioBus::Create(
       number_of_channels, GetDeferredTaskHandler().RenderQuantumFrames());
