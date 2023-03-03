@@ -151,7 +151,6 @@ void ContentIndexDatabase::AddEntry(
   if (blocked_origins_.count(origin)) {
     // TODO(crbug.com/973844): Does this need a more specific error?
     std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
-    content_index::RecordRegistrationBlocked(description->category);
     return;
   }
 
@@ -228,7 +227,6 @@ void ContentIndexDatabase::DidAddEntry(
     ContentIndexEntry entry,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content_index::RecordDatabaseOperationStatus("Add", status);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
@@ -284,7 +282,6 @@ void ContentIndexDatabase::DidDeleteEntry(
     blink::mojom::ContentIndexService::DeleteCallback callback,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content_index::RecordDatabaseOperationStatus("Delete", status);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
@@ -326,7 +323,6 @@ void ContentIndexDatabase::DidGetDescriptions(
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content_index::RecordDatabaseOperationStatus("GetDescriptions", status);
 
   if (status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
     std::move(callback).Run(blink::mojom::ContentIndexError::NONE,
@@ -357,8 +353,7 @@ void ContentIndexDatabase::DidGetDescriptions(
           service_worker_registration_id,
           {EntryKey(entry.description().id()),
            IconsKey(entry.description().id())},
-          base::BindOnce(&content_index::RecordDatabaseOperationStatus,
-                         "ClearCorruptedData"));
+          base::DoNothing());
       continue;
     }
 
@@ -388,8 +383,6 @@ void ContentIndexDatabase::DidGetSerializedIcons(
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  content_index::RecordDatabaseOperationStatus("GetIcon", status);
 
   if (status != blink::ServiceWorkerStatusCode::kOk || data.empty()) {
     std::move(callback).Run({});
@@ -453,7 +446,6 @@ void ContentIndexDatabase::DidGetEntries(
     const std::vector<std::pair<int64_t, std::string>>& user_data,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content_index::RecordDatabaseOperationStatus("GetAllEntries", status);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR,
@@ -514,7 +506,6 @@ void ContentIndexDatabase::DidGetEntry(
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content_index::RecordDatabaseOperationStatus("GetEntry", status);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(absl::nullopt);
@@ -532,8 +523,7 @@ void ContentIndexDatabase::ClearServiceWorkerDataOnCorruption(
 
   service_worker_context_->ClearRegistrationUserDataByKeyPrefixes(
       service_worker_registration_id, {kEntryPrefix, kIconPrefix},
-      base::BindOnce(&content_index::RecordDatabaseOperationStatus,
-                     "ClearCorruptedData"));
+      base::DoNothing());
 }
 
 void ContentIndexDatabase::DeleteItem(int64_t service_worker_registration_id,

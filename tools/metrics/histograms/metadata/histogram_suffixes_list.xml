@@ -1052,17 +1052,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.PathValidationSuccess"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContentIndexDatabaseTask" separator=".">
-  <suffix name="Add" label="Register content"/>
-  <suffix name="ClearCorruptedData" label="Clear data in SW"/>
-  <suffix name="Delete" label="Delete content"/>
-  <suffix name="GetAllEntries" label="Get all entries"/>
-  <suffix name="GetDescriptions" label="Get registered content"/>
-  <suffix name="GetEntry" label="Get a specific entry"/>
-  <suffix name="GetIcon" label="Get content icon"/>
-  <affected-histogram name="ContentIndex.Database"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContentIndexDispatchPhase" separator=".">
   <suffix name="Dispatch" label="Dispatch Service Worker event"/>
   <suffix name="Find" label="Find Service Worker"/>

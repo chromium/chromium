@@ -14,19 +14,10 @@
 namespace content {
 namespace content_index {
 
-// Records the result of DB operation identified by |name|.
-// |name| must be one of ContentIndexDatabaseTask.
-void RecordDatabaseOperationStatus(const std::string& name,
-                                   blink::ServiceWorkerStatusCode status);
-
 // Records the status of dispatching the `contentdelete` event.
 // |phase| must be one of ContentIndexDispatchPhase.
 void RecordDisptachStatus(const std::string& phase,
                           blink::ServiceWorkerStatusCode status);
-
-// Records the category of a blocked entry.
-void RecordRegistrationBlocked(blink::mojom::ContentCategory category);
-
 }  // namespace content_index
 }  // namespace content
 

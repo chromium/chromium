@@ -9,19 +9,10 @@
 namespace content {
 namespace content_index {
 
-void RecordDatabaseOperationStatus(const std::string& name,
-                                   blink::ServiceWorkerStatusCode status) {
-  base::UmaHistogramEnumeration("ContentIndex.Database." + name, status);
-}
-
 void RecordDisptachStatus(const std::string& phase,
                           blink::ServiceWorkerStatusCode status_code) {
   base::UmaHistogramEnumeration("ContentIndex.ContentDeleteEvent." + phase,
                                 status_code);
-}
-
-void RecordRegistrationBlocked(blink::mojom::ContentCategory category) {
-  base::UmaHistogramEnumeration("ContentIndex.RegistrationBlocked", category);
 }
 
 }  // namespace content_index
