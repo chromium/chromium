@@ -2339,6 +2339,7 @@ static_library("browser") {
     "//components/sync",
     "//components/sync_bookmarks",
     "//components/sync_preferences",
+    "//components/sync_preferences:common_syncable_prefs_database",
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tracing:background_tracing_metrics_provider",

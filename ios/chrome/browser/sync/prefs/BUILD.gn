@@ -11,5 +11,6 @@ source_set("prefs") {
   deps = [
     "//base",
     "//components/sync_preferences",
+    "//components/sync_preferences:common_syncable_prefs_database",
   ]
 }

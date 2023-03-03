@@ -9,6 +9,9 @@
 
 namespace sync_preferences {
 
+// Should be used by tests.
+extern const char kSyncablePrefForTesting[];
+
 // This class provides an implementation for SyncablePrefsDatabase for common
 // syncable preferences, i.e. preferences which are shared between all
 // platforms.
