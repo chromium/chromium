@@ -1172,22 +1172,6 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
     DigestAlgorithm tbs_algorithm;
   };
 
-  // On some platforms trying to import a certificate with mismatched signature
-  // will fail. Consequently the rest of the tests can't be performed.
-  [[nodiscard]] bool SupportsImportingMismatchedAlgorithms() const {
-#if BUILDFLAG(IS_IOS)
-    LOG(INFO) << "Skipping test on iOS because certs with mismatched "
-                 "algorithms cannot be imported";
-    return false;
-#elif BUILDFLAG(IS_MAC)
-    LOG(INFO) << "Skipping test on macOS >= 10.12 because certs with "
-                 "mismatched algorithms cannot be imported";
-    return false;
-#else
-    return true;
-#endif
-  }
-
   // Shorthand for VerifyChain() where only the leaf's parameters need
   // to be specified.
   [[nodiscard]] int VerifyLeaf(const CertParams& leaf_params) {
@@ -1421,9 +1405,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha256) {
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({DigestAlgorithm::Sha1, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1433,9 +1414,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha256) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha1) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1445,9 +1423,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha1) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        ?
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Unknown) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({DigestAlgorithm::Sha256, kUnknownDigestAlgorithm});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1457,9 +1432,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Unknown) {
 //  Certificate.signatureAlgorithm:  ?
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafUnknownSha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({kUnknownDigestAlgorithm, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1469,9 +1441,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafUnknownSha256) {
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha1Sha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyIntermediate({DigestAlgorithm::Sha1, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1481,9 +1450,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha1Sha256) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha256Sha1) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyIntermediate({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1493,9 +1459,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha256Sha1) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootSha256Sha1) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyRoot({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsOk());
 }
@@ -1505,9 +1468,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootSha256Sha1) {
 //  Certificate.signatureAlgorithm:  ?
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownSha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyRoot({kUnknownDigestAlgorithm, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsOk());
 }
