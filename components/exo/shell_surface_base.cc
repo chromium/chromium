@@ -1440,8 +1440,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
 
   // Make shell surface a transient child if |parent_| has been set and
   // container_ isn't specified.
-  aura::Window* root_window =
-      WMHelper::GetInstance()->GetRootWindowForNewWindows();
+  aura::Window* root_window = ash::Shell::GetRootWindowForNewWindows();
   if (ash::desks_util::IsDeskContainerId(container_)) {
     DCHECK_EQ(ash::desks_util::GetActiveDeskContainerId(), container_);
     if (parent_)

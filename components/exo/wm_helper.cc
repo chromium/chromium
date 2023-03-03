@@ -215,10 +215,6 @@ aura::Window* WMHelper::GetFocusedWindow() const {
   return focus_client->GetFocusedWindow();
 }
 
-aura::Window* WMHelper::GetRootWindowForNewWindows() const {
-  return ash::Shell::GetRootWindowForNewWindows();
-}
-
 aura::client::CursorClient* WMHelper::GetCursorClient() {
   return aura::client::GetCursorClient(ash::Shell::GetPrimaryRootWindow());
 }
