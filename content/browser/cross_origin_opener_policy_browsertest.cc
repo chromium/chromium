@@ -123,6 +123,21 @@ CrossOriginIsolatedCrossOriginRedirectHandler(
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
+CoopAndCspSandboxRedirectHandler(const net::test_server::HttpRequest& request) {
+  std::string dest =
+      base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+  net::test_server::RequestQuery query =
+      net::test_server::ParseQuery(request.GetURL());
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HttpStatusCode::HTTP_FOUND);
+  http_response->AddCustomHeader("Location", dest);
+  http_response->AddCustomHeader("Cross-Origin-Opener-Policy", "same-origin");
+  http_response->AddCustomHeader("Content-Security-Policy", "sandbox");
+  return http_response;
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
 RedirectToTargetOnSecondNavigation(
     unsigned int& navigation_counter,
     const net::test_server::HttpRequest& request) {
@@ -219,6 +234,10 @@ class CrossOriginOpenerPolicyBrowserTest
         &net::test_server::HandlePrefixedRequest,
         "/redirect-with-coop-coep-headers",
         base::BindRepeating(CrossOriginIsolatedCrossOriginRedirectHandler)));
+    https_server_.RegisterDefaultHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/redirect-with-coop-and-csp-headers",
+        base::BindRepeating(CoopAndCspSandboxRedirectHandler)));
 
     unsigned int navigation_counter = 0;
     https_server_.RegisterDefaultHandler(base::BindRepeating(
@@ -704,19 +723,21 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_FALSE(second_popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
+// Verify that a opening a popup to a COOP page, with sandbox flags inherited
+// from the initiator ends up as an error page.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       NetworkErrorOnSandboxedPopups) {
-  GURL starting_page(https_server()->GetURL(
-      "a.test", "/cross-origin-opener-policy_sandbox_popup.html"));
-  GURL openee_url = https_server()->GetURL(
+                       SandboxViaInheritanceWithCoop) {
+  GURL main_page_url = https_server()->GetURL(
+      "a.test", "/cross-origin-opener-policy_sandbox_popup.html");
+  GURL coop_url = https_server()->GetURL(
       "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin");
-  EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
+  ASSERT_TRUE(NavigateToURL(shell(), main_page_url));
   ShellAddedObserver shell_observer;
   RenderFrameHostImpl* iframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
 
-  EXPECT_TRUE(ExecJs(iframe_rfh, JsReplace("window.open($1);", openee_url)));
+  ASSERT_TRUE(ExecJs(iframe_rfh, JsReplace("window.open($1);", coop_url)));
 
   auto* popup_webcontents =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
@@ -727,22 +748,206 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       PAGE_TYPE_ERROR);
 }
 
+// Verify that a navigation toward a COOP page, with sandbox flags inherited
+// from the initiator ends up as an error page.
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       NoNetworkErrorOnSandboxedDocuments) {
-  GURL starting_page(https_server()->GetURL(
-      "a.test", "/set-header?Content-Security-Policy: sandbox allow-scripts"));
-  EXPECT_TRUE(NavigateToURL(shell(), starting_page));
-  EXPECT_NE(current_frame_host()->active_sandbox_flags(),
-            network::mojom::WebSandboxFlags::kNone)
-      << "Document should be sandboxed.";
-
-  GURL next_page = https_server()->GetURL(
+                       SandboxViaInheritanceNavigationsToCoop) {
+  GURL main_page_url = https_server()->GetURL(
+      "a.test", "/cross-origin-opener-policy_sandbox_popup.html");
+  GURL coop_url = https_server()->GetURL(
       "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  GURL non_coop_url = https_server()->GetURL("a.test", "/title1.html");
 
-  EXPECT_TRUE(NavigateToURL(shell(), next_page));
+  ASSERT_TRUE(NavigateToURL(shell(), main_page_url));
+  ShellAddedObserver shell_observer;
+  RenderFrameHostImpl* iframe_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  ASSERT_TRUE(ExecJs(iframe_rfh, JsReplace("window.open($1);", non_coop_url)));
+
+  auto* popup_webcontents =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  WaitForLoadStop(popup_webcontents);
+  ASSERT_NE(popup_webcontents->GetPrimaryMainFrame()->active_sandbox_flags(),
+            network::mojom::WebSandboxFlags::kNone);
+
+  EXPECT_FALSE(NavigateToURL(popup_webcontents, coop_url));
+  EXPECT_EQ(
+      popup_webcontents->GetController().GetLastCommittedEntry()->GetPageType(),
+      PAGE_TYPE_ERROR);
+}
+
+// Verify that a document setting COOP can also set sandbox via CSP.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       SandboxViaCspWithCoop) {
+  GURL coop_and_csp_url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Content-Security-Policy: sandbox");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_and_csp_url));
   EXPECT_EQ(
       web_contents()->GetController().GetLastCommittedEntry()->GetPageType(),
       PAGE_TYPE_NORMAL);
+  ASSERT_EQ(current_frame_host()->active_sandbox_flags(),
+            network::mojom::WebSandboxFlags::kAll);
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->cross_origin_opener_policy(),
+            CoopSameOrigin());
+}
+
+// Verify that navigating from a document sandboxed via CSP to a COOP document,
+// and vice versa, does not end up as an error page.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       SandboxViaCspNavigationsToCoop) {
+  GURL csp_url(https_server()->GetURL(
+      "a.test", "/set-header?Content-Security-Policy: sandbox"));
+  GURL coop_url = https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+
+  ASSERT_TRUE(NavigateToURL(shell(), csp_url));
+  ASSERT_EQ(current_frame_host()->active_sandbox_flags(),
+            network::mojom::WebSandboxFlags::kAll);
+
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(
+      web_contents()->GetController().GetLastCommittedEntry()->GetPageType(),
+      PAGE_TYPE_NORMAL);
+
+  EXPECT_TRUE(NavigateToURL(shell(), csp_url));
+  EXPECT_EQ(
+      web_contents()->GetController().GetLastCommittedEntry()->GetPageType(),
+      PAGE_TYPE_NORMAL);
+}
+
+// Verify that CSP sandbox, which makes the origin opaque, is taken into account
+// for the COOP enforcement of the final response.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       SandboxViaCspOpaqueOriginForResponse) {
+  GURL coop_url = https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  GURL coop_and_csp_url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Content-Security-Policy: sandbox");
+
+  // Start on a page that sets COOP: same-origin.
+  ASSERT_TRUE(NavigateToURL(shell(), coop_url));
+  scoped_refptr<SiteInstance> coop_site_instance =
+      current_frame_host()->GetSiteInstance();
+
+  // We want to figure out if a BrowsingInstance swap happens because of COOP.
+  // To prevent some other types of swaps, such as proactive swaps, we do the
+  // navigations in a popup.
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(
+      ExecJs(current_frame_host(), JsReplace("window.open($1);", coop_url)));
+  auto* popup_webcontents =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  WaitForLoadStop(popup_webcontents);
+  RenderFrameHostImpl* popup_rfh = popup_webcontents->GetPrimaryMainFrame();
+  ASSERT_EQ(popup_rfh->GetSiteInstance(), coop_site_instance.get());
+
+  // Navigate to a same-origin COOP page that sets sandboxing via CSP. The popup
+  // should be sandboxed and have an opaque origin.
+  ASSERT_TRUE(NavigateToURL(popup_webcontents, coop_and_csp_url));
+  scoped_refptr<SiteInstance> coop_and_csp_site_instance =
+      popup_webcontents->GetPrimaryMainFrame()->GetSiteInstance();
+  ASSERT_EQ(popup_webcontents->GetPrimaryMainFrame()->active_sandbox_flags(),
+            network::mojom::WebSandboxFlags::kAll);
+  EXPECT_FALSE(coop_site_instance->IsRelatedSiteInstance(
+      coop_and_csp_site_instance.get()));
+
+  // Navigate again to the COOP+CSP page. The same should be true in the other
+  // direction.
+  ASSERT_TRUE(NavigateToURL(popup_webcontents, coop_and_csp_url));
+  scoped_refptr<SiteInstance> final_coop_site_instance =
+      popup_webcontents->GetPrimaryMainFrame()->GetSiteInstance();
+  EXPECT_FALSE(coop_and_csp_site_instance->IsRelatedSiteInstance(
+      final_coop_site_instance.get()));
+}
+
+// Verify that CSP sandbox, which makes the origin opaque, is not taken into
+// account for the COOP enforcement of the final response.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       SandboxViaCspNonOpaqueOriginForRedirect) {
+  GURL coop_url = https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  GURL coop_and_csp_redirect_url = https_server()->GetURL(
+      "a.test", "/redirect-with-coop-and-csp-headers?" + coop_url.spec());
+
+  // Start on a page that sets COOP: same-origin.
+  ASSERT_TRUE(NavigateToURL(shell(), coop_url));
+  scoped_refptr<SiteInstance> coop_site_instance =
+      current_frame_host()->GetSiteInstance();
+
+  // We want to figure out if a BrowsingInstance swap happens because of COOP.
+  // To prevent some other types of swaps, such as proactive swaps, we do the
+  // navigations in a popup.
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(
+      ExecJs(current_frame_host(), JsReplace("window.open($1);", coop_url)));
+  auto* popup_webcontents =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  WaitForLoadStop(popup_webcontents);
+  RenderFrameHostImpl* popup_rfh = popup_webcontents->GetPrimaryMainFrame();
+  ASSERT_EQ(popup_rfh->GetSiteInstance(), coop_site_instance.get());
+
+  // Navigate to a same-origin redirection url, that sets COOP and sandboxing
+  // via CSP. It then redirects to a same-origin COOP page without CSP.
+  ASSERT_TRUE(
+      NavigateToURL(popup_webcontents, coop_and_csp_redirect_url, coop_url));
+  scoped_refptr<SiteInstance> post_redirect_site_instance =
+      popup_webcontents->GetPrimaryMainFrame()->GetSiteInstance();
+  ASSERT_EQ(popup_webcontents->GetPrimaryMainFrame()->active_sandbox_flags(),
+            network::mojom::WebSandboxFlags::kNone);
+
+  // No BrowsingInstance swap should have happened.
+  EXPECT_TRUE(coop_site_instance->IsRelatedSiteInstance(
+      post_redirect_site_instance.get()));
+}
+
+// Verify that a document setting COOP + COEP and CSP: sandbox cannot live in
+// the same process as a document setting COOP + COEP with the same (non-opaque)
+// origin.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       SandboxViaCspOpaqueOriginForIsolation) {
+  GURL coi_url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  GURL coi_and_csp_url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp&"
+                             "Content-Security-Policy: sandbox");
+
+  // Start on the non opaque page, that does not set CSP: sandbox.
+  ASSERT_TRUE(NavigateToURL(shell(), coi_url));
+  RenderFrameHostImpl* main_page_rfh = current_frame_host();
+
+  // Open a popup with the same characteristics, but with CSP: sandbox.
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(
+      ExecJs(main_page_rfh, JsReplace("window.open($1)", coi_and_csp_url)));
+  WebContents* popup_webcontents = shell_observer.GetShell()->web_contents();
+  WaitForLoadStop(popup_webcontents);
+  RenderFrameHostImpl* popup_rfh =
+      static_cast<WebContentsImpl*>(popup_webcontents)->GetPrimaryMainFrame();
+  ASSERT_EQ(popup_rfh->active_sandbox_flags(),
+            network::mojom::WebSandboxFlags::kAll);
+  ASSERT_NE(main_page_rfh->GetLastCommittedOrigin(),
+            popup_rfh->GetLastCommittedOrigin());
+  ASSERT_TRUE(main_page_rfh->GetSiteInstance()->IsCrossOriginIsolated());
+  ASSERT_TRUE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
+
+  // They should be in different BrowsingInstances and processes.
+  EXPECT_FALSE(main_page_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  EXPECT_NE(main_page_rfh->GetSiteInstance()->GetProcess(),
+            popup_rfh->GetSiteInstance()->GetProcess());
 }
 
 class CrossOriginPolicyHeadersObserver : public WebContentsObserver {
@@ -1749,110 +1954,6 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_EQ("", EvalJs(popup_frame_host, "window.name"));
     popup->Close();
   }
-}
-
-// Try to host into the same cross-origin isolated process, two cross-origin
-// documents. The second's response sets CSP:sandbox, so its origin is opaque
-// and derived from the first.
-//
-// Variants:
-// 1. CrossOriginIsolatedOpeneeCspSandbox
-// 2. CrossOriginIsolatedOpeneeOpenerSandbox
-IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       CrossOriginIsolatedWithOpeneeCspSandbox) {
-  GURL opener_url =
-      https_server()->GetURL("a.test",
-                             "/set-header?"
-                             "Cross-Origin-Opener-Policy: same-origin&"
-                             "Cross-Origin-Embedder-Policy: require-corp");
-  GURL openee_url =
-      https_server()->GetURL("a.test",
-                             "/set-header?"
-                             "Cross-Origin-Opener-Policy: same-origin&"
-                             "Cross-Origin-Embedder-Policy: require-corp&"
-                             "Content-Security-Policy: sandbox");
-
-  // Load the first window.
-  EXPECT_TRUE(NavigateToURL(shell(), opener_url));
-  RenderFrameHostImpl* opener_current_main_document = current_frame_host();
-
-  // Load the second window.
-  ShellAddedObserver shell_observer;
-  EXPECT_TRUE(
-      ExecJs(current_frame_host(), JsReplace("window.open($1)", openee_url)));
-  WebContents* popup = shell_observer.GetShell()->web_contents();
-  WaitForLoadStop(popup);
-
-  RenderFrameHostImpl* openee_current_main_document =
-      static_cast<WebContentsImpl*>(popup)->GetPrimaryMainFrame();
-
-  // Those documents aren't error pages.
-  EXPECT_EQ(opener_current_main_document->GetLastCommittedURL(), opener_url);
-  EXPECT_EQ(openee_current_main_document->GetLastCommittedURL(), openee_url);
-  EXPECT_EQ(opener_current_main_document->last_http_status_code(), 200);
-  EXPECT_EQ(openee_current_main_document->last_http_status_code(), 200);
-
-  // We have two main documents in different cross-origin isolated process.
-  EXPECT_NE(opener_current_main_document->GetLastCommittedOrigin(),
-            openee_current_main_document->GetLastCommittedOrigin());
-  EXPECT_NE(opener_current_main_document->GetProcess(),
-            openee_current_main_document->GetProcess());
-  EXPECT_NE(opener_current_main_document->GetSiteInstance(),
-            openee_current_main_document->GetSiteInstance());
-
-  EXPECT_TRUE(
-      opener_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
-  EXPECT_TRUE(
-      openee_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
-}
-
-// Variants:
-// 1. CrossOriginIsolatedOpeneeCspSandbox
-// 2. CrossOriginIsolatedOpeneeOpenerSandbox
-IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       CrossOriginIsolatedOpeneeOpenerSandbox) {
-  // The URL used by both the openee and the opener.
-  GURL url = https_server()->GetURL(
-      "a.test",
-      "/set-header?"
-      "Cross-Origin-Opener-Policy: same-origin&"
-      "Cross-Origin-Embedder-Policy: require-corp&"
-      "Content-Security-Policy: sandbox allow-scripts allow-popups");
-
-  // Load the first window.
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  RenderFrameHostImpl* opener_current_main_document = current_frame_host();
-
-  // Load the second window.
-  ShellAddedObserver shell_observer;
-  EXPECT_TRUE(ExecJs(current_frame_host(), JsReplace("window.open($1)", url)));
-  WebContents* popup = shell_observer.GetShell()->web_contents();
-  WaitForLoadStop(popup);
-
-  RenderFrameHostImpl* openee_current_main_document =
-      static_cast<WebContentsImpl*>(popup)->GetPrimaryMainFrame();
-
-  // Popups with a sandboxing flag, inherited from their opener, are not
-  // allowed to navigate to a document with a Cross-Origin-Opener-Policy that
-  // is not "unsafe-none". As a result, the navigation in the popup ended up
-  // loading an error document.
-
-  EXPECT_EQ(opener_current_main_document->GetLastCommittedURL(), url);
-  EXPECT_EQ(openee_current_main_document->GetLastCommittedURL(), url);
-  EXPECT_EQ(opener_current_main_document->last_http_status_code(), 200);
-  EXPECT_EQ(openee_current_main_document->last_http_status_code(), 0);
-
-  EXPECT_NE(opener_current_main_document->GetLastCommittedOrigin(),
-            openee_current_main_document->GetLastCommittedOrigin());
-  EXPECT_NE(opener_current_main_document->GetProcess(),
-            openee_current_main_document->GetProcess());
-  EXPECT_NE(opener_current_main_document->GetSiteInstance(),
-            openee_current_main_document->GetSiteInstance());
-
-  EXPECT_TRUE(
-      opener_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
-  EXPECT_FALSE(
-      openee_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 // Navigate in between two documents. Check the virtual browsing context group
