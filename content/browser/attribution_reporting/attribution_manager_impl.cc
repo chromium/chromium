@@ -716,23 +716,14 @@ void AttributionManagerImpl::OnReportStored(
 
   scheduler_timer_.MaybeSet(min_new_report_time);
 
-  bool reports_changed = false;
-
   if (result.event_level_status() !=
-      AttributionTrigger::EventLevelResult::kInternalError) {
-    // Sources are changed here because storing an event-level report can
-    // cause sources to reach event-level attribution limit or become
-    // associated with a dedup key.
+          AttributionTrigger::EventLevelResult::kInternalError ||
+      result.aggregatable_status() ==
+          AttributionTrigger::AggregatableResult::kSuccess) {
+    // Sources are changed here because storing an event-level report or
+    // aggregatable report can cause sources to reach event-level attribution
+    // limit or become associated with a dedup key.
     NotifySourcesChanged();
-    reports_changed = true;
-  }
-
-  if (result.aggregatable_status() ==
-      AttributionTrigger::AggregatableResult::kSuccess) {
-    reports_changed = true;
-  }
-
-  if (reports_changed) {
     NotifyReportsChanged();
   }
 
