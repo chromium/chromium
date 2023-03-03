@@ -139,6 +139,9 @@ include_rules = [
 specific_include_rules = {
   ".*_(perf|unit)test\.cc$": [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
+    "+base/allocator/dispatcher/dispatcher.h",
+    "+base/debug/allocation_trace.h",
+    "+base/debug/debugging_buildflags.h",
     "+base/debug/proc_maps_linux.h",
     "+base/system/sys_info.h",
     "+base/test/gtest_util.h",
