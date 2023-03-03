@@ -232,10 +232,6 @@ class EventListenerMap {
                                    const std::string& extension_id,
                                    bool is_for_service_worker,
                                    const std::set<std::string>& event_names);
-  // Similar as above, but applies to extension service workers.
-  void LoadUnfilteredWorkerListeners(content::BrowserContext* browser_context,
-                                     const std::string& extension_id,
-                                     const std::set<std::string>& event_names);
 
   // Adds filtered lazy listeners as described their serialised descriptions.
   // |filtered| contains a map from event names to filters, each pairing

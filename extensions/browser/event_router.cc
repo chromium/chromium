@@ -1284,26 +1284,27 @@ void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
   std::set<std::string> registered_events =
       GetRegisteredEvents(extension->id(), RegisteredEventType::kLazy);
   listeners_.LoadUnfilteredLazyListeners(browser_context, extension->id(),
-                                         false /* is_for_service_worker */,
+                                         /*is_for_service_worker=*/false,
                                          registered_events);
 
   std::set<std::string> registered_worker_events =
       GetRegisteredEvents(extension->id(), RegisteredEventType::kServiceWorker);
-  listeners_.LoadUnfilteredWorkerListeners(browser_context, extension->id(),
-                                           registered_worker_events);
+  listeners_.LoadUnfilteredLazyListeners(browser_context, extension->id(),
+                                         /*is_for_service_worker=*/true,
+                                         registered_worker_events);
 
   const base::Value::Dict* filtered_events =
       GetFilteredEvents(extension->id(), RegisteredEventType::kLazy);
   if (filtered_events)
     listeners_.LoadFilteredLazyListeners(browser_context, extension->id(),
-                                         false /* is_for_service_worker */,
+                                         /*is_for_service_worker=*/false,
                                          *filtered_events);
 
   const base::Value::Dict* filtered_worker_events =
       GetFilteredEvents(extension->id(), RegisteredEventType::kServiceWorker);
   if (filtered_worker_events)
     listeners_.LoadFilteredLazyListeners(browser_context, extension->id(),
-                                         true /* is_for_service_worker */,
+                                         /*is_for_service_worker=*/true,
                                          *filtered_worker_events);
 }
 
