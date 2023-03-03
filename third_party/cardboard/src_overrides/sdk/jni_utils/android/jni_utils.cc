@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "third_party/cardboard/src/jni_utils/android/jni_utils.h"
+#include "third_party/cardboard/src/sdk/jni_utils/android/jni_utils.h"
 
 #include "base/android/jni_android.h"
-#include "third_party/cardboard/src/util/logging.h"
+#include "third_party/cardboard/src/sdk/util/logging.h"
 
 namespace cardboard::jni {
 namespace {
