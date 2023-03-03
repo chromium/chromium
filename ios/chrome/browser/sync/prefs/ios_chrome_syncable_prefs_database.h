@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_PREFS_IOS_CHROME_SYNCABLE_PREFS_DATABASE_H_
 #define IOS_CHROME_BROWSER_SYNC_PREFS_IOS_CHROME_SYNCABLE_PREFS_DATABASE_H_
 
-#include "components/sync_preferences/syncable_prefs_database.h"
-
 #include "components/sync_preferences/common_syncable_prefs_database.h"
+#include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace browser_sync {
 

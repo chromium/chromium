@@ -10,7 +10,11 @@ source_set("prefs") {
   ]
   deps = [
     "//base",
+    "//components/handoff",
     "//components/sync_preferences",
     "//components/sync_preferences:common_syncable_prefs_database",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/voice:prefs",
   ]
 }

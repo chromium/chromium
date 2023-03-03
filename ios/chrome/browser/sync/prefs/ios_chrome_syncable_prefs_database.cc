@@ -6,16 +6,24 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_piece.h"
+#include "components/handoff/pref_names_ios.h"
+#include "ios/chrome/browser/prefs/pref_names.h"
+#include "ios/chrome/browser/voice/voice_search_prefs.h"
 
 namespace browser_sync {
-namespace {
-// iOS specific list of syncable preferences.
-constexpr auto kIOSChromeSyncablePrefsAllowlist =
-    base::MakeFixedFlatSet<base::StringPiece>({"dummy"});
-}  // namespace
 
 bool IOSChromeSyncablePrefsDatabase::IsPreferenceSyncable(
     const std::string& pref_name) const {
+  // iOS specific list of syncable preferences.
+  static const auto kIOSChromeSyncablePrefsAllowlist =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {prefs::kArticlesForYouEnabled, prefs::kContextualSearchEnabled,
+           prefs::kDefaultCharset, prefs::kEnableDoNotTrack,
+           prefs::kIosHandoffToOtherDevices, prefs::kNetworkPredictionSetting,
+           prefs::kNTPContentSuggestionsEnabled,
+           prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
+           prefs::kSearchSuggestEnabled, prefs::kTrackPricesOnTabsEnabled,
+           prefs::kVoiceSearchLocale});
   return kIOSChromeSyncablePrefsAllowlist.count(pref_name) ||
          // Also check if `pref_name` is part of the common set of syncable
          // preferences.
