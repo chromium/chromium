@@ -1080,19 +1080,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Service.Entry.Event"
-    enum="Download.Service.EntryEvent" expires_after="M88">
+    enum="Download.Service.EntryEvent" expires_after="never">
+<!-- expires-never: Monitors download system health. -->
+
   <owner>dtrainor@chromium.org</owner>
-  <summary>An action the download service took on an active download.</summary>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    An action the download service took on an active download. Note that this
+    histogram was expired between M88 and 2023-03-03.
+  </summary>
 </histogram>
 
 <histogram name="Download.Service.Entry.RetryCount" units="attempts"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: Monitors download system health. -->
+
   <owner>dtrainor@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records how many attempts have taken place at the time of a retry for a
     download in the Download Service. This differs from
     Download.Service.Entry.ResumptionCount, which records resumptions not
-    complete restarts.
+    complete restarts. Note that this histogram was expired between M88 and
+    2023-03-03.
   </summary>
 </histogram>
 
@@ -1242,30 +1252,6 @@ chromium-metrics-reviews@google.com.
     functions after being scheduled. The tasks may be aborted or canceled. This
     metric records the status of background tasks when native functions are
     invoked.
-  </summary>
-</histogram>
-
-<histogram name="Download.Service.Upload.EntryNotFound" enum="BooleanHit"
-    expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records if the entry has been deleted for some reason while we are waiting
-    for the client to respond with the upload data.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Download.Service.Upload.HasUploadData"
-    enum="BooleanUpload" expires_after="2021-01-31">
-<!-- Name completed by histogram_suffixes
-     name="Download.Service.Client" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    The download service uses a single code path for both downloading and
-    uploading data. This metric records whether a given request includes upload
-    data. It is recorded upon starting a download or upload, immediately after
-    the client indicates whether the request includes upload data.
   </summary>
 </histogram>
 

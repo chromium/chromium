@@ -13376,11 +13376,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Upgraded"/>
 </enum>
 
-<enum name="BooleanUpload">
-  <int value="0" label="Download"/>
-  <int value="1" label="Upload"/>
-</enum>
-
 <enum name="BooleanUsage">
   <int value="0" label="Not Used"/>
   <int value="1" label="Used"/>

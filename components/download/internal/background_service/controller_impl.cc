@@ -1069,7 +1069,6 @@ void ControllerImpl::OnDownloadReadyToStart(
 
   auto* entry = model_->Get(guid);
   if (!entry) {
-    stats::LogEntryRemovedWhileWaitingForUploadResponse();
     return;
   }
 
@@ -1077,8 +1076,6 @@ void ControllerImpl::OnDownloadReadyToStart(
     entry->has_upload_data = true;
     model_->Update(*entry);
   }
-
-  stats::LogHasUploadData(entry->client, entry->has_upload_data);
 
   auto blockage_status = IsDownloadBlocked(entry);
   if (blockage_status.IsBlocked()) {
