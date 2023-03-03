@@ -254,6 +254,54 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   }
 }
 
+// Tests that an extension requesting site access but not allowed in
+// the button is not shown in the request access button.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       RequestAccessButtonVisibility_ExtensionsNotAllowedInButton) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  // Add two extensions that request access to all urls, and withhold their
+  // site access.
+  auto extension_a =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
+  auto extension_b =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extension_a.get());
+  WithholdHostPermissions(extension_b.get());
+
+  // By default, both extensions should be allowed in the request
+  // access button. However, request access button is not visible because we
+  // haven't navigated to a site yet.
+  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  EXPECT_TRUE(
+      permissions_helper.ShowAccessRequestsInToolbar(extension_a->id()));
+  EXPECT_TRUE(
+      permissions_helper.ShowAccessRequestsInToolbar(extension_b->id()));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to an url that both extensions requests access to.
+  const GURL url("http://www.example.com");
+  web_contents_tester->NavigateAndCommit(url);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_EQ(
+      request_access_button()->GetText(),
+      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 2));
+
+  // Disallow extension A in the request access button. Verify only extension A
+  // is visible in the button.
+  permissions_helper.SetShowAccessRequestsInToolbar(extension_a->id(), false);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_EQ(
+      request_access_button()->GetText(),
+      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
+
+  // Disallow extension B in the request access button. Verify button is not
+  // visible anymore.
+  permissions_helper.SetShowAccessRequestsInToolbar(extension_b->id(), false);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
 TEST_F(ExtensionsToolbarControlsUnitTest,
        RequestAccessButton_OnPressedExecuteAction) {
   content::WebContentsTester* web_contents_tester =

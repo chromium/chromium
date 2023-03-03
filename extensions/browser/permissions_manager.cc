@@ -785,4 +785,10 @@ void PermissionsManager::NotifyObserversOfChange() {
     observer.OnUserPermissionsSettingsChanged(GetUserPermissionsSettings());
 }
 
+void PermissionsManager::NotifyShowAccessRequestsInToolbarChanged() {
+  for (auto& observer : observers_) {
+    observer.OnShowAccessRequestsInToolbarChanged();
+  }
+}
+
 }  // namespace extensions

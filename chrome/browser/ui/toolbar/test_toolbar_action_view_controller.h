@@ -35,7 +35,7 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
       content::WebContents* web_contents) const override;
   bool IsEnabled(content::WebContents* web_contents) const override;
   bool IsShowingPopup() const override;
-  bool IsRequestingSiteAccess(
+  bool ShouldShowSiteAccessRequestInToolbar(
       content::WebContents* web_contents) const override;
   void HidePopup() override;
   gfx::NativeView GetPopupNativeView() override;

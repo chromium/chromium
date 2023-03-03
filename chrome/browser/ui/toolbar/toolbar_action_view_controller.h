@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/image/image.h"
 
 namespace content {
 class WebContents;
@@ -132,8 +131,9 @@ class ToolbarActionViewController {
   // Returns whether there is currently a popup visible.
   virtual bool IsShowingPopup() const = 0;
 
-  // Returns whether the action is requesting site access to `web_contents`.
-  virtual bool IsRequestingSiteAccess(
+  // Returns whether the action should show site access requests in the toolbar
+  // for `web_contents`;
+  virtual bool ShouldShowSiteAccessRequestInToolbar(
       content::WebContents* web_contents) const = 0;
 
   // Hides the current popup, if one is visible.

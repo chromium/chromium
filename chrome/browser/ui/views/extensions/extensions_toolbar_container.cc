@@ -591,9 +591,17 @@ void ExtensionsToolbarContainer::OnToolbarPinnedActionsChanged() {
 void ExtensionsToolbarContainer::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
   UpdateControlsVisibility();
-  // TODO(crbug.com/1351778): Update hover card. This will be slightly different
-  // than 'OnToolbarActionUpdated' since site settings update are not tied to a
-  // specific action.
+  // TODO(crbug.com/1351778): Update request access button hover card. This
+  // will be slightly different than 'OnToolbarActionUpdated' since site
+  // settings update are not tied to a specific action.
+}
+
+void ExtensionsToolbarContainer::OnShowAccessRequestsInToolbarChanged() {
+  UpdateControlsVisibility();
+  // TODO(crbug.com/1351778): Update requests access button hover card. This is
+  // tricky because it would need to change the items in the dialog. Another
+  // option is to close the hover card if its shown whenever request access
+  // button is updated.
 }
 
 void ExtensionsToolbarContainer::ReorderViews() {
