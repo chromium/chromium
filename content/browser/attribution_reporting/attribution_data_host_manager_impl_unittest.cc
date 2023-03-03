@@ -85,11 +85,6 @@ using ::testing::Optional;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
-constexpr char kSourceDataHandleStatusMetric[] =
-    "Conversions.SourceDataHandleStatus2";
-constexpr char kTriggerDataHandleStatusMetric[] =
-    "Conversions.TriggerDataHandleStatus2";
-
 constexpr char kRegisterSourceJson[] =
     R"json({"source_event_id":"5","destination":"https://destination.example"})json";
 
@@ -206,8 +201,6 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
                                 1);
   histograms.ExpectTimeBucketCount("Conversions.SourceEligibleDataHostLifeTime",
                                    base::Milliseconds(1), 1);
-  // kSuccess = 0.
-  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 0, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -268,8 +261,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 4,
                                 1);
-  // kSuccess = 0.
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 4);
 }
 
 TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
@@ -340,8 +331,6 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
 
   histograms.ExpectBucketCount("Conversions.RegisteredTriggersPerDataHost", 1,
                                1);
-  // kSuccess = 0.
-  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 0, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -413,10 +402,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectTotalCount("Conversions.RegisteredSourcesPerDataHost", 0);
   histograms.ExpectUniqueSample("Conversions.RegisteredTriggersPerDataHost", 3,
                                 1);
-  // kSuccess = 0.
-  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 0, 3);
-  // kContextError = 1.
-  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -486,10 +471,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectUniqueSample("Conversions.RegisteredSourcesPerDataHost", 3,
                                 1);
   histograms.ExpectTotalCount("Conversions.RegisteredTriggersPerDataHost", 0);
-  // kSuccess = 0.
-  histograms.ExpectUniqueSample(kSourceDataHandleStatusMetric, 0, 3);
-  // kContextError = 1.
-  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
@@ -573,10 +554,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // kRegistered = 0, kProcessed = 3.
   histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 0, 1);
   histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus2", 3, 1);
-
-  // kSuccess = 0, kContextError = 1.
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 2);
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 1, 0);
 
   // kContextMenu = 2.
   histograms.ExpectBucketCount(
@@ -1393,9 +1370,6 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "AttributionDataHost: Not eligible for triggers.");
-
-  // kContextError = 1.
-  histograms.ExpectUniqueSample(kTriggerDataHandleStatusMetric, 1, 1);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

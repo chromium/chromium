@@ -19515,11 +19515,6 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="Report window has passed"/>
 </enum>
 
-<enum name="ConversionDataHandleStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Context error"/>
-</enum>
-
 <enum name="ConversionNavigationDataHostStatus">
   <int value="0" label="Registered"/>
   <int value="1" label="Not found"/>

@@ -67,23 +67,6 @@ void RecordTriggerQueueEvent(TriggerQueueEvent event) {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class DataHandleStatus {
-  kSuccess = 0,
-  kContextError = 1,
-
-  kMaxValue = kContextError,
-};
-
-void RecordSourceDataHandleStatus(DataHandleStatus status) {
-  base::UmaHistogramEnumeration("Conversions.SourceDataHandleStatus2", status);
-}
-
-void RecordTriggerDataHandleStatus(DataHandleStatus status) {
-  base::UmaHistogramEnumeration("Conversions.TriggerDataHandleStatus2", status);
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class NavigationDataHostStatus {
   kRegistered = 0,
   kNotFound = 1,
@@ -482,14 +465,11 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   ReceiverContext& context = receivers_.current_context();
 
   if (context.registration_type() == RegistrationType::kTrigger) {
-    RecordSourceDataHandleStatus(DataHandleStatus::kContextError);
     mojo::ReportBadMessage("AttributionDataHost: Not eligible for sources.");
     return;
   }
 
   context.set_registration_type(RegistrationType::kSource);
-
-  RecordSourceDataHandleStatus(DataHandleStatus::kSuccess);
 
   context.IncrementNumDataRegistered();
 
@@ -520,7 +500,6 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 
   switch (context.registration_type()) {
     case RegistrationType::kSource:
-      RecordTriggerDataHandleStatus(DataHandleStatus::kContextError);
       mojo::ReportBadMessage("AttributionDataHost: Not eligible for triggers.");
       return;
     case RegistrationType::kSourceOrTrigger:
@@ -530,8 +509,6 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     case RegistrationType::kTrigger:
       break;
   }
-
-  RecordTriggerDataHandleStatus(DataHandleStatus::kSuccess);
 
   context.IncrementNumDataRegistered();
 

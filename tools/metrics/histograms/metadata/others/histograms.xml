@@ -3869,18 +3869,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceDataHandleStatus2"
-    enum="ConversionDataHandleStatus" expires_after="M117">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often source data available to the data host manager are
-    handled successfully or dropped and why. Recorded once for each source data
-    available.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.SourceEligibleDataHostLifeTime" units="ms"
     expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -4076,18 +4064,6 @@ chromium-metrics-reviews@google.com.
     Records the status of the second part of an attestation operation which
     processes the private state issuer's signature to generate an attestation
     token.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.TriggerDataHandleStatus2"
-    enum="ConversionDataHandleStatus" expires_after="M117">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often trigger data available to the data host manager are
-    handled successfully or dropped and why. Recorded once for each trigger data
-    available.
   </summary>
 </histogram>
 
