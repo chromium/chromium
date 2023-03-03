@@ -105,6 +105,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/image_service/features.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/lens/buildflags.h"
@@ -5568,6 +5569,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(optimization_guide::features::
                             kExtractRelatedSearchesFromPrefetchedZPSResponse)},
+
+    {"page-image-service-optimization-guide-salient-images",
+     flag_descriptions::kPageImageServiceOptimizationGuideSalientImagesName,
+     flag_descriptions::
+         kPageImageServiceOptimizationGuideSalientImagesDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         image_service::kImageServiceOptimizationGuideSalientImages)},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription,

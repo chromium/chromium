@@ -58824,6 +58824,8 @@ from previous Chrome versions.
   <int value="-1675747412"
       label="TurnOffStreamingMediaCachingOnBattery:enabled"/>
   <int value="-1674868343" label="DlcSettingsUi:enabled"/>
+  <int value="-1673342139"
+      label="ImageServiceOptimizationGuideSalientImages:enabled"/>
   <int value="-1672894214"
       label="AutofillUpstreamAllowAdditionalEmailDomains:disabled"/>
   <int value="-1672160462"
@@ -59516,6 +59518,8 @@ from previous Chrome versions.
   <int value="-1309205592" label="SideSearchDSESupport:disabled"/>
   <int value="-1309066678" label="ServiceWorkerOnUI:enabled"/>
   <int value="-1308600417" label="NewNetErrorPageUI:disabled"/>
+  <int value="-1308390072"
+      label="ImageServiceOptimizationGuideSalientImages:disabled"/>
   <int value="-1308389775" label="PermissionChipGestureSensitive:enabled"/>
   <int value="-1308184869" label="MediaFeedsBackgroundFetching:enabled"/>
   <int value="-1306581260" label="AutofillParsingPatternProvider:enabled"/>

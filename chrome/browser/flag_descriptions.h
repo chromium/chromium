@@ -1342,6 +1342,9 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageEntitiesPageContentAnnotationsName[];
 extern const char kPageEntitiesPageContentAnnotationsDescription[];
 
+extern const char kPageImageServiceOptimizationGuideSalientImagesName[];
+extern const char kPageImageServiceOptimizationGuideSalientImagesDescription[];
+
 extern const char kPageInfoAboutThisSiteNewIconName[];
 extern const char kPageInfoAboutThisSiteNewIconDescription[];
 

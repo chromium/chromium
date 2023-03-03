@@ -2390,6 +2390,12 @@ const char kPageEntitiesPageContentAnnotationsName[] =
 const char kPageEntitiesPageContentAnnotationsDescription[] =
     "Enables annotating the page entities model for each page load on-device.";
 
+const char kPageImageServiceOptimizationGuideSalientImagesName[] =
+    "Page Image Service - Optimization Guide Salient Images";
+const char kPageImageServiceOptimizationGuideSalientImagesDescription[] =
+    "Enables the PageImageService fetching images from the Optimization Guide "
+    "Salient Images source.";
+
 const char kPageInfoAboutThisSiteNewIconName[] = "'About this site' new icon";
 const char kPageInfoAboutThisSiteNewIconDescription[] =
     "Shows the 'About this site' section in the page info UI with a new google "

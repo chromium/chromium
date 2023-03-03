@@ -5580,6 +5580,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "page-image-service-optimization-guide-salient-images",
+    "owners": [ "tommycli", "//components/image_service/OWNERS" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "page-info-about-this-page-description-placeholder",
     "owners": [ "dullweber", "olesiamarukhno@google.com" ],
     "expiry_milestone": 112
