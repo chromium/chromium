@@ -149,6 +149,8 @@ blink_core_sources_css = [
   "css_image_generator_value.h",
   "css_image_set_option_value.cc",
   "css_image_set_option_value.h",
+  "css_image_set_type_value.cc",
+  "css_image_set_type_value.h",
   "css_image_set_value.cc",
   "css_image_set_value.h",
   "css_image_value.cc",

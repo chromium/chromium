@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_type_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
@@ -3485,6 +3486,27 @@ static CSSImageValue* CreateCSSImageValueWithReferrer(
   return image_value;
 }
 
+static CSSImageSetTypeValue* ConsumeImageSetType(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  if (!RuntimeEnabledFeatures::CSSImageSetEnabled() ||
+      range.Peek().FunctionId() != CSSValueID::kType) {
+    return nullptr;
+  }
+
+  CSSParserTokenRange range_copy = range;
+  CSSParserTokenRange args = ConsumeFunction(range_copy);
+
+  auto type = ConsumeUrlOrStringAsStringView(args, context).ToString();
+  if (type.IsNull()) {
+    return nullptr;
+  }
+
+  range = range_copy;
+
+  return MakeGarbageCollected<CSSImageSetTypeValue>(type);
+}
+
 static CSSImageSetOptionValue* ConsumeImageSetOption(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3501,6 +3523,9 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
     return nullptr;
   }
 
+  // Type could appear before or after resolution
+  CSSImageSetTypeValue* type = ConsumeImageSetType(range, context);
+
   CSSNumericLiteralValue* resolution = nullptr;
   if (range.Peek().GetType() == kDimensionToken ||
       !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
@@ -3515,7 +3540,11 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
     }
   }
 
-  return MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution);
+  if (!type) {
+    type = ConsumeImageSetType(range, context);
+  }
+
+  return MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution, type);
 }
 
 static CSSValue* ConsumeImageSet(

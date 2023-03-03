@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
@@ -50,8 +51,12 @@ const CSSNumericLiteralValue* ComputeResolution(
 
 CSSImageSetOptionValue::CSSImageSetOptionValue(
     const CSSValue* image,
-    const CSSNumericLiteralValue* resolution)
-    : CSSValue(kImageSetOptionClass), image_(image), resolution_(resolution) {
+    const CSSNumericLiteralValue* resolution,
+    const CSSImageSetTypeValue* type)
+    : CSSValue(kImageSetOptionClass),
+      image_(image),
+      resolution_(resolution),
+      type_(type) {
   DCHECK(image);
 
   if (!resolution_) {
@@ -91,19 +96,28 @@ double CSSImageSetOptionValue::ComputedResolution() const {
   return resolution_->ComputeDotsPerPixel();
 }
 
+bool CSSImageSetOptionValue::IsSupported() const {
+  return !type_ || type_->IsSupported();
+}
+
 String CSSImageSetOptionValue::CustomCSSText() const {
   StringBuilder result;
 
   result.Append(image_->CssText());
   result.Append(' ');
   result.Append(resolution_->CssText());
+  if (type_) {
+    result.Append(' ');
+    result.Append(type_->CssText());
+  }
 
   return result.ReleaseString();
 }
 
 bool CSSImageSetOptionValue::Equals(const CSSImageSetOptionValue& other) const {
   return base::ValuesEquivalent(image_, other.image_) &&
-         base::ValuesEquivalent(resolution_, other.resolution_);
+         base::ValuesEquivalent(resolution_, other.resolution_) &&
+         base::ValuesEquivalent(type_, other.type_);
 }
 
 CSSImageSetOptionValue* CSSImageSetOptionValue::ComputedCSSValue(
@@ -111,12 +125,13 @@ CSSImageSetOptionValue* CSSImageSetOptionValue::ComputedCSSValue(
     const bool allow_visited_style) const {
   return MakeGarbageCollected<CSSImageSetOptionValue>(
       ComputeImage(image_, style, allow_visited_style),
-      ComputeResolution(resolution_));
+      ComputeResolution(resolution_), type_);
 }
 
 void CSSImageSetOptionValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(image_);
   visitor->Trace(resolution_);
+  visitor->Trace(type_);
 
   CSSValue::TraceAfterDispatch(visitor);
 }

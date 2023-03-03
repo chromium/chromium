@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/style/style_image_set.h"
 
+#include "base/memory/values_equivalent.h"
+
 namespace blink {
 
 StyleImageSet::StyleImageSet(StyleImage* best_fit_image,
@@ -39,16 +41,17 @@ bool StyleImageSet::IsEqual(const StyleImage& other) const {
   const auto* other_image_set = DynamicTo<StyleImageSet>(other);
 
   return other_image_set &&
-         *best_fit_image_ == *other_image_set->best_fit_image_ &&
+         base::ValuesEquivalent(best_fit_image_,
+                                other_image_set->best_fit_image_) &&
          image_set_value_->Equals(*other_image_set->image_set_value_);
 }
 
 WrappedImagePtr StyleImageSet::Data() const {
-  return best_fit_image_->Data();
+  return best_fit_image_ ? best_fit_image_->Data() : nullptr;
 }
 
 ImageResourceContent* StyleImageSet::CachedImage() const {
-  return best_fit_image_->CachedImage();
+  return best_fit_image_ ? best_fit_image_->CachedImage() : nullptr;
 }
 
 CSSValue* StyleImageSet::CssValue() const {
@@ -61,42 +64,52 @@ CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,
 }
 
 bool StyleImageSet::CanRender() const {
-  return best_fit_image_->CanRender();
+  return !best_fit_image_ || best_fit_image_->CanRender();
 }
 
 bool StyleImageSet::IsLoaded() const {
-  return best_fit_image_->IsLoaded();
+  return !best_fit_image_ || best_fit_image_->IsLoaded();
 }
 
 bool StyleImageSet::IsLoading() const {
-  return best_fit_image_->IsLoading();
+  return best_fit_image_ && best_fit_image_->IsLoading();
 }
 
 bool StyleImageSet::ErrorOccurred() const {
-  return best_fit_image_->ErrorOccurred();
+  return best_fit_image_ && best_fit_image_->ErrorOccurred();
 }
 
 bool StyleImageSet::IsAccessAllowed(String& failing_url) const {
-  return best_fit_image_->IsAccessAllowed(failing_url);
+  return !best_fit_image_ || best_fit_image_->IsAccessAllowed(failing_url);
 }
 
 gfx::SizeF StyleImageSet::ImageSize(
     float multiplier,
     const gfx::SizeF& default_object_size,
     RespectImageOrientationEnum respect_orientation) const {
-  return best_fit_image_->ImageSize(multiplier, default_object_size,
-                                    respect_orientation);
+  return best_fit_image_
+             ? best_fit_image_->ImageSize(multiplier, default_object_size,
+                                          respect_orientation)
+             : gfx::SizeF();
 }
 
 bool StyleImageSet::HasIntrinsicSize() const {
-  return best_fit_image_->HasIntrinsicSize();
+  return best_fit_image_ && best_fit_image_->HasIntrinsicSize();
 }
 
 void StyleImageSet::AddClient(ImageResourceObserver* observer) {
+  if (!best_fit_image_) {
+    return;
+  }
+
   best_fit_image_->AddClient(observer);
 }
 
 void StyleImageSet::RemoveClient(ImageResourceObserver* observer) {
+  if (!best_fit_image_) {
+    return;
+  }
+
   best_fit_image_->RemoveClient(observer);
 }
 
@@ -105,22 +118,27 @@ scoped_refptr<Image> StyleImageSet::GetImage(
     const Document& document,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
-  return best_fit_image_->GetImage(image_resource_observer, document, style,
-                                   target_size);
+  return best_fit_image_
+             ? best_fit_image_->GetImage(image_resource_observer, document,
+                                         style, target_size)
+             : nullptr;
 }
 
 float StyleImageSet::ImageScaleFactor() const {
-  return best_fit_image_->ImageScaleFactor();
+  return best_fit_image_ ? best_fit_image_->ImageScaleFactor() : 0.0f;
 }
 
 bool StyleImageSet::KnownToBeOpaque(const Document& document,
                                     const ComputedStyle& computed_style) const {
-  return best_fit_image_->KnownToBeOpaque(document, computed_style);
+  return best_fit_image_ &&
+         best_fit_image_->KnownToBeOpaque(document, computed_style);
 }
 
 RespectImageOrientationEnum StyleImageSet::ForceOrientationIfNecessary(
     RespectImageOrientationEnum default_orientation) const {
-  return best_fit_image_->ForceOrientationIfNecessary(default_orientation);
+  return best_fit_image_
+             ? best_fit_image_->ForceOrientationIfNecessary(default_orientation)
+             : RespectImageOrientationEnum::kDoNotRespectImageOrientation;
 }
 
 void StyleImageSet::Trace(Visitor* visitor) const {

@@ -62,24 +62,33 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
 
   if (options_.empty()) {
     for (const auto& i : *this) {
-      options_.push_back(To<CSSImageSetOptionValue>(i.Get()));
+      auto* option = To<CSSImageSetOptionValue>(i.Get());
+      if (option->IsSupported()) {
+        options_.push_back(option);
+      }
     }
 
-    std::stable_sort(options_.begin(), options_.end(),
-                     [](const CSSImageSetOptionValue* left,
-                        const CSSImageSetOptionValue* right) {
-                       return left->ComputedResolution() <
-                              right->ComputedResolution();
-                     });
+    if (options_.empty()) {
+      // No supported options were identified in the image-set.
+      // As an optimization in order to avoid having to iterate
+      // through the unsupported options on subsequent calls,
+      // nullptr is inserted in the options_ vector.
+      options_.push_back(nullptr);
+    } else {
+      std::stable_sort(options_.begin(), options_.end(),
+                       [](const CSSImageSetOptionValue* left,
+                          const CSSImageSetOptionValue* right) {
+                         return left->ComputedResolution() <
+                                right->ComputedResolution();
+                       });
+    }
   }
 
   for (const auto& option : options_) {
-    if (option->ComputedResolution() >= device_scale_factor) {
+    if (option && option->ComputedResolution() >= device_scale_factor) {
       return option;
     }
   }
-
-  DCHECK(!options_.empty());
 
   return options_.back();
 }
@@ -105,8 +114,10 @@ StyleImage* CSSImageSetValue::CacheImage(
     const CSSImageSetOptionValue* best_option =
         GetBestOption(device_scale_factor);
 
-    StyleImage* style_image = best_option->CacheImage(
-        document, image_request_behavior, cross_origin, container_sizes);
+    StyleImage* style_image =
+        best_option ? best_option->CacheImage(document, image_request_behavior,
+                                              cross_origin, container_sizes)
+                    : nullptr;
 
     cached_image_ = MakeGarbageCollected<StyleImageSet>(style_image, this);
 

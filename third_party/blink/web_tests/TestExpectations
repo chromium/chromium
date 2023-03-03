@@ -2255,13 +2255,6 @@ crbug.com/1236768 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 
 crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Failure ]
 
-# image-set() type function not yet supported
-crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-rendering.html [ Failure ]
-crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-rendering-2.html [ Failure ]
-crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-rendering-3.html [ Failure ]
-crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-first-match-rendering.html [ Failure ]
-crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-skip-unsupported-rendering.html [ Failure ]
-
 # CSS Color 4 interpolations
 crbug.com/1362022 external/wpt/css/css-images/gradient/gradient-eval-004.html [ Failure ]
 
@@ -2949,8 +2942,6 @@ crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-cl
 crbug.com/626703 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering-2.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/descriptor-prefix.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/fallback-cycle.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/suffix-fallback.html [ Failure ]
