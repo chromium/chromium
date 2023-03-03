@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           і ўпэўніцеся, што ў канфігурацыі зададзены значэнні "no proxy" або "direct".</translation>
+<translation id="6549378540556750549">Chromium працуе ў тым ліку дзякуючы іншаму <ph name="BEGIN_LINK_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Змены ўступяць у сілу пасля перазапуску Chromium.</translation>
+<translation id="7681937895330411637">Chromium працуе дзякуючы праекту <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> з адкрытым зыходным кодам.</translation>
 <translation id="7861509383340276692">Перайдзіце ў
           меню Chromium &gt;
           <ph name="SETTINGS_TITLE" />

@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Перайдзіце ў
           Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
           і адмяніце выбар усіх выбраных проксі-сервераў.</translation>
+<translation id="8232971017369963250">Chrome працуе дзякуючы праекту <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> з адкрытым зыходным кодам.</translation>
+<translation id="8279509328145658601">Chrome працуе ў тым ліку дзякуючы іншаму <ph name="BEGIN_LINK_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

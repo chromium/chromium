@@ -555,6 +555,7 @@
 <translation id="1487335504823219454">Уключана – карыстальніцкія налады</translation>
 <translation id="1493892686965953381">Чакаецца <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сайты могуць запытваць дазвол на выкарыстанне шрыфтоў, усталяваных на прыладзе</translation>
+<translation id="1494429729245089920">Віртуальная машына "<ph name="VM_NAME" />" існуе, але яе тып не адпавядае патрэбнаму (<ph name="APP_NAME" />). Звярніцеся да адміністратара.</translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
 <translation id="1500297251995790841">Невядомая прылада [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Даведацца больш пра праграмы Chrome, якія не падтрымліваюцца</translation>
