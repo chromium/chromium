@@ -87,6 +87,10 @@ iron-list {
   border-radius: 16px;
 }
 
+:host-context(body.jelly-enabled) .preview-container {
+  border: none;
+}
+
 .preview-text-container,
 .preview-text-placeholder {
   align-items: flex-start;

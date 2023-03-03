@@ -1,6 +1,5 @@
 <style include="common cros-button-style">
   #container {
-    border: 1px solid var(--cros-separator-color);
     border-radius: 16px;
     display: grid;
     grid-template-areas:
@@ -28,6 +27,7 @@
   }
 
   #container.jelly-disabled {
+    border: 1px solid var(--cros-separator-color);
     grid-template-areas:
       '. slot           slot    slot    .'
       '. image          image   image   .'
