@@ -37,6 +37,7 @@ public class RelatedSearchesStampTest {
     private static final String RELATED_SEARCHES_NEEDS_URL = "needs_url";
     private static final String RELATED_SEARCHES_NEEDS_CONTENT = "needs_content";
     private static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST = "language_allowlist";
+    private static final String RELATED_SEARCHES_ALL_LANGUAGES = "all_languages";
 
     /** The "stamp" encodes the experiment and its processing history, and is built from these. */
     private static final String RELATED_SEARCHES_STAMP_VERSION = "1";
@@ -85,6 +86,7 @@ public class RelatedSearchesStampTest {
     // These need to be Boolean instead of boolean so they can be static.
     private static Boolean sRelatedSearchesNeedsUrl;
     private static Boolean sRelatedSearchesNeedsContent;
+    private static Boolean sRelatedSearchesSupportAllLanguages;
     private static String sRelatedSearchesExperimentConfigurationStamp;
 
     //=========================================================================================
@@ -146,9 +148,11 @@ public class RelatedSearchesStampTest {
         protected static boolean isRelatedSearchesParamEnabled(String relatedSearchesParamName) {
             if (relatedSearchesParamName.equals(RELATED_SEARCHES_NEEDS_URL)) {
                 return sRelatedSearchesNeedsUrl;
-            } else {
-                assertThat(relatedSearchesParamName, is(RELATED_SEARCHES_NEEDS_CONTENT));
+            } else if (relatedSearchesParamName.equals(RELATED_SEARCHES_NEEDS_CONTENT)) {
                 return sRelatedSearchesNeedsContent;
+            } else {
+                assertThat(relatedSearchesParamName, is(RELATED_SEARCHES_ALL_LANGUAGES));
+                return sRelatedSearchesSupportAllLanguages;
             }
         }
     }
@@ -175,6 +179,7 @@ public class RelatedSearchesStampTest {
         sRelatedSearchesLanguageAllowlist = "";
         sRelatedSearchesNeedsUrl = null;
         sRelatedSearchesNeedsContent = null;
+        sRelatedSearchesSupportAllLanguages = null;
         sRelatedSearchesExperimentConfigurationStamp = null;
     }
 
@@ -208,6 +213,14 @@ public class RelatedSearchesStampTest {
     }
 
     /**
+     * Sets whether the config specifies if the content can be any language to get any Related
+     * Searches.
+     */
+    private void setSupportAllLanguage(boolean support) {
+        sRelatedSearchesSupportAllLanguages = support;
+    }
+
+    /**
      * Sets whether the config specifies that the content must be in English (or some list of
      * allowed languages) in order to get any Related Searches.
      */
@@ -234,6 +247,7 @@ public class RelatedSearchesStampTest {
         // for all experiment arms, and we restrict the language to English-only.
         setNeedsUrl(true);
         setNeedsContent(true);
+        setSupportAllLanguage(false);
         setLanguageAllowlist(ENGLISH);
     }
 
@@ -432,6 +446,25 @@ public class RelatedSearchesStampTest {
         assertThat("A launch configuration with multiple languages is generating Related Searches "
                         + "when it should be language restricted for German!",
                 mStamp.getRelatedSearchesStamp(GERMAN), is(""));
+    }
+
+    @Test
+    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
+    public void testGetStampLanguageRestrictedForAllLanguages() {
+        setStandardDefaultLaunchConfiguration();
+        setSupportAllLanguage(true);
+        assertThat(
+                "A launch configuration with all languages support is not generating the expected "
+                        + "processing stamp for English!",
+                mStamp.getRelatedSearchesStamp(ENGLISH), is(EXPECTED_DEFAULT_STAMP));
+        assertThat(
+                "A launch configuration with all languages support is not generating the expected "
+                        + "processing stamp for Spanish!",
+                mStamp.getRelatedSearchesStamp(SPANISH), is(EXPECTED_DEFAULT_STAMP));
+        assertThat(
+                "A launch configuration with all languages support is not generating the expected "
+                        + "processing stamp for German!",
+                mStamp.getRelatedSearchesStamp(GERMAN), is(EXPECTED_DEFAULT_STAMP));
     }
 
     @Test

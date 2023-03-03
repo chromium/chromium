@@ -217,7 +217,17 @@ class RelatedSearchesStamp {
         return stampBuilder.toString();
     }
 
+    /**
+     * get the allowed languages for the related searches.
+     * @return A string that contains the allowed languages, or empty string which means all the
+     *         languages are allowed.
+     */
     private String getAllowedLanguages() {
+        if (ContextualSearchFieldTrial.isRelatedSearchesParamEnabled(
+                    ContextualSearchFieldTrial
+                            .RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME)) {
+            return "";
+        }
         String allowedLanguages = ContextualSearchFieldTrial.getRelatedSearchesParam(
                 ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME);
         // If there is no language found, we use default language list.

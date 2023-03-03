@@ -1996,9 +1996,12 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kRelatedSearchesUrl = {"stamp", "1Ru"};
 const FeatureEntry::FeatureParam kRelatedSearchesContent = {"stamp", "1Rc"};
+const FeatureEntry::FeatureParam kRelatedSearchesAllLanguages = {
+    "all_languages", "true"};
 const FeatureEntry::FeatureVariation kRelatedSearchesVariations[] = {
     {"from URL", &kRelatedSearchesUrl, 1, nullptr},
     {"from content", &kRelatedSearchesContent, 1, nullptr},
+    {"support all languages", &kRelatedSearchesAllLanguages, 1, nullptr},
 };
 
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith300Dp[] =
