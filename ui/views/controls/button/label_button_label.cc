@@ -4,7 +4,11 @@
 
 #include "ui/views/controls/button/label_button_label.h"
 
+#include <string>
+
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 
 namespace views::internal {
 
@@ -42,8 +46,9 @@ void LabelButtonLabel::SetColorForEnableState() {
   } else if (GetWidget()) {
     // If there is no widget, we can't actually get the colors here.
     // An OnThemeChanged() will fire once a widget is available.
-    int style = GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED;
-    Label::SetEnabledColor(style::GetColor(*this, GetTextContext(), style));
+    Label::SetEnabledColor(GetColorProvider()->GetColor(style::GetColorId(
+        GetTextContext(),
+        GetEnabled() ? style::STYLE_PRIMARY : style::STYLE_DISABLED)));
   }
 }
 

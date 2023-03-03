@@ -241,8 +241,9 @@ void MdTextButton::UpdateTextColor() {
     text_style = style::STYLE_DIALOG_BUTTON_TONAL;
   }
 
-  SkColor enabled_text_color =
-      style::GetColor(*this, label()->GetTextContext(), text_style);
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  SkColor enabled_text_color = color_provider->GetColor(
+      style::GetColorId(label()->GetTextContext(), text_style));
   const auto colors = explicitly_set_colors();
   LabelButton::SetEnabledTextColors(enabled_text_color);
   // Disabled buttons need the disabled color explicitly set.
@@ -250,9 +251,9 @@ void MdTextButton::UpdateTextColor() {
   // the basis for calculating the stroke color. enabled_text_color isn't used
   // since a descendant could have overridden the label enabled color.
   if (GetState() == STATE_DISABLED) {
-    LabelButton::SetTextColor(STATE_DISABLED,
-                              style::GetColor(*this, label()->GetTextContext(),
-                                              style::STYLE_DISABLED));
+    LabelButton::SetTextColor(
+        STATE_DISABLED, color_provider->GetColor(style::GetColorId(
+                            label()->GetTextContext(), style::STYLE_DISABLED)));
   }
   set_explicitly_set_colors(colors);
 }

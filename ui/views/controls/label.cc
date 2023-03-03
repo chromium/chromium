@@ -1245,8 +1245,9 @@ void Label::UpdateColorsFromTheme() {
   } else if (!enabled_color_set_) {
     const absl::optional<SkColor> cascading_color =
         GetCascadingProperty(this, kCascadingLabelEnabledColor);
-    requested_enabled_color_ = cascading_color.value_or(
-        style::GetColor(*this, text_context_, text_style_));
+    requested_enabled_color_ =
+        cascading_color.value_or(GetColorProvider()->GetColor(
+            style::GetColorId(text_context_, text_style_)));
   }
 
   if (background_color_id_.has_value()) {

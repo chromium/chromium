@@ -1180,7 +1180,7 @@ SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
   else if (minor)
     text_style = style::STYLE_SECONDARY;
 
-  return style::GetColor(*this, context, text_style);
+  return GetColorProvider()->GetColor(style::GetColorId(context, text_style));
 }
 
 MenuItemView::Colors MenuItemView::CalculateColors(

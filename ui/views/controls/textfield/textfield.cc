@@ -392,8 +392,8 @@ bool Textfield::HasSelection(bool primary_only) const {
 }
 
 SkColor Textfield::GetTextColor() const {
-  return text_color_.value_or(
-      style::GetColor(*this, style::CONTEXT_TEXTFIELD, GetTextStyle()));
+  return text_color_.value_or(GetColorProvider()->GetColor(
+      style::GetColorId(style::CONTEXT_TEXTFIELD, GetTextStyle())));
 }
 
 void Textfield::SetTextColor(SkColor color) {
@@ -2579,11 +2579,9 @@ void Textfield::PaintTextAndCursor(gfx::Canvas* canvas) {
       placeholder_text_draw_flags |= gfx::Canvas::NO_SUBPIXEL_RENDERING;
 
     canvas->DrawStringRectWithFlags(
-        GetPlaceholderText(),
-        placeholder_font_list_.has_value() ? placeholder_font_list_.value()
-                                           : GetFontList(),
-        placeholder_text_color_.value_or(style::GetColor(
-            *this, style::CONTEXT_TEXTFIELD, style::STYLE_HINT)),
+        GetPlaceholderText(), placeholder_font_list_.value_or(GetFontList()),
+        placeholder_text_color_.value_or(GetColorProvider()->GetColor(
+            style::GetColorId(style::CONTEXT_TEXTFIELD, style::STYLE_HINT))),
         render_text->display_rect(), placeholder_text_draw_flags);
   }
 

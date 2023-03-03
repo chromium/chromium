@@ -63,7 +63,8 @@ float GetCornerRadius() {
 
 SkColor GetTextColorForEnableState(const Combobox& combobox, bool enabled) {
   const int style = enabled ? style::STYLE_PRIMARY : style::STYLE_DISABLED;
-  return style::GetColor(combobox, style::CONTEXT_TEXTFIELD, style);
+  return combobox.GetColorProvider()->GetColor(
+      style::GetColorId(style::CONTEXT_TEXTFIELD, style));
 }
 
 // The transparent button which holds a button state but is not rendered.
@@ -614,11 +615,10 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   }
 
   // Draw the text.
-  SkColor text_color =
-      foreground_color_id_.has_value()
-          ? GetColorProvider()->GetColor(foreground_color_id_.value())
-          : GetTextColorForEnableState(*this, GetEnabled());
-  std::u16string text = GetModel()->GetItemAt(selected_index_.value());
+  SkColor text_color = foreground_color_id_
+                           ? GetColorProvider()->GetColor(*foreground_color_id_)
+                           : GetTextColorForEnableState(*this, GetEnabled());
+  std::u16string text = GetModel()->GetItemAt(*selected_index_);
   const gfx::FontList& font_list = GetFontList();
 
   // If the text is not empty, add padding between it and the icon. If there

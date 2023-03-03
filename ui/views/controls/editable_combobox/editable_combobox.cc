@@ -28,6 +28,7 @@
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
@@ -91,8 +92,8 @@ class Arrow : public Button {
           return std::make_unique<views::FloodFillInkDropRipple>(
               InkDrop::Get(host), host->size(),
               InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-              style::GetColor(*host, style::CONTEXT_TEXTFIELD,
-                              style::STYLE_PRIMARY),
+              host->GetColorProvider()->GetColor(style::GetColorId(
+                  style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY)),
               InkDrop::Get(host)->GetVisibleOpacity());
         },
         this));
