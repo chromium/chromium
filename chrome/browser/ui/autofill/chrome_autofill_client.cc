@@ -19,6 +19,7 @@
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
+#include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -52,6 +53,7 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -178,6 +180,15 @@ AutofillDownloadManager* ChromeAutofillClient::GetDownloadManager() {
         this, GetChannel(), GetLogManager());
   }
   return download_manager_.get();
+}
+
+AutofillOptimizationGuide* ChromeAutofillClient::GetAutofillOptimizationGuide()
+    const {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return profile->ShutdownStarted()
+             ? nullptr
+             : AutofillOptimizationGuideFactory::GetForProfile(profile);
 }
 
 PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {

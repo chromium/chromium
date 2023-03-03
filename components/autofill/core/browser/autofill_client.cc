@@ -48,6 +48,11 @@ AutofillDownloadManager* AutofillClient::GetDownloadManager() {
   return nullptr;
 }
 
+AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
+    const {
+  return nullptr;
+}
+
 IBANManager* AutofillClient::GetIBANManager() {
   return nullptr;
 }

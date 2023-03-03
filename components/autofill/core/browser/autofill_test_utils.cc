@@ -414,6 +414,12 @@ void CreateTestCreditCardFormData(FormData* form,
   form->fields.push_back(field);
 }
 
+void CreateTestIbanFormData(FormData* form_data, const char* value) {
+  FormFieldData field;
+  test::CreateTestFormField("IBAN Value:", "iban_value", value, "text", &field);
+  form_data->fields.push_back(field);
+}
+
 FormData WithoutUnserializedData(FormData form) {
   form.url = {};
   form.main_frame_origin = {};

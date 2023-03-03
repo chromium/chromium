@@ -600,13 +600,6 @@ class FormDataImporterTestBase {
     }
   }
 
-  void AddIBANForm(FormData* form, const char* value) {
-    FormFieldData field;
-    test::CreateTestFormField("IBAN Value:", "iban_value", value, "text",
-                              &field);
-    form->fields.push_back(field);
-  }
-
   // Helper methods that simply forward the call to the private member (to avoid
   // having to friend every test that needs to access the private
   // PersonalDataManager::ImportAddressProfile or ExtractCreditCard).
@@ -3164,7 +3157,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
   // The pref should always start disabled.
   ASSERT_FALSE(personal_data_manager_->IsAutofillHasSeenIbanPrefEnabled());
 
-  AddIBANForm(&form, kIbanValue);
+  test::CreateTestIbanFormData(&form);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -3201,7 +3194,7 @@ TEST_P(FormDataImporterTest,
   FormData form;
   form.url = GURL("https://www.foo.com");
 
-  AddIBANForm(&form, kIbanValue);
+  test::CreateTestIbanFormData(&form);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -3230,7 +3223,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   FormData form;
   form.url = GURL("https://www.foo.com");
 
-  AddIBANForm(&form, kIbanValue);
+  test::CreateTestIbanFormData(&form);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -4362,7 +4355,7 @@ TEST_P(FormDataImporterTest,
   FormData form;
   form.url = GURL("https://www.foo.com");
 
-  AddIBANForm(&form, "");
+  test::CreateTestIbanFormData(&form, "");
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -4379,7 +4372,7 @@ TEST_P(
   FormData form;
   form.url = GURL("https://www.foo.com");
 
-  AddIBANForm(&form, kIbanValue);
+  test::CreateTestIbanFormData(&form);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -4395,7 +4388,7 @@ TEST_P(FormDataImporterTest,
   FormData form;
   form.url = GURL("https://www.foo.com");
 
-  AddIBANForm(&form, kIbanValue);
+  test::CreateTestIbanFormData(&form);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -4417,7 +4410,7 @@ TEST_P(FormDataImporterTest,
   FormData form;
   form.url = GURL("https://www.foo.com");
 
-  AddIBANForm(&form, kIbanValue);
+  test::CreateTestIbanFormData(&form);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -4439,7 +4432,7 @@ TEST_P(FormDataImporterTest,
   FormData form;
   form.url = GURL("https://www.foo.com");
 
-  AddIBANForm(&form, kIbanValue);
+  test::CreateTestIbanFormData(&form);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);

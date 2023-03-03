@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -138,6 +139,10 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override = default;
 
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
+  MOCK_METHOD(AutofillOptimizationGuide*,
+              GetAutofillOptimizationGuide,
+              (),
+              (const override));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               ConfirmSaveUpiIdLocally,
@@ -195,6 +200,17 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
 
  private:
   std::vector<FormStructure*> last_queried_forms_;
+};
+
+class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
+ public:
+  MockAutofillOptimizationGuide() : AutofillOptimizationGuide(nullptr) {}
+  MockAutofillOptimizationGuide(const MockAutofillOptimizationGuide&) = delete;
+  MockAutofillOptimizationGuide& operator=(
+      const MockAutofillOptimizationGuide&) = delete;
+  ~MockAutofillOptimizationGuide() override = default;
+
+  MOCK_METHOD(void, OnDidParseForm, (const FormStructure&), (override));
 };
 
 class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
@@ -8666,6 +8682,42 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       form.fields[0].global_id(), virtual_card_suggestion,
       Suggestion("Elvis Presley", label, kVisaCard,
                  browser_autofill_manager_->GetPackedCreditCardID(7)));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       IbanFormProcessed_AutofillOptimizationGuidePresent) {
+  FormData form_data;
+  test::CreateTestIbanFormData(&form_data);
+  FormStructure form_structure{form_data};
+  FormStructureTestApi(&form_structure)
+      .SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
+
+  MockAutofillOptimizationGuide autofill_optimization_guide;
+  ON_CALL(autofill_client_, GetAutofillOptimizationGuide)
+      .WillByDefault(testing::Return(&autofill_optimization_guide));
+
+  // We reset `browser_autofill_manager_` here so that `autofill_client_`
+  // initializes `autofill_optimization_guide` in `browser_autofill_manager_`.
+  browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
+      autofill_driver_.get(), &autofill_client_);
+  EXPECT_CALL(autofill_optimization_guide, OnDidParseForm).Times(1);
+
+  browser_autofill_manager_->OnFormProcessedForTesting(form_data,
+                                                       form_structure);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       IbanFormProcessed_AutofillOptimizationGuideNotPresent) {
+  FormData form_data;
+  test::CreateTestIbanFormData(&form_data);
+  FormStructure form_structure{form_data};
+  FormStructureTestApi(&form_structure)
+      .SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
+
+  // Test that form processing doesn't crash when we have an IBAN form but no
+  // AutofillOptimizationGuide present.
+  browser_autofill_manager_->OnFormProcessedForTesting(form_data,
+                                                       form_structure);
 }
 
 TEST_F(BrowserAutofillManagerTest,

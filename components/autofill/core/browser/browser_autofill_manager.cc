@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
@@ -2397,9 +2398,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       filling_context->type_groups_originally_filled.insert(field_group_type);
 
     // Must match ForEachMatchingFormField() in form_autofill_util.cc.
-    // Only notify autofilling of empty fields and the field that initiated
-    // the filling (note that "select-one" controls may not be empty but will
-    // still be autofilled).
+    // Only notify autofilling of empty fields and the field that initiated the
+    // filling (note that "select-one" controls may not be empty but will still
+    // be autofilled).
     bool should_notify = !is_credit_card &&
                          (result.fields[i].SameFieldAs(field) ||
                           result.fields[i].form_control_type == "select-one" ||
@@ -2697,6 +2698,14 @@ void BrowserAutofillManager::OnFormProcessed(
   }
   if (address_form) {
     address_form_event_logger_->OnDidParseForm(form_structure);
+  }
+
+  // `autofill_optimization_guide_` is not present on unsupported platforms.
+  if (auto* autofill_optimization_guide =
+          client()->GetAutofillOptimizationGuide()) {
+    // Initiate necessary pre-processing based on the forms and fields that are
+    // parsed.
+    autofill_optimization_guide->OnDidParseForm(form_structure);
   }
 
   // If a form with the same name was previously filled, and there has not

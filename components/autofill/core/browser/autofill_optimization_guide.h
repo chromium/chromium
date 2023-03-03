@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 
 namespace optimization_guide {
 class NewOptimizationGuideDecider;
@@ -14,8 +15,10 @@ class NewOptimizationGuideDecider;
 
 namespace autofill {
 
-// Class to enable and disable features on a per-origin basis through bloom
-// filters using optimization_guide::NewOptimizationGuideDecider.
+class FormStructure;
+
+// Class to enable and disable features on a per-origin basis using
+// optimization_guide::NewOptimizationGuideDecider.
 // One instance per profile.
 class AutofillOptimizationGuide : public KeyedService {
  public:
@@ -25,6 +28,11 @@ class AutofillOptimizationGuide : public KeyedService {
   AutofillOptimizationGuide& operator=(const AutofillOptimizationGuide&) =
       delete;
   ~AutofillOptimizationGuide() override;
+
+  // Registers the necessary optimization guide deciders based on
+  // `form_structure`, which is a result of the form parsing that takes place
+  // once a user navigates to a new page.
+  virtual void OnDidParseForm(const FormStructure& form_structure);
 
   optimization_guide::NewOptimizationGuideDecider*
   GetOptimizationGuideKeyedServiceForTesting() const {

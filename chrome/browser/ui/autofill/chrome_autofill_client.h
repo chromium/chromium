@@ -44,6 +44,7 @@
 namespace autofill {
 
 struct AutofillErrorDialogContext;
+class AutofillOptimizationGuide;
 class AutofillPopupControllerImpl;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -92,6 +93,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDownloadManager* GetDownloadManager() override;
+  AutofillOptimizationGuide* GetAutofillOptimizationGuide() const override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IBANManager* GetIBANManager() override;

@@ -400,6 +400,11 @@ class BrowserAutofillManager : public AutofillManager,
 
   FormData* pending_form_data_for_test() { return pending_form_data_.get(); }
 
+  void OnFormProcessedForTesting(const FormData& form,
+                                 const FormStructure& form_structure) {
+    OnFormProcessed(form, form_structure);
+  }
+
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
   // callback for `form_signature` or triggering a pending callback in case too
