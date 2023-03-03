@@ -183,6 +183,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                          uint8_t scanner_id,
                          GattStatus status) override;
   void ScanResultReceived(ScanResult scan_result) override;
+  void AdvertisementFound(ScanResult scan_result) override;
   void ScanResultLost(ScanResult scan_result) override;
 
  protected:

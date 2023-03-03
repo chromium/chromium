@@ -156,9 +156,8 @@ class BluetoothFlossTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  // Simulates getting a ScannerRegistered callback and then a
-  // ScanResultReceived
-  void RegisterScannerAndGetScanResult() {
+  // Simulates getting a ScannerRegistered callback.
+  void RegisterScanner() {
     ASSERT_TRUE(adapter_.get() != nullptr);
     BluetoothAdapterFloss* floss_adapter =
         static_cast<BluetoothAdapterFloss*>(adapter_.get());
@@ -167,11 +166,30 @@ class BluetoothFlossTest : public testing::Test {
                                      kTestScannerId, GattStatus::kSuccess);
 
     base::RunLoop().RunUntilIdle();
+  }
+
+  // Simulates getting OnScanResult.
+  void GetScanResult() {
+    ASSERT_TRUE(adapter_.get() != nullptr);
+    BluetoothAdapterFloss* floss_adapter =
+        static_cast<BluetoothAdapterFloss*>(adapter_.get());
 
     ScanResult scan_result;
     scan_result.address = kTestDeviceAddr;
     scan_result.name = kTestDeviceName;
     floss_adapter->ScanResultReceived(scan_result);
+  }
+
+  // Simulates getting OnAdvertisementFound.
+  void GetAdvFound() {
+    ASSERT_TRUE(adapter_.get() != nullptr);
+    BluetoothAdapterFloss* floss_adapter =
+        static_cast<BluetoothAdapterFloss*>(adapter_.get());
+
+    ScanResult scan_result;
+    scan_result.address = kTestDeviceAddr;
+    scan_result.name = kTestDeviceName;
+    floss_adapter->AdvertisementFound(scan_result);
   }
 
  protected:
@@ -724,10 +742,15 @@ TEST_F(BluetoothFlossTest, StartLowEnergyScanSessionWithScanResult) {
   EXPECT_EQ(0, delegate.sessions_invalidated_);
 
   // Simulate a scan result event
-  RegisterScannerAndGetScanResult();
+  RegisterScanner();
   EXPECT_TRUE(
       base::Contains(GetFakeLEScanClient()->scanner_ids_, kTestScannerId));
   EXPECT_EQ(1, delegate.sessions_started_);
+
+  GetScanResult();
+  EXPECT_FALSE(base::Contains(delegate.devices_found_, kTestDeviceAddr));
+
+  GetAdvFound();
   EXPECT_TRUE(base::Contains(delegate.devices_found_, kTestDeviceAddr));
 
   // Check that the scanned device is in the devices_ map so clients can

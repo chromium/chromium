@@ -1254,8 +1254,28 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   for (auto& observer : observers_)
     observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
+}
 
-  // All scanners share scan results
+void BluetoothAdapterFloss::AdvertisementFound(ScanResult scan_result) {
+  BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
+
+  BluetoothDeviceFloss* device_ptr;
+  std::string canonical_address =
+      device::CanonicalizeBluetoothAddress(scan_result.address);
+
+  if (base::Contains(devices_, canonical_address)) {
+    device_ptr =
+        static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
+    device_ptr->UpdateTimestamp();
+  } else {
+    auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
+        {.address = scan_result.address, .name = scan_result.name}));
+    device_ptr = device.get();
+    devices_.emplace(canonical_address, std::move(device));
+  }
+
+  // TODO(b/268682529): Not all scanners share the same result.
+  // Only notify scanner that is related to this advertisement.
   for (const auto& [key, scanner] : scanners_) {
     scanner->OnDeviceFound(device_ptr);
   }
@@ -1276,15 +1296,17 @@ void BluetoothAdapterFloss::ScanResultLost(ScanResult scan_result) {
   }
 
   BluetoothDeviceFloss* device_ptr = device.get();
-  BluetoothDeviceFloss* found_ptr =
+  BluetoothDeviceFloss* deleted_ptr =
       static_cast<BluetoothDeviceFloss*>(GetDevice(device->GetAddress()));
 
   // Only remove devices from devices_ that are not paired or connected.
-  if (!found_ptr || (!found_ptr->IsPaired() && !found_ptr->IsConnected())) {
+  if (!deleted_ptr ||
+      (!deleted_ptr->IsPaired() && !deleted_ptr->IsConnected())) {
     devices_.erase(canonical_address);
   }
 
-  // All scanners share scan results
+  // TODO(b/268682529): Not all scanners share the same result.
+  // Only notify scanner that is related to this advertisement.
   for (const auto& [key, scanner] : scanners_) {
     scanner->OnDeviceLost(device_ptr);
   }
