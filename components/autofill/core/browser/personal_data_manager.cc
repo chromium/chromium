@@ -1376,12 +1376,21 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
   if (profiles.size() > 1) {
     // Rank the suggestions by ranking score.
     const base::Time comparison_time = AutofillClock::Now();
-    std::sort(
-        profiles.begin(), profiles.end(),
-        [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
-          return a->HasGreaterRankingThan(b, comparison_time);
-        });
+    base::ranges::sort(profiles, [comparison_time](const AutofillProfile* a,
+                                                   const AutofillProfile* b) {
+      return a->HasGreaterRankingThan(b, comparison_time);
+    });
   }
+  return profiles;
+}
+
+std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
+    const {
+  std::vector<AutofillProfile*> profiles = GetProfiles();
+  base::ranges::sort(profiles,
+                     [](const AutofillProfile* a, const AutofillProfile* b) {
+                       return a->modification_date() > b->modification_date();
+                     });
   return profiles;
 }
 

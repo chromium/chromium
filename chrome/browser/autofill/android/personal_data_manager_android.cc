@@ -449,7 +449,7 @@ ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetProfileGUIDsForSettings(
     JNIEnv* env,
     const JavaParamRef<jobject>& unused_obj) {
-  return GetProfileGUIDs(env, personal_data_manager_->GetProfiles());
+  return GetProfileGUIDs(env, personal_data_manager_->GetProfilesForSettings());
 }
 
 ScopedJavaLocalRef<jobjectArray>
@@ -519,7 +519,7 @@ PersonalDataManagerAndroid::GetProfileLabelsForSettings(
                           false /* include_name_in_label */,
                           true /* include_organization_in_label */,
                           true /* include_country_in_label */,
-                          personal_data_manager_->GetProfiles());
+                          personal_data_manager_->GetProfilesForSettings());
 }
 
 ScopedJavaLocalRef<jobjectArray>

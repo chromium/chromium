@@ -249,14 +249,12 @@ autofill_private::IbanEntry IbanToIbanEntry(
 
 }  // namespace
 
-namespace extensions {
-
-namespace autofill_util {
+namespace extensions::autofill_util {
 
 AddressEntryList GenerateAddressList(
     const autofill::PersonalDataManager& personal_data) {
   const std::vector<autofill::AutofillProfile*>& profiles =
-      personal_data.GetProfiles();
+      personal_data.GetProfilesForSettings();
   std::vector<std::u16string> labels;
   autofill::AutofillProfile::CreateDifferentiatingLabels(
       profiles, g_browser_process->GetApplicationLocale(), &labels);
@@ -322,6 +320,4 @@ absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   return std::move(api_account);
 }
 
-}  // namespace autofill_util
-
-}  // namespace extensions
+}  // namespace extensions::autofill_util

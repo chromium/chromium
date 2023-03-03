@@ -183,7 +183,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
-      _personalDataManager->GetProfiles();
+      _personalDataManager->GetProfilesForSettings();
   if (!autofillProfiles.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierProfiles];
     [model setHeader:[self profileSectionHeader]
@@ -266,7 +266,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)localProfilesExist {
-  return !_settingsAreDismissed && !_personalDataManager->GetProfiles().empty();
+  return !_settingsAreDismissed &&
+         !_personalDataManager->GetProfilesForSettings().empty();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -369,7 +370,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
-      _personalDataManager->GetProfiles();
+      _personalDataManager->GetProfilesForSettings();
   [self showAddressProfileDetailsPageForProfile:*autofillProfiles[indexPath
                                                                       .item]];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];

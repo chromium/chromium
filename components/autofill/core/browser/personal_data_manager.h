@@ -317,6 +317,7 @@ class PersonalDataManager : public KeyedService,
   // `GetProfiles()` returns all `kAccount` and `kLocalOrSyncable` profiles. By
   // using `GetProfilesFromSource()`, profiles from a single source are be
   // retrieved.
+  // The profiles are returned in unspecified order.
   virtual std::vector<AutofillProfile*> GetProfiles() const;
   virtual std::vector<AutofillProfile*> GetProfilesFromSource(
       AutofillProfile::Source profile_source) const;
@@ -363,8 +364,13 @@ class PersonalDataManager : public KeyedService,
   // present in the cache, this function will return a nullptr.
   gfx::Image* GetCachedCardArtImageForUrl(const GURL& card_art_url) const;
 
-  // Returns the profiles to suggest to the user, ordered by frecency.
+  // Returns the profiles to suggest to the user for filling, ordered by
+  // frecency.
   std::vector<AutofillProfile*> GetProfilesToSuggest() const;
+
+  // Returns all `GetProfiles()` in the order that the should be shown in the
+  // settings.
+  std::vector<AutofillProfile*> GetProfilesForSettings() const;
 
   // Returns Suggestions corresponding to the focused field's |type| and
   // |field_contents|, i.e. what the user has typed. |field_is_autofilled| is

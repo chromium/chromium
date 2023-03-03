@@ -1784,7 +1784,7 @@ bool AutofillTable::GetAutofillProfiles(
                 profile_source == AutofillProfile::Source::kAccount
                     ? kContactInfoTable
                     : kAutofillProfilesTable,
-                {kGuid}, "ORDER BY date_modified DESC, guid");
+                {kGuid});
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);

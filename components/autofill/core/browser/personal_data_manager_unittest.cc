@@ -569,6 +569,32 @@ TEST_F(PersonalDataManagerTest, GetProfiles) {
               ElementsAre(Pointee(kLocalProfile)));
 }
 
+// Tests that `GetProfilesForSettings()` orders by descending modification
+// dates.
+// TODO(crbug.com/1420547): The modification date is set in AutofillTable.
+// Setting it on the test profiles directly doesn't suffice.
+TEST_F(PersonalDataManagerTest, GetProfilesForSettings) {
+  // Enable UnionView to test the ordering of profiles from different sources.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillAccountProfilesUnionView);
+
+  TestAutofillClock test_clock;
+
+  AutofillProfile kAccountProfile = test::GetFullProfile();
+  kAccountProfile.set_source_for_testing(AutofillProfile::Source::kAccount);
+  AddProfileToPersonalDataManager(kAccountProfile);
+
+  AutofillProfile kLocalOrSyncableProfile = test::GetFullProfile2();
+  kLocalOrSyncableProfile.set_source_for_testing(
+      AutofillProfile::Source::kLocalOrSyncable);
+  test_clock.Advance(base::Minutes(123));
+  AddProfileToPersonalDataManager(kLocalOrSyncableProfile);
+
+  EXPECT_THAT(
+      personal_data_->GetProfilesForSettings(),
+      ElementsAre(Pointee(kLocalOrSyncableProfile), Pointee(kAccountProfile)));
+}
+
 // Tests that `SetProfilesForAllSources()` overwrites profiles with the correct
 // source.
 TEST_F(PersonalDataManagerTest, SetProfiles) {
