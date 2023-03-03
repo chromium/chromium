@@ -327,11 +327,6 @@ bool g_run_in_memory = false;
 
 }  // namespace
 
-struct AttributionManagerImpl::SourceOrTriggerRFH {
-  SourceOrTrigger source_or_trigger;
-  GlobalRenderFrameHostId rfh_id;
-};
-
 BASE_FEATURE(kAttributionVerboseDebugReporting,
              "AttributionVerboseDebugReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -506,8 +501,24 @@ AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
 void AttributionManagerImpl::HandleSource(
     StorableSource source,
     GlobalRenderFrameHostId render_frame_id) {
-  MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(source),
-                                       .rfh_id = render_frame_id});
+  bool allowed = IsOperationAllowed(
+      storage_partition_.get(),
+      ContentBrowserClient::AttributionReportingOperation::kSource,
+      RenderFrameHost::FromID(render_frame_id),
+      &*source.common_info().source_origin(),
+      /*destination_origin=*/nullptr,
+      &*source.common_info().reporting_origin());
+  RecordRegisterImpressionAllowed(allowed);
+  if (!allowed) {
+    OnSourceStored(source,
+                   /*cleared_debug_key=*/absl::nullopt,
+                   /*is_debug_cookie_set=*/false,
+                   AttributionStorage::StoreSourceResult(
+                       StorableSource::Result::kProhibitedByBrowserPolicy));
+    return;
+  }
+
+  MaybeEnqueueEvent(std::move(source));
 }
 
 void AttributionManagerImpl::StoreSource(
@@ -542,8 +553,26 @@ void AttributionManagerImpl::OnSourceStored(
 void AttributionManagerImpl::HandleTrigger(
     AttributionTrigger trigger,
     GlobalRenderFrameHostId render_frame_id) {
-  MaybeEnqueueEvent(SourceOrTriggerRFH{.source_or_trigger = std::move(trigger),
-                                       .rfh_id = render_frame_id});
+  bool allowed = IsOperationAllowed(
+      storage_partition_.get(),
+      ContentBrowserClient::AttributionReportingOperation::kTrigger,
+      RenderFrameHost::FromID(render_frame_id),
+      /*source_origin=*/nullptr, &*trigger.destination_origin(),
+      &*trigger.reporting_origin());
+  RecordRegisterConversionAllowed(allowed);
+  if (!allowed) {
+    OnReportStored(
+        trigger,
+        /*cleared_debug_key=*/absl::nullopt, /*is_debug_cookie_set=*/false,
+        CreateReportResult(
+            /*trigger_time=*/base::Time::Now(),
+            AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy,
+            AttributionTrigger::AggregatableResult::
+                kProhibitedByBrowserPolicy));
+    return;
+  }
+
+  MaybeEnqueueEvent(std::move(trigger));
 }
 
 void AttributionManagerImpl::StoreTrigger(
@@ -557,7 +586,7 @@ void AttributionManagerImpl::StoreTrigger(
                            cleared_debug_key, is_debug_cookie_set));
 }
 
-void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
+void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
   const size_t size_before_push = pending_events_.size();
 
   // Avoid unbounded memory growth with adversarial input.
@@ -598,7 +627,7 @@ void AttributionManagerImpl::ProcessEvents() {
                          : nullptr;
             },
         },
-        pending_events_.front().source_or_trigger);
+        pending_events_.front());
     if (cookie_origin) {
       cookie_checker_->IsDebugCookieSet(
           *cookie_origin,
@@ -621,77 +650,33 @@ void AttributionManagerImpl::ProcessEvents() {
 void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
   DCHECK(!pending_events_.empty());
 
-  SourceOrTriggerRFH event = std::move(pending_events_.front());
+  SourceOrTrigger event = std::move(pending_events_.front());
   pending_events_.pop_front();
 
   absl::visit(
       base::Overloaded{
           [&](StorableSource source) {
-            const CommonSourceInfo& common_info = source.common_info();
-
-            bool allowed = IsOperationAllowed(
-                this->storage_partition_.get(),
-                ContentBrowserClient::AttributionReportingOperation::kSource,
-                RenderFrameHost::FromID(event.rfh_id),
-                &*common_info.source_origin(),
-                /*destination_origin=*/nullptr,
-                &*common_info.reporting_origin());
-            RecordRegisterImpressionAllowed(allowed);
-            if (!allowed) {
-              this->OnSourceStored(
-                  source,
-                  /*cleared_debug_key=*/absl::nullopt, is_debug_cookie_set,
-                  AttributionStorage::StoreSourceResult(
-                      StorableSource::Result::kProhibitedByBrowserPolicy));
-              return;
-            }
-
-            attribution_reporting::SourceRegistration& registration =
-                source.registration();
-
             absl::optional<uint64_t> cleared_debug_key;
-            if (!is_debug_cookie_set && registration.debug_key.has_value()) {
+            if (!is_debug_cookie_set) {
               cleared_debug_key =
-                  std::exchange(registration.debug_key, absl::nullopt);
+                  std::exchange(source.registration().debug_key, absl::nullopt);
             }
 
             this->StoreSource(std::move(source), cleared_debug_key,
                               is_debug_cookie_set);
           },
-
           [&](AttributionTrigger trigger) {
-            attribution_reporting::TriggerRegistration& registration =
-                trigger.registration();
-            bool allowed = IsOperationAllowed(
-                this->storage_partition_.get(),
-                ContentBrowserClient::AttributionReportingOperation::kTrigger,
-                RenderFrameHost::FromID(event.rfh_id),
-                /*source_origin=*/nullptr, &*trigger.destination_origin(),
-                &*trigger.reporting_origin());
-            RecordRegisterConversionAllowed(allowed);
-            if (!allowed) {
-              this->OnReportStored(
-                  std::move(trigger),
-                  /*cleared_debug_key=*/absl::nullopt, is_debug_cookie_set,
-                  CreateReportResult(/*trigger_time=*/base::Time::Now(),
-                                     AttributionTrigger::EventLevelResult::
-                                         kProhibitedByBrowserPolicy,
-                                     AttributionTrigger::AggregatableResult::
-                                         kProhibitedByBrowserPolicy));
-              return;
-            }
-
             absl::optional<uint64_t> cleared_debug_key;
-            if (!is_debug_cookie_set && registration.debug_key.has_value()) {
-              cleared_debug_key =
-                  std::exchange(registration.debug_key, absl::nullopt);
+            if (!is_debug_cookie_set) {
+              cleared_debug_key = std::exchange(
+                  trigger.registration().debug_key, absl::nullopt);
             }
 
             this->StoreTrigger(std::move(trigger), cleared_debug_key,
                                is_debug_cookie_set);
           },
       },
-      std::move(event.source_or_trigger));
+      std::move(event));
 }
 
 void AttributionManagerImpl::OnReportStored(

@@ -170,8 +170,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   using ReportSentCallback = AttributionReportSender::ReportSentCallback;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
 
-  struct SourceOrTriggerRFH;
-
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
@@ -183,7 +181,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionDataHostManager> data_host_manager,
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
-  void MaybeEnqueueEvent(SourceOrTriggerRFH event);
+  void MaybeEnqueueEvent(SourceOrTrigger);
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
   void StoreSource(StorableSource source,
@@ -264,7 +262,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // the simulator currently depends on. We may be able to loosen this
   // requirement in the future so that there are conceptually separate queues
   // per <source origin, destination origin, reporting origin>.
-  base::circular_deque<SourceOrTriggerRFH> pending_events_;
+  base::circular_deque<SourceOrTrigger> pending_events_;
 
   // Controls the maximum size of `pending_events_` to avoid unbounded memory
   // growth with adversarial input.
