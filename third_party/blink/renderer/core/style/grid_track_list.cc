@@ -56,7 +56,7 @@ wtf_size_t NGGridTrackList::RepeatCount(const wtf_size_t index,
 
 wtf_size_t NGGridTrackList::RepeatIndex(const wtf_size_t index) const {
   // `repeat_index` is used for sizes, which subgrids don't have.
-  DCHECK_NE(axis_type_, GridAxisType::kSubgriddedAxis);
+  DCHECK(!IsSubgriddedAxis());
   DCHECK_LT(index, RepeaterCount());
   return repeaters_[index].repeat_index;
 }
@@ -76,7 +76,7 @@ const GridTrackSize& NGGridTrackList::RepeatTrackSize(
     const wtf_size_t index,
     const wtf_size_t n) const {
   // Subgrids don't have track sizes associated with them.
-  DCHECK_NE(axis_type_, GridAxisType::kSubgriddedAxis);
+  DCHECK(!IsSubgriddedAxis());
   DCHECK_LT(index, RepeaterCount());
   DCHECK_LT(n, RepeatSize(index));
 
@@ -95,6 +95,16 @@ wtf_size_t NGGridTrackList::TrackCountWithoutAutoRepeat() const {
 
 wtf_size_t NGGridTrackList::AutoRepeatTrackCount() const {
   return HasAutoRepeater() ? repeaters_[auto_repeater_index_].repeat_size : 0;
+}
+
+wtf_size_t NGGridTrackList::NonAutoRepeatLineCount() const {
+  DCHECK(IsSubgriddedAxis());
+  return non_auto_repeat_line_count_;
+}
+
+void NGGridTrackList::IncrementNonAutoRepeatLineCount() {
+  DCHECK(IsSubgriddedAxis());
+  ++non_auto_repeat_line_count_;
 }
 
 bool NGGridTrackList::AddRepeater(
@@ -181,6 +191,8 @@ void NGGridTrackList::operator=(const NGGridTrackList& other) {
   repeater_track_sizes_ = other.repeater_track_sizes_;
   auto_repeater_index_ = other.auto_repeater_index_;
   track_count_without_auto_repeat_ = other.track_count_without_auto_repeat_;
+  non_auto_repeat_line_count_ = other.non_auto_repeat_line_count_;
+  axis_type_ = other.axis_type_;
 }
 
 bool NGGridTrackList::operator==(const NGGridTrackList& other) const {
@@ -188,7 +200,9 @@ bool NGGridTrackList::operator==(const NGGridTrackList& other) const {
          RepeaterCount() == other.RepeaterCount() &&
          auto_repeater_index_ == other.auto_repeater_index_ &&
          repeaters_ == other.repeaters_ &&
-         repeater_track_sizes_ == other.repeater_track_sizes_;
+         repeater_track_sizes_ == other.repeater_track_sizes_ &&
+         non_auto_repeat_line_count_ == other.non_auto_repeat_line_count_ &&
+         axis_type_ == other.axis_type_;
 }
 
 GridTrackList::GridTrackList(const GridTrackList& other) {

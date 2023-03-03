@@ -29,14 +29,17 @@ class NGGridNamedLineCollection {
   NGGridNamedLineCollection& operator=(const NGGridNamedLineCollection&) =
       delete;
 
-  bool HasNamedLines();
-  wtf_size_t FirstPosition();
+  bool HasNamedLines() const;
+  wtf_size_t FirstPosition() const;
 
-  bool Contains(wtf_size_t line);
+  bool Contains(wtf_size_t line) const;
 
  private:
-  bool HasExplicitNamedLines();
-  wtf_size_t FirstExplicitPosition();
+  bool HasExplicitNamedLines() const;
+  // Returns true if the author specified auto repeat tracks, but they were
+  // collapsed to zero repeats. Only possible for subgrids.
+  bool HasCollapsedAutoRepeat() const;
+  wtf_size_t FirstExplicitPosition() const;
   const Vector<wtf_size_t>* named_lines_indexes_ = nullptr;
   const Vector<wtf_size_t>* auto_repeat_named_lines_indexes_ = nullptr;
   const Vector<wtf_size_t>* implicit_named_lines_indexes_ = nullptr;

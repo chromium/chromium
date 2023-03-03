@@ -68,6 +68,12 @@ class CORE_EXPORT NGGridTrackList {
   wtf_size_t TrackCountWithoutAutoRepeat() const;
   // Returns the number of tracks in the auto repeater, or 0 if there is none.
   wtf_size_t AutoRepeatTrackCount() const;
+  // Returns the count of line names not including auto repeaters. Note that
+  // this is subtly different than `TrackCountWithoutAutoRepeat`, as it is
+  // specifically line names (not sizes), and includes empty line names.
+  wtf_size_t NonAutoRepeatLineCount() const;
+  // Increments the count of line names not including auto repeaters.
+  void IncrementNonAutoRepeatLineCount();
   // Adds a repeater.
   bool AddRepeater(const Vector<GridTrackSize, 1>& repeater_track_sizes,
                    NGGridTrackRepeater::RepeatType repeat_type =
@@ -106,6 +112,11 @@ class CORE_EXPORT NGGridTrackList {
 
   // Count of tracks ignoring those within an auto repeater.
   wtf_size_t track_count_without_auto_repeat_{0};
+
+  // Count of line names outside of auto-repeaters. This is subtly different
+  // than `track_count_without_auto_repeat_`, as that is track definitions,
+  // while this tracks line names (including empty lines).
+  wtf_size_t non_auto_repeat_line_count_{0};
 
   // The grid axis type (standalone or subgridded).
   GridAxisType axis_type_{GridAxisType::kStandaloneAxis};

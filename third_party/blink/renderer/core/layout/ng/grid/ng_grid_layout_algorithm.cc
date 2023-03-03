@@ -1448,9 +1448,10 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
   const auto& track_list = computed_track_list.TrackList();
   DCHECK(track_list.HasAutoRepeater());
 
-  const wtf_size_t non_auto_repeat_named_grid_line_count =
-      computed_track_list.ordered_named_grid_lines.size();
-  if (non_auto_repeat_named_grid_line_count > subgrid_span_size) {
+  const wtf_size_t non_auto_repeat_line_count =
+      track_list.NonAutoRepeatLineCount();
+
+  if (non_auto_repeat_line_count > subgrid_span_size) {
     // No more room left for auto repetitions due to the number of non-auto
     // repeat named grid lines (the span is already fulfilled).
     return 0;
@@ -1464,7 +1465,7 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
   }
 
   const wtf_size_t tracks_left_over_for_auto_repeat =
-      subgrid_span_size - non_auto_repeat_named_grid_line_count + 1;
+      subgrid_span_size - non_auto_repeat_line_count + 1;
   DCHECK_GT(tracks_per_repeat, 0u);
   return static_cast<wtf_size_t>(
       std::floor(tracks_left_over_for_auto_repeat / tracks_per_repeat));
