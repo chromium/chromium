@@ -190,6 +190,9 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, features::kImeFstDecoderParamsUpdate.name) == 0) {
     return base::FeatureList::IsEnabled(features::kImeFstDecoderParamsUpdate);
   }
+  if (strcmp(feature_name, features::kAutocorrectByDefault.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kAutocorrectByDefault);
+  }
   return false;
 }
 
