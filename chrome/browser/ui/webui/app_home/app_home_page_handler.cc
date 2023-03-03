@@ -576,6 +576,11 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
   std::vector<app_home::mojom::AppInfoPtr> result;
   FillWebAppInfoList(&result);
   FillExtensionInfoList(&result);
+  sort(result.begin(), result.end(),
+       [](const app_home::mojom::AppInfoPtr& lhs,
+          const app_home::mojom::AppInfoPtr& rhs) {
+         return lhs->name < rhs->name;
+       });
   std::move(callback).Run(std::move(result));
 }
 

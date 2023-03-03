@@ -86,7 +86,7 @@ suite('AppListTest', () => {
     testAppInfo = {
       id: 'mmfbcljfglbokpmkimbfghdkjmjhdgbg',
       startUrl: {url: 'https://test.google.com/testapp3'},
-      name: 'Test App 3',
+      name: 'A Test App 3',
       iconUrl: {
         url: 'chrome://app-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
       },
@@ -162,10 +162,10 @@ suite('AppListTest', () => {
     flush();
     let appItemList =
         Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
-    assertTrue(!!appItemList.find(
-        appItem =>
-            appItem.shadowRoot!.querySelector('#textContainer')!.textContent ===
-            testAppInfo.name));
+    assertTrue(
+        appItemList[0]!.shadowRoot!.querySelector(
+                                       '#textContainer')!.textContent ===
+        testAppInfo.name);
 
     // Test removing an app
     callbackRouterRemote.removeApp(testAppInfo);
