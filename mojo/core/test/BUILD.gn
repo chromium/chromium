@@ -47,7 +47,6 @@ static_library("test_support") {
 
   deps = [
     ":test_support_impl",
-    "//components/crash/core/common",
     "//mojo/public/c/test_support",
   ]
 }

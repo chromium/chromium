@@ -10,7 +10,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_io_thread.h"
-#include "components/crash/core/common/crash_key.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -39,8 +38,6 @@ class TestSupportInitializer {
 class ScopedMojoSupport::CoreInstance {
  public:
   CoreInstance() {
-    crash_reporter::InitializeCrashKeys();
-
     mojo::core::Configuration mojo_config;
 
     // A relatively low limit to make it easier to test behavior at the limit.

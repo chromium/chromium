@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/test_switches.h"
-#include "components/crash/core/common/crash_key.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/common/in_process_child_thread_params.h"
 #include "content/common/pseudonymization_salt.h"
@@ -165,7 +164,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
         GetIOThreadTaskRunner({});
 
-    crash_reporter::InitializeCrashKeys();
     InitializeMojo();
     process_host_ =
         ChildProcessHost::Create(this, ChildProcessHost::IpcMode::kNormal);

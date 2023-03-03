@@ -45,7 +45,6 @@ specific_include_rules = {
    "+chromeos/ash/components/memory/userspace_swap",
   ],
   "render_thread_impl_browsertest\.cc": [
-    "+components/crash/core/common/crash_key.h",
     "+content/app/mojo/mojo_init.h",
   ],
   "render_thread_impl_discardable_memory_browsertest\.cc": [
