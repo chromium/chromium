@@ -17,11 +17,14 @@ import '../site_favicon.js';
 import './passwords_shared.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_import_dialog.html.js';
@@ -35,6 +38,7 @@ export interface PasswordsImportDialogElement {
     storePicker: HTMLSelectElement,
     chooseFile: CrButtonElement,
     close: CrButtonElement,
+    deleteFileOption: CrCheckboxElement,
   };
 }
 
@@ -107,6 +111,13 @@ export class PasswordsImportDialogElement extends
         value: false,
       },
 
+      enablePasswordsImportM2_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordsImportM2');
+        },
+      },
+
       results_: Object,
       failedImportsWithKnownErrors_: Array,
       failedImportsSummary_: String,
@@ -127,6 +138,7 @@ export class PasswordsImportDialogElement extends
   private results_: chrome.passwordsPrivate.ImportResults|null;
   private failedImportsWithKnownErrors_: chrome.passwordsPrivate.ImportEntry[];
   private failedImportsSummary_: string;
+  private enablePasswordsImportM2_: boolean;
   private rowsWithUnknownErrorsSummary_: string;
   private showRowsWithUnknownErrorsSummary_: boolean;
   // Refers both to syncing users with sync enabled for passwords and account
@@ -170,17 +182,38 @@ export class PasswordsImportDialogElement extends
         this.isState_(ImportDialogState.ERROR);
   }
 
-  private isTipBoxHidden_(): boolean {
+  private shouldHideTipBox_(): boolean {
     // Tip box is only shown in "success" state if all passwords were imported.
-    return !this.isState_(ImportDialogState.SUCCESS) ||
-        (this.isState_(ImportDialogState.SUCCESS) &&
-         !!this.results_!.failedImports.length);
+    // Only shown in Passwords Import M1.
+    if (this.enablePasswordsImportM2_) {
+      return true;
+    }
+    if (!this.isState_(ImportDialogState.SUCCESS)) {
+      return true;
+    }
+    assert(this.results_);
+    return !!this.results_.failedImports.length;
   }
 
-  private isFailuresSummaryHidden_(): boolean {
-    return !this.isState_(ImportDialogState.SUCCESS) ||
-        (this.isState_(ImportDialogState.SUCCESS) &&
-         !this.results_!.failedImports.length);
+  private shouldHideDeleteFileOption_(): boolean {
+    // "Delete file" checkbox is only shown in "success" state if all passwords
+    // were imported.
+    if (!this.enablePasswordsImportM2_) {
+      return true;
+    }
+    if (!this.isState_(ImportDialogState.SUCCESS)) {
+      return true;
+    }
+    assert(this.results_);
+    return !!this.results_.failedImports.length;
+  }
+
+  private shouldHideFailuresSummary_(): boolean {
+    if (!this.isState_(ImportDialogState.SUCCESS)) {
+      return true;
+    }
+    assert(this.results_);
+    return !this.results_.failedImports.length;
   }
 
   private shouldShowStorePicker_(): boolean {
@@ -249,9 +282,7 @@ export class PasswordsImportDialogElement extends
 
   private async handleSuccess_() {
     assert(this.results_);
-    if (!this.results_.failedImports.length) {
-      this.setSuccessTip_();
-    } else {
+    if (this.results_.failedImports.length) {
       const rowsWithUnknownErrorCount =
           this.results_.failedImports
               .filter(
@@ -294,10 +325,18 @@ export class PasswordsImportDialogElement extends
     return this.i18n('addPasswordStoreOptionAccount', this.accountEmail!);
   }
 
-  private setSuccessTip_() {
-    this.$.successTip.innerHTML =
-        this.i18nAdvanced('importPasswordsSuccessTip');
-    this.$.successTip.querySelector('b')!.textContent = this.results_!.fileName;
+  private getSuccessTipHtml_(): TrustedHTML {
+    assert(this.results_);
+    return this.i18nAdvanced(
+        'importPasswordsSuccessTip',
+        {attrs: ['class'], substitutions: [this.results_.fileName]});
+  }
+
+  private getCheckboxLabelHtml_(): TrustedHTML {
+    assert(this.results_);
+    return this.i18nAdvanced(
+        'importPasswordsDeleteFileOption',
+        {attrs: ['class'], substitutions: [this.results_.fileName]});
   }
 
   private getFailedEntryError_(
@@ -360,6 +399,8 @@ export class PasswordsImportDialogElement extends
   }
 
   private onCloseClick_() {
+    // TODO(crbug/1417650): Trigger the file deletion with Passwords Private API
+    // if checkbox is ticked in SUCCESS (with no errors) state.
     if (this.isState_(ImportDialogState.START)) {
       recordPasswordsImportInteraction(
           PasswordsImportDesktopInteractions.CANCELED_BEFORE_FILE_SELECT);

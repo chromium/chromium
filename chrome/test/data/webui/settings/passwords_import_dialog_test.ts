@@ -7,6 +7,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {IMPORT_HELP_LANDING_PAGE, ImportDialogState, PasswordsImportDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, SettingsPluralStringProxyImpl, CrButtonElement} from 'chrome://settings/settings.js';
@@ -134,7 +135,8 @@ suite('PasswordsImportDialog', function() {
     await eventToPromise('close', importDialog);
   });
 
-  test('hasCorrectSuccessState', async function() {
+  test('hasCorrectSuccessStateM1', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: false});
     const importDialog = elementFactory.createPasswordsImportDialog();
     assertEquals(ImportDialogState.START, importDialog.dialogState);
     passwordManager.setImportResults({
@@ -152,11 +154,44 @@ suite('PasswordsImportDialog', function() {
 
     assertTrue(isVisible(
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
+
+    assertTrue(importDialog.$.successTip.textContent!.includes('test.csv'));
+
+    // Failed imports summary should not be visible.
+    assertFalse(isVisible(importDialog.$.failuresSummary));
+
     assertEquals(
-        importDialog.i18nAdvanced('importPasswordsSuccessTip')
-            .toString()
-            .replace('<b></b>', 'test.csv'),
-        importDialog.$.successTip.textContent!.trim());
+        importDialog.i18n('done'), importDialog.$.close.textContent!.trim());
+    assertFalse(importDialog.$.close.disabled);
+    // check console for exceptions!
+    importDialog.$.close.click();
+    await eventToPromise('close', importDialog);
+  });
+
+  test('hasCorrectSuccessStateM2', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      failedImports: [],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importDialog, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    flush();
+    // After the import, the dialog should switch to SUCCESS state.
+    assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
+
+    assertFalse(isVisible(
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
+    assertTrue(isVisible(importDialog.shadowRoot!.querySelector<HTMLElement>(
+        '#deleteFileOption')));
+
+    assertTrue(
+        importDialog.$.deleteFileOption.textContent!.includes('test.csv'));
 
     // Failed imports summary should not be visible.
     assertFalse(isVisible(importDialog.$.failuresSummary));

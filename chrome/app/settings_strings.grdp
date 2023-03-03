@@ -894,7 +894,10 @@
     Select where to import your passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TIP" desc="Message is shown on the dialog for importing passwords, after a successful import. It is an advice for the user, that they should consider deleting the file, which they used for importing passwords from.">
-    Consider deleting <ph name="FILENAME">&lt;b&gt;&lt;/b&gt;<ex>&lt;b&gt;filename.csv&lt;/b&gt;</ex></ph>, so others who use this device can't see your passwords
+    Consider deleting <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph>, so others who use this device can't see your passwords
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DELETE_FILE_OPTION" desc="Message is shown on the dialog for importing passwords, after a successful import. It offers a user to delete the file, which they used for importing passwords from, by clicking at the checkbox and 'Done' button afterwards.">
+    Delete <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph>, so others who use this device can't see your passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_UNKNOWN" desc="Message is shown on the dialog for importing passwords if no passwords were imported and we don't know the cause of error. Probably error in the backend or in our systems.">
     Something went wrong and your passwords weren't imported
