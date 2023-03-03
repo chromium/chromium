@@ -1988,7 +1988,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Passwords on All Your Devices
       </message>
       <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE" desc="Subtitle of the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
-        Passwords are now saved in your Google Account (<ph name="ACCOUNT">$1<ex>foo@gmail.com</ex></ph>). You can use them wherever you're signed in. To turn this off, go to <ph name="BEGIN_LINK">BEGIN_LINK</ph>settings<ph name="END_LINK">END_LINK</ph>.
+        When you're signed in to Chrome, passwords you save will go in your Google Account (<ph name="ACCOUNT">$1<ex>foo@gmail.com</ex></ph>). To turn this off, <ph name="BEGIN_LINK">BEGIN_LINK</ph>go to settings<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT" desc="Button text for the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
         Got It
@@ -2473,7 +2473,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Use and Save Passwords in Your Google Account
       </message>
       <message name="IDS_IOS_ACCOUNT_STORAGE_OPT_IN_SUBLABEL" desc="Title for the switch item in Settings that controls whether signed-in users can save/autofill passwords to/from their account. [Length: unlimited] [iOS only]">
-        When on, passwords are saved in <ph name="ACCOUNT">$1<ex>foo@gmail.com</ex></ph>. When off, passwords are saved only on this device.
+        When on, passwords are saved in <ph name="ACCOUNT">$1<ex>foo@gmail.com</ex></ph>. When off, passwords are saved only to this device.
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ADD_PASSWORD_MANUALLY_TITLE" desc="Title of the view that allow user to enter the details for a new password credential to add it to the list the passwords. [iOS only]">
         Add Password
