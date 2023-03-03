@@ -16,8 +16,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter.ViewBinder;
-import org.chromium.chrome.browser.bookmarks.BookmarkItemsAdapter.ViewFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -32,7 +30,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.Stack;
 
-/** Respondible for BookmarkManager business logic. */
+/** Responsible for BookmarkManager business logic. */
 // TODO(crbug.com/1416611): Remove BookmarkDelegate if possible.
 class BookmarkManagerMediator
         implements BookmarkDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
@@ -184,8 +182,6 @@ class BookmarkManagerMediator
     private final boolean mIsDialogUi;
     private final boolean mIsIncognito;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier;
-    private final ViewFactory mViewFactory;
-    private final ViewBinder mViewBinder;
 
     /** Whether this instance has been destroyed. */
     private boolean mIsDestroyed;
@@ -198,8 +194,7 @@ class BookmarkManagerMediator
             SelectionDelegate<BookmarkId> selectionDelegate, RecyclerView recyclerView,
             BookmarkItemsAdapter bookmarkItemsAdapter, LargeIconBridge largeIconBridge,
             boolean isDialogUi, boolean isIncognito,
-            ObservableSupplierImpl<Boolean> backPressStateSupplier, ViewFactory viewFactory,
-            ViewBinder viewBinder) {
+            ObservableSupplierImpl<Boolean> backPressStateSupplier) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -215,8 +210,6 @@ class BookmarkManagerMediator
         mIsDialogUi = isDialogUi;
         mIsIncognito = isIncognito;
         mBackPressStateSupplier = backPressStateSupplier;
-        mViewFactory = viewFactory;
-        mViewBinder = viewBinder;
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
@@ -229,7 +222,7 @@ class BookmarkManagerMediator
 
     void onBookmarkModelLoaded() {
         mDragStateDelegate.onBookmarkDelegateInitialized(this);
-        mBookmarkItemsAdapter.onBookmarkDelegateInitialized(this, mViewFactory, mViewBinder);
+        mBookmarkItemsAdapter.onBookmarkDelegateInitialized(this);
 
         if (!TextUtils.isEmpty(mInitialUrl)) {
             setState(BookmarkUiState.createStateFromUrl(mInitialUrl, mBookmarkModel));

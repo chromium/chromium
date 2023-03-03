@@ -103,7 +103,8 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
         mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
-        BookmarkItemsAdapter bookmarkItemsAdapter = new BookmarkItemsAdapter(context, profile);
+        BookmarkItemsAdapter bookmarkItemsAdapter =
+                new BookmarkItemsAdapter(context, profile, this::createView, this::bindView);
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(
                 (RecyclerView.Adapter<RecyclerView.ViewHolder>) bookmarkItemsAdapter);
 
@@ -118,8 +119,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
         mBookmarkOpener = new BookmarkOpener(mBookmarkModel, context, openBookmarkComponentName);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, selectionDelegate, mRecyclerView, bookmarkItemsAdapter,
-                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier, this::createView,
-                this::bindView);
+                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier);
 
         mPromoHeaderManager = bookmarkItemsAdapter.getPromoHeaderManager();
         mBookmarkToolbarCoordinator.initialize(/*bookmarkDelegate=*/mMediator);

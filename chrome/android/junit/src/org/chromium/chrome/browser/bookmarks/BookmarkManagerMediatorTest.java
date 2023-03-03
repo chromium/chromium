@@ -99,7 +99,7 @@ public class BookmarkManagerMediatorTest {
         mMediator = new BookmarkManagerMediator(mContext, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, mSelectionDelegate, mRecyclerView, mBookmarkItemsAdapter,
                 mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
-                mBackPressStateSupplier, /*viewFactory*/ null, /*viewBinder*/ null);
+                mBackPressStateSupplier);
         mMediator.addUiObserver(mBookmarkUiObserver);
     }
 

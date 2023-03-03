@@ -61,6 +61,8 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
 
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
     private final Profile mProfile;
+    private final ViewFactory mViewFactory;
+    private final ViewBinder mViewBinder;
     private final SyncService mSyncService;
     private final BookmarkPromoHeader mPromoHeaderManager;
 
@@ -69,8 +71,6 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
     @ViewType
     private int mPromoHeaderType = ViewType.INVALID;
     private BookmarkDelegate mDelegate;
-    private ViewFactory mViewFactory;
-    private ViewBinder mViewBinder;
     private String mSearchText;
     private BookmarkId mCurrentFolder;
 
@@ -126,9 +126,13 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         }
     };
 
-    BookmarkItemsAdapter(Context context, Profile profile) {
+    BookmarkItemsAdapter(
+            Context context, Profile profile, ViewFactory viewFactory, ViewBinder viewBinder) {
         super(context);
         mProfile = profile;
+        mViewFactory = viewFactory;
+        mViewBinder = viewBinder;
+
         mSyncService = SyncService.get();
         mSyncService.addSyncStateChangedListener(this);
 
@@ -262,20 +266,14 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
      * Sets the delegate to use to handle UI actions related to this adapter.
      *
      * @param delegate A {@link BookmarkDelegate} instance to handle all backend interaction.
-     * @param viewFactory An object to create {@link View}s for each item/row.
-     * @param viewBinder An object to bind {@link View}s from {@link PropertyModel}s.
      */
-    void onBookmarkDelegateInitialized(
-            BookmarkDelegate delegate, ViewFactory viewFactory, ViewBinder viewBinder) {
+    void onBookmarkDelegateInitialized(BookmarkDelegate delegate) {
         mDelegate = delegate;
         mDelegate.addUiObserver(this);
         mDelegate.getModel().addObserver(mBookmarkModelObserver);
         mDelegate.getSelectionDelegate().addObserver(this);
 
         populateTopLevelFoldersList();
-
-        mViewFactory = viewFactory;
-        mViewBinder = viewBinder;
 
         mElements = new ArrayList<>();
         setDragStateDelegate(delegate.getDragStateDelegate());
