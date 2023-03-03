@@ -364,6 +364,7 @@ void Scheduler::PostPendingBeginFrameTask() {
 
   if (is_idle && needs_begin_frames && has_pending_begin_frame_args &&
       has_no_pending_begin_frame_task) {
+    recordreplay::Assert("[RUN-1230] Scheduler::PostPendingBeginFrameTask #1");
     pending_begin_frame_task_.Reset(base::BindOnce(
         &Scheduler::HandlePendingBeginFrame, base::Unretained(this)));
     task_runner_->PostTask(FROM_HERE, pending_begin_frame_task_.callback());
