@@ -600,7 +600,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
-  provider_->input_.UpdateText(u"input", 0, {});
+  provider_->input_.UpdateText(u"document", 0, {});
   ACMatches matches = provider_->ParseDocumentSearchResults(*response);
   EXPECT_EQ(matches.size(), 3u);
 
@@ -661,7 +661,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
-  provider_->input_.UpdateText(u"input", 0, {});
+  provider_->input_.UpdateText(u"document", 0, {});
   ACMatches matches = provider_->ParseDocumentSearchResults(*response);
   EXPECT_EQ(matches.size(), 3u);
 
@@ -942,7 +942,7 @@ TEST_F(DocumentProviderTest, Scoring) {
           {"title": "Document 2", "score": 900, "url": "url"},
           {"title": "Document 3", "score": 900, "url": "url"}
         ]})",
-      "input", {1000, 900, 899});
+      "document", {1000, 900, 899});
 
   // Server scoring with rank caps.
   CheckScoring(
@@ -957,7 +957,7 @@ TEST_F(DocumentProviderTest, Scoring) {
           {"title": "Document 2", "score": 1150, "url": "url"},
           {"title": "Document 3", "score": 1150, "url": "url"}
         ]})",
-      "input", {1150, 1100, 900});
+      "document", {1150, 1100, 900});
 
   // Server scoring with owner boosting.
   CheckScoring(
@@ -976,7 +976,7 @@ TEST_F(DocumentProviderTest, Scoring) {
           {"title": "Document 3", "score": 1150, "url": "url",
             "metadata": {"owner": {"emailAddresses": [{}] }} }
         ]})",
-      "input", {1150, 950, 949});
+      "document", {1150, 950, 949});
 
   // Client scoring should match each input word at most once.
   CheckScoring(
@@ -993,22 +993,6 @@ TEST_F(DocumentProviderTest, Scoring) {
             "snippet": {"snippet": "bows bows"}}
         ]})",
       "bows", {0, 669, 669});
-
-  // Client scoring should consider snippet but not URL matches.
-  CheckScoring(
-      {
-          {"DocumentUseServerScore", "false"},
-          {"DocumentUseClientScore", "true"},
-          {"DocumentCapScorePerRank", "false"},
-          {"DocumentBoostOwned", "false"},
-      },
-      R"({"results": [
-          {"title": "rainbow", "score": 1000, "url": "url"},
-          {"title": "rainbow", "score": 900, "url": "bow"},
-          {"title": "rainbow", "score": 900, "url": "bow",
-            "snippet": {"snippet": "bow bow"}}
-        ]})",
-      "rain bow", {669, 669, 793});
 
   // Client scoring should break user input on colon.
   CheckScoring(
@@ -1278,13 +1262,12 @@ TEST_F(DocumentProviderTest, LowQualitySuggestions) {
                   const std::string& input_text,
                   const std::vector<int> expected_scores) {
     base::test::ScopedFeatureList feature_list;
-    if (limit_enabled)
-      feature_list.InitAndEnableFeatureWithParameters(
-          omnibox::kDocumentProvider,
-          {{std::string(
-                OmniboxFieldTrial::kDocumentProviderMaxLowQualitySuggestions
-                    .name),
-            "1"}});
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kDocumentProvider,
+        {{std::string(
+              OmniboxFieldTrial::kDocumentProviderMaxLowQualitySuggestions
+                  .name),
+          limit_enabled ? "1" : "100"}});
     absl::optional<base::Value> response = base::JSONReader::Read(response_str);
     provider_->input_.UpdateText(base::UTF8ToUTF16(input_text), 0, {});
     ACMatches matches = provider_->ParseDocumentSearchResults(*response);
