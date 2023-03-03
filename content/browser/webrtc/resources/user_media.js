@@ -33,7 +33,7 @@ export class UserMediaTable {
    */
   createTab() {
     const container = this.tabView.addTab(USER_MEDIA_TAB_ID,
-        'GetUserMedia/GetDisplayMedia Requests');
+        'getUserMedia/getDisplayMedia');
     // Create the filter input field and label.
     appendChildWithText(container, 'label', 'Filter by origin including ');
     const input = document.createElement('input');
