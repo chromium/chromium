@@ -276,23 +276,10 @@ const int kURLLabelDefaultNumberOfLines = 3;
                                            primaryAction:readMoreAction];
     [_expandURLButton setAttributedTitle:readMoreString
                                 forState:UIControlStateNormal];
-
-    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-    // iOS 15.
-    if (@available(iOS 15, *)) {
-      _expandURLButton.configuration.contentInsets =
-          NSDirectionalEdgeInsetsMake(CGFLOAT_EPSILON, CGFLOAT_EPSILON,
-                                      CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-    }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    else {
-      _expandURLButton.titleEdgeInsets = UIEdgeInsetsMake(
-          CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-      _expandURLButton.contentEdgeInsets = UIEdgeInsetsMake(
-          CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
-    }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
+    _expandURLButton.titleEdgeInsets = UIEdgeInsetsMake(
+        CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
+    _expandURLButton.contentEdgeInsets = UIEdgeInsetsMake(
+        CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON, CGFLOAT_EPSILON);
     _expandURLButton.backgroundColor = self.view.backgroundColor;
     _expandURLButton.translatesAutoresizingMaskIntoConstraints = NO;
     // On voice over, the full info is on the URL field and this button isn't

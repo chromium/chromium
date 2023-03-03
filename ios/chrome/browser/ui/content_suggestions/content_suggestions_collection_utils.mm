@@ -198,11 +198,7 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
   [search_tab_target addSubview:voice_search_button];
 
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   [voice_search_button setAdjustsImageWhenHighlighted:NO];
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   UIImage* mic_image;
   if (UseSymbols()) {
@@ -230,12 +226,11 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
   [search_tap_target addSubview:lens_button];
 
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  // Set adjustsImageWhenHighlighted on ios 14 and lower.
-  lens_button.adjustsImageWhenHighlighted = NO;
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  if (@available(iOS 16, *)) {
+  } else {
+    // Set adjustsImageWhenHighlighted on ios 15 and lower.
+    lens_button.adjustsImageWhenHighlighted = NO;
+  }
 
   UIImage* camera_image =
       UseSymbols() ? CustomSymbolWithPointSize(

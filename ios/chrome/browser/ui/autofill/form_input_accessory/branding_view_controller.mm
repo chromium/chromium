@@ -59,22 +59,15 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
       break;
   }
   UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
-
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (@available(iOS 15, *)) {
+  if (@available(iOS 15.0, *)) {
     UIButtonConfiguration* buttonConfig =
         [UIButtonConfiguration plainButtonConfiguration];
     buttonConfig.contentInsets =
         NSDirectionalEdgeInsetsMake(0, kLeadingInset, 0, 0);
     button.configuration = buttonConfig;
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     button.imageEdgeInsets = UIEdgeInsetsMake(0, kLeadingInset, 0, 0);
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-
   button.accessibilityIdentifier = kBrandingButtonAXId;
   button.isAccessibilityElement = NO;  // Prevents VoiceOver users from tap.
   button.translatesAutoresizingMaskIntoConstraints = NO;
