@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -50,6 +51,8 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -1971,8 +1974,8 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
     : public autofill::BrowserAutofillManagerTestDelegate {
  public:
   explicit BrowserAutofillManagerTestDelegateDevtoolsImpl(
-      WebContents* inspectedContents)
-      : inspected_contents_(inspectedContents) {}
+      WebContents* inspected_contents)
+      : inspected_contents_(inspected_contents) {}
 
   BrowserAutofillManagerTestDelegateDevtoolsImpl(
       const BrowserAutofillManagerTestDelegateDevtoolsImpl&) = delete;
@@ -1986,6 +1989,14 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   void DidFillFormData() override {}
 
   void DidShowSuggestions() override {
+    // Set an override for the minimum 500 ms threshold before enter key strokes
+    // are accepted.
+    if (base::WeakPtr<autofill::AutofillPopupControllerImpl> controller =
+            autofill::ChromeAutofillClient::FromWebContentsForTesting(
+                inspected_contents_.get())
+                ->popup_controller_for_testing()) {
+      controller->DisableThresholdForTesting(true);
+    }
     ASSERT_TRUE(content::ExecuteScript(inspected_contents_,
                                        "console.log('didShowSuggestions');"));
   }
@@ -1993,7 +2004,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   void OnTextFieldChanged() override {}
 
  private:
-  WebContents* inspected_contents_;
+  const raw_ptr<WebContents> inspected_contents_;
 };
 
 // Disabled. Failing on MacOS MSAN. See https://crbug.com/849129.
@@ -2015,6 +2026,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
           ->DriverForFrame(GetInspectedTab()->GetPrimaryMainFrame());
   auto* autofill_manager = static_cast<autofill::BrowserAutofillManager*>(
       autofill_driver->autofill_manager());
+  ASSERT_TRUE(autofill_manager);
   BrowserAutofillManagerTestDelegateDevtoolsImpl autoFillTestDelegate(
       GetInspectedTab());
   autofill_manager->SetTestDelegate(&autoFillTestDelegate);

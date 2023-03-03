@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -113,11 +114,16 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
 
 // AutofillPopupController implementation.
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
-    int index,
-    base::TimeDelta show_threshold) {
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
+  // Suggestions inside the keyboard accessory adapter are accepted without
+  // requiring a minimum time threshold.
+  NOTREACHED();
+}
+
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestionWithoutThreshold(
+    int index) {
   if (controller_) {
-    controller_->AcceptSuggestion(OffsetIndexFor(index), show_threshold);
+    controller_->AcceptSuggestionWithoutThreshold(OffsetIndexFor(index));
   }
 }
 

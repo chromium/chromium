@@ -180,6 +180,7 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
 
   // Making protected functions public for testing
   using AutofillPopupControllerImpl::AcceptSuggestion;
+  using AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold;
   using AutofillPopupControllerImpl::element_bounds;
   using AutofillPopupControllerImpl::FireControlsChangedEvent;
   using AutofillPopupControllerImpl::GetLineCount;
@@ -735,8 +736,7 @@ TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
 
   // The following should not crash:
-  popup_controller().AcceptSuggestion(
-      1, /*show_threshold=*/base::Milliseconds(0));  // Out of bounds!
+  popup_controller().AcceptSuggestion(1);  // Out of bounds!
 }
 
 TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
@@ -744,16 +744,21 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
 
   // Calls before the threshold are ignored.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  popup_controller().AcceptSuggestion(
-      0, /*show_threshold=*/base::Milliseconds(500));
+  popup_controller().AcceptSuggestion(0);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  popup_controller().AcceptSuggestion(
-      0, /*show_threshold=*/base::Milliseconds(500));
+  popup_controller().AcceptSuggestion(0);
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion);
   task_environment()->FastForwardBy(base::Milliseconds(400));
-  popup_controller().AcceptSuggestion(
-      0, /*show_threshold=*/base::Milliseconds(500));
+  popup_controller().AcceptSuggestion(0);
+}
+
+TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionWithoutThreshold) {
+  ShowSuggestions({1});
+
+  // Calls are accepted immediately.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
+  popup_controller().AcceptSuggestionWithoutThreshold(0);
 }
 
 TEST_F(AutofillPopupControllerUnitTest,
@@ -762,11 +767,9 @@ TEST_F(AutofillPopupControllerUnitTest,
 
   // Calls before the threshold are ignored.
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  popup_controller().AcceptSuggestion(
-      0, /*show_threshold=*/base::Milliseconds(500));
+  popup_controller().AcceptSuggestion(0);
   task_environment()->FastForwardBy(base::Milliseconds(100));
-  popup_controller().AcceptSuggestion(
-      0, /*show_threshold=*/base::Milliseconds(500));
+  popup_controller().AcceptSuggestion(0);
 
   task_environment()->FastForwardBy(base::Milliseconds(400));
   // Show the suggestions again (simulating, e.g., a click somewhere slightly
@@ -774,14 +777,12 @@ TEST_F(AutofillPopupControllerUnitTest,
   ShowSuggestions({1});
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
-  popup_controller().AcceptSuggestion(
-      0, /*show_threshold=*/base::Milliseconds(500));
+  popup_controller().AcceptSuggestion(0);
 
   EXPECT_CALL(*delegate(), DidAcceptSuggestion);
   // After waiting, suggestions are accepted again.
   task_environment()->FastForwardBy(base::Milliseconds(500));
-  popup_controller().AcceptSuggestion(
-      0, /*show_threshold=*/base::Milliseconds(500));
+  popup_controller().AcceptSuggestion(0);
 }
 
 }  // namespace autofill

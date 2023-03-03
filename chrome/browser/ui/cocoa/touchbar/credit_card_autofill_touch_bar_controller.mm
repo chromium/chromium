@@ -4,6 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/grit/components_scaled_resources.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -34,8 +36,9 @@ constexpr int maxTouchBarItems = 3;
 
 // Returns the credit card image.
 NSImage* GetCreditCardTouchBarImage(int iconId) {
-  if (iconId < 1)
+  if (iconId < 1) {
     return nil;
+  }
 
   // If it's a generic card image, use the vector icon instead.
   if (iconId == IDR_AUTOFILL_CC_GENERIC) {
@@ -82,15 +85,17 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
       makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier {
-  if (![identifier hasSuffix:kCreditCardItemsTouchId])
+  if (![identifier hasSuffix:kCreditCardItemsTouchId]) {
     return nil;
+  }
 
   NSMutableArray* creditCardItems = [NSMutableArray array];
   for (int i = 0; i < _controller->GetLineCount() && i < maxTouchBarItems;
        i++) {
     const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(i);
-    if (suggestion.frontend_id < autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
+    if (suggestion.frontend_id < autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
       continue;
+    }
 
     NSString* cardIdentifier = [NSString
         stringWithFormat:@"%@-%i",
@@ -179,8 +184,13 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (void)acceptCreditCard:(id)sender {
-  _controller->AcceptSuggestion([sender tag],
-                                /*show_threshold=*/base::TimeDelta());
+  if (base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillPopupUseThresholdForKeyboardAndMobileAccept)) {
+    _controller->AcceptSuggestion([sender tag]);
+  } else {
+    _controller->AcceptSuggestionWithoutThreshold([sender tag]);
+  }
 }
 
 - (void)setIsCreditCardPopup:(bool)is_credit_card_popup {
