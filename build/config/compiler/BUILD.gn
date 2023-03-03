@@ -725,9 +725,8 @@ config("compiler") {
         # ARM was originally set lower than x86 to keep the size
         # bloat of ThinLTO to <10%, but that's potentially no longer true.
         # FIXME(inglorion): maybe tune these?
-        if (target_cpu == "arm" || target_cpu == "arm64") {
-          import_instr_limit = 20
-        }
+        # TODO(b/271459198): Revert limit on amd64 to 30 when fixed.
+        import_instr_limit = 20
       } else if (is_android) {
         # TODO(crbug.com/1308318): Investigate if we can get the > 6% perf win
         # of import_instr_limit 30 with a binary size hit smaller than ~2 MiB.
