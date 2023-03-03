@@ -7510,17 +7510,6 @@
 
     <issue
         id="ClickableViewAccessibility"
-        message="`onTouch` lambda should call `View#performClick` when a click is detected"
-        errorLine1="            row.setDragHandleOnTouchListener((v, event) -> {"
-        errorLine2="                                             ^">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="279"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
         message="Custom view ``ImageView`` has `setOnTouchListener` called on it but does not override `performClick`"
         errorLine1="        mDragHandle.setOnTouchListener(l);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">

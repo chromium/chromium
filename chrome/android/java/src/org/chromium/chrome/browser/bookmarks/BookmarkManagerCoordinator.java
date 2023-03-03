@@ -39,6 +39,10 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Responsible for setting up sub-components and routing incoming/outgoing signals */
 public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHandler {
@@ -114,8 +118,8 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
         mBookmarkOpener = new BookmarkOpener(mBookmarkModel, context, openBookmarkComponentName);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, selectionDelegate, mRecyclerView, bookmarkItemsAdapter,
-                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier,
-                this::createView);
+                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier, this::createView,
+                this::bindView);
 
         mPromoHeaderManager = bookmarkItemsAdapter.getPromoHeaderManager();
         mBookmarkToolbarCoordinator.initialize(/*bookmarkDelegate=*/mMediator);
@@ -250,6 +254,40 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
         }
     }
 
+    public void bindView(View view, @ViewType int viewType, PropertyModel model) {
+        ViewBinder<PropertyModel, View, PropertyKey> viewBinder = null;
+        switch (viewType) {
+            case ViewType.PERSONALIZED_SIGNIN_PROMO:
+            case ViewType.PERSONALIZED_SYNC_PROMO:
+                viewBinder = BookmarkManagerViewBinder::bindPersonalizedPromoView;
+                break;
+            case ViewType.SYNC_PROMO:
+                viewBinder = BookmarkManagerViewBinder::bindLegacyPromoView;
+                break;
+            case ViewType.SECTION_HEADER:
+                viewBinder = BookmarkManagerViewBinder::bindSectionHeaderView;
+                break;
+            case ViewType.FOLDER:
+                viewBinder = BookmarkManagerViewBinder::bindBookmarkFolderView;
+                break;
+            case ViewType.BOOKMARK:
+                viewBinder = BookmarkManagerViewBinder::bindBookmarkItemView;
+                break;
+            case ViewType.SHOPPING_POWER_BOOKMARK:
+                viewBinder = BookmarkManagerViewBinder::bindShoppingItemView;
+                break;
+            case ViewType.DIVIDER:
+                viewBinder = BookmarkManagerViewBinder::bindDividerView;
+                break;
+            case ViewType.SHOPPING_FILTER:
+                viewBinder = BookmarkManagerViewBinder::bindShoppingFilterView;
+                break;
+            default:
+                assert false;
+        }
+        PropertyModelChangeProcessor.create(model, view, viewBinder);
+    }
+
     private View buildPersonalizedPromoView(ViewGroup parent) {
         return mPromoHeaderManager.createPersonalizedSigninAndSyncPromoHolder(parent);
     }
@@ -273,6 +311,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
     private View buildShoppingItemView(ViewGroup parent) {
         PowerBookmarkShoppingItemRow row = (PowerBookmarkShoppingItemRow) inflateBookmarkRow(
                 parent, org.chromium.chrome.R.layout.power_bookmark_shopping_item_row);
+        // TODO(https://crbug.com/1416611): Move init to view binding.
         row.init(mImageFetcher, mBookmarkModel, mSnackbarManager);
         return row;
     }
@@ -292,6 +331,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
 
     private View inflateBookmarkRow(ViewGroup parent, @LayoutRes int layoutId) {
         BookmarkRow row = (BookmarkRow) inflate(parent, layoutId);
+        // TODO(https://crbug.com/1416611): Move onDelegateInitialized to view binding.
         (row).onDelegateInitialized(/*delegate=*/mMediator);
         return row;
     }

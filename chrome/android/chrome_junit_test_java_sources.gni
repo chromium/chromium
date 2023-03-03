@@ -41,6 +41,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/base/SplitPreloaderTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediatorTest.java",
+  "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinderTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/ReadingListSectionHeaderTest.java",
