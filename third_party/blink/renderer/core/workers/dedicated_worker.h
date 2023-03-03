@@ -124,8 +124,6 @@ class CORE_EXPORT DedicatedWorker final
   void Trace(Visitor*) const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DedicatedWorkerTest, TopLevelFrameSecurityOrigin);
-
   // Starts the worker.
   void Start();
   void ContinueStart(

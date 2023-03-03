@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -432,9 +431,10 @@ BeginFrameProviderParams CreateBeginFrameProviderParams(
   // itself later.
   BeginFrameProviderParams begin_frame_provider_params;
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    auto* web_local_frame = WebLocalFrameImpl::FromFrame(window->GetFrame());
-    if (web_local_frame) {
-      WebFrameWidgetImpl* widget = web_local_frame->LocalRootFrameWidget();
+    LocalFrame* frame = window->GetFrame();
+    if (frame) {
+      WebFrameWidgetImpl* widget =
+          WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
       begin_frame_provider_params.parent_frame_sink_id =
           widget->GetFrameSinkId();
     }
@@ -457,7 +457,6 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
   ExecutionContext* execution_context = GetExecutionContext();
   scoped_refptr<base::SingleThreadTaskRunner>
       agent_group_scheduler_compositor_task_runner;
-  const SecurityOrigin* top_level_frame_security_origin;
 
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     // When the main thread creates a new DedicatedWorker.
@@ -469,8 +468,6 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
             ->ToFrameScheduler()
             ->GetAgentGroupScheduler()
             ->CompositorTaskRunner();
-    top_level_frame_security_origin =
-        window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin();
   } else {
     // When a DedicatedWorker creates another DedicatedWorker (nested worker).
     WorkerGlobalScope* worker_global_scope =
@@ -480,11 +477,8 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
     settings = WorkerSettings::Copy(worker_global_scope->GetWorkerSettings());
     agent_group_scheduler_compositor_task_runner =
         worker_global_scope->GetAgentGroupSchedulerCompositorTaskRunner();
-    top_level_frame_security_origin =
-        worker_global_scope->top_level_frame_security_origin();
   }
   DCHECK(agent_group_scheduler_compositor_task_runner);
-  DCHECK(top_level_frame_security_origin);
 
   mojom::blink::ScriptType script_type =
       (options_->type() == script_type_names::kClassic)
@@ -514,8 +508,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->CrossOriginIsolatedCapability(),
       execution_context->IsIsolatedContext(),
       /*interface_registry=*/nullptr,
-      std::move(agent_group_scheduler_compositor_task_runner),
-      top_level_frame_security_origin);
+      std::move(agent_group_scheduler_compositor_task_runner));
 }
 
 scoped_refptr<WebWorkerFetchContext>

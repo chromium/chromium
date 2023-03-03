@@ -49,8 +49,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     bool parent_is_isolated_context,
     InterfaceRegistry* interface_registry,
     scoped_refptr<base::SingleThreadTaskRunner>
-        agent_group_scheduler_compositor_task_runner,
-    const SecurityOrigin* top_level_frame_security_origin)
+        agent_group_scheduler_compositor_task_runner)
     : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name),
@@ -89,11 +88,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       parent_is_isolated_context(parent_is_isolated_context),
       interface_registry(interface_registry),
       agent_group_scheduler_compositor_task_runner(
-          std::move(agent_group_scheduler_compositor_task_runner)),
-      top_level_frame_security_origin(
-          top_level_frame_security_origin
-              ? top_level_frame_security_origin->IsolatedCopy()
-              : nullptr) {
+          std::move(agent_group_scheduler_compositor_task_runner)) {
   this->inherited_trial_features =
       std::make_unique<Vector<OriginTrialFeature>>();
   if (inherited_trial_features) {
