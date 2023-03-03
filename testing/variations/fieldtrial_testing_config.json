@@ -9046,6 +9046,25 @@
             ]
         }
     ],
+    "PasswordGenerationPreviewOnHover": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordGenerationPreviewOnHover"
+                    ]
+                }
+            ]
+        }
+    ],
     "PasswordNotesWithBackup": [
         {
             "platforms": [
