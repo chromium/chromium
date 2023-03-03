@@ -338,7 +338,9 @@ void EventRouter::AddListenerForServiceWorker(const std::string& extension_id,
 void EventRouter::AddLazyListenerForMainThread(const std::string& extension_id,
                                                const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  AddLazyEventListener(event_name, extension_id);
+  std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
+      event_name, extension_id, browser_context_, false, GURL(), absl::nullopt);
+  AddLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
 }
 
 void EventRouter::AddLazyListenerForServiceWorker(
@@ -443,7 +445,9 @@ void EventRouter::RemoveLazyListenerForMainThread(
     const std::string& extension_id,
     const std::string& event_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RemoveLazyEventListener(event_name, extension_id);
+  std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
+      event_name, extension_id, browser_context_, false, GURL(), absl::nullopt);
+  RemoveLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
 }
 
 void EventRouter::RemoveLazyListenerForServiceWorker(
@@ -636,20 +640,6 @@ void EventRouter::RenderProcessHostDestroyed(RenderProcessHost* host) {
   listeners_.RemoveListenersForProcess(host);
   observed_process_set_.erase(host);
   host->RemoveObserver(this);
-}
-
-void EventRouter::AddLazyEventListener(const std::string& event_name,
-                                       const ExtensionId& extension_id) {
-  std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
-      event_name, extension_id, browser_context_, false, GURL(), absl::nullopt);
-  AddLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
-}
-
-void EventRouter::RemoveLazyEventListener(const std::string& event_name,
-                                          const ExtensionId& extension_id) {
-  std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
-      event_name, extension_id, browser_context_, false, GURL(), absl::nullopt);
-  RemoveLazyEventListenerImpl(std::move(listener), RegisteredEventType::kLazy);
 }
 
 void EventRouter::AddFilteredEventListener(
@@ -871,7 +861,7 @@ void EventRouter::DispatchEventWithLazyListener(const std::string& extension_id,
           extension_id, Extension::GetBaseURLFromExtensionId(extension_id),
           event_name);
     } else {
-      AddLazyEventListener(event_name, extension_id);
+      AddLazyListenerForMainThread(extension_id, event_name);
     }
   }
 
@@ -883,7 +873,7 @@ void EventRouter::DispatchEventWithLazyListener(const std::string& extension_id,
           extension_id, Extension::GetBaseURLFromExtensionId(extension_id),
           event_name);
     } else {
-      RemoveLazyEventListener(event_name, extension_id);
+      RemoveLazyListenerForMainThread(extension_id, event_name);
     }
   }
 }
