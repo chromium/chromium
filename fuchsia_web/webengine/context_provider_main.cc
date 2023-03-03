@@ -49,12 +49,11 @@ int ContextProviderMain() {
 
   LogComponentStartWithVersion("WebEngine context_provider");
 
-  sys::OutgoingDirectory* const directory =
-      base::ComponentContextForProcess()->outgoing().get();
-
-  ContextProviderImpl context_provider(*directory);
+  ContextProviderImpl context_provider;
 
   // Publish the ContextProvider and Debug services.
+  sys::OutgoingDirectory* const directory =
+      base::ComponentContextForProcess()->outgoing().get();
   base::ScopedServiceBinding<fuchsia::web::ContextProvider> context_binding(
       directory, &context_provider);
   base::ScopedServiceBinding<fuchsia::web::Debug> debug_hub_binding(
