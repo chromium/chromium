@@ -41,6 +41,7 @@
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/tooltip_icon.h"
@@ -182,10 +183,12 @@ void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
     ShrinkAndHideDisplay(center_error_label_);
     DisplayPlaceholderImage();
     bottom_error_label_->SetVisible(true);
+    bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(false);
     return;
   }
   ShrinkAndHideDisplay(qr_code_image_);
   bottom_error_label_->SetVisible(false);
+  bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(true);
   center_error_label_->SetPreferredSize(GetQRCodeImageSize());
   center_error_label_->SetVisible(true);
 }
@@ -193,6 +196,7 @@ void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
 void QRCodeGeneratorBubble::HideErrors(bool enable_download_button) {
   ShrinkAndHideDisplay(center_error_label_);
   bottom_error_label_->SetVisible(false);
+  bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(true);
   download_button_->SetEnabled(enable_download_button);
 }
 
@@ -276,6 +280,7 @@ void QRCodeGeneratorBubble::Init() {
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);
+  bottom_error_label->GetViewAccessibility().OverrideIsIgnored(true);
   auto* bottom_error_container = AddChildView(std::make_unique<views::View>());
   bottom_error_container->SetUseDefaultFillLayout(true);
   bottom_error_label_ =

@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -164,10 +165,19 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
                SK_ColorTRANSPARENT;
   }
 
+  // Note that this function and the one below it are not opposites!
+  // ErrorLabelShowing() checks whether *all* the conditions for the label to
+  // appear are true, and ErrorLabelHiddenAndA11yIgnored() checks whether *none*
+  // of the conditions for the label to appear are true.
   bool ErrorLabelShowing() {
     return error_label()->GetVisible() &&
            error_label()->GetPreferredSize().height() > 0 &&
            error_label()->GetPreferredSize().width() > 0;
+  }
+
+  bool ErrorLabelHiddenAndA11yIgnored() {
+    return !error_label()->GetVisible() &&
+           error_label()->GetViewAccessibility().IsIgnored();
   }
 
   FakeQRCodeGeneratorService* service() { return &fake_service_; }
@@ -282,7 +292,7 @@ TEST_F(QRCodeGeneratorBubbleUITest, LabelHidesAfterErrorState) {
   bubble()->Show();
 
   EXPECT_TRUE(ImagePlaceholderShowing());
-  EXPECT_FALSE(ErrorLabelShowing());
+  EXPECT_TRUE(ErrorLabelHiddenAndA11yIgnored());
 
   service()->WaitForRequest();
   ASSERT_TRUE(service()->HasPendingRequest());
@@ -323,7 +333,7 @@ TEST_F(QRCodeGeneratorBubbleUITest, LabelHidesAfterErrorState) {
 
   EXPECT_TRUE(ImageShowing());
   EXPECT_TRUE(ImagePlaceholderShowing());
-  EXPECT_FALSE(ErrorLabelShowing());
+  EXPECT_TRUE(ErrorLabelHiddenAndA11yIgnored());
   EXPECT_FALSE(download_button()->GetEnabled());
 }
 
