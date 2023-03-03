@@ -32,7 +32,8 @@ The current status of existing standards and Abseil features is:
 *   **C++14:** _Default allowed_
 *   **C++17:** Initially supported December 23, 2021; see allowed/banned/TBD
     features below
-*   **C++20:** _Not yet supported in Chromium_
+*   **C++20:** _Not yet supported in Chromium_, with the exception of
+    [designated initializers](https://google.github.io/styleguide/cppguide.html#Designated_initializers)
 *   **C++23:** _Not yet standardized_
 *   **Abseil:** _Default allowed; see banned/TBD features below_
       * absl::AnyInvocable: Initially supported June 20, 2022
@@ -1500,6 +1501,26 @@ contexts.
 **Documentation:**
 [`std::from_chars`](https://en.cppreference.com/w/cpp/utility/from_chars)
 [`std::to_chars`](https://en.cppreference.com/w/cpp/utility/to_chars),
+
+**Notes:**
+*** promo
+None
+***
+
+## C++20 Allowed Language Features {#core-allowlist-20}
+
+### Designated initializers <sup>[allowed]</sup>
+
+```c++
+struct S { int x = 1; int y = 2; }
+S s{ .y = 3 };  // OK, s.x == 1, s.y == 3
+```
+
+**Description:** Allows explicit initialization of subsets of aggregate members
+at construction.
+
+**Documentation:**
+[Designated initializers](https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers)
 
 **Notes:**
 *** promo
