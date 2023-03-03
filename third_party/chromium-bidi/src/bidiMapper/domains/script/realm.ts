@@ -106,8 +106,7 @@ export class Realm {
         // Remember all the handles sent to client.
         this.#realmStorage.knownHandlesToRealm.set(objectId, this.realmId);
       } else {
-        // No need in waiting for the object to be released.
-        // noinspection ES6MissingAwait
+        // No need in awaiting for the object to be released.
         this.cdpClient.sendCommand('Runtime.releaseObject', {objectId});
       }
     }

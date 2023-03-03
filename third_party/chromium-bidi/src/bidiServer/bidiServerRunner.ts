@@ -24,9 +24,7 @@ const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ▸');
 const debugRecv = debug('bidiServer:RECV ◂');
 
-async function getHttpRequestPayload(
-  request: http.IncomingMessage
-): Promise<string> {
+function getHttpRequestPayload(request: http.IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
     let data = '';
     request.on('data', (chunk) => {

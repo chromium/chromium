@@ -112,8 +112,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     this.#parser = parser;
   }
 
-  // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
-  async #process_session_status(): Promise<Session.StatusResult> {
+  static #process_session_status(): Session.StatusResult {
     return {result: {ready: false, message: 'already connected'}};
   }
 
@@ -146,7 +145,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   ): Promise<Message.CommandResponseResult> {
     switch (commandData.method) {
       case 'session.status':
-        return this.#process_session_status();
+        return CommandProcessor.#process_session_status();
       case 'session.subscribe':
         return this.#process_session_subscribe(
           this.#parser.parseSubscribeParams(commandData.params),

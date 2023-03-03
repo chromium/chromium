@@ -76,18 +76,18 @@ function createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
   class WindowCdpTransport implements ITransport {
-    private onMessage: ((message: string) => void) | null = null;
+    #onMessage: ((message: string) => void) | null = null;
 
     constructor() {
       window.cdp.onmessage = (message: string) => {
-        if (this.onMessage) {
-          this.onMessage.call(null, message);
+        if (this.#onMessage) {
+          this.#onMessage.call(null, message);
         }
       };
     }
 
     setOnMessage(onMessage: (message: string) => Promise<void>): void {
-      this.onMessage = onMessage;
+      this.#onMessage = onMessage;
     }
 
     async sendMessage(message: string): Promise<void> {
@@ -95,7 +95,7 @@ function createCdpConnection() {
     }
 
     close() {
-      this.onMessage = null;
+      this.#onMessage = null;
       window.cdp.onmessage = null;
     }
   }
@@ -110,8 +110,7 @@ function createCdpConnection() {
 
 async function createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements BidiTransport {
-    private onMessage: ((message: Message.RawCommandRequest) => void) | null =
-      null;
+    #onMessage: ((message: Message.RawCommandRequest) => void) | null = null;
 
     constructor() {
       window.onBidiMessage = (messageStr: string) => {
@@ -129,8 +128,8 @@ async function createBidiServer(selfTargetId: string) {
           );
           return;
         }
-        if (this.onMessage) {
-          this.onMessage.call(null, messageObj);
+        if (this.#onMessage) {
+          this.#onMessage.call(null, messageObj);
         }
       };
     }
@@ -138,7 +137,7 @@ async function createBidiServer(selfTargetId: string) {
     setOnMessage(
       onMessage: (message: Message.RawCommandRequest) => Promise<void>
     ): void {
-      this.onMessage = onMessage;
+      this.#onMessage = onMessage;
     }
 
     async sendMessage(message: Message.OutgoingMessage): Promise<void> {
@@ -148,7 +147,7 @@ async function createBidiServer(selfTargetId: string) {
     }
 
     close() {
-      this.onMessage = null;
+      this.#onMessage = null;
       window.onBidiMessage = null;
     }
 

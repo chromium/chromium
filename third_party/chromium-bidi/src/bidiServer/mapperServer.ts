@@ -24,15 +24,15 @@ const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
 
 export class MapperServer {
-  private handlers: ((message: string) => void)[] = [];
+  #handlers: ((message: string) => void)[] = [];
 
   static async create(
     cdpUrl: string,
     mapperContent: string
   ): Promise<MapperServer> {
-    const cdpConnection = await this.establishCdpConnection(cdpUrl);
+    const cdpConnection = await this.#establishCdpConnection(cdpUrl);
     try {
-      const mapperCdpClient = await this.initMapper(
+      const mapperCdpClient = await this.#initMapper(
         cdpConnection,
         mapperContent
       );
@@ -47,26 +47,24 @@ export class MapperServer {
     private cdpConnection: CdpConnection,
     private mapperCdpClient: CdpClient
   ) {
-    this.mapperCdpClient.on('Runtime.bindingCalled', this.onBindingCalled);
+    this.mapperCdpClient.on('Runtime.bindingCalled', this.#onBindingCalled);
     this.mapperCdpClient.on(
       'Runtime.consoleAPICalled',
-      this.onConsoleAPICalled
+      this.#onConsoleAPICalled
     );
   }
 
   setOnMessage(handler: (message: string) => void): void {
-    this.handlers.push(handler);
+    this.#handlers.push(handler);
   }
   sendMessage(messageJson: string): Promise<void> {
-    return this.sendBidiMessage(messageJson);
+    return this.#sendBidiMessage(messageJson);
   }
   close() {
     this.cdpConnection.close();
   }
 
-  private static async establishCdpConnection(
-    cdpUrl: string
-  ): Promise<CdpConnection> {
+  static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
     return new Promise((resolve, reject) => {
       debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 
@@ -84,27 +82,23 @@ export class MapperServer {
     });
   }
 
-  private async sendBidiMessage(bidiMessageJson: string): Promise<void> {
+  async #sendBidiMessage(bidiMessageJson: string): Promise<void> {
     await this.mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
     });
   }
 
-  private onBidiMessage(bidiMessage: string): void {
-    for (const handler of this.handlers) handler(bidiMessage);
+  #onBidiMessage(bidiMessage: string): void {
+    for (const handler of this.#handlers) handler(bidiMessage);
   }
 
-  private onBindingCalled = async (
-    params: Protocol.Runtime.BindingCalledEvent
-  ) => {
+  #onBindingCalled = (params: Protocol.Runtime.BindingCalledEvent) => {
     if (params.name === 'sendBidiResponse') {
-      this.onBidiMessage(params.payload);
+      this.#onBidiMessage(params.payload);
     }
   };
 
-  private onConsoleAPICalled = async (
-    params: Protocol.Runtime.ConsoleAPICalledEvent
-  ) => {
+  #onConsoleAPICalled = (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
     debugLog(
       'consoleAPICalled %s %O',
       params.type,
@@ -112,7 +106,7 @@ export class MapperServer {
     );
   };
 
-  private static async initMapper(
+  static async #initMapper(
     cdpConnection: CdpConnection,
     mapperContent: string
   ): Promise<CdpClient> {

@@ -172,9 +172,9 @@ export class BrowsingContextProcessor {
     await this.#browsingContextStorage.findContext(contextId)?.delete();
   }
 
-  async process_browsingContext_getTree(
+  process_browsingContext_getTree(
     params: BrowsingContext.GetTreeParameters
-  ): Promise<BrowsingContext.GetTreeResult> {
+  ): BrowsingContext.GetTreeResult {
     const resultContexts =
       params.root === undefined
         ? this.#browsingContextStorage.getTopLevelContexts()
@@ -360,7 +360,7 @@ export class BrowsingContextProcessor {
     };
   }
 
-  async process_cdp_getSession(params: CDP.GetSessionParams) {
+  process_cdp_getSession(params: CDP.GetSessionParams) {
     const context = params.context;
     const sessionId =
       this.#browsingContextStorage.getKnownContext(context).cdpSessionId;

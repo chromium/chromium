@@ -42,7 +42,7 @@ export class CdpConnection {
   ) {
     this.#transport = transport;
     this.#log = log;
-    this.#transport.setOnMessage(this.onMessage);
+    this.#transport.setOnMessage(this.#onMessage);
     this.#browserCdpClient = createClient(this, null);
   }
 
@@ -98,7 +98,7 @@ export class CdpConnection {
     });
   }
 
-  private onMessage = async (message: string) => {
+  #onMessage = async (message: string) => {
     const parsed = JSON.parse(message);
     const messagePretty = JSON.stringify(parsed, null, 2);
     this.#log('received ◂', messagePretty);

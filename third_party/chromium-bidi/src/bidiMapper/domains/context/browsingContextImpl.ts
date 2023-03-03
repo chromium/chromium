@@ -139,8 +139,7 @@ export class BrowsingContextImpl {
       logger
     );
 
-    // No need in waiting for target to be unblocked.
-    // noinspection ES6MissingAwait
+    // No need in awaiting for target to be unblocked.
     context.#unblockAttachedTarget();
 
     await eventManager.registerEvent(
@@ -162,8 +161,7 @@ export class BrowsingContextImpl {
     cdpSessionId: string
   ) {
     this.#updateConnection(cdpClient, cdpSessionId);
-    // No need in waiting for target to be unblocked.
-    // noinspection JSIgnoredPromiseFromCall
+    // No need in awaiting for target to be unblocked.
     this.#unblockAttachedTarget();
   }
 

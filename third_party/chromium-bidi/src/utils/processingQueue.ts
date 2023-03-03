@@ -39,7 +39,6 @@ export class ProcessingQueue<T> {
   add(entry: Promise<T>) {
     this.#queue.push(entry);
     // No need in waiting. Just initialise processor if needed.
-    // noinspection JSIgnoredPromiseFromCall
     this.#processIfNeeded();
   }
 
