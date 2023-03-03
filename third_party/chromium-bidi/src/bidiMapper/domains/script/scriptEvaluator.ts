@@ -339,7 +339,7 @@ export class ScriptEvaluator {
         generateWebDriverValue: true,
         executionContextId: realm.executionContextId,
       });
-    return await realm.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
+    return realm.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
   }
 
   public async callFunction(
@@ -361,7 +361,7 @@ export class ScriptEvaluator {
     thisAndArgumentsList.push(
       ...(await Promise.all(
         _arguments.map(async (a) => {
-          return await deserializeToCdpArg(a, realm);
+          return deserializeToCdpArg(a, realm);
         })
       ))
     );

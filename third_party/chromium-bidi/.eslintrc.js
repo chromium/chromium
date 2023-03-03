@@ -32,6 +32,7 @@ module.exports = {
     'no-empty': ['error', {allowEmptyCatch: true}],
     'no-implicit-coercion': 'error',
     'no-negated-condition': 'error',
+    'no-return-await': 'error',
     'no-undef': 'error',
     'no-underscore-dangle': 'error',
     'prefer-promise-reject-errors': 'error',

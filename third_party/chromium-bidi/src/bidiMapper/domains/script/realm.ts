@@ -253,11 +253,7 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
-    return await scriptEvaluator.serializeCdpObject(
-      cdpObject,
-      resultOwnership,
-      this
-    );
+    return scriptEvaluator.serializeCdpObject(cdpObject, resultOwnership, this);
   }
 
   /**
@@ -270,6 +266,6 @@ export class Realm {
   async stringifyObject(
     cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<string> {
-    return await stringifyObject(cdpObject, this);
+    return stringifyObject(cdpObject, this);
   }
 }

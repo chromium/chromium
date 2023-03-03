@@ -146,32 +146,32 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   ): Promise<Message.CommandResponseResult> {
     switch (commandData.method) {
       case 'session.status':
-        return await this.#process_session_status();
+        return this.#process_session_status();
       case 'session.subscribe':
-        return await this.#process_session_subscribe(
+        return this.#process_session_subscribe(
           this.#parser.parseSubscribeParams(commandData.params),
           commandData.channel ?? null
         );
       case 'session.unsubscribe':
-        return await this.#process_session_unsubscribe(
+        return this.#process_session_unsubscribe(
           this.#parser.parseSubscribeParams(commandData.params),
           commandData.channel ?? null
         );
 
       case 'browsingContext.create':
-        return await this.#contextProcessor.process_browsingContext_create(
+        return this.#contextProcessor.process_browsingContext_create(
           this.#parser.parseCreateParams(commandData.params)
         );
       case 'browsingContext.close':
-        return await this.#contextProcessor.process_browsingContext_close(
+        return this.#contextProcessor.process_browsingContext_close(
           this.#parser.parseCloseParams(commandData.params)
         );
       case 'browsingContext.getTree':
-        return await this.#contextProcessor.process_browsingContext_getTree(
+        return this.#contextProcessor.process_browsingContext_getTree(
           this.#parser.parseGetTreeParams(commandData.params)
         );
       case 'browsingContext.navigate':
-        return await this.#contextProcessor.process_browsingContext_navigate(
+        return this.#contextProcessor.process_browsingContext_navigate(
           this.#parser.parseNavigateParams(commandData.params)
         );
 
@@ -180,24 +180,24 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
           this.#parser.parseGetRealmsParams(commandData.params)
         );
       case 'script.callFunction':
-        return await this.#contextProcessor.process_script_callFunction(
+        return this.#contextProcessor.process_script_callFunction(
           this.#parser.parseCallFunctionParams(commandData.params)
         );
       case 'script.evaluate':
-        return await this.#contextProcessor.process_script_evaluate(
+        return this.#contextProcessor.process_script_evaluate(
           this.#parser.parseEvaluateParams(commandData.params)
         );
       case 'script.disown':
-        return await this.#contextProcessor.process_script_disown(
+        return this.#contextProcessor.process_script_disown(
           this.#parser.parseDisownParams(commandData.params)
         );
 
       case 'cdp.sendCommand':
-        return await this.#contextProcessor.process_cdp_sendCommand(
+        return this.#contextProcessor.process_cdp_sendCommand(
           this.#parser.parseSendCommandParams(commandData.params)
         );
       case 'cdp.getSession':
-        return await this.#contextProcessor.process_cdp_getSession(
+        return this.#contextProcessor.process_cdp_getSession(
           this.#parser.parseGetSessionParams(commandData.params)
         );
 

@@ -231,7 +231,7 @@ export class BrowsingContextProcessor {
       params.context
     );
 
-    return await context.navigate(
+    return context.navigate(
       params.url,
       params.wait === undefined ? 'none' : params.wait
     );
@@ -246,14 +246,14 @@ export class BrowsingContextProcessor {
     const context = this.#browsingContextStorage.getKnownContext(
       target.context
     );
-    return await context.getOrCreateSandbox(target.sandbox);
+    return context.getOrCreateSandbox(target.sandbox);
   }
 
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
     const realm = await this.#getRealm(params.target);
-    return await realm.scriptEvaluate(
+    return realm.scriptEvaluate(
       params.expression,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
@@ -280,7 +280,7 @@ export class BrowsingContextProcessor {
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
     const realm = await this.#getRealm(params.target);
-    return await realm.callFunction(
+    return realm.callFunction(
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
@@ -295,7 +295,7 @@ export class BrowsingContextProcessor {
     params: Script.DisownParameters
   ): Promise<Script.DisownResult> {
     const realm = await this.#getRealm(params.target);
-    await Promise.all(params.handles.map(async (h) => await realm.disown(h)));
+    await Promise.all(params.handles.map(async (h) => realm.disown(h)));
     return {result: {}};
   }
 

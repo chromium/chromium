@@ -260,7 +260,7 @@ async function createBidiServer(selfTargetId: string) {
     }
   }
 
-  return await BidiServer.createAndStart(
+  return BidiServer.createAndStart(
     new WindowBidiTransport(),
     createCdpConnection(),
     selfTargetId,
@@ -307,7 +307,7 @@ class BidiParserImpl implements BidiParser {
 
 // Needed to filter out info related to BiDi target.
 async function waitSelfTargetId(): Promise<string> {
-  return await new Promise((resolve) => {
+  return new Promise((resolve) => {
     window.setSelfTargetId = (targetId) => {
       log(LogType.system, 'Current target ID:', targetId);
       resolve(targetId);

@@ -19,8 +19,5 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export default async function read(): Promise<string> {
-  return await fs.readFile(
-    path.join(__dirname, '../../iife/mapperTab.js'),
-    'utf8'
-  );
+  return fs.readFile(path.join(__dirname, '../../iife/mapperTab.js'), 'utf8');
 }
