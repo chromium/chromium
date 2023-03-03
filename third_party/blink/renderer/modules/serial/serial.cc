@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,48 +39,6 @@ String TokenToString(const base::UnguessableToken& token) {
   return String::Format("%016" PRIX64 "%016" PRIX64,
                         token.GetHighForSerialization(),
                         token.GetLowForSerialization());
-}
-
-// Carries out basic checks for the web-exposed APIs, to make sure the minimum
-// requirements for them to be served are met. Returns true if any conditions
-// fail to be met, generating an appropriate exception as well. Otherwise,
-// returns false to indicate the call should be allowed.
-bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
-                                  ExecutionContext* context,
-                                  ExceptionState& exception_state) {
-  if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
-    return true;
-  }
-
-  // Rejects if the top-level frame has an opaque origin.
-  const SecurityOrigin* security_origin = nullptr;
-  if (context->IsWindow()) {
-    security_origin =
-        window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin();
-  } else if (context->IsDedicatedWorkerGlobalScope()) {
-    security_origin = static_cast<WorkerGlobalScope*>(context)
-                          ->top_level_frame_security_origin();
-  } else {
-    NOTREACHED_NORETURN();
-  }
-
-  if (security_origin->IsOpaque()) {
-    exception_state.ThrowSecurityError(
-        "Access to the Web Serial API is denied from contexts where the "
-        "top-level document has an opaque origin.");
-    return true;
-  }
-
-  if (!context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kSerial,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return true;
-  }
-
-  return false;
 }
 
 }  // namespace
@@ -128,8 +85,17 @@ void Serial::OnPortRemoved(mojom::blink::SerialPortInfoPtr port_info) {
 
 ScriptPromise Serial::getPorts(ScriptState* script_state,
                                ExceptionState& exception_state) {
-  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
-                                   GetExecutionContext(), exception_state)) {
+  auto* context = GetExecutionContext();
+  if (!context) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      kContextGone);
+    return ScriptPromise();
+  }
+
+  if (!context->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kSerial,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();
   }
 
@@ -146,8 +112,16 @@ ScriptPromise Serial::getPorts(ScriptState* script_state,
 ScriptPromise Serial::requestPort(ScriptState* script_state,
                                   const SerialPortRequestOptions* options,
                                   ExceptionState& exception_state) {
-  if (ShouldBlockSerialServiceCall(GetSupplementable()->DomWindow(),
-                                   GetExecutionContext(), exception_state)) {
+  if (!DomWindow()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      kContextGone);
+    return ScriptPromise();
+  }
+
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kSerial,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
     return ScriptPromise();
   }
 
