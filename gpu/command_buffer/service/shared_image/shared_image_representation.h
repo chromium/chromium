@@ -445,8 +445,9 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
 class GPU_GLES2_EXPORT DawnImageRepresentation
     : public SharedImageRepresentation {
  public:
-  static constexpr uint32_t kWriteUsage =
-      WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment;
+  static constexpr uint32_t kWriteUsage = WGPUTextureUsage_CopyDst |
+                                          WGPUTextureUsage_RenderAttachment |
+                                          WGPUTextureUsage_StorageBinding;
 
   DawnImageRepresentation(SharedImageManager* manager,
                           SharedImageBacking* backing,
