@@ -875,6 +875,48 @@ TEST(RawRef, OperatorsUseGetForComparison) {
               CountersMatch());
 }
 
+TEST(RawRef, CrossKindConversion) {
+  int x = 123;
+  CountingRawRef<int> ref1(x);
+
+  RawPtrCountingImpl::ClearCounters();
+  RawPtrCountingMayDangleImpl::ClearCounters();
+
+  CountingRawRefMayDangle<int> ref2(ref1);
+  CountingRawRefMayDangle<int> ref3(std::move(ref1));  // Falls back to copy.
+
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_duplication_cnt = 2}),
+              CountersMatch());
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
+                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 2}),
+              CountersMatch());
+}
+
+TEST(RawRef, CrossKindAssignment) {
+  int x = 123;
+  CountingRawRef<int> ref1(x);
+
+  CountingRawRefMayDangle<int> ref2(x);
+  CountingRawRefMayDangle<int> ref3(x);
+
+  RawPtrCountingImpl::ClearCounters();
+  RawPtrCountingMayDangleImpl::ClearCounters();
+  ref2 = ref1;
+  ref3 = std::move(ref1);  // Falls back to copy.
+
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_duplication_cnt = 2}),
+              CountersMatch());
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
+                  .wrap_raw_ptr_cnt = 0, .wrap_raw_ptr_for_dup_cnt = 2}),
+              CountersMatch());
+}
+
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 TEST(AsanBackupRefPtrImpl, RawRefGet) {

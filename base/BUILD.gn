@@ -3955,6 +3955,7 @@ if (enable_nocompile_tests) {
     sources = [
       "allocator/partition_allocator/partition_alloc_base/thread_annotations_pa_unittest.nc",
       "allocator/partition_allocator/pointers/raw_ptr_unittest.nc",
+      "allocator/partition_allocator/pointers/raw_ref_unittest.nc",
       "callback_list_unittest.nc",
       "containers/buffer_iterator_unittest.nc",
       "containers/checked_iterators_unittest.nc",

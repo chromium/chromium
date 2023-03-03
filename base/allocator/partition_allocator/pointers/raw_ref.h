@@ -123,16 +123,24 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   }
 
   // Deliberately implicit in order to support implicit upcast.
-  template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
+  // Delegate cross-kind conversion to the inner raw_ptr, which decides when to
+  // allow it.
+  template <class U,
+            RawPtrTraits PassedTraits,
+            class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ref(const raw_ref<U, Traits>& p) noexcept
+  PA_ALWAYS_INLINE raw_ref(const raw_ref<U, PassedTraits>& p) noexcept
       : inner_(p.inner_) {
     PA_RAW_PTR_CHECK(inner_);  // Catch use-after-move.
   }
   // Deliberately implicit in order to support implicit upcast.
-  template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
+  // Delegate cross-kind conversion to the inner raw_ptr, which decides when to
+  // allow it.
+  template <class U,
+            RawPtrTraits PassedTraits,
+            class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ref(raw_ref<U, Traits>&& p) noexcept
+  PA_ALWAYS_INLINE raw_ref(raw_ref<U, PassedTraits>&& p) noexcept
       : inner_(std::move(p.inner_)) {
     PA_RAW_PTR_CHECK(inner_);  // Catch use-after-move.
     if constexpr (need_clear_after_move) {
@@ -146,14 +154,23 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   }
 
   // Upcast assignment
-  template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
-  PA_ALWAYS_INLINE raw_ref& operator=(const raw_ref<U, Traits>& p) noexcept {
+  // Delegate cross-kind conversion to the inner raw_ptr, which decides when to
+  // allow it.
+  template <class U,
+            RawPtrTraits PassedTraits,
+            class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
+  PA_ALWAYS_INLINE raw_ref& operator=(
+      const raw_ref<U, PassedTraits>& p) noexcept {
     PA_RAW_PTR_CHECK(p.inner_);  // Catch use-after-move.
     inner_.operator=(p.inner_);
     return *this;
   }
-  template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
-  PA_ALWAYS_INLINE raw_ref& operator=(raw_ref<U, Traits>&& p) noexcept {
+  // Delegate cross-kind conversion to the inner raw_ptr, which decides when to
+  // allow it.
+  template <class U,
+            RawPtrTraits PassedTraits,
+            class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
+  PA_ALWAYS_INLINE raw_ref& operator=(raw_ref<U, PassedTraits>&& p) noexcept {
     PA_RAW_PTR_CHECK(p.inner_);  // Catch use-after-move.
     inner_.operator=(std::move(p.inner_));
     if constexpr (need_clear_after_move) {
