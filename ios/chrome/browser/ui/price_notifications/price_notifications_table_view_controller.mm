@@ -262,14 +262,9 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
                                      SectionIdentifierTrackedItems
                                                      isEmpty:YES]
               forSectionWithIdentifier:trackedSection];
-          [model setHeader:[self createHeaderForSectionIndex:
-                                     SectionIdentifierTableViewHeader
-                                                     isEmpty:YES]
-              forSectionWithIdentifier:SectionIdentifierTableViewHeader];
           [self.tableView
                 reloadSections:[self createIndexSetForSectionIdentifiers:
-                                         {SectionIdentifierTrackedItems,
-                                          SectionIdentifierTableViewHeader}]
+                                         {SectionIdentifierTrackedItems}]
               withRowAnimation:UITableViewRowAnimationAutomatic];
         }
 
@@ -547,7 +542,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
       initWithType:ItemTypeTableViewHeader];
 
-  if (isEmpty) {
+  if (isEmpty && !self.hasPreviouslyViewed) {
     header.subtitle = l10n_util::GetNSString(
         IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_EMPTY_STATE);
     return header;

@@ -408,6 +408,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       base::to_underlying(
           prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  // Register pref used to determine if the Price Tracking UI has been shown.
+  registry->RegisterBooleanPref(prefs::kPriceNotificationsHasBeenShown, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
