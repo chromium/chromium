@@ -67,7 +67,6 @@ MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings(int device_id) {
   if (!enable_per_device_settings) {
     return GetMouseSettings();
   }
-
   return mouse_settings_[device_id];
 }
 
@@ -105,7 +104,7 @@ InputDeviceSettingsEvdev::GetPointingStickSettings(int device_id) const {
 
 TouchpadSettingsEvdev::TouchpadSettingsEvdev() = default;
 TouchpadSettingsEvdev::TouchpadSettingsEvdev(
-    const TouchpadSettingsEvdev& touchpad_settings_) = default;
+    const TouchpadSettingsEvdev& touchpad_settings) = default;
 TouchpadSettingsEvdev::~TouchpadSettingsEvdev() = default;
 
 }  // namespace ui
