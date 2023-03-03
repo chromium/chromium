@@ -194,11 +194,12 @@
       <div id="audioInputNoiseCancellationSubsection" class="settings-box"
           hidden="[[!isNoiseCancellationSupported_]]">
         <div id="audioInputNoiseCancellationLabel"
-            class="settings-box-text start">
+            class="settings-box-text start" aria-hidden="true">
           $i18n{audioInputNoiseCancellationTitle}
         </div>
         <cr-toggle id="audioInputNoiseCancellationToggle"
-            checked="{{isNoiseCancellationEnabled_}}">
+            checked="{{isNoiseCancellationEnabled_}}"
+            aria-labelledby="audioInputNoiseCancellationLabel">
         </cr-toggle>
       </div>
     </div>
