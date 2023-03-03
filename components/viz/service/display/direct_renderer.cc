@@ -640,6 +640,12 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
   if (can_skip_rp) {
     skipped_render_pass_ids_.insert(render_pass->id);
+
+    int pixel_size =
+        render_pass->output_rect.width() * render_pass->output_rect.height();
+    UMA_HISTOGRAM_COUNTS_10M(
+        "Compositing.DirectRenderer.SkippedNonRootRenderPassOutputSize",
+        pixel_size);
     return;
   }
 
