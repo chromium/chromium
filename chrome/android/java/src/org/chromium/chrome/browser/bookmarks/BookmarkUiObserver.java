@@ -5,16 +5,13 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
-
-import java.util.List;
 
 /**
  * Observer interface to get notification for UI mode changes, bookmark changes, and other related
  * event that affects UI. All bookmark UI components are expected to implement this and
  * update themselves correctly on each event.
  */
-interface BookmarkUiObserver extends SelectionObserver<BookmarkId> {
+interface BookmarkUiObserver {
     /** Called when the entire UI is being destroyed and will be no longer in use. */
     default void onDestroy() {}
 
@@ -29,7 +26,4 @@ interface BookmarkUiObserver extends SelectionObserver<BookmarkId> {
 
     /** Called when the bookmark UI state changes. */
     default void onStateChanged(int state) {}
-
-    @Override
-    default void onSelectionStateChange(List<BookmarkId> selectedItems) {}
 }

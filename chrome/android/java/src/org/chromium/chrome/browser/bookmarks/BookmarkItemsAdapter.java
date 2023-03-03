@@ -28,6 +28,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,7 +41,8 @@ import java.util.List;
  * BaseAdapter for {@link RecyclerView}. It manages bookmarks to list there.
  */
 public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
-        implements BookmarkUiObserver, SyncService.SyncStateChangedListener {
+        implements BookmarkUiObserver, SyncService.SyncStateChangedListener,
+                   SelectionObserver<BookmarkId> {
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
 
@@ -330,6 +332,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         notifyDataSetChanged();
     }
 
+    // SelectionObserver<BookmarkId> implementation.
     @Override
     public void onSelectionStateChange(List<BookmarkId> selectedBookmarks) {
         clearHighlight();
@@ -510,6 +513,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
                 && entry.getBookmarkItem().isReorderable();
     }
 
+    // DragReorderableListAdapter implementation.
     @Override
     @VisibleForTesting
     public boolean isActivelyDraggable(ViewHolder viewHolder) {
