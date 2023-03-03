@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 class Profile;
@@ -19,7 +20,8 @@ class SyncService;
 }
 
 // Controls lifetime of sync-related Crosapi clients.
-class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver {
+class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver,
+                                 public ProfileObserver {
  public:
   SyncCrosapiManagerLacros();
   ~SyncCrosapiManagerLacros() override;
@@ -31,11 +33,17 @@ class SyncCrosapiManagerLacros : public syncer::SyncServiceObserver {
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
  private:
+  // ProfileObserver implementation.
+  // Note: |this| observes only the main profile.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // The objects below are created for main profile PostProfileInit() and
   // destroyed upon main profile SyncService shutdown.
   std::unique_ptr<SyncExplicitPassphraseClientLacros>
       sync_explicit_passphrase_client_;
   std::unique_ptr<SyncUserSettingsClientLacros> sync_user_settings_client_;
+
+  // This object will be destroyed on `OnProfileWillBeDestroyed()` call.
   std::unique_ptr<CrosapiSessionSyncNotifier> crosapi_session_sync_notifier_;
 };
 

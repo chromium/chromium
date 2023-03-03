@@ -13,6 +13,7 @@
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 #include "chrome/browser/lacros/sync/sync_user_settings_client_lacros.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -89,23 +90,40 @@ std::unique_ptr<SyncUserSettingsClientLacros> MaybeCreateSyncUserSettingsClient(
       std::move(client_remote), sync_user_settings);
 }
 
-// Detects changes in foreign browser sessions and notify
-// CrosapiSessionSyncNotifier
+// Returns a unique ptr to a newly created CrosapiSessionSyncNotifier.
+// Returns a nullptr if the:
+//  - ChromeOS Synced Session Sharing is disabled.
+//  - Crosapi version used is not high enough to include the necessary updates
+//  made.
+//  - session sync service for the user's profile cannot be found.
 std::unique_ptr<CrosapiSessionSyncNotifier>
-MaybeCreateCrosapiSessionSyncNotifier() {
+MaybeCreateCrosapiSessionSyncNotifier(chromeos::LacrosService* lacros_service,
+                                      Profile* profile) {
+  if (!base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing)) {
+    return nullptr;
+  }
+
   if (chromeos::LacrosService::Get()
           ->GetInterfaceVersion<crosapi::mojom::SyncService>() <
       static_cast<int>(
           crosapi::mojom::SyncService::kBindSyncedSessionClientMinVersion)) {
     return nullptr;
   }
-  // TODO(b/260599791): in a subsequent CL,
-  // - a CrosapiSessionSyncNotifier will be created and its member function
-  // passed as part of the subscription to foreign browser sessions. Upon a
-  // change in foreign browser sessions, all work will be inside of the
-  // CrosapiSessionSyncNotifier object.
-  // - Check that kSyncedSessionClient flag is enabled
-  return nullptr;
+
+  mojo::Remote<crosapi::mojom::SyncedSessionClient>
+      synced_session_client_remote;
+  lacros_service->GetRemote<crosapi::mojom::SyncService>()
+      ->BindSyncedSessionClient(
+          synced_session_client_remote.BindNewPipeAndPassReceiver());
+
+  sync_sessions::SessionSyncService* session_sync_service =
+      SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
+  if (!session_sync_service) {
+    return nullptr;
+  }
+
+  return std::make_unique<CrosapiSessionSyncNotifier>(
+      session_sync_service, std::move(synced_session_client_remote));
 }
 
 }  // namespace
@@ -127,7 +145,9 @@ void SyncCrosapiManagerLacros::PostProfileInit(Profile* profile) {
   sync_service->AddObserver(this);
 
   DCHECK(!crosapi_session_sync_notifier_);
-  crosapi_session_sync_notifier_ = MaybeCreateCrosapiSessionSyncNotifier();
+  profile->AddObserver(this);
+  crosapi_session_sync_notifier_ =
+      MaybeCreateCrosapiSessionSyncNotifier(lacros_service, profile);
 
   DCHECK(!sync_explicit_passphrase_client_);
   sync_explicit_passphrase_client_ =
@@ -136,6 +156,11 @@ void SyncCrosapiManagerLacros::PostProfileInit(Profile* profile) {
   DCHECK(!sync_user_settings_client_);
   sync_user_settings_client_ = MaybeCreateSyncUserSettingsClient(
       lacros_service, sync_service->GetUserSettings());
+}
+
+void SyncCrosapiManagerLacros::OnProfileWillBeDestroyed(Profile* profile) {
+  crosapi_session_sync_notifier_.reset();
+  profile->RemoveObserver(this);
 }
 
 void SyncCrosapiManagerLacros::OnSyncShutdown(
