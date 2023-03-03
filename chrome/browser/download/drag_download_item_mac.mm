@@ -63,6 +63,11 @@ void DragDownloadItem(const download::DownloadItem* download,
                                    current_position.y - image_size.height / 2,
                                    image_size.width, image_size.height);
     [file_item setDraggingFrame:image_rect contents:file_image];
+  } else {
+    // 16x16 placeholder, corresponding to IconLoader::IconSize::SMALL.
+    NSRect placeholder_rect =
+        NSMakeRect(current_position.x - 8, current_position.y - 8, 16, 16);
+    [file_item setDraggingFrame:placeholder_rect contents:nil];
   }
 
   // Synthesize a drag event, since we don't have access to the actual event
