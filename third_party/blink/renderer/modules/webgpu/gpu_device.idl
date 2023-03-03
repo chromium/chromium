@@ -21,7 +21,7 @@
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);
     [RuntimeEnabled=WebGPUImportTexture, RaisesException] GPUTexture experimentalImportTexture(HTMLCanvasElement canvas, GPUTextureUsageFlags usage);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
-    [RaisesException] GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
+    [RaisesException, CallWith=ScriptState] GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
 
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
     [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);

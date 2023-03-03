@@ -3736,6 +3736,8 @@
       base_feature: "none",
       origin_trial_feature_name: "WebGPUWebCodecs",
       public: true,
+      // Make the WebGPUDeveloperFeatures also enabled this OT feature.
+      implied_by: ["WebGPUDeveloperFeatures"],
     },
     {
       name: "WebHID",
