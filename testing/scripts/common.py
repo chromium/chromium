@@ -366,14 +366,8 @@ class BaseIsolatedScriptArgsAdapter:
 
     # Arguments that are ignored, but added here because it's easier to ignore
     # them to to update bot configs to not pass them.
-    add_emulator_args(self._parser)
     self._parser.add_argument('--isolated-script-test-chartjson-output')
     self._parser.add_argument('--isolated-script-test-perf-output')
-
-    self.add_extra_arguments(self._parser)
-
-  def add_extra_arguments(self, parser):
-    pass
 
   def parse_args(self, args=None):
     self._options, self._rest_args = self._parser.parse_known_args(args)

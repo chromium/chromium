@@ -58,7 +58,11 @@ KNOWN_TYP_VPYTHON3_TEST_RUNNERS = {
 # pylint: disable=super-with-arguments
 
 class BareScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
-  pass
+  def __init__(self):
+    super().__init__()
+    # Arguments that are ignored, but added here because it's easier to ignore
+    # them to to update bot configs to not pass them.
+    common.add_emulator_args(self._parser)
 
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):

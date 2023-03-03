@@ -124,6 +124,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     self.path_finder = PathFinder(self.fs)
     self.port = self.host.port_factory.get()
     super(FinchTestCase, self).__init__()
+    self._add_extra_arguments()
     self._parser = self._override_options(self._parser)
     self._include_filename = None
     self.layout_test_results_subdir = 'layout-test-results'
@@ -200,10 +201,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
 
         `argument.ArgumentParser` can extend other parsers and override their
         options, with the caveat that the child parser only inherits options
-        that the parent had at the time of the child's initialization. There is
-        not a clean way to add option overrides in `add_extra_arguments`, where
-        the provided parser is only passed up the inheritance chain, so we add
-        overridden options here at the very end.
+        that the parent had at the time of the child's initialization.
 
         See Also:
             https://docs.python.org/3/library/argparse.html#parents
@@ -501,8 +499,8 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     # Add arguments used by Skia Gold.
     FinchSkiaGoldProperties.AddCommandLineArguments(parser)
 
-  def add_extra_arguments(self, parser):
-    super(FinchTestCase, self).add_extra_arguments(parser)
+  def _add_extra_arguments(self):
+    parser = self._parser
     parser.add_argument(
       '-t',
       '--target',
