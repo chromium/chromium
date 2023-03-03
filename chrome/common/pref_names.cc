@@ -1831,11 +1831,11 @@ const char kOfficeFilesAlwaysMove[] = "filebrowser.office.always_move";
 const char kOfficeMoveConfirmationShown[] =
     "filebrowser.office.move_confirmation_shown";
 
-// Whether at least one file has been moved to OneDrive.
+// The timestamp of the latest office file automatically moved to OneDrive.
 const char kOfficeFileMovedToOneDrive[] =
     "filebrowser.office.file_moved_one_drive";
 
-// Whether at least one office file has been moved to Google Drive.
+// The timestamp of the latest office file automatically moved to Google Drive.
 const char kOfficeFileMovedToGoogleDrive[] =
     "filebrowser.office.file_moved_google_drive";
 #endif

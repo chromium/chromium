@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -530,7 +531,8 @@ void CloudOpenTask::FinishedDriveUpload(const GURL& url) {
   if (--pending_uploads_) {
     return;
   }
-  // TODO(b:267967413): Hook for triggering Files app nudge.
+  file_manager::file_tasks::SetOfficeFileMovedToGoogleDrive(profile_,
+                                                            base::Time::Now());
 }
 
 void CloudOpenTask::FinishedOneDriveUpload(
@@ -545,7 +547,8 @@ void CloudOpenTask::FinishedOneDriveUpload(
   if (--pending_uploads_) {
     return;
   }
-  // TODO(b:267967413): Hook for triggering Files app nudge.
+  file_manager::file_tasks::SetOfficeFileMovedToOneDrive(profile,
+                                                         base::Time::Now());
 }
 
 // Create the arguments necessary for showing the dialog. We first need to
