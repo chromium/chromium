@@ -2488,21 +2488,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Desktop.TimeBetweenNavigateToTaskSwitches" units="seconds"
-    expires_after="2021-03-15">
-  <owner>tbuckley@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
-  <summary>
-    The number of seconds between task window activations triggered by users
-    clicking or tapping on a window, as recorded by the Desktop_SwitchTask user
-    action. Recorded on Chrome OS only. Task switches from other sources are
-    ignored and do not affect this metric. In other words, if a user performs
-    the following steps (1) click on task window 'A' (2) Alt+Tab to task 'Z'(3)
-    click on task window 'B', then this will result in a sample recorded for the
-    time delta between activating task window 'A'and 'B'.
-  </summary>
-</histogram>
-
 <histogram name="Ash.DeviceActiveClient.CheckMembershipCases"
     enum="DeviceActiveCheckMembershipResponseCases" expires_after="2023-08-06">
   <owner>qianwan@google.com</owner>
@@ -5058,20 +5043,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Shelf.TimeBetweenNavigateToTaskSwitches" units="seconds"
-    expires_after="M81">
-  <owner>tbuckley@chromium.org</owner>
-  <summary>
-    The number of seconds between contiguous task switch user actions triggered
-    by the Shelf buttons where the user activates a different user-predictable
-    task. Task switches from other sources are ignored and do not affect this
-    metric. In other words, if a user performs the following steps (1) launch
-    task 'A' from the Shelf (2) Alt+Tab to task 'Z' (3) launch task 'B' from the
-    Shelf, then this will result in a sample recorded for the time delta between
-    launching tasks 'A' and 'B'.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Shelf.TimeBetweenWindowMinimizedAndActivatedActions"
     units="ms" expires_after="2020-06-28">
   <owner>tbuckley@chromium.org</owner>
@@ -5593,7 +5564,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of seconds between contiguous task switch user actions triggered
     by any of the other task switch actions that are tracked. (e.g.,
-    Ash.Shelf.TimeBetweenNavigateToTaskSwitches,
     Ash.Tab.TimeBetweenSwitchToExistingTabUserActions,
     Ash.WindowCycleController.TimeBetweenTaskSwitches,
     Ash.AppList.TimeBetweenTaskSwitches,
