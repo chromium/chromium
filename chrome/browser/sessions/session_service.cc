@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_common_utils.h"
 #include "chrome/browser/sessions/session_data_deleter.h"
@@ -164,6 +165,11 @@ bool SessionService::IsRelevantWindowType(
 }
 
 bool SessionService::ShouldRestore(Browser* browser) {
+  // Do not restore browser window in the kiosk session.
+  if (profiles::IsKioskSession()) {
+    return false;
+  }
+
   // ChromeOS and OSX have different ideas of application lifetime than
   // the other platforms.
   // On ChromeOS opening a new window should never start a new session.
@@ -189,7 +195,10 @@ bool SessionService::ShouldRestore(Browser* browser) {
   auto* primary_user_profile =
       g_browser_process->profile_manager()->GetProfileByPath(
           ProfileManager::GetPrimaryUserProfilePath());
-  if (StartupBrowserCreator::WasRestarted() ||
+  if (StartupBrowserCreator::WasRestarted()) {
+    return true;
+  }
+  if (primary_user_profile &&
       BrowserLauncher::GetForProfile(primary_user_profile)
           ->is_launching_for_full_restore()) {
     return true;
@@ -200,8 +209,9 @@ bool SessionService::ShouldRestore(Browser* browser) {
   // restored.
   SessionStartupPref pref =
       SessionStartupPref::GetStartupPref(profile()->GetPrefs());
-  if (!pref.ShouldRestoreLastSession())
+  if (!pref.ShouldRestoreLastSession()) {
     return false;
+  }
 
   if (!browser)
     return true;
