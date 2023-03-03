@@ -168,7 +168,7 @@ TEST_F(PriceNotificationsTableViewControllerTest,
   EXPECT_TRUE([items[0].title isEqualToString:item.title]);
 }
 
-// tests simulates that a tracked item exists and is displayed
+// Test simulates that a tracked item exists and is displayed
 TEST_F(PriceNotificationsTableViewControllerTest, DisplayUsersTrackedItems) {
   id<PriceNotificationsConsumer> consumer =
       base::mac::ObjCCast<PriceNotificationsTableViewController>(controller());
@@ -185,6 +185,35 @@ TEST_F(PriceNotificationsTableViewControllerTest, DisplayUsersTrackedItems) {
        sectionIdentifier:SectionIdentifierTrackedItems]);
   EXPECT_EQ(items.count, 1u);
   EXPECT_TRUE([items[0].title isEqualToString:item.title]);
+}
+
+// Test simulates that a tracked item exists and is displayed when the user is
+// on that item's webpage.
+TEST_F(PriceNotificationsTableViewControllerTest,
+       DisplayUsersTrackedItemsWhenViewingTrackedItemWebpage) {
+  PriceNotificationsTableViewController* tableViewController =
+      base::mac::ObjCCastStrict<PriceNotificationsTableViewController>(
+          controller());
+  PriceNotificationsTableViewItem* item =
+      [[PriceNotificationsTableViewItem alloc] initWithType:ItemTypeListItem];
+  item.title = @"Test Title";
+
+  [tableViewController setTrackableItem:nil currentlyTracking:YES];
+  [tableViewController addTrackedItem:item toBeginning:NO];
+  NSArray<PriceNotificationsTableViewItem*>* items = GetItemsFromSection(
+      tableViewController.tableViewModel, SectionIdentifierTrackedItems);
+  TableViewTextHeaderFooterItem* trackableHeaderItem =
+      GetHeaderItemFromSection<TableViewTextHeaderFooterItem>(
+          tableViewController, SectionIdentifierTrackableItemsOnCurrentSite);
+
+  EXPECT_TRUE([tableViewController.tableViewModel
+      hasItemForItemType:ItemTypeListItem
+       sectionIdentifier:SectionIdentifierTrackedItems]);
+  EXPECT_EQ(items.count, 1u);
+  EXPECT_TRUE([trackableHeaderItem.subtitle
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED)]);
 }
 
 // Test simulates that a trackable item exists, has been selected to be tracked,
@@ -204,6 +233,9 @@ TEST_F(PriceNotificationsTableViewControllerTest,
   items = GetItemsFromSection(model, SectionIdentifierTrackedItems);
   NSUInteger trackedItemCountBeforeStartTracking = items.count;
   [consumer didStartPriceTrackingForItem:item];
+  TableViewTextHeaderFooterItem* trackableHeaderItem =
+      GetHeaderItemFromSection<TableViewTextHeaderFooterItem>(
+          controller(), SectionIdentifierTrackableItemsOnCurrentSite);
   items =
       GetItemsFromSection(model, SectionIdentifierTrackableItemsOnCurrentSite);
   NSUInteger trackableItemCountAfterStartTracking = items.count;
@@ -214,6 +246,10 @@ TEST_F(PriceNotificationsTableViewControllerTest,
   EXPECT_EQ(trackedItemCountBeforeStartTracking, 0u);
   EXPECT_EQ(trackableItemCountAfterStartTracking, 0u);
   EXPECT_EQ(trackedItemCountAfterStartTracking, 1u);
+  EXPECT_TRUE([trackableHeaderItem.subtitle
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM)]);
 }
 
 // Test simulates the user tapping on a tracked item and being redirected to
