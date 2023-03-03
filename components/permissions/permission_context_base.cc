@@ -498,6 +498,13 @@ void PermissionContextBase::NotifyPermissionSet(
   if (is_final_decision) {
     UpdateTabContext(id, requesting_origin,
                      content_setting == CONTENT_SETTING_ALLOW);
+    if (content_setting == CONTENT_SETTING_ALLOW) {
+      if (auto* rfh = content::RenderFrameHost::FromID(
+              id.global_render_frame_host_id())) {
+        PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
+            content_settings_type_, rfh);
+      }
+    }
   }
 
   if (content_setting == CONTENT_SETTING_DEFAULT)

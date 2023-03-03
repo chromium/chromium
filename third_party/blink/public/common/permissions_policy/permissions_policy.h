@@ -229,6 +229,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   PermissionsPolicyFeatureState GetFeatureState() const;
 
   const url::Origin& GetOriginForTest() const { return origin_; }
+  const std::map<mojom::PermissionsPolicyFeature, Allowlist>& allowlists()
+      const {
+    return allowlists_;
+  }
 
   // Returns the list of features which can be controlled by Permissions Policy.
   const PermissionsPolicyFeatureList& GetFeatureList() const;

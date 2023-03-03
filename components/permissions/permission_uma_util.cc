@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,12 +23,15 @@
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -166,10 +170,61 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "IdleDetection";
     case RequestTypeForUma::PERMISSION_U2F_API_REQUEST:
       return "U2fApiRequest";
-    default:
+    case RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS:
+      return "AccessibilityEvents";
+
+    case RequestTypeForUma::UNKNOWN:
+    case RequestTypeForUma::PERMISSION_FLASH:
+    case RequestTypeForUma::PERMISSION_FILE_HANDLING:
+    case RequestTypeForUma::NUM:
       NOTREACHED();
       return "";
   }
+}
+
+// Helper to check if the current render frame host is cross-origin with top
+// level frame. Note: in case of nested frames like A(B(A)), the bottom frame A
+// will get |IsCrossOriginSubframe| returns false.
+bool IsCrossOriginSubframe(content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host);
+
+  // Permissions are denied for fenced frames, portal and other inner pages.
+  // |GetMainFrame| should be enough to get top level frame.
+  auto current_origin = render_frame_host->GetLastCommittedOrigin();
+  return !render_frame_host->GetMainFrame()
+              ->GetLastCommittedOrigin()
+              .IsSameOriginWith(current_origin);
+}
+
+// Helper to get permission policy header policy for the top-level frame that
+// render_frame_host is a descendant of.
+PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::PermissionsPolicyFeature feature) {
+  const auto& parsed_permission_policy_header =
+      render_frame_host->GetMainFrame()->GetPermissionsPolicyHeader();
+  if (parsed_permission_policy_header.empty()) {
+    return PermissionHeaderPolicyForUMA::HEADER_NOT_PRESENT_OR_INVALID;
+  }
+
+  const auto* permissions_policy =
+      render_frame_host->GetMainFrame()->GetPermissionsPolicy();
+  const auto& allowlists = permissions_policy->allowlists();
+  auto allowlist = allowlists.find(feature);
+  if (allowlist == allowlists.end()) {
+    return PermissionHeaderPolicyForUMA::FEATURE_NOT_PRESENT;
+  }
+
+  if (allowlist->second.MatchesAll()) {
+    return PermissionHeaderPolicyForUMA::FEATURE_ALLOWLIST_IS_WILDCARD;
+  }
+
+  const auto& origin = render_frame_host->GetLastCommittedOrigin();
+  return allowlist->second.Contains(origin)
+             ? PermissionHeaderPolicyForUMA::
+                   FEATURE_ALLOWLIST_EXPLICITLY_MATCHES_ORIGIN
+             : PermissionHeaderPolicyForUMA::
+                   FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN;
 }
 
 void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
@@ -403,6 +458,30 @@ AutoDSEPermissionRevertTransition GetAutoDSEPermissionRevertedTransition(
   }
 }
 
+void RecordTopLevelPermissionsHeaderPolicy(
+    ContentSettingsType content_settings_type,
+    const std::string& histogram,
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(IsCrossOriginSubframe(render_frame_host));
+
+  // We only care about about permission types that have a corresponding
+  // permission policy
+  const auto feature =
+      PermissionUtil::GetPermissionsPolicyFeature(content_settings_type);
+  if (!feature.has_value()) {
+    return;
+  }
+
+  // This function will only be called when we use/prompt a permission requested
+  // from a cross-origin subframe. Being allowed by permission policy is a
+  // necessary condition to use a permission in sub-frame.
+  DCHECK(render_frame_host->IsFeatureEnabled(feature.value()));
+  base::UmaHistogramEnumeration(histogram,
+                                GetTopLevelPermissionHeaderPolicyForUMA(
+                                    render_frame_host, feature.value()),
+                                PermissionHeaderPolicyForUMA::NUM);
+}
+
 }  // anonymous namespace
 
 // PermissionUmaUtil ----------------------------------------------------------
@@ -431,6 +510,10 @@ const char PermissionUmaUtil::kPermissionsPromptDeniedGesture[] =
     "Permissions.Prompt.Denied.Gesture";
 const char PermissionUmaUtil::kPermissionsPromptDeniedNoGesture[] =
     "Permissions.Prompt.Denied.NoGesture";
+const char PermissionUmaUtil::kPermissionsExperimentalUsagePrefix[] =
+    "Permissions.Experimental.Usage.";
+const char PermissionUmaUtil::kPermissionsActionPrefix[] =
+    "Permissions.Action.";
 
 // Make sure you update histograms.xml permission histogram_suffix if you
 // add new permission
@@ -462,6 +545,7 @@ void PermissionUmaUtil::PermissionRevoked(
                          PermissionPromptDisposition::NOT_APPLICABLE,
                          /*ui_reason=*/absl::nullopt, revoked_origin,
                          /*web_contents=*/nullptr, browser_context,
+                         /*render_frame_host*/ nullptr,
                          /*predicted_grant_likelihood=*/absl::nullopt,
                          /*prediction_decision_held_back=*/absl::nullopt);
 }
@@ -621,6 +705,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
         time_to_decision, ui_disposition, ui_reason, requesting_origin,
         web_contents, web_contents->GetBrowserContext(),
+        content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, prediction_decision_held_back);
 
     std::string priorDismissPrefix =
@@ -834,6 +919,7 @@ void PermissionUmaUtil::RecordPermissionAction(
     const GURL& requesting_origin,
     content::WebContents* web_contents,
     content::BrowserContext* browser_context,
+    content::RenderFrameHost* render_frame_host,
     absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
     absl::optional<bool> prediction_decision_held_back) {
   DCHECK(PermissionUtil::IsPermission(permission));
@@ -896,6 +982,11 @@ void PermissionUmaUtil::RecordPermissionAction(
           predicted_grant_likelihood, loud_ui_actions_counts_per_request_type,
           loud_ui_actions_counts, actions_counts_per_request_type,
           actions_counts, prediction_decision_held_back));
+
+  if (render_frame_host && IsCrossOriginSubframe(render_frame_host)) {
+    RecordCrossOriginFrameActionAndPolicyConfiguration(permission, action,
+                                                       render_frame_host);
+  }
 
   switch (permission) {
     case ContentSettingsType::GEOLOCATION:
@@ -965,6 +1056,10 @@ void PermissionUmaUtil::RecordPermissionAction(
     case ContentSettingsType::IDLE_DETECTION:
       base::UmaHistogramEnumeration("Permissions.Action.IdleDetection", action,
                                     PermissionAction::NUM);
+      break;
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
+      base::UmaHistogramEnumeration("Permissions.Action.AccessibilityEvents",
+                                    action, PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no
     // permission action recorded for them.
@@ -1315,6 +1410,44 @@ void PermissionUmaUtil::RecordIgnoreReason(
       GetPromptDispositionString(prompt_disposition) + ".IgnoredReason";
   base::UmaHistogramEnumeration(histogram_name, reason,
                                 PermissionIgnoredReason::NUM);
+}
+
+// static
+void PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
+    ContentSettingsType content_settings_type,
+    content::RenderFrameHost* render_frame_host) {
+  const bool is_cross_origin_subframe =
+      IsCrossOriginSubframe(render_frame_host);
+  const auto usage_histogram = base::StrCat(
+      {kPermissionsExperimentalUsagePrefix,
+       PermissionUtil::GetPermissionString(content_settings_type)});
+  base::UmaHistogramBoolean(
+      base::StrCat({usage_histogram, ".IsCrossOriginFrame"}),
+      is_cross_origin_subframe);
+  if (is_cross_origin_subframe) {
+    RecordTopLevelPermissionsHeaderPolicy(
+        content_settings_type,
+        base::StrCat(
+            {usage_histogram, ".CrossOriginFrame.TopLevelHeaderPolicy"}),
+        render_frame_host);
+  }
+}
+
+// static
+void PermissionUmaUtil::RecordCrossOriginFrameActionAndPolicyConfiguration(
+    ContentSettingsType content_settings_type,
+    PermissionAction action,
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(IsCrossOriginSubframe(render_frame_host));
+
+  const auto histogram =
+      base::StrCat({kPermissionsActionPrefix,
+                    PermissionUtil::GetPermissionString(content_settings_type),
+                    ".CrossOriginFrame"});
+  base::UmaHistogramEnumeration(histogram, action, PermissionAction::NUM);
+  RecordTopLevelPermissionsHeaderPolicy(
+      content_settings_type, base::StrCat({histogram, ".TopLevelHeaderPolicy"}),
+      render_frame_host);
 }
 
 }  // namespace permissions

@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
@@ -881,6 +882,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // shutdown of the frame.
   virtual bool GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType disabler_type) = 0;
+
+  // Returns the permission policy for this frame.
+  virtual const blink::PermissionsPolicy* GetPermissionsPolicy() = 0;
+
+  // Returns the parsed permissions policy header for this frame.
+  virtual const blink::ParsedPermissionsPolicy&
+  GetPermissionsPolicyHeader() = 0;
 
   // Returns true if the queried PermissionsPolicyFeature is allowed by
   // permissions policy.
