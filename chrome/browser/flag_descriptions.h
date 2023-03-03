@@ -1152,6 +1152,9 @@ extern const char kOmniboxBookmarkPathsDescription[];
 extern const char kOmniboxClosePopupWithEscapeName[];
 extern const char kOmniboxClosePopupWithEscapeDescription[];
 
+extern const char kOmniboxConsumesImeInsetsName[];
+extern const char kOmniboxConsumesImeInsetsDescription[];
+
 extern const char kOmniboxDefaultBrowserPedalName[];
 extern const char kOmniboxDefaultBrowserPedalDescription[];
 

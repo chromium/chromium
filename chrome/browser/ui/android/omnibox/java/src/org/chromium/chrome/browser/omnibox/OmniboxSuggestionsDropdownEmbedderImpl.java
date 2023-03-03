@@ -23,6 +23,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
+import org.chromium.ui.display.DisplayUtil;
 
 /**
  * Implementation of {@link OmniboxSuggestionsDropdownEmbedder} that positions it using an "anchor"
@@ -43,7 +44,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     private final int[] mPositionArray = new int[2];
     private int mVerticalOffsetInWindow;
     private int mWindowWidthDp;
+    private int mWindowHeightDp;
     private WindowInsetsCompat mWindowInsetsCompat;
+    private DeferredIMEWindowInsetApplicationCallback mDeferredIMEWindowInsetApplicationCallback;
 
     /**
      *
@@ -65,7 +68,9 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         mHorizontalAlignmentView = horizontalAlignmentView;
         mContext = mAnchorView.getContext();
         mContext.registerComponentCallbacks(this);
-        mWindowWidthDp = mContext.getResources().getConfiguration().smallestScreenWidthDp;
+        Configuration configuration = mContext.getResources().getConfiguration();
+        mWindowWidthDp = configuration.smallestScreenWidthDp;
+        mWindowHeightDp = configuration.screenHeightDp;
         recalculateOmniboxAlignment();
     }
 
@@ -99,6 +104,13 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         mAnchorView.addOnLayoutChangeListener(this);
         mHorizontalAlignmentView.addOnLayoutChangeListener(this);
         mAnchorView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        if (OmniboxFeatures.omniboxConsumesImeInsets()) {
+            mDeferredIMEWindowInsetApplicationCallback =
+                    new DeferredIMEWindowInsetApplicationCallback(
+                            this::recalculateOmniboxAlignment);
+            mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
+        }
+        onConfigurationChanged(mContext.getResources().getConfiguration());
         recalculateOmniboxAlignment();
     }
 
@@ -107,6 +119,10 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         mAnchorView.removeOnLayoutChangeListener(this);
         mHorizontalAlignmentView.removeOnLayoutChangeListener(this);
         mAnchorView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        if (mDeferredIMEWindowInsetApplicationCallback != null) {
+            mDeferredIMEWindowInsetApplicationCallback.detach();
+            mDeferredIMEWindowInsetApplicationCallback = null;
+        }
     }
 
     @Override
@@ -133,11 +149,16 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     // ComponentCallbacks
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) return;
         int windowWidth = newConfig.smallestScreenWidthDp;
-        if (windowWidth == mWindowWidthDp) return;
+        int windowHeight = newConfig.screenHeightDp;
+        if (windowWidth == mWindowWidthDp && mWindowHeightDp == windowHeight) return;
         mWindowWidthDp = windowWidth;
-        recalculateOmniboxAlignment();
+        mWindowHeightDp = windowHeight;
+
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)
+                || OmniboxFeatures.omniboxConsumesImeInsets()) {
+            recalculateOmniboxAlignment();
+        }
     }
 
     @Override
@@ -195,10 +216,21 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
             paddingRight = 0;
         }
 
-        // TODO(pnoland@, https://crbug.com/1416985): calculate height as well and avoid pushing
-        // changes that are identical to the previous alignment value.
+        // The height param shouldn't be used with omniboxConsumesImeInsets() off; -1 is a sentinel
+        // value that will reveal a problem quickly.
+        int height = -1;
+        if (OmniboxFeatures.omniboxConsumesImeInsets()) {
+            int mKeyboardHeight = mDeferredIMEWindowInsetApplicationCallback != null
+                    ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
+                    : 0;
+            height = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - top
+                    - mKeyboardHeight;
+        }
+
+        // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to
+        // the previous alignment value.
         OmniboxAlignment omniboxAlignment =
-                new OmniboxAlignment(left, top, width, paddingLeft, paddingRight);
+                new OmniboxAlignment(left, top, width, height, paddingLeft, paddingRight);
         mOmniboxAlignmentSupplier.set(omniboxAlignment);
     }
 

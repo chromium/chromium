@@ -5144,6 +5144,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxAssistantVoiceSearchVariations,
                                     "OmniboxAssistantVoiceSearch")},
 
+    {"omnibox-consumes-ime-insets",
+     flag_descriptions::kOmniboxConsumesImeInsetsName,
+     flag_descriptions::kOmniboxConsumesImeInsetsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOmniboxConsumesImeInsets)},
+
     {"omnibox-match-toolbar-and-status-bar-color",
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorName,
      flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorDescription,

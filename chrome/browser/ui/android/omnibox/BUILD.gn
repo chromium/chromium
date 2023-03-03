@@ -14,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/BackKeyBehaviorDelegate.java",
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteProviderClient.java",
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",
+    "java/src/org/chromium/chrome/browser/omnibox/DeferredIMEWindowInsetApplicationCallback.java",
     "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelper.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBar.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarCoordinator.java",
@@ -389,6 +390,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteStateUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/DeferredIMEWindowInsetApplicationCallbackTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxSuggestionsDropdownEmbedderImplTest.java",
@@ -491,6 +493,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:material_design_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",

@@ -117,8 +117,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(
-                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0), alignment);
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+                alignment);
     }
 
     @Test
@@ -135,8 +135,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(
-                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0), alignment);
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+                alignment);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 40,
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 40,
                              ANCHOR_WIDTH - ALIGNMENT_WIDTH - 40),
                 alignment);
     }
@@ -166,7 +166,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertTrue(mImpl.isTablet());
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0),
+        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0, 0),
                 alignment);
 
         Configuration newConfig = new Configuration();
@@ -174,7 +174,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         mImpl.onConfigurationChanged(newConfig);
         assertFalse(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0),
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 newAlignment);
     }
 
@@ -192,15 +192,15 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertFalse(mImpl.isTablet());
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(
-                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0), alignment);
+        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+                alignment);
 
         Configuration newConfig = new Configuration();
         newConfig.smallestScreenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
         mImpl.onConfigurationChanged(newConfig);
         assertTrue(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0),
+        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0, 0),
                 newAlignment);
     }
 
@@ -219,7 +219,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0),
+        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0, 0),
                 alignment);
     }
 }

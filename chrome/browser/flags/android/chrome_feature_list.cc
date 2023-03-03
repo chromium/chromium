@@ -245,6 +245,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackGestureRefactorActivityAndroid,
     &kBackGestureRefactorAndroid,
     &kOmahaMinSdkVersionAndroid,
+    &kOmniboxConsumesImeInsets,
     &kOmniboxModernizeVisualUpdate,
     &kOpaqueOriginForIncomingIntents,
     &kOptimizeGeolocationHeaderGeneration,
@@ -779,6 +780,10 @@ BASE_FEATURE(kBackGestureRefactorAndroid,
 
 BASE_FEATURE(kOmahaMinSdkVersionAndroid,
              "OmahaMinSdkVersionAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOmniboxConsumesImeInsets,
+             "OmniboxConsumesImeInsets",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxModernizeVisualUpdate,

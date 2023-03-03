@@ -5141,6 +5141,11 @@
     "owners": ["manukh", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 110
   },
+    {
+    "name": "omnibox-consumes-ime-insets",
+    "owners": ["pnoland", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 120
+  },
   {
     "name": "omnibox-default-browser-pedal",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],

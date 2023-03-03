@@ -19,19 +19,23 @@ public interface OmniboxSuggestionsDropdownEmbedder {
      * dropdown.
      */
     class OmniboxAlignment {
-        public static final OmniboxAlignment UNSPECIFIED = new OmniboxAlignment(-1, -1, -1, -1, -1);
+        public static final OmniboxAlignment UNSPECIFIED =
+                new OmniboxAlignment(-1, -1, -1, -1, -1, -1);
         public final int left;
         public final int top;
         public final int width;
+        public final int height;
         public final int paddingLeft;
         public final int paddingRight;
 
-        public OmniboxAlignment(int left, int top, int width, int paddingLeft, int paddingRight) {
+        public OmniboxAlignment(
+                int left, int top, int width, int height, int paddingLeft, int paddingRight) {
             this.left = left;
             this.top = top;
             this.width = width;
             this.paddingLeft = paddingLeft;
             this.paddingRight = paddingRight;
+            this.height = height;
         }
 
         @Override

@@ -2044,6 +2044,12 @@ const char kOmniboxClosePopupWithEscapeDescription[] =
     "default suggestion is selected will close the omnibox without removing "
     "its focus or clearing user input.";
 
+const char kOmniboxConsumesImeInsetsName[] =
+    "Omnibox Consumes IME (keyboard) insets directly";
+const char kOmniboxConsumesImeInsetsDescription[] =
+    "When enabled, the Android Omnibox will directly handle IME (keyboard) "
+    "inset changes while visible.";
+
 const char kOmniboxDefaultBrowserPedalName[] = "Omnibox Default Browser Pedal";
 const char kOmniboxDefaultBrowserPedalDescription[] =
     "Enables a pedal that helps the user 'set default browser'.";

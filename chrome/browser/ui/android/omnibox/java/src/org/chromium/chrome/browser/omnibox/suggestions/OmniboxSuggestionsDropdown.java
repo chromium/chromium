@@ -418,7 +418,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 TimingMetric metric = SuggestionsMetrics.recordSuggestionListMeasureTime()) {
             OmniboxAlignment omniboxAlignment = mEmbedder.getCurrentAlignment();
             maybeUpdateLayoutParams(omniboxAlignment.top);
-            int availableViewportHeight = calculateAvailableViewportHeight() - omniboxAlignment.top;
+            boolean useAlignmentSpecifiedHeight = OmniboxFeatures.omniboxConsumesImeInsets();
+            int availableViewportHeight = useAlignmentSpecifiedHeight
+                    ? omniboxAlignment.height
+                    : calculateAvailableViewportHeight() - omniboxAlignment.top;
             int desiredWidth = omniboxAlignment.width;
             adjustHorizontalPosition();
             // Suppress the initial requests to shrink the viewport of the omnibox suggestion
@@ -434,25 +437,29 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // This does not use getMeasuredHeight() as a means of comparison against the available
             // viewport because on tablets the measured height can be smaller than the viewport as
             // tablets use AT_MOST for the measure spec vs EXACTLY on phones.
-            if ((mInitialResizeState == InitialResizeState.WAITING_FOR_SHRINKING
-                        || mInitialResizeState == InitialResizeState.IGNORING_SHRINKING)
-                    && availableViewportHeight < mListViewMaxHeight
-                    && getMeasuredWidth() == desiredWidth) {
-                super.onMeasure(mWidthMeasureSpec, mHeightMeasureSpec);
-                if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) return;
+            // This logic is moot when we use alignment-specified height; the deferral of keyboard
+            // height changes is handled for us in that case.
+            if (!useAlignmentSpecifiedHeight) {
+                if ((mInitialResizeState == InitialResizeState.WAITING_FOR_SHRINKING
+                            || mInitialResizeState == InitialResizeState.IGNORING_SHRINKING)
+                        && availableViewportHeight < mListViewMaxHeight
+                        && getMeasuredWidth() == desiredWidth) {
+                    super.onMeasure(mWidthMeasureSpec, mHeightMeasureSpec);
+                    if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) return;
 
-                mInitialResizeState = InitialResizeState.IGNORING_SHRINKING;
-                PostTask.postDelayedTask(UiThreadTaskTraits.USER_BLOCKING, () -> {
-                    if (mInitialResizeState != InitialResizeState.IGNORING_SHRINKING) return;
-                    ViewUtils.requestLayout(this, "OmniboxSuggestionsDropdown.onMeasure");
+                    mInitialResizeState = InitialResizeState.IGNORING_SHRINKING;
+                    PostTask.postDelayedTask(UiThreadTaskTraits.USER_BLOCKING, () -> {
+                        if (mInitialResizeState != InitialResizeState.IGNORING_SHRINKING) return;
+                        ViewUtils.requestLayout(this, "OmniboxSuggestionsDropdown.onMeasure");
+                        mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
+                    }, DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS);
+                    return;
+                } else if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) {
+                    // The dimensions changed in an unexpected way (either by increasing height or
+                    // a change in width), so just mark the initial sizing as completed and accept
+                    // the new measurements and suppress the pending posted layout request.
                     mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
-                }, DEFERRED_INITIAL_SHRINKING_LAYOUT_FROM_IME_DURATION_MS);
-                return;
-            } else if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) {
-                // The dimensions changed in an unexpected way (either by increasing height or
-                // a change in width), so just mark the initial sizing as completed and accept
-                // the new measurements and suppress the pending posted layout request.
-                mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
+                }
             }
             notifyObserversIfViewportHeightChanged(availableViewportHeight);
 

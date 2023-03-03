@@ -306,14 +306,14 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         mDropdown.setEmbedder(mEmbedder);
         mDropdown.onAttachedToWindow();
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
         assertEquals(600, mDropdown.getMeasuredWidth());
         assertEquals(10, mDropdown.getPaddingLeft());
         assertEquals(10, mDropdown.getPaddingRight());
 
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 50, 50);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 50, 50);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         ShadowLooper.runUiThreadTasks();
 
@@ -326,12 +326,12 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void testAlignmentProvider_widthChange() {
         mDropdown.setEmbedder(mEmbedder);
         mDropdown.onAttachedToWindow();
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
         assertEquals(600, mDropdown.getMeasuredWidth());
 
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 400, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 400, 0, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         ShadowLooper.runUiThreadTasks();
         assertTrue(mDropdown.isLayoutRequested());
@@ -348,7 +348,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mDropdown.onAttachedToWindow();
         mDropdown.setLayoutParams(new LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
 
@@ -357,7 +357,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         assertEquals(100, layoutParams.topMargin);
         assertEquals(800 - 100, mDropdown.getMeasuredHeight());
 
-        mOmniboxAlignment = new OmniboxAlignment(0, 54, 600, 10, 10);
+        mOmniboxAlignment = new OmniboxAlignment(0, 54, 600, 0, 10, 10);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
         layoutDropdown(600, 800);
 
@@ -365,6 +365,29 @@ public class OmniboxSuggestionsDropdownUnitTest {
         assertNotNull(layoutParams);
         assertEquals(54, layoutParams.topMargin);
         assertEquals(800 - 54, mDropdown.getMeasuredHeight());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS})
+    public void testAlignmentProvider_heightChange() {
+        mDropdown.setEmbedder(mEmbedder);
+        mDropdown.onAttachedToWindow();
+        mDropdown.setLayoutParams(new LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        int height = 400;
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10);
+        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
+        layoutDropdown(600, 800);
+
+        assertEquals(height, mDropdown.getMeasuredHeight());
+
+        height = 300;
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, height, 10, 10);
+        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
+        layoutDropdown(600, 800);
+
+        assertEquals(height, mDropdown.getMeasuredHeight());
     }
 
     private void layoutDropdown(int width, int height) {
