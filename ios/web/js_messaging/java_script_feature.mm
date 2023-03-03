@@ -10,11 +10,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
+#import "ios/web/js_messaging/java_script_content_world_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/js_messaging/web_frame_internal.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -136,6 +139,15 @@ JavaScriptFeature::~JavaScriptFeature() = default;
 
 ContentWorld JavaScriptFeature::GetSupportedContentWorld() const {
   return supported_world_;
+}
+
+WebFramesManager* JavaScriptFeature::GetWebFramesManager(WebState* web_state) {
+  JavaScriptContentWorld* java_script_content_world =
+      JavaScriptFeatureManager::FromBrowserState(web_state->GetBrowserState())
+          ->GetContentWorldForFeature(this);
+  ContentWorld content_world = ContentWorldIdentifierForWKContentWorld(
+      java_script_content_world->GetWKContentWorld());
+  return web_state->GetWebFramesManager(content_world);
 }
 
 const std::vector<const JavaScriptFeature::FeatureScript>

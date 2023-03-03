@@ -26,6 +26,7 @@ class FuzzerEnvWithJavaScriptFeature;
 class ScriptMessage;
 class WebState;
 class WebFrame;
+class WebFramesManager;
 
 // Describes a feature implemented in Javascript and native<->JS communication
 // (if any). It is intended to be instantiated directly for simple features
@@ -141,6 +142,13 @@ class JavaScriptFeature {
 
   // Returns the supported content world for this feature.
   ContentWorld GetSupportedContentWorld() const;
+
+  // Returns the WebFramesManager associated with `web_state` for the content
+  // world which this feature instance has been configured. This ensures that
+  // the WebFrames within WebFramesManager match the environment where the
+  // scripts of this feature are executed. This is partifularly important if
+  // frameIds are used which are not consistent across content worlds.
+  WebFramesManager* GetWebFramesManager(WebState* web_state);
 
   // Returns a vector of scripts used by this feature.
   virtual const std::vector<const FeatureScript> GetScripts() const;
