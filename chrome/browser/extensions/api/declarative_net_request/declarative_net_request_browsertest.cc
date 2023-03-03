@@ -6367,8 +6367,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     std::vector<std::string> request_methods;
     std::vector<std::string> excluded_request_methods;
   } rules_data[] = {{1, "default", {}, {}},
-                    {2, "included", {"head", "put"}, {}},
-                    {3, "excluded", {}, {"options", "patch"}},
+                    {2, "included", {"head", "put", "other"}, {}},
+                    {3, "excluded", {}, {"options", "patch", "other"}},
                     {4, "combination", {"get"}, {"put"}}};
 
   std::vector<TestRule> rules;
@@ -6389,15 +6389,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   struct {
     std::string path;
     std::string expected_blocked_request_methods;
-  } test_cases[] = {{"default", "delete,get,head,options,patch,post,put"},
-                    {"included", "head,put"},
-                    {"excluded", "delete,get,head,post,put"},
-                    {"combination", "get"}};
+  } test_cases[] = {
+      {"default", "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,UNKNOWN"},
+      {"included", "HEAD,PUT,UNKNOWN"},
+      {"excluded", "DELETE,GET,HEAD,POST,PUT"},
+      {"combination", "GET"}};
 
   const char kPerformRequestWithAllMethodsScript[] = R"(
     {
-      const allRequestMethods = ["delete", "get", "head", "options", "patch",
-                                 "post", "put"];
+      const allRequestMethods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH",
+                                 "POST", "PUT", "UNKNOWN"];
       const url = "/empty.html?%s";
 
       let blockedMethods = [];

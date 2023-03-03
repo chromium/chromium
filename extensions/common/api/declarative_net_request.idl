@@ -36,7 +36,8 @@ namespace declarativeNetRequest {
     options,
     patch,
     post,
-    put
+    put,
+    other
   };
 
   // This describes whether the request is first or third party to the frame in

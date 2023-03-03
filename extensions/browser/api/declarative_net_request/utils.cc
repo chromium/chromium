@@ -47,12 +47,12 @@ namespace flat_rule = url_pattern_index::flat;
 // url_pattern_index.fbs. Whenever an extension with an indexed ruleset format
 // version different from the one currently used by Chrome is loaded, the
 // extension ruleset will be reindexed.
-constexpr int kIndexedRulesetFormatVersion = 27;
+constexpr int kIndexedRulesetFormatVersion = 28;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
 // updating kIndexedRulesetFormatVersion.
-static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 14,
+static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 15,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated kIndexedRulesetFormatVersion above.");
 
@@ -711,7 +711,9 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
 }
 
 // Maps an HTTP request method string to flat_rule::RequestMethod.
-// Returns `flat::RequestMethod_NON_HTTP` for non-HTTP(s) requests.
+// Returns `flat::RequestMethod_NON_HTTP` for non-HTTP(s) requests, and
+// `flat::RequestMethod_OTHER_HTTP` for HTTP(s) requests with an unknown
+// request method.
 flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
                                           const std::string& method) {
   if (!http_or_https)
@@ -739,8 +741,7 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
   std::string normalized_method = base::ToUpperASCII(method);
   auto it = kRequestMethods->find(normalized_method);
   if (it == kRequestMethods->end()) {
-    NOTREACHED() << "Request method " << normalized_method << " not handled.";
-    return flat_rule::RequestMethod_GET;
+    return flat_rule::RequestMethod_OTHER_HTTP;
   }
   return it->second;
 }
@@ -761,6 +762,8 @@ flat_rule::RequestMethod GetRequestMethod(
       return flat_rule::RequestMethod_HEAD;
     case dnr_api::REQUEST_METHOD_OPTIONS:
       return flat_rule::RequestMethod_OPTIONS;
+    case dnr_api::REQUEST_METHOD_OTHER:
+      return flat_rule::RequestMethod_OTHER_HTTP;
     case dnr_api::REQUEST_METHOD_PATCH:
       return flat_rule::RequestMethod_PATCH;
     case dnr_api::REQUEST_METHOD_POST:
