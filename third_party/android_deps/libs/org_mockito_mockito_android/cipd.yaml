@@ -1,0 +1,10 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:2@5.1.1.cr1
+package: chromium/third_party/android_deps/libs/org_mockito_mockito_android
+description: "mockito-android"
+data:
+- file: mockito-android-5.1.1.jar

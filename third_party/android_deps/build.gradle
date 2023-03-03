@@ -184,6 +184,7 @@ dependencies {
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 
+    androidTestCompile "org.mockito:mockito-android:5.1.1"
     androidTestCompile "org.mockito:mockito-core:5.1.1"
     // Depended on by downstream guava_java rewrite.
     androidTestCompile "org.checkerframework:checker-qual:3.25.0"
