@@ -85,8 +85,8 @@ async def another_context_id(websocket):
 
 @pytest_asyncio.fixture
 async def page_with_nested_iframe_url():
-    return f'data:text/html,<h1>MAIN_PAGE</h1>' \
-           f'<iframe src="about:blank" />'
+    return 'data:text/html,<h1>MAIN_PAGE</h1>' \
+           '<iframe src="about:blank" />'
 
 
 @pytest_asyncio.fixture

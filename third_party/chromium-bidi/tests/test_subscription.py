@@ -525,7 +525,7 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
                    & AnyContains("No subscription found")
     } == exception_info.value.args[0]
 
-    command_id = await send_JSON_command(
+    await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {

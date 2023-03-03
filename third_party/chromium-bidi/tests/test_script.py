@@ -887,7 +887,9 @@ async def test_scriptGetRealms(websocket, context_id):
     assert ["realms"] == list(result.keys())
 
     # Assert 2 realms are created.
-    realm_key = lambda x: x["realm"]
+    def realm_key(x):
+        return x["realm"]
+
     assert sorted([{
         "realm": old_realm,
         "origin": "null",

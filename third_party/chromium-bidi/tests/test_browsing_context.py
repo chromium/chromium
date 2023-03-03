@@ -479,8 +479,8 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
     events = []
     while len(events) < 2:
         resp = await read_JSON_message(websocket)
-        if "method" in resp and \
-              resp["method"] == "browsingContext.contextCreated":
+        if "method" in resp and resp[
+                "method"] == "browsingContext.contextCreated":
             events.append(resp)
 
     tree = await execute_command(websocket, {

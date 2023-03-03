@@ -10,6 +10,7 @@
     "e2e": "npm run e2e-headless",
     "e2e-only": "python3 -m pytest",
     "eslint": "eslint --ext js --ext ts --fix .",
+    "flake8": "flake8 examples/ tests/",
     "format": "npm run eslint && npm run prettier & npm run yapf",
     "prepare": "npm run clean && npm run build",
     "prettier": "prettier --write .",

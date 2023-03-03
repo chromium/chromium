@@ -29,6 +29,10 @@ repos:
         args: [--pytest-test-first]
       - id: requirements-txt-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/PyCQA/flake8.git
+    rev: 6.0.0
+    hooks:
+      - id: flake8
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.34.0
     hooks:
