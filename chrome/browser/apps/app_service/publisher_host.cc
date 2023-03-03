@@ -143,7 +143,7 @@ void PublisherHost::Initialize() {
 #else
   web_apps_ = std::make_unique<web_app::WebApps>(proxy_);
 
-  chrome_apps_ = std::make_unique<ExtensionApps>(proxy_, AppType::kChromeApp);
+  chrome_apps_ = std::make_unique<ExtensionApps>(proxy_);
   chrome_apps_->Initialize();
 #endif
 }
