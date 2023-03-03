@@ -14,7 +14,7 @@ namespace extensions {
 
 // static
 GURL ContentScriptInjectionUrlGetter::Get(
-    const ContextData& context_data,
+    const FrameContextData& context_data,
     const GURL& document_url,
     MatchOriginAsFallbackBehavior match_origin_as_fallback,
     bool allow_inaccessible_parents) {
@@ -142,7 +142,8 @@ GURL ContentScriptInjectionUrlGetter::Get(
   // with the same origin as the precursor and return its URL.
   // TODO(https://crbug.com/1186321): This can return the incorrect result, e.g.
   // if a parent frame navigates a grandchild frame to about:blank.
-  std::unique_ptr<ContextData> parent_context_data = context_data.Clone();
+  std::unique_ptr<FrameContextData> parent_context_data =
+      context_data.CloneFrameContextData();
   GURL parent_url;
   base::flat_set<uintptr_t> already_visited_frame_ids;
   do {

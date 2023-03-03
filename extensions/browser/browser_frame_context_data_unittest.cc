@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/browser_context_data.h"
+#include "extensions/browser/browser_frame_context_data.h"
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
@@ -19,13 +19,14 @@ namespace {
 const std::string kGoogleUrl = "https://google.com";
 }
 
-class BrowserContextDataTest : public ExtensionsTest {
+class BrowserFrameContextDataTest : public ExtensionsTest {
  public:
-  BrowserContextDataTest() = default;
-  ~BrowserContextDataTest() override = default;
+  BrowserFrameContextDataTest() = default;
+  ~BrowserFrameContextDataTest() override = default;
 
-  BrowserContextDataTest(const BrowserContextDataTest&) = delete;
-  BrowserContextDataTest& operator=(const BrowserContextDataTest&) = delete;
+  BrowserFrameContextDataTest(const BrowserFrameContextDataTest&) = delete;
+  BrowserFrameContextDataTest& operator=(const BrowserFrameContextDataTest&) =
+      delete;
 
  protected:
   void SetUp() override {
@@ -75,10 +76,10 @@ class BrowserContextDataTest : public ExtensionsTest {
   const GURL google_url_ = GURL(kGoogleUrl);
 };
 
-TEST_F(BrowserContextDataTest, Clone) {
-  auto data = std::make_unique<BrowserContextData>(
+TEST_F(BrowserFrameContextDataTest, Clone) {
+  auto data = std::make_unique<BrowserFrameContextData>(
       GetRenderFrameHost(opener_web_contents()));
-  std::unique_ptr<ContextData> cloned_data = data->Clone();
+  std::unique_ptr<FrameContextData> cloned_data = data->CloneFrameContextData();
 
   EXPECT_EQ(data->GetLocalParentOrOpener(),
             cloned_data->GetLocalParentOrOpener());
@@ -87,8 +88,8 @@ TEST_F(BrowserContextDataTest, Clone) {
   EXPECT_EQ(data->GetId(), cloned_data->GetId());
 }
 
-TEST_F(BrowserContextDataTest, GetLocalParentOrOpener) {
-  auto data = std::make_unique<BrowserContextData>(
+TEST_F(BrowserFrameContextDataTest, GetLocalParentOrOpener) {
+  auto data = std::make_unique<BrowserFrameContextData>(
       GetRenderFrameHost(opener_web_contents()));
   {
     std::unique_ptr<ContextData> local_parent_or_opener =
@@ -99,8 +100,8 @@ TEST_F(BrowserContextDataTest, GetLocalParentOrOpener) {
     EXPECT_FALSE(local_parent_or_opener);
   }
 
-  auto child_data =
-      std::make_unique<BrowserContextData>(GetRenderFrameHost(web_contents()));
+  auto child_data = std::make_unique<BrowserFrameContextData>(
+      GetRenderFrameHost(web_contents()));
   {
     std::unique_ptr<ContextData> local_parent_or_opener =
         child_data->GetLocalParentOrOpener();
@@ -111,9 +112,9 @@ TEST_F(BrowserContextDataTest, GetLocalParentOrOpener) {
   }
 }
 
-TEST_F(BrowserContextDataTest, UrlAndOriginGetters) {
+TEST_F(BrowserFrameContextDataTest, UrlAndOriginGetters) {
   {
-    auto data = std::make_unique<BrowserContextData>(
+    auto data = std::make_unique<BrowserFrameContextData>(
         GetRenderFrameHost(opener_web_contents()));
 
     EXPECT_EQ(data->GetUrl(), google_url_);
@@ -126,7 +127,7 @@ TEST_F(BrowserContextDataTest, UrlAndOriginGetters) {
     auto site_instance = content::SiteInstance::Create(browser_context());
     auto web_contents = content::WebContentsTester::CreateTestWebContents(
         browser_context(), site_instance);
-    auto data = std::make_unique<BrowserContextData>(
+    auto data = std::make_unique<BrowserFrameContextData>(
         GetRenderFrameHost(web_contents.get()));
     EXPECT_EQ(data->GetUrl(), GURL(url::kAboutBlankURL));
     EXPECT_EQ(data->GetOrigin().GetURL(), GURL());

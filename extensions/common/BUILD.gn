@@ -305,6 +305,7 @@ static_library("common") {
     "features/simple_feature.h",
     "file_util.cc",
     "file_util.h",
+    "frame_context_data.h",
     "hashed_extension_id.cc",
     "hashed_extension_id.h",
     "identifiability_metrics.cc",

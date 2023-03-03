@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/browser_context_data.h"
+#include "extensions/browser/browser_frame_context_data.h"
 
 #include <memory>
 
@@ -11,18 +11,23 @@
 
 namespace extensions {
 
-std::unique_ptr<ContextData> BrowserContextData::Clone() const {
-  return std::make_unique<BrowserContextData>(frame_);
+std::unique_ptr<ContextData> BrowserFrameContextData::Clone() const {
+  return CloneFrameContextData();
 }
 
-bool BrowserContextData::IsIsolatedApplication() const {
+std::unique_ptr<FrameContextData>
+BrowserFrameContextData::CloneFrameContextData() const {
+  return std::make_unique<BrowserFrameContextData>(frame_);
+}
+
+bool BrowserFrameContextData::IsIsolatedApplication() const {
   return frame_ &&
          frame_->GetWebExposedIsolationLevel() >=
              content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
 }
 
-std::unique_ptr<ContextData> BrowserContextData::GetLocalParentOrOpener()
-    const {
+std::unique_ptr<FrameContextData>
+BrowserFrameContextData::GetLocalParentOrOpener() const {
   content::RenderFrameHost* parent_or_opener = frame_->GetParent();
   // Non primary pages(e.g. fenced frame, prerendered page, bfcache, and
   // portals) can't look at the opener, and WebContents::GetOpener returns the
@@ -46,10 +51,10 @@ std::unique_ptr<ContextData> BrowserContextData::GetLocalParentOrOpener()
     return nullptr;
   }
 
-  return std::make_unique<BrowserContextData>(parent_or_opener);
+  return std::make_unique<BrowserFrameContextData>(parent_or_opener);
 }
 
-GURL BrowserContextData::GetUrl() const {
+GURL BrowserFrameContextData::GetUrl() const {
   if (frame_->GetLastCommittedURL().is_empty()) {
     // It's possible for URL to be empty when `frame_` is on the initial empty
     // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
@@ -59,23 +64,23 @@ GURL BrowserContextData::GetUrl() const {
   return frame_->GetLastCommittedURL();
 }
 
-url::Origin BrowserContextData::GetOrigin() const {
+url::Origin BrowserFrameContextData::GetOrigin() const {
   return frame_->GetLastCommittedOrigin();
 }
 
-// BrowserContextData::CanAccess is unable to replicate all of the
+// BrowserFrameContextData::CanAccess is unable to replicate all of the
 // WebSecurityOrigin::CanAccess checks, so these methods should not be called.
-bool BrowserContextData::CanAccess(const url::Origin& target) const {
+bool BrowserFrameContextData::CanAccess(const url::Origin& target) const {
   NOTREACHED();
   return true;
 }
 
-bool BrowserContextData::CanAccess(const ContextData& target) const {
+bool BrowserFrameContextData::CanAccess(const FrameContextData& target) const {
   NOTREACHED();
   return true;
 }
 
-uintptr_t BrowserContextData::GetId() const {
+uintptr_t BrowserFrameContextData::GetId() const {
   return frame_->GetRoutingID();
 }
 

@@ -20,7 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/browser_context_data.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/guest_view/web_view/web_view_content_script_manager.h"
@@ -148,14 +148,14 @@ GURL GetEffectiveDocumentURL(
     const GURL& document_url,
     MatchOriginAsFallbackBehavior match_origin_as_fallback) {
   // This is a simplification to avoid calling
-  // `BrowserContextData::CanAccess` which is unable to replicate all of
+  // `BrowserFrameContextData::CanAccess` which is unable to replicate all of
   // WebSecurityOrigin::CanAccess checks (e.g. universal access or file
   // exceptions tracked on the renderer side).  This is okay, because our only
   // caller (DoesContentScriptMatch()) expects false positives.
   constexpr bool kAllowInaccessibleParents = true;
 
   return ContentScriptInjectionUrlGetter::Get(
-      BrowserContextData(frame), document_url, match_origin_as_fallback,
+      BrowserFrameContextData(frame), document_url, match_origin_as_fallback,
       kAllowInaccessibleParents);
 }
 

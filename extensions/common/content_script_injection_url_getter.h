@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_COMMON_CONTENT_SCRIPT_INJECTION_URL_GETTER_H_
 #define EXTENSIONS_COMMON_CONTENT_SCRIPT_INJECTION_URL_GETTER_H_
 
-#include "extensions/common/context_data.h"
+#include "extensions/common/frame_context_data.h"
 #include "extensions/common/script_constants.h"
 #include "url/gurl.h"
 
@@ -24,7 +24,7 @@ class ContentScriptInjectionUrlGetter {
   // Only static methods.
   ContentScriptInjectionUrlGetter() = delete;
 
-  static GURL Get(const ContextData& context_data,
+  static GURL Get(const FrameContextData& context_data,
                   const GURL& document_url,
                   MatchOriginAsFallbackBehavior match_origin_as_fallback,
                   bool allow_inaccessible_parents);
