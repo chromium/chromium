@@ -32,15 +32,21 @@ class InputDeviceSettingsProvider
   void GetConnectedKeyboards(GetConnectedKeyboardsCallback callback) override;
   void ObserveKeyboardSettings(
       mojo::PendingRemote<mojom::KeyboardSettingsObserver> observer) override;
+  void ObserveTouchpadSettings(
+      mojo::PendingRemote<mojom::TouchpadSettingsObserver> observer) override;
 
   // InputDeviceSettingsController::Observer:
   void OnKeyboardConnected(const ::ash::mojom::Keyboard& keyboard) override;
   void OnKeyboardDisconnected(const ::ash::mojom::Keyboard& keyboard) override;
+  void OnTouchpadConnected(const ::ash::mojom::Touchpad& touchpad) override;
+  void OnTouchpadDisconnected(const ::ash::mojom::Touchpad& touchpad) override;
 
  private:
   void NotifyKeyboardsUpdated();
+  void NotifyTouchpadsUpdated();
 
   mojo::RemoteSet<mojom::KeyboardSettingsObserver> keyboard_settings_observers_;
+  mojo::RemoteSet<mojom::TouchpadSettingsObserver> touchpad_settings_observers_;
 
   mojo::Receiver<mojom::InputDeviceSettingsProvider> receiver_{this};
 };

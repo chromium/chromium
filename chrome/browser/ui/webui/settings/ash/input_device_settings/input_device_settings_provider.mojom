@@ -13,6 +13,13 @@ interface KeyboardSettingsObserver {
   OnKeyboardListUpdated(array<ash.mojom.Keyboard> keyboards);
 };
 
+// Interface for observing touchpad settings changes in OSSettings SWA.
+interface TouchpadSettingsObserver {
+  // Notifies TouchpadSettingsObserver when the list of connected touchpads
+  // and their settings are updated.
+  OnTouchpadListUpdated(array<ash.mojom.Touchpad> touchpads);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Returns the list of currently connected keyboards.
@@ -22,4 +29,9 @@ interface InputDeviceSettingsProvider {
   // The observer which is registered is immediately informed
   // of the current state via its OnKeyboardListUpdated function.
   ObserveKeyboardSettings(pending_remote<KeyboardSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a touchpad connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObserveTouchpadSettings function.
+  ObserveTouchpadSettings(pending_remote<TouchpadSettingsObserver> observer);
 };

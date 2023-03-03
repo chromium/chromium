@@ -39,6 +39,16 @@ const ::ash::mojom::Keyboard kKeyboard2 =
                            /*meta_key=*/::ash::mojom::MetaKey::kExternalMeta,
                            /*modifier_keys=*/{},
                            ::ash::mojom::KeyboardSettings::New());
+const ::ash::mojom::Touchpad kTouchpad1 =
+    ::ash::mojom::Touchpad(/*name=*/"test touchpad",
+                           /*id=*/2,
+                           /*device_key=*/"fake-device-key3",
+                           ::ash::mojom::TouchpadSettings::New());
+const ::ash::mojom::Touchpad kTouchpad2 =
+    ::ash::mojom::Touchpad(/*name=*/"Logitech T650",
+                           /*id=*/3,
+                           /*device_key=*/"fake-device-key4",
+                           ::ash::mojom::TouchpadSettings::New());
 template <typename T>
 void ExpectListsEqual(const std::vector<T>& expected_list,
                       const std::vector<T>& actual_list) {
@@ -81,6 +91,26 @@ class FakeKeyboardSettingsObserver : public mojom::KeyboardSettingsObserver {
 
  private:
   std::vector<::ash::mojom::KeyboardPtr> keyboards_;
+  int num_times_called_ = 0;
+};
+
+class FakeTouchpadSettingsObserver : public mojom::TouchpadSettingsObserver {
+ public:
+  void OnTouchpadListUpdated(
+      std::vector<::ash::mojom::TouchpadPtr> touchpads) override {
+    touchpads_ = std::move(touchpads);
+    ++num_times_called_;
+  }
+
+  const std::vector<::ash::mojom::TouchpadPtr>& touchpads() {
+    return touchpads_;
+  }
+
+  int num_times_called() { return num_times_called_; }
+  mojo::Receiver<mojom::TouchpadSettingsObserver> receiver{this};
+
+ private:
+  std::vector<::ash::mojom::TouchpadPtr> touchpads_;
   int num_times_called_ = 0;
 };
 
@@ -147,11 +177,19 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   }
   void AddTouchpad(::ash::mojom::TouchpadPtr touchpad) {
     touchpads_.push_back(std::move(touchpad));
+    observer_->OnTouchpadConnected(*touchpads_.back());
   }
   void RemoveTouchpad(uint32_t device_id) {
-    base::EraseIf(touchpads_, [device_id](const auto& touchpad) {
-      return touchpad->id == device_id;
-    });
+    auto iter =
+        base::ranges::find_if(touchpads_, [device_id](const auto& touchpad) {
+          return touchpad->id == device_id;
+        });
+    if (iter == touchpads_.end()) {
+      return;
+    }
+    auto temp_touchpad = std::move(*iter);
+    touchpads_.erase(iter);
+    observer_->OnTouchpadDisconnected(*temp_touchpad);
   }
   void AddPointingStick(::ash::mojom::PointingStickPtr pointing_stick) {
     pointing_sticks_.push_back(std::move(pointing_stick));
@@ -239,6 +277,34 @@ TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_called());
   ExpectListsEqual(expected_keyboards, fake_observer.keyboards());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestTouchpadSettingsObeserver) {
+  std::vector<::ash::mojom::TouchpadPtr> expected_touchpads;
+  expected_touchpads.push_back(kTouchpad1.Clone());
+  controller_->AddTouchpad(kTouchpad1.Clone());
+
+  FakeTouchpadSettingsObserver fake_observer;
+  provider_->ObserveTouchpadSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_called());
+  ExpectListsEqual(expected_touchpads, fake_observer.touchpads());
+
+  expected_touchpads.push_back(kTouchpad2.Clone());
+  controller_->AddTouchpad(kTouchpad2.Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_called());
+  ExpectListsEqual(expected_touchpads, fake_observer.touchpads());
+
+  expected_touchpads.pop_back();
+  controller_->RemoveTouchpad(kTouchpad2.id);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, fake_observer.num_times_called());
+  ExpectListsEqual(expected_touchpads, fake_observer.touchpads());
 }
 
 }  // namespace ash::settings
