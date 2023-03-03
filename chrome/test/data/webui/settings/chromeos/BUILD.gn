@@ -98,7 +98,7 @@ test_files = [
   "network_proxy_section_test.js",
   "network_summary_item_test.js",
   "network_summary_test.js",
-  "onc_mojo_test.js",
+  "onc_mojo_test.ts",
   "os_a11y_page_tests.js",
   "os_about_page_tests.js",
   "os_bluetooth_change_device_name_dialog_tests.js",
