@@ -4065,8 +4065,15 @@ bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
 
   DCHECK(rfs_document_data_for_storage_key);
 
-  return rfs_document_data_for_storage_key->runtime_feature_read_context()
-      .IsThirdPartyStoragePartitioningEnabled();
+  // If the deprecation trial is enabled, we have directive to override the
+  // current value of net::features::ThirdPartyStoragePartitioning.
+  if (rfs_document_data_for_storage_key->runtime_feature_read_context()
+          .IsDisableThirdPartyStoragePartitioningEnabled()) {
+    return false;
+  }
+  // Otherwise, return whatever the browser-side feature flag value is:
+  return base::FeatureList::IsEnabled(
+      net::features::kThirdPartyStoragePartitioning);
 }
 
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
