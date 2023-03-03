@@ -67,6 +67,12 @@ enum AutoConfirmForTest { DO_NOT_SKIP = 0, PROCEED, ABORT };
 
 AutoConfirmForTest auto_confirm_for_test = DO_NOT_SKIP;
 
+// Returns true if the extension should be exposed via the chrome.management
+// API.
+bool ShouldExposeViaManagementAPI(const Extension& extension) {
+  return !Manifest::IsComponentLocation(extension.location());
+}
+
 std::vector<std::string> CreateWarningsList(const Extension* extension) {
   std::vector<std::string> warnings_list;
   for (const PermissionMessage& msg :
@@ -254,8 +260,9 @@ void AddExtensionInfo(const Extension* source_extension,
        iter != extensions.end(); ++iter) {
     const Extension& extension = **iter;
 
-    if (!extension.ShouldExposeViaManagementAPI())
+    if (!ShouldExposeViaManagementAPI(extension)) {
       continue;
+    }
 
     extension_list->push_back(
         CreateExtensionInfo(source_extension, extension, context));
@@ -419,8 +426,9 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
 
   const Extension* target_extension =
       registry->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
-  if (!target_extension || !target_extension->ShouldExposeViaManagementAPI())
+  if (!target_extension || !ShouldExposeViaManagementAPI(*target_extension)) {
     return RespondNow(Error(keys::kNoExtensionError, extension_id_));
+  }
 
   bool should_enable = params->enabled;
 
@@ -597,7 +605,7 @@ ExtensionFunction::ResponseAction ManagementUninstallFunctionBase::Uninstall(
       extensions::ExtensionRegistry::Get(browser_context())
           ->GetExtensionById(target_extension_id_,
                              ExtensionRegistry::EVERYTHING);
-  if (!target_extension || !target_extension->ShouldExposeViaManagementAPI()) {
+  if (!target_extension || !ShouldExposeViaManagementAPI(*target_extension)) {
     return RespondNow(Error(keys::kNoExtensionError, target_extension_id_));
   }
 
@@ -1091,8 +1099,9 @@ void ManagementEventRouter::BroadcastEvent(
     const Extension* extension,
     events::HistogramValue histogram_value,
     const char* event_name) {
-  if (!extension->ShouldExposeViaManagementAPI())
+  if (!ShouldExposeViaManagementAPI(*extension)) {
     return;
+  }
   base::Value::List args;
   if (event_name == management::OnUninstalled::kEventName) {
     args.Append(extension->id());
