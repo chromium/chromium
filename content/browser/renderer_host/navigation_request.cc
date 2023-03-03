@@ -3627,6 +3627,13 @@ UrlInfo NavigationRequest::GetUrlInfo() {
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
       .WithIsPdf(is_pdf_);
 
+  // Records in the UrlInfo if COOP: same-origin or COOP: restrict-properties
+  // was set, and from which origin.
+  auto common_coop_origin = ComputeCommonCoopOrigin();
+  if (common_coop_origin.has_value()) {
+    url_info_init.WithCommonCoopOrigin(common_coop_origin.value());
+  }
+
   // Navigations within guests should always stay in the guest's
   // StoragePartition.
   SiteInstanceImpl* current_instance =
@@ -8761,6 +8768,9 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
     return WebExposedIsolationInfo::CreateNonIsolated();
   }
 
+  // TODO(https://crbug.com/1385827): This is technically incorrect, because it
+  // does not take into account sandbox flags. Find how address this,
+  // potentially reusing COOP's origin once we have a COOP+origin bundle.
   const GURL& url = common_params().url;
   url::Origin origin = url::Origin::Create(url);
 
@@ -8768,6 +8778,48 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
              GetNavigationController()->GetBrowserContext(), url)
              ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
              : WebExposedIsolationInfo::CreateIsolated(origin);
+}
+
+absl::optional<url::Origin> NavigationRequest::ComputeCommonCoopOrigin() {
+  // Iframes cannot set COOP, but live in the same BrowsingInstance as their
+  // parent. For proper BrowsingInstance reuse with COOP: restrict-properties it
+  // is important that they inherit this state.
+  if (!frame_tree_node_->IsMainFrame()) {
+    return frame_tree_node_->current_frame_host()
+        ->GetMainFrame()
+        ->GetSiteInstance()
+        ->GetCommonCoopOrigin();
+  }
+
+  // Check if COOP: same-origin or COOP: restrict-properties were set in
+  // coop_status, and if so, record the origin.
+  if ((coop_status().current_coop().value ==
+       network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin) ||
+      (coop_status().current_coop().value ==
+       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) ||
+      (coop_status().current_coop().value ==
+       network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties) ||
+      (coop_status().current_coop().value ==
+       network::mojom::CrossOriginOpenerPolicyValue::
+           kRestrictPropertiesPlusCoep)) {
+    // If we're early in the navigation process and the PolicyContainer was not
+    // yet computed, use a best effort origin.
+    // TODO(https://crbug.com/1385827): This is probably not very helpful. If
+    // we have a { Value+Origin } COOP bundle, we should be able to return a
+    // nullopt value that is distinct from { unsafe-none, nullopt }, similar to
+    // what exists for WebExposedIsolationInfo.
+    if (!policy_container_builder_->HasComputedPolicies()) {
+      return GetTentativeOriginAtRequestTime();
+    }
+
+    // TODO(https://crbug.com/1385827): This is technically incorrect, because
+    // it does not take into account sandbox flags. See how this can be
+    // addressed, potentially reusing COOP's origin once we have a COOP+origin
+    // bundle.
+    return url::Origin::Create(common_params().url);
+  }
+
+  return absl::nullopt;
 }
 
 void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {

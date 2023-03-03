@@ -1720,11 +1720,20 @@ void RenderFrameHostManager::OnDidUpdateFrameOwnerProperties(
 }
 
 RenderFrameHostManager::SiteInstanceDescriptor::SiteInstanceDescriptor(
+    SiteInstanceImpl* site_instance)
+    : existing_site_instance(site_instance),
+      relation(SiteInstanceRelation::PREEXISTING) {}
+
+RenderFrameHostManager::SiteInstanceDescriptor::SiteInstanceDescriptor(
     UrlInfo dest_url_info,
     SiteInstanceRelation relation_to_current)
     : existing_site_instance(nullptr),
       dest_url_info(dest_url_info),
-      relation(relation_to_current) {}
+      relation(relation_to_current) {
+  DCHECK((relation_to_current == SiteInstanceRelation::RELATED) ||
+         (relation_to_current == SiteInstanceRelation::RELATED_IN_COOP_GROUP) ||
+         (relation_to_current == SiteInstanceRelation::UNRELATED));
+}
 
 void RenderFrameHostManager::CleanupSpeculativeRfhForRenderProcessGone() {
   CHECK(speculative_render_frame_host_);
@@ -1981,7 +1990,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // are no other windows in the BrowsingInstance.
   // TODO(https://crbug.com/1221127): For single-page websites, do we want to
   // do a full proactive swap if `coop_swap_result` is kSwapRelated? See if a
-  // different BrowsingInstance in the same CoopRelatedBrowsingContextGroup
+  // different BrowsingInstance in the same CoopRelatedGroup
   // provides the same guarantees.
   return ShouldProactivelySwapBrowsingInstance(destination_url_info, is_reload,
                                                is_same_site,
@@ -2242,10 +2251,10 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       new_instance.get(), dest_url_info.web_exposed_isolation_info));
 
   // If `should_swap_result.ShouldSwap()` is true, we must use a different
-  // SiteInstance than the current one. If we didn't, we would have the same
-  // SiteInstance belong to two BrowsingInstances, which is not possible.
+  // SiteInstance in a different BrowsingInstance as the current one.
   if (should_swap_result->ShouldSwap()) {
     CHECK_NE(new_instance, current_instance);
+    CHECK(!new_instance->IsRelatedSiteInstance(current_instance));
   }
 
   if (new_instance == current_instance) {
@@ -2436,16 +2445,16 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     BrowsingContextGroupSwap browsing_context_group_swap,
     bool was_server_redirect,
     std::string* reason) {
-  // Note that this function should return SiteInstance with
-  // SiteInstanceRelation::UNRELATED relation to `current_instance` iff
-  // `browsing_context_group_swap.ShouldSwap()` is true.
+  // Note that this function should return a SiteInstanceDescriptor with
+  // SiteInstanceRelation::UNRELATED or
+  // SiteInstanceRelation::RELATED_IN_COOP_GROUP relations to `current_instance`
+  // iff `browsing_context_group_swap.ShouldSwap()` is true.
 
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
   if (dest_instance &&
       CanUseDestinationInstance(dest_url_info, current_instance, dest_instance,
-                                is_failure,
-                                browsing_context_group_swap.ShouldSwap())) {
+                                is_failure, browsing_context_group_swap)) {
     AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
     return SiteInstanceDescriptor(dest_instance);
   }
@@ -2471,10 +2480,15 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
                                     SiteInstanceRelation::RELATED);
     }
 
-    // TODO(https://crbug.com/1221127): If we're coming from a COOP:
-    // restrict-properties page, we should stay in the same COOP:
-    // restrict-properties group, so that further navigations get a chance to
-    // preserve their scriptability.
+    if (browsing_context_group_swap.type() ==
+        BrowsingContextGroupSwapType::kRelatedCoopSwap) {
+      // If we're dealing with COOP: restrict-properties, we need to stay in the
+      // same CoopRelatedGroup, so that further navigations get a
+      // chance to preserve their scriptability.
+      return SiteInstanceDescriptor(
+          computed_url_info, SiteInstanceRelation::RELATED_IN_COOP_GROUP);
+    }
+
     return SiteInstanceDescriptor(computed_url_info,
                                   SiteInstanceRelation::UNRELATED);
   }
@@ -2483,15 +2497,10 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // preserve a relation to the previous BrowsingInstance.
   if (browsing_context_group_swap.type() ==
       BrowsingContextGroupSwapType::kRelatedCoopSwap) {
-    // TODO(https://crbug.com/1221127): Implement the COOP group mechanisms.
-    // We should make sure that we use a BrowsingInstance in the same COOP
-    // group, to preserve minimal scriptability.
-    //
-    // For now, simply return an unrelated SiteInstance.
     AppendReason(reason,
-                 "DetermineSiteInstanceForURL => browsing-instance-swap");
+                 "DetermineSiteInstanceForURL => related_in_COOP_group");
     return SiteInstanceDescriptor(dest_url_info,
-                                  SiteInstanceRelation::UNRELATED);
+                                  SiteInstanceRelation::RELATED_IN_COOP_GROUP);
   }
 
   // If a swap is required, we need to force the SiteInstance AND
@@ -2707,12 +2716,23 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
     SiteInstanceImpl* current_instance,
     SiteInstanceImpl* dest_instance,
     bool is_failure,
-    bool force_browsing_instance_swap) {
-  // If we've decided that the target SiteInstance cannot be in the same
-  // BrowsingInstance, and that the dest_instance is, we should not reuse it.
-  if (force_browsing_instance_swap &&
-      dest_instance->IsRelatedSiteInstance(current_instance)) {
-    return false;
+    const BrowsingContextGroupSwap& browsing_context_group_swap) {
+  // Start by verifying that the dest_instance is compatible with the browsing
+  // context group swap decision.
+  if (browsing_context_group_swap.ShouldSwap()) {
+    // 1. If we've decided that the target SiteInstance cannot be in the same
+    // BrowsingInstance, and that the dest_instance is, we should not reuse it.
+    if (dest_instance->IsRelatedSiteInstance(current_instance)) {
+      return false;
+    }
+
+    // 2. If we aren't looking for a SiteInstance in the same CoopRelatedGroup,
+    // then don't use a dest_instance in that group.
+    if (browsing_context_group_swap.type() !=
+            BrowsingContextGroupSwapType::kRelatedCoopSwap &&
+        dest_instance->IsCoopRelatedSiteInstance(current_instance)) {
+      return false;
+    }
   }
 
   // Note: The later call to IsSuitableForUrlInfo does not have context
@@ -2811,6 +2831,11 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
   // |descriptor.web_exposed_isolation_info|."
   if (descriptor.relation == SiteInstanceRelation::RELATED) {
     return current_instance->GetRelatedSiteInstanceImpl(
+        descriptor.dest_url_info);
+  }
+
+  if (descriptor.relation == SiteInstanceRelation::RELATED_IN_COOP_GROUP) {
+    return current_instance->GetCoopRelatedSiteInstanceImpl(
         descriptor.dest_url_info);
   }
 

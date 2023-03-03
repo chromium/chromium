@@ -22,6 +22,13 @@ namespace content {
 // This function returns whether the BrowsingInstance should change following
 // COOP rules defined in:
 // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e#changes-to-navigation
+//
+// The SiteInstance selection model heavily relies on this function to be
+// correct, and documents these assumptions, many of which would crash the
+// browser if incorrect. In particular, it assumes that returning a value of
+// CoopSwapResult::kSwapRelated means that the current browsing context group
+// will NOT be found suitable for reuse, as that would effectively mean no swap
+// has happened.
 CoopSwapResult ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
     network::mojom::CrossOriginOpenerPolicyValue initiator_coop,
     const url::Origin& initiator_origin,

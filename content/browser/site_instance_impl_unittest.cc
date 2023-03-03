@@ -868,7 +868,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
   BrowsingInstance* browsing_instance = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*coop_related_group=*/nullptr,
+      /*common_coop_origin=*/absl::nullopt);
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -902,7 +904,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   // browser context) should return a different SiteInstance.
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*coop_related_group=*/nullptr,
+      /*common_coop_origin=*/absl::nullopt);
   // Ensure the new SiteInstance is ref counted so that it gets deleted.
   scoped_refptr<SiteInstanceImpl> site_instance_a2_2(
       browsing_instance2->GetSiteInstanceForURL(
@@ -945,7 +949,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
   scoped_refptr<BrowsingInstance> browsing_instance = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*coop_related_group=*/nullptr,
+      /*common_coop_origin=*/absl::nullopt);
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -979,7 +985,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   // context) should return a different SiteInstance with the same process.
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
       browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*coop_related_group=*/nullptr,
+      /*common_coop_origin=*/absl::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a1_2(
       browsing_instance2->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a1), false));
@@ -993,7 +1001,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
       new TestBrowserContext());
   BrowsingInstance* browsing_instance3 = new BrowsingInstance(
       browser_context2.get(), WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false, /*is_fenced=*/false);
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*coop_related_group=*/nullptr,
+      /*common_coop_origin=*/absl::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a2_3(
       browsing_instance3->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a2), false));
@@ -2039,6 +2049,139 @@ TEST_F(SiteInstanceTest, SiteInfoDetermineProcessLock_OriginAgentCluster) {
       SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
   EXPECT_EQ(foo_url, site_info_for_a_foo.process_lock_url());
   EXPECT_FALSE(site_info_for_a_foo.requires_origin_keyed_process());
+}
+
+TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdentity) {
+  const GURL test_url("https://example.com");
+
+  const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
+      /*is_fenced=*/false);
+
+  const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
+      UrlInfo(UrlInfoInit(test_url)));
+
+  EXPECT_EQ(derived_instance.get(), base_instance.get());
+  EXPECT_TRUE(derived_instance->IsRelatedSiteInstance(base_instance.get()));
+  EXPECT_TRUE(derived_instance->IsCoopRelatedSiteInstance(base_instance.get()));
+}
+
+TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceCrossSite) {
+  const GURL test_url("https://example.com");
+
+  const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
+      /*is_fenced=*/false);
+
+  const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
+      UrlInfo(UrlInfoInit(GURL("https://other-example.com"))));
+
+  // Without full Site Isolation, we'll group different sites in the default
+  // SiteInstance.
+  if (AreDefaultSiteInstancesEnabled()) {
+    EXPECT_EQ(derived_instance.get(), base_instance.get());
+    return;
+  }
+
+  EXPECT_NE(derived_instance.get(), base_instance.get());
+  EXPECT_TRUE(derived_instance->IsRelatedSiteInstance(base_instance.get()));
+  EXPECT_TRUE(derived_instance->IsCoopRelatedSiteInstance(base_instance.get()));
+}
+
+TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCoopOriginSameSite) {
+  const GURL test_url("https://example.com");
+
+  const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(),
+      UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
+          url::Origin::Create(test_url))),
+      /*is_guest=*/false, /*is_fenced=*/false);
+
+  const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
+      UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
+          url::Origin::Create(test_url))));
+  EXPECT_EQ(derived_instance.get(), base_instance.get());
+  EXPECT_TRUE(derived_instance->IsRelatedSiteInstance(base_instance.get()));
+  EXPECT_TRUE(derived_instance->IsCoopRelatedSiteInstance(base_instance.get()));
+}
+
+TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCoopOriginCrossSite) {
+  const GURL test_url("https://example.com");
+
+  const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(),
+      UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
+          url::Origin::Create(test_url))),
+      /*is_guest=*/false, /*is_fenced=*/false);
+
+  // COOP common origin might differ from the frame's actual origin (for
+  // example for cross-origin subframes), so we verify that this case is handled
+  // properly.
+  const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
+      UrlInfo(UrlInfoInit(GURL("https://other-example.com"))
+                  .WithCommonCoopOrigin(url::Origin::Create(test_url))));
+
+  // Without full Site Isolation, we'll group different sites in the default
+  // SiteInstance.
+  if (AreDefaultSiteInstancesEnabled()) {
+    EXPECT_EQ(derived_instance.get(), base_instance.get());
+    return;
+  }
+
+  EXPECT_NE(derived_instance.get(), base_instance.get());
+  EXPECT_TRUE(derived_instance->IsRelatedSiteInstance(base_instance.get()));
+  EXPECT_TRUE(derived_instance->IsCoopRelatedSiteInstance(base_instance.get()));
+}
+
+TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceDifferentCoopOrigin) {
+  const GURL test_url("https://example.com");
+
+  // Start without a COOP origin.
+  const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
+      /*is_fenced=*/false);
+
+  const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
+      UrlInfo(UrlInfoInit(test_url).WithCommonCoopOrigin(
+          url::Origin::Create(test_url))));
+  EXPECT_NE(derived_instance.get(), base_instance.get());
+  EXPECT_FALSE(derived_instance->IsRelatedSiteInstance(base_instance.get()));
+  EXPECT_TRUE(derived_instance->IsCoopRelatedSiteInstance(base_instance.get()));
+}
+
+TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceIdenticalCrossOriginIsolation) {
+  const GURL test_url("https://example.com");
+
+  const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(),
+      UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
+          WebExposedIsolationInfo::CreateIsolated(
+              url::Origin::Create(test_url)))),
+      /*is_guest=*/false, /*is_fenced=*/false);
+
+  const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
+      UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
+          WebExposedIsolationInfo::CreateIsolated(
+              url::Origin::Create(test_url)))));
+  EXPECT_EQ(derived_instance.get(), base_instance.get());
+  EXPECT_TRUE(derived_instance->IsRelatedSiteInstance(base_instance.get()));
+  EXPECT_TRUE(derived_instance->IsCoopRelatedSiteInstance(base_instance.get()));
+}
+
+TEST_F(SiteInstanceTest, CoopRelatedSiteInstanceDifferentCrossOriginIsolation) {
+  const GURL test_url("https://example.com");
+
+  const auto base_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo(UrlInfoInit(test_url)), /*is_guest=*/false,
+      /*is_fenced=*/false);
+
+  const auto derived_instance = base_instance->GetCoopRelatedSiteInstanceImpl(
+      UrlInfo(UrlInfoInit(test_url).WithWebExposedIsolationInfo(
+          WebExposedIsolationInfo::CreateIsolated(
+              url::Origin::Create(test_url)))));
+  EXPECT_NE(derived_instance.get(), base_instance.get());
+  EXPECT_FALSE(derived_instance->IsRelatedSiteInstance(base_instance.get()));
+  EXPECT_TRUE(derived_instance->IsCoopRelatedSiteInstance(base_instance.get()));
 }
 
 }  // namespace content

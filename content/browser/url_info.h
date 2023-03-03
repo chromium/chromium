@@ -164,6 +164,21 @@ struct CONTENT_EXPORT UrlInfo {
   // from other types of content.
   bool is_pdf = false;
 
+  // If set, indicates that this UrlInfo is for a document that sets either
+  // COOP: same-origin or COOP: restrict-properties from the given origin. For
+  // subframes, it is inherited from the top-level frame. This is used to select
+  // an appropriate BrowsingInstance when navigating within a CoopRelatedGroup.
+  //
+  // Note: This cannot be part of the WebExposedIsolationInfo, because while it
+  // might force a different BrowsingInstance to be used, it may not force a
+  // strict process isolation, which non-matching web_exposed_isolation_info
+  // implies. Example: a top-level a.com document sets COOP:
+  // restrict-properties, and an a.com iframe in another tab has no COOP set.
+  // Under memory pressure they should be able to reuse the same process. This
+  // is not the case if the top-level document sets COOP: restrict-properties +
+  // COEP, because it then has an isolated WebExposedIsolationInfo.
+  absl::optional<url::Origin> common_coop_origin;
+
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
 };
@@ -187,6 +202,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithWebExposedIsolationInfo(
       absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithIsPdf(bool is_pdf);
+  UrlInfoInit& WithCommonCoopOrigin(const url::Origin& origin);
 
   const absl::optional<url::Origin>& origin() { return origin_; }
 
@@ -204,6 +220,7 @@ class CONTENT_EXPORT UrlInfoInit {
   absl::optional<StoragePartitionConfig> storage_partition_config_;
   absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   bool is_pdf_ = false;
+  absl::optional<url::Origin> common_coop_origin_;
 
   // Any new fields should be added to the UrlInfoInit(UrlInfo) constructor.
 };  // class UrlInfoInit

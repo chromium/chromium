@@ -629,6 +629,10 @@ class CONTENT_EXPORT RenderFrameHostManager {
   enum class SiteInstanceRelation {
     // A SiteInstance in a different browsing instance from the current.
     UNRELATED,
+    // A SiteInstance in a different BrowsingInstance, but in the same
+    // CoopRelatedGroup. Only used for COOP: restrict-properties
+    // navigations.
+    RELATED_IN_COOP_GROUP,
     // A SiteInstance in the same browsing instance as the current.
     RELATED,
     // A pre-existing SiteInstance that might or might not be in the same
@@ -652,21 +656,21 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // It can point to an existing one or store the details needed to create a new
   // one.
   struct CONTENT_EXPORT SiteInstanceDescriptor {
-    explicit SiteInstanceDescriptor(SiteInstanceImpl* site_instance)
-        : existing_site_instance(site_instance),
-          relation(SiteInstanceRelation::PREEXISTING) {}
+    // Constructor used for PREEXISTING relations.
+    explicit SiteInstanceDescriptor(SiteInstanceImpl* site_instance);
 
+    // Constructor used for UNRELATED/RELATED_IN_COOP_GROUP/RELATED relations.
     SiteInstanceDescriptor(UrlInfo dest_url_info,
                            SiteInstanceRelation relation_to_current);
 
     // Set with an existing SiteInstance to be reused.
     raw_ptr<SiteInstanceImpl> existing_site_instance;
 
-    // In case |existing_site_instance| is null, specify a destination URL.
+    // In case `existing_site_instance` is null, specify a destination URL.
     UrlInfo dest_url_info;
 
     // Specifies how the new site is related to the current BrowsingInstance.
-    // This is PREEXISTING iff |existing_site_instance| is defined.
+    // This is PREEXISTING iff `existing_site_instance` is defined.
     SiteInstanceRelation relation;
   };
 
@@ -772,11 +776,12 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // suitable anymore.
   //
   // This is a helper function for GetSiteInstanceForNavigation.
-  bool CanUseDestinationInstance(const UrlInfo& dest_url_info,
-                                 SiteInstanceImpl* current_instance,
-                                 SiteInstanceImpl* dest_instance,
-                                 bool is_failure,
-                                 bool force_browsing_instance_swap);
+  bool CanUseDestinationInstance(
+      const UrlInfo& dest_url_info,
+      SiteInstanceImpl* current_instance,
+      SiteInstanceImpl* dest_instance,
+      bool is_failure,
+      const BrowsingContextGroupSwap& browsing_context_group_swap);
 
   // Returns true if a navigation to |dest_url| that uses the specified
   // PageTransition in the current frame is allowed to swap BrowsingInstances.
