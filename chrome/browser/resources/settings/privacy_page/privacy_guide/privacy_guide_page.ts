@@ -32,6 +32,7 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} 
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
+import {PrivacyGuideAvailabilityMixin} from '../../privacy_page/privacy_guide_availability_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, Router} from '../../router.js';
@@ -55,8 +56,8 @@ export interface SettingsPrivacyGuidePageElement {
   };
 }
 
-const PrivacyGuideBase = RouteObserverMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
+const PrivacyGuideBase = RouteObserverMixin(PrivacyGuideAvailabilityMixin(
+    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))));
 
 export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   static get is() {
@@ -114,18 +115,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       },
 
       syncStatus_: Object,
-
-      isManaged_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   static get observers() {
     return [
       'onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
-      'exitIfNecessary(isManaged_, syncStatus_.childUser)',
+      'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
 
@@ -137,9 +133,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       SyncBrowserProxyImpl.getInstance();
   private syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
-  // The privacy guide flag is only enabled when the user was not managed at
-  // the time settings were loaded, so this is default false.
-  private isManaged_: boolean = false;
   private translateMultiplier_: number;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -159,8 +152,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
     this.syncBrowserProxy_.getSyncStatus().then(
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
-    this.addWebUiListener(
-        'is-managed-changed', this.onIsManagedChanged_.bind(this));
   }
 
   disableAnimationsForTesting() {
@@ -289,7 +280,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   private exitIfNecessary(): boolean {
-    if (this.isManaged_ || (this.syncStatus_ && this.syncStatus_.childUser)) {
+    if (!this.isPrivacyGuideAvailable) {
       Router.getInstance().navigateTo(routes.PRIVACY);
       return true;
     }
@@ -300,10 +291,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
     this.navigateForwardIfCurrentCardNoLongerAvailable();
-  }
-
-  private onIsManagedChanged_(isManaged: boolean) {
-    this.isManaged_ = isManaged;
   }
 
   /** Update the privacy guide state based on changed prefs. */

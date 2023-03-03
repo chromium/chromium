@@ -42,10 +42,10 @@ import {loadTimeData} from '../i18n_setup.js';
 import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 import {PageVisibility} from '../page_visibility.js';
-import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from '../performance_page/performance_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
+import {PrivacyGuideAvailabilityMixin} from '../privacy_page/privacy_guide_availability_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
@@ -53,8 +53,9 @@ import {MainPageMixin} from '../settings_page/main_page_mixin.js';
 
 import {getTemplate} from './basic_page.html.js';
 
-const SettingsBasicPageElementBase = PrefsMixin(
-    MainPageMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement))));
+const SettingsBasicPageElementBase =
+    PrefsMixin(MainPageMixin(RouteObserverMixin(
+        PrivacyGuideAvailabilityMixin(WebUiListenerMixin(PolymerElement)))));
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   static get is() {
@@ -152,16 +153,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         value: false,
       },
 
-      isManaged_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isChildUser_: {
-        type: Boolean,
-        value: false,
-      },
-
       currentRoute_: Object,
 
       /**
@@ -185,7 +176,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   static get observers() {
     return [
-      'updatePrivacyGuidePromoVisibility_(isManaged_, isChildUser_, prefs.privacy_guide.viewed.value)',
+      'updatePrivacyGuidePromoVisibility_(isPrivacyGuideAvailable, prefs.privacy_guide.viewed.value)',
     ];
   }
 
@@ -206,8 +197,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
-  private isManaged_: boolean;
-  private isChildUser_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
   private performanceBrowserProxy_: PerformanceBrowserProxy =
@@ -223,10 +212,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.addWebUiListener(
-        'is-managed-changed', this.onIsManagedChanged_.bind(this));
-    this.addWebUiListener(
-        'sync-status-changed', this.onSyncStatusChanged_.bind(this));
 
     if (loadTimeData.getBoolean('batterySaverModeAvailable')) {
       this.addWebUiListener(
@@ -279,9 +264,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   private updatePrivacyGuidePromoVisibility_() {
-    if (!loadTimeData.getBoolean('showPrivacyGuide') ||
-        this.pageVisibility.privacy === false || this.isManaged_ ||
-        this.isChildUser_ || this.prefs === undefined ||
+    if (!this.isPrivacyGuideAvailable ||
+        this.pageVisibility.privacy === false || this.prefs === undefined ||
         this.getPref('privacy_guide.viewed').value ||
         this.privacyGuideBrowserProxy_.getPromoImpressionCount() >=
             MAX_PRIVACY_GUIDE_PROMO_IMPRESSION ||
@@ -294,24 +278,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       this.privacyGuideBrowserProxy_.incrementPromoImpressionCount();
       this.privacyGuidePromoWasShown_ = true;
     }
-  }
-
-  private onIsManagedChanged_(isManaged: boolean) {
-    // If the user became managed, then update the variable to trigger a change
-    // to privacy guide promo's visibility. However, if the user was managed
-    // before and is no longer now, then keep the managed state as true, because
-    // the Settings route for privacy guide would still be unavailable until
-    // the page is reloaded.
-    this.isManaged_ = this.isManaged_ || isManaged;
-  }
-
-  private onSyncStatusChanged_(syncStatus: SyncStatus) {
-    // If the user signed in to a child user account, then update the variable
-    // to trigger a change to privacy guide promo's visibility. However, if the
-    // user was a child user before and is no longer now then keep the childUser
-    // state as true, because the Settings route for privacy guide would still
-    // be unavailable until the page is reloaded.
-    this.isChildUser_ = this.isChildUser_ || !!syncStatus.childUser;
   }
 
   private onDeviceHasBatteryChanged_(deviceHasBattery: boolean) {
