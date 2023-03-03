@@ -552,6 +552,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cryptohome.LoginDiskCleanupAvailableSpace" units="MiB"
+    expires_after="2023-12-01">
+  <owner>vsavu@google.com</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
+  <summary>
+    Records the amount of free space available (in MiB) on a device before login
+    cleanup is executed. Only recorded when login disk cleanup can run.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.LoginDiskCleanupProgress"
     enum="CryptohomeLoginDiskCleanupProgress" expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
