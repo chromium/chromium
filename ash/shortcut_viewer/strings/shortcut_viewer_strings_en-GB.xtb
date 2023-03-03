@@ -75,7 +75,7 @@
 <translation id="3622741593887335780">Zoom in (when docked OR full-screen magnifiers enabled)</translation>
 <translation id="3633851487917460983">Open clipboard</translation>
 <translation id="3649256019230929621">Minimise window</translation>
-<translation id="3655154169297074232">Tabs &amp; Windows</translation>
+<translation id="3655154169297074232">Tabs &amp; windows</translation>
 <translation id="3668361878347172356">Redo your last action</translation>
 <translation id="3710784500737332588">Open Help Centre</translation>
 <translation id="3720939646656082033">Open the link in a new tab and switch to the new tab</translation>
@@ -100,7 +100,7 @@
 <translation id="4240486403425279990">Overview mode</translation>
 <translation id="4382340674111381977">Go back to previous page</translation>
 <translation id="4458670250301149821">Move an app icon in or out of a folder in the app grid</translation>
-<translation id="4472417192667361414">System &amp; Display Settings</translation>
+<translation id="4472417192667361414">System &amp; display settings</translation>
 <translation id="449214506787633354"><ph name="CTRL" />, then <ph name="LEFT" /> or <ph name="RIGHT" /> or <ph name="UP" /> or <ph name="DOWN" /></translation>
 <translation id="4556221320735744018">See Keyboard Shortcut Helper</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> or <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
@@ -212,9 +212,9 @@
 <translation id="906458777597946297">Maximise window</translation>
 <translation id="9072882242928138086"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />, then <ph name="LEFT" /> or <ph name="RIGHT" /> or <ph name="UP" /> or <ph name="DOWN" /></translation>
 <translation id="9091855755813503076">Go to beginning of line</translation>
-<translation id="9106898733795143799">Page &amp; Web Browser</translation>
+<translation id="9106898733795143799">Page &amp; web browser</translation>
 <translation id="9162942292291287644">No search result for <ph name="QUERY" /></translation>
-<translation id="9179672198516322668">Popular Shortcuts</translation>
+<translation id="9179672198516322668">Popular shortcuts</translation>
 <translation id="93603345341560814">Press <ph name="SHIFT" /> and click a link</translation>
 <translation id="945383118875625837">Drag link to bookmarks bar</translation>
 <translation id="969054500339500113">Place focus on menu bar</translation>

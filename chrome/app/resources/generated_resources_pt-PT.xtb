@@ -256,7 +256,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1223484782328004593">A app <ph name="APP_NAME" /> requer uma licença</translation>
 <translation id="1223853788495130632">O gestor recomenda um valor específico para esta definição.</translation>
 <translation id="1225177025209879837">A processar o pedido...</translation>
-<translation id="1227660082540388410">Edite a token de acesso</translation>
+<translation id="1227660082540388410">Edite o token de acesso</translation>
 <translation id="1227993798763400520">Falha ao transmitir o conteúdo. Tente novamente.</translation>
 <translation id="1230417814058465809">A proteção padrão está ativada. Para desfrutar de ainda mais segurança, utilize a proteção melhorada.</translation>
 <translation id="1231733316453485619">Ativar a sincronização?</translation>
@@ -340,7 +340,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1306606229401759371">Alterar definições</translation>
 <translation id="1307165550267142340">O PIN foi criado.</translation>
 <translation id="1307431692088049276">Não voltar a perguntar</translation>
-<translation id="1307559529304613120">Ups! O sistema não conseguiu guardar a token de acesso da API de longo prazo para este dispositivo.</translation>
+<translation id="1307559529304613120">Ups! O sistema não conseguiu guardar o token de acesso da API de longo prazo para este dispositivo.</translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são apagados</translation>
 <translation id="1312811472299082263">Crie a partir de um ficheiro de cópia de segurança do Crostini ou de um guia interativo do Ansible</translation>
 <translation id="1313264149528821971">Autorizações <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /> removidas</translation>
@@ -730,7 +730,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1643072738649235303">Assinatura X9.62 ECDSA com SHA-1</translation>
 <translation id="1643921258693943800">Para utilizar a funcionalidade Partilhar na proximidade, ative o Bluetooth e o Wi-Fi.</translation>
 <translation id="1644574205037202324">Histórico</translation>
-<translation id="1644852018355792105">Introduza a token de acesso Bluetooth para o dispositivo <ph name="DEVICE" /></translation>
+<translation id="1644852018355792105">Introduza o token de acesso Bluetooth para o dispositivo <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Fonte desconhecida</translation>
 <translation id="1645516838734033527">Para manter o seu <ph name="DEVICE_TYPE" /> protegido, o Smart Lock requer um bloqueio de ecrã no telemóvel.</translation>
 <translation id="1646982517418478057">Introduza uma palavra-passe para encriptar este certificado</translation>
@@ -801,7 +801,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Escolha uma permissão para utilizar para a autenticação. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Definições de rede</translation>
-<translation id="1709916727352927457">Elimine a token de acesso</translation>
+<translation id="1709916727352927457">Elimine o token de acesso</translation>
 <translation id="1709972045049031556">Não é possível partilhar</translation>
 <translation id="1711935594505774770">Esta ação irá limpar todos os dados e cookies armazenados pelo grupo de sites <ph name="SITE_GROUP_NAME" />, por quaisquer sites associados a este e pelas respetivas apps instaladas.</translation>
 <translation id="1714644264617423774">Ativa as funcionalidades de acessibilidade para facilitar a utilização do dispositivo. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
@@ -2056,7 +2056,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2801954693771979815">Tamanho do ecrã</translation>
 <translation id="2802557211515765772">Não existem impressoras geridas.</translation>
 <translation id="2803313416453193357">Abrir pasta</translation>
-<translation id="2803719750464280163">Confirme que <ph name="PASSKEY" /> é a token de acesso apresentada no dispositivo Bluetooth <ph name="DEVICE" />.</translation>
+<translation id="2803719750464280163">Confirme que <ph name="PASSKEY" /> é o token de acesso apresentada no dispositivo Bluetooth <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">Não foi possível abrir o navegador alternativo.</translation>
 <translation id="2804667941345577550">A sua sessão neste site será terminada, incluindo em separadores abertos.</translation>
 <translation id="2804680522274557040">A câmara está desativada</translation>
@@ -3160,7 +3160,7 @@ Pretende pará-lo?</translation>
     <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios a qualquer altura nas definições do dispositivo Chrome. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3819164369574292143">Aumente o zoom para aumentar o tamanho dos itens no ecrã. Use Pesquisa + Ctrl + M para ativar e desativar a lupa. Use Ctrl + Alt + teclas de seta para deslocar o ecrã com o zoom aumentado.</translation>
 <translation id="3819257035322786455">Cópia de segurança</translation>
-<translation id="3819261658055281761">O sistema não conseguiu guardar a token de acesso da API de longo prazo para este dispositivo.</translation>
+<translation id="3819261658055281761">O sistema não conseguiu guardar o token de acesso da API de longo prazo para este dispositivo.</translation>
 <translation id="3819800052061700452">&amp;Ecrã inteiro</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Mostrar}other{Mostrar tudo}}</translation>
 <translation id="3820749202859700794">SECG de curva elíptica secp521r1 (também denominada NIST P-521)</translation>
@@ -4241,7 +4241,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4823484602432206655">Ler e alterar definições do utilizador e do dispositivo</translation>
 <translation id="4824037980212326045">Cópia de segurança e restauro do Linux</translation>
 <translation id="4824958205181053313">Pretende cancelar a sincronização?</translation>
-<translation id="4825532258163983651">Não é possível eliminar a token de acesso</translation>
+<translation id="4825532258163983651">Não é possível eliminar o token de acesso</translation>
 <translation id="4827675678516992122">Não foi possível ligar</translation>
 <translation id="4827784381479890589">Verificação ortográfica melhorada no navegador Chrome (o texto é enviado à Google para sugestões ortográficas)</translation>
 <translation id="4827904420700932487">Criar código QR para esta imagem</translation>
@@ -4687,7 +4687,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5252653240322147470">O PIN deve ter menos de <ph name="MAXIMUM" /> dígitos</translation>
 <translation id="5254368820972107711">Mostrar ficheiros a remover</translation>
 <translation id="52550593576409946">Não foi possível iniciar a app de quiosque.</translation>
-<translation id="5255726914791076208">Ao editar a token de acesso, a sua conta do serviço <ph name="RP_ID" /> não é alterada</translation>
+<translation id="5255726914791076208">Ao editar o token de acesso, a sua conta do serviço <ph name="RP_ID" /> não é alterada</translation>
 <translation id="5255859108402770436">Iniciar sessão novamente</translation>
 <translation id="52566111838498928">A carregar tipos de letra…</translation>
 <translation id="5256861893479663409">Em todos os sites</translation>
@@ -7316,7 +7316,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7670483791111801022">Legendas</translation>
 <translation id="7671130400130574146">Usar os limites e a barra de título do sistema</translation>
 <translation id="767127784612208024">Toque para confirmar a reposição</translation>
-<translation id="7672504401554182757">Escolha que dispositivo tem a token de acesso para a app <ph name="APP_NAME" /></translation>
+<translation id="7672504401554182757">Escolha que dispositivo tem o token de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, em <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Desativar todas as portas a serem encaminhadas no Linux</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
@@ -8475,7 +8475,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8724859055372736596">Mo&amp;strar numa Pasta</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8725178340343806893">Favoritos/Marcadores</translation>
-<translation id="87254326763805752">Confirme a token de acesso</translation>
+<translation id="87254326763805752">Confirme o token de acesso</translation>
 <translation id="8726206820263995930">Erro ao obter as definições da política do servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8728351286589123703">As suas autorizações escolhidas serão repostas</translation>
 <translation id="8729133765463465108">Usar a câmara para ler o código QR</translation>
@@ -8974,7 +8974,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
       <ph name="LIST_ITEM" />Executar o Diagnóstico de conetividade do Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Ecrã no ecrã</translation>
-<translation id="9166253503936244008">Leia este código QR com o dispositivo que tem a token de acesso que quer usar para a app <ph name="APP_NAME" /></translation>
+<translation id="9166253503936244008">Leia este código QR com o dispositivo que tem o token de acesso que quer usar para a app <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Mostrar Lista de leitura</translation>
 <translation id="9167450455589251456">O perfil não é suportado</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
