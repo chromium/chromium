@@ -55,6 +55,31 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
  private:
   class SkiaAngleVulkanImageRepresentation;
 
+  struct TextureHolderVk {
+    TextureHolderVk();
+    TextureHolderVk(TextureHolderVk&& other);
+    TextureHolderVk& operator=(TextureHolderVk&& other);
+    ~TextureHolderVk();
+
+    std::unique_ptr<VulkanImage> vulkan_image;
+    GrBackendTexture backend_texture;
+    sk_sp<SkPromiseImageTexture> promise_texture;
+  };
+
+  struct TextureHolderGL {
+    TextureHolderGL();
+    TextureHolderGL(TextureHolderGL&& other);
+    TextureHolderGL& operator=(TextureHolderGL&& other);
+    ~TextureHolderGL();
+
+    gl::ScopedEGLImage egl_image;
+    scoped_refptr<gles2::TexturePassthrough> passthrough_texture;
+  };
+
+  // The maximum number of GL or Vulkan textures this backing can hold.
+  static constexpr size_t kMaxTextures = 3;
+
+  std::vector<sk_sp<SkPromiseImageTexture>> GetPromiseTextures();
   void AcquireTextureANGLE();
   void ReleaseTextureANGLE();
   void PrepareBackendTexture();
@@ -62,17 +87,24 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
   bool BeginAccessSkia(bool readonly);
   void EndAccessSkia();
   bool InitializePassthroughTexture();
-  void WritePixels(const base::span<const uint8_t>& pixel_data, size_t stride);
+
   GrDirectContext* gr_context() { return context_state_->gr_context(); }
 
   const raw_ptr<SharedContextState> context_state_;
-  std::unique_ptr<VulkanImage> vulkan_image_;
-  gl::ScopedEGLImage egl_image_;
-  scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
-  GrBackendTexture backend_texture_{};
-  sk_sp<SkPromiseImageTexture> promise_texture_;
+
+  // In general there will be the same number of Vulkan and GL textures.
+  // For multi-planar VkFormats there are no equivalent multi-planar GL
+  // texture formats so there could be one VkImage and multiple GL textures.
+  std::vector<TextureHolderVk> vk_textures_;
+  std::vector<TextureHolderGL> gl_textures_;
+
+  // Array of GL texture IDs and layouts to use when acquiring/releasing
+  // textures with ANGLE. `gl_layouts_` will be set from VkImage layouts even
+  // if GL textures have not been allocated yet.
+  std::array<uint32_t, kMaxTextures> gl_texture_ids_{0, 0, 0};
+  std::array<GLenum, kMaxTextures> gl_layouts_{GL_NONE, GL_NONE, GL_NONE};
+
   int surface_msaa_count_ = 0;
-  GLenum layout_ = GL_NONE;
   bool is_skia_write_in_process_ = false;
   bool is_gl_write_in_process_ = false;
   int skia_reads_in_process_ = 0;
