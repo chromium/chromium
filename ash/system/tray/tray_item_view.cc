@@ -140,9 +140,12 @@ void TrayItemView::SetVisible(bool visible) {
     return;
   }
 
-  // Do not invoke animation when visibility is not changing.
-  if (visible == GetVisible())
+  // Do not invoke animation when visibility is not changing. An in-progress
+  // animation may change the visibility, so also ensure there are no
+  // in-progress animations.
+  if (visible == GetVisible() && !IsAnimating()) {
     return;
+  }
 
   views::View::SetVisible(visible);
   PerformVisibilityAnimation(visible);

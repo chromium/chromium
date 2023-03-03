@@ -85,6 +85,9 @@ class ASH_EXPORT TrayItemView : public views::View,
   // otherwise.
   bool IsAnimating();
 
+  // Returns the target visibility. For testing only.
+  bool target_visible_for_testing() const { return target_visible_; }
+
   IconizedLabel* label() const { return label_; }
   views::ImageView* image_view() const { return image_view_; }
 
