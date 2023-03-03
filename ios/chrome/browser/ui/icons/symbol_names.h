@@ -143,6 +143,7 @@ extern NSString* const kEqualSymbol;
 extern NSString* const kBookClosedSymbol;
 extern NSString* const kSunFillSymbol;
 extern NSString* const kCalendarSymbol;
+extern NSString* const kTabsSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
