@@ -1864,6 +1864,27 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
      std::size(kNtpDriveModuleManagedUsersOnly), nullptr},
 };
 
+// History clusters fake data params are expressed as a comma separated tuple
+// consisting of a number of desired visits and the number of such visits to be
+// marked as having url keyed images. The number of visits must be greater than
+// or equal to the number of visits marked as having images.
+const FeatureEntry::FeatureParam
+    kNtpHistoryClustersModuleFakeData2Visits2Images[] = {
+        {ntp_features::kNtpHistoryClustersModuleDataParam, "2,2"}};
+const FeatureEntry::FeatureParam
+    kNtpHistoryClustersModuleFakeData3Visits1Image[] = {
+        {ntp_features::kNtpHistoryClustersModuleDataParam, "3,1"}};
+const FeatureEntry::FeatureParam
+    kNtpHistoryClustersModuleFakeData4Visits2Images[] = {
+        {ntp_features::kNtpHistoryClustersModuleDataParam, "4,2"}};
+const FeatureEntry::FeatureVariation kNtpHistoryClustersModuleVariations[] = {
+    {"- Fake Data - Layout 1", kNtpHistoryClustersModuleFakeData2Visits2Images,
+     std::size(kNtpHistoryClustersModuleFakeData2Visits2Images), nullptr},
+    {"- Fake Data - Layout 2", kNtpHistoryClustersModuleFakeData3Visits1Image,
+     std::size(kNtpHistoryClustersModuleFakeData3Visits1Image), nullptr},
+    {"- Fake Data - Layout 3", kNtpHistoryClustersModuleFakeData4Visits2Images,
+     std::size(kNtpHistoryClustersModuleFakeData4Visits2Images), nullptr}};
+
 const FeatureEntry::FeatureParam kNtpMiddleSlotPromoDismissalFakeData[] = {
     {ntp_features::kNtpMiddleSlotPromoDismissalParam, "fake"}};
 const FeatureEntry::FeatureVariation kNtpMiddleSlotPromoDismissalVariations[] =
@@ -5798,7 +5819,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-journeys-module", flag_descriptions::kNtpHistoryClustersModuleName,
      flag_descriptions::kNtpHistoryClustersModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpHistoryClustersModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpHistoryClustersModule,
+                                    kNtpHistoryClustersModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,

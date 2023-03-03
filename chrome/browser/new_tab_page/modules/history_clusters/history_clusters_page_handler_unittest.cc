@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -165,6 +166,35 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
+}
+
+TEST_F(HistoryClustersPageHandlerTest, GetFakeCluster) {
+  const unsigned long kNumVisits = 2;
+  const unsigned long kNumVisitsWithImages = 2;
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpHistoryClustersModule,
+           {{ntp_features::kNtpHistoryClustersModuleDataParam,
+             base::StringPrintf("%lu,%lu", kNumVisits, kNumVisitsWithImages)}}},
+      },
+      {});
+
+  const history::Cluster kSampleCluster = SampleCluster();
+  test_history_clusters_service().SetClustersToReturn({});
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  base::MockCallback<HistoryClustersPageHandler::GetClusterCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cluster_mojom](history_clusters::mojom::ClusterPtr cluster_arg) {
+            cluster_mojom = std::move(cluster_arg);
+          }));
+  handler().GetCluster(callback.Get());
+  ASSERT_TRUE(cluster_mojom);
+  ASSERT_EQ(0u, cluster_mojom->id);
+  // The cluster visits should include an additional entry for the SRP visit.
+  ASSERT_EQ(kNumVisits + 1, cluster_mojom->visits.size());
 }
 
 TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {

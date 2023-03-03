@@ -4,11 +4,15 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_page_handler.h"
 
+#include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,12 +20,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search/ntp_features.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -73,6 +79,67 @@ base::Time GetBeginTime() {
   return base::Time::Now() - base::Hours(hours_to_look_back);
 }
 
+history::ClusterVisit GenerateSampleVisit(history::VisitID visit_id,
+                                          const std::string& page_title,
+                                          const GURL& url,
+                                          bool has_url_keyed_image) {
+  history::URLRow url_row = history::URLRow(url);
+  url_row.set_title(base::UTF8ToUTF16(page_title));
+  history::VisitRow visit_row;
+  visit_row.visit_id = visit_id;
+  visit_row.visit_time = base::Time::Now();
+  auto content_annotations = history::VisitContentAnnotations();
+  content_annotations.has_url_keyed_image = has_url_keyed_image;
+  history::AnnotatedVisit annotated_visit;
+  annotated_visit.url_row = std::move(url_row);
+  annotated_visit.visit_row = std::move(visit_row);
+  annotated_visit.content_annotations = std::move(content_annotations);
+  history::ClusterVisit sample_visit;
+  sample_visit.normalized_url = url;
+  sample_visit.url_for_display =
+      history_clusters::ComputeURLForDisplay(url, false);
+  sample_visit.annotated_visit = std::move(annotated_visit);
+
+  return sample_visit;
+}
+
+history::Cluster GenerateSampleCluster(int num_visits, int num_images) {
+  const std::vector<std::tuple<std::string, GURL>> kSampleUrlVisitData = {
+      {"Pixel 7", GURL("https://store.google.com/product/pixel_7")},
+      {"Pixel Buds Pro",
+       GURL("https://store.google.com/product/pixel_buds_pro")},
+      {"Pixel Watch",
+       GURL("https://store.google.com/product/google_pixel_watch")}};
+
+  std::vector<history::ClusterVisit> sample_visits;
+  for (int i = 0; i < num_visits; i++) {
+    const std::tuple<std::string, GURL> kSampleData =
+        kSampleUrlVisitData.at(i % kSampleUrlVisitData.size());
+    sample_visits.push_back(GenerateSampleVisit(i, std::get<0>(kSampleData),
+                                                std::get<1>(kSampleData),
+                                                (i < num_images)));
+  }
+
+  std::string kSampleSearchQuery = "google store products";
+  url::RawCanonOutputT<char> encoded_query;
+  url::EncodeURIComponent(kSampleSearchQuery.c_str(),
+                          kSampleSearchQuery.length(), &encoded_query);
+  sample_visits.insert(
+      sample_visits.begin(),
+      GenerateSampleVisit(
+          0, kSampleSearchQuery + " - Google Search",
+          GURL("https://www.google.com/search?q=" +
+               std::string(encoded_query.data(), encoded_query.length())),
+          false));
+
+  return history::Cluster(
+      0, sample_visits, {},
+      /*should_show_on_prominent_ui_surfaces=*/true,
+      /*label=*/base::UTF8ToUTF16(kSampleSearchQuery),
+      /*raw_label=*/base::UTF8ToUTF16(kSampleSearchQuery), {},
+      {"new google products", "google devices", "google stuff"}, 0);
+}
+
 }  // namespace
 
 HistoryClustersPageHandler::HistoryClustersPageHandler(
@@ -122,6 +189,35 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
 }
 
 void HistoryClustersPageHandler::GetCluster(GetClusterCallback callback) {
+  const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpHistoryClustersModule,
+      ntp_features::kNtpHistoryClustersModuleDataParam);
+
+  if (!fake_data_param.empty()) {
+    const std::vector<std::string> kFakeDataParams = base::SplitString(
+        fake_data_param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (kFakeDataParams.size() != 2) {
+      LOG(ERROR) << "Invalid history clusters fake data selection parameter "
+                    "format.";
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    int num_visits;
+    int num_images;
+    if (!base::StringToInt(kFakeDataParams.at(0), &num_visits) ||
+        !base::StringToInt(kFakeDataParams.at(1), &num_images) ||
+        num_visits < num_images) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    std::move(callback).Run(history_clusters::ClusterToMojom(
+        TemplateURLServiceFactory::GetForProfile(profile_),
+        GenerateSampleCluster(num_visits, num_images)));
+    return;
+  }
+
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   history_clusters::QueryClustersContinuationParams continuation_params;
