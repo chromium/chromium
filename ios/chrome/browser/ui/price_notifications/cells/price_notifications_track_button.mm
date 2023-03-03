@@ -55,9 +55,11 @@ const CGFloat kTrackButtonTopPadding = 4;
                                     kTrackButtonTopPadding, horizontalPadding);
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  self.contentEdgeInsets =
-      UIEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
-                       kTrackButtonTopPadding, horizontalPadding);
+  else {
+    self.contentEdgeInsets =
+        UIEdgeInsetsMake(kTrackButtonTopPadding, horizontalPadding,
+                         kTrackButtonTopPadding, horizontalPadding);
+  }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   price_notifications::WidthConstraintValues constraintValues =

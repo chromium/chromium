@@ -442,8 +442,10 @@ CGFloat const kContentOptimalWidth = 327;
           kButtonHorizontalMargin);
     }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-    _actionButton.contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    else {
+      _actionButton.contentEdgeInsets =
+          UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
     [_actionButton

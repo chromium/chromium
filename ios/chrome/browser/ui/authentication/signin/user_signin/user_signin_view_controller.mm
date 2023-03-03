@@ -184,8 +184,10 @@ enum AuthenticationButtonType {
             NSDirectionalEdgeInsetsMake(0, 0, 0, -kImageInset);
       }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      self.primaryActionButton.imageEdgeInsets =
-          UIEdgeInsetsMake(0, 0, 0, -kImageInset);
+      else {
+        self.primaryActionButton.imageEdgeInsets =
+            UIEdgeInsetsMake(0, 0, 0, -kImageInset);
+      }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
     }
   } else {

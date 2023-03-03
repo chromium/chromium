@@ -79,7 +79,9 @@ static const CGFloat kChipVerticalMargin = 4;
                                            : NSDirectionalEdgeInsetsZero;
   }
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  self.contentEdgeInsets = enabled ? [self chipEdgeInsets] : UIEdgeInsetsZero;
+  else {
+    self.contentEdgeInsets = enabled ? [self chipEdgeInsets] : UIEdgeInsetsZero;
+  }
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 }
 
