@@ -55,13 +55,15 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   // not loaded yet, it returns the image model of the globe icon.
   ui::ImageModel GetFaviconImageModel() const;
 
+  // Requests the controller to start an OS user reauth to display the details
+  // of `password_form`. If reauth is successful, the view switches to the
+  // details view and displays the details of `password_form`. Otherwise, it
+  // remains on the list view.
+  void AuthenticateUserAndDisplayDetailsOf(
+      password_manager::PasswordForm password_form);
+
   // Holds the favicon of the page when it is asynchronously loaded.
   gfx::Image favicon_;
-
-  // If not set, the bubble displays the list of all credentials stored for the
-  // current domain. When set, the bubble displays the password details of the
-  // currently selected password.
-  absl::optional<password_manager::PasswordForm> currently_selected_password_;
 
   ManagePasswordsDetailsView* password_details_view_ = nullptr;
 
