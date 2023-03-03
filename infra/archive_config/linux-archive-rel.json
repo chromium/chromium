@@ -144,14 +144,6 @@
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Linux_x64/{%position%}/pnacl.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
-        },
-        {
-            "files": [
-                "updater.zip"
-            ],
-            "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Linux_x64/{%position%}",
-            "archive_type": "ARCHIVE_TYPE_FILES"
         }
     ]
 }
