@@ -453,23 +453,11 @@ struct v4l2_av1_global_motion FillGlobalMotionParams(
     constexpr auto kNumGlobalMotionParams = std::size(decltype(gm.params){});
 
     for (size_t j = 0; j < kNumGlobalMotionParams; ++j) {
-      // TODO(b/265204534): V4L2 AV1 uAPI v4 changed |params|'s data type from
-      // uint32_t to int32_t. Remove separate handling for gm.params[j] < 0 case
-      // when the kernel related change lands.
       static_assert(
-          std::is_same<decltype(v4l2_gm.params[0][0]), uint32_t&>::value ||
-              std::is_same<decltype(v4l2_gm.params[0][0]), int32_t&>::value,
-          "v4l2_av1_global_motion::params must be either uint32_t or int32_t");
-      if (std::is_same<decltype(v4l2_gm.params[0][0]), uint32_t&>::value) {
-        if (gm.params[j] < 0) {
-          v4l2_gm.params[i][j] =
-              base::checked_cast<uint32_t>(UINT32_MAX + gm.params[j] + 1);
-        } else {
-          v4l2_gm.params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
-        }
-      } else {
-        v4l2_gm.params[i][j] = gm.params[j];
-      }
+          std::is_same<decltype(v4l2_gm.params[0][0]), int32_t&>::value,
+          "|v4l2_av1_global_motion::params|'s data type must be int32_t "
+          "starting from AV1 uAPI v4");
+      v4l2_gm.params[i][j] = gm.params[j];
     }
 
     if (!libgav1::SetupShear(&gm))
@@ -677,22 +665,11 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
         << "|reference_frame_index| from the frame header is not 0 for the "
            "intra frame";
 
-    // TODO(b/265204534): V4L2 AV1 uAPI v4 changed |ref_frame_idx|'s data type
-    // from uint8_t to int8_t. Remove separate handling when the kernel related
-    // change lands.
     static_assert(std::is_same<decltype(v4l2_frame_params.ref_frame_idx[0]),
-                               uint8_t&>::value ||
-                      std::is_same<decltype(v4l2_frame_params.ref_frame_idx[0]),
-                                   int8_t&>::value,
-                  "|ref_frame_idx| must be either uint8_t or int8_t");
-    if (std::is_same<decltype(v4l2_frame_params.ref_frame_idx[0]),
-                     uint8_t&>::value) {
-      v4l2_frame_params.ref_frame_idx[i] =
-          base::checked_cast<__u8>(frame_header.reference_frame_index[i]);
-    } else {
-      v4l2_frame_params.ref_frame_idx[i] =
-          frame_header.reference_frame_index[i];
-    }
+                               int8_t&>::value,
+                  "|v4l2_ctrl_av1_frame::ref_frame_idx|'s data type must be "
+                  "int8_t starting from AV1 uAPI v4");
+    v4l2_frame_params.ref_frame_idx[i] = frame_header.reference_frame_index[i];
   }
 
   v4l2_frame_params.skip_mode_frame[0] =
