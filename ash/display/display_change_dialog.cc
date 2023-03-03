@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -22,14 +21,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-void RecordDisplayChangeDialogHistogram(bool accepted) {
-  UMA_HISTOGRAM_BOOLEAN("Ash.DisplayChangeDialog.Saved", accepted);
-}
-
-}  // namespace
 
 DisplayChangeDialog::DisplayChangeDialog(
     std::u16string window_title,
@@ -74,13 +65,11 @@ DisplayChangeDialog::~DisplayChangeDialog() = default;
 void DisplayChangeDialog::OnConfirmButtonClicked() {
   timer_.Stop();
   std::move(on_accept_callback_).Run();
-  RecordDisplayChangeDialogHistogram(/*accepted=*/true);
 }
 
 void DisplayChangeDialog::OnCancelButtonClicked() {
   timer_.Stop();
   std::move(on_cancel_callback_).Run(/*display_was_removed=*/false);
-  RecordDisplayChangeDialogHistogram(/*accepted=*/false);
 }
 
 gfx::Size DisplayChangeDialog::CalculatePreferredSize() const {

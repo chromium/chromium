@@ -2618,16 +2618,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.DisplayChangeDialog.Saved" enum="BooleanSaved"
-    expires_after="2020-06-30">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Emitted when the user chooses an option on the Display Change Dialog that is
-    shown when a user changes the resolution of an external display.
-  </summary>
-</histogram>
-
 <histogram name="Ash.DisplayColorManager.HasColorCorrectionMatrix"
     enum="Boolean" expires_after="M77">
   <owner>mcasas@chromium.org</owner>
