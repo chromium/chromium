@@ -6,7 +6,9 @@
 
 #import <LocalAuthentication/LAContext.h>
 
+#include "base/functional/callback.h"
 #include "base/mac/scoped_nsobject.h"
+#include "chrome/browser/password_manager/password_manager_util_mac.h"
 
 AuthenticatorMac::AuthenticatorMac() = default;
 
@@ -17,4 +19,9 @@ bool AuthenticatorMac::CheckIfBiometricsAvailable() {
   return
       [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:nil];
+}
+
+bool AuthenticatorMac::AuthenticateUserWithNonBiometrics(
+    const std::u16string& message) {
+  return password_manager_util_mac::AuthenticateUser(message);
 }

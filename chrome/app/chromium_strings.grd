@@ -554,6 +554,9 @@ Permissions you've already given to websites and apps may apply to this account.
         In Password Manager on this device
       </message>
       <if expr="is_macosx">
+      <message name="IDS_PASSWORDS_AUTHENTICATION_PROMPT_PREFIX" desc="Text shown in the beginning of the OS-level user authentication prompt before performing a seneitive operation such as show passwords in plain text.">
+          Chromium is trying to <ph name="AUTHENTICATION_PURPOSE">$1<ex>show passwords</ex></ph>
+        </message>
         <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before revealing plaintext passwords on the password page.">
           Chromium is trying to show passwords.
         </message>
