@@ -24,7 +24,7 @@ MediaPerceptionPrivateGetStateFunction::Run() {
 
 void MediaPerceptionPrivateGetStateFunction::GetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(base::Value(state.ToValue())));
+  Respond(WithArguments(state.ToValue()));
 }
 
 MediaPerceptionPrivateSetStateFunction ::
@@ -35,10 +35,11 @@ MediaPerceptionPrivateSetStateFunction ::
 
 ExtensionFunction::ResponseAction
 MediaPerceptionPrivateSetStateFunction::Run() {
-  std::unique_ptr<extensions::api::media_perception_private::SetState::Params>
-      params = extensions::api::media_perception_private::SetState::Params::
-          CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<extensions::api::media_perception_private::SetState::Params>
+      params =
+          extensions::api::media_perception_private::SetState::Params::Create(
+              args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   if (params->state.status !=
           extensions::api::media_perception_private::STATUS_RUNNING &&
       params->state.status !=
@@ -94,7 +95,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
 
 void MediaPerceptionPrivateSetStateFunction::SetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(base::Value(state.ToValue())));
+  Respond(WithArguments(state.ToValue()));
 }
 
 MediaPerceptionPrivateGetDiagnosticsFunction ::
@@ -115,7 +116,7 @@ MediaPerceptionPrivateGetDiagnosticsFunction::Run() {
 
 void MediaPerceptionPrivateGetDiagnosticsFunction::GetDiagnosticsCallback(
     extensions::api::media_perception_private::Diagnostics diagnostics) {
-  Respond(OneArgument(base::Value(diagnostics.ToValue())));
+  Respond(WithArguments(diagnostics.ToValue()));
 }
 
 MediaPerceptionPrivateSetAnalyticsComponentFunction::
@@ -126,11 +127,11 @@ MediaPerceptionPrivateSetAnalyticsComponentFunction::
 
 ExtensionFunction::ResponseAction
 MediaPerceptionPrivateSetAnalyticsComponentFunction::Run() {
-  std::unique_ptr<
+  absl::optional<
       extensions::api::media_perception_private::SetAnalyticsComponent::Params>
       params = extensions::api::media_perception_private::
-          SetAnalyticsComponent::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+          SetAnalyticsComponent::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   MediaPerceptionAPIManager* manager =
       MediaPerceptionAPIManager::Get(browser_context());
@@ -146,7 +147,7 @@ void MediaPerceptionPrivateSetAnalyticsComponentFunction::
     OnAnalyticsComponentSet(
         extensions::api::media_perception_private::ComponentState
             component_state) {
-  Respond(OneArgument(base::Value(component_state.ToValue())));
+  Respond(WithArguments(component_state.ToValue()));
 }
 
 MediaPerceptionPrivateSetComponentProcessStateFunction::
@@ -157,11 +158,11 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::
 
 ExtensionFunction::ResponseAction
 MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
-  std::unique_ptr<extensions::api::media_perception_private::
-                      SetComponentProcessState::Params>
+  absl::optional<extensions::api::media_perception_private::
+                     SetComponentProcessState::Params>
       params = extensions::api::media_perception_private::
-          SetComponentProcessState::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+          SetComponentProcessState::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   if (params->process_state.status !=
           extensions::api::media_perception_private::PROCESS_STATUS_STARTED &&
       params->process_state.status !=
@@ -184,7 +185,7 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
 void MediaPerceptionPrivateSetComponentProcessStateFunction::
     OnComponentProcessStateSet(
         extensions::api::media_perception_private::ProcessState process_state) {
-  Respond(OneArgument(base::Value(process_state.ToValue())));
+  Respond(WithArguments(process_state.ToValue()));
 }
 
 }  // namespace extensions
