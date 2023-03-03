@@ -291,15 +291,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.CountsChrome" enum="ChromeDownloadCountType"
-    expires_after="2020-10-25">
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    Various individual counts in the download system, for example the number of
-    downloads blocked by throttling from the DownloadRequestLimiter.
-  </summary>
-</histogram>
-
 <histogram name="Download.DangerousDialog.Events"
     enum="DangerousDownloadDialogEvent" expires_after="2023-07-02">
   <owner>qinmin@chromium.org</owner>
@@ -1363,15 +1354,6 @@ chromium-metrics-reviews@google.com.
     dropdown button was clicked as well when DownloadCommands were enabled or
     executed. Each action or enable event is only emitted once; as a result, it
     is safe to compute a ratio by dividing enabled events by clicked events.
-  </summary>
-</histogram>
-
-<histogram name="Download.ShowDangerousDownloadConfirmationPrompt"
-    enum="DownloadItem.DangerType" expires_after="M77">
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    User saw the confirm prompt to save a download which was marked dangerous.
-    Grouped by the type of danger.
   </summary>
 </histogram>
 

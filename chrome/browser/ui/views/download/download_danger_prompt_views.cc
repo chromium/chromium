@@ -119,8 +119,6 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
   message_body_label->SetAllowCharacterBreak(true);
 
   AddChildView(std::move(message_body_label));
-
-  RecordOpenedDangerousConfirmDialog(download_->GetDangerType());
 }
 
 DownloadDangerPromptViews::~DownloadDangerPromptViews() {

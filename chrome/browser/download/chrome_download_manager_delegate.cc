@@ -317,7 +317,6 @@ void OnCheckExistingDownloadPathDone(
     content::DownloadTargetCallback callback,
     bool file_exists) {
   if (file_exists) {
-    RecordDownloadCancelReason(DownloadCancelReason::kExistingDownloadPath);
     target_info->result = download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
   }
 
@@ -1764,8 +1763,6 @@ void ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete(
     // Presumes all downloads initiated by navigation use this throttle and
     // nothing else does.
     RecordDownloadSource(DOWNLOAD_INITIATED_BY_NAVIGATION);
-  } else {
-    RecordDownloadCount(CHROME_DOWNLOAD_COUNT_BLOCKED_BY_THROTTLING);
   }
 
   std::move(check_download_allowed_cb).Run(allow);

@@ -15589,14 +15589,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="4" label="Shutdown"/>
 </enum>
 
-<enum name="ChromeDownloadCountType">
-  <int value="0" label="Initiated by Navigation (Obsolete)"/>
-  <int value="1" label="Initiated by Context Menu (Obsolete)"/>
-  <int value="2" label="Initiated by WebStore Installer (Obsolete)"/>
-  <int value="3" label="Initiated by ImageBurner (Obsolete)"/>
-  <int value="4" label="Blocked by Throttling"/>
-</enum>
-
 <enum name="ChromeDownloadSource">
   <int value="0" label="Initiated by Navigation"/>
   <int value="1" label="Initiated by Context Menu"/>

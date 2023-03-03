@@ -12,11 +12,6 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 
-void RecordDownloadCount(ChromeDownloadCountTypes type) {
-  base::UmaHistogramEnumeration("Download.CountsChrome", type,
-                                CHROME_DOWNLOAD_COUNT_TYPES_LAST_ENTRY);
-}
-
 void RecordDownloadSource(ChromeDownloadSource source) {
   base::UmaHistogramEnumeration("Download.SourcesChrome", source,
                                 CHROME_DOWNLOAD_SOURCE_LAST_ENTRY);
@@ -31,13 +26,6 @@ void RecordDangerousDownloadWarningShown(
                                 download::DOWNLOAD_DANGER_TYPE_MAX);
   safe_browsing::RecordDangerousDownloadWarningShown(
       danger_type, file_path, is_https, has_user_gesture);
-}
-
-void RecordOpenedDangerousConfirmDialog(
-    download::DownloadDangerType danger_type) {
-  base::UmaHistogramEnumeration(
-      "Download.ShowDangerousDownloadConfirmationPrompt", danger_type,
-      download::DOWNLOAD_DANGER_TYPE_MAX);
 }
 
 void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
