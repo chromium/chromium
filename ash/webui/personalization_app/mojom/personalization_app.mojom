@@ -666,8 +666,11 @@ enum BacklightColor {
   kPurple = 7,
 
   kRainbow = 100,
-  // Indicates multi-zone customization is selected. The actual zone colors are
-  // saved in |ash::prefs::kPersonalizationKeyboardBacklightZoneColors|.
+  // Indicates multi-zone customization is selected, not considered a valid
+  // color for setter APIs like |SetBacklightColor()| and
+  // |SetBacklightZoneColor()|, and only used by the backend. The actual zone
+  // colors are saved in
+  // |ash::prefs::kPersonalizationKeyboardBacklightZoneColors|.
   kMultiZone = 101,
 };
 
@@ -698,6 +701,10 @@ interface KeyboardBacklightProvider {
 
   // Sets the backlight color.
   SetBacklightColor(BacklightColor backlight_color);
+
+  // Sets the backlight color for the given zone. May only be called if device
+  // supports multizone.
+  SetBacklightZoneColor(int32 zone, BacklightColor backlight_color);
 
   // Determines whether to show the education nudge.
   ShouldShowNudge() => (bool should_show_nudge);

@@ -14,6 +14,7 @@ export class TestKeyboardBacklightProvider extends TestBrowserProxy implements
     super([
       'setKeyboardBacklightObserver',
       'setBacklightColor',
+      'setBacklightZoneColor',
       'shouldShowNudge',
       'handleNudgeShown',
     ]);
@@ -24,6 +25,10 @@ export class TestKeyboardBacklightProvider extends TestBrowserProxy implements
 
   setBacklightColor(backlightColor: BacklightColor) {
     this.methodCalled('setBacklightColor', backlightColor);
+  }
+
+  setBacklightZoneColor(zone: number, backlightColor: BacklightColor) {
+    this.methodCalled('setBacklightZoneColor', zone, backlightColor);
   }
 
   shouldShowNudge() {

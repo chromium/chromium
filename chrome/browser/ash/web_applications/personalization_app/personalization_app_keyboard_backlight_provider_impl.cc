@@ -12,7 +12,7 @@
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
@@ -63,6 +63,7 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
     return;
   }
   DVLOG(4) << __func__ << " backlight_color=" << backlight_color;
+  DCHECK_NE(backlight_color, mojom::BacklightColor::kMultiZone);
   LogKeyboardBacklightColor(backlight_color);
   GetKeyboardBacklightColorController()->SetBacklightColor(
       backlight_color, GetAccountId(profile_));
@@ -71,6 +72,33 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
       ->SetUserPerformedAction();
 
   NotifyBacklightColorChanged();
+}
+
+void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightZoneColor(
+    int zone,
+    mojom::BacklightColor backlight_color) {
+  if (!ash::features::IsMultiZoneRgbKeyboardEnabled()) {
+    keyboard_backlight_receiver_.ReportBadMessage(
+        "Cannot call `SetBacklightZoneColor()` without multi-zone rgb keyboard "
+        "enabled");
+    return;
+  }
+
+  DVLOG(4) << __func__ << " zone=" << zone
+           << " backlight_color=" << backlight_color;
+  DCHECK_NE(backlight_color, mojom::BacklightColor::kMultiZone);
+  LogKeyboardBacklightColor(mojom::BacklightColor::kMultiZone);
+  GetKeyboardBacklightColorController()->SetBacklightZoneColor(
+      zone, backlight_color, GetAccountId(profile_));
+  GetKeyboardBacklightColorController()
+      ->keyboard_backlight_color_nudge_controller()
+      ->SetUserPerformedAction();
+
+  // Notifies backlight changed to |kMultizone| to highlight the selected state
+  // of customization button.
+  NotifyBacklightColorChanged();
+
+  // TODO(b/265855838): Notify backlight zone colors have changed.
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::ShouldShowNudge(

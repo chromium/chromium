@@ -23,6 +23,13 @@ export function setBacklightColor(
   store.dispatch(setBacklightColorAction(backlightColor));
 }
 
+// Set the keyboard backlight color for the given zone.
+export function setBacklightZoneColor(
+    zone: number, backlightColor: BacklightColor,
+    provider: KeyboardBacklightProviderInterface) {
+  provider.setBacklightZoneColor(zone, backlightColor);
+}
+
 // Set the should show nudge boolean.
 export async function getShouldShowNudge(
     provider: KeyboardBacklightProviderInterface, store: PersonalizationStore) {

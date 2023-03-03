@@ -42,6 +42,9 @@ class FakePersonalizationAppKeyboardBacklightProvider
 
   void SetBacklightColor(mojom::BacklightColor backlight_color) override {}
 
+  void SetBacklightZoneColor(int zone,
+                             mojom::BacklightColor backlight_color) override {}
+
   void ShouldShowNudge(ShouldShowNudgeCallback callback) override {}
 
   void HandleNudgeShown() override {}
