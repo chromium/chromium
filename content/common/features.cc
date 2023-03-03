@@ -4,6 +4,9 @@
 
 #include "content/common/features.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+
 namespace content {
 
 // Please keep features in alphabetical order.
@@ -25,6 +28,25 @@ BASE_FEATURE(kOptimizeImmHideCalls,
 BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              "QueueNavigationsWhileWaitingForPendingCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+static constexpr base::FeatureParam<NavigationQueueingFeatureLevel>::Option
+    kNavigationQueueingFeatureLevels[] = {
+        {NavigationQueueingFeatureLevel::kNone, "none"},
+        {NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
+         "avoid-redundant"},
+        {NavigationQueueingFeatureLevel::kFull, "full"}};
+const base::FeatureParam<NavigationQueueingFeatureLevel>
+    kNavigationQueueingFeatureLevelParam{
+        &kQueueNavigationsWhileWaitingForCommit, "level",
+        NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
+        &kNavigationQueueingFeatureLevels};
+
+NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
+  if (base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit)) {
+    return kNavigationQueueingFeatureLevelParam.Get();
+  }
+  return NavigationQueueingFeatureLevel::kNone;
+}
 
 BASE_FEATURE(kRestrictCanAccessDataForOriginToUIThread,
              "RestrictCanAccessDataForOriginToUIThread",

@@ -40,6 +40,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -22482,19 +22483,20 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(b1_navigation.GetNavigationHandle());
 
   // 4) Start a same-RFH navigation to A3 after B1 gets to "pending commit"
-  // stage. The behavior depends on whether
-  // the kAvoidUnnecessaryNavigationCancellations flag is enabled or not:
-  // - If the flag is enabled, A3's navigation won't cancel the previous
-  //  cross-RFH navigation to B1, as B1's NavigationRequest had moved.
-  // - If the flag is disabled,  A3's navigation will cancel the previous
-  // cross-RFH navigation to B1, because when a same-RFH navigation starts
-  // it will delete the speculative RFH.
+  // stage. The behavior depends on whether the navigation queueing feature
+  // level is at least kAvoidRedundantCancellations:
+  // - If it is at least kAvoidReundantCancellations, A3's navigation won't
+  //   cancel the previous cross-RFH navigation to B1, as B1's NavigationRequest
+  //   had moved.
+  // - Otherwise, A3's navigation will cancel the previous cross-RFH navigation
+  //   to B1, because when a same-RFH navigation starts it will delete the
+  //   speculative RFH.
   TestNavigationManager a3_navigation(shell()->web_contents(), url_a3);
   EXPECT_TRUE(b1_navigation.WaitForResponse());
   StartNavigationOnReadyToCommit(shell(), b1_navigation, url_a3);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAvoidUnnecessaryNavigationCancellations)) {
+  if (GetNavigationQueueingFeatureLevel() >=
+      NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
     // Assert that the navigation to B1 didn't get cancelled, and finish
     // committing B1. This shouldn't cancel the navigation to A3.
     ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
@@ -22603,8 +22605,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // cancel other navigations happening in the same FrameTreeNode.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        UnloadingPreviousRFHOnCommitWontCancelNavigation) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAvoidUnnecessaryNavigationCancellations)) {
+  if (GetNavigationQueueingFeatureLevel() <
+      NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
     return;
   }
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
