@@ -153,17 +153,12 @@ class PasswordsModelDelegate {
   // Called from the dialog controller when the dialog is hidden.
   virtual void OnDialogHidden() = 0;
 
-  // Called from password bubble controller when OS re-auth is needed. Invokes
-  // `callback` immediately with true if user authentication is not available
-  // for the given platform. Otherwise, the method schedules a task to show an
-  // authentication dialog and invokes `callback` with the result of the
-  // authentication flow.
-  virtual void AuthenticateUser(AvailabilityCallback callback) = 0;
-
-  // Called from the BiometricAuthenticationForFilling bubble controller when OS
-  // re-auth is needed to enable feature. Runs callback with true parameter
-  // immediately if user authentication is not available for the given platform.
-  // Otherwise, the method schedules a task to show an authentication dialog.
+  // Called from the UI bubble controllers when OS re-auth is needed to enable
+  // feature. Runs callback with true parameter immediately if user
+  // authentication is not available for the given platform. Otherwise, the
+  // method schedules a task to show an authentication dialog.
+  // `message`is the messages to be shown in the authentication dialog after the
+  // prefix "Chromium is trying to".
   virtual void AuthenticateUserWithMessage(const std::u16string& message,
                                            AvailabilityCallback callback) = 0;
 

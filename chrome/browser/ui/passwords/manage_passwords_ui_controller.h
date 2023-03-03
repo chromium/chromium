@@ -178,9 +178,6 @@ class ManagePasswordsUIController
       password_manager::ManagePasswordsReferrer referrer) override;
   void EnableSync(const AccountInfo& account) override;
   void OnDialogHidden() override;
-  // TODO(crbug.com/1353344): Replace AuthenticateUser with
-  // AuthenticateUserWithMessage
-  void AuthenticateUser(AvailabilityCallback callback) override;
   void AuthenticateUserWithMessage(const std::u16string& message,
                                    AvailabilityCallback callback) override;
   void AuthenticateUserForAccountStoreOptInAndSavePassword(
@@ -277,12 +274,6 @@ class ManagePasswordsUIController
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
-
-  // Requests authentication and invokes `callback` with the result.
-  void RequestAuthentication(AvailabilityCallback callback);
-
-  // Shows an authentication dialog and returns true if auth is successful.
-  virtual bool ShowAuthenticationDialog();
 
   // Gets invoked gaia reauth flow is finished. If the reauth was successful,
   // and the |form_manager| is still the same, |username| and |password| are

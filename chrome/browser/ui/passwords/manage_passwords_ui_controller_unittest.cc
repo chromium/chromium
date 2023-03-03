@@ -177,7 +177,6 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
  private:
   void UpdateBubbleAndIconVisibility() override;
   void HidePasswordBubble() override;
-  bool ShowAuthenticationDialog() override { return true; }
 
   bool opened_automatic_bubble_ = false;
 };

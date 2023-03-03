@@ -97,10 +97,6 @@ class PasswordsModelDelegateMock
   MOCK_METHOD(void, EnableSync, (const AccountInfo& account), (override));
   MOCK_METHOD(void, OnDialogHidden, (), (override));
   MOCK_METHOD(void,
-              AuthenticateUser,
-              (AvailabilityCallback callback),
-              (override));
-  MOCK_METHOD(void,
               AuthenticateUserWithMessage,
               (const std::u16string& message, AvailabilityCallback callback),
               (override));

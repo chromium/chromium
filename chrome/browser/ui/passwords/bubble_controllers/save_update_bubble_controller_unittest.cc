@@ -648,8 +648,8 @@ TEST_P(SaveUpdateBubbleControllerPasswordRevealingTest,
             controller()->password_revealing_requires_reauth());
 
   if (reauth_expected) {
-    EXPECT_CALL(*delegate(), AuthenticateUser)
-        .WillOnce(testing::WithArg<0>(testing::Invoke(
+    EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
+        .WillOnce(testing::WithArg<1>(testing::Invoke(
             [&](PasswordsModelDelegate::AvailabilityCallback callback) {
               std::move(callback).Run(!does_os_support_user_auth);
             })));
@@ -658,7 +658,7 @@ TEST_P(SaveUpdateBubbleControllerPasswordRevealingTest,
     EXPECT_CALL(mock_callback, Run(!does_os_support_user_auth));
     controller()->ShouldRevealPasswords(mock_callback.Get());
   } else {
-    EXPECT_CALL(*delegate(), AuthenticateUser).Times(0);
+    EXPECT_CALL(*delegate(), AuthenticateUserWithMessage).Times(0);
     base::MockCallback<PasswordsModelDelegate::AvailabilityCallback>
         mock_callback;
     EXPECT_CALL(mock_callback, Run(true));

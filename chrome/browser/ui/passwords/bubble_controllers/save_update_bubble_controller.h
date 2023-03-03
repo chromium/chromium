@@ -121,6 +121,11 @@ class SaveUpdateBubbleController : public PasswordBubbleControllerBase {
   // PasswordBubbleControllerBase methods:
   void ReportInteractions() override;
 
+  // Invoked upon the conclusion of the os authentication flow. Invokes
+  // `completion` with the `authentication_result`.
+  void OnUserAuthenticationCompleted(base::OnceCallback<void(bool)> completion,
+                                     bool authentication_result);
+
   // Origin of the page from where this bubble was triggered.
   url::Origin origin_;
   password_manager::ui::State state_;
@@ -140,6 +145,8 @@ class SaveUpdateBubbleController : public PasswordBubbleControllerBase {
 
   // Used to retrieve the current time, in base::Time units.
   raw_ptr<base::Clock> clock_;
+
+  base::WeakPtrFactory<SaveUpdateBubbleController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_

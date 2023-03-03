@@ -720,18 +720,6 @@ bool ManagePasswordsUIController::IsSavingPromptBlockedExplicitlyOrImplicitly()
          stats->dismissal_count >= show_threshold;
 }
 
-void ManagePasswordsUIController::AuthenticateUser(
-    AvailabilityCallback callback) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ManagePasswordsUIController::RequestAuthentication,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-#else
-  std::move(callback).Run(true);
-#endif
-}
-
 void ManagePasswordsUIController::AuthenticateUserWithMessage(
     const std::u16string& message,
     AvailabilityCallback callback) {
@@ -891,30 +879,6 @@ void ManagePasswordsUIController::WebContentsDestroyed() {
   if (account_password_store)
     account_password_store->RemoveObserver(this);
   HidePasswordBubble();
-}
-
-void ManagePasswordsUIController::RequestAuthentication(
-    AvailabilityCallback callback) {
-  bool auth_is_successful = ShowAuthenticationDialog();
-  std::move(callback).Run(auth_is_successful);
-}
-
-bool ManagePasswordsUIController::ShowAuthenticationDialog() {
-// TODO(crbug.com/1353344): Use biometric authentication to reveal password in
-// the bubble.
-#if BUILDFLAG(IS_WIN)
-  return password_manager_util_win::AuthenticateUser(
-      web_contents()->GetNativeView(),
-      password_manager_util_win::GetMessageForLoginPrompt(
-          password_manager::ReauthPurpose::VIEW_PASSWORD));
-#elif BUILDFLAG(IS_MAC)
-  return password_manager_util_mac::AuthenticateUser(
-      password_manager_util_mac::GetMessageForNonBiometricLoginPrompt(
-          password_manager::ReauthPurpose::VIEW_PASSWORD));
-#else
-  NOTREACHED();
-  return true;
-#endif
 }
 
 void ManagePasswordsUIController::
