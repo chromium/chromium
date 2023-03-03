@@ -18,6 +18,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/test_history_clusters_service.h"
@@ -107,20 +108,35 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<HistoryClustersPageHandler> handler_;
 };
 
+history::Cluster SampleCluster() {
+  history::VisitRow visit_row;
+  visit_row.visit_id = 1;
+  visit_row.visit_time = base::Time::Now();
+  auto content_annotations = history::VisitContentAnnotations();
+  content_annotations.has_url_keyed_image = true;
+  content_annotations.related_searches = {"fruits", "red fruits",
+                                          "healthy fruits"};
+  history::AnnotatedVisit annotated_visit;
+  annotated_visit.visit_row = std::move(visit_row);
+  annotated_visit.content_annotations = std::move(content_annotations);
+  std::string kSampleUrl = "www.google.com";
+  history::ClusterVisit sample_visit;
+  sample_visit.url_for_display = base::UTF8ToUTF16(kSampleUrl);
+  sample_visit.annotated_visit = std::move(annotated_visit);
+  sample_visit.score = 1.0f;
+
+  std::string kSampleLabel = "LabelOne";
+  return history::Cluster(1, {sample_visit, sample_visit},
+                          {{u"apples", history::ClusterKeywordData()},
+                           {u"Red Oranges", history::ClusterKeywordData()}},
+                          /*should_show_on_prominent_ui_surfaces=*/true,
+                          /*label=*/base::UTF8ToUTF16(kSampleLabel));
+}
+
 TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
   base::HistogramTester histogram_tester;
 
-  std::string kSampleLabel = "LabelOne";
-  std::string kSampleUrl = "www.google.com";
-  history::ClusterVisit kSampleVisit;
-  kSampleVisit.url_for_display = base::UTF8ToUTF16(kSampleUrl);
-  const history::Cluster kSampleCluster =
-      history::Cluster(1, {kSampleVisit},
-                       {{u"apples", history::ClusterKeywordData()},
-                        {u"Red Oranges", history::ClusterKeywordData()}},
-                       /*should_show_on_prominent_ui_surfaces=*/false,
-                       /*label=*/base::UTF8ToUTF16(kSampleLabel));
-
+  const history::Cluster kSampleCluster = SampleCluster();
   const std::vector<history::Cluster> kSampleClusters = {kSampleCluster};
   test_history_clusters_service().SetClustersToReturn(kSampleClusters);
 
@@ -135,34 +151,26 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
   handler().GetCluster(callback.Get());
   ASSERT_TRUE(cluster_mojom);
   ASSERT_EQ(1u, cluster_mojom->id);
-  ASSERT_EQ(kSampleLabel, cluster_mojom->label.value());
-  ASSERT_EQ(1u, cluster_mojom->visits.size());
-  ASSERT_EQ(kSampleUrl, cluster_mojom->visits[0]->url_for_display);
+  ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.label.value()),
+            cluster_mojom->label.value());
+  ASSERT_EQ(2u, cluster_mojom->visits.size());
+  ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.visits[0].url_for_display),
+            cluster_mojom->visits[0]->url_for_display);
 
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumClusterCandidates", 1, 1);
-  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 1,
+  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 2,
                                       1);
   histogram_tester.ExpectUniqueSample(
-      "NewTabPage.HistoryClusters.NumRelatedSearches", 0, 1);
+      "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
 }
 
 TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
   base::HistogramTester histogram_tester;
 
-  std::string kSampleLabel = "LabelOne";
-  std::string kSampleUrl = "www.google.com";
-  history::ClusterVisit kSampleVisit;
-  kSampleVisit.url_for_display = base::UTF8ToUTF16(kSampleUrl);
-  const history::Cluster kSampleCluster =
-      history::Cluster(1, {kSampleVisit},
-                       {{u"apples", history::ClusterKeywordData()},
-                        {u"Red Oranges", history::ClusterKeywordData()}},
-                       /*should_show_on_prominent_ui_surfaces=*/false,
-                       /*label=*/base::UTF8ToUTF16(kSampleLabel));
-
+  const history::Cluster kSampleCluster = SampleCluster();
   const std::vector<history::Cluster> kSampleClusters = {kSampleCluster,
                                                          kSampleCluster};
   test_history_clusters_service().SetClustersToReturn(kSampleClusters);
@@ -178,18 +186,20 @@ TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
   handler().GetCluster(callback.Get());
   ASSERT_TRUE(cluster_mojom);
   ASSERT_EQ(1u, cluster_mojom->id);
-  ASSERT_EQ(kSampleLabel, cluster_mojom->label.value());
-  ASSERT_EQ(1u, cluster_mojom->visits.size());
-  ASSERT_EQ(kSampleUrl, cluster_mojom->visits[0]->url_for_display);
+  ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.label.value()),
+            cluster_mojom->label.value());
+  ASSERT_EQ(2u, cluster_mojom->visits.size());
+  ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.visits[0].url_for_display),
+            cluster_mojom->visits[0]->url_for_display);
 
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumClusterCandidates", 2, 1);
-  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 1,
+  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 2,
                                       1);
   histogram_tester.ExpectUniqueSample(
-      "NewTabPage.HistoryClusters.NumRelatedSearches", 0, 1);
+      "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
 }
 
 TEST_F(HistoryClustersPageHandlerTest, NoClusters) {

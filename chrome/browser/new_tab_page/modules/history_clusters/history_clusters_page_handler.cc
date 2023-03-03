@@ -19,10 +19,13 @@
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search/ntp_features.h"
 
 namespace {
+
+constexpr int kMinRequiredRelatedSearches = 3;
 
 base::flat_set<std::string> GetCategories() {
   std::string categories_string = base::GetFieldTrialParamValueByFeature(
@@ -87,6 +90,17 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
     GetClusterCallback callback,
     std::vector<history::Cluster> clusters,
     history_clusters::QueryClustersContinuationParams continuation_params) {
+  std::set<GURL> seen_urls = {};
+  history_clusters::CullNonProminentOrDuplicateClusters("", clusters,
+                                                        &seen_urls);
+  history_clusters::HideAndCullLowScoringVisits(clusters, 2);
+  history_clusters::CoalesceRelatedSearches(clusters);
+  // Cull clusters that do not have the minimum required of related searches to
+  // be eligible for display.
+  base::EraseIf(clusters, [&](auto& cluster) {
+    return cluster.related_searches.size() < kMinRequiredRelatedSearches;
+  });
+
   base::UmaHistogramBoolean("NewTabPage.HistoryClusters.HasClusterToShow",
                             !clusters.empty());
   base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumClusterCandidates",
