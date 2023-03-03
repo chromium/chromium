@@ -11,6 +11,8 @@
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/device_reauth/device_authenticator.h"
 
+class AuthenticatorMacInterface;
+
 namespace device {
 namespace fido {
 namespace mac {
@@ -21,6 +23,11 @@ class TouchIdContext;
 
 class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
  public:
+  // Creates an instance of DeviceAuthenticatorWin for testing purposes
+  // only.
+  static scoped_refptr<DeviceAuthenticatorMac> CreateForTesting(
+      std::unique_ptr<AuthenticatorMacInterface> authenticator);
+
   bool CanAuthenticateWithBiometrics() override;
 
   // Trigges an authentication flow based on biometrics, with the
@@ -51,7 +58,8 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
 
  private:
   friend class ChromeDeviceAuthenticatorFactory;
-  DeviceAuthenticatorMac();
+  explicit DeviceAuthenticatorMac(
+      std::unique_ptr<AuthenticatorMacInterface> authenticator);
   ~DeviceAuthenticatorMac() override;
 
   // Called when the authentication completes with the result |success|.
@@ -65,6 +73,8 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
   std::unique_ptr<device::fido::mac::TouchIdContext> touch_id_auth_context_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  std::unique_ptr<AuthenticatorMacInterface> authenticator_;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<DeviceAuthenticatorMac> weak_ptr_factory_{this};

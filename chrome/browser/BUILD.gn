@@ -5896,6 +5896,8 @@ static_library("browser") {
       "chrome_browser_main_mac.h",
       "chrome_browser_main_mac.mm",
       "component_updater/recovery_improved_component_installer_mac.cc",
+      "device_reauth/mac/authenticator_mac.h",
+      "device_reauth/mac/authenticator_mac.mm",
       "device_reauth/mac/device_authenticator_mac.h",
       "device_reauth/mac/device_authenticator_mac.mm",
       "download/download_status_updater_mac.mm",

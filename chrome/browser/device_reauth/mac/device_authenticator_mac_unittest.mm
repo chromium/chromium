@@ -4,13 +4,16 @@
 
 #include "chrome/browser/device_reauth/mac/device_authenticator_mac.h"
 
-#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/browser/device_reauth/mac/authenticator_mac.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "device/fido/mac/touch_id_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,11 +28,33 @@ using password_manager::PasswordAccessAuthenticator;
 
 }  // namespace
 
+class MockSystemAuthenticator : public AuthenticatorMacInterface {
+ public:
+  MOCK_METHOD(bool, CheckIfBiometricsAvailable, (), (override));
+};
+
 class DeviceAuthenticatorMacTest : public testing::Test {
  public:
+  DeviceAuthenticatorMacTest()
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override {
+    std::unique_ptr<MockSystemAuthenticator> system_authenticator =
+        std::make_unique<MockSystemAuthenticator>();
+    system_authenticator_ = system_authenticator.get();
+    authenticator_ = DeviceAuthenticatorMac::CreateForTesting(
+        std::move(system_authenticator));
+  }
+
   device_reauth::DeviceAuthenticator* authenticator() {
     return authenticator_.get();
   }
+
+  MockSystemAuthenticator& system_authenticator() {
+    return *system_authenticator_;
+  }
+
+  ScopedTestingLocalState& local_state() { return testing_local_state_; }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
@@ -44,6 +69,7 @@ class DeviceAuthenticatorMacTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingLocalState testing_local_state_;
   scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_ =
       ChromeDeviceAuthenticatorFactory::GetInstance()
           ->GetOrCreateDeviceAuthenticator();
@@ -53,6 +79,9 @@ class DeviceAuthenticatorMacTest : public testing::Test {
   device::fido::mac::ScopedTouchIdTestEnvironment touch_id_test_environment_{
       config_};
   MockAuthResultCallback result_callback_;
+
+  // This is owned by the authenticator.
+  raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;
 };
 
 // If time that passed since the last successful authentication is smaller than
@@ -139,4 +168,20 @@ TEST_F(DeviceAuthenticatorMacTest, CancelPendngAuthentication) {
   // there will be a cancelation in the meantime.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->Cancel(DeviceAuthRequester::kPasswordsInSettings);
+}
+
+TEST_F(DeviceAuthenticatorMacTest, BiometricAuthenticationAvailable) {
+  EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometrics());
+  EXPECT_EQ(true, local_state().Get()->GetBoolean(
+                      password_manager::prefs::kHadBiometricsAvailable));
+}
+
+TEST_F(DeviceAuthenticatorMacTest, BiometricAuthenticationNotAvailable) {
+  EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(authenticator()->CanAuthenticateWithBiometrics());
+  EXPECT_EQ(false, local_state().Get()->GetBoolean(
+                       password_manager::prefs::kHadBiometricsAvailable));
 }

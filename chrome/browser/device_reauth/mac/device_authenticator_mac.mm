@@ -8,20 +8,27 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_reauth/mac/authenticator_mac.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "device/fido/mac/touch_id_context.h"
 
-DeviceAuthenticatorMac::DeviceAuthenticatorMac() = default;
+DeviceAuthenticatorMac::DeviceAuthenticatorMac(
+    std::unique_ptr<AuthenticatorMacInterface> authenticator)
+    : authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;
 
+// static
+scoped_refptr<DeviceAuthenticatorMac> DeviceAuthenticatorMac::CreateForTesting(
+    std::unique_ptr<AuthenticatorMacInterface> authenticator) {
+  return base::WrapRefCounted(
+      new DeviceAuthenticatorMac(std::move(authenticator)));
+}
+
 bool DeviceAuthenticatorMac::CanAuthenticateWithBiometrics() {
-  base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
-  bool is_available =
-      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                           error:nil];
+  bool is_available = authenticator_->CheckIfBiometricsAvailable();
   base::UmaHistogramBoolean("PasswordManager.CanUseBiometricsMac",
                             is_available);
   if (is_available) {
