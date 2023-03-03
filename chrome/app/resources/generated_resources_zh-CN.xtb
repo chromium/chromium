@@ -1548,9 +1548,9 @@
 <translation id="2335111415680198280">{0,plural, =1{关闭 # 个窗口}other{关闭 # 个窗口}}</translation>
 <translation id="2335122562899522968">该页用于设置 Cookie。</translation>
 <translation id="2336228925368920074">为所有标签页添加书签...</translation>
-<translation id="2336376423977300504">始终在关闭窗口时清除 Cookie</translation>
+<translation id="2336376423977300504">始终在关闭窗口时清除 Cookie 的网站</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">预加载 Chrome 认为您可能会访问的网页。为此，Chrome 可能会使用 Cookie（如果您允许使用 Cookie 的话），并通过 Google 加密和发送网页以在网站中隐藏您的身份。</translation>
+<translation id="2337236196941929873">预加载 Chrome 认为您可能会访问的网页。为此，Chrome 可能会使用 Cookie（如果您允许使用 Cookie 的话），并通过 Google 加密和发送网页以向网站隐藏您的身份。</translation>
 <translation id="2340239562261172947">无法安全地下载“<ph name="FILE_NAME" />”</translation>
 <translation id="2342180549977909852">您的孩子可以使用数字（PIN 码）代替密码来解锁此设备。如果想等到需要时再设置 PIN 码，到时请前往“设置”。</translation>
 <translation id="2342740338116612727">书签已添加</translation>
@@ -7721,7 +7721,7 @@
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7978450511781612192">执行此操作会使您退出 Google 帐号。您的书签、历史记录、密码及其他设置将不再保持同步。</translation>
 <translation id="7980084013673500153">资源 ID：<ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">预加载网页，以便实现更快速的浏览和搜索</translation>
+<translation id="7981313251711023384">预加载网页，加快浏览和搜索速度</translation>
 <translation id="7981662863948574132">显示包含设备 EID 和二维码的弹出式窗口</translation>
 <translation id="7981670705071137488">之后，软件更新将在后台进行。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="7982083145464587921">请重新启动您的设备以修复此错误。</translation>

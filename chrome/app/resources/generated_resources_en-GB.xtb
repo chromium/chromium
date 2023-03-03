@@ -1040,7 +1040,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1885066963699478692">XML files that are being used to set the policies.</translation>
 <translation id="1885106732301550621">Disk space</translation>
 <translation id="1886996562706621347">Allow sites to ask to become default handlers for protocols (recommended)</translation>
-<translation id="1887442540531652736">Sign-In Error</translation>
+<translation id="1887442540531652736">Sign-in error</translation>
 <translation id="1887597546629269384">Say "Hey Google" again</translation>
 <translation id="189035593835762169">Terms and Conditions</translation>
 <translation id="1891362123137972260">Disk space is critically low. Please free up disk space.</translation>
@@ -1863,7 +1863,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2604255671529671813">Network connection error</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> address form filled.</translation>
 <translation id="2605668923777146443">Go to <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" /> to see your options for Better Together.</translation>
-<translation id="2606246518223360146">Link Data</translation>
+<translation id="2606246518223360146">Link data</translation>
 <translation id="2606454609872547359">No, continue without ChromeVox</translation>
 <translation id="2606568927909309675">Automatically creates captions for English audio and video. Audio and captions never leave your device.</translation>
 <translation id="2607101320794533334">Subject Public Key Info</translation>
@@ -8309,7 +8309,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8479176401914456949">Invalid code. Please try again.</translation>
 <translation id="8480082892550707549">Even if you have downloaded files from this site before, the site may be temporarily unsafe (hacked). Try downloading this file later.</translation>
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
-<translation id="8481187309597259238">Confirm USB Permission</translation>
+<translation id="8481187309597259238">Confirm USB permission</translation>
 <translation id="8481980314595922412">Trial features are on</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8486666913807228950">Reason: The inverted rule <ph name="REVERT_RULE" /> was found in the 'Force open in' list.</translation>

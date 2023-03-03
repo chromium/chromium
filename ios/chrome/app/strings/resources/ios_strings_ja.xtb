@@ -324,6 +324,7 @@
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">変更を保存できませんでした。</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />、<ph name="ADDITIONAL_INFO" />、<ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="3264775633254836593">パスワードの自動入力</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3272527697863656322">キャンセル</translation>
 <translation id="3277021493514034324">サイトのアドレスがコピーされました</translation>
@@ -430,6 +431,7 @@
 <translation id="408404951701638773">検索バーをより手軽に使用できるようになりました</translation>
 <translation id="4092655288299341041">ヘルプを表示</translation>
 <translation id="4101942614374785540">パスワードは Google アカウント（<ph name="ACCOUNT" />）に保存されました。ログインすればどのデバイスでもパスワードを使用できます。この機能をオフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
+<translation id="4105841739161771091">{count,plural, =1{住所を削除}other{住所を削除}}</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
 <translation id="411254640334432676">ダウンロードできませんでした。</translation>
 <translation id="4112644173421521737">検索</translation>
@@ -853,6 +855,7 @@
 <translation id="6914583639806229067">コピーした画像を検索</translation>
 <translation id="6914783257214138813">エクスポートしたファイルを閲覧できるユーザーにパスワードを知られてしまう可能性があります。</translation>
 <translation id="6930799952781667037">タップしてこの言語を変更できます。</translation>
+<translation id="6939941780796374211">パスワードのオプション</translation>
 <translation id="6944369514868857500">別のアカウントを選択</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6965382102122355670">OK</translation>
