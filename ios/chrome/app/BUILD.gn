@@ -624,23 +624,6 @@ source_set("main") {
       "//ios/third_party/material_components_ios:material_components_ios+link",
     ]
   }
-
-  # Lottie links with GLKit which does not support macCatalyst environment
-  # (see https://crbug.com/1394553 for details of the build failure). This
-  # is a stop-gap solution.
-  if (target_environment != "catalyst") {
-    if (ios_chrome_links_with_lottie_framework) {
-      deps += [
-        "//ios/third_party/lottie:lottie+bundle",
-        "//ios/third_party/lottie:lottie+link",
-      ]
-    } else {
-      assert_no_deps += [
-        "//ios/third_party/lottie:lottie+bundle",
-        "//ios/third_party/lottie:lottie+link",
-      ]
-    }
-  }
 }
 
 source_set("multitasking_test_app_delegate") {
