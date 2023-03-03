@@ -262,7 +262,7 @@ using PriceNotificationItems =
 - (void)didStopTrackingItem:(PriceNotificationsTableViewItem*)item {
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   self.shoppingService->GetProductInfoForUrl(
-      self.webState->GetVisibleURL(),
+      item.entryURL,
       base::BindOnce(^(
           const GURL& productURL,
           const absl::optional<commerce::ProductInfo>& productInfo) {

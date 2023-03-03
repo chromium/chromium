@@ -240,39 +240,39 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 - (void)didStopPriceTrackingItem:(PriceNotificationsTableViewItem*)trackedItem
                    onCurrentSite:(BOOL)isViewingProductSite {
-  [self.tableView
-      performBatchUpdates:^{
-        TableViewModel* model = self.tableViewModel;
-        SectionIdentifier trackedSection = SectionIdentifierTrackedItems;
+  TableViewModel* model = self.tableViewModel;
+  SectionIdentifier trackedSection = SectionIdentifierTrackedItems;
+  SectionIdentifier trackableSection =
+      SectionIdentifierTrackableItemsOnCurrentSite;
+  std::vector<SectionIdentifier> sectionsToReload;
 
-        NSIndexPath* index = [model indexPathForItem:trackedItem];
-        [model removeItemWithType:ItemTypeListItem
-            fromSectionWithIdentifier:trackedSection
-                              atIndex:index.item];
-        [self.tableView
-            deleteRowsAtIndexPaths:@[ index ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-        trackedItem.tracking = NO;
+  trackedItem.tracking = NO;
+  NSIndexPath* index = [model indexPathForItem:trackedItem];
+  [model removeItemWithType:ItemTypeListItem
+      fromSectionWithIdentifier:trackedSection
+                        atIndex:index.item];
 
-        if (![model hasItemForItemType:ItemTypeListItem
-                     sectionIdentifier:trackedSection]) {
-          _hasTrackedItems = NO;
-          _itemOnCurrentSiteIsTracked = !isViewingProductSite;
-          [model setHeader:[self createHeaderForSectionIndex:
-                                     SectionIdentifierTrackedItems
-                                                     isEmpty:YES]
-              forSectionWithIdentifier:trackedSection];
-          [self.tableView
-                reloadSections:[self createIndexSetForSectionIdentifiers:
-                                         {SectionIdentifierTrackedItems}]
-              withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
+  if (![model hasItemForItemType:ItemTypeListItem
+               sectionIdentifier:trackedSection]) {
+    _hasTrackedItems = NO;
+    [model setHeader:
+               [self createHeaderForSectionIndex:SectionIdentifierTrackedItems
+                                         isEmpty:YES]
+        forSectionWithIdentifier:trackedSection];
+    sectionsToReload.push_back(trackedSection);
+  }
 
-        if (isViewingProductSite) {
-          [self setTrackableItem:trackedItem currentlyTracking:NO];
-        }
-      }
-               completion:nil];
+  if (isViewingProductSite) {
+    self.itemOnCurrentSiteIsTracked = NO;
+    [model setHeader:[self createHeaderForSectionIndex:trackableSection
+                                               isEmpty:NO]
+        forSectionWithIdentifier:trackableSection];
+    [model insertItem:trackedItem
+        inSectionWithIdentifier:trackableSection
+                        atIndex:0];
+    sectionsToReload.push_back(trackableSection);
+  }
+
   NSString* messageText = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING_SNACKBAR);
   MDCSnackbarMessage* message =
@@ -280,6 +280,27 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   [self.snackbarCommandsHandler
       showSnackbarMessage:message
            withHapticType:UINotificationFeedbackTypeSuccess];
+
+  if (!self.viewIfLoaded.window) {
+    return;
+  }
+
+  if (isViewingProductSite) {
+    NSIndexPath* trackableSectionIndex =
+        [model indexPathForItemType:ItemTypeListItem
+                  sectionIdentifier:trackableSection];
+    [self.tableView moveRowAtIndexPath:index toIndexPath:trackableSectionIndex];
+  }
+
+  if (sectionsToReload.size()) {
+    [self.tableView reloadSections:[self createIndexSetForSectionIdentifiers:
+                                             sectionsToReload]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    return;
+  }
+
+  [self.tableView deleteRowsAtIndexPaths:@[ index ]
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)didStartPriceTrackingForItem:
