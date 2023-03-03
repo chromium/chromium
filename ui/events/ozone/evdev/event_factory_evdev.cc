@@ -289,9 +289,10 @@ void EventFactoryEvdev::DispatchMouseButtonEvent(
   // Mouse buttons can be remapped, touchpad taps & clicks cannot.
   unsigned int button = params.button;
   if (params.map_type == MouseButtonMapType::kMouse) {
-    button = mouse_button_map_.GetMappedButton(button);
+    button = mouse_button_map_.GetMappedButton(params.device_id, button);
   } else if (params.map_type == MouseButtonMapType::kPointingStick) {
-    button = pointing_stick_button_map_.GetMappedButton(button);
+    button =
+        pointing_stick_button_map_.GetMappedButton(params.device_id, button);
   }
 
   int modifier = MODIFIER_NONE;

@@ -308,15 +308,13 @@ void InputControllerEvdev::SetMouseAcceleration(absl::optional<int> device_id,
 
 void InputControllerEvdev::SetPrimaryButtonRight(absl::optional<int> device_id,
                                                  bool right) {
-  // TODO(dpad): Implement button remapping per-device.
-  mouse_button_map_->SetPrimaryButtonRight(right);
+  mouse_button_map_->SetPrimaryButtonRight(device_id, right);
 }
 
 void InputControllerEvdev::SetPointingStickPrimaryButtonRight(
     absl::optional<int> device_id,
     bool right) {
-  // TODO(dpad): Implement button remapping per-device.
-  pointing_stick_button_map_->SetPrimaryButtonRight(right);
+  pointing_stick_button_map_->SetPrimaryButtonRight(device_id, right);
 }
 
 void InputControllerEvdev::SetGamepadKeyBitsMapping(
@@ -432,6 +430,13 @@ void InputControllerEvdev::SetHapticTouchpadEffectForNextButtonRelease(
 
 void InputControllerEvdev::OnInputDeviceRemoved(int device_id) {
   input_device_settings_.RemoveDeviceFromSettings(device_id);
+  // Mouse button map and pointing stick map can be null in tests.
+  if (mouse_button_map_) {
+    mouse_button_map_->RemoveDeviceFromSettings(device_id);
+  }
+  if (pointing_stick_button_map_) {
+    pointing_stick_button_map_->RemoveDeviceFromSettings(device_id);
+  }
   ScheduleUpdateDeviceSettings();
 }
 
