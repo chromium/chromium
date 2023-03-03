@@ -11,11 +11,14 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -28,6 +31,8 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -59,15 +64,15 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
  public:
   BookmarkBubbleDelegate(std::unique_ptr<BubbleSyncPromoDelegate> delegate,
-                         Profile* profile,
+                         Browser* browser,
                          const GURL& url)
-      : delegate_(std::move(delegate)), profile_(profile), url_(url) {}
+      : delegate_(std::move(delegate)), browser_(browser), url_(url) {}
 
   void RemoveBookmark() {
     base::RecordAction(UserMetricsAction("BookmarkBubble_Unstar"));
     should_apply_edits_ = false;
     bookmarks::BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(profile_);
+        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (node)
@@ -87,15 +92,17 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 
   void ShowEditor() {
     DCHECK(dialog_model()->host());
+
+    Profile* const profile = browser_->profile();
+
     const bookmarks::BookmarkNode* node =
-        BookmarkModelFactory::GetForBrowserContext(profile_)
+        BookmarkModelFactory::GetForBrowserContext(profile)
             ->GetMostRecentlyAddedUserNodeForURL(url_);
     DCHECK(bookmark_bubble_->anchor_widget());
     gfx::NativeWindow native_parent =
         bookmark_bubble_->anchor_widget()->GetNativeWindow();
     DCHECK(native_parent);
 
-    Profile* const profile = profile_;
     // Note that closing the dialog with |should_apply_edits_| still true will
     // synchronously save any pending changes.
     dialog_model()->host()->Close();
@@ -123,7 +130,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     should_apply_edits_ = false;
 
     bookmarks::BookmarkModel* const model =
-        BookmarkModelFactory::GetForBrowserContext(profile_);
+        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (!node)
@@ -141,6 +148,11 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
         node, dialog_model()
                   ->GetComboboxByUniqueId(kBookmarkFolder)
                   ->selected_index());
+
+    if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+      browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHPowerBookmarksSidePanelFeature);
+    }
   }
 
   RecentlyUsedFoldersComboModel* GetFolderModel() {
@@ -155,7 +167,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 
  private:
   std::unique_ptr<BubbleSyncPromoDelegate> delegate_;
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Browser> browser_;
   const GURL url_;
 
   bool should_apply_edits_ = true;
@@ -167,7 +179,7 @@ void BookmarkBubbleView::ShowBubble(
     content::WebContents* web_contents,
     views::Button* highlighted_button,
     std::unique_ptr<BubbleSyncPromoDelegate> delegate,
-    Profile* profile,
+    Browser* browser,
     const GURL& url,
     bool already_bookmarked) {
   if (bookmark_bubble_)
@@ -175,13 +187,14 @@ void BookmarkBubbleView::ShowBubble(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   BubbleSyncPromoDelegate* const delegate_ptr = delegate.get();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = browser->profile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   const bookmarks::BookmarkNode* bookmark_node =
       bookmark_model->GetMostRecentlyAddedUserNodeForURL(url);
 
   auto bubble_delegate_unique = std::make_unique<BookmarkBubbleDelegate>(
-      std::move(delegate), profile, url);
+      std::move(delegate), browser, url);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
   auto dialog_model_builder =

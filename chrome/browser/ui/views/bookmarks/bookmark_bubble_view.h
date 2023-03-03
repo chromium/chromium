@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 
 class GURL;
-class Profile;
+class Browser;
 
 namespace content {
 class WebContents;
@@ -33,7 +33,7 @@ class BookmarkBubbleView {
                          content::WebContents* web_contents,
                          views::Button* highlighted_button,
                          std::unique_ptr<BubbleSyncPromoDelegate> delegate,
-                         Profile* profile,
+                         Browser* browser,
                          const GURL& url,
                          bool already_bookmarked);
 
