@@ -758,7 +758,7 @@ void PermissionsManager::OnUserPermissionsSettingsChanged() {
   // effect in the network layer.
   NetworkPermissionsUpdater::UpdateAllExtensions(
       *browser_context_,
-      base::BindOnce(&PermissionsManager::NotifyObserversOfChange,
+      base::BindOnce(&PermissionsManager::NotifyUserPermissionSettingsChanged,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -780,9 +780,10 @@ bool PermissionsManager::RemoveRestrictedSiteAndUpdatePrefs(
   return removed_site;
 }
 
-void PermissionsManager::NotifyObserversOfChange() {
-  for (auto& observer : observers_)
+void PermissionsManager::NotifyUserPermissionSettingsChanged() {
+  for (auto& observer : observers_) {
     observer.OnUserPermissionsSettingsChanged(GetUserPermissionsSettings());
+  }
 }
 
 void PermissionsManager::NotifyShowAccessRequestsInToolbarChanged() {

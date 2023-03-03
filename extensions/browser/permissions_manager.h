@@ -250,8 +250,8 @@ class PermissionsManager : public KeyedService {
       const Extension& extension,
       const PermissionSet& user_permitted_set);
 
-  // Notifies observers of a permissions change.
-  void NotifyObserversOfChange();
+  // Notifies `observers_` that user permissions have changed.
+  void NotifyUserPermissionSettingsChanged();
 
   base::ObserverList<Observer>::Unchecked observers_;
 
