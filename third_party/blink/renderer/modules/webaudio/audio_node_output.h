@@ -47,6 +47,8 @@ class MODULES_EXPORT AudioNodeOutput final {
   // setNumberOfChannels() must be called later on.
   AudioNodeOutput(AudioHandler*, unsigned number_of_channels);
 
+  ~AudioNodeOutput();
+
   void Dispose();
 
   // Causes our AudioNode to process if it hasn't already for this render
