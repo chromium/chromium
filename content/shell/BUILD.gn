@@ -312,7 +312,14 @@ static_library("content_shell_lib") {
   ]
 
   if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy:fuchsia.ui.policy_hlcpp" ]
+    sources += [
+      "browser/fuchsia_view_presenter.cc",
+      "browser/fuchsia_view_presenter.h",
+    ]
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy:fuchsia.ui.policy_hlcpp",
+    ]
   } else {
     deps += [
       "//components/crash/content/browser",

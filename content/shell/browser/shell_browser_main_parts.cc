@@ -72,6 +72,10 @@
 #include "ui/linux/linux_ui_factory.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "content/shell/browser/fuchsia_view_presenter.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -188,6 +192,10 @@ void ShellBrowserMainParts::PostCreateThreads() {
 }
 
 int ShellBrowserMainParts::PreMainMessageLoopRun() {
+#if BUILDFLAG(IS_FUCHSIA)
+  fuchsia_view_presenter_ = std::make_unique<FuchsiaViewPresenter>();
+#endif
+
   InitializeBrowserContexts();
   Shell::Initialize(CreateShellPlatformDelegate());
   net::NetModule::SetResourceProvider(PlatformResourceProvider);
@@ -210,6 +218,9 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
   ui::LinuxUi::SetInstance(nullptr);
 #endif
   performance_manager_lifetime_.reset();
+#if BUILDFLAG(IS_FUCHSIA)
+  fuchsia_view_presenter_.reset();
+#endif
 }
 
 void ShellBrowserMainParts::PostDestroyThreads() {
