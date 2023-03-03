@@ -1281,7 +1281,7 @@ void BluetoothAdapterFloss::AdvertisementFound(ScanResult scan_result) {
   }
 }
 
-void BluetoothAdapterFloss::ScanResultLost(ScanResult scan_result) {
+void BluetoothAdapterFloss::AdvertisementLost(ScanResult scan_result) {
   BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
 
   auto device = CreateBluetoothDeviceFloss(FlossDeviceId(

@@ -278,11 +278,12 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
       .WillOnce(DoAll(testing::SaveArg<2>(&method_handler_on_adv_found),
                       &FakeExportMethod));
 
-  dbus::ExportedObject::MethodCallCallback method_handler_on_scan_result_lost;
-  EXPECT_CALL(*exported_callback.get(),
-              ExportMethod(kScannerCallbackInterfaceName,
-                           adapter::kOnScanResultLost, testing::_, testing::_))
-      .WillOnce(DoAll(testing::SaveArg<2>(&method_handler_on_scan_result_lost),
+  dbus::ExportedObject::MethodCallCallback method_handler_on_adv_lost;
+  EXPECT_CALL(
+      *exported_callback.get(),
+      ExportMethod(kScannerCallbackInterfaceName, adapter::kOnAdvertisementLost,
+                   testing::_, testing::_))
+      .WillOnce(DoAll(testing::SaveArg<2>(&method_handler_on_adv_lost),
                       &FakeExportMethod));
 
   EXPECT_CALL(*bus_.get(), GetExportedObject(callback_path_))
@@ -313,7 +314,7 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
   ASSERT_TRUE(!!method_handler_on_scanner_registered);
   ASSERT_TRUE(!!method_handler_on_scan_result);
   ASSERT_TRUE(!!method_handler_on_adv_found);
-  ASSERT_TRUE(!!method_handler_on_scan_result_lost);
+  ASSERT_TRUE(!!method_handler_on_adv_lost);
 
   TestOnScannerRegistered(method_handler_on_scanner_registered);
   TestOnScanResult(method_handler_on_scan_result);

@@ -101,7 +101,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResult[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisementFound[];
 // TODO(b/269343922): Rename this to OnAdvertisementLost for better symmetry
 // with OnAdvertisementFound.
-extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResultLost[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisementLost[];
 }  // namespace adapter
 
 namespace manager {
