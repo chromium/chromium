@@ -131,9 +131,6 @@ void SessionDataDeleterInternal::Run(
       host_content_settings_map->ClearSettingsForOneType(
           ContentSettingsType::CLIENT_HINTS);
     }
-
-    host_content_settings_map->ClearSettingsForOneType(
-        ContentSettingsType::REDUCED_ACCEPT_LANGUAGE);
   }
 
   if (!storage_policy_.get() || !storage_policy_->HasSessionOnlyOrigins())

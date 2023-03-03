@@ -21,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -105,11 +106,17 @@ void ReduceAcceptLanguageService::PersistReducedLanguage(
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
   base::Value::Dict accept_language_dictionary;
+  base::TimeDelta cache_duration =
+      network::features::kReduceAcceptLanguageCacheDuration.Get();
+
   accept_language_dictionary.Set(kReduceAcceptLanguageSettingKey, language);
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE,
       base::Value(std::move(accept_language_dictionary)),
-      {base::Time(), content_settings::SessionModel::Durable});
+      {cache_duration.is_zero()
+           ? base::Time()
+           : content_settings::GetConstraintExpiration(cache_duration),
+       content_settings::SessionModel::Durable});
 
   // Record the time spent getting the reduce accept language.
   base::TimeDelta duration = base::TimeTicks::Now() - start_time;
