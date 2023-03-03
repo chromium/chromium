@@ -2117,6 +2117,12 @@ const char kOmniboxModernizeVisualUpdateDescription[] =
     "When enabled, Omnibox will show a new UI which is visually "
     "updated. This flag is for the step 1 in the Clank Omnibox revamp plan.";
 
+const char kOmniboxScrimOnTabletsName[] = "Omnibox Scrim on Tablets";
+const char kOmniboxScrimOnTabletsDescription[] =
+    "When enabled, the omnibox on Android tablets will show a scrim over top "
+    "of page content on either side of the suggestions list instead of added "
+    "padding.";
+
 const char kOmniboxMostVisitedTilesName[] = "Omnibox Most Visited Tiles";
 const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frequently visited pages from history as a single row "

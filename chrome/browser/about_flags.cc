@@ -5184,6 +5184,10 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxModernizeVisualUpdateVariations,
          "OmniboxModernizeVisualUpdate")},
 
+    {"omnibox-scrim-on-tablets", flag_descriptions::kOmniboxScrimOnTabletsName,
+     flag_descriptions::kOmniboxScrimOnTabletsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOmniboxScrimOnTablets)},
+
     {"omnibox-most-visited-tiles-add-recycled-view-poll",
      flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolName,
      flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolDescription,

@@ -191,15 +191,15 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
         if (isTablet()) {
             ViewUtils.getRelativeLayoutPosition(
                     mAnchorView, mHorizontalAlignmentView, mPositionArray);
-            if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
-                // Case 1: tablets with revamp enabled. Width equal to alignment view and left
+            if (OmniboxFeatures.shouldShowTabletScrim()) {
+                // Case 1: tablets with scrim enabled. Width equal to alignment view and left
                 // equivalent to left of alignment view.
                 left = mPositionArray[0];
                 width = mHorizontalAlignmentView.getMeasuredWidth();
                 paddingLeft = 0;
                 paddingRight = 0;
             } else {
-                // Case 2: tablets with revamp disabled. Full bleed width with padding to align
+                // Case 2: tablets with scrim disabled. Full bleed width with padding to align
                 // suggestions to the alignment view.
                 left = 0;
                 width = mAnchorView.getMeasuredWidth();

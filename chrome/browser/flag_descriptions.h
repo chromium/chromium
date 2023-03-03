@@ -1202,6 +1202,9 @@ extern const char kOmniboxMlUrlScoringModelDescription[];
 extern const char kOmniboxModernizeVisualUpdateName[];
 extern const char kOmniboxModernizeVisualUpdateDescription[];
 
+extern const char kOmniboxScrimOnTabletsName[];
+extern const char kOmniboxScrimOnTabletsDescription[];
+
 extern const char kOmniboxMatchToolbarAndStatusBarColorName[];
 extern const char kOmniboxMatchToolbarAndStatusBarColorDescription[];
 

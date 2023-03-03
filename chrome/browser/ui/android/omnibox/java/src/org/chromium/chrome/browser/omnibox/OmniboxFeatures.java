@@ -33,6 +33,9 @@ public class OmniboxFeatures {
     private static final MutableFlagWithSafeDefault sOmniboxConsumesImeInsets =
             new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS, false);
 
+    private static final MutableFlagWithSafeDefault sOmniboxScrimOnTablets =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_SCRIM_ON_TABLETS, false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
@@ -96,5 +99,13 @@ public class OmniboxFeatures {
      */
     public static boolean shouldAddMostVisitedTilesRecycledViewPool() {
         return ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool.isEnabled();
+    }
+
+    /**
+     * Returns whether the tablet omnibox should show a scrim on either side of the suggestions
+     * list instead of padding.
+     */
+    public static boolean shouldShowTabletScrim() {
+        return sOmniboxScrimOnTablets.isEnabled();
     }
 }
