@@ -378,6 +378,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Images.HasOverfetchedCappedPixels" enum="Boolean"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Boolean indicating that OverfetchedCappedPixels was a positive integer.
+    Reported whenever an image is loaded and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.HasOverfetchedPixels" enum="Boolean"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Boolean indicating that OverfetchedPixels was a positive integer. Reported
+    whenever an image is loaded and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.HasSizesAttributeMiss" enum="Boolean"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Boolean indicating that SizesAttributeMiss was a positive integer. Only set
+    when the sizes attribute is present. Reported whenever an image is loaded
+    and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.OverfetchedCappedPixels" units="px^2"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The amount of HTMLImageElement image pixels squared (width * height) that
+    were fetched by the renderer, but eventually weren't needed, as the layout
+    dimensions of the image corrected to the screen's device pixel ratio (up to
+    a predefined cap) were smaller than the image pixels fetched. Reported
+    whenever an image is loaded and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.OverfetchedPixels" units="px^2"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The amount of HTMLImageElement image pixels squared (width * height) that
+    were fetched by the renderer, but eventually weren't needed, as the layout
+    dimensions of the image corrected to the screen's device pixel ratio were
+    smaller than the image pixels fetched. Reported whenever an image is loaded
+    and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.SizesAttributeMiss" units="px"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The amount of HTMLImageElement pixels by which the eventual layout width was
+    smaller than the width provided by the sizes attribute.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
     units="ms" expires_after="2023-05-27">
   <owner>ckitagawa@chromium.org</owner>
@@ -385,7 +452,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the number of milliseconds spent blocking Blink's main thread while
-    capturing the main frame.
+    capturing the main frame. Reported whenever an image is loaded and painted.
   </summary>
 </histogram>
 
