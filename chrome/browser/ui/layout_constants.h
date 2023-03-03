@@ -91,6 +91,9 @@ enum LayoutConstant {
   // The horizontal space between most items in the toolbar.
   TOOLBAR_STANDARD_SPACING,
 
+  // corner radius on the top of the toolbar introduced in chrome refresh 2023
+  TOOLBAR_CORNER_RADIUS,
+
   // The size of the app menu button in a web app browser window.
   WEB_APP_MENU_BUTTON_SIZE,
 

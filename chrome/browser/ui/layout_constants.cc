@@ -74,6 +74,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 16;
     case DOWNLOAD_ICON_SIZE:
       return 16;
+    case TOOLBAR_CORNER_RADIUS:
+      return 8;
     default:
       break;
   }

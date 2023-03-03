@@ -92,6 +92,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
@@ -628,6 +629,10 @@ void ToolbarView::Layout() {
 
   LayoutCommon();
 
+  if (features::IsChromeRefresh2023()) {
+    UpdateClipPath();
+  }
+
   // Call super implementation to ensure layout manager and child layouts
   // happen.
   AccessiblePaneView::Layout();
@@ -642,6 +647,22 @@ void ToolbarView::OnThemeChanged() {
     LoadImages();
 
   SchedulePaint();
+}
+
+void ToolbarView::UpdateClipPath() {
+  const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+  SkPath path;
+  const gfx::Rect local_bounds = GetLocalBounds();
+  path.moveTo(0, local_bounds.height());
+  path.lineTo(0, corner_radius);
+  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
+             SkPathDirection::kCW, corner_radius, 0);
+  path.lineTo(local_bounds.width() - corner_radius, 0);
+  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
+             SkPathDirection::kCW, local_bounds.width(), corner_radius);
+  path.lineTo(local_bounds.width(), local_bounds.height());
+  path.lineTo(0, local_bounds.height());
+  SetClipPath(path);
 }
 
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
