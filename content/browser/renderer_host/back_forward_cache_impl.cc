@@ -1363,14 +1363,8 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   // we've received confirmation that eviction is disabled from renderers.
   auto cb = base::BarrierClosure(
       bfcache_entry.render_view_hosts().size(),
-      base::BindOnce(
-          [](base::TimeTicks ipc_start_time, base::OnceClosure cb) {
-            std::move(cb).Run();
-            base::UmaHistogramTimes(
-                "BackForwardCache.Restore.DisableEvictionDelay",
-                base::TimeTicks::Now() - ipc_start_time);
-          },
-          base::TimeTicks::Now(), std::move(done_callback)));
+      base::BindOnce([](base::OnceClosure cb) { std::move(cb).Run(); },
+                     std::move(done_callback)));
 
   for (const auto& rvh : bfcache_entry.render_view_hosts()) {
     rvh->PrepareToLeaveBackForwardCache(cb);
