@@ -3812,6 +3812,7 @@ if (!is_android) {
         "../browser/ash/login/app_mode/test/kiosk_device_owned_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_enterprise_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_remote_command_browsertest.cc",
+        "../browser/ash/login/app_mode/test/kiosk_sku_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_update_browsertest.cc",
         "../browser/ash/login/app_mode/test/test_app_data_load_waiter.cc",
         "../browser/ash/login/app_mode/test/test_app_data_load_waiter.h",
