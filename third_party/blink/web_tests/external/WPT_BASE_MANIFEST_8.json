@@ -162477,6 +162477,19 @@
        {}
       ]
      ],
+     "ruby-bidi-004.html": [
+      "9cfe65059d117d63837ee2c534c621f2f0e0af39",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/ruby-bidi-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "ruby-box-generation-001.html": [
       "ac58d4d43ab966eb1ac57f56c826e309877cebac",
       [
@@ -265515,6 +265528,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "70e955ad0022975a929d756cf46d4b1a50f72a29",
+     []
+    ],
+    "mtime.json": [
+     "9214e267bf01f5cee62783c7d3ae6e14e61de150",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -269223,7 +269246,7 @@
      []
     ],
     "rendering-utils.js": [
-     "46283bd5d078a14922e24160053017b6e8cb072c",
+     "8027cd5f8484702c35348eaf8b405684915cf283",
      []
     ],
     "sab.js": [
@@ -308677,6 +308700,10 @@
       "c2b1eb4826ea7bcdf3101080e777051259954f12",
       []
      ],
+     "ruby-bidi-004-ref.html": [
+      "58ebff482c07f01af62542d0b664222da4055738",
+      []
+     ],
      "ruby-box-generation-001-ref.html": [
       "8d836fe23c830d0aa815dc2291033615a62a0c81",
       []
@@ -315400,6 +315427,10 @@
        "a931df9be258c3133380d5914b34a3ec58143a64",
        []
       ],
+      "text-transform-capitalize-005.html.ini": [
+       "7fa3a2ca9ac900bea86af1935775c17a99c56c95",
+       []
+      ],
       "text-transform-capitalize-014.html.ini": [
        "4080d27f0bc429516e18336bf4fff03742a3a083",
        []
@@ -321222,6 +321253,10 @@
       ],
       "kind-of-widget-fallback-input-submit-border-inline-end-width-001.html.ini": [
        "2a170629651d9defa1951ceceeab784ca50ea285",
+       []
+      ],
+      "kind-of-widget-fallback-input-submit-border-inline-start-width-001.html.ini": [
+       "e22326544e8cda86ac41f55288a45aa2021c907e",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-right-width-001.html.ini": [
@@ -328345,6 +328380,10 @@
      ],
      "backdrop-filter-edge-behavior-ref.html": [
       "b605e3251c5b91f50a8b001655884b28937e9bef",
+      []
+     ],
+     "backdrop-filter-edge-behavior.html.ini": [
+      "c7127e471f6eed804646a1dbdbc6f15eabd6382b",
       []
      ],
      "backdrop-filter-edge-pixels-ref.html": [
@@ -338258,6 +338297,10 @@
        "f2a886f39de7d36f08be433bdba1e47851752aa9",
        []
       ],
+      "data_non_ascii.json": [
+       "64566c50c14ab8fb3fdad474f016648dec32d296",
+       []
+      ],
       "empty.json": [
        "0967ef424bce6791893e9a57bb952f80fd536e93",
        []
@@ -338333,15 +338376,15 @@
        []
       ],
       "known-mime-type.sub.any-expected.txt": [
-       "016825f78c92fe6d0b956da9843ea90254200062",
+       "77ee580e662e1353d5387b07db674490f76d0c91",
        []
       ],
       "known-mime-type.sub.any.js.ini": [
-       "ac433cd3c4ab515deb830b569214ff629cf2a6f8",
+       "f8fb39992035f9c02fc76f6d1afc4d9338c2c3f5",
        []
       ],
       "known-mime-type.sub.any.worker-expected.txt": [
-       "016825f78c92fe6d0b956da9843ea90254200062",
+       "77ee580e662e1353d5387b07db674490f76d0c91",
        []
       ],
       "nosniff.sub.any-expected.txt": [
@@ -354004,6 +354047,10 @@
          "564df60f70ad3c254503ff0157c4f94d4c6b58a0",
          []
         ],
+        "resource-selection-invoke-remove-from-document-networkState.html.ini": [
+         "9699c1136836756287faf5148ae74a26b5cfdbda",
+         []
+        ],
         "resource-selection-invoke-set-src-not-in-document.html.ini": [
          "b5b4f9d832f0d4904827a71dee1d10206557ebb1",
          []
@@ -355746,7 +355793,7 @@
         []
        ],
        "select-event.html.ini": [
-        "6d698f3ad24984f74897d903a2f64585cd760cdc",
+        "e0055c5f2e8f584d226efbb0ad582ce92182f35f",
         []
        ]
       },
@@ -363512,7 +363559,7 @@
     ]
    },
    "lint.ignore": [
-    "e74817f1732c54f233662d6f03a2b4bbbed1f5f1",
+    "3b6106fbfc3f8dff9e2f6fb2d6caf05753bdc8bb",
     []
    ],
    "loading": {
@@ -378608,12 +378655,12 @@
      "9338e277c5e3acc519e00d0e07c910be491c624d",
      []
     ],
-    "requestStorageAccess-cross-origin-sibling-iframes.sub.https.window.js.ini": [
-     "f0612e5ada98307caea31e123c22ad664888f97e",
-     []
-    ],
     "requestStorageAccess-cross-site-iframe.sub.https.window.js.ini": [
      "aa17501c514b2960953b0eab40a9639e9529b650",
+     []
+    ],
+    "requestStorageAccess-cross-site-sibling-iframes.sub.https.window.js.ini": [
+     "6ddb8374d2f3e51704b2849c1ec8505e6111e110",
      []
     ],
     "requestStorageAccess-nested-cross-origin-iframe.sub.https.window.js.ini": [
@@ -495094,7 +495141,7 @@
        ]
       ],
       "known-mime-type.sub.any.js": [
-       "d0954c83555977ea8714db524957a809286db321",
+       "919964f3f57ad89a87ba8cce176982c0d5a75236",
        [
         "fetch/orb/tentative/known-mime-type.sub.any.html",
         {
@@ -539073,7 +539120,7 @@
         ]
        ],
        "select-event.html": [
-        "5b29ac1d8862806e629a68e1eb6e960cfd62d0d4",
+        "854b1f480460d61a77788cc7773c24a37b530cb2",
         [
          null,
          {
@@ -596475,19 +596522,15 @@
       }
      ]
     ],
-    "requestStorageAccess-cross-origin-sibling-iframes.sub.https.window.js": [
-     "fd82f89f3c97f9a3a6787146f9c73e9660f8be4e",
+    "requestStorageAccess-cross-site-iframe.sub.https.window.js": [
+     "53f90de75d06f6bbf95e99bd5ae7da7cd06f7830",
      [
-      "storage-access-api/requestStorageAccess-cross-origin-sibling-iframes.sub.https.window.html",
+      "storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html",
       {
        "script_metadata": [
         [
          "script",
          "helpers.js"
-        ],
-        [
-         "script",
-         "/cookies/resources/cookie-helper.sub.js"
         ],
         [
          "script",
@@ -596501,15 +596544,19 @@
       }
      ]
     ],
-    "requestStorageAccess-cross-site-iframe.sub.https.window.js": [
-     "53f90de75d06f6bbf95e99bd5ae7da7cd06f7830",
+    "requestStorageAccess-cross-site-sibling-iframes.sub.https.window.js": [
+     "41f2f5c74ec7877ee0eb37f705d9fb52085dc573",
      [
-      "storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html",
+      "storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.html",
       {
        "script_metadata": [
         [
          "script",
          "helpers.js"
+        ],
+        [
+         "script",
+         "/cookies/resources/cookie-helper.sub.js"
         ],
         [
          "script",
@@ -596707,7 +596754,7 @@
      ]
     ],
     "storageAccess.testdriver.sub.html": [
-     "5282cc8cc186743d195fa66906a8d9c7e8322169",
+     "cc945dd18232b725f93e5b877f39be664ce56997",
      [
       null,
       {
