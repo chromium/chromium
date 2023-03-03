@@ -4252,15 +4252,15 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
-const char kReadAnythingName[] = "Read Anything";
+const char kReadAnythingName[] = "Reading Mode";
 const char kReadAnythingDescription[] =
-    "Enables the Read Anything feature which generates a reader-friendly view "
-    "of web pages. Open the side panel and select Read Anything to try the "
+    "Enables the Reading Mode feature which generates a reader-friendly view "
+    "of web pages. Open the side panel and select Reading Mode to try the "
     "feature.";
 
-const char kReadAnythingWithScreen2xName[] = "Read Anything with Screen2x";
+const char kReadAnythingWithScreen2xName[] = "Reading Mode with Screen2x";
 const char kReadAnythingWithScreen2xDescription[] =
-    "Have Read Anything use a local machine learning model for web page"
+    "Have Reading Mode use a local machine learning model for web page "
     "distillation.";
 
 const char kEnableWebHidOnExtensionServiceWorkerName[] =
