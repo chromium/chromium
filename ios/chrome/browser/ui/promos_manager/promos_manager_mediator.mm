@@ -31,6 +31,10 @@
   return self;
 }
 
+- (void)deregisterPromo:(promos_manager::Promo)promo {
+  _promosManager->DeregisterPromo(promo);
+}
+
 - (void)recordImpression:(promos_manager::Promo)promo {
   _promosManager->RecordImpression(promo);
 }

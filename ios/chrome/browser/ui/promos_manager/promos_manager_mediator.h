@@ -24,6 +24,9 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Deregisters `promo` (stopping `promo` from being displayed).
+- (void)deregisterPromo:(promos_manager::Promo)promo;
+
 // Records the display impression of `promo`.
 - (void)recordImpression:(promos_manager::Promo)promo;
 
