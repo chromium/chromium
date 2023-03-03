@@ -58,6 +58,23 @@ class RedirectChainObserver : public DIPSService::Observer {
   base::ScopedObservation<DIPSService, Observer> obs_{this};
 };
 
+class UserActivationObserver : public content::WebContentsObserver {
+ public:
+  explicit UserActivationObserver(content::WebContents* web_contents,
+                                  content::RenderFrameHost* render_frame_host);
+
+  // Wait until the frame receives user activation.
+  void Wait();
+
+ private:
+  // WebContentsObserver override
+  void FrameReceivedUserActivation(
+      content::RenderFrameHost* render_frame_host) override;
+
+  raw_ptr<content::RenderFrameHost> const render_frame_host_;
+  base::RunLoop run_loop_;
+};
+
 // Checks that the URLs associated with the UKM entries with the given name are
 // as expected. Sorts the URLs so order doesn't matter.
 //

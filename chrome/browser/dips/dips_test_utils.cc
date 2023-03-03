@@ -55,6 +55,23 @@ void RedirectChainObserver::Wait() {
   run_loop_.Run();
 }
 
+UserActivationObserver::UserActivationObserver(
+    WebContents* web_contents,
+    RenderFrameHost* render_frame_host)
+    : WebContentsObserver(web_contents),
+      render_frame_host_(render_frame_host) {}
+
+void UserActivationObserver::Wait() {
+  run_loop_.Run();
+}
+
+void UserActivationObserver::FrameReceivedUserActivation(
+    RenderFrameHost* render_frame_host) {
+  if (render_frame_host_ == render_frame_host) {
+    run_loop_.Quit();
+  }
+}
+
 EntryUrlsAre::EntryUrlsAre(std::string entry_name,
                            std::vector<std::string> urls)
     : entry_name_(std::move(entry_name)), expected_urls_(std::move(urls)) {

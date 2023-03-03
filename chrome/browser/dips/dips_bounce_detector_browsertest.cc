@@ -43,29 +43,6 @@ using ukm::builders::DIPS_Redirect;
 
 namespace {
 
-class UserActivationObserver : public content::WebContentsObserver {
- public:
-  explicit UserActivationObserver(content::WebContents* web_contents,
-                                  content::RenderFrameHost* render_frame_host)
-      : WebContentsObserver(web_contents),
-        render_frame_host_(render_frame_host) {}
-
-  // Wait until the frame receives user activation.
-  void Wait() { run_loop_.Run(); }
-
-  // WebContentsObserver override
-  void FrameReceivedUserActivation(
-      content::RenderFrameHost* render_frame_host) override {
-    if (render_frame_host_ == render_frame_host) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  raw_ptr<content::RenderFrameHost> const render_frame_host_;
-  base::RunLoop run_loop_;
-};
-
 // Returns a simplified URL representation for ease of comparison in tests.
 // Just host+path.
 std::string FormatURL(const GURL& url) {
