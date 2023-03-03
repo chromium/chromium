@@ -165,8 +165,20 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
-// The size of trailing symbol icons for safe/insecure state.
-NSInteger kTrailingSymbolSize = 18;
+// The size of trailing symbol icons for safe/insecure state. Used when
+// kIOSPasswordCheckup feature is disabled.
+constexpr NSInteger kTrailingSymbolSizeWithoutCheckup = 18;
+
+// The size of trailing symbol icons for safe/insecure state. Used when
+// kIOSPasswordCheckup feature is enabled.
+constexpr NSInteger kTrailingSymbolSize = 18;
+
+// Returns the correct trailing symbol size depending on whether
+// kIOSPasswordCheckup is enabled or not.
+NSInteger GetTrailingSymbolSize() {
+  return IsPasswordCheckupEnabled() ? kTrailingSymbolSize
+                                    : kTrailingSymbolSizeWithoutCheckup;
+}
 
 // Helper method to get the right trailing image for the Password Check cell
 // depending on the check state.
@@ -177,15 +189,15 @@ UIImage* GetPasswordCheckStatusTrailingImage(
       return DefaultSymbolTemplateWithPointSize(IsPasswordCheckupEnabled()
                                                     ? kErrorCircleFillSymbol
                                                     : kWarningFillSymbol,
-                                                kTrailingSymbolSize);
+                                                GetTrailingSymbolSize());
     case PasswordCheckStateReusedPasswords:
     case PasswordCheckStateWeakPasswords:
     case PasswordCheckStateDismissedWarnings:
       return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
-                                                kTrailingSymbolSize);
+                                                GetTrailingSymbolSize());
     case PasswordCheckStateSafe:
       return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                                kTrailingSymbolSize);
+                                                GetTrailingSymbolSize());
     case PasswordCheckStateDefault:
     case PasswordCheckStateRunning:
     case PasswordCheckStateDisabled:
