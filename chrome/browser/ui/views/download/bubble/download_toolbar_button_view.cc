@@ -440,6 +440,7 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble_delegate->set_margins(GetPrimaryViewMargin());
+  bubble_delegate->SetEnableArrowKeyTraversal(true);
   bubble_delegate_ = bubble_delegate.get();
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
   bubble_delegate_->GetWidget()->Show();
