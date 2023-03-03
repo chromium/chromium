@@ -219,10 +219,12 @@ suite('PasswordsImportDialog', function() {
         importDialog
             .i18nAdvanced(
                 'importPasswordsBadFormatError',
-                {substitutions: [IMPORT_HELP_LANDING_PAGE]},
+                {
+                  attrs: ['class'],
+                  substitutions: ['test.csv', IMPORT_HELP_LANDING_PAGE],
+                },
                 )
-            .toString()
-            .replace('<b></b>', '<b>test.csv</b>'));
+            .toString());
   });
 
   test('hasCorrectUnknownErrorState', async function() {
@@ -374,7 +376,7 @@ suite('PasswordsImportDialog', function() {
 
     assertEquals(
         importDialog.i18n('importPasswordsAlreadyActive'),
-        importDialog.$.descriptionText.textContent!.trim());
+        importDialog.$.descriptionText.textContent!.toString());
 
     assertFalse(isVisible(
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));

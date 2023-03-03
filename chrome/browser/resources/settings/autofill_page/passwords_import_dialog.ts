@@ -21,6 +21,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -118,6 +119,7 @@ export class PasswordsImportDialogElement extends
         },
       },
 
+      descriptionText_: String,
       results_: Object,
       failedImportsWithKnownErrors_: Array,
       failedImportsSummary_: String,
@@ -136,6 +138,7 @@ export class PasswordsImportDialogElement extends
   isAccountStoreUser: boolean;
   accountEmail: string;
   private results_: chrome.passwordsPrivate.ImportResults|null;
+  private descriptionText_: TrustedHTML;
   private failedImportsWithKnownErrors_: chrome.passwordsPrivate.ImportEntry[];
   private failedImportsSummary_: string;
   private enablePasswordsImportM2_: boolean;
@@ -152,8 +155,8 @@ export class PasswordsImportDialogElement extends
     super.connectedCallback();
 
     if (this.isAccountStoreUser) {
-      this.$.descriptionText.textContent =
-          this.i18n('importPasswordsGenericDescription');
+      this.descriptionText_ =
+          this.i18nAdvanced('importPasswordsGenericDescription');
       PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
           isAccountStoreDefault => {
             this.passwordsSavedToAccount_ = isAccountStoreDefault;
@@ -163,12 +166,13 @@ export class PasswordsImportDialogElement extends
           });
     } else if (this.isUserSyncingPasswords) {
       this.passwordsSavedToAccount_ = true;
-      this.$.descriptionText.textContent =
-          this.i18n('importPasswordsDescriptionAccount', this.accountEmail);
+      this.descriptionText_ = this.i18nAdvanced(
+          'importPasswordsDescriptionAccount',
+          {substitutions: [this.accountEmail]});
     } else {
       this.passwordsSavedToAccount_ = false;
-      this.$.descriptionText.textContent =
-          this.i18n('importPasswordsDescriptionDevice');
+      this.descriptionText_ =
+          this.i18nAdvanced('importPasswordsDescriptionDevice');
     }
     this.dialogState = ImportDialogState.START;
   }
@@ -243,35 +247,35 @@ export class PasswordsImportDialogElement extends
         this.handleSuccess_();
         return;
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsFileSizeExceeded');
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsFileSizeExceeded');
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
       case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsUnknownError');
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsUnknownError');
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsLimitExceeded', 3000);
+        this.descriptionText_ = this.i18nAdvanced(
+            'importPasswordsLimitExceeded', {substitutions: ['3000']});
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
-        this.$.descriptionText.innerHTML = this.i18nAdvanced(
-            'importPasswordsBadFormatError',
-            {substitutions: [IMPORT_HELP_LANDING_PAGE]});
-        this.$.descriptionText.querySelector('b')!.textContent =
-            this.results_.fileName;
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsBadFormatError', {
+              attrs: ['class'],
+              substitutions: [this.results_.fileName, IMPORT_HELP_LANDING_PAGE],
+            });
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
         // Dialog state should not change if a system file picker was dismissed.
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsAlreadyActive');
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsAlreadyActive');
         this.dialogState = ImportDialogState.ALREADY_ACTIVE;
         break;
       default:
@@ -308,13 +312,14 @@ export class PasswordsImportDialogElement extends
           await PluralStringProxyImpl.getInstance().getPluralString(
               'importPasswordsSuccessSummaryAccount',
               this.results_.numberImported);
-      this.$.descriptionText.textContent =
-          descriptionText.replace('$1', this.accountEmail);
+      this.descriptionText_ =
+          sanitizeInnerHtml(descriptionText.replace('$1', this.accountEmail));
     } else {
-      this.$.descriptionText.textContent =
+      const descriptionText =
           await PluralStringProxyImpl.getInstance().getPluralString(
               'importPasswordsSuccessSummaryDevice',
               this.results_.numberImported);
+      this.descriptionText_ = sanitizeInnerHtml(descriptionText);
     }
     this.dialogState = ImportDialogState.SUCCESS;
 
