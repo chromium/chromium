@@ -15,8 +15,6 @@ const wchar_t kGoogleUpdate3WebUserClassProgId[] =
 
 const wchar_t kGlobalPrefix[] = L"Global\\G";
 
-const wchar_t kPrefsAccessMutex[] = L"" PREFS_ACCESS_MUTEX;
-
 const wchar_t kRegKeyCommands[] = L"Commands";
 const wchar_t kRegValueCommandLine[] = L"CommandLine";
 const wchar_t kRegValueAutoRunOnOSUpgrade[] = L"AutoRunOnOSUpgrade";

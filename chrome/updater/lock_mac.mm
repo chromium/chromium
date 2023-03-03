@@ -1,15 +1,20 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/prefs_impl.h"
+#include "chrome/updater/lock.h"
 
 #include <mach/mach.h>
 #include <servers/bootstrap.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
+#include "base/strings/strcat.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/updater_branding.h"
@@ -17,13 +22,13 @@
 
 namespace {
 
-// Mach service name for the global prefs lock.
-constexpr char kPrefsLockMachServiceName[] =
-    MAC_BUNDLE_IDENTIFIER_STRING ".lock";
+// Mach service name prefix/suffix for the global  lock.
+constexpr char kLockMachServiceNamePrefix[] = MAC_BUNDLE_IDENTIFIER_STRING;
+constexpr char kLockMachServiceNameSuffix[] = ".lock";
 
 // Interval to poll for lock availability if it is not immediately available.
 // Final interval will be truncated to fit the available timeout.
-constexpr base::TimeDelta kPrefsLockPollingInterval = base::Seconds(3);
+constexpr base::TimeDelta kLockPollingInterval = base::Seconds(3);
 
 //
 // Attempts to acquire the receive right to a named Mach service.
@@ -44,11 +49,10 @@ base::mac::ScopedMachReceiveRight TryAcquireReceive(const char* service_name) {
     // process has acquired the receive rights for this service.
     if (check_in_result != BOOTSTRAP_NOT_PRIVILEGED) {
       BOOTSTRAP_LOG(ERROR, check_in_result)
-          << "bootstrap_check_in to acquire prefs lock: "
-          << kPrefsLockMachServiceName;
+          << "bootstrap_check_in to acquire lock: " << service_name;
     } else {
       BOOTSTRAP_VLOG(2, check_in_result)
-          << "Prefs lock already held: " << kPrefsLockMachServiceName;
+          << " lock already held: " << service_name;
     }
     return base::mac::ScopedMachReceiveRight();
   }
@@ -60,9 +64,8 @@ base::mac::ScopedMachReceiveRight TryAcquireReceive(const char* service_name) {
 void WaitToRetryLock(base::TimeDelta max_wait) {
   // This is a polling implementation of Mach service locking.
   // TODO(1135787): replace with a non-polling Mach notification approach.
-  const base::TimeDelta wait_time = max_wait < kPrefsLockPollingInterval
-                                        ? max_wait
-                                        : kPrefsLockPollingInterval;
+  const base::TimeDelta wait_time =
+      max_wait < kLockPollingInterval ? max_wait : kLockPollingInterval;
   base::PlatformThread::Sleep(wait_time);
 }
 
@@ -70,16 +73,16 @@ void WaitToRetryLock(base::TimeDelta max_wait) {
 
 namespace updater {
 
-class ScopedPrefsLockImpl {
+class ScopedLockImpl {
  public:
-  // Constructs a ScopedPrefsLockImpl from a receive right.
-  explicit ScopedPrefsLockImpl(base::mac::ScopedMachReceiveRight receive_right);
+  // Constructs a ScopedLockImpl from a receive right.
+  explicit ScopedLockImpl(base::mac::ScopedMachReceiveRight receive_right);
 
   // Releases the receive right (and therefore releases the lock).
-  ~ScopedPrefsLockImpl() = default;
+  ~ScopedLockImpl() = default;
 
-  ScopedPrefsLockImpl(const ScopedPrefsLockImpl&) = delete;
-  ScopedPrefsLockImpl& operator=(const ScopedPrefsLockImpl&) = delete;
+  ScopedLockImpl(const ScopedLockImpl&) = delete;
+  ScopedLockImpl& operator=(const ScopedLockImpl&) = delete;
 
  private:
   // The Mach port representing the held lock itself. We only care about
@@ -87,30 +90,34 @@ class ScopedPrefsLockImpl {
   base::mac::ScopedMachReceiveRight receive_right_;
 };
 
-ScopedPrefsLockImpl::ScopedPrefsLockImpl(
-    base::mac::ScopedMachReceiveRight receive_right)
+ScopedLockImpl::ScopedLockImpl(base::mac::ScopedMachReceiveRight receive_right)
     : receive_right_(std::move(receive_right)) {
   mach_port_type_t port_type = 0;
   kern_return_t port_check_result =
       mach_port_type(mach_task_self(), receive_right_.get(), &port_type);
   MACH_CHECK(port_check_result == KERN_SUCCESS, port_check_result)
-      << "ScopedPrefsLockImpl could not verify lock port";
+      << "ScopedLockImpl could not verify lock port";
   CHECK(port_type & MACH_PORT_TYPE_RECEIVE)
-      << "ScopedPrefsLockImpl given port without receive right";
+      << "ScopedLockImpl given port without receive right";
 }
 
-ScopedPrefsLock::ScopedPrefsLock(std::unique_ptr<ScopedPrefsLockImpl> impl)
+ScopedLock::ScopedLock(std::unique_ptr<ScopedLockImpl> impl)
     : impl_(std::move(impl)) {}
 
-ScopedPrefsLock::~ScopedPrefsLock() = default;
+ScopedLock::~ScopedLock() = default;
 
-std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
-    UpdaterScope scope,
-    base::TimeDelta timeout) {
+// static
+std::unique_ptr<ScopedLock> ScopedLock::Create(const std::string& name,
+                                               UpdaterScope scope,
+                                               base::TimeDelta timeout) {
+  const std::string service_name(
+      base::StrCat({kLockMachServiceNamePrefix, name,
+                    UpdaterScopeToString(scope), kLockMachServiceNameSuffix}));
+
   // First, try to acquire the lock. If the timeout is zero or negative,
   // this is the only attempt we will make.
   base::mac::ScopedMachReceiveRight receive_right(
-      TryAcquireReceive(kPrefsLockMachServiceName));
+      TryAcquireReceive(service_name.c_str()));
 
   // Set up time limits.
   base::TimeTicks deadline = base::TimeTicks::Now() + timeout;
@@ -125,14 +132,14 @@ std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
        !receive_right.is_valid() && remain > kDeltaZero;
        remain = deadline - base::TimeTicks::Now()) {
     WaitToRetryLock(remain);
-    receive_right = TryAcquireReceive(kPrefsLockMachServiceName);
+    receive_right = TryAcquireReceive(service_name.c_str());
   }
 
   if (!receive_right.is_valid()) {
     return nullptr;
   }
-  return std::make_unique<ScopedPrefsLock>(
-      std::make_unique<ScopedPrefsLockImpl>(std::move(receive_right)));
+  return std::make_unique<ScopedLock>(
+      std::make_unique<ScopedLockImpl>(std::move(receive_right)));
 }
 
 }  // namespace updater

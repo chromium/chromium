@@ -18,6 +18,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs_impl.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/json_pref_store.h"
@@ -37,9 +38,12 @@ const char kPrefMigratedLegacyUpdaters[] = "converted_legacy_updaters";
 const char kPrefActiveVersion[] = "active_version";
 const char kPrefServerStarts[] = "server_starts";
 
+// Serializes access to prefs.
+const char kPrefsAccessMutex[] = PREFS_ACCESS_MUTEX;
+
 }  // namespace
 
-UpdaterPrefsImpl::UpdaterPrefsImpl(std::unique_ptr<ScopedPrefsLock> lock,
+UpdaterPrefsImpl::UpdaterPrefsImpl(std::unique_ptr<ScopedLock> lock,
                                    std::unique_ptr<PrefService> prefs)
     : lock_(std::move(lock)), prefs_(std::move(prefs)) {}
 
@@ -95,8 +99,8 @@ scoped_refptr<GlobalPrefs> CreateGlobalPrefs(UpdaterScope scope) {
     return nullptr;
   }
 
-  std::unique_ptr<ScopedPrefsLock> lock =
-      AcquireGlobalPrefsLock(scope, base::Minutes(2));
+  std::unique_ptr<ScopedLock> lock =
+      ScopedLock::Create(kPrefsAccessMutex, scope, base::Minutes(2));
   if (!lock)
     return nullptr;
 

@@ -35,47 +35,4 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
   PrefsCommitPendingWrites(pref.get());
 }
 
-TEST(PrefsTest, AcquireGlobalPrefsLock_LockThenTryLockInThreadFail) {
-  base::test::TaskEnvironment task_environment;
-
-  std::unique_ptr<ScopedPrefsLock> lock =
-      AcquireGlobalPrefsLock(GetTestScope(), base::Seconds(0));
-  EXPECT_TRUE(lock);
-
-  base::RunLoop run_loop;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce([]() {
-        std::unique_ptr<ScopedPrefsLock> lock =
-            AcquireGlobalPrefsLock(GetTestScope(), base::Seconds(0));
-        return lock.get() != nullptr;
-      }),
-      base::OnceCallback<void(bool)>(
-          base::BindLambdaForTesting([&run_loop](bool acquired_lock) {
-            EXPECT_FALSE(acquired_lock);
-            run_loop.Quit();
-          })));
-  run_loop.Run();
-}
-
-TEST(PrefsTest, AcquireGlobalPrefsLock_TryLockInThreadSuccess) {
-  base::test::TaskEnvironment task_environment;
-
-  base::RunLoop run_loop;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce([]() {
-        std::unique_ptr<ScopedPrefsLock> lock =
-            AcquireGlobalPrefsLock(GetTestScope(), base::Seconds(0));
-        return lock.get() != nullptr;
-      }),
-      base::OnceCallback<void(bool)>(
-          base::BindLambdaForTesting([&run_loop](bool acquired_lock) {
-            EXPECT_TRUE(acquired_lock);
-            run_loop.Quit();
-          })));
-  run_loop.Run();
-
-  auto lock = AcquireGlobalPrefsLock(GetTestScope(), base::Seconds(0));
-  EXPECT_TRUE(lock);
-}
-
 }  // namespace updater

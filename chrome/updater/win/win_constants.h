@@ -21,9 +21,6 @@ extern const wchar_t kGoogleUpdate3WebUserClassProgId[];
 // to avoid collision on kernel object names.
 extern const wchar_t kGlobalPrefix[];
 
-// Serializes access to prefs.
-extern const wchar_t kPrefsAccessMutex[];
-
 // Registry keys and value names.
 #define COMPANY_KEY L"Software\\" COMPANY_SHORTNAME_STRING L"\\"
 
