@@ -95,7 +95,9 @@ bool IsJellyEnabled() {
 }
 
 bool IsJellyrollEnabled() {
-  return base::FeatureList::IsEnabled(kJellyroll);
+  // Force Jellyroll features on if Jelly is enabled since they need to be
+  // tested together. b/270742469
+  return IsJellyEnabled() || base::FeatureList::IsEnabled(kJellyroll);
 }
 
 bool IsPasswordManagerSystemAuthenticationEnabled() {
