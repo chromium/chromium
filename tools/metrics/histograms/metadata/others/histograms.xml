@@ -6789,20 +6789,6 @@ chromium-metrics-reviews@google.com.
   <token key="MessageType" variants="GridTabSwitcherMessageTypes"/>
 </histogram>
 
-<histogram name="GwpAsan.CrashAnalysisResult" enum="GwpAsanCrashAnalysisResult"
-    expires_after="2020-05-17">
-  <owner>vtsyrklevich@chromium.org</owner>
-  <owner>dynamic-tools@google.com</owner>
-  <summary>
-    Reports the GWP-ASan crash analysis result. That can either be a
-    determination that the crash was related to GWP-ASan, not related to
-    GWP-ASan, or an error making that determination. Recorded with every crash.
-
-    Deprecated in favor of GwpAsan.CrashAnalysisResult.Malloc and
-    GwpAsan.CrashAnalysisResult.PartitionAlloc in M76
-  </summary>
-</histogram>
-
 <histogram name="Hardware.Concurrency" units="CPU cores"
     expires_after="2021-12-12">
   <owner>zmo@chromium.org</owner>

@@ -2151,12 +2151,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="GridTabSwitcher.MaxFrameInterval"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GwpAsanBackingAllocator" separator=".">
-  <suffix name="Malloc" label="From malloc"/>
-  <suffix name="PartitionAlloc" label="From PartitionAlloc"/>
-  <affected-histogram name="GwpAsan.CrashAnalysisResult"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GWSChromeJointExperiment" separator="_">
   <suffix name="Experiment1"
       label="Only page loads that are a result of a navigation from a web
