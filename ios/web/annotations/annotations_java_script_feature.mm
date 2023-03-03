@@ -44,7 +44,8 @@ AnnotationsJavaScriptFeature* AnnotationsJavaScriptFeature::GetInstance() {
 }
 
 void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
-                                               int maximum_text_length) {
+                                               int maximum_text_length,
+                                               int seq_id) {
   DCHECK(web_state);
   auto* frame = web::GetMainFrame(web_state);
   if (!frame) {
@@ -53,6 +54,7 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
 
   std::vector<base::Value> parameters;
   parameters.push_back(base::Value(maximum_text_length));
+  parameters.push_back(base::Value(seq_id));
   CallJavaScriptFunction(frame, "annotations.extractText", parameters);
 }
 
@@ -123,10 +125,12 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
 
   if (*command == "annotations.extractedText") {
     const std::string* text = response->FindStringKey("text");
-    if (!text) {
+    absl::optional<double> seq_id = response->FindDoubleKey("seqId");
+    if (!text || !seq_id) {
       return;
     }
-    manager->OnTextExtracted(web_state, *text);
+    manager->OnTextExtracted(web_state, *text,
+                             static_cast<int>(seq_id.value()));
   } else if (*command == "annotations.decoratingComplete") {
     absl::optional<double> optional_annotations =
         response->FindDoubleKey("annotations");

@@ -63,7 +63,8 @@ void AnnotationsTabHelper::WebStateDestroyed(web::WebState* web_state) {
 #pragma mark - AnnotationsTextObserver methods.
 
 void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
-                                           const std::string& text) {
+                                           const std::string& text,
+                                           int seq_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(web_state_, web_state);
 
@@ -81,7 +82,7 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
                      ios::provider::GetHandledIntentTypesForOneTap(web_state),
                      std::move(model_path)),
       base::BindOnce(&AnnotationsTabHelper::ApplyDeferredProcessing,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), seq_id));
 }
 
 void AnnotationsTabHelper::OnDecorated(web::WebState* web_state,
@@ -139,6 +140,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
 #pragma mark - Private Methods
 
 void AnnotationsTabHelper::ApplyDeferredProcessing(
+    int seq_id,
     absl::optional<base::Value> deferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -147,7 +149,7 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     DCHECK(manager);
 
     base::Value annotations(std::move(deferred.value()));
-    manager->DecorateAnnotations(web_state_, annotations);
+    manager->DecorateAnnotations(web_state_, annotations, seq_id);
   }
 }
 

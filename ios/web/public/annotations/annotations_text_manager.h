@@ -37,9 +37,10 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager> {
 
   // Triggers the JS decoration code with given `annotations`. JS will async
   // calls `OnDecorated` when done and `OnClick` when an annotation is tapped
-  // on.
+  // on. `seq_id` must be the one passed to an observer `OnTextExtracted`.
   virtual void DecorateAnnotations(WebState* web_state,
-                                   base::Value& annotations) = 0;
+                                   base::Value& annotations,
+                                   int seq_id) = 0;
 
   // Removes all decorations added to the page. Call only if it needs to be done
   // before the page is navigated away from (i.e. at user's request).

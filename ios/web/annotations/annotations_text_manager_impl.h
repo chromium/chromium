@@ -31,12 +31,15 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
   void AddObserver(AnnotationsTextObserver* observer) override;
   void RemoveObserver(AnnotationsTextObserver* observer) override;
   void DecorateAnnotations(WebState* web_state,
-                           base::Value& annotations) override;
+                           base::Value& annotations,
+                           int seq_id) override;
   void RemoveDecorations() override;
   void RemoveHighlight() override;
 
   // JS callback methods.
-  void OnTextExtracted(WebState* web_state, const std::string& text);
+  void OnTextExtracted(WebState* web_state,
+                       const std::string& text,
+                       int seq_id);
   void OnDecorated(WebState* web_state, int successes, int annotations);
   void OnClick(WebState* web_state,
                const std::string& text,
@@ -57,6 +60,9 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
   base::ObserverList<AnnotationsTextObserver, true> observers_;
 
   WebState* web_state_ = nullptr;
+  // Id passed on to some callbacks and checked on followup calls to make
+  // sure it matches with current manager's state.
+  int seq_id_;
 };
 
 }  // namespace web

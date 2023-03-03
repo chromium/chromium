@@ -119,11 +119,13 @@ let sections: Section[];
  * Extracts first `maxChars` text characters from the page. Once done it
  * send a 'annotations.extractedText' command with the 'text'.
  * @param maxChars - maximum number of characters to parse out.
+ * @param seqId - id of extracted text to pass back.
  */
-function extractText(maxChars: number): void {
+function extractText(maxChars: number, seqId: number): void {
   sendWebKitMessage('annotations', {
     command: 'annotations.extractedText',
     text: getPageText(maxChars),
+    seqId: seqId,
   });
 }
 

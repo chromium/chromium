@@ -19,6 +19,7 @@ source_set("annotations") {
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
+    "//ios/web/public/annotations",
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
     "//ios/web/public/navigation:referrer",

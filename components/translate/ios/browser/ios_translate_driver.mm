@@ -22,6 +22,7 @@
 #include "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_controller.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/web/public/annotations/annotations_text_manager.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/navigation/navigation_context.h"
 #include "ios/web/public/navigation/navigation_item.h"
@@ -182,6 +183,11 @@ void IOSTranslateDriver::PrepareToTranslatePage(
   timeout_timer_.Start(FROM_HERE, kTimeoutDelay,
                        BindOnce(&IOSTranslateDriver::OnTranslationTimeout,
                                 weak_ptr_factory_.GetWeakPtr(), page_seq_no));
+  // Remove annotations before replacing translated data.
+  auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
+  if (manager) {
+    manager->RemoveDecorations();
+  }
 }
 
 void IOSTranslateDriver::TranslatePage(int page_seq_no,

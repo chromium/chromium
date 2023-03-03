@@ -33,6 +33,7 @@ source_set("browser") {
     "//components/translate/core/language_detection",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/web/public",
+    "//ios/web/public/annotations",
     "//ios/web/public/js_messaging",
     "//net",
     "//net/traffic_annotation:traffic_annotation",
