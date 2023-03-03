@@ -1652,7 +1652,7 @@ void WallpaperControllerImpl::OnColorCalculationComplete(
       info.location, wallpaper_calculated_colors.prominent_colors);
   pref_manager_->CacheKMeanColor(info.location,
                                  wallpaper_calculated_colors.k_mean_color);
-  if (features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     pref_manager_->CacheCelebiColor(info.location,
                                     wallpaper_calculated_colors.celebi_color);
   }

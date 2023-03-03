@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/wallpaper/wallpaper_utils/scored_sample.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h"
@@ -18,6 +17,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
@@ -88,7 +88,7 @@ WallpaperCalculatedColors CalculateWallpaperColor(
       /*find_closest=*/true);
 
   // Compute result with with the improved clustering algorithm.
-  SkColor celebi_color = ash::features::IsJellyEnabled()
+  SkColor celebi_color = chromeos::features::IsJellyEnabled()
                              ? ComputeWallpaperSeedColor(resized_image)
                              : SK_ColorTRANSPARENT;
 

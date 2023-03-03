@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
@@ -27,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -357,7 +357,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     absl::optional<std::vector<SkColor>> cached_colors =
         GetCachedProminentColors(location);
     absl::optional<SkColor> cached_k_mean_color = GetCachedKMeanColor(location);
-    if (!features::IsJellyEnabled()) {
+    if (!chromeos::features::IsJellyEnabled()) {
       if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
         return WallpaperCalculatedColors(cached_colors.value(),
                                          cached_k_mean_color.value(),
