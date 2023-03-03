@@ -315,6 +315,9 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   bool is_set_tilt_;
   bool is_set_zoom_;
 
+  // Whether |this| is added to camera effect observer list.
+  bool camera_effect_observer_added_;
+
   std::vector<base::OnceClosure> get_photo_state_queue_;
   bool use_digital_zoom_;
   float ae_compensation_step_;
