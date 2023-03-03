@@ -13261,9 +13261,7 @@ TEST_F(HttpNetworkTransactionTest, UploadUnreadableFile) {
   base::FilePath temp_file;
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file));
   std::string temp_file_content("Unreadable file.");
-  ASSERT_EQ(static_cast<int>(temp_file_content.length()),
-            base::WriteFile(temp_file, temp_file_content.c_str(),
-                            temp_file_content.length()));
+  ASSERT_TRUE(base::WriteFile(temp_file, temp_file_content));
   ASSERT_TRUE(base::MakeFileUnreadable(temp_file));
 
   std::vector<std::unique_ptr<UploadElementReader>> element_readers;
