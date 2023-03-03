@@ -198,6 +198,10 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
   int total_count = 0;
   const base::Time now = base::Time::Now();
   for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+    if (device_info_tracker_->IsRecentLocalCacheGuid(device_info->guid())) {
+      continue;
+    }
+
     if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
                         base::Days(active_threshold))) {
       continue;
