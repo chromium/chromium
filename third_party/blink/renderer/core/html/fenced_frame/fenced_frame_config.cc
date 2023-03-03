@@ -73,4 +73,16 @@ V8UnionOpaquePropertyOrUnsignedLong* FencedFrameConfig::height() const {
   return Get<Attribute::kHeight>();
 }
 
+void FencedFrameConfig::setSharedStorageContext(const String& context) {
+  shared_storage_context_ =
+      (context.length() <= kFencedFrameConfigSharedStorageContextMaxLength)
+          ? context
+          : context.Substring(0,
+                              kFencedFrameConfigSharedStorageContextMaxLength);
+}
+
+String FencedFrameConfig::GetSharedStorageContext() const {
+  return shared_storage_context_;
+}
+
 }  // namespace blink

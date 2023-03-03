@@ -378,9 +378,12 @@ class NavigationDelayerInterceptor
     ~NavigationDelayer() override = default;
 
     void Navigate(const GURL& url,
-                  base::TimeTicks navigation_start_time) override {
+                  base::TimeTicks navigation_start_time,
+                  const absl::optional<std::u16string>&
+                      embedder_shared_storage_context) override {
       base::PlatformThread::Sleep(duration_);
-      fenced_frame_->Navigate(url, navigation_start_time);
+      fenced_frame_->Navigate(url, navigation_start_time,
+                              embedder_shared_storage_context);
     }
 
     void DidChangeFramePolicy(const blink::FramePolicy& frame_policy) override {

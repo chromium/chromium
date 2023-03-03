@@ -488,7 +488,8 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
 void HTMLFencedFrameElement::Navigate(
     const KURL& url,
     absl::optional<bool> deprecated_should_freeze_initial_size,
-    absl::optional<gfx::Size> content_size) {
+    absl::optional<gfx::Size> content_size,
+    String embedder_shared_storage_context) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
   if (!isConnected())
     return;
@@ -545,7 +546,7 @@ void HTMLFencedFrameElement::Navigate(
 
   UpdateContainerPolicy();
 
-  frame_delegate_->Navigate(url);
+  frame_delegate_->Navigate(url, embedder_shared_storage_context);
 
   RecordFencedFrameCreationOutcome(
       mode_ == mojom::blink::FencedFrameMode::kDefault
@@ -603,7 +604,8 @@ void HTMLFencedFrameElement::NavigateToConfig() {
             ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
   }
   Navigate(url, config_->deprecated_should_freeze_initial_size(PassKey()),
-           config_->content_size(PassKey()));
+           config_->content_size(PassKey()),
+           config_->GetSharedStorageContext());
 }
 
 void HTMLFencedFrameElement::CreateDelegateAndNavigate() {

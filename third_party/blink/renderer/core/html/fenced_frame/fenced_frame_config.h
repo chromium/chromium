@@ -70,6 +70,12 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   V8UnionOpaquePropertyOrUnsignedLong* width() const;
   V8UnionOpaquePropertyOrUnsignedLong* height() const;
 
+  void setSharedStorageContext(const String& contextString);
+
+  // Unlike `setSharedStorageContext()`, `GetSharedStorageContext()` is not
+  // web-exposed.
+  String GetSharedStorageContext() const;
+
   // Get attribute's value ignoring visibility.
   template <Attribute attr>
   auto GetValueIgnoringVisibility() const {
@@ -107,6 +113,9 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   KURL url_;
   uint32_t width_;
   uint32_t height_;
+
+  // `shared_storage_context_` can be set, but has no web-exposed getter here.
+  String shared_storage_context_;
 
   AttributeVisibility url_attribute_visibility_ = AttributeVisibility::kNull;
   AttributeVisibility size_attribute_visibility_ = AttributeVisibility::kNull;

@@ -1074,7 +1074,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     const absl::optional<blink::Impression>& impression,
     bool is_pdf,
-    bool is_embedder_initiated_fenced_frame_navigation) {
+    bool is_embedder_initiated_fenced_frame_navigation,
+    absl::optional<std::u16string> embedder_shared_storage_context) {
   return Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       /*browser_initiated=*/true, was_opener_suppressed, initiator_frame_token,
@@ -1082,7 +1083,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       is_form_submission, std::move(navigation_ui_data), impression,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
-      is_pdf, is_embedder_initiated_fenced_frame_navigation);
+      is_pdf, is_embedder_initiated_fenced_frame_navigation,
+      /*is_container_initiated=*/false, embedder_shared_storage_context);
 }
 
 // static
@@ -1104,7 +1106,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
         initiator_activation_and_ad_status,
     bool is_pdf,
     bool is_embedder_initiated_fenced_frame_navigation,
-    bool is_container_initiated) {
+    bool is_container_initiated,
+    absl::optional<std::u16string> embedder_shared_storage_context) {
   TRACE_EVENT1("navigation", "NavigationRequest::Create", "browser_initiated",
                browser_initiated);
 
@@ -1199,7 +1202,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       nullptr /* prefetched_signed_exchange_cache */,
       rfh_restored_from_back_forward_cache, initiator_process_id,
       was_opener_suppressed, is_pdf,
-      is_embedder_initiated_fenced_frame_navigation));
+      is_embedder_initiated_fenced_frame_navigation,
+      mojo::NullReceiver() /* renderer_cancellation_listener */,
+      embedder_shared_storage_context));
 
   return navigation_request;
 }
@@ -1523,7 +1528,8 @@ NavigationRequest::NavigationRequest(
     bool is_pdf,
     bool is_embedder_initiated_fenced_frame_navigation,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
-        renderer_cancellation_listener)
+        renderer_cancellation_listener,
+    absl::optional<std::u16string> embedder_shared_storage_context)
     : frame_tree_node_(frame_tree_node),
       is_synchronous_renderer_commit_(is_synchronous_renderer_commit),
       common_params_(std::move(common_params)),
@@ -1576,7 +1582,8 @@ NavigationRequest::NavigationRequest(
       fenced_frame_properties_(
           is_embedder_initiated_fenced_frame_navigation
               ? absl::make_optional(FencedFrameProperties())
-              : absl::nullopt) {
+              : absl::nullopt),
+      embedder_shared_storage_context_(embedder_shared_storage_context) {
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);
   DCHECK_EQ(common_params_->url, commit_params_->original_url);
@@ -2323,10 +2330,16 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   common_params_->url = mapped_url_value;
   commit_params_->original_url = mapped_url_value;
 
-  // Store the browser's view of the fenced frame properties in the
-  // `NavigationRequest`. Upon commit, it will be stored in the fenced frame
-  // root `FrameTreeNode`.
+  // Store the browser's view of the fenced frame properties along with any
+  // embedder context for shared storage in the`NavigationRequest`. Upon commit,
+  // it will be stored in the fenced frame root `FrameTreeNode`.
   fenced_frame_properties_ = properties;
+
+  // Set the shared storage context in the fenced frame properties.
+  DCHECK(fenced_frame_properties_);
+  fenced_frame_properties_->embedder_shared_storage_context_ =
+      embedder_shared_storage_context_;
+  embedder_shared_storage_context_ = absl::nullopt;
 
   // For urns loaded into iframes for FLEDGE OT, for compatibility we don't
   // want to use a fenced frame nonce.

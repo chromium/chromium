@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "url/mojom/url.mojom";
@@ -14,9 +15,13 @@ import "url/mojom/url.mojom";
 // hosts an "inner" frame tree via Multiple Page Architecture.
 interface FencedFrameOwnerHost {
   // Navigates the main frame of the fenced frame's frame tree, to `url`.
+  // `embedder_shared_storage_context` is an optional string that may be set
+  // on the config by the fenced frame embedder prior to navigation using
+  // `setSharedStorageContext()`; if not set, its value is null.
   // TODO(crbug.com/1243568): Document the restrictions on the types of URLs
   // that `url` can represent, once these restrictions are made.
-  Navigate(url.mojom.Url url, mojo_base.mojom.TimeTicks navigation_start_time);
+  Navigate(url.mojom.Url url, mojo_base.mojom.TimeTicks navigation_start_time,
+           mojo_base.mojom.String16? embedder_shared_storage_context);
   // Updates the container policy on the browser side. Note: right now, this
   // does not change the sandbox flags or the required document policy. We use
   // this instead of RenderFrameHostImpl::DidChangeFramePolicy to avoid doing

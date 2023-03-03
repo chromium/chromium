@@ -50,7 +50,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     virtual ~FencedFrameDelegate();
     void Trace(Visitor* visitor) const;
 
-    virtual void Navigate(const KURL&) = 0;
+    virtual void Navigate(const KURL&, const String&) = 0;
     // This method is used to clean up all state in preparation for destruction,
     // even though the destruction may happen arbitrarily later during garbage
     // collection.
@@ -123,7 +123,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void Navigate(const KURL& url,
                 absl::optional<bool> deprecated_should_freeze_initial_size =
                     absl::nullopt,
-                absl::optional<gfx::Size> content_size = absl::nullopt);
+                absl::optional<gfx::Size> content_size = absl::nullopt,
+                String embedder_shared_storage_context = String());
 
   // This method delegates to `Navigate()` above only if `this` has a non-null
   // `config_`. If that's the case, this method pulls the appropriate URL off of

@@ -23,7 +23,7 @@ class CORE_EXPORT FencedFrameMPArchDelegate
  public:
   explicit FencedFrameMPArchDelegate(HTMLFencedFrameElement* outer_element);
 
-  void Navigate(const KURL&) override;
+  void Navigate(const KURL&, const String&) override;
   void Dispose() override;
   void AttachLayoutTree() override;
   bool SupportsFocus() override;

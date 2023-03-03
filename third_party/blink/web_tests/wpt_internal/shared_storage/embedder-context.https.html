@@ -1,0 +1,28 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/utils.js"></script>
+<script src="../fenced_frame/resources/utils.js"></script>
+
+<body>
+<script>
+'use strict';
+
+promise_test(async () => {
+  const ancestorKey = token();
+
+  let fencedFrameConfig0 = await runSelectURL(
+    "resources/embedder-context-inner.https.html",
+    [ancestorKey], true);
+  assert_true(validateSelectURLResult(fencedFrameConfig0, true));
+
+  fencedFrameConfig0.setSharedStorageContext("here is some context");
+
+  attachFencedFrame(fencedFrameConfig0, 'opaque-ads');
+  const result0 = await nextValueFromServer(ancestorKey);
+  assert_equals(result0, "embedder_context_inner_loaded");
+}, 'embedder sharedStorage.context');
+</script>
+</body>

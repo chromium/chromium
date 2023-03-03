@@ -344,6 +344,12 @@ struct CONTENT_EXPORT FencedFrameProperties {
       FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
       shared_storage_budget_metadata_;
 
+  // Any context that is written by the embedder using
+  // `blink::FencedFrameConfig::setSharedStorageContext`. Only readable in
+  // shared storage worklets via `sharedStorage.context()`. Not copied during
+  // redaction.
+  absl::optional<std::u16string> embedder_shared_storage_context_;
+
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 
   absl::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;

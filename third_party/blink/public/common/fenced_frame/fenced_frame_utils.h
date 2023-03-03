@@ -17,6 +17,10 @@ namespace blink {
 // to 64KB.
 const size_t kFencedFrameMaxBeaconLength = 64000;
 
+// The maximum length of `blink::FencedFrameConfig::shared_storage_context_`.
+// When setting, longer strings are truncated to this length.
+const size_t kFencedFrameConfigSharedStorageContextMaxLength = 2048;
+
 // Histogram names for fenced frame.
 inline constexpr char kFencedFrameCreationOrNavigationOutcomeHistogram[] =
     "Blink.FencedFrame.CreationOrNavigationOutcome";

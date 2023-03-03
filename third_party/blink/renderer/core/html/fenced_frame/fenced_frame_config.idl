@@ -17,4 +17,5 @@ interface FencedFrameConfig {
   readonly attribute FencedFrameConfigURL? url;
   readonly attribute FencedFrameConfigSize? width;
   readonly attribute FencedFrameConfigSize? height;
+  void setSharedStorageContext(DOMString contextString);
 };
