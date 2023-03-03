@@ -834,9 +834,8 @@ void ArCoreGl::CopyCameraImageToFramebuffer() {
   // Draw the current camera texture to the output default framebuffer now, if
   // available.
   if (have_camera_image_) {
-    glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, 0);
-    ar_image_transport_->CopyCameraImageToFramebuffer(screen_size_,
-                                                      uv_transform_);
+    ar_image_transport_->CopyCameraImageToFramebuffer(
+        /*framebuffer=*/0, screen_size_, uv_transform_);
     have_camera_image_ = false;
   }
 
@@ -1307,9 +1306,8 @@ void ArCoreGl::OnTransportFrameAvailable(const gfx::Transform& uv_transform) {
   // Don't use the viewport bounds here, those already got applied
   // when copying the mailbox image to the transfer Surface
   // in ProcessFrameFromMailbox.
-  glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, 0);
-  ar_image_transport_->CopyDrawnImageToFramebuffer(webxr_.get(), screen_size_,
-                                                   uv_transform);
+  ar_image_transport_->CopyDrawnImageToFramebuffer(
+      webxr_.get(), /*framebuffer=*/0, screen_size_, uv_transform);
 
   FinishFrame(frame_index);
 

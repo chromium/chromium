@@ -1,7 +1,9 @@
 include_rules = [
   "+components/viz/common/frame_sinks/begin_frame_args.h",
   "+components/viz/common/resources/resource_id.h",
-  "+gpu/ipc/common",
   "+gpu/command_buffer/common/shared_image_usage.h",
+  "+gpu/command_buffer/service",
+  "+gpu/config/gpu_driver_bug_workaround_type.h",
+  "+gpu/ipc/common",
   "+ui/gl",
 ]
