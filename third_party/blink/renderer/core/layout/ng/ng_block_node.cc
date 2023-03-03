@@ -2191,7 +2191,6 @@ void NGBlockNode::StoreColumnSizeAndCount(LayoutUnit inline_size, int count) {
   // We have no chance to unregister the inline size for the
   // LayoutMultiColumnFlowThread.
   TextAutosizer::MaybeRegisterInlineSize(*flow_thread, inline_size);
-  flow_thread->ClearNeedsLayout();
 
   flow_thread->SetColumnCountFromNG(count);
 }

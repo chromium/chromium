@@ -1076,7 +1076,7 @@ float TextAutosizer::MultiplierFromBlock(const LayoutBlock* block) {
 // containing block, and wasn't marked as needing layout.
 #if DCHECK_IS_ON()
   DCHECK(blocks_that_have_begun_layout_.Contains(block) ||
-         !block->NeedsLayout());
+         !block->NeedsLayout() || IsA<LayoutMultiColumnFlowThread>(block));
 #endif
   // Block width, in CSS pixels.
   float block_width = WidthFromBlock(block);
