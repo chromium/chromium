@@ -200,11 +200,18 @@ _primitive_kind_to_fuzz_type = {
 }
 
 
-_SHARED_MODULE_PREFIX = 'chrome://resources/mojo'
+_CHROME_SCHEME_PREFIX = 'chrome:'
+_SHARED_MODULE_PREFIX = '//resources/mojo'
+
+
+def _IsSharedModulePath(path):
+  return path.startswith(_SHARED_MODULE_PREFIX) or \
+      path.startswith(_CHROME_SCHEME_PREFIX + _SHARED_MODULE_PREFIX)
 
 
 def _IsAbsoluteChromeResourcesPath(path):
-  return path.startswith('chrome://resources/')
+  return path.startswith('chrome://resources/') or \
+      path.startswith('//resources/')
 
 
 def _GetWebUiModulePath(module):
@@ -997,9 +1004,15 @@ class Generator(generator.Generator):
 
   def _GetJsModuleImports(self, for_webui_module=False):
     this_module_path = _GetWebUiModulePath(self.module)
-    this_module_is_shared = bool(
-        this_module_path and this_module_path.startswith(_SHARED_MODULE_PREFIX))
+    this_module_is_shared = bool(this_module_path
+                                 and _IsSharedModulePath(this_module_path))
     imports = dict()
+
+    def strip_prefix(s, prefix):
+      if s.startswith(prefix):
+        return s[len(prefix):]
+      return s
+
     for spec, kind in self.module.imported_kinds.items():
       if for_webui_module:
         assert this_module_path is not None
@@ -1008,15 +1021,15 @@ class Generator(generator.Generator):
         import_path = '{}{}-webui.js'.format(base_path,
                                              os.path.basename(kind.module.path))
 
-        import_module_is_shared = import_path.startswith(_SHARED_MODULE_PREFIX)
+        import_module_is_shared = _IsSharedModulePath(import_path)
         if this_module_is_shared:
           assert import_module_is_shared, \
               'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
                   'module "{}"'.format(self.module.path, kind.module.path)
 
-        # Some Mojo JS files are served from chrome://resources/, but not from
-        # chrome://resources/mojo/, for example from
-        # chrome://resources/cr_components/. Need to use absolute paths when
+        # Some Mojo JS files are served from //resources/, but not from
+        # //resources/mojo/, for example from
+        # //resources/cr_components/. Need to use absolute paths when
         # referring to such files from other modules, so that TypeScript can
         # correctly resolve them since they belong to a different ts_library()
         # target compared to |this_module_path|.
@@ -1033,19 +1046,19 @@ class Generator(generator.Generator):
                 import_module_is_shared == this_module_is_shared
 
         if use_relative_path:
-
-          def strip_prefix(s, prefix):
-            if s.startswith(prefix):
-              return s[len(prefix):]
-            return s
-
           import_path = urllib.request.pathname2url(
               os.path.relpath(
-                  strip_prefix(import_path, _SHARED_MODULE_PREFIX),
-                  strip_prefix(this_module_path, _SHARED_MODULE_PREFIX)))
+                  strip_prefix(strip_prefix(import_path, _CHROME_SCHEME_PREFIX),
+                               _SHARED_MODULE_PREFIX),
+                  strip_prefix(
+                      strip_prefix(this_module_path, _CHROME_SCHEME_PREFIX),
+                      _SHARED_MODULE_PREFIX)))
           if (not import_path.startswith('.')
               and not import_path.startswith('/')):
             import_path = './' + import_path
+        else:
+          # Import absolute imports from scheme-relative paths.
+          import_path = strip_prefix(import_path, _CHROME_SCHEME_PREFIX)
       else:
         import_path = self._GetRelativePath(kind.module.path) + '.m.js'
 
