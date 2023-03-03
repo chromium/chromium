@@ -350,8 +350,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     #   expect in following loads.
     # cache_pages: List of URLs that should be both re-navigated and/or
     #   reloaded in a restarted browser to expect some cache condition.
-    webgpu_cache_test_browser_args = [
-        cba.ENABLE_UNSAFE_WEBGPU,
+    webgpu_cache_test_browser_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ]
     # For the tests to run properly on Linux, we need additional args.

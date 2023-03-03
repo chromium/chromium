@@ -10,6 +10,7 @@ from typing import Any, List
 import unittest
 
 import gpu_path_util
+from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
@@ -200,8 +201,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(WebCodecsIntegrationTest, cls).SetUpProcess()
     args = [
         '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
-        '--enable-unsafe-webgpu', '--enable-blink-features=SharedArrayBuffer'
-    ]
+        '--enable-blink-features=SharedArrayBuffer'
+    ] + cba.ENABLE_WEBGPU_FOR_TESTING
 
     # If we don't call CustomizeBrowserArgs cls.platform is None
     cls.CustomizeBrowserArgs(args)

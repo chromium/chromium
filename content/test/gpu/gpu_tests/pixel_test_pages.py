@@ -418,8 +418,7 @@ class PixelTestPages():
       VULKAN_SWIFTSHADER = 2
 
     def webgpu_pages_helper(base_name, mode):
-      webgpu_args = [
-          cba.ENABLE_UNSAFE_WEBGPU,
+      webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
           cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
       ]
       video_frame_query_params = '?sourceType=hw_decoder'
@@ -535,8 +534,8 @@ class PixelTestPages():
 
   @staticmethod
   def WebGPUCanvasCapturePages(base_name):
-    webgpu_args = [
-        cba.ENABLE_UNSAFE_WEBGPU, cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+    webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
+        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
     ]
 
     browser_args_canvas_one_copy_capture = webgpu_args + [
