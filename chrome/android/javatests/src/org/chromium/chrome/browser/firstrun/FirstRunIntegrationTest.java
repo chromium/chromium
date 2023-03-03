@@ -13,6 +13,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -232,21 +234,14 @@ public class FirstRunIntegrationTest {
     }
 
     private void setHasAppRestrictionForMock(boolean hasAppRestriction) {
-        Mockito.doAnswer(invocation -> {
-                   Callback<Boolean> callback = invocation.getArgument(0);
-                   callback.onResult(hasAppRestriction);
-                   return null;
-               })
+        doCallback((Callback<Boolean> callback) -> callback.onResult(hasAppRestriction))
                 .when(mMockAppRestrictionInfo)
                 .getHasAppRestriction(any());
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
     }
 
     private void setTemplateUrlServiceForMock() {
-        Mockito.doAnswer(invocation -> {
-                   mTemplateUrlServiceWhenLoadedRunnables.add(invocation.getArgument(0));
-                   return null;
-               })
+        doCallback((Runnable runnable) -> mTemplateUrlServiceWhenLoadedRunnables.add(runnable))
                 .when(mTemplateUrlService)
                 .runWhenLoaded(any());
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
