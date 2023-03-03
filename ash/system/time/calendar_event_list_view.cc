@@ -20,6 +20,7 @@
 #include "ash/system/time/calendar_event_list_item_view_jelly.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -190,7 +191,7 @@ CalendarEventListView::~CalendarEventListView() = default;
 void CalendarEventListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto color =
-      features::IsCalendarJellyEnabled() && features::IsJellyEnabled()
+      features::IsCalendarJellyEnabled() && chromeos::features::IsJellyEnabled()
           ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSurfaceVariant))
           : GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque);
   SetBackground(views::CreateSolidBackground(color));
