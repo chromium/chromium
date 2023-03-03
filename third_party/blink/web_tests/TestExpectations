@@ -677,7 +677,7 @@ crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht 
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht [ Failure ]
 
 # Minor bleed on left/top side of the edge pieces (computed spacing is 16px / 3).
-crbug.com/1175040 external/wpt/css/css-backgrounds/border-image-repeat-space-10.html [ Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/border-image-repeat-space-10.html [ Pass Failure ]
 
 # No emoji flag symbols available in the Windows system emoji font.
 
@@ -837,16 +837,16 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 
 # Passes with the WPT runner but not the internal one. (???)
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1a.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1b.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1c.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-3.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-4.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-5.html [ Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1a.html [ Pass Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1b.html [ Pass Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1c.html [ Pass Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-3.html [ Pass Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-4.html [ Pass Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-5.html [ Pass Failure ]
 
 # Off-by-one in some components.
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-6.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-6.html [ Pass Failure ]
+crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Pass Failure ]
 
 # Failures due to pointerMove building synthetic events without button information (main thread only).
 crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Failure ]
@@ -1122,7 +1122,7 @@ crbug.com/882385 external/wpt/css/css-contain/quote-scoping-003.html [ Failure ]
 crbug.com/882385 external/wpt/css/css-contain/quote-scoping-004.html [ Failure ]
 crbug.com/1315275 external/wpt/css/css-contain/content-visibility/content-visibility-canvas.html [ Failure ]
 crbug.com/1315275 external/wpt/css/css-contain/content-visibility/content-visibility-video.html [ Failure ]
-crbug.com/1400979 external/wpt/css/css-contain/container-queries/nested-query-containers.html [ Crash Failure Timeout ]
+crbug.com/1400979 external/wpt/css/css-contain/container-queries/nested-query-containers.html [ Pass Crash Failure Timeout ]
 
 # [css-align]
 
@@ -1135,7 +1135,7 @@ crbug.com/1121601 external/wpt/css/css-align/self-alignment/self-align-safe-unsa
 # The `input-security` property not implemented yet.
 crbug.com/1253732 external/wpt/css/css-ui/input-security-none-sensitive-text-input.html [ Failure ]
 # Layout team disagrees with the spec for this particular test.
-crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Pass Failure ]
 # Various issues related to the 'appearance' property:
 crbug.com/1284251 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-attachment-001.html [ Failure ]
 crbug.com/1284251 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-clip-001.html [ Failure ]
@@ -1631,7 +1631,7 @@ crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-002.ht
 crbug.com/1035708 [ Debug Mac12 ] wpt_internal/css/css-pseudo/grammar-error-color-dynamic-003.html [ Failure ]
 crbug.com/1035708 [ Debug Mac12 ] wpt_internal/css/css-pseudo/grammar-error-color-dynamic-004.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/target-text-004.html [ Failure ]
-crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Failure ]
+crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Pass Failure ]
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
 crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-grammar-error.html [ Failure ]
 crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-spelling-error.html [ Failure ]
@@ -2789,9 +2789,9 @@ crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-relay-canvas.https.html 
 
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
-crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-004.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-004.html [ Pass Failure ]
 crbug.com/1024156 [ Debug Mac12 ] external/wpt/css/css-pseudo/highlight-cascade-007.html [ Failure ]
-crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-003.html [ Failure ]
+crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-003.html [ Pass Failure ]
 crbug.com/1113004 external/wpt/css/css-pseudo/active-selection-043.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-051.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-052.html [ Failure ]
@@ -3296,8 +3296,8 @@ crbug.com/958104 external/wpt/presentation-api/controlling-ua/getAvailability.ht
 crbug.com/626703 external/wpt/screen-orientation/onchange-event-subframe.html [ Timeout ]
 
 # These tests pass on the blink_rel bots but fail on the other builders
-crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Crash ]
-crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Crash Timeout ]
+crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Pass Crash ]
+crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Pass Crash Timeout ]
 
 # Moved from NeverFixTests. These may be relevant again now that
 # overlay scrollbars have been fixed (crrev.com/c/3455024).
@@ -6749,7 +6749,7 @@ crbug.com/1395549 webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pa
 crbug.com/1395551 webaudio/codec-tests/vorbis/vbr-70kbps-44khz.html [ Failure Pass ]
 crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure Pass ]
 crbug.com/1395450 http/tests/devtools/layers/layer-tree-model.js [ Failure Pass ]
-crbug.com/1395744 [ Linux ] external/wpt/css/filter-effects/effect-reference-on-transparent-element.html [ Failure ]
+crbug.com/1395744 [ Linux ] external/wpt/css/filter-effects/effect-reference-on-transparent-element.html [ Failure Pass ]
 
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
