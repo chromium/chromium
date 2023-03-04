@@ -13709,7 +13709,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Submit Feedback
       </message>
       <message name="IDS_SIDE_SEARCH_PROMO" desc="Promo UI shown next to the side search button to encourage its use.">
-        Compare search resuls faster from the new side panel
+        Compare search results faster from the new side panel
       </message>
       <message name="IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL" desc="Tutorial bubble shown next to the side search button to instruct users to open side panel">
         Click the "G" button to see more search results in a side panel

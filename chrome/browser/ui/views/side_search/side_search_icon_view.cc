@@ -103,12 +103,12 @@ void SideSearchIconView::UpdateImpl() {
       !side_search::IsSideSearchToggleOpen(browser_view);
   SetVisible(should_show);
 
-  if (should_show && !was_visible && !MaybeShowPageActionLabel() &&
-      tab_contents_helper->returned_to_previous_srp_count() > 0) {
-    // If we are not animating-in the label text make a request to show the
-    // IPH if we detect the user may be engaging in a pogo-sticking journey.
+  if (should_show && !was_visible) {
+    // Now IPH and action label share the same frontend triggering condition.
+    // Make sure we show IPH first if possible.
     browser_view->MaybeShowFeaturePromo(
         feature_engagement::kIPHSideSearchFeature);
+    MaybeShowPageActionLabel();
   }
 
   if (!should_show) {

@@ -922,7 +922,6 @@ class SideSearchIPHAndTutorialBrowserTest
   auto CheckIPHTriggeredCorrectly(const ui::ElementIdentifier& primary_tab_id) {
     const auto srp_url = GetMatchingSearchUrl();
     const auto non_srp_url_1 = GetNonMatchingUrl();
-    const auto non_srp_url_2 = GetNonMatchingUrl();
     return Steps(
         InstrumentTab(primary_tab_id),
         // Navigate to a SRP URL and then once to a non-SRP URL.
@@ -932,12 +931,6 @@ class SideSearchIPHAndTutorialBrowserTest
         // panel isn't open.
         WaitForShow(kSideSearchButtonElementId),
         EnsureNotPresent(kSidePanelElementId),
-
-        // Detects a po-go action.
-        PressButton(kBackButtonElementId),
-        WaitForWebContentsNavigation(primary_tab_id),
-        NavigateWebContents(primary_tab_id, non_srp_url_2),
-        WaitForShow(kSideSearchButtonElementId),
 
         // IPH bubble appears.
         // Verify it's created with correct body text and anchored to side
