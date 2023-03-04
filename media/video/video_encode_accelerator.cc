@@ -38,6 +38,16 @@ BitstreamBufferMetadata::BitstreamBufferMetadata(size_t payload_size_bytes,
       timestamp(timestamp) {}
 BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
+bool BitstreamBufferMetadata::end_of_picture() const {
+  if (vp9) {
+    return vp9->end_of_picture;
+  }
+  if (av1) {
+    return av1->end_of_picture;
+  }
+  return true;
+}
+
 absl::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
   if (vp9) {
     return vp9->spatial_idx;

@@ -142,6 +142,7 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   base::TimeDelta timestamp;
   int32_t qp = -1;
 
+  bool end_of_picture() const;
   absl::optional<uint8_t> spatial_idx() const;
 
   // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,

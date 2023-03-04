@@ -1102,7 +1102,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     // Pop timestamps until we have a match.
     while (!submitted_frames_.empty()) {
       auto& front_frame = submitted_frames_.front();
-      const bool end_of_picture = !metadata.vp9 || metadata.vp9->end_of_picture;
+      const bool end_of_picture = metadata.end_of_picture();
       if (front_frame.media_timestamp_ == metadata.timestamp) {
         rtp_timestamp = front_frame.rtp_timestamp_;
         capture_timestamp_ms = front_frame.capture_time_ms_;
