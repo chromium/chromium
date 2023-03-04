@@ -211,6 +211,8 @@ static_library("ui") {
     "ui_features.cc",
     "ui_features.h",
     "uninstall_browser_prompt.h",
+    "url_identity.cc",
+    "url_identity.h",
     "view_ids.h",
     "views/side_panel/lens/lens_core_tab_side_panel_helper.cc",
     "webauthn/authenticator_request_dialog.h",
