@@ -243,6 +243,22 @@ void BluetoothAdapterFloss::Init() {
   std::move(init_callback_).Run();
 }
 
+void BluetoothAdapterFloss::NotifyDeviceFound(uint8_t scanner_id,
+                                              const std::string& address) {
+  if (!base::Contains(devices_, address)) {
+    return;
+  }
+
+  BluetoothDeviceFloss* device_ptr =
+      static_cast<BluetoothDeviceFloss*>(devices_[address].get());
+
+  for (const auto& [key, scanner] : scanners_) {
+    if (scanner->GetScannerId() == scanner_id) {
+      scanner->OnDeviceFound(device_ptr);
+    }
+  }
+}
+
 BluetoothAdapterFloss::UUIDList BluetoothAdapterFloss::GetUUIDs() const {
   return {};
 }
@@ -1256,7 +1272,8 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
                                          scan_result.adv_data);
 }
 
-void BluetoothAdapterFloss::AdvertisementFound(ScanResult scan_result) {
+void BluetoothAdapterFloss::AdvertisementFound(uint8_t scanner_id,
+                                               ScanResult scan_result) {
   BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
 
   BluetoothDeviceFloss* device_ptr;
@@ -1274,14 +1291,25 @@ void BluetoothAdapterFloss::AdvertisementFound(ScanResult scan_result) {
     devices_.emplace(canonical_address, std::move(device));
   }
 
-  // TODO(b/268682529): Not all scanners share the same result.
-  // Only notify scanner that is related to this advertisement.
-  for (const auto& [key, scanner] : scanners_) {
-    scanner->OnDeviceFound(device_ptr);
-  }
+  // MSFT event does not arrive together with the advertisement data, but they
+  // always arrive very close to each other.
+  // Ideally Floss daemon should consolidate the advertisement data into the
+  // AdvertisementFound callback, but for now the workaround is to delay
+  // notifying client for a little bit to practically be sure that the client
+  // will have updated the advertisement data by the time they hear
+  // OnDeviceFound.
+  // TODO(b/271165074): Fix this by combining AdvertisementFound with the first
+  // advertisement data.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceFound,
+                     weak_ptr_factory_.GetWeakPtr(), scanner_id,
+                     canonical_address),
+      base::Seconds(1));
 }
 
-void BluetoothAdapterFloss::AdvertisementLost(ScanResult scan_result) {
+void BluetoothAdapterFloss::AdvertisementLost(uint8_t scanner_id,
+                                              ScanResult scan_result) {
   BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
 
   auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
@@ -1305,10 +1333,10 @@ void BluetoothAdapterFloss::AdvertisementLost(ScanResult scan_result) {
     devices_.erase(canonical_address);
   }
 
-  // TODO(b/268682529): Not all scanners share the same result.
-  // Only notify scanner that is related to this advertisement.
   for (const auto& [key, scanner] : scanners_) {
-    scanner->OnDeviceLost(device_ptr);
+    if (scanner->GetScannerId() == scanner_id) {
+      scanner->OnDeviceLost(device_ptr);
+    }
   }
 }
 

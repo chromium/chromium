@@ -183,8 +183,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                          uint8_t scanner_id,
                          GattStatus status) override;
   void ScanResultReceived(ScanResult scan_result) override;
-  void AdvertisementFound(ScanResult scan_result) override;
-  void AdvertisementLost(ScanResult scan_result) override;
+  void AdvertisementFound(uint8_t scanner_id, ScanResult scan_result) override;
+  void AdvertisementLost(uint8_t scanner_id, ScanResult scan_result) override;
 
  protected:
   // BluetoothAdapter:
@@ -198,6 +198,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // Init will get asynchronouly called once we know if Object Manager is
   // supported.
   void Init();
+
+  void NotifyDeviceFound(uint8_t scanner_id, const std::string& address);
 
   // Helper function to create a Floss device
   std::unique_ptr<BluetoothDeviceFloss> CreateBluetoothDeviceFloss(

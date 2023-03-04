@@ -23,8 +23,7 @@ void FakeFlossLEScanClient::RegisterScanner(
     ResponseCallback<device::BluetoothUUID> callback) {
   scanners_registered_++;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), device::BluetoothUUID(kTestUuidStr)));
+      FROM_HERE, base::BindOnce(std::move(callback), next_scanner_uuid_));
 }
 
 void FakeFlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,

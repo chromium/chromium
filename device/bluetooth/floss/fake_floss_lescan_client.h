@@ -12,6 +12,7 @@
 namespace floss {
 
 constexpr char kTestUuidStr[] = "00010203-0405-0607-0809-0a0b0c0d0e0f";
+constexpr char kTestUuidStr2[] = "02010203-0405-0607-0809-0a0b0c0d0e0f";
 
 class DEVICE_BLUETOOTH_EXPORT FakeFlossLEScanClient : public FlossLEScanClient {
  public:
@@ -31,11 +32,21 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossLEScanClient : public FlossLEScanClient {
                  const ScanSettings& scan_settings,
                  const absl::optional<ScanFilter>& filters) override;
 
+  void SetNextScannerUUID(const device::BluetoothUUID& uuid) {
+    next_scanner_uuid_ = uuid;
+  }
+
   // For test observation
   int scanners_registered_ = 0;
   std::unordered_set<uint8_t> scanner_ids_;
 
  private:
+  // Next UUID for registered scanner.
+  // TODO(b/271318036): Replace fake with mocks for easier control of fake
+  // values.
+  device::BluetoothUUID next_scanner_uuid_ =
+      device::BluetoothUUID(kTestUuidStr);
+
   base::WeakPtrFactory<FakeFlossLEScanClient> weak_ptr_factory_{this};
 };
 

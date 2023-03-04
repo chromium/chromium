@@ -180,15 +180,17 @@ void FlossLEScanClient::ScanResultReceived(ScanResult scan_result) {
   }
 }
 
-void FlossLEScanClient::AdvertisementFound(ScanResult scan_result) {
+void FlossLEScanClient::AdvertisementFound(uint8_t scanner_id,
+                                           ScanResult scan_result) {
   for (auto& observer : observers_) {
-    observer.AdvertisementFound(scan_result);
+    observer.AdvertisementFound(scanner_id, scan_result);
   }
 }
 
-void FlossLEScanClient::AdvertisementLost(ScanResult scan_result) {
+void FlossLEScanClient::AdvertisementLost(uint8_t scanner_id,
+                                          ScanResult scan_result) {
   for (auto& observer : observers_) {
-    observer.AdvertisementLost(scan_result);
+    observer.AdvertisementLost(scanner_id, scan_result);
   }
 }
 
