@@ -53,6 +53,21 @@ public class CreatorActivity extends SnackbarActivity {
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private Profile mProfile;
 
+    private static class TabShareDelegateImpl extends ShareDelegateImpl {
+        public TabShareDelegateImpl(BottomSheetController controller,
+                ActivityLifecycleDispatcherImpl lifecycleDispatcher,
+                ActivityTabProvider tabProvider, ObservableSupplierImpl tabModelSelectorProvider,
+                ObservableSupplierImpl profileSupplier, ShareSheetDelegate delegate,
+                boolean isCustomTab) {
+            super(controller, lifecycleDispatcher, tabProvider, tabModelSelectorProvider,
+                    profileSupplier, delegate, isCustomTab);
+        }
+
+        @Override
+        public boolean isSharingHubEnabled() {
+            return false;
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         byte[] mWebFeedId =
@@ -73,11 +88,20 @@ public class CreatorActivity extends SnackbarActivity {
         super.onCreate(savedInstanceState);
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid = new ActivityWindowAndroid(this, false, intentRequestTracker);
+
+        TabShareDelegateImpl tabshareDelegate = new TabShareDelegateImpl(mBottomSheetController,
+                mLifecycleDispatcher, mActivityTabProvider,
+                /* tabModelSelectProvider */ new ObservableSupplierImpl<>(), mProfileSupplier,
+                new ShareDelegateImpl.ShareSheetDelegate(),
+                /* isCustomTab */ false);
+        mTabShareDelegateSupplier.set(tabshareDelegate);
+
         CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId,
                 getSnackbarManager(), mWindowAndroid, mProfile, url, this::createWebContents,
                 this::createNewTab, mTabShareDelegateSupplier, mEntryPoint, following);
 
         mBottomSheetController = coordinator.getBottomSheetController();
+
         ShareDelegate shareDelegate = new ShareDelegateImpl(mBottomSheetController,
                 mLifecycleDispatcher, mActivityTabProvider,
                 /* tabModelSelectProvider */ new ObservableSupplierImpl<>(), mProfileSupplier,
