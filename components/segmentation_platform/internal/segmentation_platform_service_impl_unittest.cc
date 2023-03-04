@@ -171,12 +171,14 @@ class SegmentationPlatformServiceImplTest
         base::BindOnce(
             &SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
             base::Unretained(this), loop.QuitClosure(), result));
-    segment_db_->LoadCallback(true);
     loop.Run();
   }
 
  protected:
   void TestInitializationFlow() {
+    // ServiceProxy will load new segment infos from the DB.
+    EXPECT_CALL(observer_, OnClientInfoAvailable(_)).Times(3);
+
     // Let the DB loading complete successfully.
     EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
     segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
@@ -217,12 +219,10 @@ class SegmentationPlatformServiceImplTest
             [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE]
         .Run(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
              kModelVersion);
-    segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
     // The SignalFilterProcessor needs to read the segment information from the
     // database before starting to listen to the updated signals.
-    segment_db_->LoadCallback(true);
     task_environment_.RunUntilIdle();
     //  We should have started recording 1 value histogram, once.
     EXPECT_EQ(
@@ -239,10 +239,7 @@ class SegmentationPlatformServiceImplTest
     AssertCachedSegment(kTestSegmentationKey2, false);
     AssertCachedSegment(kTestSegmentationKey3, false);
 
-    // ServiceProxy will load new segment info from the DB.
-    EXPECT_CALL(observer_, OnClientInfoAvailable(_));
     task_environment_.RunUntilIdle();
-    segment_db_->LoadCallback(true);
 
     ASSERT_TRUE(model_provider_data_.model_providers_callbacks.count(
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
@@ -251,12 +248,10 @@ class SegmentationPlatformServiceImplTest
             [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE]
         .Run(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata,
              kModelVersion);
-    segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
     // The SignalFilterProcessor needs to read the segment information from the
     // database before starting to listen to the updated signals.
-    segment_db_->LoadCallback(true);
     task_environment_.RunUntilIdle();
     //  We should have started recording 1 value histogram, twice.
     EXPECT_EQ(
@@ -264,16 +259,10 @@ class SegmentationPlatformServiceImplTest
         histogram_tester.GetBucketCount(
             "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 1));
 
-    // ServiceProxy will load new segment info from the DB.
-    EXPECT_CALL(observer_, OnClientInfoAvailable(_));
-    task_environment_.RunUntilIdle();
-    segment_db_->LoadCallback(true);
-
     // Database maintenance tasks should try to cleanup the signals after a
     // short delay, which starts with looking up data from the
     // SegmentInfoDatabase.
     task_environment_.FastForwardBy(base::Hours(1));
-    segment_db_->LoadCallback(true);
 
     AssertSelectedSegment(kTestSegmentationKey1, true,
                           SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);

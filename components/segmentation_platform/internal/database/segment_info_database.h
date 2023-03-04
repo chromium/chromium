@@ -87,19 +87,6 @@ class SegmentInfoDatabase {
  private:
   void OnDatabaseInitialized(SuccessCallback callback,
                              leveldb_proto::Enums::InitStatus status);
-  void OnMultipleSegmentInfoLoaded(
-      std::unique_ptr<SegmentInfoList> all_segments_in_cache,
-      MultipleSegmentInfoCallback callback,
-      bool success,
-      std::unique_ptr<std::vector<proto::SegmentInfo>> all_infos);
-  void OnGetSegmentInfo(SegmentId segment_id,
-                        SegmentInfoCallback callback,
-                        bool success,
-                        std::unique_ptr<proto::SegmentInfo> info);
-  void OnGetSegmentInfoForUpdatingResults(
-      absl::optional<proto::PredictionResult> result,
-      SuccessCallback callback,
-      absl::optional<proto::SegmentInfo> segment_info);
 
   void OnLoadAllEntries(
       SuccessCallback callback,
