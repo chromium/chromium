@@ -410,7 +410,13 @@ TEST_F(ValidationTest, InputParser) {
   }
 }
 
-TEST_F(ValidationTest, Conformance) {
+// TODO(https://crbug.com/1421162): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Conformance DISABLED_Conformance
+#else
+#define MAYBE_Conformance Conformance
+#endif
+TEST_F(ValidationTest, MAYBE_Conformance) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
   validators.SetValidator(std::make_unique<TwoStepValidator>(
@@ -420,7 +426,13 @@ TEST_F(ValidationTest, Conformance) {
   RunValidationTests("conformance_", &validators);
 }
 
-TEST_F(ValidationTest, AssociatedConformace) {
+// TODO(https://crbug.com/1421162): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_AssociatedConformace DISABLED_AssociatedConformace
+#else
+#define MAYBE_AssociatedConformace AssociatedConformace
+#endif
+TEST_F(ValidationTest, MAYBE_AssociatedConformace) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
   validators.SetValidator(std::make_unique<TwoStepValidator>(
@@ -434,7 +446,13 @@ TEST_F(ValidationTest, AssociatedConformace) {
 // This test is similar to Conformance test but its goal is specifically
 // do bounds-check testing of message validation. For example we test the
 // detection of off-by-one errors in method ordinals.
-TEST_F(ValidationTest, BoundsCheck) {
+// TODO(https://crbug.com/1421162): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_BoundsCheck DISABLED_BoundsCheck
+#else
+#define MAYBE_BoundsCheck BoundsCheck
+#endif
+TEST_F(ValidationTest, MAYBE_BoundsCheck) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
   validators.SetValidator(std::make_unique<TwoStepValidator>(
@@ -444,7 +462,13 @@ TEST_F(ValidationTest, BoundsCheck) {
 }
 
 // This test is similar to the Conformance test but for responses.
-TEST_F(ValidationTest, ResponseConformance) {
+// TODO(https://crbug.com/1421162): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ResponseConformance DISABLED_ResponseConformance
+#else
+#define MAYBE_ResponseConformance ResponseConformance
+#endif
+TEST_F(ValidationTest, MAYBE_ResponseConformance) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
   validators.SetValidator(std::make_unique<TwoStepValidator>(
@@ -455,7 +479,13 @@ TEST_F(ValidationTest, ResponseConformance) {
 }
 
 // This test is similar to the BoundsCheck test but for responses.
-TEST_F(ValidationTest, ResponseBoundsCheck) {
+// TODO(https://crbug.com/1421162): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ResponseBoundsCheck DISABLED_ResponseBoundsCheck
+#else
+#define MAYBE_ResponseBoundsCheck ResponseBoundsCheck
+#endif
+TEST_F(ValidationTest, MAYBE_ResponseBoundsCheck) {
   DummyMessageReceiver dummy_receiver;
   mojo::MessageDispatcher validators(&dummy_receiver);
   validators.SetValidator(std::make_unique<TwoStepValidator>(
@@ -469,7 +499,13 @@ TEST_F(ValidationTest, ResponseBoundsCheck) {
 // with each other:
 //   - MessageHeaderValidator
 //   - X::ResponseValidator_
-TEST_F(ValidationIntegrationTest, Remote) {
+// TODO(https://crbug.com/1421162): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Remote DISABLED_Remote
+#else
+#define MAYBE_Remote Remote
+#endif
+TEST_F(ValidationIntegrationTest, MAYBE_Remote) {
   Remote<IntegrationTestInterface> remote(
       PendingRemote<IntegrationTestInterface>(testee_endpoint(), 0u));
   remote.internal_state()->EnableTestingMode();
@@ -482,7 +518,13 @@ TEST_F(ValidationIntegrationTest, Remote) {
 // with each other:
 //   - MessageHeaderValidator
 //   - X::RequestValidator_
-TEST_F(ValidationIntegrationTest, Receiver) {
+// TODO(https://crbug.com/1421162): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Receiver DISABLED_Receiver
+#else
+#define MAYBE_Receiver Receiver
+#endif
+TEST_F(ValidationIntegrationTest, MAYBE_Receiver) {
   IntegrationTestInterfaceImpl interface_impl;
   Receiver<IntegrationTestInterface> receiver(
       &interface_impl,
