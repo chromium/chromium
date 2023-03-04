@@ -90,6 +90,9 @@ struct Profile {
   // The retrospective metadata requests.
   std::vector<RetrospectiveMetadata> retrospective_metadata;
 
+  // The profile metadata requests.
+  std::vector<MetadataRecorder::Item> profile_metadata;
+
   // Duration of this profile.
   TimeDelta profile_duration;
 
@@ -121,6 +124,7 @@ class TestProfileBuilder : public ProfileBuilder {
       TimeTicks period_start,
       TimeTicks period_end,
       const MetadataRecorder::Item& item) override;
+  void AddProfileMetadata(const MetadataRecorder::Item& item) override;
   void OnSampleCompleted(std::vector<Frame> sample,
                          TimeTicks sample_timestamp) override;
   void OnProfileCompleted(TimeDelta profile_duration,
@@ -137,6 +141,9 @@ class TestProfileBuilder : public ProfileBuilder {
 
   // The retrospective metadata requests.
   std::vector<RetrospectiveMetadata> retrospective_metadata_;
+
+  // The profile metadata requests.
+  std::vector<MetadataRecorder::Item> profile_metadata_;
 
   // Callback made when sampling a profile completes.
   ProfileCompletedCallback callback_;
@@ -165,6 +172,11 @@ void TestProfileBuilder::ApplyMetadataRetrospectively(
       RetrospectiveMetadata{period_start, period_end, item});
 }
 
+void TestProfileBuilder::AddProfileMetadata(
+    const MetadataRecorder::Item& item) {
+  profile_metadata_.push_back(item);
+}
+
 void TestProfileBuilder::OnSampleCompleted(std::vector<Frame> sample,
                                            TimeTicks sample_timestamp) {
   samples_.push_back(std::move(sample));
@@ -173,8 +185,8 @@ void TestProfileBuilder::OnSampleCompleted(std::vector<Frame> sample,
 void TestProfileBuilder::OnProfileCompleted(TimeDelta profile_duration,
                                             TimeDelta sampling_period) {
   std::move(callback_).Run(Profile{samples_, record_metadata_count_,
-                                   retrospective_metadata_, profile_duration,
-                                   sampling_period});
+                                   retrospective_metadata_, profile_metadata_,
+                                   profile_duration, sampling_period});
 }
 
 // Unloads |library| and returns when it has completed unloading. Unloading a
@@ -1636,6 +1648,150 @@ PROFILER_TEST_F(
     ASSERT_TRUE(metadata2.item.key.has_value());
     EXPECT_EQ(20, *metadata2.item.key);
     EXPECT_EQ(20, metadata2.item.value);
+  }
+}
+
+// Checks that requests to add profile metadata are passed on to the profile
+// builder.
+PROFILER_TEST_F(StackSamplingProfilerTest,
+                AddProfileMetadata_PassedToProfileBuilder) {
+  // Runs the passed closure on the profiler thread after a sample is taken.
+  class PostSampleInvoker : public StackSamplerTestDelegate {
+   public:
+    explicit PostSampleInvoker(RepeatingClosure post_sample_closure)
+        : post_sample_closure_(std::move(post_sample_closure)) {}
+
+    void OnPreStackWalk() override { post_sample_closure_.Run(); }
+
+   private:
+    RepeatingClosure post_sample_closure_;
+  };
+
+  SamplingParams params;
+  params.sampling_interval = Milliseconds(10);
+  // 10,000 samples ensures the profiler continues running until manually
+  // stopped.
+  params.samples_per_profile = 10000;
+
+  UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
+
+  Profile profile;
+  WithTargetThread(
+      &scenario,
+      BindLambdaForTesting(
+          [&](SamplingProfilerThreadToken target_thread_token) {
+            WaitableEvent sample_seen(WaitableEvent::ResetPolicy::AUTOMATIC);
+            PostSampleInvoker post_sample_invoker(
+                BindLambdaForTesting([&]() { sample_seen.Signal(); }));
+
+            StackSamplingProfiler profiler(
+                target_thread_token, params,
+                std::make_unique<TestProfileBuilder>(
+                    module_cache(),
+                    BindLambdaForTesting([&profile](Profile result_profile) {
+                      profile = std::move(result_profile);
+                    })),
+                CreateCoreUnwindersFactoryForTesting(module_cache()),
+                RepeatingClosure(), &post_sample_invoker);
+            profiler.Start();
+            sample_seen.Wait();
+            AddProfileMetadata("TestMetadata", 1, 2,
+                               SampleMetadataScope::kProcess);
+            profiler.Stop();
+          }));
+
+  ASSERT_EQ(1u, profile.profile_metadata.size());
+  const MetadataRecorder::Item& item = profile.profile_metadata[0];
+  EXPECT_EQ(HashMetricName("TestMetadata"), item.name_hash);
+  EXPECT_EQ(1, *item.key);
+  EXPECT_EQ(2, item.value);
+}
+
+PROFILER_TEST_F(StackSamplingProfilerTest,
+                AddProfileMetadata_PassedToProfileBuilder_MultipleCollections) {
+  SamplingParams params;
+  params.sampling_interval = Milliseconds(10);
+  // 10,000 samples ensures the profiler continues running until manually
+  // stopped.
+  params.samples_per_profile = 10000;
+  ModuleCache module_cache1, module_cache2;
+
+  WaitableEvent profiler1_started;
+  WaitableEvent profiler2_started;
+  WaitableEvent profiler1_metadata_applied;
+  WaitableEvent profiler2_metadata_applied;
+
+  Profile profile1;
+  WaitableEvent sampling_completed1;
+  TargetThread target_thread1(BindLambdaForTesting([&]() {
+    StackSamplingProfiler profiler1(
+        target_thread1.thread_token(), params,
+        std::make_unique<TestProfileBuilder>(
+            &module_cache1, BindLambdaForTesting([&](Profile result_profile) {
+              profile1 = std::move(result_profile);
+              sampling_completed1.Signal();
+            })),
+        CreateCoreUnwindersFactoryForTesting(&module_cache1),
+        RepeatingClosure());
+    profiler1.Start();
+    profiler1_started.Signal();
+    profiler2_started.Wait();
+
+    AddProfileMetadata("TestMetadata1", 1, 2, SampleMetadataScope::kThread);
+
+    profiler1_metadata_applied.Signal();
+    profiler2_metadata_applied.Wait();
+    profiler1.Stop();
+  }));
+  target_thread1.Start();
+
+  Profile profile2;
+  WaitableEvent sampling_completed2;
+  TargetThread target_thread2(BindLambdaForTesting([&]() {
+    StackSamplingProfiler profiler2(
+        target_thread2.thread_token(), params,
+        std::make_unique<TestProfileBuilder>(
+            &module_cache2, BindLambdaForTesting([&](Profile result_profile) {
+              profile2 = std::move(result_profile);
+              sampling_completed2.Signal();
+            })),
+        CreateCoreUnwindersFactoryForTesting(&module_cache2),
+        RepeatingClosure());
+    profiler2.Start();
+    profiler2_started.Signal();
+    profiler1_started.Wait();
+
+    AddProfileMetadata("TestMetadata2", 11, 12, SampleMetadataScope::kThread);
+
+    profiler2_metadata_applied.Signal();
+    profiler1_metadata_applied.Wait();
+    profiler2.Stop();
+  }));
+  target_thread2.Start();
+
+  target_thread1.Join();
+  target_thread2.Join();
+
+  // Wait for the profile to be captured before checking expectations.
+  sampling_completed1.Wait();
+  sampling_completed2.Wait();
+
+  ASSERT_EQ(1u, profile1.profile_metadata.size());
+  ASSERT_EQ(1u, profile2.profile_metadata.size());
+
+  {
+    const MetadataRecorder::Item& item = profile1.profile_metadata[0];
+    EXPECT_EQ(HashMetricName("TestMetadata1"), item.name_hash);
+    ASSERT_TRUE(item.key.has_value());
+    EXPECT_EQ(1, *item.key);
+    EXPECT_EQ(2, item.value);
+  }
+  {
+    const MetadataRecorder::Item& item = profile2.profile_metadata[0];
+    EXPECT_EQ(HashMetricName("TestMetadata2"), item.name_hash);
+    ASSERT_TRUE(item.key.has_value());
+    EXPECT_EQ(11, *item.key);
+    EXPECT_EQ(12, item.value);
   }
 }
 

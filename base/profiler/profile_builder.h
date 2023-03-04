@@ -52,6 +52,10 @@ class BASE_EXPORT ProfileBuilder {
       TimeTicks period_end,
       const MetadataRecorder::Item& item) {}
 
+  // Adds the specified metadata |item| to |CallstackProfile::profile_metadata|.
+  // |CallstackProfile::profile_metadata| stores metadata global to the profile.
+  virtual void AddProfileMetadata(const MetadataRecorder::Item& item) {}
+
   // Records a new set of frames. Invoked when sampling a sample completes.
   virtual void OnSampleCompleted(std::vector<Frame> frames,
                                  TimeTicks sample_timestamp) = 0;
