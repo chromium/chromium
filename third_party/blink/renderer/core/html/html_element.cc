@@ -417,14 +417,15 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnLangAttrChanged},
       {html_names::kNonceAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnNonceAttrChanged},
+      {html_names::kPopoverAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::OnPopoverChanged},
 
+      // Attributes handled by base class
       {html_names::kFocusgroupAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::ReparseAttribute},
       {html_names::kTabindexAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::ReparseAttribute},
       {xml_names::kLangAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::ReparseAttribute},
-      {html_names::kPopoverAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::ReparseAttribute},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
@@ -3010,10 +3011,11 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   }
 }
 
+void HTMLElement::OnPopoverChanged(const AttributeModificationParams& params) {
+  UpdatePopoverAttribute(params.new_value);
+}
+
 void HTMLElement::ReparseAttribute(const AttributeModificationParams& params) {
-  if (params.name == html_names::kPopoverAttr) {
-    UpdatePopoverAttribute(params.new_value);
-  }
   Element::ParseAttribute(params);
 }
 

@@ -357,7 +357,9 @@ class CORE_EXPORT HTMLElement : public Element {
   void OnFormAttrChanged(const AttributeModificationParams&);
   void OnLangAttrChanged(const AttributeModificationParams&);
   void OnNonceAttrChanged(const AttributeModificationParams&);
+  void OnPopoverChanged(const AttributeModificationParams&);
 
+  // Delegate ParseAttribute to base class
   void ReparseAttribute(const AttributeModificationParams&);
 
   int AdjustedOffsetForZoom(LayoutUnit);
