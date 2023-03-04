@@ -2691,7 +2691,7 @@ bool Animation::IsReplaceable() {
     return false;
 
   // 7. The animation's associated effect has an effect target.
-  Element* target = To<KeyframeEffect>(content_.Get())->target();
+  Element* target = To<KeyframeEffect>(content_.Get())->EffectTarget();
   if (!target)
     return false;
 
