@@ -18,13 +18,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -615,8 +615,8 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
 
   weak_this_ = weak_this_factory_.GetWeakPtr();
 
-  auto change_status_callback =
-      CrossThreadBindRepeating(media::BindToCurrentLoop(base::BindRepeating(
+  auto change_status_callback = CrossThreadBindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &RTCVideoDecoderAdapter::ChangeStatus, weak_this_)));
   impl_ = std::make_unique<Impl>(gpu_factories,
                                  std::move(change_status_callback), weak_impl_);

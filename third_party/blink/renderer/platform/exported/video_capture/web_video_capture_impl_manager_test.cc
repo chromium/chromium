@@ -9,10 +9,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/token.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 using base::test::RunOnceClosure;
-using media::BindToCurrentLoop;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InSequence;
@@ -149,7 +148,8 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
   VideoCaptureImplManagerTest()
       : manager_(new MockVideoCaptureImplManager(
             this,
-            BindToCurrentLoop(cleanup_run_loop_.QuitClosure()))),
+            base::BindPostTaskToCurrentDefault(
+                cleanup_run_loop_.QuitClosure()))),
         browser_interface_broker_(&GetEmptyBrowserInterfaceBroker()) {
     for (size_t i = 0; i < kNumClients; ++i) {
       session_ids_[i] = base::UnguessableToken::Create();
@@ -168,7 +168,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
       bool same_session_id) {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure =
-        BindToCurrentLoop(run_loop.QuitClosure());
+        base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
 
     InSequence s;
     if (!same_session_id) {
@@ -197,7 +197,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
       std::array<base::OnceClosure, kNumClients>* stop_callbacks) {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure =
-        BindToCurrentLoop(run_loop.QuitClosure());
+        base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
     EXPECT_CALL(*this, OnStopped(_))
         .Times(kNumClients - 1)
         .RetiresOnSaturation();
@@ -289,7 +289,7 @@ TEST_F(VideoCaptureImplManagerTest, SuspendAndResumeSessions) {
   {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure =
-        BindToCurrentLoop(run_loop.QuitClosure());
+        base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
     EXPECT_CALL(*this, OnPaused(session_ids_[0]))
         .Times(1)
         .RetiresOnSaturation();
@@ -307,7 +307,7 @@ TEST_F(VideoCaptureImplManagerTest, SuspendAndResumeSessions) {
   {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure =
-        BindToCurrentLoop(run_loop.QuitClosure());
+        base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
     EXPECT_CALL(*this, OnResumed(session_ids_[0]))
         .Times(1)
         .RetiresOnSaturation();
@@ -326,7 +326,7 @@ TEST_F(VideoCaptureImplManagerTest, SuspendAndResumeSessions) {
   {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure =
-        BindToCurrentLoop(run_loop.QuitClosure());
+        base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
     EXPECT_CALL(*this, OnPaused(session_ids_[0]))
         .WillOnce(RunOnceClosure(std::move(quit_closure)))
         .RetiresOnSaturation();
@@ -339,7 +339,7 @@ TEST_F(VideoCaptureImplManagerTest, SuspendAndResumeSessions) {
   {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure =
-        BindToCurrentLoop(run_loop.QuitClosure());
+        base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
     EXPECT_CALL(*this, OnPaused(session_ids_[1]))
         .Times(1)
         .RetiresOnSaturation();
@@ -361,7 +361,7 @@ TEST_F(VideoCaptureImplManagerTest, SuspendAndResumeSessions) {
   {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure =
-        BindToCurrentLoop(run_loop.QuitClosure());
+        base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
     EXPECT_CALL(*this, OnResumed(session_ids_[0]))
         .Times(1)
         .RetiresOnSaturation();

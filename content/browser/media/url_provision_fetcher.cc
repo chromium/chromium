@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/provision_fetcher_factory.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"

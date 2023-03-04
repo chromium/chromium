@@ -3,7 +3,6 @@ include_rules = [
   "+components/viz/client",
   "+components/viz/common",
   "+media/base/audio_buffer.h",
-  "+media/base/bind_to_current_loop.h",
   "+media/base/speech_recognition_client.h",
   "+third_party/khronos/GLES2",
   "+third_party/khronos/GLES3",

@@ -96,7 +96,6 @@ source_set("base") {
     "audio_shifter.h",
     "audio_timestamp_helper.cc",
     "audio_timestamp_helper.h",
-    "bind_to_current_loop.h",
     "bit_reader.cc",
     "bit_reader.h",
     "bit_reader_core.cc",

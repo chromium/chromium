@@ -42,8 +42,9 @@ struct WebMediaConfiguration;
 // - a WebmMuxer class multiplexing encoded data into a WebM container, and
 // - a single recorder client receiving this contained data.
 // All methods are called on the same thread as construction and destruction,
-// i.e. the Main Render thread. (Note that a BindToCurrentLoop is used to
-// guarantee this, since VideoTrackRecorder sends back frames on IO thread.)
+// i.e. the Main Render thread. (Note that a base::BindPostTaskToCurrentDefault
+// is used to guarantee this, since VideoTrackRecorder sends back frames on IO
+// thread.)
 class MODULES_EXPORT MediaRecorderHandler final
     : public GarbageCollected<MediaRecorderHandler> {
  public:

@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 
-// TODO(tzik): Merge this file to media/base/bind_to_current_loop.h.
+// TODO(tzik): Merge this file to base/task/bind_post_task.h.
 
 namespace sync_file_system {
 namespace drive_backend {

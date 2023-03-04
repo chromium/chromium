@@ -22,7 +22,6 @@
 #include "media/base/audio_latency.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_layout.h"
 #include "media/base/sample_rates.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -938,7 +937,7 @@ void WebRtcAudioRenderer::EnableSpeechRecognition() {
   if (speech_recognition_client_ &&
       speech_recognition_client_->IsSpeechRecognitionAvailable()) {
     transcribe_audio_callback_ =
-        media::BindToCurrentLoop(ConvertToBaseRepeatingCallback(
+        base::BindPostTaskToCurrentDefault(ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&WebRtcAudioRenderer::TranscribeAudio,
                                      weak_factory_.GetWeakPtr())));
   }
