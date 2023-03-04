@@ -32,18 +32,6 @@ export class SuggestTileModuleElement extends I18nMixin
 
   relatedSearches: SearchQuery[];
 
-  constructor() {
-    super();
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-  }
-
   private filterRelatedSearches_(item: SearchQuery, index: number): boolean {
     return item && index < 3;
   }

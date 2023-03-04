@@ -40,18 +40,6 @@ export class TileModuleElement extends I18nMixin
 
   visit: URLVisit;
 
-  constructor() {
-    super();
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-  }
-
   private computeLabel_(): string {
     return this.visit.urlForDisplay;
   }
