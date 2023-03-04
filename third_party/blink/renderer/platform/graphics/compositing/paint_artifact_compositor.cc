@@ -248,6 +248,14 @@ bool NeedsFullUpdateAfterPaintingChunk(
   if (previous.DrawsContent() != repainted.DrawsContent())
     return true;
 
+  // Solid color status change requires full update to change the cc::Layer
+  // type.
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled() &&
+      previous.background_color.is_solid_color !=
+          repainted.background_color.is_solid_color) {
+    return true;
+  }
+
   // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
   // Before returning that a full update is not needed, check that the
   // properties are changed, which would indicate a missing call to

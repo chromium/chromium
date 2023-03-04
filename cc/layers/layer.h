@@ -692,6 +692,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // display.
   virtual sk_sp<const SkPicture> GetPicture() const;
 
+  virtual bool IsSolidColorLayerForTesting() const;
+
   const LayerDebugInfo* debug_info() const { return debug_info_.Read(*this); }
   LayerDebugInfo& EnsureDebugInfo();
   void ClearDebugInfo();

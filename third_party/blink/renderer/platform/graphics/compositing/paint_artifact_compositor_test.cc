@@ -2494,6 +2494,22 @@ TEST_P(PaintArtifactCompositorTest, EffectivelyInvisibleChunk) {
   EXPECT_FALSE(LayerAt(0)->GetPicture());
 }
 
+TEST_P(PaintArtifactCompositorTest, EffectivelyInvisibleSolidColorChunk) {
+  TestPaintArtifact artifact;
+  artifact.Chunk()
+      .EffectivelyInvisible()
+      .RectDrawing(gfx::Rect(10, 0, 10, 10), Color(255, 0, 0))
+      .IsSolidColor();
+  Update(artifact.Build());
+  ASSERT_EQ(1u, LayerCount());
+  EXPECT_EQ(gfx::Size(10, 10), LayerAt(0)->bounds());
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
+    EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
+  }
+  EXPECT_FALSE(LayerAt(0)->draws_content());
+  EXPECT_FALSE(LayerAt(0)->GetPicture());
+}
+
 TEST_P(PaintArtifactCompositorTest,
        EffectivelyInvisibleChunkWithPrecedingChunk) {
   UpdateWithEffectivelyInvisibleChunk(true, false);
@@ -3533,6 +3549,23 @@ TEST_P(PaintArtifactCompositorTest, WillBeRemovedFromFrame) {
   // We would need a fake or mock LayerTreeHost to validate that we
   // unregister all element ids, so just check layer count for now.
   EXPECT_EQ(0u, LayerCount());
+}
+
+TEST_P(PaintArtifactCompositorTest, SolidColor) {
+  TestPaintArtifact artifact;
+  artifact.Chunk()
+      .RectDrawing(gfx::Rect(100, 200, 300, 400), Color::kBlack)
+      .IsSolidColor();
+  Update(artifact.Build());
+  ASSERT_EQ(1u, LayerCount());
+  auto* layer = LayerAt(0);
+  EXPECT_EQ(gfx::Vector2dF(100, 200), layer->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(300, 400), layer->bounds());
+  EXPECT_TRUE(layer->draws_content());
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
+    EXPECT_TRUE(LayerAt(0)->IsSolidColorLayerForTesting());
+  }
+  EXPECT_EQ(SkColors::kBlack, layer->background_color());
 }
 
 TEST_P(PaintArtifactCompositorTest, ContentsNonOpaque) {

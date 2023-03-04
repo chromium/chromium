@@ -982,8 +982,10 @@ void LayerTreeHostImpl::NotifyPendingTreeFullyPainted() {
     // is important for SingleThreadProxy and impl-side painting case. For
     // STP, we commit to active tree and RequiresHighResToDraw, and set
     // Scheduler to wait for ReadyToDraw signal to avoid Checkerboard.
-    if (CommitToActiveTree())
+    if (CommitToActiveTree() ||
+        settings_.wait_for_all_pipeline_stages_before_draw) {
       NotifyReadyToDraw();
+    }
   }
 }
 

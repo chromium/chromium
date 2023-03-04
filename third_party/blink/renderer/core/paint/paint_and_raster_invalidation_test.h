@@ -14,7 +14,14 @@ namespace blink {
 
 const RasterInvalidationTracking* GetRasterInvalidationTracking(
     const LocalFrameView& root_frame_view,
-    wtf_size_t index = 0);
+    wtf_size_t index,
+    const String& name_regex);
+
+inline const RasterInvalidationTracking* GetRasterInvalidationTracking(
+    const LocalFrameView& root_frame_view) {
+  return GetRasterInvalidationTracking(root_frame_view, 0,
+                                       "Scrolling background of LayoutNGView");
+}
 
 class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
  public:
@@ -24,8 +31,14 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
 
  protected:
   const RasterInvalidationTracking* GetRasterInvalidationTracking(
-      wtf_size_t index = 0) const {
-    return blink::GetRasterInvalidationTracking(*GetDocument().View(), index);
+      wtf_size_t index,
+      const String& name_regex) const {
+    return blink::GetRasterInvalidationTracking(*GetDocument().View(), index,
+                                                name_regex);
+  }
+
+  const RasterInvalidationTracking* GetRasterInvalidationTracking() const {
+    return blink::GetRasterInvalidationTracking(*GetDocument().View());
   }
 
   void SetUp() override {

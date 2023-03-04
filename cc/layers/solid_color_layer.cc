@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "cc/layers/solid_color_layer_impl.h"
+#include "third_party/skia/include/core/SkPictureRecorder.h"
 
 namespace cc {
 
@@ -26,6 +27,22 @@ SolidColorLayer::~SolidColorLayer() = default;
 void SolidColorLayer::SetBackgroundColor(SkColor4f color) {
   SetContentsOpaque(color.isOpaque());
   Layer::SetBackgroundColor(color);
+  UpdateDrawsContent();
+}
+
+sk_sp<const SkPicture> SolidColorLayer::GetPicture() const {
+  if (!draws_content() || bounds().IsEmpty()) {
+    return nullptr;
+  }
+
+  SkPictureRecorder recorder;
+  recorder.beginRecording(bounds().width(), bounds().height())
+      ->drawColor(background_color());
+  return recorder.finishRecordingAsPicture();
+}
+
+bool SolidColorLayer::IsSolidColorLayerForTesting() const {
+  return true;
 }
 
 }  // namespace cc

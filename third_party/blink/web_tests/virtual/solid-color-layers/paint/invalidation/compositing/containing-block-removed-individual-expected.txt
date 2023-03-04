@@ -1,0 +1,37 @@
+CONSOLE MESSAGE: debug
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutNGView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "position": [50, 50],
+      "bounds": [75, 75],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 100, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -36,7 +36,10 @@ class ObjectPaintInvalidatorTest : public RenderingTest {
 using ::testing::ElementsAre;
 
 TEST_F(ObjectPaintInvalidatorTest, Selection) {
-  SetBodyInnerHTML("<img id='target' style='width: 100px; height: 100px'>");
+  SetBodyInnerHTML(R"HTML(
+     <img id='target' style='width: 100px; height: 100px;
+                             border: 1px solid black'>
+  )HTML");
   auto* target = GetLayoutObjectByElementId("target");
 
   // Add selection.
@@ -46,7 +49,7 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   const auto* invalidations =
       &GetRasterInvalidationTracking(*GetDocument().View())->Invalidations();
   ASSERT_EQ(1u, invalidations->size());
-  EXPECT_EQ(gfx::Rect(8, 8, 100, 100), (*invalidations)[0].rect);
+  EXPECT_EQ(gfx::Rect(8, 8, 102, 102), (*invalidations)[0].rect);
   EXPECT_EQ(PaintInvalidationReason::kSelection, (*invalidations)[0].reason);
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -66,7 +69,7 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   invalidations =
       &GetRasterInvalidationTracking(*GetDocument().View())->Invalidations();
   ASSERT_EQ(1u, invalidations->size());
-  EXPECT_EQ(gfx::Rect(8, 8, 100, 100), (*invalidations)[0].rect);
+  EXPECT_EQ(gfx::Rect(8, 8, 102, 102), (*invalidations)[0].rect);
   EXPECT_EQ(PaintInvalidationReason::kSelection, (*invalidations)[0].reason);
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }

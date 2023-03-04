@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "cc/layers/scrollbar_layer_base.h"
+#include "cc/layers/solid_color_layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -522,15 +523,37 @@ void PendingLayer::UpdateScrollbarLayer(PendingLayer* old_pending_layer) {
 void PendingLayer::UpdateContentLayer(PendingLayer* old_pending_layer,
                                       bool tracks_raster_invalidations) {
   DCHECK(!ChunkRequiresOwnLayer());
+  DCHECK(!cc_layer_);
   DCHECK(!content_layer_client_);
-  if (old_pending_layer)
+  DCHECK(!UsesSolidColorLayer());
+  if (old_pending_layer) {
     content_layer_client_ = std::move(old_pending_layer->content_layer_client_);
+  }
   if (!content_layer_client_) {
     content_layer_client_ = std::make_unique<ContentLayerClientImpl>();
     content_layer_client_->GetRasterInvalidator().SetTracksRasterInvalidations(
         tracks_raster_invalidations);
   }
   content_layer_client_->UpdateCcPictureLayer(*this);
+}
+
+void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
+  DCHECK(!ChunkRequiresOwnLayer());
+  DCHECK(!cc_layer_);
+  DCHECK(!content_layer_client_);
+  DCHECK(UsesSolidColorLayer());
+  if (old_pending_layer) {
+    cc_layer_ = std::move(old_pending_layer->cc_layer_);
+  }
+  if (!cc_layer_) {
+    cc_layer_ = cc::SolidColorLayer::Create();
+  }
+  cc_layer_->SetOffsetToTransformParent(LayerOffset());
+  cc_layer_->SetBounds(LayerBounds());
+  cc_layer_->SetHitTestable(true);
+  DCHECK(FirstPaintChunk().background_color.is_solid_color);
+  cc_layer_->SetBackgroundColor(FirstPaintChunk().background_color.color);
+  cc_layer_->SetIsDrawable(draws_content_);
 }
 
 void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
@@ -549,7 +572,11 @@ void PendingLayer::UpdateCompositedLayer(PendingLayer* old_pending_layer,
       break;
     default:
       DCHECK(!ChunkRequiresOwnLayer());
-      UpdateContentLayer(old_pending_layer, tracks_raster_invalidations);
+      if (UsesSolidColorLayer()) {
+        UpdateSolidColorLayer(old_pending_layer);
+      } else {
+        UpdateContentLayer(old_pending_layer, tracks_raster_invalidations);
+      }
       break;
   }
 
@@ -587,16 +614,24 @@ void PendingLayer::UpdateCompositedLayerForRepaint(
   }
 
   if (!ChunkRequiresOwnLayer()) {
-    DCHECK(content_layer_client_);
-    // Checking |pending_layer_chunks_unchanged| is an optimization to avoid
-    // the expensive call to |UpdateCcPictureLayer| when no repainting occurs
-    // for this PendingLayer.
-    if (chunks_unchanged) {
-      // See RasterInvalidator::SetOldPaintArtifact() for the reason for this.
-      content_layer_client_->GetRasterInvalidator().SetOldPaintArtifact(
-          &Chunks().GetPaintArtifact());
+    if (UsesSolidColorLayer()) {
+      DCHECK(cc_layer_);
+      if (!chunks_unchanged) {
+        DCHECK(FirstPaintChunk().background_color.is_solid_color);
+        cc_layer_->SetBackgroundColor(FirstPaintChunk().background_color.color);
+      }
     } else {
-      content_layer_client_->UpdateCcPictureLayer(*this);
+      DCHECK(content_layer_client_);
+      // Checking |chunks_unchanged| is an optimization to avoid the expensive
+      // call to |UpdateCcPictureLayer| when no repainting occurs for this
+      // PendingLayer.
+      if (chunks_unchanged) {
+        // See RasterInvalidator::SetOldPaintArtifact() for the reason for this.
+        content_layer_client_->GetRasterInvalidator().SetOldPaintArtifact(
+            &Chunks().GetPaintArtifact());
+      } else {
+        content_layer_client_->UpdateCcPictureLayer(*this);
+      }
     }
   }
 

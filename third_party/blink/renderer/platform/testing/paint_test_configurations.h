@@ -18,19 +18,23 @@ namespace blink {
 enum {
   kUnderInvalidationChecking = 1 << 0,
   kScrollUnification = 1 << 1,
+  kSolidColorLayers = 1 << 2,
 };
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
-      private ScopedPaintUnderInvalidationCheckingForTest {
+      private ScopedPaintUnderInvalidationCheckingForTest,
+      private ScopedSolidColorLayersForTest {
  public:
   PaintTestConfigurations()
-      : ScopedPaintUnderInvalidationCheckingForTest(
-            GetParam() & kUnderInvalidationChecking) {
-    if (GetParam() & kScrollUnification)
+      : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
+                                                    kUnderInvalidationChecking),
+        ScopedSolidColorLayersForTest(GetParam() & kSolidColorLayers) {
+    if (GetParam() & kScrollUnification) {
       feature_list_.InitAndEnableFeature(::features::kScrollUnification);
-    else
+    } else {
       feature_list_.InitAndDisableFeature(::features::kScrollUnification);
+    }
   }
   ~PaintTestConfigurations() override {
     // Must destruct all objects before toggling back feature flags.
@@ -50,8 +54,9 @@ class PaintTestConfigurations
 // For now this has only one configuration, but can be extended in the future
 // to include more configurations.
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
-  INSTANTIATE_TEST_SUITE_P(All, test_class,        \
-                           ::testing::Values(0, kScrollUnification))
+  INSTANTIATE_TEST_SUITE_P(                        \
+      All, test_class,                             \
+      ::testing::Values(0, kScrollUnification, kSolidColorLayers))
 
 }  // namespace blink
 

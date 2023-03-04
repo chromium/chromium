@@ -1771,6 +1771,16 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "solid-color-layers",
+    "platforms": ["Linux"],
+    "bases": [
+      "compositing",
+      "paint/invalidation/compositing"
+    ],
+    "args": ["--enable-blink-features=SolidColorLayers"],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "webcodecs-without-task-runner-with-custom-deleter",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

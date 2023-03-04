@@ -26,6 +26,8 @@ class CC_EXPORT SolidColorLayer : public Layer {
       LayerTreeImpl* tree_impl) const override;
 
   void SetBackgroundColor(SkColor4f color) override;
+  sk_sp<const SkPicture> GetPicture() const override;
+  bool IsSolidColorLayerForTesting() const override;
 
  protected:
   SolidColorLayer();

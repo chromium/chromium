@@ -219,6 +219,10 @@ viz::ViewTransitionElementResourceId Layer::ViewTransitionResourceId() const {
   return viz::ViewTransitionElementResourceId();
 }
 
+bool Layer::IsSolidColorLayerForTesting() const {
+  return false;
+}
+
 void Layer::SetNeedsFullTreeSync() {
   if (!IsAttached())
     return;

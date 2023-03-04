@@ -1721,23 +1721,26 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShow) {
 
   ForceFullCompositingUpdate();
 
-  const auto* non_fast_layer = MainFrameScrollingContentsLayer();
-
   // Should have a NFSR initially.
-  EXPECT_EQ(non_fast_layer->non_fast_scrollable_region().bounds(),
-            gfx::Rect(2, 2, 100, 100));
+  EXPECT_EQ(
+      MainFrameScrollingContentsLayer()->non_fast_scrollable_region().bounds(),
+      gfx::Rect(2, 2, 100, 100));
 
   // Hiding the iframe should clear the NFSR.
   Element* iframe = GetFrame()->GetDocument()->getElementById("iframe");
   iframe->setAttribute(html_names::kStyleAttr, "display: none");
   ForceFullCompositingUpdate();
-  EXPECT_TRUE(non_fast_layer->non_fast_scrollable_region().bounds().IsEmpty());
+  EXPECT_TRUE(MainFrameScrollingContentsLayer()
+                  ->non_fast_scrollable_region()
+                  .bounds()
+                  .IsEmpty());
 
   // Showing it again should compute the NFSR.
   iframe->setAttribute(html_names::kStyleAttr, "");
   ForceFullCompositingUpdate();
-  EXPECT_EQ(non_fast_layer->non_fast_scrollable_region().bounds(),
-            gfx::Rect(2, 2, 100, 100));
+  EXPECT_EQ(
+      MainFrameScrollingContentsLayer()->non_fast_scrollable_region().bounds(),
+      gfx::Rect(2, 2, 100, 100));
 }
 
 // Same as above but the main frame is scrollable. This should cause the non
@@ -1771,11 +1774,10 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShowScrollable) {
       page->GetVisualViewport().LayerForScrolling();
   Element* iframe = GetFrame()->GetDocument()->getElementById("iframe");
 
-  const auto* outer_viewport_scroll_layer = MainFrameScrollingContentsLayer();
-
   // Should have a NFSR initially.
   ForceFullCompositingUpdate();
-  EXPECT_FALSE(outer_viewport_scroll_layer->non_fast_scrollable_region()
+  EXPECT_FALSE(MainFrameScrollingContentsLayer()
+                   ->non_fast_scrollable_region()
                    .bounds()
                    .IsEmpty());
 
@@ -1787,14 +1789,16 @@ TEST_P(ScrollingTest, IframeCompositedScrollingHideAndShowScrollable) {
   // Hiding the iframe should clear the NFSR.
   iframe->setAttribute(html_names::kStyleAttr, "display: none");
   ForceFullCompositingUpdate();
-  EXPECT_TRUE(outer_viewport_scroll_layer->non_fast_scrollable_region()
+  EXPECT_TRUE(MainFrameScrollingContentsLayer()
+                  ->non_fast_scrollable_region()
                   .bounds()
                   .IsEmpty());
 
   // Showing it again should compute the NFSR.
   iframe->setAttribute(html_names::kStyleAttr, "");
   ForceFullCompositingUpdate();
-  EXPECT_FALSE(outer_viewport_scroll_layer->non_fast_scrollable_region()
+  EXPECT_FALSE(MainFrameScrollingContentsLayer()
+                   ->non_fast_scrollable_region()
                    .bounds()
                    .IsEmpty());
 }

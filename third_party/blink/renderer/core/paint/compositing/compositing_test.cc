@@ -2788,12 +2788,19 @@ TEST_P(CompositingSimTest, SolidColorLayersWithSnapping) {
 
   Compositor().BeginFrame();
 
-  auto* snap_down =
-      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("snapDown"));
-  EXPECT_TRUE(snap_down->GetRecordingSourceForTesting()->is_solid_color());
-  auto* snap_up =
-      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("snapUp"));
-  EXPECT_TRUE(snap_up->GetRecordingSourceForTesting()->is_solid_color());
+  auto* snap_down = CcLayerByDOMElementId("snapDown");
+  auto* snap_up = CcLayerByDOMElementId("snapUp");
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
+    EXPECT_TRUE(snap_down->IsSolidColorLayerForTesting());
+    EXPECT_TRUE(snap_up->IsSolidColorLayerForTesting());
+  } else {
+    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(snap_down)
+                    ->GetRecordingSourceForTesting()
+                    ->is_solid_color());
+    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(snap_up)
+                    ->GetRecordingSourceForTesting()
+                    ->is_solid_color());
+  }
 }
 
 TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
@@ -2822,9 +2829,14 @@ TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
 
   Compositor().BeginFrame();
 
-  auto* target =
-      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("target"));
-  EXPECT_TRUE(target->GetRecordingSourceForTesting()->is_solid_color());
+  auto* target = CcLayerByDOMElementId("target");
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
+    EXPECT_TRUE(target->IsSolidColorLayerForTesting());
+  } else {
+    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(target)
+                    ->GetRecordingSourceForTesting()
+                    ->is_solid_color());
+  }
   EXPECT_NEAR(0.4, target->offset_to_transform_parent().x(), 0.001);
   EXPECT_NEAR(0.6, target->offset_to_transform_parent().y(), 0.001);
 }
