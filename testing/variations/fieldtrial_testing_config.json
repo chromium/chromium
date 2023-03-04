@@ -3829,6 +3829,26 @@
             ]
         }
     ],
+    "DesktopNtpPanorama": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Panorama",
+                    "enable_features": [
+                        "CustomizeChromeColorExtraction",
+                        "CustomizeChromeSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpRealboxLensEntrypoint": [
         {
             "platforms": [
