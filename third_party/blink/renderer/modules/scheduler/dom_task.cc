@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -118,6 +120,14 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
   ScriptState* script_state =
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Create");
   DCHECK(script_state && script_state->ContextIsValid());
+
+  if (script_state->World().IsMainWorld()) {
+    if (auto* tracker =
+            ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+      parent_task_id_ = tracker->RunningTaskAttributionId(script_state);
+    }
+  }
+
   auto* context = ExecutionContext::From(script_state);
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "SchedulePostTaskCallback", SchedulePostTaskCallbackTraceEventData,
@@ -182,6 +192,14 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
       delay_.InMillisecondsF());
   probe::AsyncTask async_task(context, &async_task_context_);
   probe::UserCallback probe(context, "postTask", AtomicString(), true);
+
+  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+      task_attribution_scope;
+  if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+    task_attribution_scope = tracker->CreateTaskScope(
+        script_state, parent_task_id_,
+        scheduler::TaskAttributionTracker::TaskScopeType::kSchedulerPostTask);
+  }
 
   ScriptValue result;
   if (callback_->Invoke(nullptr).To(&result))

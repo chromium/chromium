@@ -79,11 +79,6 @@ ScriptPromise DOMScheduler::postTask(
     return ScriptPromise();
   }
 
-  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
-  if (tracker && script_state->World().IsMainWorld()) {
-    callback_function->SetParentTaskId(
-        tracker->RunningTaskAttributionId(script_state));
-  }
   // Always honor the priority and the task signal if given.
   DOMTaskQueue* task_queue;
   AbortSignal* signal = options->hasSignal() ? options->signal() : nullptr;
