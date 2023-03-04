@@ -1052,13 +1052,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.PathValidationSuccess"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContentIndexDispatchPhase" separator=".">
-  <suffix name="Dispatch" label="Dispatch Service Worker event"/>
-  <suffix name="Find" label="Find Service Worker"/>
-  <suffix name="Start" label="Start Service Worker"/>
-  <affected-histogram name="ContentIndex.ContentDeleteEvent"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContentSetting" separator=".">
   <suffix name="Allow" label="Allow"/>
   <suffix name="AllowThirdParty" label="All third parties allowed on a domain"/>

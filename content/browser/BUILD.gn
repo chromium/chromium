@@ -729,8 +729,6 @@ source_set("browser") {
     "content_index/content_index_context_impl.h",
     "content_index/content_index_database.cc",
     "content_index/content_index_database.h",
-    "content_index/content_index_metrics.cc",
-    "content_index/content_index_metrics.h",
     "content_index/content_index_service_impl.cc",
     "content_index/content_index_service_impl.h",
     "cookie_store/cookie_change_subscription.cc",

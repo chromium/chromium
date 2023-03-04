@@ -119,18 +119,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="ContentIndex.ContentDeleteEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M95">
-<!-- Name completed by histogram_suffixes name="ContentIndexDispatchPhase" -->
-
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>
-    Records the status of dispatching the `contentdelete` event in every phase
-    of dispatch.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.AllowStorageAccessSync" units="ms"
     expires_after="2023-08-08">
   <owner>cduvall@chromium.org</owner>

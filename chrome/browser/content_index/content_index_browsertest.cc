@@ -324,7 +324,6 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
 
   // User deletion will dispatch an event.
   {
-    base::HistogramTester histogram_tester;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
 
     base::RunLoop run_loop;
@@ -334,14 +333,6 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_MetricsCollected) {
     provider()->RemoveItem(offline_items().at("my-id-1").id);
     EXPECT_EQ(RunScript("waitForMessageFromServiceWorker()"), "my-id-1");
     run_loop.Run();
-
-    histogram_tester.ExpectBucketCount("ContentIndex.ContentDeleteEvent.Find",
-                                       blink::ServiceWorkerStatusCode::kOk, 1);
-    histogram_tester.ExpectBucketCount("ContentIndex.ContentDeleteEvent.Start",
-                                       blink::ServiceWorkerStatusCode::kOk, 1);
-    histogram_tester.ExpectBucketCount(
-        "ContentIndex.ContentDeleteEvent.Dispatch",
-        blink::ServiceWorkerStatusCode::kOk, 1);
     EXPECT_EQ(ukm_recorder
                   .GetEntriesByName(
                       ukm::builders::ContentIndex_DeletedByUser::kEntryName)

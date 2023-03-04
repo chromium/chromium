@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "content/browser/background_fetch/storage/image_helpers.h"
 #include "content/browser/content_index/content_index.pb.h"
-#include "content/browser/content_index/content_index_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -561,8 +560,6 @@ void ContentIndexDatabase::StartActiveWorkerForDispatch(
     scoped_refptr<ServiceWorkerRegistration> registration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  content_index::RecordDisptachStatus("Find", service_worker_status);
-
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk)
     return;
 
@@ -583,8 +580,6 @@ void ContentIndexDatabase::DeliverMessageToWorker(
     const std::string& description_id,
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  content_index::RecordDisptachStatus("Start", service_worker_status);
 
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk)
     return;
@@ -608,7 +603,6 @@ void ContentIndexDatabase::DidDispatchEvent(
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  content_index::RecordDisptachStatus("Dispatch", service_worker_status);
   UnblockOrigin(origin);
 }
 
