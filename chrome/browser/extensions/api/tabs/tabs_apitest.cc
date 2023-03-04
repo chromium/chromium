@@ -350,25 +350,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, IncognitoDisabledByPref) {
   ASSERT_TRUE(RunExtensionTest("tabs/incognito_disabled")) << message_;
 }
 
-// Failed run on ChromeOS CI builder. https://crbug.com/1245240
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetViewsOfCreatedPopup DISABLED_GetViewsOfCreatedPopup
-#else
-#define MAYBE_GetViewsOfCreatedPopup GetViewsOfCreatedPopup
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedPopup) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedPopup) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics",
                                {.extension_url = "get_views_popup.html"}))
       << message_;
 }
 
-// Failed run on ChromeOS CI builder. https://crbug.com/1245240
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetViewsOfCreatedWindow DISABLED_GetViewsOfCreatedWindow
-#else
-#define MAYBE_GetViewsOfCreatedWindow GetViewsOfCreatedWindow
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics",
                                {.extension_url = "get_views_window.html"}))
       << message_;
