@@ -67,8 +67,7 @@ class TranslateUILanguagesManager {
   // Returns the displayable name for the language at |index|.
   std::u16string GetLanguageNameAt(size_t index) const;
 
-  // If the language has changed, updates the source language index and returns
-  // true. Returns false otherwise.
+  // Updates the source language index.
   bool UpdateSourceLanguageIndex(size_t language_index);
 
   // Updates the source language and returns true if |language_code| exists in
@@ -86,36 +85,37 @@ class TranslateUILanguagesManager {
   static std::u16string GetUnknownLanguageDisplayName();
 
  private:
-  base::WeakPtr<TranslateManager> translate_manager_;
-
-  // ISO code (en, fr...) -> displayable name in the current locale
-  typedef std::pair<std::string, std::u16string> LanguageNamePair;
-
-  // The list supported languages for translation.
-  // The languages are sorted alphabetically based on the displayable name.
-  std::vector<LanguageNamePair> languages_;
-
-  // The index for language the page is in before translation.
-  size_t source_language_index_;
-
-  // The index for language the page is in before translation in that was first
-  // reported (source_language_index_ changes if the user selects a new
-  // source language, but this one does not).  This is necessary to report
-  // language detection errors with the right source language even if the user
-  // changed the source language.
-  size_t initial_source_language_index_;
-
-  // The index for language the page should be translated to.
-  size_t target_language_index_;
-
-  // The translation related preferences.
-  std::unique_ptr<TranslatePrefs> prefs_;
-
   // Returns a Collator object which helps to sort strings in a given locale or
   // null if unable to find the right collator.
   //
   // TODO(hajimehoshi): Write a test for icu::Collator::createInstance.
   std::unique_ptr<icu::Collator> CreateCollator(const std::string& locale);
+
+  base::WeakPtr<TranslateManager> translate_manager_;
+
+  // ISO code (en, fr...) -> displayable name in the current locale
+  typedef std::pair<std::string, std::u16string> LanguageNamePair;
+
+  // The list of supported languages for translation.
+  // The languages are sorted alphabetically based on the displayable name.
+  std::vector<LanguageNamePair> languages_;
+
+  // The index of the language selected as the page's source language before a
+  // translation.
+  size_t source_language_index_;
+
+  // The index of the language that the page is in when it was first reported
+  // (source_language_index_ changes if the user selects a new source language,
+  // but this does not).  This is necessary to report language detection errors
+  // with the right source language even if the user changed the source
+  // language.
+  size_t initial_source_language_index_;
+
+  // The index of the language selected as the target language for translation.
+  size_t target_language_index_;
+
+  // Translate related preferences.
+  std::unique_ptr<TranslatePrefs> prefs_;
 };
 
 }  // namespace translate

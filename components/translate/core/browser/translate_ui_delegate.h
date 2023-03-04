@@ -157,13 +157,14 @@ class TranslateUIDelegate {
   raw_ptr<TranslateDriver, DanglingUntriaged> translate_driver_;
   base::WeakPtr<TranslateManager> translate_manager_;
 
+  // Manages the Translate UI language list related APIs.
   std::unique_ptr<TranslateUILanguagesManager> translate_ui_languages_manager_;
 
   // The list of language codes representing translatable user's setting
   // languages. The languages are in order defined by the user.
   std::vector<std::string> translatable_content_languages_codes_;
 
-  // The translation related preferences.
+  // Translate related preferences.
   std::unique_ptr<TranslatePrefs> prefs_;
 
   // Listens to accept languages changes.

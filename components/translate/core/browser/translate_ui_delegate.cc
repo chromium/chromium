@@ -147,14 +147,6 @@ void TranslateUIDelegate::UpdateAndRecordTargetLanguage(
   }
 }
 
-void TranslateUIDelegate::MaybeSetContentLanguages() {
-  std::string locale =
-      TranslateDownloadManager::GetInstance()->application_locale();
-  translatable_content_languages_codes_.clear();
-  prefs_->GetTranslatableContentLanguages(
-      locale, &translatable_content_languages_codes_);
-}
-
 void TranslateUIDelegate::OnErrorShown(TranslateErrors error_type) {
   DCHECK_LE(TranslateErrors::NONE, error_type);
   DCHECK_LT(error_type, TranslateErrors::TRANSLATE_ERROR_MAX);
@@ -310,24 +302,6 @@ bool TranslateUIDelegate::ShouldAlwaysTranslate() const {
       translate_ui_languages_manager_->GetTargetLanguageCode());
 }
 
-bool TranslateUIDelegate::ShouldAlwaysTranslateBeCheckedByDefault() const {
-  return ShouldAlwaysTranslate();
-}
-
-bool TranslateUIDelegate::ShouldShowAlwaysTranslateShortcut() const {
-  return !translate_driver_->IsIncognito() &&
-         prefs_->GetTranslationAcceptedCount(
-             translate_ui_languages_manager_->GetSourceLanguageCode()) >=
-             kAlwaysTranslateShortcutMinimumAccepts;
-}
-
-bool TranslateUIDelegate::ShouldShowNeverTranslateShortcut() const {
-  return !translate_driver_->IsIncognito() &&
-         prefs_->GetTranslationDeniedCount(
-             translate_ui_languages_manager_->GetSourceLanguageCode()) >=
-             kNeverTranslateShortcutMinimumDenials;
-}
-
 void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
   const std::string& source_lang =
       translate_ui_languages_manager_->GetSourceLanguageCode();
@@ -354,10 +328,22 @@ void TranslateUIDelegate::SetAlwaysTranslate(bool value) {
   UMA_HISTOGRAM_BOOLEAN(kAlwaysTranslateLang, value);
 }
 
-std::string TranslateUIDelegate::GetPageHost() const {
-  if (!translate_driver_->HasCurrentPage())
-    return std::string();
-  return translate_driver_->GetLastCommittedURL().HostNoBrackets();
+bool TranslateUIDelegate::ShouldAlwaysTranslateBeCheckedByDefault() const {
+  return ShouldAlwaysTranslate();
+}
+
+bool TranslateUIDelegate::ShouldShowAlwaysTranslateShortcut() const {
+  return !translate_driver_->IsIncognito() &&
+         prefs_->GetTranslationAcceptedCount(
+             translate_ui_languages_manager_->GetSourceLanguageCode()) >=
+             kAlwaysTranslateShortcutMinimumAccepts;
+}
+
+bool TranslateUIDelegate::ShouldShowNeverTranslateShortcut() const {
+  return !translate_driver_->IsIncognito() &&
+         prefs_->GetTranslationDeniedCount(
+             translate_ui_languages_manager_->GetSourceLanguageCode()) >=
+             kNeverTranslateShortcutMinimumDenials;
 }
 
 void TranslateUIDelegate::OnUIClosedByUser() {
@@ -377,6 +363,14 @@ void TranslateUIDelegate::ReportUIChange(bool is_ui_shown) {
     translate_manager_->GetActiveTranslateMetricsLogger()->LogUIChange(
         is_ui_shown);
   }
+}
+
+void TranslateUIDelegate::MaybeSetContentLanguages() {
+  std::string locale =
+      TranslateDownloadManager::GetInstance()->application_locale();
+  translatable_content_languages_codes_.clear();
+  prefs_->GetTranslatableContentLanguages(
+      locale, &translatable_content_languages_codes_);
 }
 
 bool TranslateUIDelegate::IsIncognito() const {
@@ -449,5 +443,12 @@ bool TranslateUIDelegate::ShouldAutoNeverTranslate() {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+std::string TranslateUIDelegate::GetPageHost() const {
+  if (!translate_driver_->HasCurrentPage()) {
+    return std::string();
+  }
+  return translate_driver_->GetLastCommittedURL().HostNoBrackets();
+}
 
 }  // namespace translate
