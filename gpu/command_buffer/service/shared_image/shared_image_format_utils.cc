@@ -165,14 +165,43 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-// TODO (hitawala): Add support for multiplanar formats.
 bool HasVkFormat(viz::SharedImageFormat format) {
-  return viz::HasVkFormat(format.resource_format());
+  if (format.is_single_plane()) {
+    return viz::HasVkFormat(format.resource_format());
+  } else if (format == viz::MultiPlaneFormat::kYVU_420 ||
+             format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR ||
+             format == viz::MultiPlaneFormat::kP010) {
+    return true;
+  }
+
+  return false;
 }
 
-// TODO (hitawala): Add support for multiplanar formats.
-VkFormat ToVkFormat(viz::SharedImageFormat format) {
-  return viz::ToVkFormat(format.resource_format());
+VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+
+  if (format.is_single_plane()) {
+    return viz::ToVkFormat(format.resource_format());
+  }
+
+  // The following SharedImageFormat constants have PrefersExternalSampler()
+  // false so they create a separate VkImage per plane and return the single
+  // planar equivalents.
+  if (format == viz::MultiPlaneFormat::kYVU_420) {
+    // Based on VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM.
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+    // Based on VK_FORMAT_G8_B8R8_2PLANE_420_UNORM.
+    return plane_index == 0 ? VK_FORMAT_R8_UNORM : VK_FORMAT_R8G8_UNORM;
+  } else if (format == viz::MultiPlaneFormat::kP010) {
+    // Based on VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 but using
+    // 16bit unorm plane formats as they are class compatible and more widely
+    // supported.
+    return plane_index == 0 ? VK_FORMAT_R16_UNORM : VK_FORMAT_R16G16_UNORM;
+  }
+
+  NOTREACHED();
+  return VK_FORMAT_UNDEFINED;
 }
 #endif
 

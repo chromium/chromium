@@ -1252,9 +1252,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
   if (dependency_->IsUsingVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {
-      DCHECK(si_format.is_single_plane());
-      // TODO(hitawala): Add multiplanar support for Skia-Vulkan.
-      return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format));
+      return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format, plane_index));
     }
 
     // Assume optimal tiling.

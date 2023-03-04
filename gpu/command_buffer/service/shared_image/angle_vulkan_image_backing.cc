@@ -231,7 +231,6 @@ AngleVulkanImageBacking::~AngleVulkanImageBacking() {
 bool AngleVulkanImageBacking::Initialize(
     const base::span<const uint8_t>& data) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
-  VkFormat vk_format = ToVkFormat(format());
 
   constexpr auto kUsageNeedsColorAttachment =
       SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
@@ -249,23 +248,29 @@ bool AngleVulkanImageBacking::Initialize(
     }
   }
 
-  VkImageCreateFlags vk_create_flags = 0;
-  auto vulkan_image =
-      VulkanImage::Create(device_queue, size(), vk_format, vk_usage,
-                          vk_create_flags, VK_IMAGE_TILING_OPTIMAL);
+  int num_planes = format().NumberOfPlanes();
+  vk_textures_.reserve(num_planes);
+  for (int plane = 0; plane < num_planes; ++plane) {
+    VkFormat vk_format = ToVkFormat(format(), plane);
+    gfx::Size plane_size = format().GetPlaneSize(plane, size());
+    VkImageCreateFlags vk_create_flags = 0;
+    auto vulkan_image =
+        VulkanImage::Create(device_queue, plane_size, vk_format, vk_usage,
+                            vk_create_flags, VK_IMAGE_TILING_OPTIMAL);
 
-  if (!vulkan_image) {
-    return false;
+    if (!vulkan_image) {
+      return false;
+    }
+
+    GrVkImageInfo vk_info = CreateGrVkImageInfo(vulkan_image.get());
+
+    auto& vk_texture = vk_textures_.emplace_back();
+    vk_texture.vulkan_image = std::move(vulkan_image);
+    vk_texture.backend_texture =
+        GrBackendTexture(plane_size.width(), plane_size.height(), vk_info);
+    vk_texture.promise_texture =
+        SkPromiseImageTexture::Make(vk_texture.backend_texture);
   }
-
-  GrVkImageInfo vk_info = CreateGrVkImageInfo(vulkan_image.get());
-
-  auto& vk_texture = vk_textures_.emplace_back();
-  vk_texture.vulkan_image = std::move(vulkan_image);
-  vk_texture.backend_texture =
-      GrBackendTexture(size().width(), size().height(), vk_info);
-  vk_texture.promise_texture =
-      SkPromiseImageTexture::Make(vk_texture.backend_texture);
 
   if (!data.empty()) {
     DCHECK(format().is_single_plane());
@@ -281,13 +286,15 @@ bool AngleVulkanImageBacking::Initialize(
 
 bool AngleVulkanImageBacking::InitializeWihGMB(
     gfx::GpuMemoryBufferHandle handle) {
+  DCHECK(format().is_single_plane());
+
   auto* vulkan_implementation =
       context_state_->vk_context_provider()->GetVulkanImplementation();
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
   DCHECK(vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
                                                          handle.type));
 
-  VkFormat vk_format = ToVkFormat(format());
+  VkFormat vk_format = ToVkFormat(format(), /*plane_index=*/0);
   auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
       device_queue, std::move(handle), size(), vk_format, color_space());
 
@@ -597,41 +604,50 @@ void AngleVulkanImageBacking::EndAccessSkia() {
 }
 
 bool AngleVulkanImageBacking::InitializePassthroughTexture() {
-  DCHECK(vk_textures_[0].vulkan_image);
   DCHECK(gl_textures_.empty());
 
-  auto& vulkan_image = vk_textures_[0].vulkan_image;
-  auto egl_image =
-      CreateEGLImage(vulkan_image->image(), &vulkan_image->create_info(),
-                     GLInternalFormat(format()));
-  if (!egl_image.is_valid()) {
-    LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
-    return false;
+  int num_planes = format().NumberOfPlanes();
+  gl_textures_.reserve(num_planes);
+  for (int plane = 0; plane < num_planes; ++plane) {
+    auto& vulkan_image = vk_textures_[plane].vulkan_image;
+    DCHECK(vulkan_image);
+
+    auto egl_image =
+        CreateEGLImage(vulkan_image->image(), &vulkan_image->create_info(),
+                       GLInternalFormat(format(), plane));
+    if (!egl_image.is_valid()) {
+      LOG(ERROR) << "Error creating EGLImage: " << ui::GetLastEGLErrorString();
+      gl_textures_.clear();
+      gl_texture_ids_.fill(0u);
+      return false;
+    }
+
+    scoped_refptr<gles2::TexturePassthrough> passthrough_texture;
+    GLuint texture_id =
+        GLTextureImageBackingHelper::MakeTextureAndSetParameters(
+            GL_TEXTURE_2D,
+            /*framebuffer_attachment_angle=*/true, &passthrough_texture,
+            nullptr);
+    passthrough_texture->SetEstimatedSize(GetEstimatedSize());
+
+    gl::GLApi* api = gl::g_current_gl_context;
+    ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
+    api->glBindTextureFn(GL_TEXTURE_2D, texture_id);
+
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, egl_image.get());
+
+    if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
+      const std::string label =
+          "SharedImage_AngleVulkan" + CreateLabelForSharedImageUsage(usage());
+      api->glObjectLabelFn(GL_TEXTURE, texture_id, label.size(), label.c_str());
+    }
+
+    auto& gl_texture = gl_textures_.emplace_back();
+    gl_texture.egl_image = std::move(egl_image);
+    gl_texture.passthrough_texture = std::move(passthrough_texture);
+
+    gl_texture_ids_[plane] = texture_id;
   }
-
-  scoped_refptr<gles2::TexturePassthrough> passthrough_texture;
-  GLuint texture_id = GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-      GL_TEXTURE_2D,
-      /*framebuffer_attachment_angle=*/true, &passthrough_texture, nullptr);
-  passthrough_texture->SetEstimatedSize(GetEstimatedSize());
-
-  gl::GLApi* api = gl::g_current_gl_context;
-  ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
-  api->glBindTextureFn(GL_TEXTURE_2D, texture_id);
-
-  glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, egl_image.get());
-
-  if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
-    const std::string label =
-        "SharedImage_AngleVulkan" + CreateLabelForSharedImageUsage(usage());
-    api->glObjectLabelFn(GL_TEXTURE, texture_id, label.size(), label.c_str());
-  }
-
-  auto& gl_texture = gl_textures_.emplace_back();
-  gl_texture.egl_image = std::move(egl_image);
-  gl_texture.passthrough_texture = std::move(passthrough_texture);
-
-  gl_texture_ids_[0] = texture_id;
 
   return true;
 }
