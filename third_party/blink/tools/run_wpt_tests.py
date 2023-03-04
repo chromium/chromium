@@ -331,9 +331,10 @@ class WPTAdapter:
                         ' '.join(args))
             options.binary_args.extend(args)
 
-        smoke_file_short_path = self.fs.relpath(
-            self.port.path_to_smoke_tests_file(), self.port.web_tests_dir())
         if self.port.default_smoke_test_only():
+            smoke_file_short_path = self.fs.relpath(
+                self.port.path_to_smoke_tests_file(),
+                self.port.web_tests_dir())
             if not _has_explicit_tests(options):
                 self._load_smoke_tests(options)
                 logger.info(
