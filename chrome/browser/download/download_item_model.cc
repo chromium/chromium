@@ -29,6 +29,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_target_determiner.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
@@ -123,8 +124,10 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
   // then as all in-progress downloads are.
   absl::optional<base::Time> ephemeral_warning_ui_shown_time_;
 
-  // Was the UI actioned on.
-  bool actioned_on_ = false;
+  // Was the UI actioned on. This defaults to true so that we don't show
+  // extraneous items in the partial view the first time the bubble pops up
+  // after a browser restart.
+  bool actioned_on_ = true;
 
  private:
   DownloadItemModelData();
@@ -485,6 +488,9 @@ void DownloadItemModel::SetWasUINotified(bool was_ui_notified) {
 
 bool DownloadItemModel::WasActionedOn() const {
   const DownloadItemModelData* data = DownloadItemModelData::Get(download_);
+  if (!data) {
+    return DownloadUIModel::WasActionedOn();
+  }
   return data && data->actioned_on_;
 }
 

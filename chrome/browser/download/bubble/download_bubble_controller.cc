@@ -145,14 +145,14 @@ bool DownloadBubbleUIController::MaybeAddOfflineItem(const OfflineItem& item,
   if (item.id.name_space == ContentIndexProviderImpl::kProviderNamespace)
     return false;
 
-  std::unique_ptr<DownloadUIModel> model(
-      std::make_unique<OfflineItemModel>(offline_manager_, item));
-  if (!model->ShouldShowInBubble())
+  OfflineItemModel model(offline_manager_, item);
+  if (!model.ShouldShowInBubble()) {
     return false;
+  }
 
   offline_items_.push_back(item);
-  if (is_new) {
-    model->SetActionedOn(false);
+  if (is_new && model.ShouldNotifyUI()) {
+    model.SetActionedOn(false);
   }
   return true;
 }
@@ -234,10 +234,12 @@ void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
 
 void DownloadBubbleUIController::DoOnNewItem(download::DownloadItem* item,
                                              bool may_show_animation) {
-  auto model = std::make_unique<DownloadItemModel>(item);
-  model->SetActionedOn(false);
+  DownloadItemModel model(item);
+  if (model.ShouldNotifyUI()) {
+    model.SetActionedOn(false);
+  }
   display_controller_->OnNewItem(may_show_animation &&
-                                 model->ShouldShowDownloadStartedAnimation());
+                                 model.ShouldShowDownloadStartedAnimation());
 }
 
 void DownloadBubbleUIController::OnDelayedNewItemByGuid(
