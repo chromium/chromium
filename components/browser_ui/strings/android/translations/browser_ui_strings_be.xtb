@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Сайты могуць захоўваць даныя на вашай прыладзе</translation>
 <translation id="5771720122942595109">Заблакіравана: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Дазволы</translation>
+<translation id="5810805850857689118">Будуць выдалены ўсе файлы cookie і даныя групы <ph name="ORIGIN" /> і ўсіх сайтаў у ёй.</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5876056640971328065">Прыпыніць відэа</translation>
 <translation id="5884085660368669834">Выбар у дачыненні да сайта</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Не дазваляць сайтам захоўваць даныя на прыладзе (не рэкамендуецца)</translation>
 <translation id="851751545965956758">Блакіраваць сайтам падключэнне да прылад</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
+<translation id="8528440122773422556">Будуць выдалены файлы cookie і даныя, захаваныя ўсімі сайтамі групы <ph name="ORIGIN" /> або яго праграмай на галоўным экране.</translation>
 <translation id="8541410041357371550">Гэты сайт выкарыстоўвае тэмы рэкламы з Chrome, каб паказваць вам больш рэлевантную рэкламу</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}one{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}few{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}many{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайтаў у дамене <ph name="FPS_OWNER" />}other{Выкарыстанне файлаў cookie дазволена для <ph name="FPS_MEMBERS_COUNT" /> сайта ў дамене <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дазволена (рэкамендуецца)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Забыць</translation>
 <translation id="8990043154272859344">Вы выйдзеце з уліковых запісаў на ўсіх сайтах</translation>
 <translation id="9019902583201351841">Пад кіраваннем вашых бацькоў</translation>
+<translation id="9039697262778250930">Будзе выкананы выхад з гэтых сайтаў</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Гэты сайт належыць да групы, якая мае доступ да звестак пра вашы дзеянні. Група вызначана даменам <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Выдаліць файлы cookie?</translation>

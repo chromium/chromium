@@ -31,6 +31,7 @@
 <translation id="2450140762465183767">Siz endi Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> brauzerini tanlang.</translation>
 <translation id="2590893390871230428">Chromium axborotini sinxronlash</translation>
+<translation id="2618596336309823556">Qurilma Sozlamalaridan “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” sahifasini oching va “Chromium” bandini tanlang</translation>
 <translation id="2650312721222849884">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="2684230048001240293">Chromium brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="2730884209570016437">Chromium kamerangizdan foydalana olmaydi, chunki boshqa ilova allaqachon kamerani ishlatmoqda.</translation>
@@ -115,7 +116,6 @@
 <translation id="8073677936375100957">Chromium maʼlumotlari bu qurilmadan tozalansinmi?</translation>
 <translation id="8240981428553046115">Chromium yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
-<translation id="8460301378281140593">iPhone sozlamalari orqali “Parol variantlari” sahifasini oching va “Chromium” ilovasini tanlang</translation>
 <translation id="858114650497379505">Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
 <translation id="865600487977764604">Hisobingizga kirganingizda Chromium va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>

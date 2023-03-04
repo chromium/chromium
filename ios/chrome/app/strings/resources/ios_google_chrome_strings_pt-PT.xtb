@@ -20,6 +20,7 @@
 <translation id="2339201583852607431">A palavra-passe será guardada na sua Conta Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">O Chrome partilha a sua localização com os sites que permite.</translation>
 <translation id="2347208864470321755">Se esta funcionalidade estiver ativada, o Chrome oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="2414068465746584414">Nas Definições do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chrome"</translation>
 <translation id="2427791862912929107">O Chrome inclui funcionalidades que ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="2444854139071078915">Para obter facilmente as palavras-passe guardadas nas outras apps, use o Chrome para o preenchimento automático</translation>
@@ -113,7 +114,6 @@
 <translation id="7754633291442704733">A sua organização <ph name="DOMAIN" /> vai ter acesso aos seus dados do Chrome, marcadores, histórico, palavras-passe e outras definições que armazenar nesta conta. Quando terminar sessão, os dados são limpos deste dispositivo.  No entanto, os dados permanecem armazenados na sua Conta Google gerida e ficam disponíveis para a sua organização. A sua organização também pode definir Políticas do Utilizador específicas para essa conta que podem alterar o comportamento do Chrome.</translation>
 <translation id="7780154209050837198">Para tirar o máximo partido do Chrome, inicie sessão no mesmo com a sua Conta Google.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
-<translation id="7939179037291298976">Nas Definições do iPhone, abra as "Opções de palavras-passe" e selecione "Chrome"</translation>
 <translation id="8022947259858476807">Utilize o Chrome por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
 <translation id="804638182476029347">Permita que as notificações do Chrome recebam alertas de descida do preço</translation>
 <translation id="81358522153858150">O Chrome suporta agora Políticas do Utilizador para a sua conta gerida</translation>

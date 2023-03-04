@@ -293,7 +293,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2625189173221582860">Palavra-passe copiada</translation>
 <translation id="2642087927315268160">A secção inferior de início de sessão está fechada.</translation>
-<translation id="2643064289437760082">Pode sempre apagar dados de medição de anúncios ao apagar os seus dados de navegação</translation>
+<translation id="2643064289437760082">Pode sempre eliminar dados de medição de anúncios ao eliminar os seus dados de navegação</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
 <translation id="2649068648233607930">O navegador é gerido por <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">Explicação do guia de privacidade fechada</translation>
@@ -664,7 +664,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4662373422909645029">A alcunha n/ pode ter núm.</translation>
 <translation id="4663499661119906179">Veja os sites e as notícias principais para si.</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> marcadores eliminados</translation>
-<translation id="4668279686271488041">Os dados de medição de anúncios são apagados regularmente do seu dispositivo</translation>
+<translation id="4668279686271488041">Os dados de medição de anúncios são eliminados regularmente do seu dispositivo</translation>
 <translation id="4668347365065281350">Todos os dados armazenados pelos sites, incluindo cookies e outros dados armazenados localmente.</translation>
 <translation id="4678082183394354975">O tema escuro para os sites está ativado no Chrome</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
@@ -759,7 +759,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5091199029769593641">Em breve, serão apresentadas notícias de <ph name="SITE_NAME" /> quando abrir um novo separador. Os sites que segue são guardados na sua Conta Google. Pode geri-los nas definições do Discover.</translation>
 <translation id="5091249083535528968">Dados de utilização alargados</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
-<translation id="5097349930204431044">Os sites que visita podem determinar o que gosta e, de seguida, sugerir anúncios enquanto continua a navegar</translation>
+<translation id="5097349930204431044">Os sites que visita podem determinar aquilo de que gosta e, de seguida, sugerir anúncios enquanto continua a navegar</translation>
 <translation id="5099845111805573968">Quando seleciona o site para computador uma vez, a definição é aplicada ao site sempre que o visitar</translation>
 <translation id="5102401324271069229">Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura</translation>
 <translation id="510275257476243843">Falta 1 hora</translation>
@@ -1268,7 +1268,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7786595606756654269">O Assistente Google proporciona uma melhor experiência de voz para pesquisar na Web e interagir com sites que abriu. O Assistente Google vai receber o URL e o conteúdo dos sites com os quais o utiliza.</translation>
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> separadores restaurados.</translation>
-<translation id="780301667611848630">Não, obrigado</translation>
+<translation id="780301667611848630">Não</translation>
 <translation id="7808889146555843082">Eliminar esta palavra-passe não elimina a sua conta em <ph name="SITE" />. Altere a palavra-passe ou elimine a sua conta em <ph name="SITE" /> para a manter protegida contra terceiros.</translation>
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7815484226266492798">Captura de ecrã longa</translation>
@@ -1372,7 +1372,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="829672787777123339">A ligar ao seu dispositivo…</translation>
 <translation id="8310344678080805313">Separadores padrão</translation>
 <translation id="831192587911042850">Adiciona o Website atual à lista de Websites que está a seguir</translation>
-<translation id="8333340769932050274">Pode bloquear os tópicos que não quer partilhar com os sites. O Chrome também apaga automaticamente os tópicos com mais de 4 semanas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8333340769932050274">Pode bloquear os tópicos que não quer partilhar com os sites. O Chrome também elimina automaticamente os tópicos com mais de 4 semanas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="834313815369870491">Nunca traduzir sites</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chrome sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="8354977102499939946">Pesquise com a sua voz rapidamente. Para editar este atalho, aceda às Definições.</translation>
@@ -1453,7 +1453,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8683039184091909753">imagem</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
-<translation id="8712637175834984815">Entendido</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8746155870861185046">Partilhar destaque</translation>
 <translation id="874726034427945498">Para ver melhores sugestões na barra de endereço, sincronize os separadores e o histórico</translation>
