@@ -264,6 +264,7 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
         case html_names::HTMLTag::kPlaintext:
         case html_names::HTMLTag::kPre:
         case html_names::HTMLTag::kScript:
+        case html_names::HTMLTag::kSearch:
         case html_names::HTMLTag::kSection:
         case html_names::HTMLTag::kSelect:
         case html_names::HTMLTag::kStyle:

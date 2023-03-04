@@ -702,6 +702,7 @@ static bool IsProhibitedParagraphChild(const AtomicString& name) {
           html_names::kPTag.LocalName(),
           html_names::kPlaintextTag.LocalName(),
           html_names::kPreTag.LocalName(),
+          html_names::kSearchTag.LocalName(),
           html_names::kSectionTag.LocalName(),
           html_names::kSummaryTag.LocalName(),
           html_names::kTableTag.LocalName(),
