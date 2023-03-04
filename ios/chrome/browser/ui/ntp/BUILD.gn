@@ -137,9 +137,10 @@ source_set("util") {
 source_set("field_trial") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "new_tab_page_retention_field_trial.cc",
-    "new_tab_page_retention_field_trial.h",
-    "new_tab_page_retention_field_trial_constants.h",
+    "field_trial_constants.cc",
+    "field_trial_constants.h",
+    "ios_popular_sites_field_trial.cc",
+    "ios_popular_sites_field_trial.h",
   ]
   public_deps = [
     "//base",
@@ -275,9 +276,9 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "ios_popular_sites_field_trial_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
     "new_tab_page_mediator_unittest.mm",
-    "new_tab_page_retention_field_trial_unittest.mm",
   ]
   deps = [
     ":coordinator",
