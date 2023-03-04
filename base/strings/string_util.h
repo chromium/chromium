@@ -61,6 +61,9 @@ inline int snprintf(char* buffer, size_t size, const char* format, ...) {
 // If the return value is >= dst_size, then the output was truncated.
 // NOTE: All sizes are in number of characters, NOT in bytes.
 BASE_EXPORT size_t strlcpy(char* dst, const char* src, size_t dst_size);
+BASE_EXPORT size_t u16cstrlcpy(char16_t* dst,
+                               const char16_t* src,
+                               size_t dst_size);
 BASE_EXPORT size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size);
 
 // Scan a wprintf format string to determine whether it's portable across a

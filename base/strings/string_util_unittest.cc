@@ -1214,21 +1214,28 @@ TEST(StringUtilTest, LcpyTest) {
   // Test the normal case where we fit in our buffer.
   {
     char dst[10];
+    char16_t u16dst[10];
     wchar_t wdst[10];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
-    EXPECT_EQ(0, memcmp(dst, "abcdefg", 8));
+    EXPECT_EQ(0, memcmp(dst, "abcdefg", sizeof(dst[0]) * 8));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
+    EXPECT_EQ(0, memcmp(u16dst, u"abcdefg", sizeof(u16dst[0]) * 8));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wchar_t) * 8));
+    EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wdst[0]) * 8));
   }
 
   // Test dst_size == 0, nothing should be written to |dst| and we should
   // have the equivalent of strlen(src).
   {
     char dst[2] = {1, 2};
+    char16_t u16dst[2] = {1, 2};
     wchar_t wdst[2] = {1, 2};
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", 0));
     EXPECT_EQ(1, dst[0]);
     EXPECT_EQ(2, dst[1]);
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", 0));
+    EXPECT_EQ(char16_t{1}, u16dst[0]);
+    EXPECT_EQ(char16_t{2}, u16dst[1]);
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", 0));
     EXPECT_EQ(static_cast<wchar_t>(1), wdst[0]);
     EXPECT_EQ(static_cast<wchar_t>(2), wdst[1]);
@@ -1237,31 +1244,40 @@ TEST(StringUtilTest, LcpyTest) {
   // Test the case were we _just_ competely fit including the null.
   {
     char dst[8];
+    char16_t u16dst[8];
     wchar_t wdst[8];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
     EXPECT_EQ(0, memcmp(dst, "abcdefg", 8));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
+    EXPECT_EQ(0, memcmp(u16dst, u"abcdefg", sizeof(u16dst)));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wchar_t) * 8));
+    EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wdst)));
   }
 
   // Test the case were we we are one smaller, so we can't fit the null.
   {
     char dst[7];
+    char16_t u16dst[7];
     wchar_t wdst[7];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
-    EXPECT_EQ(0, memcmp(dst, "abcdef", 7));
+    EXPECT_EQ(0, memcmp(dst, "abcdef", sizeof(dst[0]) * 7));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
+    EXPECT_EQ(0, memcmp(u16dst, u"abcdef", sizeof(u16dst[0]) * 7));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"abcdef", sizeof(wchar_t) * 7));
+    EXPECT_EQ(0, memcmp(wdst, L"abcdef", sizeof(wdst[0]) * 7));
   }
 
   // Test the case were we are just too small.
   {
     char dst[3];
+    char16_t u16dst[3];
     wchar_t wdst[3];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
-    EXPECT_EQ(0, memcmp(dst, "ab", 3));
+    EXPECT_EQ(0, memcmp(dst, "ab", sizeof(dst)));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
+    EXPECT_EQ(0, memcmp(u16dst, u"ab", sizeof(u16dst)));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"ab", sizeof(wchar_t) * 3));
+    EXPECT_EQ(0, memcmp(wdst, L"ab", sizeof(wdst)));
   }
 }
 
