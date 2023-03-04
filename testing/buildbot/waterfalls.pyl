@@ -3771,6 +3771,15 @@
           'gtest_tests': 'fieldtrial_browser_tests',
         },
       },
+      'win-network-sandbox-tester': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'network_sandbox_browser_tests',
+        },
+      },
       'win-perfetto-rel': {
         'additional_compile_targets': [ 'all' ],
         'mixins': [

@@ -494,6 +494,28 @@ ci.thin_tester(
     ),
 )
 
+ci.thin_tester(
+    name = "win-network-sandbox-tester",
+    triggered_by = ["ci/Win x64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    cores = None,
+    console_view_entry = consoles.console_view_entry(
+        category = "network|sandbox",
+        short_name = "win",
+    ),
+)
+
 ci.builder(
     name = "android-fieldtrial-rel",
     builder_spec = builder_config.builder_spec(

@@ -4501,6 +4501,32 @@
       },
     },
 
+    'network_sandbox_browser_tests': {
+      'browser_tests_network_sandbox': {
+        'args': [
+          '--enable-features=NetworkServiceSandbox',
+        ],
+        'test': 'browser_tests',
+      },
+      'components_browsertests_network_sandbox': {
+        'args': [
+          '--enable-features=NetworkServiceSandbox',
+        ],
+        'test': 'components_browsertests',
+      },
+      'interactive_ui_tests_network_sandbox': {
+        'args': [
+          '--enable-features=NetworkServiceSandbox',
+        ],
+        'test': 'interactive_ui_tests',
+      },
+      'sync_integration_tests_network_sandbox': {
+        'args': [
+          '--enable-features=NetworkServiceSandbox',
+        ],
+        'test': 'sync_integration_tests',
+      },
+    },
     'network_service_fyi_gtests': {
       'network_service_web_request_proxy_browser_tests': {
         'args': [
