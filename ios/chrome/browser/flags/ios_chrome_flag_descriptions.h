@@ -435,10 +435,10 @@ extern const char kIOSPasswordUISplitDescription[];
 extern const char kIOSPasswordManagerCrossOriginIframeSupportName[];
 extern const char kIOSPasswordManagerCrossOriginIframeSupportDescription[];
 
-// Title and description of the flag to enable client side new tab page
-// experiments aimed at improving user retention.
-extern const char kNewTabPageRetentionName[];
-extern const char kNewTabPageRetentionDescription[];
+// Title and description of the flag to enable improved default suggestions of
+// popular sites.
+extern const char kIOSPopularSitesImprovedSuggestionsName[];
+extern const char kIOSPopularSitesImprovedSuggestionsDescription[];
 
 // Title and description for the flag to enable Shared Highlighting color
 // change in iOS.

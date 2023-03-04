@@ -9,28 +9,26 @@
 
 namespace ntp_tiles {
 
-// Experiment groups for the new tab page retention experiments.
-enum class NewTabPageRetentionExperimentBehavior {
-  // Default popular sites.
-  kDefault = 0,
+// (Chrome IOS only) Experiment behaviors for the improved default popular sites
+// experiment.
+enum class IOSDefaultPopularSitesExperimentBehavior {
   // Sites with popular, native iOS apps are included in the default popular
   // sites suggestions.
-  kPopularSitesIncludePopularApps = 1,
+  kIncludePopularApps = 0,
   // Sites with popular, native iOS apps are excluded from the default popular
   // sites suggestions.
-  kPopularSitesExcludePopularApps = 2,
-  // Control population for popular apps experiment.
-  kPopularSitesControl = 3,
-  // Hides all NTP tiles for new users.
-  kTileAblationHideAll = 4,
-  // Hides most visited tiles for new users.
-  kTileAblationHideMVTOnly = 5,
-  // Control group for tile ablation.
-  kTileAblationControl = 6,
+  kExcludePopularApps = 1,
+  // Default popular sites.
+  kDefault = 2,
 };
 
 // Name of the field trial to configure PopularSites.
 extern const char kPopularSitesFieldTrialName[];
+
+// Feature param under `kIOSPopularSitesImprovedSuggestions` to enable
+// excluding sites from popular sites (on IOS only) that have popular, native
+// iOS apps.
+extern const char kIOSPopularSitesExcludePopularAppsParam[];
 
 // This feature is enabled by default. Otherwise, users who need it would not
 // get the right configuration timely enough. The configuration affects only
@@ -44,17 +42,14 @@ BASE_DECLARE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature);
 // If this feature is enabled, we enable popular sites in the suggestions UI.
 BASE_DECLARE_FEATURE(kUsePopularSitesSuggestions);
 
-// Feature flag to enable new tab page retention experiment on IOS.
-// Use `GetDefaultNTPRetentionExperimentType()` instead of this
+// Feature flag to enable improved default popular sites suggestions on IOS.
+// Use `GetDefaultPopularSitesExperimentType()` instead of this
 // constant directly.
-BASE_DECLARE_FEATURE(kNewTabPageRetention);
+BASE_DECLARE_FEATURE(kIOSPopularSitesImprovedSuggestions);
 
-// Feature parameters for the new tab page retention experiment.
-extern const char kNewTabPageRetentionParam[];
-
-// Returns the currently enabled NTP retention experiment type. If none are
-// enabled, returns the default value.
-NewTabPageRetentionExperimentBehavior GetNewTabPageRetentionExperimentType();
+// (Chrome IOS only) Returns the experiment type for the improved default
+// popular sites suggestions.
+IOSDefaultPopularSitesExperimentBehavior GetDefaultPopularSitesExperimentType();
 
 }  // namespace ntp_tiles
 

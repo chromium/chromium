@@ -74,24 +74,24 @@ GURL GetPopularSitesURL(const std::string& directory,
                         const std::string& version) {
   // A Chrome iOS-only experiment is being run for M109 which overrides the
   // popular sites URL.
-  NewTabPageRetentionExperimentBehavior experiment_type =
-      GetNewTabPageRetentionExperimentType();
+  IOSDefaultPopularSitesExperimentBehavior experiment_type =
+      GetDefaultPopularSitesExperimentType();
 
   // If the experiment is enabled, and the popular sites suggestions should
   // include sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
-  if (country == "US" && experiment_type ==
-                             NewTabPageRetentionExperimentBehavior::
-                                 kPopularSitesIncludePopularApps) {
+  if (country == "US" &&
+      experiment_type ==
+          IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
     return GURL(kIOSDefaultPopularSitesExperimentIncludeApps);
   }
 
   // If the experiment is enabled, and the popular sites suggestions should
   // exclude sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
-  if (country == "US" && experiment_type ==
-                             NewTabPageRetentionExperimentBehavior::
-                                 kPopularSitesExcludePopularApps) {
+  if (country == "US" &&
+      experiment_type ==
+          IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
     return GURL(kIOSDefaultPopularSitesExperimentExcludeApps);
   }
 
@@ -258,14 +258,14 @@ base::Value DefaultPopularSites() {
 
   // A Chrome iOS-only experiment is being run which overrides the popular sites
   // URL.
-  NewTabPageRetentionExperimentBehavior experiment_type =
-      GetNewTabPageRetentionExperimentType();
+  IOSDefaultPopularSitesExperimentBehavior experiment_type =
+      GetDefaultPopularSitesExperimentType();
 
   // If the experiment is enabled, and the popular sites suggestions should
   // include sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
   if (experiment_type ==
-      NewTabPageRetentionExperimentBehavior::kPopularSitesIncludePopularApps) {
+      IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
     popular_sites_json = IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_JSON;
   }
 
@@ -273,7 +273,7 @@ base::Value DefaultPopularSites() {
   // exclude sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
   if (experiment_type ==
-      NewTabPageRetentionExperimentBehavior::kPopularSitesExcludePopularApps) {
+      IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
     popular_sites_json = IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_JSON;
   }
 
@@ -293,9 +293,9 @@ base::Value DefaultPopularSites() {
 
   // If the experiment is enabled, and the popular sites suggestions should
   // include sites with native iOS apps,
-  // `kIncludePopularApps` is used.
+  // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
   if (experiment_type ==
-      NewTabPageRetentionExperimentBehavior::kIncludePopularApps) {
+      IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
     static constexpr int popular_sites_icons_with_popular_ios_apps[] = {
         IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON0,
         IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON1,
@@ -311,9 +311,9 @@ base::Value DefaultPopularSites() {
 
   // If the experiment is enabled, and the popular sites suggestions should
   // exclude sites with native iOS apps,
-  // `kExcludePopularApps` is used.
+  // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
   if (experiment_type ==
-      NewTabPageRetentionExperimentBehavior::kExcludePopularApps) {
+      IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
     static constexpr int popular_sites_icons_without_popular_ios_apps[] = {
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON0,
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON1,
