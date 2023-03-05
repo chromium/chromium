@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">ລຶບ​ຂໍ້​ມູນ​ການ​ທ່ອງ​ເນັດ</translation>
 <translation id="1815941218935345331">ລະຫັດ</translation>
 <translation id="1820259098641718022">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{{COUNT} ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}other{{COUNT} ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}}</translation>
 <translation id="1832848789136765277">ເພື່ອກວດສອບວ່າທ່ານຈະສາມາດເຂົ້າເຖິງການຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້ກ່ອນ</translation>
 <translation id="1870148520156231997">ເປີດເຜີຍລະຫັດຜ່ານ</translation>
 <translation id="1872096359983322073">ໄຟສາຍ</translation>
@@ -720,6 +721,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6152406514676263192">ຊິ້ງຂໍ້ມູນສຳລັບເນື້ອຫາທີ່ກ່ຽວຂ້ອງທີ່ສຸດໂດຍອ້າງອີງໃສ່ຄວາມສົນໃຈຂອງທ່ານ.</translation>
 <translation id="6159839020698489198">ບໍ່ບັງຄັບ</translation>
 <translation id="6170450281939467187">ແປພາສາບໍ່ສຳເລັດ.</translation>
+<translation id="6173499589275053515">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">ຊອກຫາໃນ Chrome</translation>
 <translation id="6184086493125982861">ສະ​ແດງ​ແຖບ</translation>
 <translation id="6187302354554850004">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6193424046394092997">{count,plural, =1{ໄດ້ບຸກມາກໃສ່ {title} ແລ້ວ}other{ໄດ້ບຸກມາກໃສ່ {title} ແລ້ວ}}</translation>
 <translation id="6196207969502475924">​ການຄົ້ນຫາ​ສຽງ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ປິດ {COUNT} ແຖບ}other{ປິດ {COUNT} ແຖບ}}</translation>
+<translation id="6213567400989743524">ປິດຄຳເຕືອນໄວ້ແລ້ວ</translation>
 <translation id="6219550825416862075">ຍິນດີຕ້ອນຮັບກັບມາ</translation>
 <translation id="6219688215832490856">ຢ່າແປ</translation>
 <translation id="6223816392543092032">ໃຊ້ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຢູ່ໃນທຸກອຸປະກອນຂອງທ່ານ.</translation>
@@ -750,6 +753,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6346549652287021269">ເລີ່ມການດາວໂຫຼດໃໝ່ບໍ?</translation>
 <translation id="6347953390226388422">{count,plural, =1{ທີ່ຢູ່ນີ້ຈະຖືກລຶບຈາກບັນຊີ Google ຂອງທ່ານ (<ph name="USER_EMAIL" />) ແລະ ຈາກອຸປະກອນນີ້.}other{ທີ່ຢູ່ເຫຼົ່ານີ້ຈະຖືກລຶບຈາກບັນຊີ Google ຂອງທ່ານ (<ph name="USER_EMAIL" />) ແລະ ຈາກອຸປະກອນນີ້.}}</translation>
 <translation id="634878792104344809">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານຂອງທ່ານ, ປະຫວັດ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
+<translation id="6355820205320395730">ລະຫັດຜ່ານງ່າຍແມ່ນລະຫັດຜ່ານທີ່ເດົາໄດ້ງ່າຍ. ກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານກຳລັງສ້າງລະຫັດຜ່ານຍາກ. <ph name="BEGIN_LINK" />ເບິ່ງເຄັດລັບຄວາມປອດໄພເພີ່ມເຕີມ.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">ຕິດຕາມ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">ບໍ່​ມີ​ແຖບທີ່ບໍ່​ເຜີຍ​​ຕົວຕົນ</translation>
 <translation id="6363526231572697780">ບໍ່ມີຊື່ຜູ້ໃຊ້</translation>
@@ -853,6 +857,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6888009575607455378">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການຍົກເລີກການປ່ຽນແປງຂອງທ່ານ?</translation>
 <translation id="6896758677409633944">ກັອບປີ້</translation>
 <translation id="6897187120838603299">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ອຸປະກອນທ່ານ.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. ສະເພາະຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="6914583639806229067">ຊອກຫາຮູບພາບທີ່ທ່ານສຳເນົາໄວ້</translation>
 <translation id="6914783257214138813">ລະຫັດຜ່ານຂອງທ່ານຈະເບິ່ງເຫັນໄດ້ຕໍ່ກັບທຸກຄົນທີ່ສາມາດເຫັນໄຟລ໌ທີ່ສົ່ງອອກ.</translation>
 <translation id="6930799952781667037">ແຕະເພື່ອປ່ຽນເປັນພາສານີ້.</translation>
@@ -1012,10 +1017,12 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8084285576995584326">ຄວບຄຸມຂໍ້ມູນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="809543534949702122">ປະຫວັດການຊອກຫາ</translation>
 <translation id="8101409298456377967">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">ປິດ</translation>
 <translation id="8114753159095730575">ການດາວໂຫຼດໄຟລ໌ບໍ່ສາມາດໃຊ້ໄດ້. ມີຕົວເລືອກຕ່າງໆຢູ່ໃກ້ສ່ວນລຸ່ມຂອງໜ້າຈໍ.</translation>
 <translation id="81313319706244542">2. ແຕະລະຫັດຜ່ານ</translation>
 <translation id="8132598642024322408">ຕອນນີ້ <ph name="PRICE" /> ກ່ອນໜ້ານີ້ <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">ໃຊ້ລະຫັດຜ່ານທີ່ບໍ່ຊ້ຳກັນສຳລັບແຕ່ລະເວັບໄຊ ຫຼື ແອັບ. ຫາກມີບຸກຄົນອື່ນຮູ້ລະຫັດຜ່ານທີ່ທ່ານໃຊ້ຊ້ຳ, ອາດມີການນຳເອົາລະຫັດຜ່ານນັ້ນໄປໃຊ້ເພື່ອເຂົ້າເຖິງບັນຊີອື່ນໆຂອງທ່ານໄດ້. ຄລິກເພື່ອເປີດເວັບໄຊ ແລະ ປ່ຽນພວກມັນຕອນນີ້.</translation>
 <translation id="8136856065410661948">ຂໍ້ມູນນີ້ຈະໃຊ້ເພື່ອສ້າງນັດໝາຍໃນປະຕິທິນ Apple ຂອງທ່ານຈາກ Chrome ແລະ Google Lens.</translation>
 <translation id="8156478151976189188">ການຊິ້ງຂໍ້ມູນລະຫັດຜ່ານບໍ່ເຮັດວຽກ</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ບັນ​ຊີ</translation>
@@ -1027,6 +1034,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8225985093977202398">ຮູບ ແລະ ໄຟລ໌ທີ່ຖືກແຄດຊ໌</translation>
 <translation id="8237382152611443140">ເປີດການຕັ້ງຄ່າການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
+<translation id="8264966119170358612">ລະຫັດຜ່ານຂອງທ່ານຈຳນວນໜຶ່ງທີ່ບັນທຶກໄວ້ຖືກເປີດເຜີຍໃນການລະເມີດຂໍ້ມູນທີ່ບໍ່ແມ່ນຂໍ້ມູນ Google. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">ຍອມຮັບ ແລະ ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8278938988428169257">ລະບຸຄຳສັບ ຫຼື ວະລີ</translation>
 <translation id="8281781826761538115">ຄ່າເລີ່ມຕົ້ນ - <ph name="DEFAULT_LOCALE" /></translation>

@@ -81,6 +81,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="149095475893949513">This website is trying to download a configuration profile.</translation>
 <translation id="1491277525950327607">Double tap to toggle setting</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
+<translation id="1497590942294823549">Menu → Password Manager</translation>
 <translation id="1498283581832036924">Your <ph name="WEBSITE" /> account won't be deleted.</translation>
 <translation id="1506063256525392513">This lets you take and upload photos, as well as scan QR codes</translation>
 <translation id="1509486075633541495">Sign in to website</translation>
@@ -242,6 +243,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">Unable to Open File</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
+<translation id="2737716090799520623">When you're signed in to Chrome, passwords that you save will go in your Google Account (<ph name="ACCOUNT" />). To turn this off, <ph name="BEGIN_LINK" />go to settings<ph name="END_LINK" />.</translation>
 <translation id="2747003861858887689">Previous field</translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">just now</translation>
@@ -843,6 +845,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6801927553864092214">To browse privately, open an Incognito tab</translation>
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
+<translation id="6822587385560699678">When on, passwords are saved in <ph name="ACCOUNT" />. When off, passwords are saved only to this device.</translation>
 <translation id="683022620450280906">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL" /></translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>

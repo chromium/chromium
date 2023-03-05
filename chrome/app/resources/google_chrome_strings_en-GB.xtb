@@ -278,6 +278,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6327105987658262776">No update is available.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
+<translation id="6493527311031785448">Google Chrome is trying to <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="659498884637196217">In Google Password Manager on this device</translation>

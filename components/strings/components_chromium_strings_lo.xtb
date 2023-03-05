@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ແລະເບິ່ງໃຫ້ແນ່ໃຈວ່າ ການກໍານົດຂອງທ່ານໄດ້ຕັ້ງເປັນ "ບໍ່ມີພຣັອກຊີ" ຫຼື "ໂດຍກົງ" ແລ້ວ.</translation>
+<translation id="6549378540556750549">Chromium ຍັງເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_OSS" /> ອື່ນນຳອີກ.</translation>
 <translation id="6613594504749178791">ການປ່ຽນແປງຂອງທ່ານຈະມີຜົນຄັ້ງຕໍ່ໄປທີ່ທ່ານເລີ່ມເປີດໃຊ້ Chromium ໃໝ່.</translation>
+<translation id="7681937895330411637">Chromium ເປັນໄປໄດ້ໂດຍໂຄງການໂອເພນຊອດ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">ໄປ​ທີ່
           ເມ​ນູ Chromium &gt;
           <ph name="SETTINGS_TITLE" />

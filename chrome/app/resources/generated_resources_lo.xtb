@@ -347,6 +347,7 @@
 <translation id="1303671224831497365">ບໍ່ພົບອຸປະກອນ Bluetooth</translation>
 <translation id="130491383855577612">ປ່ຽນແທນແອັບ ແລະ ໄຟລ໌ Linux ສຳເລັດແລ້ວ</translation>
 <translation id="1306390193749326011">ທ່ານຈະບໍ່ເຫັນ <ph name="MODULE_NAME" /> ຢູ່ໜ້ານີ້ອີກ</translation>
+<translation id="1306518237408758433">ເປີດ <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">ປ່ຽນການຕັ້ງຄ່າ</translation>
 <translation id="1307165550267142340">ສ້າງ PIN ຂອງທ່ານແລ້ວ</translation>
 <translation id="1307431692088049276">ຢ່າຖາມຂ້ອຍອີກ</translation>
@@ -436,6 +437,7 @@
 <translation id="1393283411312835250">ແສງແດດ ແລະ ເມກເຝື້ອ</translation>
 <translation id="1395730723686586365">ຕົວອັບເດດເລີ່ມຕົ້ນແລ້ວ</translation>
 <translation id="1395832189806039783">ໄຮໄລ້ລາຍການດ້ວຍໂຟກັສແປ້ນພິມ</translation>
+<translation id="1396120028054416908">ກັບໄປທີ່ <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">ຜິດພາດໃນການຕັ້ງຄ່າເຄື່ອງພິມ</translation>
 <translation id="1396963298126346194">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານທີ່ທ່ານປ້ອນເຂົ້າບໍ່ກົງກັນ</translation>
 <translation id="1397500194120344683">ບໍ່ມີອຸປະກອນທີ່ມີສິດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -558,6 +560,7 @@
 <translation id="1487335504823219454">ເປີດໃຊ້ - ການຕັ້ງຄ່າແບບກຳນົດເອງ</translation>
 <translation id="1493892686965953381">ກໍາລັງລໍຖ້າ <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">ເວັບໄຊສາມາດຂໍໃຊ້ຟອນທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
+<translation id="1494429729245089920">ເຄື່ອງຈັກສະເໝືອນ "<ph name="VM_NAME" />" ມີຢູ່, ແຕ່ປາກົດວ່າບໍ່ແມ່ນເຄື່ອງຈັກສະເໝືອນ <ph name="APP_NAME" /> ທີ່ຖືກຕ້ອງ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1495677929897281669">ກັບຄືນຫາແຖບ</translation>
 <translation id="1500297251995790841">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບແອັບ Chrome ທີ່ບໍ່ຮອງຮັບ</translation>
@@ -675,6 +678,7 @@
 <translation id="1596286373007273895">ສາມາດໃຊ້ໄດ້</translation>
 <translation id="1596709061955594992">Bluetooth ຖືກປິດໄວ້ຢູ່. ເພື່ອເບິ່ງອຸປະກອນທີ່ສາມາດໃຊ້ໄດ້, ກະລຸນາເປີດ Bluetooth ກ່ອນ.</translation>
 <translation id="1596780725094407793">- ຮວມໂດເມນຍ່ອຍ</translation>
+<translation id="1597852076552089763">ຕົວເລືອກບຸກມາກ</translation>
 <translation id="1598163867407640634">ໃຊ້ <ph name="SITE_ETLD_PLUS_ONE" /> ດ້ວຍ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">ການ​ອັບ​ເດດ​ຖືກ​ປິດ​ໃຊ້​ງານ​ໂດຍ​ຜູ້​ດູແລລະ​ບົບ​ຂອງ​ທ່ານ.</translation>
 <translation id="1600857548979126453">ເຂົ້າຫາດ້ານຫຼັງຂອງຕົວແກ້ໄຂບັນຫາໜ້າ</translation>
@@ -1826,6 +1830,7 @@
 <translation id="25568951186001797">ເຟຣມທີ່ມີຮົ້ວກັ້ນ: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">ປະຫວັດການທ່ອງເວັບຂອງທ່ານມີຜົນກັບໂຄສະນາທີ່ທ່ານເຫັນ</translation>
 <translation id="2559889124253841528">ບັນທຶກໃສ່ອຸປະກອນ</translation>
+<translation id="2561211427862644160">ເບິ່ງບຸກມາກທັງໝົດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="2564520396658920462">ການດຳເນີນ JavaScript ຜ່ານ AppleScript ປິດຢູ່. ເພື່ອເປີດມັນ, ຈາກແຖບເມນູ, ກະລຸນາໄປຫາ ເບິ່ງ &gt; ຜູ້ພັດທະນາ &gt; ອະນຸຍາດ JavaScript ຈາກ Apple Events. ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">ການກວດການສະກົດຄຳທີ່ປັບປຸງແລ້ວ</translation>
 <translation id="2568694057933302218">ເມື່ອຢູ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ເວັບໄຊຈະບໍ່ສາມາດໃຊ້ຄຸກກີ້ຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນເວັບໄຊຕ່າງໆໄດ້. ການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານແມ່ນບໍ່ໄດ້ໃຊ້ເພື່ອສິ່ງຕ່າງໆ ເຊັ່ນ: ການປັບແຕ່ງໂຄສະນາໃຫ້ເປັນສ່ວນຕົວ. ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ.</translation>
@@ -2429,6 +2434,7 @@
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ຈັບຄູ່ແລ້ວ</translation>
 <translation id="3093714882666365141">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ</translation>
 <translation id="3094141017404513551">ນີ້ຈະແຍກການທ່ອງເວັບຂອງທ່ານອອກຈາກ <ph name="EXISTING_USER" /></translation>
+<translation id="3094521107841754472">ລາຄາໄດ້ປ່ຽນຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="CURRENT_PRICE" /> ແລ້ວ.</translation>
 <translation id="3095871294753148861">ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນໂປຣແກຣມທ່ອງເວັບອື່ນຖືກຊິ້ງຂໍ້ມູນກັບບັນຊີຫຼັກຂອງທ່ານ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{ສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ 1 ລາຍການປິດຢູ່. ທ່ານສາມາດລຶບມັນອອກໄດ້ນຳ.}other{ສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ {NUM_EXTENSIONS} ລາຍການປິດຢູ່. ທ່ານສາມາດລຶບມັນອອກໄດ້ນຳ.}}</translation>
 <translation id="3101126716313987672">ຫຼີ່ແສງລົງ</translation>
@@ -2781,6 +2787,7 @@
 <translation id="3441653493275994384">ຫນ້າ​ຈໍ</translation>
 <translation id="3441663102605358937">ເຂົ້າສູ່ລະບົບ <ph name="ACCOUNT" /> ອີກຄັ້ງເພື່ອຢັ້ງຢືນບັນຊີນີ້</translation>
 <translation id="3442674350323953953">ໃຫ້ Google ໃຊ້ຂໍ້ມູນຮາດແວຂອງທ່ານເພື່ອຊ່ວຍປັບປຸງ <ph name="DEVICE_OS" />. ຫາກທ່ານປະຕິເສດ, ຂໍ້ມູນນີ້ຈະຍັງຄົງຖືກສົ່ງໄປໃຫ້ Google ເພື່ອກວດສອບການອັບເດດທີ່ເໝາະສົມ, ແຕ່ຈະບໍ່ຖືກຈັດເກັບ ຫຼື ຖືກໃຊ້ໄປໃນທາງອື່ນ.</translation>
+<translation id="3443744348829035122"><ph name="BRAND" /> ໝົດເວລາແລ້ວ</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ຈະສາມາດເບິ່ງ <ph name="FILENAME" /> ໄດ້</translation>
 <translation id="3445047461171030979">ຄຳຕອບດ່ວນຂອງຜູ້ຊ່ວຍ Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ນາທີ</translation>
@@ -3178,6 +3185,7 @@
 <translation id="3790417903123637354">ມີບາງຢ່າງຜິດພາດ. ລອງໃໝ່ໃນພາຍຫລັງ</translation>
 <translation id="379082410132524484">ບັດຂອງທ່ານໝົດອາຍຸແລ້ວ</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> ສ່ວນຂະຫຍາຍ</translation>
+<translation id="3794792524918736965">ເປີດ Windows Hello</translation>
 <translation id="379500251094592809">ເພື່ອໃຊ້ການແບ່ງປັນໃກ້ຄຽງ, ກະລຸນາກວດສອບວ່າອຸປະກອນທັງສອງປົດລັອກແລ້ວ, ຢູ່ໃກ້ກັນ ແລະ ເປີດ Bluetooth. ຖ້າທ່ານກຳລັງແບ່ງປັນກັບ Chromebook ທີ່ບໍ່ໄດ້ຢູ່ໃນລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ, ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າມັນໄດ້ເປີດການແບ່ງປັນໃກ້ຄຽງ (ເປີດພື້ນທີ່ສະຖານະໂດຍການເລືອກເວລາ, ຈາກນັ້ນເປີດການແບ່ງປັນໃກ້ຄຽງ) <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">ປິດ</translation>
 <translation id="3795766489237825963">ຫຼິ້ນອະນິເມຊັນ</translation>
@@ -3323,6 +3331,7 @@
 <translation id="39103738135459590">ລະຫັດການເປີດນຳໃຊ້</translation>
 <translation id="3911824782900911339">ໜ້າແຖບໃໝ່</translation>
 <translation id="3914173277599553213">ຕ້ອງມີ</translation>
+<translation id="3914568430265141791">ເປີດໂຟນເດີ <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">ຊອກ​ຫາ​ດ້ວຍສຽງ</translation>
 <translation id="3916233823027929090">ກວດສອບຄວາມປອດໄພສຳເລັດແລ້ວ</translation>
 <translation id="3916445069167113093">ໄຟລ໌ປະເພດນີ້ສາມາດເປັນອັນຕະລາຍຕໍ່ຄອມພິວເຕີຂອງທ່ານໄດ້. ແນວໃດທ່ານກໍ່ຕ້ອງການເກັບ <ph name="FILE_NAME" /> ໄວ້ບໍ?</translation>
@@ -3454,6 +3463,7 @@
 <translation id="4022426551683927403">ເພີ່ມໃສ່ພົດຈະນານຸກົມ</translation>
 <translation id="4025039777635956441">ປິດສຽງເວັບໄຊທີ່ເລືອກ</translation>
 <translation id="402707738228916911">ໄດ້ຮັບຄຳສັ່ງ <ph name="AUTHORIZE_INSTRUCTION_NAME" /> ລາຍການແລ້ວ</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ໂຟນເດີ</translation>
 <translation id="4027958407426528157">ເປີດເວັບໄຊໃນແອັບທີ່ຕິດຕັ້ງໄວ້ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="4028467762035011525">ເພີ່ມວິທີການປ້ອນຂໍ້ມູນ</translation>
 <translation id="4029556917477724407">ກັບມາຈາກໜ້າ <ph name="PAGE_TITLE" /></translation>
@@ -3508,6 +3518,7 @@
 <translation id="4077917118009885966">ບລັອກໂຄສະນາໃນເວັບໄຊນີ້ໄວ້ແລ້ວ</translation>
 <translation id="4077919383365622693">ລະບົບຈະລຶບລ້າງຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ເກັບໄວ້ໂດຍ <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">ບັງຄັບແຄສ</translation>
+<translation id="4078903002989614318">ຕົວເລືອກການຈັດຮຽງ ແລະ ລາຍຊື່</translation>
 <translation id="4079140982534148664">ໃຊ້ການກວດການສະກົດຄຳທີ່ປັບປຸງດີຂຶ້ນແລ້ວ</translation>
 <translation id="4084682180776658562">ບຸກມາກຄ໌</translation>
 <translation id="4084835346725913160">ປິດ <ph name="TAB_NAME" /></translation>
@@ -3652,6 +3663,7 @@
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4218081191298393750">ຄລິກໃສ່ໄອຄອນລຳໂພງເພື່ອປິດສຽງແຖບນີ້</translation>
 <translation id="4220648711404560261">ເກີດຄວາມຜິດພາດໃນລະຫວ່າງການເປີດນຳໃຊ້.</translation>
+<translation id="4222917615373664617">ການຕິດຕາມລາຄາເປີດການນຳໃຊ້ຢູ່. ລາຄາແມ່ນ <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223845867739585293">ສ້າງກະແຈຜ່ານ</translation>
 <translation id="4225397296022057997">ໃນທຸກເວັບໄຊ</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ບໍ່ອະນຸຍາດສ່ວນຂະຫຍາຍນີ້}other{ບໍ່ອະນຸຍາດສ່ວນຂະຫຍາຍບາງອັນ}}</translation>
@@ -5811,6 +5823,7 @@
 <translation id="6212168817037875041">ປິດໜ້າຈໍ</translation>
 <translation id="6212752530110374741">ອີເມວລິ້ງ</translation>
 <translation id="621470880408090483">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth</translation>
+<translation id="6215039389782910006">{1,plural, =1{ເພື່ອຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ, <ph name="BRAND" /> ຈະລັອກຫຼັງຈາກບໍ່ມີການເຄື່ອນໄຫວ 1 ນາທີ}other{ເພື່ອຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ, <ph name="BRAND" /> ຈະລັອກຫຼັງຈາກບໍ່ມີການເຄື່ອນໄຫວ # ນາທີ}}</translation>
 <translation id="6216239400972191926">ເວັບໄຊ ແລະ ແອັບທີ່ຖືກປະຕິເສດ</translation>
 <translation id="6216601812881225442">ກ່ອງບັນຈຸຂອງທ່ານບໍ່ຮອງຮັບການປັບຂະໜາດ. ເພື່ອປັບປະລິມານພື້ນທີ່ຫວ່າງທີ່ຈັດສັນລ່ວງໜ້າໃຫ້ Linux, ກະລຸນາສຳຮອງຂໍ້ມູນໄວ້ ແລະ ຈາກນັ້ນກູ້ຄືນໃສ່ກ່ອງບັນຈຸໃໝ່.</translation>
 <translation id="6216696360484424239">ເຂົ້າສູ່ລະບົບອັດຕະໂນມັດ</translation>
@@ -6433,6 +6446,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ຖືກເພີ່ມເຂົ້າຈາກທາງໄກແລ້ວ</translation>
 <translation id="6790820461102226165">ເພີ່ມບຸກຄົນ...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">ເພື່ອເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ດ້ວຍກະແຈຜ່ານ, ທ່ານຈໍາເປັນຕ້ອງເປີດ Windows Hello ໃນການຕັ້ງຄ່າ. ຈາກນັ້ນກັບຄືນມາຫາເວັບໄຊນີ້ແລ້ວລອງໃໝ່.</translation>
 <translation id="6795371939514004514">ການສະແກນອັດຕະໂນມັດຈະເຮັດໃຫ້ທ່ານສາມາດເລື່ອນຜ່ານລາຍການຢູ່ໜ້າຈໍໄດ້ໂດຍອັດຕະໂນມັດ. ເມື່ອໄຮໄລ້ລາຍການໃດໜຶ່ງແລ້ວ, ໃຫ້ກົດ “ເລືອກ” ເພື່ອເປີດນຳໃຊ້ມັນ.</translation>
 <translation id="6795884519221689054">ແພນດ້າ</translation>
 <translation id="6796509790850723820">ສະແດງພາບ</translation>
@@ -8349,6 +8363,7 @@
 <translation id="8513108775083588393">ໝຸນອັດຕະໂນມັດ</translation>
 <translation id="8514746246728959655">ລອງກະແຈຄວາມປອດໄພອື່ນ</translation>
 <translation id="8514955299594277296">ຢ່າອະນຸຍາດໃຫ້ເວັບໄຊບັນທຶກຂໍ້ມູນຢູ່ອຸປະກອນຂອງທ່ານ (ບໍ່ແນະນຳ)</translation>
+<translation id="8517759303731677493">ແກ້ໄຂ…</translation>
 <translation id="8519895319663397036">ບໍ່ສາມາດນຳເຂົ້າລະຫັດຜ່ານໄດ້. ຂະໜາດໄຟລ໌ຄວນໜ້ອຍກວ່າ 150 KB.</translation>
 <translation id="8523493869875972733">ຮັກສາການປ່ຽນແປງ</translation>
 <translation id="8523849605371521713">ເພີ່ມໂດຍນະໂຍບາຍ</translation>
