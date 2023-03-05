@@ -37,17 +37,16 @@ class IdleRequestCallbackWrapper
       scoped_refptr<IdleRequestCallbackWrapper> callback_wrapper,
       base::TimeTicks deadline) {
 
-    if (!recordreplay::AreEventsDisallowed())
-      recordreplay::Assert("[RUN-1335-1336] IdleTaskFired A %d",
-                           callback_wrapper->Id());
+    recordreplay::Assert("[RUN-1335-1336] IdleTaskFired A %d",
+                          callback_wrapper->Id());
 
     if (ScriptedIdleTaskController* controller =
             callback_wrapper->Controller()) {
       // If we are going to yield immediately, reschedule the callback for
       // later.
 
-      if (!recordreplay::AreEventsDisallowed())
-        recordreplay::Assert("[RUN-1335-1336] IdleTaskFired B");
+      recordreplay::Assert("[RUN-1335-1456] IdleTaskFired B %d",
+                           callback_wrapper->Id());
 
       if (ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
         controller->ScheduleCallback(std::move(callback_wrapper),
@@ -57,6 +56,10 @@ class IdleRequestCallbackWrapper
       controller->CallbackFired(callback_wrapper->Id(), deadline,
                                 IdleDeadline::CallbackType::kCalledWhenIdle);
     }
+    
+    recordreplay::Assert("[RUN-1335-1456] IdleTaskFired C %d",
+                         callback_wrapper->Id());
+
     callback_wrapper->Cancel();
   }
 
@@ -81,7 +84,10 @@ class IdleRequestCallbackWrapper
  private:
   IdleRequestCallbackWrapper(ScriptedIdleTaskController::CallbackId id,
                              ScriptedIdleTaskController* controller)
-      : id_(id), controller_(controller) {}
+      : id_(id), controller_(controller) {
+    recordreplay::Assert(
+        "[RUN-1335-1456] IdleRequestCallbackWrapper::IdleRequestCallbackWrapper %d %d", id, !!controller_);
+  }
 
   ScriptedIdleTaskController::CallbackId id_;
   WeakPersistent<ScriptedIdleTaskController> controller_;
@@ -107,7 +113,12 @@ ScriptedIdleTaskController::ScriptedIdleTaskController(
       next_callback_id_(0),
       paused_(false) {}
 
-ScriptedIdleTaskController::~ScriptedIdleTaskController() = default;
+ScriptedIdleTaskController::~ScriptedIdleTaskController() {
+  if (idle_tasks_.size()) {
+    recordreplay::Assert(
+      "[RUN-1335-1456] ScriptedIdleTaskController::~ScriptedIdleTaskController %lu", idle_tasks_.size());
+  }
+}
 
 void ScriptedIdleTaskController::Trace(Visitor* visitor) const {
   visitor->Trace(idle_tasks_);
@@ -135,6 +146,9 @@ ScriptedIdleTaskController::RegisterCallback(
   CallbackId id = NextCallbackId();
   idle_tasks_.Set(id, idle_task);
   uint32_t timeout_millis = options->timeout();
+
+  recordreplay::Assert(
+      "[RUN-1335-1456] ScriptedIdleTaskController::RegisterCallback A %d", id);
 
   idle_task->async_task_context()->Schedule(GetExecutionContext(),
                                             "requestIdleCallback");
@@ -170,6 +184,9 @@ void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "CancelIdleCallback", inspector_idle_callback_cancel_event::Data,
       GetExecutionContext(), id);
+  recordreplay::Assert(
+      "[RUN-1335-1456] ScriptedIdleTaskController::CancelCallback %d", id);
+
   if (!IsValidCallbackId(id))
     return;
 
@@ -202,6 +219,10 @@ void ScriptedIdleTaskController::RunCallback(
     IdleDeadline::CallbackType callback_type) {
   DCHECK(!paused_);
 
+  recordreplay::Assert(
+      "[RUN-1335-1456] ScriptedIdleTaskController::RunCallback A %d",
+      id);
+
   // Keep the idle task in |idle_tasks_| so that it's still wrapper-traced.
   // TODO(https://crbug.com/796145): Remove this hack once on-stack objects
   // get supported by either of wrapper-tracing or unified GC.
@@ -210,6 +231,10 @@ void ScriptedIdleTaskController::RunCallback(
     return;
   IdleTask* idle_task = idle_task_iter->value;
   DCHECK(idle_task);
+
+  recordreplay::Assert(
+      "[RUN-1335-1456] ScriptedIdleTaskController::RunCallback B %d %d",
+      id, idle_task->RecordReplayId());
 
   base::TimeDelta allotted_time =
       std::max(deadline - base::TimeTicks::Now(), base::TimeDelta());
@@ -240,6 +265,11 @@ void ScriptedIdleTaskController::RunCallback(
 }
 
 void ScriptedIdleTaskController::ContextDestroyed() {
+  if (idle_tasks_.size())
+    recordreplay::Assert(
+        "[RUN-1335-1456] ScriptedIdleTaskController::ContextDestroyed %lu %d",
+        idle_tasks_.size(),
+        idle_tasks_.begin()->value->RecordReplayId());
   idle_tasks_.clear();
 }
 
