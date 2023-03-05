@@ -5,7 +5,6 @@
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_utils.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
@@ -23,11 +22,9 @@ const int kMenuButtonWidth = 63;
 // touch_selection_menu_runner_views.cc.
 const int kMenuCommandCount = 3;
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Should match size of |kMenuSelectionCommands| array in
 // touch_selection_menu_runner_views.cc.
 const int kMenuSelectionCommandCount = 2;
-#endif
 
 }  // namespace
 
@@ -45,10 +42,6 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
 
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kTouchTextEditingRedesign);
-#endif
     ViewsTestBase::SetUp();
     // These tests expect NativeWidgetAura and so aren't applicable to
     // aura-mus-client. http://crbug.com/663561.
@@ -81,8 +74,6 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
   bool no_command_available_ = false;
 
   int last_executed_command_id_ = 0;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the default touch selection menu runner is installed and opening
@@ -116,16 +107,57 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, InstalledAndWorksProperly) {
 // distance of handles.
 TEST_F(TouchSelectionMenuRunnerViewsTest, QuickMenuAdjustsAnchorRect) {
   gfx::Size handle_size(10, 10);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kTouchTextEditingRedesign});
+
   TouchSelectionMenuRunnerViews::TestApi test_api(
       static_cast<TouchSelectionMenuRunnerViews*>(
           ui::TouchSelectionMenuRunner::GetInstance()));
 
-  int menu_command_count =
-#if BUILDFLAG(IS_CHROMEOS)
-      kMenuCommandCount + kMenuSelectionCommandCount;
-#else
-      kMenuCommandCount;
-#endif
+  int menu_command_count = kMenuCommandCount;
+
+  // Calculate the width of quick menu. In addition to the menu commands, there
+  // is an item for ellipsis.
+  int quick_menu_width =
+      (menu_command_count + 1) * kMenuButtonWidth + menu_command_count;
+
+  // Set anchor rect's width a bit smaller than the quick menu width plus handle
+  // image width and check that anchor rect's height is adjusted.
+  gfx::Rect anchor_rect(0, 0, quick_menu_width + handle_size.width() - 10, 20);
+  ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
+      GetWeakPtr(), anchor_rect, handle_size, GetContext());
+  anchor_rect.Inset(gfx::Insets::TLBR(0, 0, -handle_size.height(), 0));
+  EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
+
+  // Set anchor rect's width a bit greater than the quick menu width plus handle
+  // image width and check that anchor rect's height is not adjusted.
+  anchor_rect =
+      gfx::Rect(0, 0, quick_menu_width + handle_size.width() + 10, 20);
+  ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
+      GetWeakPtr(), anchor_rect, handle_size, GetContext());
+  EXPECT_EQ(anchor_rect, test_api.GetAnchorRect());
+
+  ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
+  RunPendingMessages();
+}
+
+// Tests that anchor rect for the quick menu is adjusted correctly based on the
+// distance of handles.
+TEST_F(TouchSelectionMenuRunnerViewsTest,
+       QuickMenuAdjustsAnchorRectWithSelectCommands) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  gfx::Size handle_size(10, 10);
+  TouchSelectionMenuRunnerViews::TestApi test_api(
+      static_cast<TouchSelectionMenuRunnerViews*>(
+          ui::TouchSelectionMenuRunner::GetInstance()));
+
+  int menu_command_count = kMenuCommandCount + kMenuSelectionCommandCount;
 
   // Calculate the width of quick menu. In addition to the menu commands, there
   // is an item for ellipsis.

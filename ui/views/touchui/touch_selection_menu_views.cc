@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -46,12 +45,10 @@ MenuCommand kMenuCommands[] = {
     {ui::TouchEditable::kPaste, IDS_APP_PASTE},
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
 MenuCommand kMenuSelectCommands[] = {
-    {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
     {ui::TouchEditable::kSelectWord, IDS_APP_SELECT},
+    {ui::TouchEditable::kSelectAll, IDS_APP_SELECT_ALL},
 };
-#endif
 
 constexpr int kSpacingBetweenButtons = 2;
 
@@ -129,10 +126,8 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
     return client->IsCommandIdEnabled(command.command_id);
   };
   bool is_available = base::ranges::any_of(kMenuCommands, is_enabled);
-#if BUILDFLAG(IS_CHROMEOS)
   is_available |= ::features::IsTouchTextEditingRedesignEnabled() &&
                   base::ranges::any_of(kMenuSelectCommands, is_enabled);
-#endif
   return is_available;
 }
 
@@ -157,7 +152,6 @@ void TouchSelectionMenuViews::CreateButtons() {
                               base::Unretained(this), command.command_id));
     }
   }
-#if BUILDFLAG(IS_CHROMEOS)
   if (::features::IsTouchTextEditingRedesignEnabled()) {
     for (const auto& command : kMenuSelectCommands) {
       if (client_->IsCommandIdEnabled(command.command_id)) {
@@ -168,7 +162,6 @@ void TouchSelectionMenuViews::CreateButtons() {
       }
     }
   }
-#endif
 
   // Finally, add ellipsis button.
   CreateButton(u"...",
