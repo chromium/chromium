@@ -14,6 +14,10 @@
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
+namespace recordreplay {
+extern bool IsMainThread();
+}
+
 namespace mojo {
 namespace internal {
 
@@ -57,20 +61,18 @@ Buffer& Buffer::operator=(Buffer&& other) {
 // message sizes.
 static bool gRecordReplayAssertAllocations = false;
 
-extern "C" bool V8IsMainThread();
-
 AutoRecordReplayAssertBufferAllocations::AutoRecordReplayAssertBufferAllocations() {
-  if (V8IsMainThread())
+  if (recordreplay::IsMainThread())
     gRecordReplayAssertAllocations = true;
 }
 
 AutoRecordReplayAssertBufferAllocations::~AutoRecordReplayAssertBufferAllocations() {
-  if (V8IsMainThread())
+  if (recordreplay::IsMainThread())
     gRecordReplayAssertAllocations = false;
 }
 
 size_t Buffer::Allocate(size_t num_bytes) {
-  if (gRecordReplayAssertAllocations && V8IsMainThread())
+  if (gRecordReplayAssertAllocations && recordreplay::IsMainThread())
     recordreplay::Assert("Buffer::Allocate %zu", num_bytes);
 
   const size_t aligned_num_bytes = Align(num_bytes);

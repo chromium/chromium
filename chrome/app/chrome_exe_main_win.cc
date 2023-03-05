@@ -233,12 +233,16 @@ __declspec(dllexport) __cdecl void GetPakFileHashes(
   *chrome_200_pak = kSha256_chrome_200_percent_pak.data();
 }
 
+#include "./record_replay_main.cc"
+
 #if !defined(WIN_CONSOLE_APP)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {
 #else   // !defined(WIN_CONSOLE_APP)
 int main() {
   HINSTANCE instance = GetModuleHandle(nullptr);
 #endif  // !defined(WIN_CONSOLE_APP)
+
+  RecordReplayAttach(nullptr, nullptr);
 
 #if defined(ARCH_CPU_32_BITS)
   enum class FiberStatus { kConvertFailed, kCreateFiberFailed, kSuccess };

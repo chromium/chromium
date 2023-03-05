@@ -19,6 +19,8 @@
 #include "base/time/time_override.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
@@ -30,14 +32,24 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
   // We're probably going to crash anyways if this is ever NULL, so we might as
   // well make our stack reports more informative by crashing here.
   CHECK(handle_.is_valid());
+
+  // Pointer registration is needed for sorting in WaitSet.user_events_
+  if (!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording())
+    recordreplay::RegisterPointer("WaitableEvent", this);
 }
 
 WaitableEvent::WaitableEvent(win::ScopedHandle handle)
     : handle_(std::move(handle)) {
   CHECK(handle_.is_valid()) << "Tried to create WaitableEvent from NULL handle";
+
+  // Pointer registration is needed for sorting in WaitSet.user_events_
+  if (!recordreplay::AreEventsDisallowed() || recordreplay::HasDivergedFromRecording())
+    recordreplay::RegisterPointer("WaitableEvent", this);
 }
 
-WaitableEvent::~WaitableEvent() = default;
+WaitableEvent::~WaitableEvent() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void WaitableEvent::Reset() {
   ResetEvent(handle_.get());

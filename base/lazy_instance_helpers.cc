@@ -9,38 +9,44 @@
 #include "base/at_exit.h"
 #include "base/threading/platform_thread.h"
 
+#if !BUILDFLAG(IS_WIN)
 #include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
+
+static void* LookupRecordReplaySymbol(const char* name) {
+#if !BUILDFLAG(IS_WIN)
+  void* fnptr = dlsym(RTLD_DEFAULT, name);
+#else
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+#endif
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
+
+static void RecordReplayBeginPassThroughEvents() {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayBeginPassThroughEvents");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(fnptr)();
+  }
+}
+
+static void RecordReplayEndPassThroughEvents() {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayEndPassThroughEvents");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(fnptr)();
+  }
+}
 
 namespace base {
 namespace internal {
-
-static void (*gRecordReplayBeginPassThroughEventsFn)();
-
-static void RecordReplayBeginPassThroughEvents() {
-  if (!gRecordReplayBeginPassThroughEventsFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginPassThroughEvents");
-    if (!fnptr) {
-      return;
-    }
-    gRecordReplayBeginPassThroughEventsFn = reinterpret_cast<void(*)()>(fnptr);
-  }
-
-  gRecordReplayBeginPassThroughEventsFn();
-}
-
-static void (*gRecordReplayEndPassThroughEventsFn)();
-
-static void RecordReplayEndPassThroughEvents() {
-  if (!gRecordReplayEndPassThroughEventsFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayEndPassThroughEvents");
-    if (!fnptr) {
-      return;
-    }
-    gRecordReplayEndPassThroughEventsFn = reinterpret_cast<void(*)()>(fnptr);
-  }
-
-  gRecordReplayEndPassThroughEventsFn();
-}
 
 bool NeedsLazyInstance(std::atomic<uintptr_t>& state) {
   // Try to create the instance, if we're the first, will go from 0 to

@@ -4,22 +4,29 @@
 
 #include "base/functional/callback_helpers.h"
 
+#ifndef _WIN32
 #include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
 
-static void* gRecordReplayValueFn;
+static void* LookupRecordReplaySymbol(const char* name) {
+#ifndef _WIN32
+  void* fnptr = dlsym(RTLD_DEFAULT, name);
+#else
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+#endif
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
 
 static uintptr_t RecordReplayValue(const char* why, uintptr_t v) {
-  if (!gRecordReplayValueFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayValue");
-    if (!fnptr) {
-      gRecordReplayValueFn = reinterpret_cast<void*>(1);
-      return v;
-    }
-    gRecordReplayValueFn = fnptr;
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayValue");
   }
-
-  if (gRecordReplayValueFn != reinterpret_cast<void*>(1)) {
-    return reinterpret_cast<uintptr_t(*)(const char*, uintptr_t)>(gRecordReplayValueFn)(why, v);
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    return reinterpret_cast<uintptr_t(*)(const char*, uintptr_t)>(fnptr)(why, v);
   }
   return v;
 }

@@ -10,10 +10,10 @@
 #include "third_party/inspector_protocol/crdtp/json.h"
 #include "third_party/inspector_protocol/crdtp/serializable.h"
 
-
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/process/process_handle.h"
 #include "base/record_replay.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -3680,7 +3680,7 @@ static void GetCurrentNetworkStreamData(const v8::FunctionCallbackInfo<v8::Value
 
 static std::string MakeRequestIdentifier(uint64_t identifier) {
   char request_id[64];
-  snprintf(request_id, 64, "%d.%lu", (int) getpid(), (unsigned long) identifier);
+  snprintf(request_id, 64, "%d.%lu", (int) base::GetCurrentProcId(), (unsigned long) identifier);
   return std::string(request_id);
 }
 

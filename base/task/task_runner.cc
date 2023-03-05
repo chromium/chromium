@@ -13,35 +13,42 @@
 #include "base/threading/post_task_and_reply_impl.h"
 #include "base/time/time.h"
 
+#if !BUILDFLAG(IS_WIN)
 #include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
 
-static void (*gRecordReplayRegisterPointerFn)(const char*, void*);
-
-static bool RecordReplayRegisterPointer(const char* name, void* ptr) {
-  if (!gRecordReplayRegisterPointerFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayRegisterPointerWithName");
-    if (!fnptr) {
-      return false;
-    }
-    gRecordReplayRegisterPointerFn = reinterpret_cast<void(*)(const char*, void*)>(fnptr);
-  }
-
-  gRecordReplayRegisterPointerFn(name, ptr);
-  return true;
+static void* LookupRecordReplaySymbol(const char* name) {
+#if !BUILDFLAG(IS_WIN)
+  void* fnptr = dlsym(RTLD_DEFAULT, name);
+#else
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+#endif
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
 }
 
-static void (*gRecordReplayUnregisterPointerFn)(void*);
+static bool RecordReplayRegisterPointer(const char* name, void* ptr) {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayRegisterPointerWithName");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)(const char*, void*)>(fnptr)(name, ptr);
+    return true;
+  }
+  return false;
+}
 
 static void RecordReplayUnregisterPointer(void* ptr) {
-  if (!gRecordReplayUnregisterPointerFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayUnregisterPointer");
-    if (!fnptr) {
-      return;
-    }
-    gRecordReplayUnregisterPointerFn = reinterpret_cast<void(*)(void*)>(fnptr);
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayUnregisterPointer");
   }
-
-  gRecordReplayUnregisterPointerFn(ptr);
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)(void*)>(fnptr)(ptr);
+  }
 }
 
 namespace base {

@@ -96,15 +96,16 @@ if (useGoma) {
 }
 
 // ensure that build configuration is written with correct paths
-spawnChecked("gn", ["gen", "out/Release"]);
+const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
+spawnChecked(gn, ["gen", "out/Release"]);
 
 console.log(`Building...`);
-spawnChecked("autoninja", ["-C", "out/Release", "chrome"], {
+const autoninja = currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
+spawnChecked(autoninja, ["-C", "out/Release", "chrome"], {
   stdio: "inherit",
 });
 
 console.log(`Build finished.`);
-
 
 function spawnChecked(cmd, args, options) {
   const prettyCmd = [cmd].concat(args).join(" ");
@@ -128,6 +129,8 @@ function currentPlatform() {
       return "macOS";
     case "linux":
       return "linux";
+    case "win32":
+      return "windows";
     default:
       throw new Error(`Platform ${process.platform} not supported`);
   }

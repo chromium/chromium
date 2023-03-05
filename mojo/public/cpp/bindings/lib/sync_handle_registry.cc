@@ -20,9 +20,13 @@
 
 #include "base/record_replay.h"
 
+namespace recordreplay {
+
 // Used to make sure we finish recordings on the main thread, even if we're
 // blocked in a sync event.
-extern "C" void V8RecordReplayMaybeTerminate(void (*callback)(void*), void* data);
+void MaybeTerminate(void (*callback)(void*), void* data);
+
+} // namespace recordreplay
 
 namespace mojo {
 
@@ -137,7 +141,7 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 
   scoped_refptr<SyncHandleRegistry> preserver(this);
   while (true) {
-    V8RecordReplayMaybeTerminate(nullptr, nullptr);
+    recordreplay::MaybeTerminate(nullptr, nullptr);
 
     for (size_t i = 0; i < count; ++i) {
       if (*should_stop[i]) {

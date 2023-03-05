@@ -28,39 +28,39 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/spinlock.h"
 
+#ifndef _WIN32
 #include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
 
-static void* gRecordReplayBeginDisallowEventsWithLabelFn;
+static void* LookupRecordReplaySymbol(const char* name) {
+#ifndef _WIN32
+  void* fnptr = dlsym(RTLD_DEFAULT, name);
+#else
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+#endif
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
 
 static void RecordReplayBeginDisallowEventsWithLabel(const char* label) {
-  if (!gRecordReplayBeginDisallowEventsWithLabelFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginDisallowEventsWithLabel");
-    if (!fnptr) {
-      gRecordReplayBeginDisallowEventsWithLabelFn = reinterpret_cast<void*>(1);
-      return;
-    }
-    gRecordReplayBeginDisallowEventsWithLabelFn = fnptr;
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayBeginDisallowEventsWithLabel");
   }
-
-  if (gRecordReplayBeginDisallowEventsWithLabelFn != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)(const char*)>(gRecordReplayBeginDisallowEventsWithLabelFn)(label);
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)(const char*)>(fnptr)(label);
   }
 }
 
-static void* gRecordReplayEndDisallowEventsFn;
-
 static void RecordReplayEndDisallowEvents() {
-  if (!gRecordReplayEndDisallowEventsFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayEndDisallowEvents");
-    if (!fnptr) {
-      gRecordReplayEndDisallowEventsFn = reinterpret_cast<void*>(1);
-      return;
-    }
-    gRecordReplayEndDisallowEventsFn = fnptr;
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayEndDisallowEvents");
   }
-
-  if (gRecordReplayEndDisallowEventsFn != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)()>(gRecordReplayEndDisallowEventsFn)();
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(fnptr)();
   }
 }
 

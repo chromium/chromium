@@ -10,8 +10,12 @@
 
 namespace blink {
 
-//thread_local ThreadStateStorage* g_thread_specific_ CONSTINIT
-//    __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL))) = nullptr;
+#if BUILDFLAG(IS_WIN)
+
+thread_local ThreadStateStorage* g_thread_specific_ CONSTINIT
+    __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL))) = nullptr;
+
+#else // !BUILDFLAG(IS_WIN)
 
 template <typename T>
 class ThreadLocal {
@@ -38,6 +42,8 @@ ThreadStateStorage*& GetThreadStateStorage() {
   static ThreadLocal<ThreadStateStorage*> instance(nullptr);
   return instance.get();
 }
+
+#endif // !BUILDFLAG(IS_WIN)
 
 // static
 ThreadStateStorage ThreadStateStorage::main_thread_state_storage_;

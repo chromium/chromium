@@ -101,7 +101,7 @@ if (use_v8_context_snapshot) {
     }
 
     executable("v8_context_snapshot_generator") {
-      sources = [ "v8_context_snapshot_generator.cc" ]
+      sources = [ "v8_context_snapshot_generator.cc", "//components/viz/service/display/record_replay_render_nop.cc" ]
 
       deps = [
         "//gin:gin",

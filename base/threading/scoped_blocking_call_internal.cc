@@ -22,42 +22,42 @@
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 
+#if !BUILDFLAG(IS_WIN)
 #include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
 
-static void* gRecordReplayAssertFn;
+static void* LookupRecordReplaySymbol(const char* name) {
+#if !BUILDFLAG(IS_WIN)
+  void* fnptr = dlsym(RTLD_DEFAULT, name);
+#else
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+#endif
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
 
 static void RecordReplayAssert(const char* aFormat, ...) {
-  if (!gRecordReplayAssertFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
-    if (!fnptr) {
-      gRecordReplayAssertFn = reinterpret_cast<void*>(1);
-      return;
-    }
-    gRecordReplayAssertFn = fnptr;
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayAssert");
   }
-
-  if (gRecordReplayAssertFn != reinterpret_cast<void*>(1)) {
+  if (fnptr != reinterpret_cast<void*>(1)) {
     va_list ap;
     va_start(ap, aFormat);
-    reinterpret_cast<void(*)(const char*, va_list)>(gRecordReplayAssertFn)(aFormat, ap);
+    reinterpret_cast<void(*)(const char*, va_list)>(fnptr)(aFormat, ap);
     va_end(ap);
   }
 }
 
-static void* gRecordReplayAreEventsDisallowedFn;
-
 static bool RecordReplayAreEventsDisallowed() {
-  if (!gRecordReplayAreEventsDisallowedFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAreEventsDisallowed");
-    if (!fnptr) {
-      gRecordReplayAreEventsDisallowedFn = reinterpret_cast<void*>(1);
-      return false;
-    }
-    gRecordReplayAreEventsDisallowedFn = fnptr;
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayAreEventsDisallowed");
   }
-
-  if (gRecordReplayAreEventsDisallowedFn != reinterpret_cast<void*>(1)) {
-    return reinterpret_cast<bool(*)()>(gRecordReplayAreEventsDisallowedFn)();
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    return reinterpret_cast<bool(*)()>(fnptr)();
   }
   return false;
 }
