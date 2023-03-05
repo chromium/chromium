@@ -534,7 +534,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "handwritinglibrarydlc",
       base::FeatureList::IsEnabled(ash::features::kHandwritingLibraryDlc)));
   features.Append(
-      GenerateFeatureFlag("jelly", ash::features::IsJellyEnabled()));
+      GenerateFeatureFlag("jelly", chromeos::features::IsJellyEnabled()));
 
   results.Set("features", std::move(features));
 
