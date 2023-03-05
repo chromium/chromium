@@ -3745,6 +3745,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ активни)</translation>
 <translation id="4310132194679586591">Изберете приложение на устройството си, за да отворите тази връзка</translation>
 <translation id="4310139701823742692">Файловият формат е неправилен. Проверете PPD файла и опитайте отново.</translation>
+<translation id="4310496734563057511">Ако споделяте устройството с други хора, можете да включите Windows Hello, за да потвърждавате самоличността си всеки път, когато използвате запазена парола</translation>
 <translation id="431076611119798497">&amp;Подробности</translation>
 <translation id="4311284648179069796">Няма разрешение да чете и променя</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 профил в Google}other{<ph name="EXTRA_ACCOUNTS" /> профила в Google}}</translation>
@@ -9045,6 +9046,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9131209053278896908">Блокираните сайтове се показват тук</translation>
 <translation id="9131487537093447019">Да обменя съобщения с устройства с Bluetooth.</translation>
 <translation id="913383674572270194">{NUM_BOOKMARKS,plural, =1{1 отметка}other{# отметки}}</translation>
+<translation id="9133985615769429248">Ако споделяте това устройство с други хора, можете да използвате опцията си за заключване на екрана, за да потвърждавате самоличността си всеки път, когато ползвате запазена парола</translation>
 <translation id="9134066738478820307">Сайтовете могат да използват идентификатори с цел възпроизвеждане на защитено съдържание</translation>
 <translation id="913411432238655354">Възстановяване на приложенията при стартиране</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>

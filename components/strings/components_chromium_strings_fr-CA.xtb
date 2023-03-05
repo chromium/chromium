@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           et assurez-vous que vos paramètres aient comme valeur « sans mandataire » ou « direct ».</translation>
+<translation id="6549378540556750549">Chromium est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
+<translation id="7681937895330411637">Chromium est rendu possible grâce au projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Accédez au
           menu Chromium &gt;
           <ph name="SETTINGS_TITLE" />

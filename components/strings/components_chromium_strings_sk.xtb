@@ -26,7 +26,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a uistite sa, že je vaša konfigurácia nastavená na hodnotu „žiadny server proxy" alebo „priame".</translation>
+<translation id="6549378540556750549">Prehliadač Chromium je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
+<translation id="7681937895330411637">Prehliadač Chromium je založený na projekte open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Prejdite do
         ponuky Chromium &gt;
         <ph name="SETTINGS_TITLE" />

@@ -14,7 +14,6 @@
 <translation id="1203500561924088507">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце браўзер.</translation>
 <translation id="1261119230216066228">Дзякуючы Эканоміі памяці браўзер Chromium стаў працаваць яшчэ хутчэй</translation>
 <translation id="1315551408014407711">Наладзьце свой профіль Chromium</translation>
-<translation id="1396446129537741364">Chromium спрабуе паказаць паролі.</translation>
 <translation id="1414495520565016063">Вы ўвайшлі ў Chromium!</translation>
 <translation id="1524282610922162960">Абагульце ўкладку Chromium</translation>
 <translation id="1553461853655228091">Chromium запытвае дазвол на доступ да камеры, каб стварыць 3D-карту асяроддзя</translation>
@@ -80,7 +79,6 @@
 <translation id="2928420929544864228">Усталяванне завершана.</translation>
 <translation id="2977470724722393594">Chromium абноўлены</translation>
 <translation id="2977506796191543575">Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chromium можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі</translation>
-<translation id="2983934633046890458">Chromium спрабуе змяніць паролі.</translation>
 <translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Браўзер Chromium падключаны да прылады HID}one{Браўзер Chromium падключаны да прылад HID}few{Браўзер Chromium падключаны да прылад HID}many{Браўзер Chromium падключаны да прылад HID}other{Браўзер Chromium падключаны да прылад HID}}</translation>
 <translation id="3032706164202344641">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>
 <translation id="3032787606318309379">Дадаецца ў Chromium...</translation>
@@ -93,7 +91,6 @@
 <translation id="3179665906251668410">Адкрыць спасылку ў акне інко&amp;гніта ў Chromium</translation>
 <translation id="3185330573522821672">Наладзьце новы профіль Chromium</translation>
 <translation id="3190315855212034486">Памылка! Збой Chromium. Перазапусціць?</translation>
-<translation id="3229526316128325841">Chromium запытвае дазвол на экспартаванне вашых пароляў.</translation>
 <translation id="3258596308407688501">Chromium не можа чытаць з каталога даных і запісваць у яго:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -338,7 +335,6 @@
 <translation id="8213374284266571500">Браўзер Chromium заблакіраваў гэты файл, бо гэты тып файлаў з'яўляецца небяспечным</translation>
 <translation id="8248265253516264921">Калі відарыс не мае прыдатнага апісання, Chromium паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google. Гэты параметр можна адключыць у наладах у любы час.</translation>
 <translation id="8266560134891435528">Chromium не можа праверыць вашы паролі, пакуль вы не ўвойдзеце ва ўліковы запіс</translation>
-<translation id="8276522524898344151">Chromium спрабуе скапіраваць паролі.</translation>
 <translation id="8290862415967981663">Файл можа быць небяспечным, таму Chromium заблакіраваў яго.</translation>
 <translation id="8325404639443959713">Больш магчымасцей для Chromium</translation>
 <translation id="8330519371938183845">Увайдзіце ў Chromium, каб сінхранізаваць і персаналізаваць яго на сваіх прыладах</translation>
@@ -348,6 +344,7 @@
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Перазапусціце Chromium на працягу дня}one{Перазапусціце Chromium на працягу # дня}few{Перазапусціце Chromium на працягу # дзён}many{Перазапусціце Chromium на працягу # дзён}other{Перазапусціце Chromium на працягу # дня}}</translation>
 <translation id="8453117565092476964">Архіў усталёўшчыка пашкоджаны або мае няправільны фармат. Спампуйце Chromium зноў.</translation>
+<translation id="8458614432758743027">Для браўзера Chromium патрабуецца Windows 10 або навейшая версія.</translation>
 <translation id="8463672209299734063">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chromium OS шляхам аўтаматычнай адпраўкі ў Google даных пра выкарыстанне і дыягностыку (неабавязкова).</translation>
 <translation id="8493179195440786826">Chromium састарэў</translation>
 <translation id="8550334526674375523">Гэты працоўны профіль і ваш асабісты профіль з'яўляюцца поўнасцю асобнымі профілямі.</translation>

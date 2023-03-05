@@ -12,7 +12,6 @@
 <translation id="1203500561924088507">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించడానికి ముందు మీరు బ్రౌజర్‌ను తప్పకుండా రీస్టార్ట్ చేయాలి.</translation>
 <translation id="1261119230216066228">మెమరీ సేవర్ Chromiumను వేగవంతం చేస్తుంది</translation>
 <translation id="1315551408014407711">మీ కొత్త Chromium ప్రొఫైల్‍ను సెట్ అప్ చేయండి</translation>
-<translation id="1396446129537741364">Chromium పాస్‌వర్డ్‌లను చూపడానికి ప్రయత్నిస్తోంది.</translation>
 <translation id="1414495520565016063">మీరు Chromiumకు సైన్ ఇన్ చేశారు!</translation>
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="1553461853655228091">మీ పరిసరాల 3D మ్యాప్‌ను క్రియేట్ చేయడానికి Chromiumకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
@@ -78,7 +77,6 @@
 <translation id="2928420929544864228">ఇన్‌స్టాలేషన్ పూర్తయింది.</translation>
 <translation id="2977470724722393594">Chromium తాజాగా ఉంది</translation>
 <translation id="2977506796191543575">ఏదైనా సైట్ మీ పాస్‌వర్డ్‌ను దొంగిలించే ప్రయత్నం చేసినా, లేదంటే ఏదైనా హానికరమైన ఫైల్‌ను మీరు డౌన్‌లోడ్ చేసినా, సదరు URLలను, ఆయా పేజీల కంటెంట్‌లోని కొన్ని భాగాలను కూడా Chromium, 'సురక్షిత బ్రౌజింగ్'కు పంపవచ్చు</translation>
-<translation id="2983934633046890458">Chromium పాస్‌వర్డ్‌లను ఎడిట్ చేయడానికి ప్రయత్నిస్తోంది.</translation>
 <translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium HID పరికరానికి కనెక్ట్ చేయబడింది}other{Chromium HID పరికరాలకు కనెక్ట్ చేయబడింది}}</translation>
 <translation id="3032706164202344641">Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3032787606318309379">Chromiumకి జోడిస్తోంది...</translation>
@@ -91,7 +89,6 @@
 <translation id="3179665906251668410">Chromium అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="3185330573522821672">మీ కొత్త Chromium ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="3190315855212034486">అయ్యో! Chromium క్రాష్ అయ్యింది. ఇప్పుడే మళ్లీ ప్రారంభించాలా?</translation>
-<translation id="3229526316128325841">Chromium మీ పాస్‌వర్డ్‌లను ఎగుమతి చేయాలనుకుంటోంది.</translation>
 <translation id="3258596308407688501">Chromium దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Chromium వెర్షన్ <ph name="PRODUCT_VERSION" /> ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
@@ -333,7 +330,6 @@
 <translation id="8213374284266571500">ఈ ఫైల్ రకం ప్రమాదకరమైనందున Chromium ఈ ఫైల్‌ను బ్లాక్ చేసింది</translation>
 <translation id="8248265253516264921">చిత్రంలో ఉపయోగకరమైన వివరణ లేకుంటే, మీ కోసం ఒక వివరణను అందించడానికి Chromium ప్రయత్నిస్తుంది. వివరణలను క్రియేట్ చేయడానికి, చిత్రాలు Googleకు పంపబడతాయి. మీరు దీన్ని ఎప్పుడైనా సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="8266560134891435528">మీరు సైన్ ఇన్ చేయనందున Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు</translation>
-<translation id="8276522524898344151">పాస్‌వర్డ్‌లను కాపీ చేయడానికి Chromium ప్రయత్నిస్తోంది.</translation>
 <translation id="8290862415967981663">ఈ ఫైల్ అపాయకరం కావచ్చు, కాబట్టి Chromium దీన్ని బ్లాక్ చేసింది.</translation>
 <translation id="8325404639443959713">Chromiumతో మరెన్నో చేయండి</translation>
 <translation id="8330519371938183845">మీ పరికరాల అంతటా Chromiumను సింక్ చేయడానికి, వ్యక్తిగతీకరించడానికి సైన్ ఇన్ చేయండి</translation>

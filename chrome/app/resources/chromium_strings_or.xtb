@@ -14,7 +14,6 @@
 <translation id="1203500561924088507">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ। ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="1261119230216066228">ମେମୋରୀ ସେଭର Chromiumକୁ ଆହୁରି ଦ୍ରୁତ କରିଛି</translation>
 <translation id="1315551408014407711">ଆପଣଙ୍କର ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
-<translation id="1396446129537741364">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ଦେଖାଇବାକୁ Chromium ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="1414495520565016063">ଆପଣ Chromium‍ରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି!</translation>
 <translation id="1524282610922162960">ଗୋଟିଏ Chromium ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1553461853655228091">Chromium ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ପାଇଁ ଆପଣଙ୍କ କ୍ୟାମେରା ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
@@ -80,7 +79,6 @@
 <translation id="2928420929544864228">ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="2977470724722393594">Chromium ଅପ୍‍-ଟୁ-ଡେଟ୍‍ ଅଛି</translation>
 <translation id="2977506796191543575">ଯଦି କୌଣସି ସାଇଟ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଚୋରି କରିବାକୁ ଚେଷ୍ଟା କରେ କିମ୍ବା ଆପଣ ଏକ କ୍ଷତିକାରକ ଫାଇଲ ଡାଉନଲୋଡ କଲେ, ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ସହିତ URLଗୁଡ଼ିକୁ ମଧ୍ୟ Chromium ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଇପାରେ</translation>
-<translation id="2983934633046890458">Chromium ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromiumକୁ ଏକ HID ଡିଭାଇସ ସହ କନେକ୍ଟ କରାଯାଇଛି}other{Chromiumକୁ HID ଡିଭାଇସଗୁଡ଼ିକ ସହ କନେକ୍ଟ କରାଯାଇଛି}}</translation>
 <translation id="3032706164202344641">Chromium ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3032787606318309379">Chromiumକୁ ଯୋଗ କରାଯାଉଛି...</translation>
@@ -93,7 +91,6 @@
 <translation id="3179665906251668410">Chromium &amp;ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="3185330573522821672">ଆପଣଙ୍କ ନୂଆ Chromium ପ୍ରୋଫାଇଲକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="3190315855212034486">ବାଃ! Chromium କ୍ରାସ୍ ହୋଇଯାଇଛି। ପୁଣିଥରେ ଲଞ୍ଚ କରିବେ?</translation>
-<translation id="3229526316128325841">ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡଗୁଡିକୁ Chromium ଏକ୍ସପୋର୍ଟ କରିବାକୁ ଚାହେଁ।</translation>
 <translation id="3258596308407688501">Chromium ଏହାର ଡାଟାକୁ ପଢ଼ି ପାରିବ ନାହିଁ ଏବଂ ଏଥିରେ ଲେଖି ପାରିବ ନାହିଁ:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -338,7 +335,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8213374284266571500">ଏହି ପ୍ରକାରର ଫାଇଲ ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chromium ଏହି ଫାଇଲକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="8248265253516264921">ଯଦି ଗୋଟିଏ ଛବିରେ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chromium ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି। ଆପଣ ଯେକୌଣସି ସମୟରେ ସେଟିଂସ୍‌ରେ ଏହାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="8266560134891435528">ଆପଣ ସାଇନ୍ ଇନ୍ କରିନଥିବା ଯୋଗୁଁ Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
-<translation id="8276522524898344151">Chromium ପାସୱାର୍ଡଗୁଡ଼ିକ କପି କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="8290862415967981663">ଏହି ଫାଇଲ୍‌ଟି ହୁଏତ ବିପଜ୍ଜନକ ହୋଇପାରେ, ତେଣୁ ଏହାକୁ Chromium ବ୍ଲକ୍ କରିଛି।</translation>
 <translation id="8325404639443959713">Chromium ସହ ଆହୁରି ଅନେକ କିଛି କରନ୍ତୁ</translation>
 <translation id="8330519371938183845">ସିଙ୍କରେ ସାଇନ୍‌ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍‌ରେ Chromiumକୁ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>

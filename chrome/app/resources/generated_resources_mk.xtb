@@ -3748,6 +3748,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />К (<ph name="NUM_KILOBYTES_LIVE" />К во живо)</translation>
 <translation id="4310132194679586591">Изберете апликација на уредот за да го отворите линков</translation>
 <translation id="4310139701823742692">Погрешен формат на датотека. Проверете ја PPD-датотеката и обидете се повторно.</translation>
+<translation id="4310496734563057511">Ако го споделувате овој уред со други, може да вклучите Windows Hello за да потврдувате дека сте вие секогаш кога користите зачувана лозинка</translation>
 <translation id="431076611119798497">&amp;Детали</translation>
 <translation id="4311284648179069796">Нема дозвола да чита и менува</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 сметка на Google}one{<ph name="EXTRA_ACCOUNTS" /> сметка на Google}other{<ph name="EXTRA_ACCOUNTS" /> сметки на Google}}</translation>
@@ -9052,6 +9053,7 @@
 <translation id="9131209053278896908">Блокираните сајтови ќе се појавуваат тука</translation>
 <translation id="9131487537093447019">Испраќајте и примајте пораки од уреди со Bluetooth.</translation>
 <translation id="913383674572270194">{NUM_BOOKMARKS,plural, =1{1 обележувач}one{# обележувач}other{# обележувачи}}</translation>
+<translation id="9133985615769429248">Ако го споделувате овој уред со други, може да го користите заклучувањето екран за да потврдувате дека сте вие секогаш кога користите зачувана лозинка</translation>
 <translation id="9134066738478820307">Сајтовите може да користат идентификатори за да пуштаат заштитени содржини</translation>
 <translation id="913411432238655354">Враќајте ги апликациите при стартување</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>

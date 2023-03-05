@@ -5837,6 +5837,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策未设置，默认情况下，受企业管理的用户和非受管用户都能选择启用该应用。</translation>
 <translation id="6640748114867542396">不允许受管理的扩展程序使用 Enterprise Hardware Platform API</translation>
 <translation id="6641981670621198190">停用对 3D 图形 API 的支持</translation>
+<translation id="6644480111811011438">此政策提供了一种停用 First-Party Set 功能的方法。
+
+                  如果此政策未设置或已启用，则系统会启用 First-Party Set 功能。
+
+                  如果此政策已停用，则系统会停用 First-Party Set 功能。
+
+                  此政策用于控制 Chrome 是否支持 First-Party Set 相关集成。</translation>
 <translation id="6646912445796087001">通过设置此政策，您可以启用或停用各种屏幕键盘功能。仅当“VirtualKeyboardEnabled”政策启用后，此政策才会生效。
 
       如果此政策中的某一项功能设为 True，系统将会启用这项屏幕键盘功能。
@@ -7271,6 +7278,19 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8020222525161221827">允许第三方使用 Desk API 控制 ChromeOS</translation>
 <translation id="802147957407376460">将屏幕旋转 0 度</translation>
 <translation id="8021777486638359878">播放音频时将用户视为空闲</translation>
+<translation id="8022909529579794519">此设置用于配置要使用哪个 <ph name="LACROS_NAME" /> 浏览器。
+
+如果此政策设为 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />，用户可以决定加载哪个 <ph name="LACROS_NAME" /> 浏览器：来自 <ph name="LACROS_ROOTFS_NAME" /> 或 <ph name="LACROS_STATEFUL_NAME" /> 分区的二进制文件。
+如果用户未设置任何偏好设置，系统会选择具有最新版本的二进制文件。
+
+如果此政策设为 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，请始终加载 <ph name="LACROS_NAME" /> 浏览器的 <ph name="LACROS_ROOTFS_NAME" /> 二进制文件。
+
+如果未设置此政策，则受企业管理的用户将使用默认值“<ph name="LACROS_SELECTION_ROOTFS_VALUE" />”，不受企业管理的用户将使用默认值“<ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />”。
+
+请注意，更改此政策的值后，如果 <ph name="LACROS_NAME" /> 浏览器的版本低于当前版本，则可能会导致该浏览器的数据丢失。例如，如果此政策从 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 更改为 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，并且前者已更新。或者，如果 <ph name="PRODUCT_OS_NAME" /> 是与 <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> 浏览器一起更新的，且 <ph name="LACROS_STATEFUL_NAME" /> 尚未更新。
+在此类情况下，无法保证正确迁移数据。
+
+为了安全起见，可以使用 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> 或 <ph name="LACROS_SELECTION_ROOTFS_VALUE" />，也可以从 <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> 切换到 <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />。</translation>
 <translation id="80243978433618492">禁止对网址参数进行任何过滤操作。</translation>
 <translation id="8025620823136567878">国际键盘快捷键映射到键盘中的按键位置（而非按键的字形）。</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
@@ -7893,6 +7913,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
           指定的政策值应以毫秒为单位。</translation>
 <translation id="859579553230883285">为您的用户停用 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置。</translation>
+<translation id="8597758693275075382">要在安装过程中向虚拟机传递的 SMBIOS OEM 字符串。默认为空列表。</translation>
 <translation id="8598786284856179541">启用关于版本信息的报告</translation>
 <translation id="859937827887158048">不允许点对点下载自动更新</translation>
 <translation id="8603454805657060638">通过设置此政策，管理员可以在将设备连接到基座时更改 MAC（媒体访问控制）地址。当某些型号的设备连接到基座时，系统会默认使用设备的指定基座 MAC 地址在以太网上标识相应设备。

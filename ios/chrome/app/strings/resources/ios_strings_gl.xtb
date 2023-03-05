@@ -429,7 +429,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4063300985191096908">Ir ao feed</translation>
 <translation id="408404951701638773">Agora é máis fácil acceder á barra de busca</translation>
 <translation id="4092655288299341041">Mostrar axuda:</translation>
-<translation id="4101942614374785540">Agora os contrasinais gárdanse na túa Conta de Google (<ph name="ACCOUNT" />). Podes usalos en calquera dispositivo onde teñas iniciada a sesión. Para desactivar esta opción, vai á <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />.</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar enderezo}other{Eliminar enderezos}}</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
 <translation id="411254640334432676">Erro na descarga.</translation>
@@ -877,7 +876,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceptar e cambiar de conta</translation>
 <translation id="7080806333218412752">Envía enderezos URL á función Navegación segura para comprobalos. Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas. Vincula temporalmente estes datos coa túa Conta de Google cando inicies sesión para protexerte nas aplicacións de Google.</translation>
-<translation id="7083860864742905105">Cando a opción está activada, os contrasinais gárdanse en <ph name="ACCOUNT" />. Se está desactivada, gárdanse só neste dispositivo.</translation>
 <translation id="7095110968493193530">No xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Pestanas recentes</translation>
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
@@ -1047,7 +1045,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8393889347136007944">Estas pestanas levan sen usarse <ph name="THRESHOLD" /> días</translation>
 <translation id="8407669440184693619">Non se atopou ningún contrasinal para este sitio</translation>
 <translation id="842017693807136194">Sesión iniciada con</translation>
-<translation id="8427613705947111202">Menú → Configuración → Contrasinais</translation>
 <translation id="8428045167754449968">Cidade/localidade</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8428634594422941299">De acordo</translation>

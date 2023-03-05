@@ -14,7 +14,6 @@
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
 <translation id="1261119230216066228">Санах ой хэмнэгч нь Chromium-г илүү хурдан болгосон</translation>
 <translation id="1315551408014407711">Chromium-н шинэ профайлаа тохируулах</translation>
-<translation id="1396446129537741364">Chromium нь нууц үгийг үзүүлэхээр ачаалж байна.</translation>
 <translation id="1414495520565016063">Та Chromium руу нэвтэрсэн байна!</translation>
 <translation id="1524282610922162960">Chromium-н таб хуваалцах</translation>
 <translation id="1553461853655228091">Орчин тойрны тань 3D газрын зургийг үүсгэхийн тулд таны камерт хандах зөвшөөрөл Chromium-д шаардлагатай</translation>
@@ -80,7 +79,6 @@
 <translation id="2928420929544864228">Суулгаж дууслаа.</translation>
 <translation id="2977470724722393594">Chromium-г шинэчилсэн байна</translation>
 <translation id="2977506796191543575">Хэрэв сайт таны нууц үгийг хулгайлахаар оролдох эсвэл таныг аюултай файл татах үед Chromium URL-г хуудасны бага зэрэг контентын хамт Аюулгүй үзэх рүү мөн илгээж болзошгүй</translation>
-<translation id="2983934633046890458">Chromium нууц үгсийг засахаар оролдож байна.</translation>
 <translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium HID төхөөрөмжтэй холбогдсон байна}other{Chromium HID төхөөрөмжүүдтэй холбогдсон байна}}</translation>
 <translation id="3032706164202344641">Chromium таны нууц үгсийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="3032787606318309379">Chromium-д өгөгдөл нэмэх нь ...</translation>
@@ -93,7 +91,6 @@
 <translation id="3179665906251668410">Холбоосыг Chromium-н нууцлалтай цонхонд нээх</translation>
 <translation id="3185330573522821672">Chromium-н шинэ профайлаа тохируулна уу</translation>
 <translation id="3190315855212034486">Chromium-д гамтал гарлаа. Дахин эхлүүлэх үү?</translation>
-<translation id="3229526316128325841">Chromium таны төхөөрөмжийг экспортлох хүсэлтэй байна.</translation>
 <translation id="3258596308407688501">Chromium нь өөрийн өгөгдлийн сан руу уншуулж бас бичиж чадахгүй байна: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Chromium <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
@@ -335,7 +332,6 @@
 <translation id="8213374284266571500">Энэ төрлийн файл аюултай тул Chromium энэ файлыг блоклосон</translation>
 <translation id="8248265253516264921">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chromium танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ. Та үүнийг хүссэн үедээ тохиргоонд унтрааж болно.</translation>
 <translation id="8266560134891435528">Та нэвтрээгүй байгаа тул Chromium таны нууц үгсийг шалгах боломжгүй байна</translation>
-<translation id="8276522524898344151">Chromium нь нууц үгс хуулахыг оролдож байна.</translation>
 <translation id="8290862415967981663">Энэ файл аюултай тул Chromium блоклосон байна.</translation>
 <translation id="8325404639443959713">Chromium-р илүү ихийг хийгээрэй</translation>
 <translation id="8330519371938183845">Төхөөрөмжүүддээ Chromium-г синк хийж, хувийн болгохын тулд нэвтрэх</translation>

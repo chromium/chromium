@@ -39,4 +39,6 @@
 <translation id="8187289872471304532">Prejdite na možnosť
           Aplikácie &gt; Systémové predvoľby &gt; Sieť &gt; Rozšírené nastavenia &gt; Servery proxy
           a zrušte výber všetkých vybratých serverov proxy.</translation>
+<translation id="8232971017369963250">Chrome je založený na projekte open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

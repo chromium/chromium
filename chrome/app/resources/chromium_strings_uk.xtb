@@ -12,7 +12,6 @@
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
 <translation id="1261119230216066228">Функція заощадження пам’яті пришвидшує роботу Chromium</translation>
 <translation id="1315551408014407711">Налаштуйте новий профіль Chromium</translation>
-<translation id="1396446129537741364">Chromium намагається показати паролі.</translation>
 <translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
 <translation id="1524282610922162960">Поділитися вкладкою Chromium</translation>
 <translation id="1553461853655228091">Chromium потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
@@ -78,7 +77,6 @@
 <translation id="2928420929544864228">Встановлення завершено.</translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>
 <translation id="2977506796191543575">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
-<translation id="2983934633046890458">Chromium намагається змінити паролі.</translation>
 <translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium підключено до пристрою HID}one{Chromium підключено до пристроїв HID}few{Chromium підключено до пристроїв HID}many{Chromium підключено до пристроїв HID}other{Chromium підключено до пристроїв HID}}</translation>
 <translation id="3032706164202344641">Chromium не може перевірити паролі. Повторіть спробу пізніше.</translation>
 <translation id="3032787606318309379">Додавання в Chromium...</translation>
@@ -91,7 +89,6 @@
 <translation id="3179665906251668410">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
 <translation id="3185330573522821672">Налаштуйте свій новий профіль Chromium</translation>
 <translation id="3190315855212034486">Помилка. Chromium аварійно завершив роботу. Перезапустити зараз?</translation>
-<translation id="3229526316128325841">Chromium хоче експортувати ваші паролі.</translation>
 <translation id="3258596308407688501">Chromium не може читати та писати дані у свій каталог даних:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -337,7 +334,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8213374284266571500">Веб-переглядач Chromium заблокував цей файл, оскільки такий тип файлів небезпечний.</translation>
 <translation id="8248265253516264921">Якщо зображення не має корисного опису, Chromium спробує додати його. Для цього зображення надсилаються в Google. Ви можете будь-коли вимкнути це в налаштуваннях.</translation>
 <translation id="8266560134891435528">Chromium не може перевірити паролі, оскільки ви не ввійшли в обліковий запис</translation>
-<translation id="8276522524898344151">Chromium намагається скопіювати паролі.</translation>
 <translation id="8290862415967981663">Цей файл може бути небезпечним, тому Chromium заблокував його.</translation>
 <translation id="8325404639443959713">Більше можливостей із Chromium</translation>
 <translation id="8330519371938183845">Увійдіть, щоб синхронізувати та персоналізувати роботу Chromium на всіх своїх пристроях</translation>

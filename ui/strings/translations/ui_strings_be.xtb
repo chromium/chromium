@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{праз 1 гадз}one{праз # гадз}few{праз # гадз}many{праз # гадз}other{праз # гадз}}</translation>
 <translation id="2583543531130364912">Адкалібруйце сэнсарны экран</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
+<translation id="2653844658857826081">НОВАЕ</translation>
 <translation id="2666092431469916601">Зверху</translation>
 <translation id="2701330563083355633">Абагулена з прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Новае</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Аднавіць</translation>
 <translation id="3183922693828471536">Прагартаць сюды</translation>
 <translation id="3234408098842461169">Стрэлка ўніз</translation>
+<translation id="3240426699337459095">Спасылка скапіравана</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 дзень}one{# дзень}few{# дні}many{# дзён}other{# дня}}</translation>
 <translation id="3295886253693811851">Зрабіць выклік праз</translation>
 <translation id="3306688585798492231">Убудаваны дысплэй</translation>

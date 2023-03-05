@@ -3730,6 +3730,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K en vivo)</translation>
 <translation id="4310132194679586591">Elige un app de tu dispositivo para abrir este vínculo</translation>
 <translation id="4310139701823742692">El archivo no tiene el formato correcto. Verifica el archivo PPD y vuelve a intentarlo.</translation>
+<translation id="4310496734563057511">Si compartes este dispositivo con otras personas, puedes activar Windows Hello para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
 <translation id="4311284648179069796">No puede leer ni modificar</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Cuentas de Google}}</translation>
@@ -9028,6 +9029,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9131209053278896908">Los sitios que bloqueaste aparecen aquí</translation>
 <translation id="9131487537093447019">Enviar y recibir mensajes desde dispositivos Bluetooth</translation>
 <translation id="913383674572270194">{NUM_BOOKMARKS,plural, =1{1 favorito}other{# favoritos}}</translation>
+<translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar tu bloqueo de pantalla para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="9134066738478820307">Permitir que los sitios utilicen identificadores para reproducir contenido protegido</translation>
 <translation id="913411432238655354">Restablecer apps en el inicio</translation>
 <translation id="9137013805542155359">Mostrar original</translation>

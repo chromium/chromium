@@ -14,7 +14,6 @@
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">„Штедачот на меморија“ го направи Chromium побрз</translation>
 <translation id="1315551408014407711">Поставете нов профил на Chromium</translation>
-<translation id="1396446129537741364">Chromium се обидува да покаже лозинки.</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
 <translation id="1524282610922162960">Споделете картичка на Chromium</translation>
 <translation id="1553461853655228091">На Chromium му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
@@ -80,7 +79,6 @@
 <translation id="2928420929544864228">Инсталирањето заврши.</translation>
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
 <translation id="2977506796191543575">Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chromium може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“</translation>
-<translation id="2983934633046890458">Chromium се обидува да измени лозинки.</translation>
 <translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium е поврзан со HID-уред}one{Chromium е поврзан со HID-уреди}other{Chromium е поврзан со HID-уреди}}</translation>
 <translation id="3032706164202344641">Chromium не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
 <translation id="3032787606318309379">Се додава на Chromium...</translation>
@@ -93,7 +91,6 @@
 <translation id="3179665906251668410">Отвори го линкот во инко&amp;гнито прозорец на Chromium</translation>
 <translation id="3185330573522821672">Приспособете го вашиот нов профил на Chromium</translation>
 <translation id="3190315855212034486">Уф! Chromium падна. Да се стартува повторно веднаш?</translation>
-<translation id="3229526316128325841">Chromium сака да ги извезе вашите лозинки.</translation>
 <translation id="3258596308407688501">Chromium не може да чита и да пишува во директориумот за податоци:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -339,7 +336,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8213374284266571500">Chromium ја блокираше датотекава бидејќи типот на датотека е опасен</translation>
 <translation id="8248265253516264921">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="8266560134891435528">Chromium не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
-<translation id="8276522524898344151">Chromium се обидува да копира лозинки.</translation>
 <translation id="8290862415967981663">Датотекава може да биде опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="8325404639443959713">Извлечете го максимумот од Chromium</translation>
 <translation id="8330519371938183845">Најавете се за да го синхронизирате и персонализирате Chromium на сите ваши уреди</translation>

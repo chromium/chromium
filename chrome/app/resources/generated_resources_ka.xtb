@@ -3732,6 +3732,7 @@
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K live)</translation>
 <translation id="4310132194679586591">ამ ბმულის გასახსნელად აირჩიეთ აპი თქვენს მოწყობილობაზე</translation>
 <translation id="4310139701823742692">ფაილის ფორმატი არასწორია. შეამოწმეთ PPD ფაილი და ცადეთ ხელახლა.</translation>
+<translation id="4310496734563057511">თუ ეს მოწყობილობა სხვებთან საზიაროა, შენახული პაროლის გამოყენებისას თქვენი ვინაობის დასადასტურებლად შეგიძლიათ ჩართოთ Windows Hello</translation>
 <translation id="431076611119798497">&amp;დეტალები</translation>
 <translation id="4311284648179069796">დაუშვებელია წაკითხვა და შეცვლა</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google ანგარიში}other{<ph name="EXTRA_ACCOUNTS" /> Google ანგარიში}}</translation>
@@ -9029,6 +9030,7 @@
 <translation id="9131209053278896908">დაბლოკილი საიტები აქ გამოჩნდება</translation>
 <translation id="9131487537093447019">Bluetooth მოწყობილობებიდან შეტყობინებების გაგზავნა და მიღება.</translation>
 <translation id="913383674572270194">{NUM_BOOKMARKS,plural, =1{1 სანიშნე}other{# სანიშნე}}</translation>
+<translation id="9133985615769429248">თუ ეს მოწყობილობა სხვებთან საზიაროა, შენახული პაროლის გამოყენებისას თქვენი ვინაობის დასადასტურებლად შეგიძლიათ გამოიყენოთ თქვენი ეკრანის დაბლოკვის მეთოდი</translation>
 <translation id="9134066738478820307">ვებსაიტებს შეუძლია იდენტიფიკატორების გამოყენება დაცული კონტენტის დასაკრავად</translation>
 <translation id="913411432238655354">აპების აღდგენა ჩართვისას</translation>
 <translation id="9137013805542155359">ორიგინალის ჩვენება</translation>

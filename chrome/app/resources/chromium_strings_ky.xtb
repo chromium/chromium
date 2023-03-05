@@ -14,7 +14,6 @@
 <translation id="1203500561924088507">Орнотуп алганыңыз үчүн рахмат. <ph name="BUNDLE_NAME" /> топтомун колдонуп баштоодон мурда серепчини өчүрүп күйгүзүңүз.</translation>
 <translation id="1261119230216066228">Эстутумду үнөмдөгүч аркылуу Chromium тезирээк иштеп калды</translation>
 <translation id="1315551408014407711">Жаңы Chromium профилин жөндөп алыңыз</translation>
-<translation id="1396446129537741364">Chromium сырсөздөрдү көрсөткөнгө аракет кылып жатат.</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="1524282610922162960">Chromium өтмөгүн бөлүшүү</translation>
 <translation id="1553461853655228091">Chromium айланаңыздын 3D картасын түзүү үчүн камераңызды колдонушу керек</translation>
@@ -80,7 +79,6 @@
 <translation id="2928420929544864228">Орнотулду.</translation>
 <translation id="2977470724722393594">Chromium жаңырган</translation>
 <translation id="2977506796191543575">Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактагы мазмундун үлгүлөрүн Коопсуз серептөөгө жөнөтүшү мүмкүн</translation>
-<translation id="2983934633046890458">Chromium cырсөздөрдү өзгөртүүгө аракет кылууда.</translation>
 <translation id="3021964162552004083">{NUM_DEVICES,plural, =1{Chromium HID түзмөгүнө туташтырылган}other{Chromium HID түзмөктөрүнө туташтырылган}}</translation>
 <translation id="3032706164202344641">Chromium сырсөздөрүңүздү текшере албай жатат. Кийинчерээк кайталаңыз.</translation>
 <translation id="3032787606318309379">Chromium'га кошууда…</translation>
@@ -93,7 +91,6 @@
 <translation id="3179665906251668410">Шилтемени Chromium'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="3185330573522821672">Жаңы Chromium профилиңизди жекелештириңиз</translation>
 <translation id="3190315855212034486">Ой! Chromium кыйрады. Кайра ишке киргизилсинби?</translation>
-<translation id="3229526316128325841">Chromium сырсөздөрүңүздү экспорттогону жатат.</translation>
 <translation id="3258596308407688501">Chromium дайындар каталогун окуп, ага жаза албайт:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -339,7 +336,6 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8213374284266571500">Файлдын мындай түрү кооптуу болгондуктан, Chromium аны бөгөттөп койду</translation>
 <translation id="8248265253516264921">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт. Аны жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="8266560134891435528">Chromium сырсөздөрүңүздү текшере албайт, анткени аккаунтуңузга кирген жоксуз</translation>
-<translation id="8276522524898344151">Chromium сырсөздөрдү көчүрүүгө аракет кылып жатат.</translation>
 <translation id="8290862415967981663">Бул файл кооптуу болушу мүмкүн, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="8325404639443959713">Chromium менен көбүрөөк иш аткарыңыз</translation>
 <translation id="8330519371938183845">Chromium'ду бардык түзмөктөрүңүздө шайкештирип, жекелештирүү үчүн аккаунтуңузга кириңиз</translation>
