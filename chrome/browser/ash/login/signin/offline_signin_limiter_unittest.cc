@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"

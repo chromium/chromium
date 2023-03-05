@@ -190,7 +190,6 @@ class ProfileHelper {
   // TODO(nkostylev): Create a test API class that will be the only one allowed
   // to access private test methods.
   friend class FakeChromeUserManager;
-  friend class MockUserManager;
   friend class ProfileHelperTest;
   friend class ::IndependentOTRProfileManagerTest;
 

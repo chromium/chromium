@@ -20,7 +20,6 @@
 namespace ash {
 class ChromeUserManagerImpl;
 class FakeChromeUserManager;
-class MockUserManager;
 class UserAddingScreenTest;
 class UserSessionManager;
 class UserImageManagerImpl;
@@ -224,7 +223,6 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // For testing:
   friend class FakeUserManager;
   friend class ash::FakeChromeUserManager;
-  friend class ash::MockUserManager;
   friend class ash::UserAddingScreenTest;
   friend class policy::ProfilePolicyConnectorTest;
   FRIEND_TEST_ALL_PREFIXES(UserTest, DeviceLocalAccountAffiliation);

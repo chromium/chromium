@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"

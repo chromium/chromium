@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/test/base/testing_profile.h"

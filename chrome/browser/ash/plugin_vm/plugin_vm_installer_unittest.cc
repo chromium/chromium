@@ -16,7 +16,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_drive_image_download_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"

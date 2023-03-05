@@ -62,7 +62,7 @@ class ProfileHelperImpl : public ProfileHelper {
  private:
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
 
-  // Used for testing by unit tests and FakeUserManager/MockUserManager.
+  // Used for testing by unit tests and FakeUserManager.
   std::map<const user_manager::User*, Profile*> user_to_profile_for_testing_;
 
   // When this list is not empty GetUserByProfile() will find user that has

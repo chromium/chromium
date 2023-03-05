@@ -4433,8 +4433,6 @@ static_library("test_support") {
     "login/users/fake_chrome_user_manager.h",
     "login/users/fake_supervised_user_manager.cc",
     "login/users/fake_supervised_user_manager.h",
-    "login/users/mock_user_manager.cc",
-    "login/users/mock_user_manager.h",
     "login/version_updater/mock_version_updater_delegate.cc",
     "login/version_updater/mock_version_updater_delegate.h",
     "net/network_portal_detector_test_utils.cc",
