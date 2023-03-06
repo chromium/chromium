@@ -8,26 +8,53 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/keyboard_accessory_sheet_container"
-    android:fillViewport="true"
-    android:paddingTop="0dp"
-    android:layout_gravity="start|top"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/keyboard_accessory_sheet_height"
+    android:layout_height="wrap_content"
+    android:layout_gravity="start|top"
+    android:orientation="vertical"
+    android:background="@macro/default_bg_color"
     android:visibility="gone">
 
-    <org.chromium.chrome.browser.keyboard_accessory.sheet_component.NoSwipeViewPager
-        android:id="@+id/keyboard_accessory_sheet"
-        android:background="@macro/default_bg_color"
-        android:fillViewport="true"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
-
-    <ImageView
-        android:id="@+id/accessory_sheet_shadow"
+    <LinearLayout
+        android:id="@+id/sheet_header"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/keyboard_accessory_shadow"
-        android:src="@drawable/modern_toolbar_shadow"
-        android:scaleType="fitXY"
-        android:visibility="invisible"
-        android:importantForAccessibility="no" />
+        android:minHeight="@dimen/keyboard_accessory_height"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:orientation="horizontal"
+        android:background="@macro/default_bg_color"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <include layout="@layout/accessory_sheet_header"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/keyboard_accessory_sheet_frame"
+        android:fillViewport="true"
+        android:paddingTop="0dp"
+        android:layout_gravity="start|top"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/keyboard_accessory_sheet_height">
+
+        <org.chromium.chrome.browser.keyboard_accessory.sheet_component.NoSwipeViewPager
+            android:id="@+id/keyboard_accessory_sheet"
+            android:background="@macro/default_bg_color"
+            android:fillViewport="true"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
+        <ImageView
+            android:id="@+id/accessory_sheet_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/keyboard_accessory_shadow"
+            android:src="@drawable/modern_toolbar_shadow"
+            android:scaleType="fitXY"
+            android:visibility="invisible"
+            android:importantForAccessibility="no" />
+
+    </FrameLayout>
+
 </org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetView>
