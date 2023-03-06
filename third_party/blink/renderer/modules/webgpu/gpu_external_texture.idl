@@ -9,5 +9,6 @@
     SecureContext
 ] interface GPUExternalTexture {
     readonly attribute boolean expired;
+    [RuntimeEnabled=WebGPUDeveloperFeatures] readonly attribute boolean isZeroCopy;
 };
 GPUExternalTexture includes GPUObjectBase;

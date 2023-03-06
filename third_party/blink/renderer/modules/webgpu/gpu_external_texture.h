@@ -36,6 +36,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       GPUDevice* device,
       WGPUExternalTexture external_texture,
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
+      bool is_zero_copy,
       absl::optional<media::VideoFrame::ID> media_video_frame_unique_id);
 
   GPUExternalTexture(const GPUExternalTexture&) = delete;
@@ -44,6 +45,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   void Destroy();
 
   bool expired() const;
+  bool isZeroCopy() const;
 
   void ListenToHTMLVideoElement(HTMLVideoElement* video);
   void ListenToVideoFrame(VideoFrame* frame);
@@ -114,6 +116,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   bool destroyed() const;
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
+  bool is_zero_copy_ = false;
 
   absl::optional<media::VideoFrame::ID> media_video_frame_unique_id_;
   WeakMember<HTMLVideoElement> video_;

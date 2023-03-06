@@ -301,6 +301,7 @@ ExternalTexture CreateExternalTexture(
     device->GetProcs().textureViewRelease(plane1);
 
     external_texture.mailbox_texture = std::move(mailbox_texture);
+    external_texture.is_zero_copy = true;
     return external_texture;
   }
   // If the context is lost, the resource provider would be invalid.

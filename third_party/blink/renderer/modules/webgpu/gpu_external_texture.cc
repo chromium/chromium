@@ -77,7 +77,8 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
   GPUExternalTexture* gpu_external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
           device, external_texture.wgpu_external_texture,
-          external_texture.mailbox_texture, media_video_frame_unique_id);
+          external_texture.mailbox_texture, external_texture.is_zero_copy,
+          media_video_frame_unique_id);
 
   return gpu_external_texture;
 }
@@ -110,7 +111,7 @@ GPUExternalTexture* GPUExternalTexture::CreateExpired(
           device,
           device->GetProcs().deviceCreateErrorExternalTexture(
               device->GetHandle()),
-          nullptr /*mailbox_texture*/,
+          nullptr /*mailbox_texture*/, false /*is_zero_copy*/,
           absl::nullopt /*media_video_frame_unique_id*/);
 
   return external_texture;
@@ -201,9 +202,11 @@ GPUExternalTexture::GPUExternalTexture(
     GPUDevice* device,
     WGPUExternalTexture external_texture,
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
+    bool is_zero_copy,
     absl::optional<media::VideoFrame::ID> media_video_frame_unique_id)
     : DawnObject<WGPUExternalTexture>(device, external_texture),
       mailbox_texture_(mailbox_texture),
+      is_zero_copy_(is_zero_copy),
       media_video_frame_unique_id_(media_video_frame_unique_id) {
   // Mark GPUExternalTexture without back resources as destroyed because no need
   // to do real resource releasing.
@@ -320,6 +323,10 @@ void GPUExternalTexture::OnVideoFrameClosed() {
 
 bool GPUExternalTexture::expired() const {
   return status_ == Status::Expired || status_ == Status::Destroyed;
+}
+
+bool GPUExternalTexture::isZeroCopy() const {
+  return is_zero_copy_;
 }
 
 bool GPUExternalTexture::destroyed() const {
