@@ -241,13 +241,6 @@ i18n.input.chrome.inputview.Controller = function(keyset, languageCode,
   /** @private {!SoundController} */
   this.soundController_ = new SoundController(false);
 
-  /**
-   * Whether or not the candidates were last set by gesture typing.
-   *
-   * @private {boolean}
-   */
-  this.candidatesSetByGestureTyping_ = false;
-
   /** @private {!i18n.input.chrome.inputview.KeyboardContainer} */
   this.container_ = new i18n.input.chrome.inputview.KeyboardContainer(
       this.adapter_, this.soundController_);
@@ -1033,28 +1026,6 @@ Controller.prototype.executeCommand_ = function(command, opt_arg) {
 
 
 /**
- * Returns the gesture typing event type for a given candidate ID.
- *
- * @param {number} candidateID The candidate ID to convert.
- * @return {?i18n.input.chrome.Statistics.GestureTypingEvent} The gesture
- *     typing event type for the given candidate. Null if the candidate was not
- *     found.
- * @private
- */
-Controller.prototype.getGestureEventTypeForCandidateID_ =
-    function(candidateID) {
-  if (candidateID == 0) {
-    return Statistics.GestureTypingEvent.REPLACED_0;
-  } else if (candidateID == 1) {
-    return Statistics.GestureTypingEvent.REPLACED_1;
-  } else if (candidateID >= 2) {
-    return Statistics.GestureTypingEvent.REPLACED_2;
-  }
-  return null;
-};
-
-
-/**
  * Handles the pointer action.
  *
  * @param {!i18n.input.chrome.inputview.elements.Element} view The view.
@@ -1150,16 +1121,6 @@ Controller.prototype.handlePointerAction_ = function(view, e) {
       if (e.type == EventType.POINTER_UP) {
         if (view.candidateType == CandidateType.CANDIDATE) {
           this.adapter_.selectCandidate(view.candidate);
-          if (this.candidatesSetByGestureTyping_) {
-            var type = this.getGestureEventTypeForCandidateID_(
-                view.candidate[Name.CANDIDATE_ID]);
-            if (type) {
-              this.statistics_.recordEnum(
-                  Statistics.GESTURE_TYPING_METRIC_NAME,
-                  type,
-                  Statistics.GestureTypingEvent.MAX);
-            }
-          }
         } else if (view.candidateType == CandidateType.NUMBER) {
           this.adapter_.sendKeyDownAndUpEvent(
               view.candidate[Name.CANDIDATE], '');
@@ -2028,7 +1989,6 @@ Controller.prototype.showCandidates_ = function(source, candidates,
         SHRINK_CANDIDATES, false);
     this.container_.currentKeysetView.setVisible(true);
   }
-  this.candidatesSetByGestureTyping_ = !!opt_fromGestures;
 };
 
 

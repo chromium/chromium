@@ -1341,17 +1341,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.CharactersBetweenBackspaces"
-    units="units" expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Counts the length of text typed by the virtual keyboard between each
-    backspace. This metric provides a rough approximation of an error rate for
-    the virtual keyboard.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.VirtualKeyboard.CharactersCommitted" units="units"
     expires_after="2023-08-08">
   <owner>shend@chromium.org</owner>
@@ -1461,13 +1450,6 @@ chromium-metrics-reviews@google.com.
     Whether an input field was focused by a stylus or not. Recorded when an
     input field is focused.
   </summary>
-</histogram>
-
-<histogram name="InputMethod.VirtualKeyboard.GestureTypingEvent"
-    enum="IMEGestureTypingEvent" expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>Text input events related to gesture typing.</summary>
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Handwriting.CommitType"
@@ -1699,16 +1681,6 @@ chromium-metrics-reviews@google.com.
     user starts swiping on the backspace key, incremented based on how far they
     swipe forwards on the deletion track, and recorded when they release their
     finger.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.VirtualKeyboard.WordsPerMinute" units="units"
-    expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The number of words typed per minute. Recorded when the virtual keyboard is
-    closed.
   </summary>
 </histogram>
 

@@ -71,33 +71,6 @@ Statistics.CommitTypes = {
 
 
 /**
- * The event type for gestures typing actions.
- * Keep this in sync with the enum IMEGestureEventType in histograms.xml file in
- * chromium.
- * Please append new items at the end.
- *
- * @enum {number}
- */
-Statistics.GestureTypingEvent = {
-  TYPED: 0,
-  DELETED: 1,
-  REPLACED_0: 2, // User chooses 1st suggestion.
-  REPLACED_1: 3, // User chooses 2nd suggestion.
-  REPLACED_2: 4, // User chooses 3rd suggestion.
-  MAX: 5
-};
-
-
-/**
- * Name to use when logging gesture typing metrics.
- *
- * @const {string}
- */
-Statistics.GESTURE_TYPING_METRIC_NAME =
-    'InputMethod.VirtualKeyboard.GestureTypingEvent';
-
-
-/**
  * The current input method id.
  *
  * @private {string}
@@ -111,14 +84,6 @@ Statistics.prototype.inputMethodId_ = '';
  * @private {number}
  */
 Statistics.prototype.autoCorrectLevel_ = 0;
-
-
-/**
- * Number of characters entered between each backspace.
- *
- * @private {number}
- */
-Statistics.prototype.charactersBetweenBackspaces_ = 0;
 
 
 /**
@@ -145,14 +110,6 @@ Statistics.prototype.MIN_WORDS_FOR_WPM_ = 10;
  * @private {number}
  */
 Statistics.prototype.lastActivityTimeStamp_ = 0;
-
-
-/**
- * Time spent typing.
- *
- * @private {number}
- */
-Statistics.prototype.typingDuration_ = 0;
 
 
 /**
@@ -229,18 +186,10 @@ Statistics.prototype.recordSessionEnd = function() {
   if (this.charactersCommitted_ > 0) {
     this.recordValue('InputMethod.VirtualKeyboard.CharactersCommitted',
         this.charactersCommitted_, 16384, 50);
-    var words = (this.charactersCommitted_ - this.droppedKeys_) / 5;
-    if (this.typingDuration_ > 0 && words > this.MIN_WORDS_FOR_WPM_) {
-      // Milliseconds to minutes.
-      var minutes = this.typingDuration_ / 60000;
-      this.recordValue('InputMethod.VirtualKeyboard.WordsPerMinute',
-          Math.round(words / minutes), 100, 100);
-    }
   }
   this.droppedKeys_ = 0;
   this.charactersCommitted_ = 0;
   this.lastCommitLength_ = 0;
-  this.typingDuration_ = 0;
   this.lastActivityTimeStamp_ = 0;
 };
 
@@ -432,9 +381,7 @@ Statistics.prototype.recordValue = function(
 Statistics.prototype.recordCharacterKey = function() {
   var now = Date.now();
   if (this.lastActivityTimeStamp_) {
-    if (now < (this.lastActivityTimeStamp_ + this.MAX_PAUSE_DURATION_)) {
-      this.typingDuration_ += (now - this.lastActivityTimeStamp_);
-    } else {
+    if (now >= (this.lastActivityTimeStamp_ + this.MAX_PAUSE_DURATION_)) {
       // Exceeded pause duration. Ignore this character.
       this.droppedKeys_++;
     }
@@ -443,20 +390,5 @@ Statistics.prototype.recordCharacterKey = function() {
     this.droppedKeys_++;
   }
   this.lastActivityTimeStamp_ = now;
-  this.charactersBetweenBackspaces_++;
-};
-
-
-/**
- * Records a backspace.
- */
-Statistics.prototype.recordBackspace = function() {
-  // Ignore multiple backspaces typed in succession.
-  if (this.charactersBetweenBackspaces_ > 0) {
-    this.recordValue(
-        'InputMethod.VirtualKeyboard.CharactersBetweenBackspaces',
-        this.charactersBetweenBackspaces_, 4096, 50);
-  }
-  this.charactersBetweenBackspaces_ = 0;
 };
 });  // goog.scope

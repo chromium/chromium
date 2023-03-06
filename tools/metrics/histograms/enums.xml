@@ -51800,22 +51800,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Service disconnected"/>
 </enum>
 
-<enum name="IMEGestureTypingEvent">
-  <int value="0" label="Typed">A word was typed with a gesture.</int>
-  <int value="1" label="Deleted">
-    A gesture-typed word was deleted after being typed.
-  </int>
-  <int value="2" label="Replaced 0">
-    A gesture-typed word was replaced by the first suggestion.
-  </int>
-  <int value="3" label="Replaced 1">
-    A gesture-typed word was replaced by the second suggestion.
-  </int>
-  <int value="4" label="Replaced 2">
-    A gesture-typed word was replaced by the third suggestion.
-  </int>
-</enum>
-
 <enum name="IMEGrammarActions">
   <int value="0" label="UNDERLINED"/>
   <int value="1" label="WINDOW_SHOWN"/>
