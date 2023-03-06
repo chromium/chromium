@@ -11,4 +11,4 @@ REM break things.
 
 REM Execute whatever is printed by setenv.py. Use "CALL" to ensure that the
 REM command title is reset when this script finishes executing.
-FOR /f "usebackq tokens=*" %%a in (`python %~dp0setenv.py`) do CALL %%a
+FOR /f "usebackq tokens=*" %%a in (`python3 %~dp0setenv.py`) do CALL %%a
