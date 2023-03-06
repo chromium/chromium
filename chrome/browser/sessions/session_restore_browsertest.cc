@@ -903,11 +903,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignSession) {
 
   GURL url1("http://google.com");
   GURL url2("http://google2.com");
-  SerializedNavigationEntry nav1 =
-      ContentTestHelper::CreateNavigation(url1.spec(), "one");
-  SerializedNavigationEntry nav2 =
-      ContentTestHelper::CreateNavigation(url2.spec(), "two");
-  SerializedNavigationEntryTestHelper::SetIsOverridingUserAgent(true, &nav2);
 
   // Set up the restore data -- one window with two tabs.
   std::vector<const sessions::SessionWindow*> session;
