@@ -163,6 +163,7 @@
   E_CPONLY(kColorNewTabPageFirstRunBackground) \
   E_CPONLY(kColorNewTabPageFocusRing) \
   E_CPONLY(kColorNewTabPageHeader) \
+  E_CPONLY(kColorNewTabPageHistoryClustersModuleItemBackground) \
   E_CPONLY(kColorNewTabPagePromoBackground) \
   E_CPONLY(kColorNewTabPagePromoImageBackground) \
   E_CPONLY(kColorNewTabPageIconButtonBackground) \

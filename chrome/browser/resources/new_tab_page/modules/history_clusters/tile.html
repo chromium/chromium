@@ -1,10 +1,9 @@
 <style include="history-clusters-shared-style">
-  /* TODO(crbug.com/1414484): Add comprehensive theming colors. */
-
   #content {
-    background: var(--google-grey-100);
+    background:
+        var(--color-new-tab-page-history-clusters-module-item-background);
     border-radius: 25px;
-    color: var(--google-grey-900);
+    color: var(--color-new-tab-page-primary-foreground);
     height: 100%;
     width: 100%;
   }
@@ -58,6 +57,7 @@
   }
 
   #title {
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 16px;
     white-space: initial;
   }
@@ -81,7 +81,7 @@
   }
 
   #info-container {
-    color: var(--google-grey-700);
+    color: var(--color-new-tab-page-secondary-foreground);
     display: flex;
     flex-direction: row;
     font-size: 11px;

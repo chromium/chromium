@@ -142,6 +142,8 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageChipForeground] =
       select_topmost_element_foreground_color;
   mixer[kColorNewTabPageModuleItemBackground] = {kColorNewTabPageBackground};
+  mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
+      kColorNewTabPageBackground};
   mixer[kColorNewTabPageModuleControlBorder] = SelectBasedOnWhiteNtpBackground(
       gfx::kGoogleGrey300, kColorNewTabPageBackground);
   mixer[kColorNewTabPageMostVisitedForeground] = SelectBasedOnDarkInput(
@@ -444,6 +446,8 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
       kColorNewTabPageBackgroundOverride};
   mixer[kColorNewTabPageModuleItemBackground] = {
       kColorNewTabPageBackgroundOverride};
+  mixer[kColorNewTabPageHistoryClustersModuleItemBackground] = {
+      dark_mode ? gfx::kGoogleGrey700 : gfx::kGoogleGrey100};
   mixer[kColorNewTabPageModuleIconContainerBackground] =
       ui::SetAlpha(accent_color,
                    /* 24% opacity */ 0.24 * SK_AlphaOPAQUE);
