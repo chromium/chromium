@@ -1448,6 +1448,14 @@ const char kWebViewTagMPArchBehaviorDescription[] =
     "ChromeAppsWebViewPermissiveBehaviorAllowed policy serves as an escape "
     "hatch during the roll out of this change.";
 
+const char kWebAuthFlowInBrowserTabName[] =
+    "Web Authentication Flow in Browser Tab";
+const char kWebAuthFlowInBrowserTabDescription[] =
+    "Web authentication flows to be displayed in a Browser Tab instead of an "
+    "App Window. The flows are used via the Chrome Extension API, using "
+    "`chrome.identity` functions. Browser Tab can be displayed either in a New "
+    "Tab or a Popup Window via the feature paramters.";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kExtensionWebFileHandlersName[] =
     "Extensions Web File Handlers";

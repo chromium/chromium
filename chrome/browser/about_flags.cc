@@ -3242,6 +3242,20 @@ const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
      std::size(kPrivacySandboxSettings4ForceShowEEANoticeForTesting), nullptr},
 };
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+const FeatureEntry::FeatureParam kWebAuthFlowInNewTab[] = {
+    {"browser_tab_mode", "new_tab"}};
+const FeatureEntry::FeatureParam kWebAuthFlowInPopupWindow[] = {
+    {"browser_tab_mode", "popup_window"}};
+
+const FeatureEntry::FeatureVariation kWebAuthFlowInBrowserTabVariations[]{
+    {"WebAuthFlow in New Tab", kWebAuthFlowInNewTab,
+     std::size(kWebAuthFlowInNewTab), nullptr},
+    {"WebAuthFlow in Popup Window", kWebAuthFlowInPopupWindow,
+     std::size(kWebAuthFlowInPopupWindow), nullptr},
+};
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -9390,6 +9404,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebViewTagMPArchBehaviorName,
      flag_descriptions::kWebViewTagMPArchBehaviorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kWebviewTagMPArchBehavior)},
+
+    {"web-auth-flow-in-browser-tab",
+     flag_descriptions::kWebAuthFlowInBrowserTabName,
+     flag_descriptions::kWebAuthFlowInBrowserTabDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kWebAuthFlowInBrowserTab,
+                                    kWebAuthFlowInBrowserTabVariations,
+                                    "WebAuthFlowInBrowserTab")},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
         //
 #if BUILDFLAG(IS_ANDROID)

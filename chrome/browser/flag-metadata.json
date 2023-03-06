@@ -7245,6 +7245,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "web-auth-flow-in-browser-tab",
+    "owners": ["rsult", "alexilin", "chrome-signin-team"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "web-authentication-permit-enterprise-attestation",
     "owners": [ "chrome-webauthn@google.com" ],
     // This flag lets end users enroll security keys with an enterprise that
