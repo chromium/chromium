@@ -3514,6 +3514,7 @@
 <translation id="4102469565336584882">代码无效。所输入代码的格式应为 LPA:1$&lt;smdp 地址&gt;$&lt;激活码&gt;</translation>
 <translation id="4102906002417106771">重启以执行 Powerwash</translation>
 <translation id="4104163789986725820">导出(&amp;X)...</translation>
+<translation id="4104944259562794668">您可等到需要时再前往“设置”&gt;“安全和隐私设置”&gt;“锁定屏幕和登录”部分中启用该功能</translation>
 <translation id="4107048419833779140">识别并弹出存储设备</translation>
 <translation id="4108314971463891922">关注</translation>
 <translation id="4109135793348361820">将窗口移至<ph name="USER_NAME" />(<ph name="USER_EMAIL" />)</translation>
@@ -5536,6 +5537,7 @@
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{为确保您能够继续浏览网页，请让您的管理员卸载这款应用。}other{为确保您能够继续浏览网页，请让您的管理员卸载这些应用。}}</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 个网站已完成审核}other{{NUM_SITES} 个网站已完成审核}}</translation>
 <translation id="5997337190805127100">详细了解网站访问权限</translation>
+<translation id="5998458948782718639">帮助改进自动填充功能</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6001839398155993679">开始</translation>
 <translation id="6002122790816966947">您的设备</translation>
@@ -5623,6 +5625,7 @@
 <translation id="6075907793831890935">与名为“<ph name="HOSTNAME" />”的设备交换数据</translation>
 <translation id="6076175485108489240">使用位置信息。允许具有位置权限的应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">冷灰色</translation>
+<translation id="6076576896267434196">扩展程序“<ph name="EXTENSION_NAME" />”想访问您的帐号</translation>
 <translation id="6077131872140550515">从首选网络列表中移除</translation>
 <translation id="6077189836672154517">与 <ph name="DEVICE_TYPE" /> 相关的提示和最新资讯</translation>
 <translation id="6077476112742402730">说话即可输入</translation>
@@ -7781,6 +7784,7 @@
 <translation id="8033827949643255796">已选中</translation>
 <translation id="8033958968890501070">已超时</translation>
 <translation id="8035059678007243127">无痕式往返缓存版页面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8036193484521570992">帮助改进自动填充功能</translation>
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
@@ -7977,6 +7981,7 @@
 <translation id="8206745257863499010">音符</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8207404892907560325">选择一个通行密钥</translation>
+<translation id="8207794858944505786">虚拟机“<ph name="DEFAULT_VM_NAME" />”已存在，但似乎不是有效的 <ph name="VM_TYPE" /> 虚拟机。请与您的管理员联系。</translation>
 <translation id="8208188204689616705">这些网站属于一个由 <ph name="FPS_OWNER" /> 定义的群组。群组中的网站可查看您在该群组中的活动记录。</translation>
 <translation id="8208216423136871611">不保存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
