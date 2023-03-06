@@ -183,6 +183,9 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kDialogRadius, ShapeSysTokens::kMediumSmall},
+          {ShapeContextTokens::kMenuRadius, ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kMenuAuxRadius, ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kMedium},
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
       });
   const auto* it = shape_token_map.find(id);
@@ -198,10 +201,15 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
       case ShapeContextTokens::kButtonRadius:
         return GetCornerRadiusMetric(Emphasis::kMedium, size);
       case ShapeContextTokens::kComboboxRadius:
-      case ShapeContextTokens::kTextfieldRadius:
-        return FocusRing::kDefaultCornerRadiusDp;
       case ShapeContextTokens::kDialogRadius:
         return GetCornerRadiusMetric(Emphasis::kMedium, size);
+      case ShapeContextTokens::kMenuRadius:
+      case ShapeContextTokens::kMenuAuxRadius:
+        return GetCornerRadiusMetric(Emphasis::kNone);
+      case ShapeContextTokens::kMenuTouchRadius:
+        return GetCornerRadiusMetric(Emphasis::kHigh);
+      case ShapeContextTokens::kTextfieldRadius:
+        return FocusRing::kDefaultCornerRadiusDp;
       default:
         return 0;
     }

@@ -23,8 +23,9 @@ int MenuConfig::CornerRadiusForMenu(const MenuController* controller) const {
   }
 
   if (controller && (controller->IsCombobox() ||
-                     (!win11_style_menus && controller->IsContextMenu())))
+                     (!use_bubble_border && controller->IsContextMenu()))) {
     return auxiliary_corner_radius;
+  }
   return corner_radius;
 }
 
