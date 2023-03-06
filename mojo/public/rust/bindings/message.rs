@@ -4,7 +4,9 @@
 
 use crate::bindings::decoding::{Decoder, ValidationError};
 use crate::bindings::encoding;
-use crate::bindings::encoding::{Context, DataHeaderValue, Encoder, DATA_HEADER_SIZE};
+use crate::bindings::encoding::{
+    Context, DataHeaderValue, Encoder, EncodingState, DATA_HEADER_SIZE,
+};
 use crate::bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
 
 /// A flag for the message header indicating that no flag has been set.
@@ -53,12 +55,12 @@ impl MojomPointer for MessageHeader {
         encoding::align_default(size)
     }
 
-    fn encode_value(self, encoder: &mut Encoder, context: Context) {
-        MojomEncodable::encode(self.interface_id, encoder, context.clone());
-        MojomEncodable::encode(self.name, encoder, context.clone());
-        MojomEncodable::encode(self.flags, encoder, context.clone());
+    fn encode_value(self, encoder: &mut Encoder, state: &mut EncodingState, context: Context) {
+        MojomEncodable::encode(self.interface_id, encoder, state, context.clone());
+        MojomEncodable::encode(self.name, encoder, state, context.clone());
+        MojomEncodable::encode(self.flags, encoder, state, context.clone());
         if self.version > 0 {
-            MojomEncodable::encode(self.request_id, encoder, context.clone());
+            MojomEncodable::encode(self.request_id, encoder, state, context.clone());
         }
     }
 

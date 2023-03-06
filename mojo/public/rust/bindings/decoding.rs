@@ -325,7 +325,7 @@ impl<'slice> Decoder<'slice> {
             return Err(ValidationError::IllegalMemoryRange);
         }
         // Check for 8-byte alignment
-        if offset & 7 != 0 {
+        if offset % 8 != 0 {
             return Err(ValidationError::MisalignedObject);
         }
         // Bounds check on offset

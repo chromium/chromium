@@ -52,7 +52,7 @@ rust_static_library("mojo_rust") {
   unit_test_target =
       "mojo_rust_unittests"  # avoids conflict with C++ target elsewhere
   crate_name = "mojo"
-  edition = "2018"
+  edition = "2021"
 
   # TODO(danakj): Move to a gtest target.
   build_native_rust_unit_tests = true

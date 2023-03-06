@@ -27,14 +27,10 @@ macro_rules! impl_encodable_for_pointer {
         fn encode(
             self,
             encoder: &mut $crate::bindings::encoding::Encoder,
+            state: &mut $crate::bindings::encoding::EncodingState,
             context: $crate::bindings::encoding::Context,
         ) {
-            let loc = encoder.size() as u64;
-            {
-                let state = encoder.get_mut(&context);
-                state.encode_pointer(loc);
-            }
-            self.encode_new(encoder, context);
+            state.encode_pointer(self.encode_new(encoder, context));
         }
         fn decode(
             decoder: &mut $crate::bindings::decoding::Decoder,
@@ -81,12 +77,13 @@ macro_rules! impl_encodable_for_union {
         fn encode(
             self,
             encoder: &mut $crate::bindings::encoding::Encoder,
+            state: &mut $crate::bindings::encoding::EncodingState,
             context: $crate::bindings::encoding::Context,
         ) {
             if context.is_union() {
-                self.nested_encode(encoder, context);
+                self.nested_encode(encoder, state, context);
             } else {
-                self.inline_encode(encoder, context.set_is_union(true));
+                self.inline_encode(encoder, state, context.set_is_union(true));
             }
         }
         fn decode(
@@ -131,11 +128,11 @@ macro_rules! impl_encodable_for_interface {
         fn encode(
             self,
             encoder: &mut $crate::bindings::encoding::Encoder,
+            state: &mut $crate::bindings::encoding::EncodingState,
             context: $crate::bindings::encoding::Context,
         ) {
             let version = self.version();
             let pos = encoder.add_handle(self.as_untyped());
-            let mut state = encoder.get_mut(&context);
             state.encode(pos as i32);
             state.encode(version as u32);
         }
@@ -143,10 +140,9 @@ macro_rules! impl_encodable_for_interface {
             decoder: &mut $crate::bindings::decoding::Decoder,
             context: $crate::bindings::encoding::Context,
         ) -> Result<Self, ValidationError> {
-            let (handle_index, version) = {
-                let mut state = decoder.get_mut(&context);
-                (state.decode::<i32>(), state.decode::<u32>())
-            };
+            let state = decoder.get_mut(&context);
+            let handle_index: i32 = state.decode();
+            let version: u32 = state.decode();
             let handle = decoder
                 .claim_handle::<$crate::system::message_pipe::MessageEndpoint>(handle_index)?;
             Ok(Self::with_version(handle, version))

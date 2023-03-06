@@ -215,8 +215,10 @@ impl Context {
     }
 }
 
-/// An encoding state represents the encoding logic for a single
-/// Mojom object that is NOT inlined, such as a struct or an array.
+/// Used to encode a single mojom object's contents. This is backed by a buffer
+/// sized according to the `DataHeader` passed to `Encoder::add`. Each
+/// `EncodingState` maps one-to-one with a mojom object, and all
+/// `EncodingState`s from one `Encoder` are non-overlapping.
 pub struct EncodingState<'slice> {
     /// The buffer the state may write to.
     data: &'slice mut [u8],
@@ -339,45 +341,61 @@ impl<'slice> EncodingState<'slice> {
 /// A struct that will encode a given Mojom object and convert it into
 /// bytes and a vector of handles.
 pub struct Encoder<'slice> {
-    bytes: usize,
+    offset: usize,
     buffer: Option<&'slice mut [u8]>,
-    states: Vec<EncodingState<'slice>>,
     handles: Vec<UntypedHandle>,
 }
 
 impl<'slice> Encoder<'slice> {
     /// Create a new Encoder.
     pub fn new(buffer: &'slice mut [u8]) -> Encoder<'slice> {
-        Encoder { bytes: 0, buffer: Some(buffer), states: Vec::new(), handles: Vec::new() }
+        Encoder { offset: 0, buffer: Some(buffer), handles: Vec::new() }
     }
 
     /// Get the current encoded size (useful for writing pointers).
     pub fn size(&self) -> usize {
-        self.bytes
+        self.offset
     }
 
-    /// Start encoding a new object with its data header.
+    /// Reserve space to encode a new object.
     ///
-    /// Creates a new encoding state for the object.
-    pub fn add(&mut self, header: &DataHeader) -> Option<Context> {
-        let buf = self.buffer.take().unwrap();
-        if buf.len() < (header.size() as usize) {
-            self.buffer = Some(buf);
+    /// `header` is the object's data header, which contains its encoded size
+    /// and another field whose interpretation depends on the object type.
+    ///
+    /// Returns a tuple of `(offset, encoding_state, context)`. The
+    /// encoding_state is used to encode the members of the object. The offset
+    /// is relative to the start of the buffer passed to `Encoder::new`, and
+    /// should be used to encode a pointer in the parent object.
+    #[must_use]
+    pub fn add(&mut self, header: &DataHeader) -> Option<(u64, EncodingState<'slice>, Context)> {
+        let obj_size = header.size() as usize;
+        let (obj_offset, claimed) = self.reserve_aligned(obj_size)?;
+
+        // Context id for encoding no longer matters.
+        Some((obj_offset as u64, EncodingState::new(claimed, header, obj_offset), Context::new(0)))
+    }
+
+    /// Split off exactly `size` bytes from the beginning of the wrapped buffer.
+    /// Updates the current offset accordingly. Returns the split off slice and
+    /// the offset relative to the original buffer.
+    fn reserve(&mut self, size: usize) -> Option<(usize, &'slice mut [u8])> {
+        let buf: &'slice mut [u8] = self.buffer.take()?;
+        if size > buf.len() {
             return None;
         }
-        let obj_bytes = header.size() as usize;
-        let (claimed, rest) = buf.split_at_mut(obj_bytes);
-        self.states.push(EncodingState::new(claimed, header, self.bytes));
-        self.bytes += obj_bytes;
-        let padding_bytes = align_default(obj_bytes) - obj_bytes;
-        if padding_bytes <= rest.len() {
-            let (_, new_buffer) = rest.split_at_mut(padding_bytes);
-            self.bytes += padding_bytes;
-            self.buffer = Some(new_buffer);
-        } else {
-            self.buffer = Some(rest);
-        }
-        Some(Context::new(self.states.len() - 1))
+        let claimed_offset = self.offset;
+        let (claimed, rest) = buf.split_at_mut(size);
+        self.offset += size;
+        self.buffer = Some(rest);
+        Some((claimed_offset, claimed))
+    }
+
+    /// Same as `reserve` but aligns the offset to 8 bytes, the mojom standard,
+    /// and skips over the padding bytes.
+    fn reserve_aligned(&mut self, size: usize) -> Option<(usize, &'slice mut [u8])> {
+        let padding_size = align_default(self.offset) - self.offset;
+        let _: (usize, &'slice mut [u8]) = self.reserve(padding_size)?;
+        self.reserve(size)
     }
 
     /// Adds a handle and returns an offset to that handle in the
@@ -385,16 +403,6 @@ impl<'slice> Encoder<'slice> {
     pub fn add_handle(&mut self, handle: UntypedHandle) -> usize {
         self.handles.push(handle);
         self.handles.len() - 1
-    }
-
-    /// Immutably borrow an encoding state via Context.
-    pub fn get(&self, context: &Context) -> &EncodingState<'slice> {
-        &self.states[context.id()]
-    }
-
-    /// Mutably borrow an encoding state via Context.
-    pub fn get_mut(&mut self, context: &Context) -> &mut EncodingState<'slice> {
-        &mut self.states[context.id()]
     }
 
     /// Signal to finish encoding by destroying the Encoder and returning the

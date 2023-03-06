@@ -10,7 +10,7 @@
 
 use mojo::bindings::decoding::{Decoder, ValidationError};
 use mojo::bindings::encoding;
-use mojo::bindings::encoding::{Context, DataHeaderValue, Encoder};
+use mojo::bindings::encoding::{Context, DataHeaderValue, Encoder, EncodingState};
 use mojo::bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
 use mojo::system;
 use mojo::system::UntypedHandle;
@@ -28,8 +28,8 @@ impl<T: MojomEncodable> MojomPointer for StructA<T> {
     fn serialized_size(&self, _context: &Context) -> usize {
         16
     }
-    fn encode_value(self, encoder: &mut Encoder, context: Context) {
-        MojomEncodable::encode(self.param0, encoder, context.clone());
+    fn encode_value(self, encoder: &mut Encoder, state: &mut EncodingState, context: Context) {
+        MojomEncodable::encode(self.param0, encoder, state, context.clone());
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let _version = {
