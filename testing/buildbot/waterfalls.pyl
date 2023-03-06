@@ -2108,6 +2108,29 @@
         },
         'os_type': 'android',
       },
+      'android-x86-code-coverage': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'nougat-x86-emulator',
+          'emulator-4-cores',
+          'linux-bionic',
+          'x86-64',
+        ],
+        'additional_compile_targets': [
+          'cronet_test_instrumentation_apk',
+          'chrome_nocompile_tests',
+        ],
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_nougat_emulator_gtests',
+          'isolated_scripts': 'nougat_isolated_scripts',
+          'scripts': 'chromium_android_scripts',
+        },
+      },
       'fuchsia-code-coverage': {
         'additional_compile_targets': [
           'chrome_pkg',

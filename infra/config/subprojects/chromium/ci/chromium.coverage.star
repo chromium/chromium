@@ -75,12 +75,43 @@ coverage_builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "android",
-            short_name = "and",
+            short_name = "arm64",
         ),
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     generate_blame_list = True,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    use_java_coverage = True,
+)
+
+coverage_builder(
+    name = "android-x86-code-coverage",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android", "enable_wpr_tests"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x86_builder_mb",
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "android",
+            short_name = "x86",
+        ),
+    ],
+    coverage_test_types = ["overall", "unit"],
+    export_coverage_to_zoss = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_java_coverage = True,
 )
