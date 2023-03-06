@@ -48,6 +48,7 @@ password_manager::CredentialUIEntry ConvertJavaObjectToCredential(
       env, Java_CompromisedCredential_getPassword(env, credential));
   entry.last_used_time = base::Time::FromJavaTime(
       Java_CompromisedCredential_getLastUsedTime(env, credential));
+  entry.stored_in.insert(password_manager::PasswordForm::Store::kProfileStore);
   return entry;
 }
 
