@@ -161,7 +161,7 @@ TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(profile_->IsChild());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(service->IsURLFilteringEnabled());
 #else
   EXPECT_FALSE(service->IsURLFilteringEnabled());

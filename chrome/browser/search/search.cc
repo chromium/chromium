@@ -140,12 +140,12 @@ bool IsNTPOrRelatedURLHelper(const GURL& url, Profile* profile) {
 
 bool IsURLAllowedForSupervisedUser(const GURL& url, Profile* profile) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // If this isn't a supervised child user, skip the URL filter check, since it
-  // can be fairly expensive.
-  if (!profile->IsChild())
-    return true;
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
+  if (!supervised_user_service ||
+      !supervised_user_service->IsURLFilteringEnabled()) {
+    return true;
+  }
   SupervisedUserURLFilter* url_filter = supervised_user_service->GetURLFilter();
   if (url_filter->GetFilteringBehaviorForURL(url) ==
           SupervisedUserURLFilter::BLOCK) {

@@ -243,12 +243,10 @@ base::Value::Dict HistoryEntryToValue(
   result.Set("deviceType", device_type);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  SupervisedUserService* supervised_user_service = nullptr;
-  if (profile->IsChild()) {
-    supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(profile);
-  }
-  if (supervised_user_service) {
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  if (supervised_user_service &&
+      supervised_user_service->IsURLFilteringEnabled()) {
     SupervisedUserURLFilter* url_filter =
         supervised_user_service->GetURLFilter();
     int filtering_behavior =
