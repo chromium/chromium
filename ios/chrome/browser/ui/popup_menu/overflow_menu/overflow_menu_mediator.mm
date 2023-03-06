@@ -1089,7 +1089,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 }
 
 // Decides whether the default browser blue dot promo should be active, and if
-// it is, move the settings destination to the front and add the blue dot badge.
+// it is, move the settings destination to 4th position and add the blue dot
+// badge.
 - (NSArray<OverflowMenuDestination*>*)maybeActivateDefaultBrowserBlueDotPromo:
     (NSArray<OverflowMenuDestination*>*)destinations {
   if (!self.engagementTracker) {
@@ -1102,16 +1103,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     // Add the blue dot promo badge to the settings destination.
     self.settingsDestination.badge = BadgeTypeBlueDot;
 
-    // Move the settings destination to the front of the destinations, otherwise
-    // respecting the original order.
+    // Move the settings destination to the 4th position of the destinations,
+    // otherwise respecting the original order.
     NSMutableArray<OverflowMenuDestination*>* newDestinations =
         [[NSMutableArray alloc] init];
 
-    [newDestinations addObject:self.settingsDestination];
     for (OverflowMenuDestination* destination in destinations) {
-      if (destination != self.settingsDestination) {
-        [newDestinations addObject:destination];
+      if (destination == self.settingsDestination) {
+        continue;
       }
+
+      if ([newDestinations count] == 3) {
+        [newDestinations addObject:self.settingsDestination];
+      }
+
+      [newDestinations addObject:destination];
     }
 
     // If we've only started showing the blue dot recently (<6 hours), don't
