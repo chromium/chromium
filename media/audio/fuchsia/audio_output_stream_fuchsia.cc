@@ -196,6 +196,13 @@ bool AudioOutputStreamFuchsia::InitializePayloadBuffer() {
 }
 
 void AudioOutputStreamFuchsia::OnMinLeadTimeChanged(int64_t min_lead_time) {
+  // AudioRenderer may initially send `min_lead_time=0`. This event can be
+  // ignored. It's expected to send a valid value soon after processing
+  // `SetPcmStreamType()`. See fxbug.dev/122532.
+  if (min_lead_time <= 0) {
+    return;
+  }
+
   bool min_lead_time_was_unknown = !min_lead_time_.has_value();
 
   min_lead_time_ = base::Nanoseconds(min_lead_time);
