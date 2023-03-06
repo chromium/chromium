@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
@@ -103,10 +104,12 @@ HashRealTimeService::HashRealTimeService(
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         get_network_context,
     VerdictCacheManager* cache_manager,
+    OhttpKeyService* ohttp_key_service,
     base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled)
     : url_loader_factory_(url_loader_factory),
       get_network_context_(std::move(get_network_context)),
       cache_manager_(cache_manager),
+      ohttp_key_service_(ohttp_key_service),
       backoff_operator_(std::make_unique<BackoffOperator>(
           /*num_failures_to_enforce_backoff=*/kNumFailuresToEnforceBackoff,
           /*min_backoff_reset_duration_in_seconds=*/
@@ -268,27 +271,11 @@ void HashRealTimeService::StartLookup(
   // Send request.
   if (base::FeatureList::IsEnabled(kHashRealTimeOverOhttp)) {
     // OHTTP
-    network::mojom::ObliviousHttpRequestPtr ohttp_request =
-        network::mojom::ObliviousHttpRequest::New();
-    ohttp_request->relay_url = GURL(kHashRealTimeOverOhttpRelayUrl.Get());
-    ohttp_request->traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag());
-    // TODO(crbug.com/1407283): Get key config from Ohttp key service.
-    ohttp_request->key_config = "";
-    ohttp_request->resource_url = GURL(GetResourceUrl(std::move(request)));
-    ohttp_request->method = net::HttpRequestHeaders::kGetMethod;
-
-    mojo::PendingReceiver<network::mojom::ObliviousHttpClient> pending_receiver;
-    get_network_context_.Run()->GetViaObliviousHttp(
-        std::move(ohttp_request),
-        pending_receiver.InitWithNewPipeAndPassRemote());
-    ohttp_client_receivers_.Add(
-        std::make_unique<ObliviousHttpClient>(base::BindOnce(
-            &HashRealTimeService::OnOhttpComplete, weak_factory_.GetWeakPtr(),
-            url, std::move(hash_prefixes_to_request),
-            std::move(cached_full_hashes), base::TimeTicks::Now(),
-            std::move(callback_task_runner), std::move(response_callback))),
-        std::move(pending_receiver));
+    ohttp_key_service_->GetOhttpKey(base::BindOnce(
+        &HashRealTimeService::OnGetOhttpKey, weak_factory_.GetWeakPtr(),
+        std::move(request), url, std::move(hash_prefixes_to_request),
+        std::move(cached_full_hashes), base::TimeTicks::Now(),
+        std::move(callback_task_runner), std::move(response_callback)));
   } else {
     // Direct fetch
     std::unique_ptr<network::SimpleURLLoader> url_loader =
@@ -309,6 +296,48 @@ void HashRealTimeService::StartLookup(
   }
 }
 
+void HashRealTimeService::OnGetOhttpKey(
+    std::unique_ptr<V5::SearchHashesRequest> request,
+    const GURL& url,
+    const std::vector<std::string>& hash_prefixes_in_request,
+    std::vector<V5::FullHash> result_full_hashes,
+    base::TimeTicks request_start_time,
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+    HPRTLookupResponseCallback response_callback,
+    absl::optional<std::string> key) {
+  // TODO(crbug.com/1407283): Add a histogram to log the key fetch result.
+  if (!key.has_value()) {
+    backoff_operator_->ReportError();
+    response_callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_callback),
+                                  /*is_lookup_successful=*/false,
+                                  /*sb_threat_type=*/absl::nullopt));
+    return;
+  }
+  // Construct OHTTP request.
+  network::mojom::ObliviousHttpRequestPtr ohttp_request =
+      network::mojom::ObliviousHttpRequest::New();
+  ohttp_request->relay_url = GURL(kHashRealTimeOverOhttpRelayUrl.Get());
+  ohttp_request->traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag());
+  ohttp_request->key_config = key.value();
+  ohttp_request->resource_url = GURL(GetResourceUrl(std::move(request)));
+  ohttp_request->method = net::HttpRequestHeaders::kGetMethod;
+
+  mojo::PendingReceiver<network::mojom::ObliviousHttpClient> pending_receiver;
+  get_network_context_.Run()->GetViaObliviousHttp(
+      std::move(ohttp_request),
+      pending_receiver.InitWithNewPipeAndPassRemote());
+  ohttp_client_receivers_.Add(
+      std::make_unique<ObliviousHttpClient>(base::BindOnce(
+          &HashRealTimeService::OnOhttpComplete, weak_factory_.GetWeakPtr(),
+          url, std::move(hash_prefixes_in_request),
+          std::move(result_full_hashes), request_start_time,
+          std::move(response_callback_task_runner),
+          std::move(response_callback))),
+      std::move(pending_receiver));
+}
+
 void HashRealTimeService::OnOhttpComplete(
     const GURL& url,
     const std::vector<std::string>& hash_prefixes_in_request,
@@ -318,6 +347,8 @@ void HashRealTimeService::OnOhttpComplete(
     HPRTLookupResponseCallback response_callback,
     const absl::optional<std::string>& response_body,
     int net_error) {
+  // TODO(crbug.com/1407283): Notify ohttp_key_service_ if the error is key
+  // related.
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
   // TODO(crbug.com/1407283): Set response_code when the mojo interface exposes
@@ -544,6 +575,7 @@ void HashRealTimeService::Shutdown() {
 
   // Clear references to other KeyedServices.
   cache_manager_ = nullptr;
+  ohttp_key_service_ = nullptr;
 }
 
 base::WeakPtr<HashRealTimeService> HashRealTimeService::GetWeakPtr() {

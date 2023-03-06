@@ -373,6 +373,7 @@ class MockHashRealTimeService : public HashRealTimeService {
             /*url_loader_factory=*/nullptr,
             /*get_network_context=*/base::NullCallback(),
             /*cache_manager=*/nullptr,
+            /*ohttp_key_service=*/nullptr,
             /*get_is_enhanced_protection_enabled=*/base::NullCallback()) {}
   base::WeakPtr<MockHashRealTimeService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

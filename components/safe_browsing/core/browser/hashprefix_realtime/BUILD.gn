@@ -6,6 +6,8 @@ static_library("hash_realtime_service") {
   sources = [
     "hash_realtime_service.cc",
     "hash_realtime_service.h",
+    "ohttp_key_service.cc",
+    "ohttp_key_service.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

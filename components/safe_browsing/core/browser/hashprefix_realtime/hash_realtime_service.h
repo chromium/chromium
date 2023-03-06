@@ -39,6 +39,7 @@ using HPRTLookupRequestCallback =
 using HPRTLookupResponseCallback =
     base::OnceCallback<void(bool, absl::optional<SBThreatType>)>;
 
+class OhttpKeyService;
 class VerdictCacheManager;
 
 // This class implements the backoff logic, cache logic, and lookup request for
@@ -55,6 +56,7 @@ class HashRealTimeService : public KeyedService {
       base::RepeatingCallback<network::mojom::NetworkContext*()>
           get_network_context,
       VerdictCacheManager* cache_manager,
+      OhttpKeyService* ohttp_key_service,
       base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled);
 
   HashRealTimeService(const HashRealTimeService&) = delete;
@@ -92,6 +94,8 @@ class HashRealTimeService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_MissingCacheDuration);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestBackoffModeSet);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeSet_MissingOhttpKey);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestBackoffModeRespected_FullyCached);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
@@ -136,6 +140,19 @@ class HashRealTimeService : public KeyedService {
   // Get the URL that will return a response containing full hashes.
   std::string GetResourceUrl(
       std::unique_ptr<V5::SearchHashesRequest> request) const;
+
+  // Callback for getting the OHTTP key. Most parameters are used by
+  // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
+  // details. |key| is returned from |ohttp_key_service_|.
+  void OnGetOhttpKey(
+      std::unique_ptr<V5::SearchHashesRequest> request,
+      const GURL& url,
+      const std::vector<std::string>& hash_prefixes_in_request,
+      std::vector<V5::FullHash> result_full_hashes,
+      base::TimeTicks request_start_time,
+      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+      HPRTLookupResponseCallback response_callback,
+      absl::optional<std::string> key);
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
@@ -273,6 +290,9 @@ class HashRealTimeService : public KeyedService {
 
   // Unowned object used for getting and storing cache entries.
   raw_ptr<VerdictCacheManager> cache_manager_;
+
+  // Unowned object used for getting OHTTP key.
+  raw_ptr<OhttpKeyService> ohttp_key_service_;
 
   // All requests that are sent directly to the server but haven't received a
   // response yet.

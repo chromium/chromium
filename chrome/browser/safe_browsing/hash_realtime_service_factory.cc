@@ -7,6 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
+#include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
@@ -40,6 +41,7 @@ HashRealTimeServiceFactory::HashRealTimeServiceFactory()
               .Build()) {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(NetworkContextServiceFactory::GetInstance());
+  DependsOn(OhttpKeyServiceFactory::GetInstance());
 }
 
 KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
@@ -57,6 +59,7 @@ KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
       base::BindRepeating(&HashRealTimeServiceFactory::GetNetworkContext,
                           profile),
       VerdictCacheManagerFactory::GetForProfile(profile),
+      OhttpKeyServiceFactory::GetForProfile(profile),
       base::BindRepeating(
           &HashRealTimeServiceFactory::IsEnhancedProtectionEnabled, profile));
 }

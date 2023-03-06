@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
@@ -38,6 +39,7 @@ constexpr char kUrlWithMatchingHashPrefix1[] = "https://example.a23549";
 constexpr char kUrlWithMatchingHashPrefix2[] = "https://example.a3945";
 
 constexpr char kTestRelayUrl[] = "https://ohttp.endpoint.test";
+constexpr char kOhttpKey[] = "TestOhttpKey";
 
 // A class for testing requests sent via OHTTP. Call |AddResponse| and
 // |SetInterceptor| to set up response before |GetViaObliviousHttp| is
@@ -90,6 +92,20 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
   mojo::Remote<network::mojom::ObliviousHttpClient> remote_;
 };
 
+class TestOhttpKeyService : public OhttpKeyService {
+ public:
+  void GetOhttpKey(OhttpKeyService::Callback callback) override {
+    std::move(callback).Run(ohttp_key_);
+  }
+
+  void SetOhttpKey(absl::optional<std::string> ohttp_key) {
+    ohttp_key_ = ohttp_key;
+  }
+
+ private:
+  absl::optional<std::string> ohttp_key_;
+};
+
 }  // namespace
 
 class HashRealTimeServiceTest : public PlatformTest {
@@ -125,9 +141,11 @@ class HashRealTimeServiceTest : public PlatformTest {
           /*sync_observer=*/nullptr);
       cache_manager_ptr = cache_manager_.get();
     }
+    ohttp_key_service_ = std::make_unique<TestOhttpKeyService>();
+    ohttp_key_service_->SetOhttpKey(kOhttpKey);
     service_ = std::make_unique<HashRealTimeService>(
         test_shared_loader_factory_, network_context_callback,
-        cache_manager_ptr, base::NullCallback());
+        cache_manager_ptr, ohttp_key_service_.get(), base::NullCallback());
   }
   void SetUp() override {
     PlatformTest::SetUp();
@@ -310,7 +328,7 @@ class HashRealTimeServiceTest : public PlatformTest {
           EXPECT_EQ(ohttp_request->method, net::HttpRequestHeaders::kGetMethod);
           EXPECT_EQ(ohttp_request->relay_url, GURL(kTestRelayUrl));
           EXPECT_EQ(ohttp_request->resource_url, GURL(expected_url));
-          EXPECT_EQ(ohttp_request->key_config, "");
+          EXPECT_EQ(ohttp_request->key_config, kOhttpKey);
         }));
 
     // Set up request response.
@@ -518,6 +536,7 @@ class HashRealTimeServiceTest : public PlatformTest {
   OhttpTestNetworkContext network_context_;
   std::string key_param_;
   std::unique_ptr<VerdictCacheManager> cache_manager_;
+  std::unique_ptr<TestOhttpKeyService> ohttp_key_service_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   base::test::TaskEnvironment task_environment_{
@@ -907,6 +926,23 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
       /*expected_operation_result=*/
       HashRealTimeService::OperationResult::kNoCacheDurationError);
 }
+TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
+  GURL url = GURL("https://example.test");
+  ohttp_key_service_->SetOhttpKey(absl::nullopt);
+  base::MockCallback<HPRTLookupResponseCallback> response_callback;
+  EXPECT_CALL(response_callback,
+              Run(/*is_lookup_successful=*/false,
+                  /*sb_threat_type=*/testing::Eq(absl::nullopt)))
+      .Times(1);
+  service_->StartLookup(url, response_callback.Get(),
+                        base::SequencedTaskRunner::GetCurrentDefault());
+  task_environment_.RunUntilIdle();
+
+  CheckNoNetworkRequestMetric();
+  // If the OHTTP key is missing, lookup should fail before making a request to
+  // network_context_.
+  EXPECT_EQ(network_context_.total_requests(), 0u);
+}
 
 TEST_F(HashRealTimeServiceTest, TestFullyCached_OneHash_Safe) {
   GURL url = GURL("https://example.test");
@@ -1146,6 +1182,26 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet) {
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   RunSimpleFailingRequest(url);
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+}
+
+TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
+  GURL url = GURL("https://example.test");
+  ohttp_key_service_->SetOhttpKey(absl::nullopt);
+  base::MockCallback<HPRTLookupResponseCallback> response_callback;
+  EXPECT_CALL(response_callback,
+              Run(/*is_lookup_successful=*/false,
+                  /*sb_threat_type=*/testing::Eq(absl::nullopt)))
+      .Times(3);
+  service_->StartLookup(url, response_callback.Get(),
+                        base::SequencedTaskRunner::GetCurrentDefault());
+  service_->StartLookup(url, response_callback.Get(),
+                        base::SequencedTaskRunner::GetCurrentDefault());
+  service_->StartLookup(url, response_callback.Get(),
+                        base::SequencedTaskRunner::GetCurrentDefault());
+  task_environment_.RunUntilIdle();
+
+  // Key related failure should also affect the backoff status.
+  EXPECT_EQ(service_->backoff_operator_->IsInBackoffMode(), true);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeRespected_FullyCached) {
