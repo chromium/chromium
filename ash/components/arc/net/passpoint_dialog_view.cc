@@ -28,9 +28,8 @@
 
 namespace {
 
-// TODO(b/266151265): Point to actual Passpoint help page, instead of WiFi page.
 constexpr char kPasspointHelpPage[] =
-    "https://support.google.com/chromebook?p=hidden_networks";
+    "https://support.google.com/chromebook?p=wifi_passpoint";
 
 }  // namespace
 
