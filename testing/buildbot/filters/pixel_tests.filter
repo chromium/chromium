@@ -42,6 +42,7 @@ IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*
 InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
+KioskPixelTest.*
 LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*
 OneTimePermissionPromptBubbleViewBrowserTest.*
