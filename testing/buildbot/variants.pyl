@@ -686,6 +686,7 @@
       'cros_board': 'octopus',
       'cros_chrome_version': '110.0.5423.0',
       'cros_img': 'octopus-release/R110-15249.0.0',
+      'tast_expr': '("group:mainline" && !informational)',
       'autotest_name': 'tast.chrome-from-tls',
     },
     'enabled': True,
