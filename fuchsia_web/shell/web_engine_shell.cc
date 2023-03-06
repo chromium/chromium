@@ -45,7 +45,10 @@ namespace {
 constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
+// TODO(crbug.com/1421342): This flag will be removed. Keep for now to prevent
+// users from failing.
 constexpr char kUseWebInstance[] = "use-web-instance";
+constexpr char kUseContextProvider[] = "use-context-provider";
 constexpr char kEnableWebInstanceTmp[] = "enable-web-instance-tmp";
 
 void PrintUsage() {
@@ -86,7 +89,21 @@ int main(int argc, char** argv) {
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
 
-  const bool use_context_provider = !command_line->HasSwitch(kUseWebInstance);
+  const bool use_web_instance = command_line->HasSwitch(kUseWebInstance);
+  const bool use_context_provider =
+      command_line->HasSwitch(kUseContextProvider);
+
+  if (use_web_instance && use_context_provider) {
+    LOG(ERROR) << "Cannot use " << kUseWebInstance << " and "
+               << kUseContextProvider << " simultaneously.";
+    return 1;
+  }
+
+  if (use_web_instance) {
+    LOG(WARNING) << "Flag " << kUseWebInstance << " is deprecated and has no "
+                 << "effect as WebInstance is used by default.";
+  }
+
   if (!use_context_provider) {
     if (auto optional_exit_code = RelaunchForWebInstanceHostIfParent(
             "#meta/web_engine_shell_for_web_instance_host.cm", *command_line);
