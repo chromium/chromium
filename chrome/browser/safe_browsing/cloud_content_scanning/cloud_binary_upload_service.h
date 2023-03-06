@@ -92,6 +92,7 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
   void OnGetAccessToken(Request* request, const std::string& access_token);
 
+  // This may destroy `request`.
   void OnGetRequestData(Request* request, Result result, Request::Data data);
 
   void OnUploadComplete(Request* request,
