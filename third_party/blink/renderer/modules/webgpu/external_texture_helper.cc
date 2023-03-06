@@ -103,6 +103,41 @@ bool IsSameGamutAndGamma(gfx::ColorSpace src_color_space,
   return false;
 }
 
+// Copy this helper function from media/renderers/paint_canvas_video_renderer.cc
+// to workaround issue crbug.com/1407112. We need to ensure no color space
+// conversion happens during all conversions. And leverage Dawn to do the color
+// space conversion
+// TODO(crbug.com/1407112): Remove this after fixing crbug.com/1407112
+gfx::ColorSpace GetVideoFrameRGBColorSpacePreferringSRGB(
+    const media::VideoFrame* frame) {
+  const auto rgb_color_space = frame->ColorSpace().GetAsFullRangeRGB();
+  auto primary_id = rgb_color_space.GetPrimaryID();
+  switch (primary_id) {
+    case gfx::ColorSpace::PrimaryID::CUSTOM:
+      return rgb_color_space;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      break;
+    default:
+      break;
+  }
+  auto transfer_id = rgb_color_space.GetTransferID();
+  switch (transfer_id) {
+    case gfx::ColorSpace::TransferID::CUSTOM:
+    case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+      return rgb_color_space;
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      transfer_id = gfx::ColorSpace::TransferID::SRGB;
+      break;
+    default:
+      break;
+  }
+  return gfx::ColorSpace(primary_id, transfer_id);
+}
+
 ExternalTextureSource GetExternalTextureSourceFromVideoElement(
     HTMLVideoElement* video,
     ExceptionState& exception_state) {
@@ -237,12 +272,13 @@ ExternalTexture CreateExternalTexture(
     external_texture_desc.plane1 = plane1;
 
     // Set color space transformation metas for ExternalTexture
-    external_texture_desc.doYuvToRgbConversionOnly =
-        IsSameGamutAndGamma(src_color_space, dst_color_space);
-
     std::array<float, 12> yuvToRgbMatrix =
         GetYUVToRGBMatrix(src_color_space, media_video_frame->BitDepth());
     external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix.data();
+
+    // Decide whether color space conversion could be skipped.
+    external_texture_desc.doYuvToRgbConversionOnly =
+        IsSameGamutAndGamma(src_color_space, dst_color_space);
 
     ColorSpaceConversionConstants color_space_conversion_constants =
         GetColorSpaceConversionConstants(src_color_space, dst_color_space);
@@ -275,11 +311,24 @@ ExternalTexture CreateExternalTexture(
 
   const auto intrinsic_size = media_video_frame->natural_size();
 
+  // Try to workaround crbug.com/1407112 by keeping no color space conversion
+  // DrawVideoFrameIntoResourceProvider by setting the canvas resource's
+  // colorspace to the specific ones. However not all color space can be
+  // converted to SkColorSpace, in that case default to sRGB.
+  // TODO(crbug.com/1407112): set recyclable_canvas_resource_color_space to dest
+  // color space after fixing crbug.com/1407112.
+  gfx::ColorSpace recyclable_canvas_resource_color_space =
+      GetVideoFrameRGBColorSpacePreferringSRGB(media_video_frame.get());
+  if (!recyclable_canvas_resource_color_space.ToSkColorSpace()) {
+    recyclable_canvas_resource_color_space = gfx::ColorSpace::CreateSRGB();
+  }
+
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          SkImageInfo::MakeN32Premul(intrinsic_size.width(),
-                                     intrinsic_size.height()),
+          SkImageInfo::MakeN32Premul(
+              intrinsic_size.width(), intrinsic_size.height(),
+              recyclable_canvas_resource_color_space.ToSkColorSpace()),
           /*is_origin_top_left=*/true);
   if (!recyclable_canvas_resource) {
     return external_texture;
@@ -321,6 +370,14 @@ ExternalTexture CreateExternalTexture(
 
   // Set plane for ExternalTexture
   external_texture_desc.plane0 = plane0;
+
+  // Decide whether color space conversion could be skipped.
+  // Try to workaround crbug.com/1407112 by using Dawn to do color space
+  // conversion.
+  // TODO(crbug.com/1407112): compare recyclable_canvas_resource_color_space
+  // instead of src_color_space after fixing crbug.com/1407112.
+  external_texture_desc.doYuvToRgbConversionOnly =
+      IsSameGamutAndGamma(src_color_space, dst_color_space);
 
   // Set color space transformation metas for ExternalTexture
   ColorSpaceConversionConstants color_space_conversion_constants =
