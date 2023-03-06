@@ -128,7 +128,6 @@ class OzonePlatformScenic : public OzonePlatform,
     static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
     static bool initialised = false;
     if (!initialised) {
-      properties->needs_view_token = true;
       properties->message_pump_type_for_gpu = base::MessagePumpType::IO;
       properties->supports_vulkan_swap_chain = true;
 
