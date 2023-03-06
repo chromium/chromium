@@ -1793,12 +1793,28 @@ TEST_F(HarfBuzzShaperTest,
        ShapeHorizontalWithoutSubpixelPositionWithKerningIsRounded) {
   ScopedSubpixelOverride subpixel_override(false);
 
+  // The verification whether a particular shaping routine is performing
+  // kerning can be flaky when subpixel if OFF - see KerningIsHappening().
+  // For instance, if the position of a character is say `7.55` with subpixel
+  // ON, it gets rounded to `8` with subpixel position OFF, and the comparison
+  // in KerningIsHappening() fails, although kerning is effectively happening.
+  //
+  // Hence, this test leverages the uses of a particular font (Arial) where the
+  // result is reliable cross platform (linux, mac, ios, etc).
+  //
+  // [1] RoundHarfBuzzPosition() @harfbuzz_shaper.cc
+  FontDescription font_description(font_description_);
+  FontFamily family;
+  family.SetFamily(font_family_names::kArial, FontFamily::Type::kFamilyName);
+  font_description.SetFamily(family);
+  Font font = Font(font_description);
+
   String string(u"AVOID");
   TextDirection direction = TextDirection::kLtr;
-  ASSERT_TRUE(KerningIsHappening(font_description_, direction, string));
+  ASSERT_TRUE(KerningIsHappening(font_description, direction, string));
 
   HarfBuzzShaper shaper(string);
-  scoped_refptr<ShapeResult> result = shaper.Shape(&font_, direction);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, direction);
 
   for (unsigned i = 0; i < string.length(); i++) {
     float position = result->PositionForOffset(i);
