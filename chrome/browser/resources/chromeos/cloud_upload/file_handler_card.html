@@ -1,4 +1,12 @@
 <style>
+  :host {
+    outline: none;
+  }
+
+  #container {
+    position: relative;
+  }
+
   #card {
     align-items: center;
     background-color: var(--cros-textfield-background-color);
@@ -11,7 +19,11 @@
     user-select: none;
   }
 
-  #card[checked] {
+  #card:hover {
+    background-color: var(--cros-ripple-color);
+  }
+
+  :host(:focus-visible) #card {
     border: 2px solid var(--cros-focus-ring-color);
   }
 
@@ -19,12 +31,15 @@
     margin-block-start: 8px;
   }
 
-  .round-top {
+  /* Apply border radius to both #card and paper-ripple */
+  #container.round-top #card,
+  #container.round-top paper-ripple {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
   }
 
-  .round-bottom {
+  #container.round-bottom #card,
+  #container.round-bottom paper-ripple {
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
   }
@@ -110,16 +125,19 @@
     transform: rotate(0deg);
   }
 
-  #card:not([checked]) > #right-icon:not(.chevron) {
+  #card:not([selected]) > #right-icon:not(.chevron) {
     visibility: hidden;
   }
 </style>
 
-<div id="card">
-  <div id="icon"></div>
-  <div id="content">
-    <div id="title"></div>
-    <div id="description"></div>
+<div id="container">
+  <paper-ripple></paper-ripple>
+  <div id="card">
+    <div id="icon"></div>
+    <div id="content">
+      <div id="title"></div>
+      <div id="description"></div>
+    </div>
+    <div id="right-icon"></div>
   </div>
-  <div id="right-icon"></div>
 </div>
