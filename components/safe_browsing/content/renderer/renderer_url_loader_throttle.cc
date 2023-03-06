@@ -79,9 +79,9 @@ void RendererURLLoaderThrottle::WillStartRequest(
 
   static const base::NoDestructor<
       std::unordered_set<network::mojom::RequestDestination>>
-      request_destinations_to_skip({network::mojom::RequestDestination::kStyle,
+      request_destinations_to_skip{{network::mojom::RequestDestination::kStyle,
                                     network::mojom::RequestDestination::kImage,
-                                    network::mojom::RequestDestination::kFont});
+                                    network::mojom::RequestDestination::kFont}};
   if (base::Contains(*request_destinations_to_skip, request->destination) &&
       base::FeatureList::IsEnabled(kSafeBrowsingSkipImageCssFont)) {
     return;
