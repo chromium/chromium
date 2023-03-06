@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1209,7 +1210,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("GUEST_OS", true);
 
-  dict->Set("JELLY", ash::features::IsJellyEnabled());
+  dict->Set("JELLY", chromeos::features::IsJellyEnabled());
 
   dict->Set("DRIVE_SHORTCUTS",
             base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
