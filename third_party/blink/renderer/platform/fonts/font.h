@@ -209,6 +209,12 @@ class PLATFORM_EXPORT Font {
     EnsureFontFallbackList()->SetCanShapeWordByWordForTesting(b);
   }
 
+  // Causes PrimaryFont to return nullptr, which is useful for simulating
+  // a situation where the "last resort font" did not load.
+  void NullifyPrimaryFontForTesting() {
+    EnsureFontFallbackList()->NullifyPrimarySimpleFontDataForTesting();
+  }
+
   void ReportNotDefGlyph() const;
 
   void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,

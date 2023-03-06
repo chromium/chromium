@@ -89,6 +89,9 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
 
   const SimpleFontData* PrimarySimpleFontData(
       const FontDescription& font_description) {
+    if (nullify_primary_font_data_for_test_) {
+      return nullptr;
+    }
     if (!cached_primary_simple_font_data_) {
       cached_primary_simple_font_data_ =
           DeterminePrimarySimpleFontData(font_description);
@@ -103,6 +106,11 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   void SetCanShapeWordByWordForTesting(bool b) {
     can_shape_word_by_word_ = b;
     can_shape_word_by_word_computed_ = true;
+  }
+
+  // See Font::NullifyPrimaryFontForTesting.
+  void NullifyPrimarySimpleFontDataForTesting() {
+    nullify_primary_font_data_for_test_ = true;
   }
 
   bool HasLoadingFallback() const { return has_loading_fallback_; }
@@ -132,6 +140,7 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool can_shape_word_by_word_ : 1;
   bool can_shape_word_by_word_computed_ : 1;
   bool is_invalid_ : 1;
+  bool nullify_primary_font_data_for_test_ : 1;
 
   base::WeakPtr<ShapeCache> shape_cache_;
 };
