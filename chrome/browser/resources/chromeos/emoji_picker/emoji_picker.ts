@@ -1052,7 +1052,7 @@ export class EmojiPicker extends PolymerElement {
    * change of incognito state.
    *
    */
-  private updateIncognitoState(incognito: boolean) {
+  updateIncognitoState(incognito: boolean) {
     this.incognito = incognito;
     // Load the history item for each category.
     for (const category of Object.values(CategoryEnum)) {

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-export function assertCloseTo(actual, expected) {
+export function assertCloseTo(actual: number, expected: number) {
   assertTrue(
       Math.abs(1 - actual / expected) <= 0.001,
       `expected ${expected} to be close to ${actual}`);
@@ -15,16 +15,12 @@ export function assertCloseTo(actual, expected) {
  * Queries for an element through a path of custom elements.
  * This is needed because querySelector() does not query into
  * custom elements' shadow roots.
- *
- * @param {!Element} root element to start searching from.
- * @param {!Array<string>} path array of query selectors. each selector should
- *     correspond to one shadow root.
- * @returns {HTMLElement|null} element or null if not found.
  */
-export function deepQuerySelector(root, path) {
+export function deepQuerySelector(root: Element, path: string[]): HTMLElement|
+    null {
   assert(root, 'deepQuerySelector called with null root');
 
-  let el = root;
+  let el: ShadowRoot|Element|null = root;
 
   for (const part of path) {
     if (el.shadowRoot) {
@@ -37,19 +33,15 @@ export function deepQuerySelector(root, path) {
     }
   }
 
-  return el;
+  return el as HTMLElement | null;
 }
 
 /**
  * Constructs a promise which resolves when the given condition function
  * evaluates to a truthy value.
- * @param {!function(): T} condition condition function to check.
- * @param {string=} message error message to show when maxWait reached.
- * @param {number=} maxWait maximum wait time in ms.
- * @return {!Promise<T>} promise resolving to truthy return value of condition.
- * @template T return type of condition function.
  */
-export async function waitForCondition(condition, message, maxWait = 5000) {
+export async function waitForCondition<T>(
+    condition: () => T, message: string, maxWait = 5000): Promise<T> {
   const interval = 10;
   let waiting = 0;
 
@@ -68,18 +60,15 @@ export async function waitForCondition(condition, message, maxWait = 5000) {
 
 /**
  * Constructs a promise which resolves after the given amount of time.
- * @param {!number} ms timeout in milliseconds.
- * @return {!Promise} timeout promise.
  */
-export function timeout(ms) {
+export function timeout(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
  * Constructs a promise which resolves after 0 seconds.
- * @return {!Promise} timeout promise.
  */
-export function completePendingMicrotasks() {
+export function completePendingMicrotasks(): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, 0);
   });
@@ -88,17 +77,12 @@ export function completePendingMicrotasks() {
 /**
  * Constructs a promise which resolves when the given promise resolves,
  * or fails after the given timeout - whichever occurs first.
- * @param {!Promise<T>} promise promise to wait for.
- * @param {!number} ms max timeout in milliseconds
- * @param {message=} message message on timeout.
- * @return {!Promise<T>} promise with timeout.
- * @template T resolve type of promise.
  */
-export function waitWithTimeout(promise, ms, message) {
+export function waitWithTimeout<T>(
+    promise: Promise<T>, ms: number, message: string): Promise<T> {
   message = message || 'waiting for promise timed out after ' + ms + ' ms.';
   return Promise.race(
-      [promise, timeout(ms).then(
-        () => Promise.reject(new Error(message)))]);
+      [promise, timeout(ms).then(() => Promise.reject(new Error(message)))]);
 }
 
 /**
@@ -106,11 +90,9 @@ export function waitWithTimeout(promise, ms, message) {
  * an event of the given type.
  * Note: this function should be called *before* event is expected to set up
  * the handler, then it should be awaited when the event is required.
- * @param {!Element} element element to listen on.
- * @param {!string} eventType event type to listen for.
- * @return {!Promise<!Event>} event promise.
  */
-export function waitForEvent(element, eventType) {
+export function waitForEvent(
+    element: Element, eventType: string): Promise<Event> {
   return new Promise(
       resolve => element.addEventListener(eventType, resolve, {once: true}));
 }
@@ -118,11 +100,9 @@ export function waitForEvent(element, eventType) {
 
 /**
  * Simulates a mouse click event on the given element.
- * @param {!Element} element element to right click.
- * @param {!number} button button number for event.
- * @param {!string=} eventType event type to dispatch.
  */
-export function dispatchMouseEvent(element, button, eventType = 'contextmenu') {
+export function dispatchMouseEvent(
+    element: Element, button: number, eventType = 'contextmenu') {
   element.dispatchEvent(new MouseEvent(eventType, {
     bubbles: true,
     cancelable: true,
@@ -139,11 +119,9 @@ const ACTIVE_TEXT_GROUP_CLASS = 'text-group-active';
 /**
  * Checks if the given emoji-group-button or text-group-button element is
  * activated.
- * @param {?Element} element element to check.
- * @return {boolean} true if active, false otherwise.
  */
-export function isGroupButtonActive(element) {
+export function isGroupButtonActive(element: Element|null): boolean {
   assert(element, 'group button element should not be null');
-  return element.classList.contains(ACTIVE_EMOJI_GROUP_CLASS) ||
-      element.classList.contains(ACTIVE_TEXT_GROUP_CLASS);
+  return element!.classList.contains(ACTIVE_EMOJI_GROUP_CLASS) ||
+      element!.classList.contains(ACTIVE_TEXT_GROUP_CLASS);
 }

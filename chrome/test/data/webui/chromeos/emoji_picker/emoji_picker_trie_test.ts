@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {Trie} from 'chrome://emoji-picker/structs/trie.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('TrieUnitTest', () => {
-  let trie;
+  let trie: Trie;
   setup(() => {
     trie = new Trie();
   });
