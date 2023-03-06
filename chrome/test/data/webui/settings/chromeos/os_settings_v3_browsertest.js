@@ -484,7 +484,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsSearchPage', 'os_search_page_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
  ['OSSettingsMenu', 'os_settings_menu_test.js'],
- ['ParentalControlsPage', 'parental_controls_page_test.js'],
+ [
+   'ParentalControlsPage',
+   'parental_controls_page/parental_controls_page_test.js'
+ ],
  ['PeoplePage', 'os_people_page_test.js'],
  ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
  [

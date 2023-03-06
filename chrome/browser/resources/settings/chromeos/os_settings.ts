@@ -210,6 +210,7 @@ export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, 
 export {routes} from './os_settings_routes.js';
 export {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.js';
+export {SettingsParentalControlsPageElement} from './parental_controls_page/parental_controls_page.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
 export {Route, Router} from './router.js';
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';

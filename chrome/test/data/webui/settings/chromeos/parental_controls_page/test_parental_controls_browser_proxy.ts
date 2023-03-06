@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ParentalControlsBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-export class TestParentalControlsBrowserProxy extends TestBrowserProxy {
+export class TestParentalControlsBrowserProxy extends TestBrowserProxy
+    implements ParentalControlsBrowserProxy {
   constructor() {
     super([
       'showAddSupervisionDialog',
