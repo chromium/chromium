@@ -26,6 +26,7 @@ namespace content {
 class BrowserContext;
 class RenderFrameHost;
 class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 class GURL;
@@ -399,6 +400,10 @@ class PermissionUmaUtil {
   PermissionUmaUtil& operator=(const PermissionUmaUtil&) = delete;
 
   static void PermissionRequested(ContentSettingsType permission);
+
+  static void RecordPermissionRequestedFromFrame(
+      ContentSettingsType content_settings_type,
+      content::RenderFrameHost* rfh);
 
   static void PermissionRequestPreignored(blink::PermissionType permission);
 

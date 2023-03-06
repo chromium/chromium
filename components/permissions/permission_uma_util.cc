@@ -196,6 +196,22 @@ bool IsCrossOriginSubframe(content::RenderFrameHost* render_frame_host) {
               .IsSameOriginWith(current_origin);
 }
 
+// Helper to check if the current render frame host is cross-origin with any of
+// its parents.
+bool IsCrossOriginWithAnyParent(content::RenderFrameHost* render_frame_host) {
+  const url::Origin& current_origin =
+      render_frame_host->GetLastCommittedOrigin();
+  content::RenderFrameHost* parent = render_frame_host->GetParent();
+  while (parent) {
+    const url::Origin& parent_origin = parent->GetLastCommittedOrigin();
+    if (!parent_origin.IsSameOriginWith(current_origin)) {
+      return true;
+    }
+    parent = parent->GetParent();
+  }
+  return false;
+}
+
 // Helper to get permission policy header policy for the top-level frame that
 // render_frame_host is a descendant of.
 PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
@@ -524,6 +540,27 @@ void PermissionUmaUtil::PermissionRequested(ContentSettingsType content_type) {
 
   base::UmaHistogramEnumeration("ContentSettings.PermissionRequested",
                                 permission, PermissionType::NUM);
+}
+
+void PermissionUmaUtil::RecordPermissionRequestedFromFrame(
+    ContentSettingsType content_settings_type,
+    content::RenderFrameHost* rfh) {
+  PermissionType permission;
+  bool success =
+      PermissionUtil::GetPermissionType(content_settings_type, &permission);
+  DCHECK(success);
+
+  if (IsCrossOriginWithAnyParent(rfh)) {
+    base::UmaHistogramEnumeration("Permissions.Request.CrossOrigin", permission,
+                                  PermissionType::NUM);
+  } else {
+    std::string frame_level =
+        rfh->IsInPrimaryMainFrame() ? "MainFrame" : "SubFrame";
+
+    base::UmaHistogramEnumeration(
+        "Permissions.Request.SameOrigin." + frame_level, permission,
+        PermissionType::NUM);
+  }
 }
 
 void PermissionUmaUtil::PermissionRequestPreignored(PermissionType permission) {
