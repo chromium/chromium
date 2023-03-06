@@ -4,18 +4,22 @@
 
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,7 +58,11 @@ VideoConferenceTrayController* VideoConferenceTrayController::Get() {
   return g_controller_instance;
 }
 
-void VideoConferenceTrayController::Initialize() {
+void VideoConferenceTrayController::Initialize(
+    VideoConferenceManagerBase* video_conference_manager) {
+  DCHECK(!video_conference_manager_)
+      << "VideoConferenceTrayController should not be Initialized twice.";
+  video_conference_manager_ = video_conference_manager;
   media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
       this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
@@ -91,6 +99,73 @@ bool VideoConferenceTrayController::IsCapturingCamera() const {
 
 bool VideoConferenceTrayController::IsCapturingMicrophone() const {
   return state_.is_capturing_microphone;
+}
+
+void VideoConferenceTrayController::SetCameraMuted(bool muted) {
+  if (!ash::features::IsCrosPrivacyHubEnabled()) {
+    media::CameraHalDispatcherImpl::GetInstance()
+        ->SetCameraSWPrivacySwitchState(
+            muted ? cros::mojom::CameraPrivacySwitchState::ON
+                  : cros::mojom::CameraPrivacySwitchState::OFF);
+    return;
+  }
+
+  // Change user pref to let Privacy Hub enable/disable the camera.
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+  pref_service->SetBoolean(prefs::kUserCameraAllowed, !muted);
+}
+
+bool VideoConferenceTrayController::GetCameraMuted() {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return camera_muted_by_software_switch();
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref_service && !pref_service->GetBoolean(prefs::kUserCameraAllowed);
+}
+
+void VideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
+  if (!ash::features::IsCrosPrivacyHubEnabled()) {
+    CrasAudioHandler::Get()->SetInputMute(
+        /*mute_on=*/muted, CrasAudioHandler::InputMuteChangeMethod::kOther);
+    return;
+  }
+
+  // Change user pref to let Privacy Hub enable/disable the microphone.
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+  pref_service->SetBoolean(prefs::kUserMicrophoneAllowed, !muted);
+}
+
+bool VideoConferenceTrayController::GetMicrophoneMuted() {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return CrasAudioHandler::Get()->IsInputMuted();
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref_service &&
+         !pref_service->GetBoolean(prefs::kUserMicrophoneAllowed);
+}
+
+void VideoConferenceTrayController::GetMediaApps(
+    base::OnceCallback<void(MediaApps)> ui_callback) {
+  DCHECK(video_conference_manager_);
+  video_conference_manager_->GetMediaApps(std::move(ui_callback));
+}
+
+void VideoConferenceTrayController::ReturnToApp(
+    const base::UnguessableToken& id) {
+  DCHECK(video_conference_manager_);
+  video_conference_manager_->ReturnToApp(id);
 }
 
 void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(

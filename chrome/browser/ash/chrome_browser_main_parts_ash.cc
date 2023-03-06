@@ -1008,12 +1008,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   lacros_data_backward_migration_mode_policy_observer_ = std::make_unique<
       crosapi::LacrosDataBackwardMigrationModePolicyObserver>();
 
-  // Only creates VideoConferenceAppServiceClient if VcControlsUi is enabled.
-  if (features::IsVideoConferenceEnabled()) {
-    vc_app_service_client_ =
-        std::make_unique<VideoConferenceAppServiceClient>();
-  }
-
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   // Needs to be initialized after crosapi_manager_.
@@ -1393,6 +1387,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (features::IsVideoConferenceEnabled()) {
     video_conference_manager_client_ =
         std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
+    vc_app_service_client_ =
+        std::make_unique<VideoConferenceAppServiceClient>();
   }
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();

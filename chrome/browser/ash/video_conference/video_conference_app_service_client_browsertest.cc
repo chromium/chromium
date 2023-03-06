@@ -12,7 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
-#include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/test/test_window_builder.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"

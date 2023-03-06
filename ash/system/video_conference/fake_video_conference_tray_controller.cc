@@ -62,6 +62,13 @@ bool FakeVideoConferenceTrayController::GetMicrophoneMuted() {
 
 void FakeVideoConferenceTrayController::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
+  // If initialized, use real VideoConferenceTrayController for GetMediaApps.
+  if (initialized()) {
+    VideoConferenceTrayController::GetMediaApps(std::move(ui_callback));
+    return;
+  }
+
+  // If not initialized, use fake `media_apps_`.
   MediaApps apps;
   for (auto& app : media_apps_) {
     apps.push_back(app->Clone());
@@ -72,6 +79,11 @@ void FakeVideoConferenceTrayController::GetMediaApps(
 void FakeVideoConferenceTrayController::ReturnToApp(
     const base::UnguessableToken& id) {
   app_to_launch_state_[id] = true;
+
+  // Call real ReturnToApp if initialized.
+  if (initialized()) {
+    VideoConferenceTrayController::ReturnToApp(id);
+  }
 }
 
 void FakeVideoConferenceTrayController::HandleDeviceUsedWhileDisabled(

@@ -14,7 +14,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
-#include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/animation/ink_drop.h"

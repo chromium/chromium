@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/functional/callback.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,7 +32,8 @@ struct VideoConferenceMediaState;
 //    background blur, portrait relighting, apps using audio/camera, etc.
 //    and providing this information to the UI as needed.
 class VideoConferenceManagerAsh
-    : public crosapi::mojom::VideoConferenceManager {
+    : public VideoConferenceManagerBase,
+      public crosapi::mojom::VideoConferenceManager {
  public:
   VideoConferenceManagerAsh();
 
@@ -41,18 +43,12 @@ class VideoConferenceManagerAsh
 
   ~VideoConferenceManagerAsh() override;
 
-  // Returns a vector of crosapi::mojom::VideoConferenceMediaAppInfo
-  // for all media apps aggregated from all clients.
-  using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
-  void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback);
-
-  // Brings the app connected to the |id| to the foreground.
-  void ReturnToApp(const base::UnguessableToken& id);
-
-  // Sets whether |device| is disabled at the system or hardware level.
+  // VideoConferenceManagerBase overrides.
+  void GetMediaApps(base::OnceCallback<void(MediaApps)>) override;
+  void ReturnToApp(const base::UnguessableToken& id) override;
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled);
+      bool disabled) override;
 
   // Registers an ash-browser client. Non-mojo clients need to manually call
   // |UnregisterClient|, e.g. inside their destructor.

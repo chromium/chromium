@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/barrier_callback.h"
 #include "base/check.h"
@@ -25,7 +25,11 @@
 
 namespace ash {
 
-VideoConferenceManagerAsh::VideoConferenceManagerAsh() = default;
+VideoConferenceManagerAsh::VideoConferenceManagerAsh() {
+  if (ash::features::IsVideoConferenceEnabled()) {
+    GetTrayController()->Initialize(this);
+  }
+}
 
 VideoConferenceManagerAsh::~VideoConferenceManagerAsh() = default;
 

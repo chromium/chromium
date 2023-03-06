@@ -3086,8 +3086,6 @@ source_set("ash") {
     "usb/cros_usb_detector.h",
     "video_conference/video_conference_app_service_client.cc",
     "video_conference/video_conference_app_service_client.h",
-    "video_conference/video_conference_tray_controller_impl.cc",
-    "video_conference/video_conference_tray_controller_impl.h",
     "vm_shutdown_observer.h",
     "vm_starting_observer.h",
     "wallpaper/wallpaper_drivefs_delegate_impl.cc",

@@ -23,7 +23,7 @@
 #include "ash/style/style_viewer/system_ui_components_style_viewer_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/toast_manager_impl.h"
-#include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/touch/touch_devices_controller.h"
