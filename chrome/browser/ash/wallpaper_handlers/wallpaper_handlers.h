@@ -180,6 +180,11 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // carry information on the state of the user's Google Photos library.
   virtual absl::optional<base::Value> CreateErrorResponse(int error_code);
 
+  // Returns the result of the managed policy
+  // WallpaperGooglePhotosIntegrationEnabled, or true if this pref is
+  // not managed.
+  virtual bool IsGooglePhotosIntegrationPolicyEnabled() const;
+
  private:
   void OnTokenReceived(
       std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,

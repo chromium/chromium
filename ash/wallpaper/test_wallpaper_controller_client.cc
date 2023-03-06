@@ -98,6 +98,12 @@ void TestWallpaperControllerClient::FetchGooglePhotosPhoto(
     const AccountId& account_id,
     const std::string& id,
     FetchGooglePhotosPhotoCallback callback) {
+  auto iter = wallpaper_google_photos_integration_enabled_.find(account_id);
+  if (iter != wallpaper_google_photos_integration_enabled_.end() &&
+      !iter->second) {
+    std::move(callback).Run(/*photo=*/nullptr, /*success=*/true);
+    return;
+  }
   base::Time time;
   base::Time::Exploded exploded_time{2011, 6, 3, 15, 12, 0, 0, 0};
   if (!base::Time::FromUTCExploded(exploded_time, &time))

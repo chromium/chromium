@@ -5117,4 +5117,57 @@ TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
   EXPECT_LE(delay, one_day + base::Minutes(61));
 }
 
+TEST_F(WallpaperControllerGooglePhotosWallpaperTest,
+       ResetToDefaultForDisabledGooglePhotosIntegrationPolicyOnStalenessCheck) {
+  SimulateUserLogin(kAccountId1);
+
+  WallpaperInfo info = {kFakeGooglePhotosPhotoId, WALLPAPER_LAYOUT_CENTER,
+                        WallpaperType::kOnceGooglePhotos,
+                        DayBeforeYesterdayish()};
+  pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
+
+  client_.set_wallpaper_google_photos_integration_enabled_for_account_id(
+      kAccountId1, false);
+
+  // Trigger Google Photos wallpaper cache check.
+  controller_->OnActiveUserSessionChanged(kAccountId1);
+  WaitForWallpaperCount(1);
+
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
+}
+
+TEST_F(
+    WallpaperControllerGooglePhotosWallpaperTest,
+    ResetToDefaultForDisabledGooglePhotosIntegrationPolicyDailyGooglePhotosAlbums) {
+  SimulateUserLogin(kAccountId1);
+
+  base::test::TestFuture<bool> google_photos_future;
+  controller_->SetGooglePhotosWallpaper(
+      {kAccountId1, kFakeGooglePhotosAlbumId, /*daily_refresh_enabled=*/true,
+       WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+       /*preview_mode=*/false, /*dedup_key=*/absl::nullopt},
+      google_photos_future.GetCallback());
+  EXPECT_TRUE(google_photos_future.Get());
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo current_info;
+  pref_manager_->GetUserWallpaperInfo(kAccountId1, &current_info);
+
+  EXPECT_EQ(WallpaperType::kDailyGooglePhotos, current_info.type);
+
+  // This makes the test fetch in `client_` return a null photo, but a
+  // successful call, which is the sign for the
+  // WallpaperGooglePhotosIntegrationEnabled policy disabled, or a deleted or
+  // empty album.
+  client_.set_wallpaper_google_photos_integration_enabled_for_account_id(
+      kAccountId1, false);
+
+  controller_->UpdateDailyRefreshWallpaperForTesting();
+  RunAllTasksUntilIdle();
+
+  pref_manager_->GetUserWallpaperInfo(kAccountId1, &current_info);
+
+  EXPECT_EQ(WallpaperType::kDefault, current_info.type);
+}
+
 }  // namespace ash
