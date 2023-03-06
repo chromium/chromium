@@ -28,11 +28,11 @@
 namespace attribution_reporting {
 
 Filters FiltersForSourceType(mojom::SourceType source_type) {
-  return Filters({
+  return Filters{{
       {
           {FilterData::kSourceTypeFilterKey, {SourceTypeName(source_type)}},
       },
-  });
+  }};
 }
 
 bool operator==(const AggregationKeys& a, const AggregationKeys& b) {
