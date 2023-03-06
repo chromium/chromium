@@ -26,7 +26,6 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/favicon/favicon_url.h"
-#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -75,7 +74,7 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
   navigation_manager_->SetBrowserState(params.browser_state);
   web_controller_ = [[CRWWebController alloc] initWithWebState:owner_];
 
-  GetPageWorldWebFramesManager().AddObserver(this);
+  owner_->GetPageWorldWebFramesManager()->AddObserver(this);
 
   // Restore session history last because NavigationManagerImpl relies on
   // CRWWebController to restore history into the web view.
@@ -130,7 +129,7 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
 
 void WebStateImpl::RealizedWebState::TearDown() {
   [web_controller_ close];
-  GetPageWorldWebFramesManager().RemoveObserver(this);
+  owner_->GetPageWorldWebFramesManager()->RemoveObserver(this);
 
   // WebUI depends on web state so it must be destroyed first in case any WebUI
   // implementations depends on accessing web state during destruction.
@@ -152,21 +151,6 @@ WebStateImpl::RealizedWebState::GetNavigationManager() const {
 
 NavigationManagerImpl& WebStateImpl::RealizedWebState::GetNavigationManager() {
   return *navigation_manager_;
-}
-
-WebFramesManagerImpl&
-WebStateImpl::RealizedWebState::GetPageWorldWebFramesManager() {
-  return GetWebFramesManagerImpl(ContentWorld::kPageContentWorld);
-}
-
-WebFramesManagerImpl& WebStateImpl::RealizedWebState::GetWebFramesManagerImpl(
-    ContentWorld world) {
-  DCHECK_NE(world, ContentWorld::kAllContentWorlds);
-
-  if (!managers_[world]) {
-    managers_[world] = base::WrapUnique(new WebFramesManagerImpl());
-  }
-  return *managers_[world].get();
 }
 
 const SessionCertificatePolicyCacheImpl&
@@ -505,12 +489,6 @@ void WebStateImpl::RealizedWebState::RetrieveExistingFrames() {
   for (JavaScriptContentWorld* world : feature_manager->GetAllContentWorlds()) {
     [web_controller_
         retrieveExistingFramesInContentWorld:world->GetWKContentWorld()];
-  }
-}
-
-void WebStateImpl::RealizedWebState::RemoveAllWebFrames() {
-  for (const auto& iterator : managers_) {
-    iterator.second->RemoveAllWebFrames();
   }
 }
 

@@ -9,13 +9,11 @@
 
 #import "ios/web/web_state/web_state_impl.h"
 
-#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
 
-class WebFramesManagerImpl;
 class WebUIIOS;
 
 // Internal implementation of a realized WebStateImpl.
@@ -60,14 +58,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
   // Returns the NavigationManagerImpl associated with the owning WebStateImpl.
   const NavigationManagerImpl& GetNavigationManager() const;
   NavigationManagerImpl& GetNavigationManager();
-
-  // Returns the WebFrameManagerImpl associated with the owning WebStateImpl for
-  // the page content world.
-  WebFramesManagerImpl& GetPageWorldWebFramesManager();
-
-  // Returns the WebFrameManagerImpl associated with the owning WebStateImpl for
-  // the given `world`.
-  WebFramesManagerImpl& GetWebFramesManagerImpl(ContentWorld world);
 
   // Returns the SessionCertificationPolicyCacheImpl associated with the owning
   // WebStateImpl.
@@ -139,7 +129,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
                       NSURLCredential* proposed_credential,
                       WebStateDelegate::AuthCallback callback);
   void RetrieveExistingFrames();
-  void RemoveAllWebFrames();
 
   // WebState:
   WebStateDelegate* GetDelegate();
@@ -225,9 +214,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
                                WebFrame* web_frame) override;
   void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
                                  const std::string frame_id) override;
-
-  // Notifies observers that `frame` will be removed and then removes it.
-  void NotifyObserversAndRemoveWebFrame(WebFrame* frame);
 
   // Creates a WebUIIOS object for `url` that is owned by the called. Returns
   // nullptr if `url` does not correspond to a WebUI page.
@@ -318,9 +304,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
 
   // The fake CRWWebViewNavigationProxy used for testing. Nil in production.
   __strong id<CRWWebViewNavigationProxy> web_view_for_testing_;
-
-  // A map which stores the web frame manager for each content world.
-  std::map<ContentWorld, std::unique_ptr<WebFramesManagerImpl>> managers_;
 };
 
 }  // namespace web

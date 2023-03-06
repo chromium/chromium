@@ -184,8 +184,13 @@ int WebStateImpl::GetNavigationItemCount() const {
 }
 
 WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl(
-    ContentWorld content_world) {
-  return RealizedState()->GetWebFramesManagerImpl(content_world);
+    ContentWorld world) {
+  DCHECK_NE(world, ContentWorld::kAllContentWorlds);
+
+  if (!managers_[world]) {
+    managers_[world] = base::WrapUnique(new WebFramesManagerImpl());
+  }
+  return *managers_[world].get();
 }
 
 SessionCertificatePolicyCacheImpl&
@@ -320,7 +325,9 @@ void WebStateImpl::RetrieveExistingFrames() {
 }
 
 void WebStateImpl::RemoveAllWebFrames() {
-  RealizedState()->RemoveAllWebFrames();
+  for (const auto& iterator : managers_) {
+    iterator.second->RemoveAllWebFrames();
+  }
 }
 
 void WebStateImpl::RequestPermissionsWithDecisionHandler(
@@ -465,11 +472,11 @@ NavigationManager* WebStateImpl::GetNavigationManager() {
 }
 
 WebFramesManager* WebStateImpl::GetPageWorldWebFramesManager() {
-  return &RealizedState()->GetPageWorldWebFramesManager();
+  return &GetWebFramesManagerImpl(ContentWorld::kPageContentWorld);
 }
 
 WebFramesManager* WebStateImpl::GetWebFramesManager(ContentWorld world) {
-  return &RealizedState()->GetWebFramesManagerImpl(world);
+  return &GetWebFramesManagerImpl(world);
 }
 
 const SessionCertificatePolicyCache*

@@ -381,6 +381,12 @@ class WebStateImpl final : public WebState {
   // `WebStateRealized`).
   WebStateObserverList observers_;
 
+  // A map which stores the web frame manager for each content world. This is
+  // not stored in RealizedWebState because observers are added to
+  // WebFramesManagerImpl during the AttachTabHelpers phase leading to over
+  // realizing all WebStates.
+  std::map<ContentWorld, std::unique_ptr<WebFramesManagerImpl>> managers_;
+
   // All the WebStatePolicyDeciders asked for navigation decision. Weak
   // references. This is not stored in RealizedWebState/SerializedData to
   // allow adding policy decider to an "unrealized" WebState.
