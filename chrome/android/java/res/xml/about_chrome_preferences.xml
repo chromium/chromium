@@ -5,15 +5,21 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <Preference
         android:key="application_version"
         android:title="@string/application_version_title" />
     <org.chromium.chrome.browser.about_settings.AboutChromePreferenceOSVersion
         android:key="os_version"
         android:title="@string/os_version_title" />
-    <Preference
+    <!-- <Preference
         android:fragment="org.chromium.chrome.browser.about_settings.LegalInformationSettings"
         android:key="legal_information"
-        android:title="@string/legal_information_title" />
+        android:title="@string/legal_information_title" /> -->
+    <org.chromium.chrome.browser.about_settings.HyperlinkPreference
+        android:key="open_source_license"
+        android:title="@string/open_source_license_title"
+        app:url="@string/open_source_license_url" />
 </PreferenceScreen>

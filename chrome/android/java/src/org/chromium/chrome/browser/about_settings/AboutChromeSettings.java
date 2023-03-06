@@ -56,9 +56,9 @@ public class AboutChromeSettings
         p.setOnPreferenceClickListener(this);
         p = findPreference(PREF_OS_VERSION);
         p.setSummary(AboutSettingsBridge.getOSVersion());
-        p = findPreference(PREF_LEGAL_INFORMATION);
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        p.setSummary(getString(R.string.legal_information_summary, currentYear));
+        // p = findPreference(PREF_LEGAL_INFORMATION);
+        // int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        // p.setSummary(getString(R.string.legal_information_summary, currentYear));
     }
 
     /**
