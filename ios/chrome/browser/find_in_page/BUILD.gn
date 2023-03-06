@@ -23,6 +23,7 @@ source_set("find_in_page") {
   ]
   deps = [
     "//base",
+    "//components/strings:components_strings_grit",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/web",
