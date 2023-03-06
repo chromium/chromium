@@ -230,11 +230,20 @@ void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
   DCHECK(loaded());
 
   scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
-  if (!entry || entry->IsRead() == read) {
+  if (!entry) {
     return;
   }
 
-  NotifyObserversWithWillMoveEntry(url);
+  const bool notify_observers = entry->IsRead() != read;
+
+  if (notify_observers) {
+    NotifyObserversWithWillMoveEntry(url);
+  }
+
+  // The update propagates to both underlying ReadingListModelImpl instances
+  // even if the `entry` read status is equal to `read`. This is because if
+  // `entry` was a merged entry, then one of the two underlying entries may have
+  // a different read status.
 
   {
     base::AutoReset<bool> auto_reset_suppress_observer_notifications(
@@ -243,8 +252,10 @@ void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
     account_model_->SetReadStatusIfExists(url, read);
   }
 
-  NotifyObserversWithDidMoveEntry(url);
-  NotifyObserversWithDidApplyChanges();
+  if (notify_observers) {
+    NotifyObserversWithDidMoveEntry(url);
+    NotifyObserversWithDidApplyChanges();
+  }
 }
 
 void DualReadingListModel::SetEntryTitleIfExists(const GURL& url,

@@ -868,6 +868,33 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForAccountCommonEntry) {
   EXPECT_FALSE(dual_model_->GetEntryByURL(kUrl)->IsRead());
 }
 
+TEST_F(DualReadingListModelTest,
+       SetReadStatusIfExistsForMergedEntryHasSameStatus) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetRead(clock_.Now() + base::Seconds(1))}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_FALSE(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->IsRead());
+  // The expected read state of the merged entry is equal to the state of the
+  // entry that was most recently updated, and initially the update time of the
+  // entry is equal to the creation time.
+  ASSERT_TRUE(dual_model_->GetEntryByURL(kUrl)->IsRead());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->SetReadStatusIfExists(kUrl, true);
+
+  EXPECT_TRUE(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->IsRead());
+}
+
 TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForNonExistingEntry) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
 
