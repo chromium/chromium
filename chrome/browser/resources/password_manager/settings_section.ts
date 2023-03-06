@@ -7,25 +7,32 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './shared_style.css.js';
 import './prefs/pref_toggle_button.js';
 
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import {getTemplate} from './settings_section.html.js';
+import {SyncBrowserProxyImpl, TrustedVaultBannerState} from './sync_browser_proxy.js';
 
 export interface SettingsSectionElement {
   $: {
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
+    trustedVaultBanner: CrLinkRowElement,
   };
 }
 
-export class SettingsSectionElement extends I18nMixin
-(PolymerElement) {
+const SettingsSectionElementBase =
+    WebUiListenerMixin(I18nMixin(PolymerElement));
+
+export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
     return 'settings-section';
   }
@@ -63,6 +70,12 @@ export class SettingsSectionElement extends I18nMixin
         type: Boolean,
         value: false,
       },
+
+      /** The visibility state of the trusted vault banner. */
+      trustedVaultBannerState_: {
+        type: Object,
+        value: TrustedVaultBannerState.NOT_SHOWN,
+      },
     };
   }
 
@@ -76,6 +89,8 @@ export class SettingsSectionElement extends I18nMixin
   private addShortcutDescription_: string;
 
   private hasPasswordsToExport_: boolean;
+
+  private trustedVaultBannerState_: TrustedVaultBannerState;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -98,6 +113,15 @@ export class SettingsSectionElement extends I18nMixin
         this.setCredentialsChangedListener_);
     PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
         this.setCredentialsChangedListener_);
+
+    const trustedVaultStateChanged = (state: TrustedVaultBannerState) => {
+      this.trustedVaultBannerState_ = state;
+    };
+    const syncBrowserProxy = SyncBrowserProxyImpl.getInstance();
+    syncBrowserProxy.getTrustedVaultBannerState().then(
+        trustedVaultStateChanged);
+    this.addWebUiListener(
+        'trusted-vault-banner-state-changed', trustedVaultStateChanged);
   }
 
   override disconnectedCallback() {
@@ -145,6 +169,52 @@ export class SettingsSectionElement extends I18nMixin
 
   private getShortcutBannerDescription_(): string {
     return this.addShortcutDescription_;
+  }
+
+  private onTrustedVaultBannerClick_() {
+    switch (this.trustedVaultBannerState_) {
+      case TrustedVaultBannerState.OPTED_IN:
+        OpenWindowProxyImpl.getInstance().openUrl(
+            loadTimeData.getString('trustedVaultLearnMoreUrl'));
+        break;
+      case TrustedVaultBannerState.OFFER_OPT_IN:
+        OpenWindowProxyImpl.getInstance().openUrl(
+            loadTimeData.getString('trustedVaultOptInUrl'));
+        break;
+      case TrustedVaultBannerState.NOT_SHOWN:
+      default:
+        assertNotReached();
+    }
+  }
+
+  private getTrustedVaultBannerTitle_(): string {
+    switch (this.trustedVaultBannerState_) {
+      case TrustedVaultBannerState.OPTED_IN:
+        return this.i18n('trustedVaultBannerLabelOptedIn');
+      case TrustedVaultBannerState.OFFER_OPT_IN:
+        return this.i18n('trustedVaultBannerLabelOfferOptIn');
+      case TrustedVaultBannerState.NOT_SHOWN:
+        return '';
+      default:
+        assertNotReached();
+    }
+  }
+
+  private getTrustedVaultBannerDescription_(): string {
+    switch (this.trustedVaultBannerState_) {
+      case TrustedVaultBannerState.OPTED_IN:
+        return this.i18n('trustedVaultBannerSubLabelOptedIn');
+      case TrustedVaultBannerState.OFFER_OPT_IN:
+        return this.i18n('trustedVaultBannerSubLabelOfferOptIn');
+      case TrustedVaultBannerState.NOT_SHOWN:
+        return '';
+      default:
+        assertNotReached();
+    }
+  }
+
+  private shouldHideTrustedVaultBanner_(): boolean {
+    return this.trustedVaultBannerState_ === TrustedVaultBannerState.NOT_SHOWN;
   }
 }
 

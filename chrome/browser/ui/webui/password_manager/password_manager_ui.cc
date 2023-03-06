@@ -146,6 +146,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_MUTED_COMPROMISED_PASSWORDS},
     {"notValidWebsite", IDS_PASSWORD_MANAGER_UI_NOT_VALID_WEB_ADDRESS},
     {"notesLabel", IDS_PASSWORD_MANAGER_UI_NOTES_LABEL},
+    {"opensInNewTab", IDS_PASSWORD_MANAGER_UI_OPENS_IN_NEW_TAB},
     {"passwordCopiedToClipboard",
      IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},
     {"passwordDeleted", IDS_PASSWORD_MANAGER_UI_PASSWORD_DELETED},
@@ -175,7 +176,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"trustedVaultBannerLabelOfferOptIn",
      IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
     {"trustedVaultBannerSubLabelOfferOptIn",
-     IDS_PASSWORD_MANAGER_UI_RUSTED_VAULT_OPT_IN_DESCRIPTION},
+     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_DESCRIPTION},
+    {"trustedVaultBannerLabelOptedIn",
+     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_TITLE},
+    {"trustedVaultBannerSubLabelOptedIn",
+     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_DESCRIPTION},
     {"tryAgain", IDS_PASSWORD_MANAGER_UI_CHECK_PASSWORDS_AFTER_ERROR},
     {"undoRemovePassword", IDS_PASSWORD_MANAGER_UI_UNDO},
     {"unmuteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_UNMUTE_ISSUE},
@@ -260,6 +265,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddResourcePath("images/password_manager_pwa_icon.svg",
                           IDR_CHROME_PASSWORD_MANAGER_PWA_ICON);
 #endif
+
+  source->AddString("trustedVaultOptInUrl", chrome::kSyncTrustedVaultOptInURL);
+  source->AddString("trustedVaultLearnMoreUrl",
+                    chrome::kSyncTrustedVaultLearnMoreURL);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

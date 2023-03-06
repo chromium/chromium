@@ -53,9 +53,12 @@
       </pref-toggle-button>
     </template>
   </if>
-  <cr-link-row id="trustedVaultBanner" class="cr-row settings-cr-link-row"
-      label="$i18n{trustedVaultBannerLabelOfferOptIn}"
-      sub-label="$i18n{trustedVaultBannerSubLabelOfferOptIn}" external>
+  <cr-link-row id="trustedVaultBanner" class="cr-row"
+      label="[[getTrustedVaultBannerTitle_(trustedVaultBannerState_)]]"
+      sub-label="[[getTrustedVaultBannerDescription_(trustedVaultBannerState_)]]"
+      hidden$="[[shouldHideTrustedVaultBanner_(trustedVaultBannerState_)]]"
+      button-aria-description="$i18n{opensInNewTab}"
+      on-click="onTrustedVaultBannerClick_" external>
   </cr-link-row>
   <cr-link-row id="importPasswords" class="cr-row settings-cr-link-row"
       label="$i18n{importPasswords}"
@@ -67,7 +70,7 @@
   <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
     <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
         on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
-        sub-label="[[getShortcutBannerDescription_()]]" hide-icon>
+        sub-label="[[getShortcutBannerDescription_]]" hide-icon>
     </cr-link-row>
   </template>
 </div>
