@@ -32,7 +32,7 @@ struct CardMetadataLoggingContext {
 
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(
-    const std::vector<CreditCard*>& cards);
+    const std::vector<CreditCard>& cards);
 
 // Log the latency between suggestions being shown and a suggestion was
 // selected, in milliseconds.

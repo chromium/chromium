@@ -74,8 +74,7 @@ class AutofillSuggestionGenerator {
   // Returns the local and server cards ordered by the Autofill ranking. The
   // cards which are expired and disused aren't included if
   // |suppress_disused_cards| is true.
-  static std::vector<CreditCard*> GetOrderedCardsToSuggest(
-      // PersonalDataManager* personal_data,
+  static std::vector<CreditCard> GetOrderedCardsToSuggest(
       AutofillClient* autofill_client,
       bool suppress_disused_cards);
 

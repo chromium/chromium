@@ -28,19 +28,19 @@ std::string GetHistogramSuffix(const CardMetadataLoggingContext& context) {
 }  // namespace
 
 CardMetadataLoggingContext GetMetadataLoggingContext(
-    const std::vector<CreditCard*>& cards) {
+    const std::vector<CreditCard>& cards) {
   bool card_product_description_available = false;
   bool card_art_image_available = false;
   bool virtual_card_with_card_art_image = false;
 
-  for (const auto* card : cards) {
-    if (!card->product_description().empty()) {
+  for (const CreditCard& card : cards) {
+    if (!card.product_description().empty()) {
       card_product_description_available = true;
     }
 
-    if (card->card_art_url().is_valid()) {
+    if (card.card_art_url().is_valid()) {
       card_art_image_available = true;
-      if (card->virtual_card_enrollment_state() ==
+      if (card.virtual_card_enrollment_state() ==
           CreditCard::VirtualCardEnrollmentState::ENROLLED) {
         virtual_card_with_card_art_image = true;
       }
@@ -79,8 +79,7 @@ void LogAcceptanceLatency(base::TimeDelta latency,
                                     GetHistogramSuffix(suggestion_context),
                                 latency);
 
-  CreditCard duplicate = selected_card;
-  auto selected_card_context = GetMetadataLoggingContext({&duplicate});
+  auto selected_card_context = GetMetadataLoggingContext({selected_card});
   if (!selected_card_context.card_metadata_available) {
     return;
   }

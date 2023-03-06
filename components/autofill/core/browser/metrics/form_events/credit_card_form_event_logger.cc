@@ -115,9 +115,8 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       metadata_logging_context_, credit_card);
 
   // Log if the selected suggestion had metadata shown.
-  CreditCard duplicate = credit_card;
   metadata_logging_context_ =
-      autofill_metrics::GetMetadataLoggingContext({&duplicate});
+      autofill_metrics::GetMetadataLoggingContext({credit_card});
   if (metadata_logging_context_.IsCardMetadataShown()) {
     Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED, form);
   }

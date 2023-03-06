@@ -150,7 +150,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   // data.
   auto field_contents = SanitizeCreditCardFieldValue(field.value);
 
-  std::vector<CreditCard*> cards_to_suggest =
+  std::vector<CreditCard> cards_to_suggest =
       GetOrderedCardsToSuggest(autofill_client_, field_contents.empty());
 
   std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
@@ -161,30 +161,32 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   // Set `should_display_gpay_logo` to true if all cards are server cards, and
   // to false if any of the card is a local card.
   should_display_gpay_logo = base::ranges::all_of(
-      cards_to_suggest, base::not_fn(&CreditCard::IsLocalCard));
+      cards_to_suggest, base::not_fn([](const CreditCard& card) {
+        return CreditCard::IsLocalCard(&card);
+      }));
 
-  for (const CreditCard* credit_card : cards_to_suggest) {
+  for (const CreditCard& credit_card : cards_to_suggest) {
     // The value of the stored data for this field type in the |credit_card|.
     std::u16string creditcard_field_value =
-        credit_card->GetInfo(type, app_locale);
+        credit_card.GetInfo(type, app_locale);
     if (creditcard_field_value.empty())
       continue;
 
     bool prefix_matched_suggestion;
     if (suggestion_selection::IsValidSuggestionForFieldContents(
             base::i18n::ToLower(creditcard_field_value), field_contents_lower,
-            type, credit_card->record_type() == CreditCard::MASKED_SERVER_CARD,
+            type, credit_card.record_type() == CreditCard::MASKED_SERVER_CARD,
             field.is_autofilled, &prefix_matched_suggestion)) {
       bool card_linked_offer_available =
-          base::Contains(card_linked_offers_map, credit_card->guid());
-      if (ShouldShowVirtualCardOption(credit_card)) {
+          base::Contains(card_linked_offers_map, credit_card.guid());
+      if (ShouldShowVirtualCardOption(&credit_card)) {
         suggestions.push_back(CreateCreditCardSuggestion(
-            *credit_card, type, prefix_matched_suggestion,
+            credit_card, type, prefix_matched_suggestion,
             /*virtual_card_option=*/true, app_locale,
             card_linked_offer_available));
       }
       suggestions.push_back(CreateCreditCardSuggestion(
-          *credit_card, type, prefix_matched_suggestion,
+          credit_card, type, prefix_matched_suggestion,
           /*virtual_card_option=*/false, app_locale,
           card_linked_offer_available));
     }
@@ -210,8 +212,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 }
 
 // static
-std::vector<CreditCard*> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-    // PersonalDataManager* personal_data,
+std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
     AutofillClient* autofill_client,
     bool suppress_disused_cards) {
   DCHECK(autofill_client);
@@ -221,14 +222,14 @@ std::vector<CreditCard*> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
   PersonalDataManager* personal_data =
       autofill_client->GetPersonalDataManager();
   DCHECK(personal_data);
-  std::vector<CreditCard*> cards_to_suggest =
+  std::vector<CreditCard*> available_cards =
       personal_data->GetCreditCardsToSuggest();
 
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
   if (!card_linked_offers_map.empty()) {
     base::ranges::stable_sort(
-        cards_to_suggest,
+        available_cards,
         [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
           return base::Contains(card_linked_offers_map, a->guid()) &&
                  !base::Contains(card_linked_offers_map, b->guid());
@@ -240,9 +241,14 @@ std::vector<CreditCard*> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
     const base::Time min_last_used =
         AutofillClock::Now() - kDisusedDataModelTimeDelta;
     AutofillSuggestionGenerator::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
-        AutofillClock::Now(), min_last_used, &cards_to_suggest);
+        AutofillClock::Now(), min_last_used, &available_cards);
   }
 
+  std::vector<CreditCard> cards_to_suggest;
+  cards_to_suggest.reserve(available_cards.size());
+  for (const CreditCard* card : available_cards) {
+    cards_to_suggest.push_back(*card);
+  }
   return cards_to_suggest;
 }
 

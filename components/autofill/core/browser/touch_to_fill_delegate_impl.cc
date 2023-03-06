@@ -87,7 +87,7 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
   // Trigger only if there is at least 1 complete valid credit card on file.
   // Complete = contains number, expiration date and name on card.
   // Valid = unexpired with valid number format.
-  std::vector<CreditCard*> cards_to_suggest =
+  std::vector<CreditCard> cards_to_suggest =
       AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
           manager_->client(), /*suppress_disused_cards=*/true);
   if (base::ranges::none_of(cards_to_suggest,
@@ -103,13 +103,13 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
   // card with `CreditCard::VIRTUAL_CARD` as the record type, and insert it
   // before the actual card.
   std::vector<autofill::CreditCard> real_and_virtual_cards;
-  for (const CreditCard* card : cards_to_suggest) {
-    if (card->virtual_card_enrollment_state() == CreditCard::ENROLLED &&
+  for (const CreditCard& card : cards_to_suggest) {
+    if (card.virtual_card_enrollment_state() == CreditCard::ENROLLED &&
         base::FeatureList::IsEnabled(
             features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
-      real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(*card));
+      real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(card));
     }
-    real_and_virtual_cards.push_back(*card);
+    real_and_virtual_cards.push_back(card);
   }
   return {TriggerOutcome::kShown, std::move(real_and_virtual_cards)};
 }
