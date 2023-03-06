@@ -23,7 +23,7 @@
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_image_stub.h"
+#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_surface_stub.h"
@@ -57,6 +57,20 @@ using ::testing::StrictMock;
 namespace gpu {
 namespace gles2 {
 
+namespace {
+
+class GLImageStub : public gl::GLImage {
+ public:
+  GLImageStub() = default;
+
+  // GLImage:
+  gfx::Size GetSize() override { return gfx::Size(1, 1); }
+
+ private:
+  ~GLImageStub() override = default;
+};
+
+}  // namespace
 void GLES2DecoderRGBBackbufferTest::SetUp() {
   InitState init;
   init.bind_generates_resource = true;
@@ -271,7 +285,7 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
                                           1,                    /* depth */
                                           0,                    /* border */
                                           GL_RGBA, GL_UNSIGNED_BYTE);
-  scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
+  scoped_refptr<gl::GLImage> image(new GLImageStub);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   abstract_texture->SetUnboundImage(image.get());
@@ -325,7 +339,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_EQ(texture->min_filter(), static_cast<GLenum>(GL_LINEAR));
 
   // Attach an image and see if it works.
-  scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
+  scoped_refptr<gl::GLImage> image(new GLImageStub);
 
   // NOTE: For this test, it doesn't actually matter whether the image is
   // client-managed or decoder-managed.
