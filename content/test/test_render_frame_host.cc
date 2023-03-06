@@ -577,9 +577,9 @@ void TestRenderFrameHost::SimulateCommitProcessed(
 }
 
 WebBluetoothServiceImpl*
-TestRenderFrameHost::CreateWebBluetoothServiceForTesting() {
-  RenderFrameHostImpl::CreateWebBluetoothService(
-      dummy_web_bluetooth_service_remote_.InitWithNewPipeAndPassReceiver());
+TestRenderFrameHost::CreateWebBluetoothServiceForTesting(
+    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
+  RenderFrameHostImpl::CreateWebBluetoothService(std::move(receiver));
   return RenderFrameHostImpl::GetWebBluetoothServiceForTesting();
 }
 

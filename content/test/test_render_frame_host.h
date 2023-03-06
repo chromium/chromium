@@ -204,7 +204,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       bool same_document);
 
   // Creates a WebBluetooth Service with a dummy InterfaceRequest.
-  WebBluetoothServiceImpl* CreateWebBluetoothServiceForTesting();
+  WebBluetoothServiceImpl* CreateWebBluetoothServiceForTesting(
+      mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
   // Returns a pending Frame remote that represents a connection to a non-
   // existent renderer, where all messages will go into the void.
@@ -350,9 +351,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   std::map<NavigationRequest*,
            mojom::NavigationClient::CommitFailedNavigationCallback>
       commit_failed_callback_;
-
-  mojo::PendingRemote<blink::mojom::WebBluetoothService>
-      dummy_web_bluetooth_service_remote_;
 };
 
 }  // namespace content
