@@ -7268,13 +7268,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteNonMsbb)},
 
-    {"page-info-about-this-page-description-placeholder",
-     flag_descriptions::kPageInfoboutThisPageDescriptionPlaceholderName,
-     flag_descriptions::kPageInfoboutThisPageDescriptionPlaceholderDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"page-info-about-this-page-persistent-side-panel-entry",
      flag_descriptions::kPageInfoboutThisPagePersistentEntryName,

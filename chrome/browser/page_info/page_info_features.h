@@ -12,10 +12,6 @@ namespace page_info {
 // enabled.
 bool IsMoreAboutThisSiteFeatureEnabled();
 
-// Returns true if kPageInfoAboutThisSiteDescriptionPlaceholder and dependent
-// features are enabled.
-bool IsDescriptionPlaceholderFeatureEnabled();
-
 // Returns true if `kPageInfoAboutThisSiteNewIcon` and dependent features are
 // enabled.
 bool IsAboutThisSiteNewIconFeatureEnabled();

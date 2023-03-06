@@ -58,7 +58,7 @@ KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           profile->IsOffTheRecord(), profile->GetPrefs()),
       TemplateURLServiceFactory::GetForProfile(profile),
-      page_info::IsDescriptionPlaceholderFeatureEnabled(),
+      page_info::IsMoreAboutThisSiteFeatureEnabled(),
       page_info::IsAboutThisSiteForNonMsbbFeatureEnabled());
 }
 
