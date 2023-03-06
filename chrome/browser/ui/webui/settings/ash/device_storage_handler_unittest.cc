@@ -498,7 +498,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   int64_t available_size = 100 * GB;
   total_disk_space_test_api_->SimulateOnGetRootDeviceSize(total_size);
   free_disk_space_test_api_->SimulateOnGetFreeDiskSpace(&available_size);
-  drive_offline_size_test_api_->SimulateOnGetOfflineItemsSize(available_size);
+  drive_offline_size_test_api_->SimulateOnGetOfflineItemsSize(50 * GB);
   const base::Value* callback =
       GetWebUICallbackMessage("storage-size-stat-changed");
   ASSERT_TRUE(callback) << "No 'storage-size-stat-changed' callback";
@@ -587,22 +587,22 @@ TEST_F(StorageHandlerTest, SystemSize) {
       // updated.
       callback = GetWebUICallbackMessage("storage-system-size-changed");
       ASSERT_TRUE(callback) << "No 'storage-system-size-changed' callback";
-      EXPECT_EQ("110 GB", callback->GetString());
+      EXPECT_EQ("60.0 GB", callback->GetString());
     }
   }
 
-  // If there's an error while calculating the size of browsing data, the size
-  // of browsing data and system should be displayed as "Unknown".
+  // If there is an error while calculating the size of browsing data, the size
+  // of browsing data should be displayed as "Unknown".
   browsing_data_size_test_api_->SimulateOnGetBrowsingDataSize(
       true /* is_site_data */, -1);
   callback = GetWebUICallbackMessage("storage-browsing-data-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-browsing-data-size-changed' callback";
   EXPECT_EQ("Unknown", callback->GetString());
-  // The missing 24.0 GB of browsing data should be reflected in the system
-  // section instead. We expect the displayed size to be 100 + 24 GB.
+  // The missing 24 GB of browsing data should be reflected in the system
+  // section instead. We expect the displayed size to be 60 + 24 GB.
   callback = GetWebUICallbackMessage("storage-system-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-system-size-changed' callback";
-  EXPECT_EQ("134 GB", callback->GetString());
+  EXPECT_EQ("84.0 GB", callback->GetString());
 
   // No error while recalculating browsing data size, the UI should be updated
   // with the right sizes.
@@ -613,7 +613,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   EXPECT_EQ("24.0 GB", callback->GetString());
   callback = GetWebUICallbackMessage("storage-system-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-system-size-changed' callback";
-  EXPECT_EQ("110 GB", callback->GetString());
+  EXPECT_EQ("60.0 GB", callback->GetString());
 }
 
 TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {

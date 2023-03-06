@@ -131,6 +131,9 @@ void TotalDiskSpaceCalculator::GetRootDeviceSize() {
 void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
     absl::optional<int64_t> reply) {
   if (reply.has_value()) {
+    if (reply.value() < 0) {
+      LOG(FATAL) << "Negative root device size (" << reply.value() << ")";
+    }
     NotifySizeCalculated(reply.value());
     return;
   }
@@ -138,8 +141,8 @@ void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
   // FakeSpacedClient does not have a proper implementation of
   // GetRootDeviceSize. If SpacedClient::GetRootDeviceSize does not return a
   // value, use GetTotalDiskSpace as a fallback.
-  LOG(ERROR) << "OnGetRootDeviceSize: Empty reply. Using GetTotalDiskSpace as "
-                "fallback.";
+  VLOG(1) << "OnGetRootDeviceSize: Empty reply. Using GetTotalDiskSpace as "
+             "fallback.";
   GetTotalDiskSpace();
 }
 
@@ -156,6 +159,9 @@ void TotalDiskSpaceCalculator::GetTotalDiskSpace() {
 }
 
 void TotalDiskSpaceCalculator::OnGetTotalDiskSpace(int64_t* total_bytes) {
+  if (*total_bytes < 0) {
+    LOG(FATAL) << "Negative total disk space (" << *total_bytes << ")";
+  }
   NotifySizeCalculated(*total_bytes);
 }
 
@@ -178,6 +184,9 @@ void FreeDiskSpaceCalculator::PerformCalculation() {
 }
 
 void FreeDiskSpaceCalculator::OnGetFreeDiskSpace(int64_t* available_bytes) {
+  if (*available_bytes < 0) {
+    LOG(FATAL) << "Negative free disk space (" << *available_bytes << ")";
+  }
   NotifySizeCalculated(*available_bytes);
 }
 
@@ -188,6 +197,7 @@ DriveOfflineSizeCalculator::~DriveOfflineSizeCalculator() = default;
 
 void DriveOfflineSizeCalculator::PerformCalculation() {
   if (!base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning)) {
+    NotifySizeCalculated(0);
     return;
   }
 
@@ -195,6 +205,7 @@ void DriveOfflineSizeCalculator::PerformCalculation() {
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
 
   if (!integration_service) {
+    NotifySizeCalculated(-1);
     return;
   }
 

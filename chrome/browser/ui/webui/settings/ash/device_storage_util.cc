@@ -4,16 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 
-#include <cstdint>
-#include <iostream>
-
-#include "base/notreached.h"
-
 namespace ash::settings {
 
 int64_t RoundByteSize(int64_t bytes) {
   if (bytes < 0) {
-    NOTREACHED() << "Negative bytes value";
     return -1;
   }
 
