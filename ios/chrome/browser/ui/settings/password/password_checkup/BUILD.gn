@@ -9,11 +9,10 @@ source_set("password_checkup") {
     "password_checkup_coordinator.mm",
     "password_checkup_mediator.h",
     "password_checkup_mediator.mm",
-    "password_checkup_utils.h",
-    "password_checkup_utils.mm",
   ]
   deps = [
     ":password_checkup_ui",
+    ":password_checkup_utils",
     "//components/password_manager/core/browser",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/passwords",
@@ -31,8 +30,21 @@ source_set("password_checkup_ui") {
     "password_checkup_view_controller.mm",
   ]
   deps = [
+    ":password_checkup_utils",
     "//base",
     "//ios/chrome/browser/ui/settings:settings_root",
+  ]
+}
+
+source_set("password_checkup_utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_utils.h",
+    "password_checkup_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
   ]
 }
 
@@ -55,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":password_checkup",
     ":password_checkup_ui",
+    ":password_checkup_utils",
     "//base",
     "//base/test:test_support",
     "//components/keyed_service/core",
@@ -66,6 +79,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 

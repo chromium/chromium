@@ -20,6 +20,15 @@ enum class WarningType {
   kNoInsecurePasswordsWarning,
 };
 
+// Struct used to obtain the password counts associated with the different
+// insecure types.
+struct InsecurePasswordCounts {
+  int compromisedCount;
+  int dismissedCount;
+  int reusedCount;
+  int weakCount;
+};
+
 // Returns the type of warning with the highest priority, the descending order
 // of priority being:
 //  1. Compromised password warnings
@@ -28,6 +37,12 @@ enum class WarningType {
 //  4. Muted warnings warning
 //  5. No insecure password warning
 WarningType GetWarningOfHighestPriority(
+    const std::vector<password_manager::CredentialUIEntry>&
+        insecure_credentials);
+
+// Returns the number of saved passwords associated with each of the insecure
+// types.
+InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
     const std::vector<password_manager::CredentialUIEntry>&
         insecure_credentials);
 

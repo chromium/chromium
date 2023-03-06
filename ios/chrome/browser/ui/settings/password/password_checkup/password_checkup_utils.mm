@@ -40,38 +40,44 @@ WarningType GetWarningOfHighestPriority(
   return WarningType::kNoInsecurePasswordsWarning;
 }
 
+InsecurePasswordCounts CountInsecurePasswordsPerInsecureType(
+    const std::vector<password_manager::CredentialUIEntry>&
+        insecure_credentials) {
+  InsecurePasswordCounts counts{};
+  for (const auto& credential : insecure_credentials) {
+    // If a compromised credential is muted, we don't want to take it into
+    // account in the compromised count.
+    if (credential.IsMuted()) {
+      counts.dismissedCount++;
+    } else if (credential.IsPhished() || credential.IsLeaked()) {
+      counts.compromisedCount++;
+    }
+    if (credential.IsReused()) {
+      counts.reusedCount++;
+    }
+    if (credential.IsWeak()) {
+      counts.weakCount++;
+    }
+  }
+  return counts;
+}
+
 int GetPasswordCountForWarningType(
     WarningType warningType,
     const std::vector<password_manager::CredentialUIEntry>&
         insecure_credentials) {
-  int passwordCount = 0;
+  InsecurePasswordCounts counts =
+      CountInsecurePasswordsPerInsecureType(insecure_credentials);
   switch (warningType) {
     case WarningType::kCompromisedPasswordsWarning:
-      passwordCount = std::count_if(
-          insecure_credentials.begin(), insecure_credentials.end(),
-          [](const auto& credential) {
-            return (credential.IsLeaked() || credential.IsPhished()) &&
-                   !credential.IsMuted();
-          });
-      break;
+      return counts.compromisedCount;
     case WarningType::kReusedPasswordsWarning:
-      passwordCount = std::count_if(
-          insecure_credentials.begin(), insecure_credentials.end(),
-          [](const auto& credential) { return credential.IsReused(); });
-      break;
+      return counts.reusedCount;
     case WarningType::kWeakPasswordsWarning:
-      passwordCount = std::count_if(
-          insecure_credentials.begin(), insecure_credentials.end(),
-          [](const auto& credential) { return credential.IsWeak(); });
-      break;
+      return counts.weakCount;
     case WarningType::kDismissedWarningsWarning:
-      passwordCount = std::count_if(
-          insecure_credentials.begin(), insecure_credentials.end(),
-          [](const auto& credential) { return credential.IsMuted(); });
-      break;
+      return counts.dismissedCount;
     case WarningType::kNoInsecurePasswordsWarning:
-      break;
+      return 0;
   }
-
-  return passwordCount;
 }
