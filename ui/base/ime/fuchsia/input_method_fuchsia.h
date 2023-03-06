@@ -5,7 +5,6 @@
 #ifndef UI_BASE_IME_FUCHSIA_INPUT_METHOD_FUCHSIA_H_
 #define UI_BASE_IME_FUCHSIA_INPUT_METHOD_FUCHSIA_H_
 
-#include <fuchsia/ui/input/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 
