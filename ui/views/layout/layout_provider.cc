@@ -181,8 +181,9 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
       base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>({
           {ShapeContextTokens::kBadgeRadius, ShapeSysTokens::kXSmall},
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
-          {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kDialogRadius, ShapeSysTokens::kMediumSmall},
+          {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
       });
   const auto* it = shape_token_map.find(id);
   return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;
@@ -195,10 +196,12 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
       case ShapeContextTokens::kBadgeRadius:
         return 3;
       case ShapeContextTokens::kButtonRadius:
-        return 4;
+        return GetCornerRadiusMetric(Emphasis::kMedium, size);
       case ShapeContextTokens::kComboboxRadius:
       case ShapeContextTokens::kTextfieldRadius:
         return FocusRing::kDefaultCornerRadiusDp;
+      case ShapeContextTokens::kDialogRadius:
+        return GetCornerRadiusMetric(Emphasis::kMedium, size);
       default:
         return 0;
     }
@@ -212,6 +215,8 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
       return 4;
     case ShapeSysTokens::kSmall:
       return 8;
+    case ShapeSysTokens::kMediumSmall:
+      return 12;
     case ShapeSysTokens::kMedium:
       return 16;
     case ShapeSysTokens::kLarge:

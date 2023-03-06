@@ -138,8 +138,9 @@ enum class Emphasis {
 enum class ShapeContextTokens {
   kBadgeRadius,
   kButtonRadius,
-  kTextfieldRadius,
   kComboboxRadius,
+  kDialogRadius,
+  kTextfieldRadius,
 };
 
 // ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.
@@ -152,6 +153,7 @@ enum class ShapeSysTokens {
   kDefault,
   kXSmall,
   kSmall,
+  kMediumSmall,
   kMedium,
   kLarge,
   kFull,
