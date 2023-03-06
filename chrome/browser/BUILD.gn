@@ -5330,6 +5330,10 @@ static_library("browser") {
       "lacros/download_controller_client_lacros.h",
       "lacros/drivefs_cache.cc",
       "lacros/drivefs_cache.h",
+      "lacros/drivefs_native_message_host_bridge_lacros.cc",
+      "lacros/drivefs_native_message_host_bridge_lacros.h",
+      "lacros/drivefs_native_message_host_lacros.cc",
+      "lacros/drivefs_native_message_host_lacros.h",
       "lacros/external_protocol_dialog.cc",
       "lacros/feedback_util.cc",
       "lacros/feedback_util.h",
@@ -5450,6 +5454,7 @@ static_library("browser") {
     ]
     deps += [
       "//chrome/browser/apps:icon_standardizer",
+      "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",

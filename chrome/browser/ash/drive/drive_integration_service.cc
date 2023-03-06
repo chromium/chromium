@@ -29,6 +29,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -52,6 +53,8 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
+#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_pref_names.h"
@@ -74,6 +77,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -531,6 +535,18 @@ class DriveIntegrationService::DriveFsHolder
 
   drivefs::DriveFsHost* drivefs_host() { return &drivefs_host_; }
 
+  void RegisterDriveFsNativeMessageHostBridge(
+      mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
+          bridge) {
+    if (native_message_host_bridge_) {
+      // We only accept one registered bridge at a time as it doesn't make sense
+      // for DriveFS to talk to multiple extensions at the same time.
+      return;
+    }
+    native_message_host_bridge_.Bind(std::move(bridge));
+    native_message_host_bridge_.reset_on_disconnect();
+  }
+
  private:
   // drivefs::DriveFsHost::Delegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -619,8 +635,21 @@ class DriveIntegrationService::DriveFsHolder
       mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host,
       drivefs::mojom::DriveFsDelegate::ConnectToExtensionCallback callback)
       override {
-    std::move(callback).Run(ConnectToDriveFsNativeMessageExtension(
-        profile_, params->extension_id, std::move(port), std::move(host)));
+    if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+      if (!native_message_host_bridge_) {
+        std::move(callback).Run(
+            drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound);
+        return;
+      }
+      native_message_host_bridge_->ConnectToExtension(
+          std::move(params), std::move(port), std::move(host),
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(callback),
+              drivefs::mojom::ExtensionConnectionStatus::kUnknownError));
+    } else {
+      std::move(callback).Run(ConnectToDriveFsNativeMessageExtension(
+          profile_, params->extension_id, std::move(port), std::move(host)));
+    }
   }
 
   const std::string GetMachineRootID() override {
@@ -646,6 +675,9 @@ class DriveIntegrationService::DriveFsHolder
   drivefs::DriveFsHost drivefs_host_;
 
   std::string profile_salt_;
+
+  mojo::Remote<crosapi::mojom::DriveFsNativeMessageHostBridge>
+      native_message_host_bridge_;
 };
 
 DriveIntegrationService::DriveIntegrationService(
@@ -1608,6 +1640,12 @@ void DriveIntegrationService::GetReadOnlyAuthenticationToken(
 PinManager* DriveIntegrationService::GetPinManager() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return pin_manager_.get();
+}
+
+void DriveIntegrationService::RegisterDriveFsNativeMessageHostBridge(
+    mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
+        bridge) {
+  drivefs_holder_->RegisterDriveFsNativeMessageHostBridge(std::move(bridge));
 }
 
 //===================== DriveIntegrationServiceFactory =======================

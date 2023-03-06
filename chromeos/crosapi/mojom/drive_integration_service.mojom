@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
 // Interface for drive mount point path observers. Implemented by lacros-chrome.
@@ -15,10 +16,24 @@ interface DriveIntegrationServiceObserver {
   OnMountPointPathChanged@0(mojo_base.mojom.FilePath path);
 };
 
+// Interface used to allow ash-chrome to initiate a connection with an extension
+// in lacros-chrome. Implemented by lacros-chrome.
+[Stable]
+interface DriveFsNativeMessageHostBridge {
+  // Initiates a connection to the extension specified in `params`.
+  ConnectToExtension@0(
+      drivefs.mojom.ExtensionConnectionParams params,
+      pending_receiver<drivefs.mojom.NativeMessagingPort> extension_receiver,
+      pending_remote<drivefs.mojom.NativeMessagingHost> drivefs_remote) => (
+          drivefs.mojom.ExtensionConnectionStatus error);
+};
+
 // This interface is used to query the DriveIntegrationService for the local
 // Google Drive mount associated with the current Ash profile. As well as allows
 // clients to subscribe to drive availability updates.
 // Implemented by ash-chrome.
+//
+// Next version: 3
 [Stable, Uuid="60fd345d-0f72-4941-a035-910b93c141fa"]
 interface DriveIntegrationService {
   // Returns the path of the mount point for Google Drive. Returns an empty file
@@ -31,4 +46,18 @@ interface DriveIntegrationService {
   [MinVersion=1]
   AddDriveIntegrationServiceObserver@1(
       pending_remote<DriveIntegrationServiceObserver> observer);
+
+  // Called when an extension wants to initiate a connection to DriveFS. Errors
+  // are returned by resetting `extension_remote`.
+  [MinVersion=2]
+  CreateNativeHostSession@2(
+      drivefs.mojom.ExtensionConnectionParams params,
+      pending_receiver<drivefs.mojom.NativeMessagingHost> drivefs_receiver,
+      pending_remote<drivefs.mojom.NativeMessagingPort> extension_remote);
+
+  // Registers a bridge that ash-chrome can call into when DriveFS wants to
+  // initiate a connection to an extension in lacros.
+  [MinVersion=2]
+  RegisterDriveFsNativeMessageHostBridge@3(
+      pending_remote<DriveFsNativeMessageHostBridge> bridge);
 };

@@ -23,6 +23,7 @@
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
+#include "chrome/browser/lacros/drivefs_native_message_host_bridge_lacros.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
@@ -109,6 +110,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
   desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
+  drivefs_native_message_host_bridge_ =
+      std::make_unique<drive::DriveFsNativeMessageHostBridge>();
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();

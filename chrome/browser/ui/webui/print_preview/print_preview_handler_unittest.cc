@@ -59,6 +59,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
+#include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #endif
 
@@ -341,6 +342,15 @@ class FakeDriveIntegrationService
   void AddDriveIntegrationServiceObserver(
       mojo::PendingRemote<crosapi::mojom::DriveIntegrationServiceObserver>)
       override {}
+  void CreateNativeHostSession(
+      drivefs::mojom::ExtensionConnectionParamsPtr params,
+      mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost>
+          drivefs_receiver,
+      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> extension_remote)
+      override {}
+  void RegisterDriveFsNativeMessageHostBridge(
+      mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
+          bridge) override {}
 };
 #endif
 

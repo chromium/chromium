@@ -51,6 +51,10 @@ namespace content {
 class ScreenOrientationDelegate;
 }  // namespace content
 
+namespace drive {
+class DriveFsNativeMessageHostBridge;
+}  // namespace drive
+
 namespace video_conference {
 class VideoConferenceManagerClientImpl;
 }  // namespace video_conference
@@ -99,6 +103,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Receiver and cache of drive mount point path updates.
   std::unique_ptr<DriveFsCache> drivefs_cache_;
+
+  // Handles requests from DriveFS to connect to an extension in lacros.
+  std::unique_ptr<drive::DriveFsNativeMessageHostBridge>
+      drivefs_native_message_host_bridge_;
 
   // Sends lacros download information to ash.
   std::unique_ptr<DownloadControllerClientLacros> download_controller_client_;

@@ -22,12 +22,14 @@
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
+#include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/auth_service_interface.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class Profile;
 class PrefService;
@@ -294,6 +296,12 @@ class DriveIntegrationService : public KeyedService,
   // Returns via callback the amount of storage taken by all currently pinned
   // files.
   void GetTotalPinnedSize(base::OnceCallback<void(int64_t)> callback);
+
+  // Called by lacros to register a bridge that this service can call into when
+  // DriveFS wants to initiate a connection to an extension in lacros.
+  void RegisterDriveFsNativeMessageHostBridge(
+      mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
+          bridge);
 
  private:
   enum State {

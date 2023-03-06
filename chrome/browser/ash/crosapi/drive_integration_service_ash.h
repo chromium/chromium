@@ -34,6 +34,15 @@ class DriveIntegrationServiceAsh
   void AddDriveIntegrationServiceObserver(
       mojo::PendingRemote<mojom::DriveIntegrationServiceObserver> observer)
       override;
+  void CreateNativeHostSession(
+      drivefs::mojom::ExtensionConnectionParamsPtr params,
+      mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost>
+          drivefs_receiver,
+      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> extension_remote)
+      override;
+  void RegisterDriveFsNativeMessageHostBridge(
+      mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
+          bridge) override;
 
   // drivefs::DriveIntegrationServiceObserver:
   void OnFileSystemMounted() override;
@@ -50,6 +59,8 @@ class DriveIntegrationServiceAsh
   mojo::ReceiverSet<mojom::DriveIntegrationService> receivers_;
   // Support any number of observers.
   mojo::RemoteSet<mojom::DriveIntegrationServiceObserver> observers_;
+
+  mojo::Remote<mojom::DriveFsNativeMessageHostBridge> native_message_bridge_;
 };
 
 }  // namespace crosapi

@@ -114,6 +114,7 @@ mojom("mojom") {
 
   public_deps = [
     ":video_capture",
+    "//chromeos/components/drivefs/mojom",
     "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors/mojom",
     "//chromeos/services/machine_learning/public/mojom",
