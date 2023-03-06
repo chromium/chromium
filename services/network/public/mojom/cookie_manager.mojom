@@ -475,8 +475,9 @@ interface CookieManager {
   SetStorageAccessGrantSettings(
       array<content_settings.mojom.ContentSettingPatternSource> settings) => ();
 
-  // Sets content settings for which top-level storage access grants exist. Will
+  // Sets content settings for both flavors of storage access grants. Will
   // ack the caller with a callback when settings have been updated.
-  SetTopLevelStorageAccessSettings(
-      array<content_settings.mojom.ContentSettingPatternSource> settings) => ();
+  SetAllStorageAccessSettings(
+      array<content_settings.mojom.ContentSettingPatternSource> standard_settings,
+      array<content_settings.mojom.ContentSettingPatternSource> top_level_settings) => ();
 };

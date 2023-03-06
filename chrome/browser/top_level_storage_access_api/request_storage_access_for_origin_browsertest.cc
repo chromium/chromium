@@ -66,6 +66,14 @@ constexpr char kQueryTopLevelStorageAccessPermission[] =
     "navigator.permissions.query({name: 'top-level-storage-access', "
     "requestedOrigin: '%s'}).then("
     "  (permission) => permission.state);";
+constexpr char kVerifyHasStorageAccessPermission[] =
+    "navigator.permissions.query({name: 'storage-access'}).then("
+    "  (permission) => permission.name === 'storage-access' && "
+    "permission.state === 'granted');";
+constexpr char kRequestStorageAccess[] =
+    "document.requestStorageAccess()"
+    ".then(() => true)"
+    ".catch(() => false);";
 
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
@@ -297,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForOriginBrowserTest,
       ->profile()
       ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
-      ->SetTopLevelStorageAccessSettings(settings, base::DoNothing());
+      ->SetAllStorageAccessSettings(settings, settings, base::DoNothing());
 
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/echoheader?cookie");
@@ -526,6 +534,45 @@ IN_PROC_BROWSER_TEST_F(
                   kRequestOutcomeHistogram,
                   0 /*RequestOutcome::kGrantedByFirstPartySet*/),
               Gt(0));
+}
+
+// Validate that the permission for rSAFor allows autogranting of rSA, including
+// without a user gesture.
+IN_PROC_BROWSER_TEST_F(
+    RequestStorageAccessForOriginWithFirstPartySetsBrowserTest,
+    Permission_AllowsRequestStorageAccessResolution) {
+  SetBlockThirdPartyCookies(true);
+
+  SetCrossSiteCookieOnHost(kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/");
+  // First, verify that executing `requestStorageAccess` without a user gesture
+  // results in a rejection.
+  EXPECT_FALSE(content::EvalJs(GetFrame(), kRequestStorageAccess,
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractBool());
+  // Then invoke `requestStorageAccessForOrigin` at the top level on behalf of
+  // the frame.
+  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+  // With the permission set, executing `requestStorageAccess` should now
+  // resolve, even without a user gesture.
+  EXPECT_TRUE(content::EvalJs(GetFrame(), kRequestStorageAccess,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractBool());
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "cross-site=b.test");
+
+  EXPECT_TRUE(content::EvalJs(GetFrame(), kVerifyHasStorageAccessPermission)
+                  .ExtractBool());
+
+  NavigateFrameTo(kHostC, "/");
+  // Verify that there was not a side effect on `kHostC`: invoking
+  // `requestStorageAccess` without a user gesture should lead to rejection.
+  EXPECT_FALSE(content::EvalJs(GetFrame(), kRequestStorageAccess,
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -225,7 +225,8 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   DCHECK(settings_map);
   DCHECK(persist);
 
-  // This permission was allowed so store it.
+  // This permission was allowed, so store it. Because this is a superset of the
+  // regular storage access permission, we also store that one.
   const net::SchemefulSite embedding_site(embedding_origin);
   const GURL embedding_site_as_url = embedding_site.GetURL();
   ContentSettingsPattern secondary_site_pattern =
@@ -236,6 +237,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
           ->WithPathWildcard()
           ->WithPortWildcard()
           ->Build();
+
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
       secondary_site_pattern, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
@@ -243,9 +245,19 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
       {content_settings::GetConstraintExpiration(kGrantDuration),
        content_settings::SessionModel::NonRestorableUserSession});
 
-  ContentSettingsForOneType grants;
+  settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
+      secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
+      content_setting,
+      {content_settings::GetConstraintExpiration(kGrantDuration),
+       content_settings::SessionModel::NonRestorableUserSession});
+
+  ContentSettingsForOneType top_level_grants;
   settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &grants);
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &top_level_grants);
+  ContentSettingsForOneType storage_access_grants;
+  settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
+                                      &storage_access_grants);
 
   // TODO(https://crbug.com/989663): Ensure that this update of settings doesn't
   // cause a double update with
@@ -258,8 +270,9 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
-      ->SetTopLevelStorageAccessSettings(
-          grants, base::BindOnce(std::move(callback), content_setting));
+      ->SetAllStorageAccessSettings(
+          storage_access_grants, top_level_grants,
+          base::BindOnce(std::move(callback), content_setting));
 }
 
 void TopLevelStorageAccessPermissionContext::UpdateContentSetting(

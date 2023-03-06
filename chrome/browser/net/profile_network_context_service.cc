@@ -254,23 +254,30 @@ void UpdateStorageAccessSettings(Profile* profile) {
   }
 }
 
-void UpdateTopLevelStorageAccessSettings(Profile* profile) {
+void UpdateAllStorageAccessSettings(Profile* profile) {
   // TODO(crbug.com/1385156): Switch to an independent feature flag.
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
       base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension)) {
-    ContentSettingsForOneType settings;
+    ContentSettingsForOneType top_level_settings;
     HostContentSettingsMapFactory::GetForProfile(profile)
         ->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-                                &settings);
+                                &top_level_settings);
+    ContentSettingsForOneType storage_access_settings;
+    HostContentSettingsMapFactory::GetForProfile(profile)
+        ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
+                                &storage_access_settings);
 
     profile->ForEachLoadedStoragePartition(base::BindRepeating(
-        [](ContentSettingsForOneType settings,
+        [](ContentSettingsForOneType storage_access_settings,
+           ContentSettingsForOneType top_level_settings,
            content::StoragePartition* storage_partition) {
           storage_partition->GetCookieManagerForBrowserProcess()
-              ->SetTopLevelStorageAccessSettings(settings, base::DoNothing());
+              ->SetAllStorageAccessSettings(storage_access_settings,
+                                            top_level_settings,
+                                            base::DoNothing());
         },
-        settings));
+        storage_access_settings, top_level_settings));
   }
 }
 
@@ -1098,13 +1105,12 @@ void ProfileNetworkContextService::OnContentSettingChanged(
       UpdateStorageAccessSettings(profile_);
       break;
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      UpdateTopLevelStorageAccessSettings(profile_);
+      UpdateAllStorageAccessSettings(profile_);
       break;
     case ContentSettingsType::DEFAULT:
       UpdateCookieSettings(profile_);
       UpdateLegacyCookieSettings(profile_);
-      UpdateStorageAccessSettings(profile_);
-      UpdateTopLevelStorageAccessSettings(profile_);
+      UpdateAllStorageAccessSettings(profile_);
       break;
     default:
       return;

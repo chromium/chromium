@@ -379,7 +379,9 @@ void WebTestPermissionManager::OnPermissionChanged(
     case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
       browser_context_->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess()
-          ->SetTopLevelStorageAccessSettings(
+          ->SetAllStorageAccessSettings(
+              GetContentSettings(permission.origin, permission.embedding_origin,
+                                 status),
               GetContentSettings(permission.origin, permission.embedding_origin,
                                  status),
               base::BindOnce(std::move(permission_callback), /*success=*/true));
