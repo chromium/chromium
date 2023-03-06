@@ -73,7 +73,7 @@
       'lacros-arm64-archive-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
       'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'linux-archive-dbg': 'debug_bot_reclient',
-      'linux-archive-rel': 'release_bot_reclient',
+      'linux-archive-rel': 'linux_archive_release_bot_reclient',
       'linux-lacros-archive-rel': 'lacros_on_linux_release_not_build_ash_bot_reclient',
       'linux-official': 'official_optimize_reclient',
       'mac-archive-dbg': 'debug_bot_reclient',
@@ -3026,6 +3026,10 @@
 
     'libfuzzer_windows_asan_release_trybot_reclient': [
       'libfuzzer', 'asan', 'release_trybot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
+    ],
+
+    'linux_archive_release_bot_reclient': [
+      'release_bot_reclient', 'updater',
     ],
 
     'linux_cfm_release_bot_reclient': [
