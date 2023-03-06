@@ -13,10 +13,6 @@
 #include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
-// TODO(crbug.com/1220176): When fixed, remove this include and add it to a file
-// with the narrowest scope possible.
-#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
-
 namespace cast_api_bindings {
 class MessagePort;
 }
@@ -69,7 +65,6 @@ class ReceiverSession {
 
   using MessagePortProvider =
       base::OnceCallback<std::unique_ptr<cast_api_bindings::MessagePort>()>;
-  using AVConstraints = openscreen::cast::ReceiverSession::Preferences;
 
   virtual ~ReceiverSession() = default;
 
@@ -78,12 +73,6 @@ class ReceiverSession {
   // limitations surrounding this support.
   // |message_port_provider| creates a new MessagePort to be used for sending
   // and receiving Cast messages.
-  // TODO(crbug.com/1219079): Add conversion functions to create the
-  // ReceiverSession::Preferences object from //media types.
-  static std::unique_ptr<ReceiverSession> Create(
-      std::unique_ptr<AVConstraints> av_constraints,
-      MessagePortProvider message_port_provider,
-      Client* client = nullptr);
   static std::unique_ptr<ReceiverSession> Create(
       const ReceiverConfig& av_constraints,
       MessagePortProvider message_port_provider,

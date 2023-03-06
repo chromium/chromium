@@ -7,34 +7,27 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/cast_message_port_converter.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
+#include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/browser/receiver_config_conversions.h"
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
+#include "third_party/openscreen/src/cast/streaming/receiver_constraints.h"
 
 namespace cast_streaming {
-
-// static
-std::unique_ptr<ReceiverSession> ReceiverSession::Create(
-    std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-    ReceiverSession::MessagePortProvider message_port_provider,
-    ReceiverSession::Client* client) {
-  return std::make_unique<ReceiverSessionImpl>(
-      std::move(av_constraints), std::move(message_port_provider), client);
-}
 
 // static
 std::unique_ptr<ReceiverSession> ReceiverSession::Create(
     const ReceiverConfig& av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     ReceiverSession::Client* client) {
-  return Create(std::make_unique<ReceiverSession::AVConstraints>(
-                    ToOpenscreenConstraints(av_constraints)),
-                std::move(message_port_provider), client);
+  return std::make_unique<ReceiverSessionImpl>(
+      ToOpenscreenConstraints(av_constraints), std::move(message_port_provider),
+      client);
 }
 
 ReceiverSessionImpl::ReceiverSessionImpl(
-    std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
+    openscreen::cast::ReceiverConstraints av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     ReceiverSession::Client* client)
     : message_port_provider_(std::move(message_port_provider)),
@@ -42,7 +35,6 @@ ReceiverSessionImpl::ReceiverSessionImpl(
       client_(client),
       weak_factory_(this) {
   // TODO(crbug.com/1218495): Validate the provided codecs against build flags.
-  DCHECK(av_constraints_);
   DCHECK(message_port_provider_);
 }
 

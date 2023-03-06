@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/receiver.h"
+#include "third_party/openscreen/src/cast/streaming/receiver_constraints.h"
 #include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 
 namespace cast_streaming {
@@ -96,7 +97,7 @@ class CastStreamingSession {
   // surrounding this support.
   void Start(Client* client,
              absl::optional<RendererControllerConfig> renderer_controls,
-             std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
+             openscreen::cast::ReceiverConstraints av_constraints,
              ReceiverSession::MessagePortProvider message_port_provider,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -129,7 +130,7 @@ class CastStreamingSession {
     ReceiverSessionClient(
         CastStreamingSession::Client* client,
         absl::optional<RendererControllerConfig> renderer_controls,
-        std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
+        openscreen::cast::ReceiverConstraints av_constraints,
         ReceiverSession::MessagePortProvider message_port_provider,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
     ~ReceiverSessionClient() override;

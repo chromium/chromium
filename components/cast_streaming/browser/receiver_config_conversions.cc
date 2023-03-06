@@ -133,17 +133,20 @@ openscreen::cast::RemotingConstraints ToOpenscreenRemotingConstraintsType(
 
 openscreen::cast::ReceiverConstraints ToOpenscreenConstraints(
     const ReceiverConfig& config) {
-  openscreen::cast::ReceiverConstraints constraints;
+  std::vector<openscreen::cast::AudioCodec> audio_codecs;
+  audio_codecs.reserve(config.audio_codecs.size());
+  base::ranges::transform(
+      config.audio_codecs.begin(), config.audio_codecs.end(),
+      std::back_inserter(audio_codecs), ToAudioCaptureConfigCodec);
 
-  constraints.audio_codecs.reserve(config.audio_codecs.size());
-  base::ranges::transform(config.audio_codecs,
-                          std::back_inserter(constraints.audio_codecs),
-                          ToAudioCaptureConfigCodec);
+  std::vector<openscreen::cast::VideoCodec> video_codecs;
+  video_codecs.reserve(config.video_codecs.size());
+  base::ranges::transform(
+      config.video_codecs.begin(), config.video_codecs.end(),
+      std::back_inserter(video_codecs), ToVideoCaptureConfigCodec);
 
-  constraints.video_codecs.reserve(config.video_codecs.size());
-  base::ranges::transform(config.video_codecs,
-                          std::back_inserter(constraints.video_codecs),
-                          ToVideoCaptureConfigCodec);
+  openscreen::cast::ReceiverConstraints constraints(std::move(video_codecs),
+                                                    std::move(audio_codecs));
 
   constraints.audio_limits.reserve(config.audio_limits.size());
   base::ranges::transform(config.audio_limits,

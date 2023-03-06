@@ -69,7 +69,7 @@ StreamingInitializationInfo CreateMirroringInitializationInfo(
 CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     CastStreamingSession::Client* client,
     absl::optional<RendererControllerConfig> renderer_controls,
-    std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
+    openscreen::cast::ReceiverConstraints av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
@@ -90,7 +90,7 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
 
   receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
       this, &environment_, &cast_message_port_converter_->GetMessagePort(),
-      std::move(*av_constraints));
+      std::move(av_constraints));
 
   if (renderer_controls) {
     playback_command_dispatcher_ = std::make_unique<PlaybackCommandDispatcher>(
@@ -462,7 +462,7 @@ CastStreamingSession::~CastStreamingSession() = default;
 void CastStreamingSession::Start(
     Client* client,
     absl::optional<RendererControllerConfig> renderer_controls,
-    std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
+    openscreen::cast::ReceiverConstraints av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DVLOG(1) << __func__;

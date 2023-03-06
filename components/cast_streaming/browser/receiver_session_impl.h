@@ -18,6 +18,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace openscreen::cast {
+class ReceiverConstraints;
+}
+
 namespace cast_streaming {
 
 // Owns the CastStreamingSession and sends buffers to the renderer process via
@@ -28,10 +32,9 @@ class ReceiverSessionImpl final
  public:
   // |av_constraints| specifies the supported media codecs and limitations
   // surrounding this support.
-  ReceiverSessionImpl(
-      std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-      MessagePortProvider message_port_provider,
-      ReceiverSession::Client* client);
+  ReceiverSessionImpl(openscreen::cast::ReceiverConstraints av_constraints,
+                      MessagePortProvider message_port_provider,
+                      ReceiverSession::Client* client);
   ~ReceiverSessionImpl() override;
 
   ReceiverSessionImpl(const ReceiverSessionImpl&) = delete;
@@ -100,7 +103,7 @@ class ReceiverSessionImpl final
   // Populated in the ctor, and empty following a call to either
   // OnReceiverEnabled() or OnMojoDisconnect().
   MessagePortProvider message_port_provider_;
-  std::unique_ptr<ReceiverSession::AVConstraints> av_constraints_;
+  openscreen::cast::ReceiverConstraints av_constraints_;
 
   mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector_;
   cast_streaming::CastStreamingSession cast_streaming_session_;

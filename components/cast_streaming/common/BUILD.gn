@@ -39,12 +39,7 @@ mojom("mojom") {
 }
 
 source_set("conversions") {
-  visibility += [
-    "//components/mirroring/service/*",
-
-    # TODO(crbug.com/1219079): Remove this dependency.
-    "//fuchsia_web/webengine:cast_streaming_receiver",
-  ]
+  visibility += [ "//components/mirroring/service/*" ]
   public = [
     "config_conversions.h",
     "message_serialization.h",
