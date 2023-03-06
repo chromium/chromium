@@ -12,6 +12,10 @@
 #include "content/browser/devtools/protocol/fed_cm.h"
 #include "content/common/content_export.h"
 
+namespace content {
+class FederatedAuthRequestPageData;
+}  // namespace content
+
 namespace content::protocol {
 
 class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
@@ -23,6 +27,11 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
 
   static std::vector<FedCmHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
+  void WillShowDialog(bool* intercept) {
+    if (enabled_) {
+      *intercept = true;
+    }
+  }
   void OnDialogShown();
 
  private:
@@ -34,6 +43,8 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
   // FedCm::Backend
   DispatchResponse Enable() override;
   DispatchResponse Disable() override;
+
+  FederatedAuthRequestPageData* GetPageData();
 
   RenderFrameHostImpl* frame_host_ = nullptr;
   std::unique_ptr<FedCm::Frontend> frontend_;

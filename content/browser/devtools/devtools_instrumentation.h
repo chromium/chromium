@@ -392,6 +392,7 @@ void UpdateDeviceRequestPrompt(RenderFrameHost* render_frame_host,
 void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
                                 DevtoolsDeviceRequestPromptInfo* prompt_info);
 
+void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
 void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host);
 
 }  // namespace devtools_instrumentation

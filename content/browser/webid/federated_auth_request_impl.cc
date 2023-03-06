@@ -978,6 +978,21 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // trial. Should revisit based on the OT feedback.
   bool show_auto_reauthn_checkbox = false;
 
+  bool intercept = false;
+  // In tests (content_shell or when --use-fake-ui-for-fedcm is used), the
+  // dialog controller will immediately select an account. But if browser
+  // automation is enabled, we don't want that to happen because automation
+  // should be able to choose which account to select or to cancel.
+  // So we use this call to see whether interception is enabled.
+  // It is not needed in regular Chrome even when automation is used because
+  // there, the dialog will wait for user input anyway.
+  devtools_instrumentation::WillShowFedCmDialog(&render_frame_host(),
+                                                &intercept);
+  // Since we don't reuse the controller for each request, and intercept
+  // defaults to false, we only need to call this if intercept is true.
+  if (intercept) {
+    request_dialog_controller_->SetIsInterceptionEnabled(intercept);
+  }
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(

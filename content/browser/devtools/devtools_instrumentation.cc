@@ -1843,6 +1843,14 @@ void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
                    prompt_info);
 }
 
+void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept) {
+  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+  if (!ftn) {
+    return;
+  }
+  DispatchToAgents(ftn, &protocol::FedCmHandler::WillShowDialog, intercept);
+}
+
 void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host) {
   FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
   if (!ftn) {

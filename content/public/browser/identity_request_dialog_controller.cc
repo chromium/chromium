@@ -46,6 +46,10 @@ int IdentityRequestDialogController::GetBrandIconMinimumSize() {
   return 0;
 }
 
+void IdentityRequestDialogController::SetIsInterceptionEnabled(bool enabled) {
+  is_interception_enabled_ = enabled;
+}
+
 void IdentityRequestDialogController::ShowAccountsDialog(
     WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
@@ -55,7 +59,9 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {
-  std::move(dismiss_callback).Run(DismissReason::OTHER);
+  if (!is_interception_enabled_) {
+    std::move(dismiss_callback).Run(DismissReason::OTHER);
+  }
 }
 
 void IdentityRequestDialogController::ShowFailureDialog(
@@ -63,12 +69,16 @@ void IdentityRequestDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
     const std::string& idp_for_display,
     DismissCallback dismiss_callback) {
-  std::move(dismiss_callback).Run(DismissReason::OTHER);
+  if (!is_interception_enabled_) {
+    std::move(dismiss_callback).Run(DismissReason::OTHER);
+  }
 }
 
 void IdentityRequestDialogController::ShowIdpSigninFailureDialog(
     base::OnceClosure dismiss_callback) {
-  std::move(dismiss_callback).Run();
+  if (!is_interception_enabled_) {
+    std::move(dismiss_callback).Run();
+  }
 }
 
 }  // namespace content

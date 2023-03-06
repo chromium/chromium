@@ -49,4 +49,12 @@ void FedCmHandler::OnDialogShown() {
   }
 }
 
+FederatedAuthRequestPageData* FedCmHandler::GetPageData() {
+  if (!frame_host_) {
+    return nullptr;
+  }
+  Page& page = frame_host_->GetPage();
+  return PageUserData<FederatedAuthRequestPageData>::GetOrCreateForPage(page);
+}
+
 }  // namespace content::protocol

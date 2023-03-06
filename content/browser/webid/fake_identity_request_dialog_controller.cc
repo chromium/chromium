@@ -27,6 +27,10 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
   std::vector<IdentityRequestAccount> accounts =
       identity_provider_data[0].accounts;
   DCHECK_GT(accounts.size(), 0ul);
+  if (is_interception_enabled_) {
+    // Browser automation will handle selecting an account/canceling.
+    return;
+  }
   // Use the provided account, if any. Otherwise use the first one.
   std::move(on_selected)
       .Run(identity_provider_data[0].idp_metadata.config_url,

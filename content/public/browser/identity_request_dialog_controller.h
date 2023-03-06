@@ -100,6 +100,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // icon is displayed in the accounts dialog.
   virtual int GetBrandIconMinimumSize();
 
+  // When this is true, the dialog should not be immediately auto-accepted.
+  virtual void SetIsInterceptionEnabled(bool enabled);
+
   // Shows and accounts selections for the given IDP. The |on_selected| callback
   // is called with the selected account id or empty string otherwise.
   // |sign_in_mode| represents whether this is an auto re-authn flow.
@@ -123,6 +126,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // Show dialog notifying user that IdP sign-in failed.
   virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
+
+ protected:
+  bool is_interception_enabled_{false};
 };
 
 }  // namespace content
