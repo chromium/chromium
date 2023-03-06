@@ -285,7 +285,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that searching a typed URL (after Sync is enabled and the URL is
 // uploaded to the Sync server) displays only entries matching the search term.
-- (void)testSearchSyncedHistory {
+// TODO(crbug.com/1421761): This test is flaky on devices.
+#if IPHONE_OS_SIMULATOR
+#define MAYBE_testSearchSyncedHistory testSearchSyncedHistory
+#else
+#define MAYBE_testSearchSyncedHistory FLAKY_testSearchSyncedHistory
+#endif
+- (void)MAYBE_testSearchSyncedHistory {
   const char syncedURL[] = "http://mockurl/sync/";
   const GURL mockURL(syncedURL);
 
