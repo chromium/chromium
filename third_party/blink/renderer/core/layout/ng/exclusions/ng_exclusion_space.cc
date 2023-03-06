@@ -90,7 +90,7 @@ void CollectSolidEdges(
   *out_edges = std::move(*edges);
   for (auto* it = out_edges->begin(); it != out_edges->end();) {
     if ((*it).block_end <= block_offset) {
-      out_edges->erase(it);
+      it = out_edges->erase(it);
     } else {
       ++it;
     }

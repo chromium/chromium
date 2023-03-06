@@ -1196,7 +1196,7 @@ class DeviceContainer {
       DCHECK(!it->IsEmpty());
       failed_constraint_name = it->ApplyConstraintSet(constraint_set);
       if (failed_constraint_name)
-        processing_based_containers_.erase(it);
+        it = processing_based_containers_.erase(it);
       else
         ++it;
     }
@@ -1402,7 +1402,7 @@ class CandidatesContainer {
       auto* failed_constraint_name = it->ApplyConstraintSet(constraint_set);
       if (failed_constraint_name) {
         latest_failed_constraint_name = failed_constraint_name;
-        devices_.erase(it);
+        it = devices_.erase(it);
       } else {
         ++it;
       }
