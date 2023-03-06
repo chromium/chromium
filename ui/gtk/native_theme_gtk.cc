@@ -47,6 +47,11 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
   CairoSurface surface(bitmap);
   cairo_t* cr = surface.cairo();
 
+  double opacity = 1;
+  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
+  if (opacity < 1)
+    cairo_push_group(cr);
+
   switch (bg_mode) {
     case BG_RENDER_NORMAL:
       gtk_render_background(context, cr, 0, 0, size.width(), size.height());
@@ -60,6 +65,13 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
   if (render_frame) {
     gtk_render_frame(context, cr, 0, 0, size.width(), size.height());
   }
+
+  if (opacity < 1) {
+    cairo_pop_group_to_source(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+    cairo_paint_with_alpha(cr, opacity);
+  }
+
   bitmap.setImmutable();
   return bitmap;
 }

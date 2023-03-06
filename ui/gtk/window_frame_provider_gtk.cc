@@ -87,13 +87,23 @@ SkBitmap PaintBitmap(const gfx::Size& bitmap_size,
 
   auto bounds = render_bounds;
 
+  double opacity = 1;
+  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
+  if (opacity < 1)
+    cairo_push_group(cr);
+
   cairo_scale(cr, scale, scale);
   gtk_render_background(context, cr, bounds.x(), bounds.y(), bounds.width(),
                         bounds.height());
   gtk_render_frame(context, cr, bounds.x(), bounds.y(), bounds.width(),
                    bounds.height());
 
-  bitmap.notifyPixelsChanged();
+  if (opacity < 1) {
+    cairo_pop_group_to_source(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+    cairo_paint_with_alpha(cr, opacity);
+  }
+
   bitmap.setImmutable();
   return bitmap;
 }
@@ -146,6 +156,10 @@ bool HeaderIsTranslucent() {
   // The arbitrary square size to render a sample header.
   constexpr int kHeaderSize = 32;
   auto context = HeaderContext(false, false);
+  double opacity = 1.0f;
+  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
+  if (opacity < 1.0f)
+    return true;
   ApplyCssToContext(context, R"(window, headerbar {
     box-shadow: none;
     border: none;
