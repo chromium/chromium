@@ -56,7 +56,7 @@ bool SupervisedUserExtensionsDelegateImpl::IsChild(
     content::BrowserContext* context) const {
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context);
-  return supervised_user_service->IsChild();
+  return supervised_user_service->AreExtensionsPermissionsEnabled();
 }
 
 bool SupervisedUserExtensionsDelegateImpl::IsExtensionAllowedByParent(

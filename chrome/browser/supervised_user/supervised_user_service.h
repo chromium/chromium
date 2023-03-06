@@ -175,10 +175,10 @@ class SupervisedUserService : public KeyedService,
 
   static std::string GetEduCoexistenceLoginUrl();
 
-  // Returns true if the user is a type of Family Link supervised account, this
-  // includes Unicorn, Geller, and Griffin accounts.
-  bool IsChild() const;
+  // Returns true if the extensions permissions parental control is enabled.
+  bool AreExtensionsPermissionsEnabled() const;
 
+  // Returns true if the URL filtering parental control is enabled.
   bool IsURLFilteringEnabled() const;
 
   // Returns true if there is a custodian for the child.  A child can have
@@ -261,6 +261,10 @@ class SupervisedUserService : public KeyedService,
       ValidateURLSupportCallback check_webstore_url_callback);
 
   void SetActive(bool active);
+
+  // Returns true if the user is a type of Family Link supervised account, this
+  // includes Unicorn, Geller, and Griffin accounts.
+  bool IsChild() const;
 
   void OnCustodianInfoChanged();
 

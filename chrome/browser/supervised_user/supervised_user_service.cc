@@ -225,10 +225,6 @@ std::string SupervisedUserService::GetEduCoexistenceLoginUrl() {
   return chrome::kChromeUIEDUCoexistenceLoginURLV2;
 }
 
-bool SupervisedUserService::IsChild() const {
-  return profile_->IsChild();
-}
-
 bool SupervisedUserService::IsURLFilteringEnabled() const {
 // TODO(b/271413641): Use capabilities to verify if filtering is enabled on iOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
@@ -237,6 +233,14 @@ bool SupervisedUserService::IsURLFilteringEnabled() const {
   return profile_->IsChild() &&
          base::FeatureList::IsEnabled(
              supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+#endif
+}
+
+bool SupervisedUserService::AreExtensionsPermissionsEnabled() const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return profile_->IsChild();
+#else
+  return false;
 #endif
 }
 
@@ -473,6 +477,10 @@ void SupervisedUserService::SetActive(bool active) {
     BrowserList::RemoveObserver(this);
 #endif
   }
+}
+
+bool SupervisedUserService::IsChild() const {
+  return profile_->IsChild();
 }
 
 void SupervisedUserService::OnCustodianInfoChanged() {

@@ -177,6 +177,15 @@ TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
   EXPECT_TRUE(service->IsURLFilteringEnabled());
 }
 
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(SupervisedUserServiceTest, AreExtensionsPermissionsEnabled) {
+  EXPECT_TRUE(profile_->IsChild());
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+}
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+
 class SupervisedUserServiceTestUnsupervised
     : public SupervisedUserServiceTestBase {
  public:
@@ -198,6 +207,15 @@ TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
 
   EXPECT_FALSE(service->IsURLFilteringEnabled());
 }
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
+  EXPECT_FALSE(profile_->IsChild());
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+}
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
 // due to failed timezone conversion assertion.
@@ -279,12 +297,27 @@ class SupervisedUserServiceExtensionTestUnsupervised
       : SupervisedUserServiceExtensionTestBase(false) {}
 };
 
+TEST_F(SupervisedUserServiceExtensionTestUnsupervised,
+       AreExtensionsPermissionsEnabled) {
+  EXPECT_FALSE(profile_->IsChild());
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+}
+
 class SupervisedUserServiceExtensionTest
     : public SupervisedUserServiceExtensionTestBase {
  public:
   SupervisedUserServiceExtensionTest()
       : SupervisedUserServiceExtensionTestBase(true) {}
 };
+
+TEST_F(SupervisedUserServiceExtensionTest, AreExtensionsPermissionsEnabled) {
+  EXPECT_TRUE(profile_->IsChild());
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+}
 
 TEST_F(SupervisedUserServiceExtensionTest,
        ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls) {
