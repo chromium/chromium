@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOr
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -70,15 +71,18 @@ class TouchToFillMediator {
     private List<WebAuthnCredential> mWebAuthnCredentials;
     private List<Credential> mCredentials;
     private boolean mManagePasskeysHidesPasswords;
+    private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     void initialize(Context context, TouchToFillComponent.Delegate delegate, PropertyModel model,
-            LargeIconBridge largeIconBridge, @Px int desiredIconSize) {
+            LargeIconBridge largeIconBridge, @Px int desiredIconSize,
+            BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
         mContext = context;
         mDelegate = delegate;
         mModel = model;
         mLargeIconBridge = largeIconBridge;
         mDesiredIconSize = desiredIconSize;
+        mBottomSheetFocusHelper = bottomSheetFocusHelper;
     }
 
     void showCredentials(GURL url, boolean isOriginSecure,
@@ -131,6 +135,7 @@ class TouchToFillMediator {
                                 getManageButtonText(credentials, webAuthnCredentials))
                         .build()));
 
+        mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
     }
 

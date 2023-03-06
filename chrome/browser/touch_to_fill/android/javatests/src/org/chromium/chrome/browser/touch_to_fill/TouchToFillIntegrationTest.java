@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -71,6 +72,9 @@ public class TouchToFillIntegrationTest {
     @Mock
     private TouchToFillComponent.Delegate mMockBridge;
 
+    @Mock
+    private BottomSheetFocusHelper mMockFocusHelper;
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -93,8 +97,8 @@ public class TouchToFillIntegrationTest {
             mTouchToFill = new TouchToFillCoordinator();
             mBottomSheetController = BottomSheetControllerProvider.from(
                     mActivityTestRule.getActivity().getWindowAndroid());
-            mTouchToFill.initialize(
-                    mActivityTestRule.getActivity(), mBottomSheetController, mMockBridge);
+            mTouchToFill.initialize(mActivityTestRule.getActivity(), mBottomSheetController,
+                    mMockBridge, mMockFocusHelper);
         });
     }
 

@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.test.util.browser.Features;
@@ -107,6 +108,8 @@ public class TouchToFillControllerTest {
     private TouchToFillComponent.Delegate mMockDelegate;
     @Mock
     private LargeIconBridge mMockIconBridge;
+    @Mock
+    private BottomSheetFocusHelper mMockFocusHelper;
 
     // Can't be local, as it has to be initialized by initMocks.
     @Captor
@@ -131,8 +134,8 @@ public class TouchToFillControllerTest {
                      any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
 
-        mMediator.initialize(
-                mContext, mMockDelegate, mModel, mMockIconBridge, DESIRED_FAVICON_SIZE);
+        mMediator.initialize(mContext, mMockDelegate, mModel, mMockIconBridge, DESIRED_FAVICON_SIZE,
+                mMockFocusHelper);
     }
 
     @Test
@@ -461,6 +464,15 @@ public class TouchToFillControllerTest {
         assertThat(itemList.size(), is(4));
         assertThat(itemList.get(itemList.size() - 1).model.get(MANAGE_BUTTON_TEXT),
                 is(mContext.getString(R.string.manage_passkeys)));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    public void testAddsTheBottomSheetHeperToObserveTheSheet() {
+        mMediator.showCredentials(TEST_URL, true, Arrays.asList(DINO), Arrays.asList(ANA),
+                /*submitCredential=*/false, /*managePasskeysHidesPasswords=*/true);
+
+        verify(mMockFocusHelper).registerForOneTimeUse();
     }
 
     /**

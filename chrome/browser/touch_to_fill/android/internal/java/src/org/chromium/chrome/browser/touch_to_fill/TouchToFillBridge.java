@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -29,8 +30,8 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mTouchToFillComponent = new TouchToFillCoordinator();
-        mTouchToFillComponent.initialize(
-                windowAndroid.getContext().get(), bottomSheetController, this);
+        mTouchToFillComponent.initialize(windowAndroid.getContext().get(), bottomSheetController,
+                this, new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
     }
 
     @CalledByNative

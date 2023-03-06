@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -77,8 +78,11 @@ public interface TouchToFillComponent {
      * @param context A {@link Context} to create views and retrieve resources.
      * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles dismiss events.
+     * @param bottomSheetFocusHelper A {@link BottomSheetFocusHelper} used to restore accessibility
+     *         focus after the BottomSheet closes.
      */
-    void initialize(Context context, BottomSheetController sheetController, Delegate delegate);
+    void initialize(Context context, BottomSheetController sheetController, Delegate delegate,
+            BottomSheetFocusHelper bottomSheetFocusHelper);
 
     /**
      * Displays the given credentials in a new bottom sheet.
