@@ -13,6 +13,7 @@
 #include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 // AV1 stateless decoding not supported upstream yet
 #if BUILDFLAG(IS_CHROMEOS)
@@ -56,8 +57,8 @@ constexpr char kHelpMsg[] =
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
     "    --output_format=<str>\n"
-    "        Optional. Output type for decoded frames\n"
-    "        Formats currently supported are YUV or PNG\n"
+    "        Optional. Output type for decoded frames, defaults to YUV.\n"
+    "        YUV and PNG are supported.\n"
     "    --output_path_prefix=<path>\n"
     "        Optional. Prefix to the filepaths where raw YUV or PNG files\n"
     "        will be written. For example, setting <path> to \"test/test_\"\n"
@@ -136,11 +137,14 @@ int main(int argc, char** argv) {
   const std::string output_file_prefix =
       cmd->GetSwitchValueASCII("output_path_prefix");
 
-  std::string output_format = cmd->GetSwitchValueASCII("output_format");
-  if (output_format != "yuv" && output_format != "png") {
-    LOG(ERROR) << "Unsupported output format: " << output_format
-               << " so default to YUV.";
-    output_format = "yuv";
+  std::string output_format = "yuv";
+  if (has_output_file && cmd->HasSwitch("output_format")) {
+    output_format =
+        base::ToLowerASCII(cmd->GetSwitchValueASCII("output_format"));
+    if (output_format != "yuv" && output_format != "png") {
+      LOG(ERROR) << "Unsupported output format: " << output_format;
+      return EXIT_FAILURE;
+    }
   }
 
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
