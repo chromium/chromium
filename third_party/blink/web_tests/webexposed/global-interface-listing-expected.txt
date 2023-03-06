@@ -5198,6 +5198,7 @@ interface MLGraphBuilder
     method sigmoid
     method softmax
     method sub
+    method transpose
 interface MLModelLoader
     attribute @@toStringTag
     method constructor

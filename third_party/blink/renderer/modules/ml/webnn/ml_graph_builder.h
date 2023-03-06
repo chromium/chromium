@@ -27,6 +27,7 @@ class MLGemmOptions;
 class MLGraph;
 class MLPool2dOptions;
 class MLResample2dOptions;
+class MLTransposeOptions;
 class MLOperand;
 class MLOperandDescriptor;
 class ScriptPromiseResolver;
@@ -137,6 +138,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperator* sigmoid(ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
+
+  MLOperand* transpose(const MLOperand* input,
+                       const MLTransposeOptions* options,
+                       ExceptionState& exception_state);
 
   ScriptPromise build(ScriptState* script_state,
                       const MLNamedOperands& outputs,

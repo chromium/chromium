@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ml/buildflags.h"
@@ -1176,6 +1177,73 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
     return nullptr;
   }
   softmax->Connect({input}, {output});
+  return output;
+}
+
+MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
+                                     const MLTransposeOptions* options,
+                                     ExceptionState& exception_state) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose,
+  // When permutation is not specified, it’s set to [N-1...0], where N is the
+  // rank of the input tensor.
+  auto input_rank = input->Dimensions().size();
+  Vector<int32_t> default_permutation(input_rank);
+  for (wtf_size_t i = 0; i < input_rank - 1; i++) {
+    default_permutation[i] = input_rank - 1 - i;
+  }
+  const Vector<int32_t> permutation =
+      options->getPermutationOr(std::move(default_permutation));
+  if (permutation.size() != input_rank) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The number of values in permutation must be the same as the rank "
+        "of the input tensor.");
+    return nullptr;
+  }
+
+  // The current WebNN spec defines the value of permutation as signed
+  // integer: https://www.w3.org/TR/webnn/#dom-mltransposeoptions-permutation
+  // And an issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/317
+  if (base::ranges::any_of(permutation, [input_rank](int32_t axis) {
+        return axis < 0 || base::MakeStrictNum(axis) >= input_rank;
+      })) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::Format(
+            "The values in permutation must be within the range from 0 "
+            "to (%u).",
+            input_rank - 1));
+    return nullptr;
+  }
+
+  if (permutation.size() !=
+      std::set<int32_t>(permutation.begin(), permutation.end()).size()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Two or more values are same in the permutation sequence.");
+    return nullptr;
+  }
+
+  Vector<uint32_t> output_shape(input_rank);
+  for (wtf_size_t i = 0; i < input_rank; ++i) {
+    output_shape[i] = input->Dimensions()[permutation[i]];
+  }
+  auto* transpose = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kTranspose, options);
+  String error_message;
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose, the output
+  // tensor of transpose has the same type as its input.
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), std::move(output_shape), transpose, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  transpose->Connect({input}, {output});
   return output;
 }
 

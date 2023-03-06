@@ -39,7 +39,8 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
     kReshape,
     kResample2d,
     kSoftmax,
-    kSigmoid
+    kSigmoid,
+    kTranspose
   };
 
   static String OperatorKindToString(MLOperator::OperatorKind kind);

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 409 tests; 235 PASS, 174 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 409 tests; 238 PASS, 171 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': The input layout nchw is not supported."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -258,7 +258,7 @@ FAIL MLGraphBuilder interface: operation split(MLOperand, (unsigned long or sequ
 FAIL MLGraphBuilder interface: operation squeeze(MLOperand, optional MLSqueezeOptions) assert_own_property: interface prototype object missing non-static operation expected property "squeeze" missing
 FAIL MLGraphBuilder interface: operation tanh(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
 FAIL MLGraphBuilder interface: operation tanh() assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
-FAIL MLGraphBuilder interface: operation transpose(MLOperand, optional MLTransposeOptions) assert_own_property: interface prototype object missing non-static operation expected property "transpose" missing
+PASS MLGraphBuilder interface: operation transpose(MLOperand, optional MLTransposeOptions)
 PASS MLGraphBuilder must be primary interface of builder
 PASS Stringification of builder
 PASS MLGraphBuilder interface: builder must inherit property "input(DOMString, MLOperandDescriptor)" with the proper type
@@ -405,8 +405,8 @@ FAIL MLGraphBuilder interface: calling squeeze(MLOperand, optional MLSqueezeOpti
 FAIL MLGraphBuilder interface: builder must inherit property "tanh(MLOperand)" with the proper type assert_inherits: property "tanh" not found in prototype chain
 FAIL MLGraphBuilder interface: calling tanh(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "tanh" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type assert_inherits: property "tanh" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type assert_inherits: property "transpose" not found in prototype chain
-FAIL MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError assert_inherits: property "transpose" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type
+PASS MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError
 PASS WorkerNavigator interface: attribute ml
 PASS WorkerNavigator interface: navigator must inherit property "ml" with the proper type
 Harness: the test ran to completion.

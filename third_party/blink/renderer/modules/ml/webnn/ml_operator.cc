@@ -46,6 +46,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "softmax";
     case MLOperator::OperatorKind::kSigmoid:
       return "sigmoid";
+    case MLOperator::OperatorKind::kTranspose:
+      return "transpose";
   }
 }
 

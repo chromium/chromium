@@ -693,6 +693,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_info.cc",

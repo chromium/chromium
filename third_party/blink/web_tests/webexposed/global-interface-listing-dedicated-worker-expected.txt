@@ -863,6 +863,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method sigmoid
 [Worker]     method softmax
 [Worker]     method sub
+[Worker]     method transpose
 [Worker] interface MLOperand
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
