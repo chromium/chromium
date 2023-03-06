@@ -77,7 +77,7 @@ class UnexportableKeyTaskManager {
   // task with `signing_key` and `data` arguments. Might return a cached result
   // if a task with the same combination of `signing_key` and `data` has been
   // completed recently.
-  // Invokes `callback` with a signature of `data`, of `absl::nullopt` if an
+  // Invokes `callback` with a signature of `data`, or `absl::nullopt` if an
   // error occurs during signing.
   void SignSlowlyAsync(
       scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
