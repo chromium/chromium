@@ -1,6 +1,7 @@
 {
    "background": {
-     "scripts": ["background.js"]
+     "scripts": ["background.js"],
+     "persistent": true
    },
    "description": "Test whether extensions open incognito windows after policy disallows it",
    "name": "Incognito Disabled",

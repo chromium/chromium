@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "description": "Tests chrome.tabs.onCreated.",
   "background": {
-    "scripts": ["test.js"]
+    "scripts": ["test.js"],
+    "persistent": true
   }
 }

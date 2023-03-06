@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests the behavior of the tabs.onUpdated event with different cases of navigation",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs"],
   "web_accessible_resources": [

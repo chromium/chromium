@@ -4,7 +4,8 @@
   "manifest_version": 2,
   "description": "Tests access to the tabs API from extensions lacking the tabs permission",
   "background": {
-    "scripts": ["test.js"]
+    "scripts": ["test.js"],
+    "persistent": false
   },
   "permissions": []
 }
