@@ -444,7 +444,9 @@ bool GetFileNameFromFirstDescriptor(IDataObject* data_object,
 
 }  // namespace
 
-bool ClipboardUtil::HasUrl(IDataObject* data_object, bool convert_filenames) {
+namespace ClipboardUtil {
+
+bool HasUrl(IDataObject* data_object, bool convert_filenames) {
   DCHECK(data_object);
   return HasData(data_object, ClipboardFormatType::MozUrlType()) ||
          HasData(data_object, ClipboardFormatType::UrlType()) ||
@@ -452,14 +454,14 @@ bool ClipboardUtil::HasUrl(IDataObject* data_object, bool convert_filenames) {
          (convert_filenames && HasFilenames(data_object));
 }
 
-bool ClipboardUtil::HasFilenames(IDataObject* data_object) {
+bool HasFilenames(IDataObject* data_object) {
   DCHECK(data_object);
   return HasData(data_object, ClipboardFormatType::CFHDropType()) ||
          HasData(data_object, ClipboardFormatType::FilenameType()) ||
          HasData(data_object, ClipboardFormatType::FilenameAType());
 }
 
-bool ClipboardUtil::HasVirtualFilenames(IDataObject* data_object) {
+bool HasVirtualFilenames(IDataObject* data_object) {
   DCHECK(data_object);
   // Favor real files on the file system over virtual files.
   return !HasFilenames(data_object) &&
@@ -468,29 +470,29 @@ bool ClipboardUtil::HasVirtualFilenames(IDataObject* data_object) {
           HasData(data_object, ClipboardFormatType::FileDescriptorAType()));
 }
 
-bool ClipboardUtil::HasFileContents(IDataObject* data_object) {
+bool HasFileContents(IDataObject* data_object) {
   DCHECK(data_object);
   return HasData(data_object, ClipboardFormatType::FileContentZeroType()) &&
          (HasData(data_object, ClipboardFormatType::FileDescriptorType()) ||
           HasData(data_object, ClipboardFormatType::FileDescriptorAType()));
 }
 
-bool ClipboardUtil::HasHtml(IDataObject* data_object) {
+bool HasHtml(IDataObject* data_object) {
   DCHECK(data_object);
   return HasData(data_object, ClipboardFormatType::HtmlType()) ||
          HasData(data_object, ClipboardFormatType::TextHtmlType());
 }
 
-bool ClipboardUtil::HasPlainText(IDataObject* data_object) {
+bool HasPlainText(IDataObject* data_object) {
   DCHECK(data_object);
   return HasData(data_object, ClipboardFormatType::PlainTextType()) ||
          HasData(data_object, ClipboardFormatType::PlainTextAType());
 }
 
-bool ClipboardUtil::GetUrl(IDataObject* data_object,
-                           GURL* url,
-                           std::u16string* title,
-                           bool convert_filenames) {
+bool GetUrl(IDataObject* data_object,
+            GURL* url,
+            std::u16string* title,
+            bool convert_filenames) {
   DCHECK(data_object && url && title);
   if (!HasUrl(data_object, convert_filenames))
     return false;
@@ -533,8 +535,8 @@ bool ClipboardUtil::GetUrl(IDataObject* data_object,
   return false;
 }
 
-bool ClipboardUtil::GetFilenames(IDataObject* data_object,
-                                 std::vector<std::wstring>* filenames) {
+bool GetFilenames(IDataObject* data_object,
+                  std::vector<std::wstring>* filenames) {
   DCHECK(data_object && filenames);
   if (!HasFilenames(data_object))
     return false;
@@ -584,8 +586,7 @@ bool ClipboardUtil::GetFilenames(IDataObject* data_object,
   return false;
 }
 
-STGMEDIUM ClipboardUtil::CreateStorageForFileNames(
-    const std::vector<FileInfo>& filenames) {
+STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames) {
   // CF_HDROP clipboard format consists of DROPFILES structure, a series of file
   // names including the terminating null character and the additional null
   // character at the tail to terminate the array.
@@ -631,9 +632,8 @@ STGMEDIUM ClipboardUtil::CreateStorageForFileNames(
   return storage;
 }
 
-bool ClipboardUtil::GetVirtualFilenames(
-    IDataObject* data_object,
-    std::vector<base::FilePath>* filenames) {
+bool GetVirtualFilenames(IDataObject* data_object,
+                         std::vector<base::FilePath>* filenames) {
   DCHECK(data_object && filenames);
   if (!HasVirtualFilenames(data_object))
     return false;
@@ -654,7 +654,7 @@ bool ClipboardUtil::GetVirtualFilenames(
   return false;
 }
 
-bool ClipboardUtil::GetVirtualFilesAsTempFiles(
+bool GetVirtualFilesAsTempFiles(
     IDataObject* data_object,
     base::OnceCallback<
         void(const std::vector<std::pair</*temp path*/ base::FilePath,
@@ -682,8 +682,7 @@ bool ClipboardUtil::GetVirtualFilesAsTempFiles(
   return true;
 }
 
-bool ClipboardUtil::GetPlainText(IDataObject* data_object,
-                                 std::u16string* plain_text) {
+bool GetPlainText(IDataObject* data_object, std::u16string* plain_text) {
   DCHECK(data_object && plain_text);
   if (!HasPlainText(data_object))
     return false;
@@ -720,9 +719,9 @@ bool ClipboardUtil::GetPlainText(IDataObject* data_object,
   return false;
 }
 
-bool ClipboardUtil::GetHtml(IDataObject* data_object,
-                            std::u16string* html,
-                            std::string* base_url) {
+bool GetHtml(IDataObject* data_object,
+             std::u16string* html,
+             std::string* base_url) {
   DCHECK(data_object && html && base_url);
 
   STGMEDIUM store;
@@ -755,9 +754,9 @@ bool ClipboardUtil::GetHtml(IDataObject* data_object,
   return true;
 }
 
-bool ClipboardUtil::GetFileContents(IDataObject* data_object,
-                                    std::wstring* filename,
-                                    std::string* file_contents) {
+bool GetFileContents(IDataObject* data_object,
+                     std::wstring* filename,
+                     std::string* file_contents) {
   DCHECK(data_object && filename && file_contents);
   if (!HasFileContents(data_object))
     return false;
@@ -792,7 +791,7 @@ bool ClipboardUtil::GetFileContents(IDataObject* data_object,
   return false;
 }
 
-bool ClipboardUtil::GetWebCustomData(
+bool GetWebCustomData(
     IDataObject* data_object,
     std::unordered_map<std::u16string, std::u16string>* custom_data) {
   DCHECK(data_object && custom_data);
@@ -842,9 +841,9 @@ bool ClipboardUtil::GetWebCustomData(
 // Helper method for converting from text/html to MS CF_HTML.
 // Documentation for the CF_HTML format is available at
 // http://msdn.microsoft.com/en-us/library/aa767917(VS.85).aspx
-std::string ClipboardUtil::HtmlToCFHtml(const std::string& html,
-                                        const std::string& base_url,
-                                        ClipboardContentType content_type) {
+std::string HtmlToCFHtml(const std::string& html,
+                         const std::string& base_url,
+                         ClipboardContentType content_type) {
   // TODO(ansollan): Implement changes to correctly convert unsanitized
   // text/html to MS CF_HTML.
   if (html.empty() || content_type == ClipboardContentType::kUnsanitized) {
@@ -902,14 +901,14 @@ std::string ClipboardUtil::HtmlToCFHtml(const std::string& html,
 }
 
 // Helper method for converting from MS CF_HTML to text/html.
-void ClipboardUtil::CFHtmlToHtml(const std::string& cf_html,
-                                 std::string* html,
-                                 std::string* base_url) {
+void CFHtmlToHtml(const std::string& cf_html,
+                  std::string* html,
+                  std::string* base_url) {
   size_t fragment_start = std::string::npos;
   size_t fragment_end = std::string::npos;
 
-  ClipboardUtil::CFHtmlExtractMetadata(cf_html, base_url, nullptr,
-                                       &fragment_start, &fragment_end);
+  CFHtmlExtractMetadata(cf_html, base_url, nullptr, &fragment_start,
+                        &fragment_end);
 
   if (html &&
       fragment_start != std::string::npos &&
@@ -919,11 +918,11 @@ void ClipboardUtil::CFHtmlToHtml(const std::string& cf_html,
   }
 }
 
-void ClipboardUtil::CFHtmlExtractMetadata(const std::string& cf_html,
-                                          std::string* base_url,
-                                          size_t* html_start,
-                                          size_t* fragment_start,
-                                          size_t* fragment_end) {
+void CFHtmlExtractMetadata(const std::string& cf_html,
+                           std::string* base_url,
+                           size_t* html_start,
+                           size_t* fragment_start,
+                           size_t* fragment_end) {
   // Obtain base_url if present.
   if (base_url) {
     static constexpr char kSrcUrlStr[] = "SourceURL:";
@@ -968,5 +967,7 @@ void ClipboardUtil::CFHtmlExtractMetadata(const std::string& cf_html,
     *fragment_end = cf_html.rfind('<', tag_end);
   }
 }
+
+}  // namespace ClipboardUtil
 
 }  // namespace ui
