@@ -64,6 +64,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   NSWindow* browser_window() { return browser_window_; }
   NSWindow* overlay_window() { return overlay_window_; }
 
+  // Caled when `immersive_mode_titlebar_view_controller_`'s view is moved to
+  // a different window.
+  void ImmersiveModeViewWillMoveToWindow(NSWindow* window);
+
   // When true the titlebar is assumed to be fully visible. For testing only.
   void SetTitlebarFullyVisibleForTesting(bool fully_visible) {
     titlebar_fully_visible_for_testing_ = fully_visible;
@@ -111,6 +115,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   base::scoped_nsobject<ImmersiveModeMapper> immersive_mode_mapper_;
   base::scoped_nsobject<ImmersiveModeWindowObserver>
       immersive_mode_window_observer_;
+  base::scoped_nsobject<ImmersiveModeTitlebarObserver>
+      immersive_mode_titlebar_observer_;
 
   int titlebar_lock_count_ = 0;
   int reveal_lock_count_ = 0;
