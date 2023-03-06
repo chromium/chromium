@@ -92,8 +92,8 @@ struct RateLimitInput {
     auto builder = SourceBuilder(time);
 
     builder.SetSourceOrigin(*SuitableOrigin::Deserialize(source_origin));
-    builder.SetDestinationOrigin(
-        *SuitableOrigin::Deserialize(destination_origin));
+    builder.SetDestinationSites(
+        {net::SchemefulSite::Deserialize(destination_origin)});
     builder.SetReportingOrigin(*SuitableOrigin::Deserialize(reporting_origin));
     builder.SetExpiry(source_expiry);
 

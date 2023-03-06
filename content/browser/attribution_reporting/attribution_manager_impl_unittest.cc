@@ -64,6 +64,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -1714,7 +1715,7 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(
       SourceBuilder()
           .SetSourceOrigin(source_origin)
-          .SetDestinationOrigin(destination_origin)
+          .SetDestinationSites({net::SchemefulSite(destination_origin)})
           .SetReportingOrigin(reporting_origin)
           .SetDebugKey(123)
           .SetExpiry(kImpressionExpiry)
@@ -2579,12 +2580,12 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
 
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
 
-  const auto destination_origin =
-      *SuitableOrigin::Deserialize("https://d.test");
+  const auto destination_site =
+      net::SchemefulSite::Deserialize("https://d.test");
 
   // Failed without debug reporting.
   attribution_manager_->HandleSource(
-      SourceBuilder().SetDestinationOrigin(destination_origin).Build(),
+      SourceBuilder().SetDestinationSites({destination_site}).Build(),
       kFrameId);
 
   task_environment_.RunUntilIdle();
@@ -2595,7 +2596,7 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   // no debug report is sent.
   attribution_manager_->HandleSource(
       SourceBuilder()
-          .SetDestinationOrigin(destination_origin)
+          .SetDestinationSites({destination_site})
           .SetIsWithinFencedFrame(true)
           .SetDebugReporting(true)
           .Build(),
@@ -2614,7 +2615,7 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
 
     attribution_manager_->HandleSource(
         SourceBuilder()
-            .SetDestinationOrigin(destination_origin)
+            .SetDestinationSites({destination_site})
             .SetDebugReporting(true)
             .Build(),
         kFrameId);
@@ -2634,7 +2635,7 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
 
     attribution_manager_->HandleSource(
         SourceBuilder()
-            .SetDestinationOrigin(destination_origin)
+            .SetDestinationSites({destination_site})
             .SetDebugReporting(true)
             .Build(),
         kFrameId);
@@ -2679,7 +2680,8 @@ TEST_F(AttributionManagerImplDebugReportTest,
 
   attribution_manager_->HandleSource(
       SourceBuilder()
-          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d.test"))
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://d.test")})
           .SetDebugReporting(true)
           .Build(),
       kFrameId);

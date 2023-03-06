@@ -125,11 +125,6 @@ SourceBuilder& SourceBuilder::SetSourceOrigin(SuitableOrigin origin) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetDestinationOrigin(
-    const SuitableOrigin& origin) {
-  return SetDestinationSites({net::SchemefulSite(origin)});
-}
-
 SourceBuilder& SourceBuilder::SetDestinationSites(
     base::flat_set<net::SchemefulSite> sites) {
   destination_sites_ =

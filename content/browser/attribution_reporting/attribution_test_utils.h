@@ -91,11 +91,6 @@ class SourceBuilder {
 
   SourceBuilder& SetSourceOrigin(attribution_reporting::SuitableOrigin);
 
-  // TODO(apaseltiner): Rename this to `SetDestination()`, since the origin
-  // itself is no longer used.
-  SourceBuilder& SetDestinationOrigin(
-      const attribution_reporting::SuitableOrigin&);
-
   SourceBuilder& SetDestinationSites(base::flat_set<net::SchemefulSite>);
 
   SourceBuilder& SetReportingOrigin(attribution_reporting::SuitableOrigin);

@@ -283,10 +283,11 @@ TEST_F(AttributionStorageTest, MultipleImpressionsForConversion_OneConverts) {
 
 TEST_F(AttributionStorageTest,
        CrossOriginSameDomainConversion_ImpressionConverted) {
-  auto impression = SourceBuilder()
-                        .SetDestinationOrigin(
-                            *SuitableOrigin::Deserialize("https://sub.a.test"))
-                        .Build();
+  auto impression =
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://sub.a.test")})
+          .Build();
   storage()->StoreSource(impression);
   EXPECT_EQ(
       AttributionTrigger::EventLevelResult::kSuccess,
@@ -433,10 +434,11 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        ConversionWithDifferentConversionOrigin_NoReportScheduled) {
-  auto impression = SourceBuilder()
-                        .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                            "https://different.test"))
-                        .Build();
+  auto impression =
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://different.test")})
+          .Build();
   storage()->StoreSource(impression);
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -889,7 +891,7 @@ TEST_F(AttributionStorageTest,
 
   storage()->StoreSource(SourceBuilder()
                              .SetSourceOrigin(origin)
-                             .SetDestinationOrigin(origin)
+                             .SetDestinationSites({net::SchemefulSite(origin)})
                              .Build());
   MaybeCreateAndStoreEventLevelReport(
       TriggerBuilder().SetDestinationOrigin(origin).Build());
@@ -951,12 +953,13 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
   for (int i = 0; i < 10; i++) {
     auto origin =
         *SuitableOrigin::Deserialize(base::StringPrintf("https://%d.com/", i));
-    storage()->StoreSource(SourceBuilder(now)
-                               .SetExpiry(base::Days(30))
-                               .SetSourceOrigin(origin)
-                               .SetReportingOrigin(origin)
-                               .SetDestinationOrigin(origin)
-                               .Build());
+    storage()->StoreSource(
+        SourceBuilder(now)
+            .SetExpiry(base::Days(30))
+            .SetSourceOrigin(origin)
+            .SetReportingOrigin(origin)
+            .SetDestinationSites({net::SchemefulSite(origin)})
+            .Build());
     task_environment_.FastForwardBy(base::Days(1));
   }
 
@@ -1316,8 +1319,8 @@ TEST_F(AttributionStorageTest,
                 .SetSourceOrigin(*SuitableOrigin::Deserialize(source_origin))
                 .SetReportingOrigin(
                     *SuitableOrigin::Deserialize(reporting_origin))
-                .SetDestinationOrigin(
-                    *SuitableOrigin::Deserialize(destination_origin))
+                .SetDestinationSites(
+                    {net::SchemefulSite::Deserialize(destination_origin)})
                 .SetExpiry(base::Days(30))
                 .Build())
         .status;
@@ -1363,8 +1366,8 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
                 .SetSourceOrigin(*SuitableOrigin::Deserialize(source_origin))
                 .SetReportingOrigin(
                     *SuitableOrigin::Deserialize(reporting_origin))
-                .SetDestinationOrigin(
-                    *SuitableOrigin::Deserialize(destination_origin))
+                .SetDestinationSites(
+                    {net::SchemefulSite::Deserialize(destination_origin)})
                 .SetExpiry(expiry)
                 .Build())
         .status;
@@ -1406,14 +1409,16 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_AppliesToNavigationSources) {
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example/"))
-                             .Build());
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://b.example"))
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example/")})
+          .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.example")})
+          .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
@@ -1421,15 +1426,16 @@ TEST_F(AttributionStorageTest,
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_CountsAllSourceTypes) {
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example/"))
-                             .SetSourceType(SourceType::kNavigation)
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example/")})
+          .SetSourceType(SourceType::kNavigation)
+          .Build());
   AttributionStorage::StoreSourceResult result = storage()->StoreSource(
       SourceBuilder()
-          .SetDestinationOrigin(
-              *SuitableOrigin::Deserialize("https://b.example"))
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.example")})
           .SetSourceType(SourceType::kEvent)
           .Build());
   EXPECT_EQ(result.status,
@@ -1446,28 +1452,31 @@ TEST_F(AttributionStorageTest,
 
   const base::TimeDelta expiry = base::Milliseconds(5);
 
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example/"))
-                             .SetSourceType(SourceType::kNavigation)
-                             .SetExpiry(expiry)
-                             .Build());
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://b.example"))
-                             .SetSourceType(SourceType::kEvent)
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example/")})
+          .SetSourceType(SourceType::kNavigation)
+          .SetExpiry(expiry)
+          .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.example")})
+          .SetSourceType(SourceType::kEvent)
+          .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(expiry);
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://b.example"))
-                             .SetSourceType(SourceType::kEvent)
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.example")})
+          .SetSourceType(SourceType::kEvent)
+          .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
@@ -1485,11 +1494,12 @@ TEST_F(AttributionStorageTest,
           .Build());
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
-  storage()->StoreSource(SourceBuilder()
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://c.example"))
-                             .SetSourceType(SourceType::kEvent)
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://c.example")})
+          .SetSourceType(SourceType::kEvent)
+          .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
 
@@ -1842,16 +1852,18 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
 }
 
 TEST_F(AttributionStorageTest, DedupKey_Dedups) {
-  storage()->StoreSource(SourceBuilder()
-                             .SetSourceEventId(1)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example"))
-                             .Build());
-  storage()->StoreSource(SourceBuilder()
-                             .SetSourceEventId(2)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://b.example"))
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example")})
+          .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(2)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.example")})
+          .Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(DedupKeysAre(IsEmpty()), DedupKeysAre(IsEmpty())));
 
@@ -1920,11 +1932,12 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
 }
 
 TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
-  storage()->StoreSource(SourceBuilder()
-                             .SetSourceEventId(1)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example"))
-                             .Build());
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example")})
+          .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -1966,16 +1979,18 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
 
 TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
   TestAggregatableSourceProvider provider;
-  storage()->StoreSource(provider.GetBuilder()
-                             .SetSourceEventId(1)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example"))
-                             .Build());
-  storage()->StoreSource(provider.GetBuilder()
-                             .SetSourceEventId(2)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://b.example"))
-                             .Build());
+  storage()->StoreSource(
+      provider.GetBuilder()
+          .SetSourceEventId(1)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example")})
+          .Build());
+  storage()->StoreSource(
+      provider.GetBuilder()
+          .SetSourceEventId(2)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://b.example")})
+          .Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(AggregatableDedupKeysAre(IsEmpty()),
                           AggregatableDedupKeysAre(IsEmpty())));
@@ -2047,12 +2062,13 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
 
 TEST_F(AttributionStorageTest,
        AggregatableDedupKey_DedupsAfterConversionDeletion) {
-  storage()->StoreSource(TestAggregatableSourceProvider()
-                             .GetBuilder()
-                             .SetSourceEventId(1)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example"))
-                             .Build());
+  storage()->StoreSource(
+      TestAggregatableSourceProvider()
+          .GetBuilder()
+          .SetSourceEventId(1)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example")})
+          .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -2093,12 +2109,13 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest, DedupKey_AggregatableReportNotDedups) {
-  storage()->StoreSource(TestAggregatableSourceProvider()
-                             .GetBuilder()
-                             .SetSourceEventId(1)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example"))
-                             .Build());
+  storage()->StoreSource(
+      TestAggregatableSourceProvider()
+          .GetBuilder()
+          .SetSourceEventId(1)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example")})
+          .Build());
 
   auto result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
@@ -2125,12 +2142,13 @@ TEST_F(AttributionStorageTest, DedupKey_AggregatableReportNotDedups) {
 }
 
 TEST_F(AttributionStorageTest, AggregatableDedupKey_EventLevelReportNotDedups) {
-  storage()->StoreSource(TestAggregatableSourceProvider()
-                             .GetBuilder()
-                             .SetSourceEventId(1)
-                             .SetDestinationOrigin(*SuitableOrigin::Deserialize(
-                                 "https://a.example"))
-                             .Build());
+  storage()->StoreSource(
+      TestAggregatableSourceProvider()
+          .GetBuilder()
+          .SetSourceEventId(1)
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://a.example")})
+          .Build());
 
   auto result = storage()->MaybeCreateAndStoreReport(
       DefaultAggregatableTriggerBuilder()
@@ -2170,7 +2188,7 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
 
   storage()->StoreSource(
       SourceBuilder()
-          .SetDestinationOrigin(origin)
+          .SetDestinationSites({net::SchemefulSite(origin)})
           .SetReportingOrigin(origin)
           .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .SetAggregationKeys(
@@ -2616,13 +2634,15 @@ TEST_F(AttributionStorageTest, GetAttributionDataKeysSet) {
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
           .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s1.test"))
-          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d1.test"))
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://d1.test")})
           .Build();
   auto s3 =
       SourceBuilder()
           .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r.test"))
           .SetSourceOrigin(*SuitableOrigin::Deserialize("https://s2.test"))
-          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d2.test"))
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://d2.test")})
           .Build();
 
   storage()->StoreSource(s1);
@@ -2977,7 +2997,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
 
   storage()->StoreSource(SourceBuilder()
                              .SetSourceType(SourceType::kNavigation)
-                             .SetDestinationOrigin(origin)
+                             .SetDestinationSites({net::SchemefulSite(origin)})
                              .SetReportingOrigin(origin)
                              .Build());
 
@@ -3017,7 +3037,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
   storage()->StoreSource(
       SourceBuilder()
           .SetSourceType(SourceType::kNavigation)
-          .SetDestinationOrigin(origin)
+          .SetDestinationSites({net::SchemefulSite(origin)})
           .SetReportingOrigin(origin)
           .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .Build());
@@ -3115,7 +3135,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
 
   storage()->StoreSource(
       SourceBuilder()
-          .SetDestinationOrigin(origin)
+          .SetDestinationSites({net::SchemefulSite(origin)})
           .SetReportingOrigin(origin)
           .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .SetAggregationKeys(
