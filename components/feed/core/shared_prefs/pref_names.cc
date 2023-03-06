@@ -20,7 +20,8 @@ const char kArticlesListVisible[] = "ntp_snippets.list_visible";
 const char kVideoPreviewsType[] = "ntp_snippets.video_previews_type";
 
 void RegisterFeedSharedProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kEnableSnippets, true);
+  // 隐藏掉主页下面信息流开关
+  registry->RegisterBooleanPref(kEnableSnippets, false);
   //禁用”探索“
   registry->RegisterBooleanPref(kArticlesListVisible, false);
   registry->RegisterIntegerPref(kVideoPreviewsType, 1);
