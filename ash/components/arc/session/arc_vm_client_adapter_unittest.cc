@@ -1847,30 +1847,6 @@ TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderEnforced) {
   EXPECT_TRUE(request.mini_instance_request().disable_download_provider());
 }
 
-TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kVmGmsCoreLowMemoryKillerProtection,
-                                    false);
-  StartMiniArc();
-  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(req.enable_gmscore_lmk_protection());
-}
-
-TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kVmGmsCoreLowMemoryKillerProtection,
-                                    true);
-  StartMiniArc();
-  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(req.enable_gmscore_lmk_protection());
-}
-
-TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_Default) {
-  StartMiniArc();
-  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(req.enable_gmscore_lmk_protection());
-}
-
 TEST_F(ArcVmClientAdapterTest, BroadcastPreANRDefault) {
   StartMiniArc();
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();

@@ -369,8 +369,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   request.set_enable_rw(file_system_status.is_host_rootfs_writable() &&
                         file_system_status.is_system_image_ext_format());
-  request.set_enable_gmscore_lmk_protection(
-      base::FeatureList::IsEnabled(arc::kVmGmsCoreLowMemoryKillerProtection));
   request.set_enable_broadcast_anr_prenotify(
       base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR));
   request.set_enable_virtio_blk_data(start_params.use_virtio_blk_data);

@@ -68,7 +68,6 @@ BASE_DECLARE_FEATURE(kVmMemorySize);
 extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;
 extern const base::FeatureParam<int> kVmMemorySizeMaxMiB;
 BASE_DECLARE_FEATURE(kVmBroadcastPreNotifyANR);
-BASE_DECLARE_FEATURE(kVmGmsCoreLowMemoryKillerProtection);
 BASE_DECLARE_FEATURE(kVmmSwapKeyboardShortcut);
 BASE_DECLARE_FEATURE(kVmmSwapPolicy);
 extern const base::FeatureParam<int> kVmmSwapOutDelaySecond;
