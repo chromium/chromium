@@ -7,6 +7,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -28,14 +29,6 @@ void AddDiscreteMapping(proto::SegmentationModelMetadata* metadata,
     entry->set_min_result(pair[0]);
     entry->set_rank(pair[1]);
   }
-}
-
-std::unique_ptr<Config> CreateTestConfig(SegmentId segment_id) {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = "test_key";
-  config->segmentation_uma_name = "TestUmaKey";
-  config->AddSegmentId(segment_id);
-  return config;
 }
 
 }  // namespace
@@ -824,12 +817,12 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
 }
 
 TEST_F(MetadataUtilsTest, HasMigratedToMultiOutput) {
-  auto config =
-      CreateTestConfig(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
+  auto config = test_utils::CreateTestConfig(
+      "test_key", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
   EXPECT_FALSE(metadata_utils::HasMigratedToMultiOutput(config.get()));
 
-  config =
-      CreateTestConfig(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER);
+  config = test_utils::CreateTestConfig(
+      "test_key", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER);
   EXPECT_TRUE(metadata_utils::HasMigratedToMultiOutput(config.get()));
 }
 

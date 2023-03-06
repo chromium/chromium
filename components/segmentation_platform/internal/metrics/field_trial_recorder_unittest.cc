@@ -9,6 +9,7 @@
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/cached_result_provider.h"
 #include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
@@ -22,37 +23,12 @@ namespace {
 
 using ::testing::NiceMock;
 
-// Labels for BinnedClassifier.
-const char kLowUsed[] = "Low";
-const char kMediumUsed[] = "Medium";
-const char kHighUsed[] = "High";
-const char kUnderflowLabel[] = "Underflow";
-
-const char kClientKey[] = "test_key";
-
-std::unique_ptr<Config> CreateTestConfig() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kClientKey;
-  config->segmentation_uma_name = "test_key";
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER);
-  return config;
-}
-
 proto::ClientResult CreateClientResult(proto::PredictionResult pred_result) {
   proto::ClientResult client_result;
   client_result.mutable_client_result()->CopyFrom(pred_result);
   client_result.set_timestamp_us(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   return client_result;
-}
-
-proto::OutputConfig GetTestOutputConfigForBinnedClassifier() {
-  proto::SegmentationModelMetadata model_metadata;
-  MetadataWriter writer(&model_metadata);
-  writer.AddOutputConfigForBinnedClassifier(
-      /*bins=*/{{0.2, kLowUsed}, {0.3, kMediumUsed}, {0.5, kHighUsed}},
-      kUnderflowLabel);
-  return model_metadata.output_config();
 }
 
 class MockFieldTrialRegister : public FieldTrialRegister {
@@ -80,7 +56,9 @@ class FieldTrialRecorderTest : public testing::Test {
 
     field_trial_recorder_ =
         std::make_unique<FieldTrialRecorder>(&field_trial_register_);
-    configs_.push_back(CreateTestConfig());
+    configs_.push_back(test_utils::CreateTestConfig(
+        "test_key",
+        proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER));
   }
 
  protected:
@@ -106,10 +84,10 @@ TEST_F(FieldTrialRecorderTest, RecordUnselectedFieldTrial) {
 
 TEST_F(FieldTrialRecorderTest, RecordFieldTrial) {
   result_prefs_->SaveClientResultToPrefs(
-      kClientKey,
-      CreateClientResult(metadata_utils::CreatePredictionResult(
-          /*model_scores=*/{0.8}, GetTestOutputConfigForBinnedClassifier(),
-          /*timestamp=*/base::Time::Now())));
+      "test_key", CreateClientResult(metadata_utils::CreatePredictionResult(
+                      /*model_scores=*/{0.8},
+                      test_utils::GetTestOutputConfigForBinnedClassifier(),
+                      /*timestamp=*/base::Time::Now())));
   cached_result_provider_ = std::make_unique<CachedResultProvider>(
       std::move(result_prefs_), configs_);
 

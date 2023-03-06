@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
@@ -30,14 +31,6 @@ class MockResultProvider : public SegmentResultProvider {
   MOCK_METHOD1(GetSegmentResult,
                void(std::unique_ptr<GetResultOptions> options));
 };
-
-std::unique_ptr<Config> CreateTestConfig() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = "client_key";
-  config->segmentation_uma_name = "TestUmaKey";
-  config->AddSegmentId(kSegmentId);
-  return config;
-}
 
 proto::PredictionResult CreatePredictionResultWithBinaryClassifier() {
   proto::PredictionResult prediction_result;
@@ -62,7 +55,7 @@ class RequestHandlerTest : public testing::Test {
   void SetUp() override {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
-    config_ = CreateTestConfig();
+    config_ = test_utils::CreateTestConfig("test_client", kSegmentId);
     auto provider = std::make_unique<MockResultProvider>();
     result_provider_ = provider.get();
     request_handler_ =

@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
@@ -27,14 +28,6 @@ using testing::Invoke;
 
 namespace segmentation_platform {
 namespace {
-
-// Labels for BinaryClassifier.
-const char kNotShowShare[] = "Not Show Share";
-const char kShowShare[] = "Show Share";
-
-// TTL for BinaryClassifier labels.
-const int kShowShareTTL = 3;
-const int kDefaultTTL = 5;
 
 // Test clients.
 const char kTestClient1[] = "client_1";
@@ -50,29 +43,6 @@ class MockResultProvider : public SegmentResultProvider {
                void(std::unique_ptr<GetResultOptions> options));
 };
 
-std::unique_ptr<Config> CreateTestConfig(const std::string& key) {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = key;
-  config->segmentation_uma_name = "TestUmaKey";
-  config->on_demand_execution = false;
-  config->AddSegmentId(kSegmentId);
-  return config;
-}
-
-proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
-  proto::SegmentationModelMetadata model_metadata;
-  MetadataWriter writer(&model_metadata);
-
-  writer.AddOutputConfigForBinaryClassifier(
-      /*threshold=*/0.5, /*positive_label=*/kShowShare,
-      /*negative_label=*/kNotShowShare);
-
-  writer.AddPredictedResultTTLInOutputConfig({{kShowShare, kShowShareTTL}},
-                                             kDefaultTTL, proto::TimeUnit::DAY);
-
-  return model_metadata.output_config();
-}
-
 class ResultRefreshManagerTest : public testing::Test {
  public:
   ResultRefreshManagerTest() = default;
@@ -82,8 +52,10 @@ class ResultRefreshManagerTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    configs_.emplace_back(CreateTestConfig(kTestClient1));
-    configs_.emplace_back(CreateTestConfig(kTestClient2));
+    configs_.emplace_back(
+        test_utils::CreateTestConfig(kTestClient1, kSegmentId));
+    configs_.emplace_back(
+        test_utils::CreateTestConfig(kTestClient2, kSegmentId));
     cached_result_writer_ = SetupCachedResultWriter();
 
     client1_result_provider_ = std::make_unique<MockResultProvider>();
@@ -195,7 +167,8 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
   // Client 1 gets model result from database.
   proto::PredictionResult result_from_db_for_client1 =
       metadata_utils::CreatePredictionResult(
-          /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
+          /*model_scores=*/{0.8},
+          test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now());
 
   ExpectResultFromDatabase(
@@ -207,7 +180,8 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
   proto::PredictionResult result_from_db_for_client2;
   proto::PredictionResult result_from_model_for_client2 =
       metadata_utils::CreatePredictionResult(
-          /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
+          /*model_scores=*/{0.8},
+          test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now());
 
   ExpectResultFromModelExecution(
