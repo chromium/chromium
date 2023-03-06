@@ -52,16 +52,20 @@ try_.builder(
 try_.builder(
     name = "win-rust-x64-rel",
     mirrors = ["ci/win-rust-x64-rel"],
+    os = os.WINDOWS_DEFAULT,
 )
 
 try_.builder(
     name = "win-rust-x64-dbg",
     mirrors = ["ci/win-rust-x64-dbg"],
+    os = os.WINDOWS_DEFAULT,
 )
 
 try_.builder(
     name = "mac-rust-x64-rel",
     mirrors = ["ci/mac-rust-x64-rel"],
+    cores = None,
+    os = os.MAC_ANY,
 )
 
 try_.builder(
