@@ -43,6 +43,10 @@
       ],
     },
     {
+      protocol: "fuchsia.element.GraphicalPresenter",
+      availability: "optional",
+    },
+    {
       storage: "data",
       path: "/data",
     },

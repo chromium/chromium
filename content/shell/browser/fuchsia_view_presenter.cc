@@ -6,9 +6,11 @@
 
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
@@ -23,6 +25,8 @@ FuchsiaViewPresenter::FuchsiaViewPresenter() {
 
   base::ComponentContextForProcess()->svc()->Connect(
       graphical_presenter_.NewRequest());
+  graphical_presenter_.set_error_handler(base::LogFidlErrorAndExitProcess(
+      FROM_HERE, "fuchsia.element.GraphicalPresenter"));
 
   ui::fuchsia::SetScenicViewPresenter(base::BindRepeating(
       &FuchsiaViewPresenter::PresentScenicView, base::Unretained(this)));
