@@ -3241,9 +3241,6 @@ extern const char kLacrosMoveProfileMigrationDescription[];
 extern const char kLacrosProfileMigrationForceOffName[];
 extern const char kLacrosProfileMigrationForceOffDescription[];
 
-extern const char kImeAssistPersonalInfoName[];
-extern const char kImeAssistPersonalInfoDescription[];
-
 extern const char kVirtualKeyboardNewHeaderName[];
 extern const char kVirtualKeyboardNewHeaderDescription[];
 

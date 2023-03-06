@@ -145,18 +145,6 @@ const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetAssistivePersonalInfoSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_PERSONAL_INFORMATION_SUGGESTIONS,
-       mojom::kSmartInputsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowPersonalInformationSuggestions}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
@@ -169,11 +157,6 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   return *tags;
 }
 
-bool IsAssistivePersonalInfoAllowed() {
-  return !IsGuestModeActive() &&
-         base::FeatureList::IsEnabled(features::kAssistPersonalInfo);
-}
-
 bool IsPredictiveWritingAllowed() {
   return features::IsAssistiveMultiWordEnabled();
 }
@@ -184,21 +167,12 @@ void AddSmartInputsStrings(content::WebUIDataSource* html_source,
                            bool is_emoji_suggestion_allowed) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"smartInputsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
-      {"personalInfoSuggestionTitle",
-       IDS_SETTINGS_SUGGESTIONS_PERSONAL_INFO_TITLE},
-      {"personalInfoSuggestionHelpTooltip",
-       IDS_SETTINGS_SUGGESTIONS_PERSONAL_INFO_HELP_TOOLTIP},
-      {"personalInfoSuggestionDescription",
-       IDS_SETTINGS_SUGGESTIONS_PERSONAL_INFO_DESCRIPTION},
-      {"managePersonalInfo", IDS_SETTINGS_SUGGESTIONS_MANAGE_PERSONAL_INFO},
       {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("allowAssistivePersonalInfo",
-                          IsAssistivePersonalInfoAllowed());
   html_source->AddBoolean("allowEmojiSuggestion", is_emoji_suggestion_allowed);
 }
 
@@ -536,10 +510,8 @@ LanguagesSection::LanguagesSection(Profile* profile,
   updater.AddSearchTags(GetInputPageSearchConceptsV2());
   UpdateSpellCheckSearchTags();
 
-  if (IsAssistivePersonalInfoAllowed() || IsEmojiSuggestionAllowed()) {
+  if (IsEmojiSuggestionAllowed()) {
     updater.AddSearchTags(GetSmartInputsSearchConcepts());
-    if (IsAssistivePersonalInfoAllowed())
-      updater.AddSearchTags(GetAssistivePersonalInfoSearchConcepts());
     if (IsEmojiSuggestionAllowed())
       updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
   }
@@ -679,7 +651,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSmartInputsSubpagePath);
   static constexpr mojom::Setting kSmartInputsFeaturesSettings[] = {
-      mojom::Setting::kShowPersonalInformationSuggestions,
       mojom::Setting::kShowEmojiSuggestions,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSmartInputs,

@@ -87,8 +87,7 @@ class OsSettingsLanguagesSectionElement extends
       smartInputsEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('allowAssistivePersonalInfo') ||
-              loadTimeData.getBoolean('allowEmojiSuggestion');
+          return loadTimeData.getBoolean('allowEmojiSuggestion');
         },
       },
 

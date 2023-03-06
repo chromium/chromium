@@ -1085,8 +1085,6 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
     case ui::ime::ButtonId::kSmartInputsSettingLink:
       base::RecordAction(base::UserMetricsAction(
           "ChromeOS.Settings.SmartInputs.PersonalInfoSuggestions.Open"));
-      // TODO(crbug/1101689): Add subpath for personal info suggestions
-      // settings.
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           ProfileManager::GetActiveUserProfile(),
           chromeos::settings::mojom::kSmartInputsSubpagePath);

@@ -217,7 +217,8 @@ enum Setting {
   // Languages and Input section.
   kAddLanguage = 1200,
   kShowInputOptionsInShelf = 1201,
-  kShowPersonalInformationSuggestions = 1202,
+  // Note: Value 1202 was deprecated for kShowPersonalInformationSuggestions.
+  // Do not reuse.
   kShowEmojiSuggestions = 1203,
   kChangeDeviceLanguage = 1204,
   kOfferTranslation = 1205,

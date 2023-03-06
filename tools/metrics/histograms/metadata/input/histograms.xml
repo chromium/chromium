@@ -549,18 +549,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.Disabled.PersonalInfo"
-    enum="IMEAssistiveDisabledReason" expires_after="2021-09-19">
-  <owner>myy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The reason for personal information suggestions not being shown to users.
-    Recorded when the surrounding text could trigger personal information
-    suggestions but the feature was disabled. Only the first applicable reason
-    in IMEAssistiveDisabledReason enum is recorded per occurrence.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.DismissedAccuracy.MultiWord" units="%"
     expires_after="2022-05-31">
   <owner>curtismcmullan@google.com</owner>
@@ -785,19 +773,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.TimeToAccept.PersonalInfo" units="ms"
-    expires_after="2021-10-04">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>jiwan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The duration from when personal info suggestions show up to when users
-    accept a suggestion. Recorded when users accept the suggestion.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.TimeToDismiss.Emoji" units="ms"
     expires_after="2021-01-01">
   <obsolete>
@@ -822,19 +797,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.Assistive.TimeToDismiss.PersonalInfo" units="ms"
-    expires_after="2021-09-12">
-  <obsolete>
-    Removed in M100.
-  </obsolete>
-  <owner>jiwan@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The duration from when personal info suggestions show up to when users
-    dismiss a suggestion. Recorded when users dismiss the suggestion.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Assistive.UserPref.Emoji" enum="BooleanEnabled"
     expires_after="2023-02-12">
   <owner>myy@google.com</owner>
@@ -855,17 +817,6 @@ chromium-metrics-reviews@google.com.
     user is logged in and the AssistiveSuggester is initialised.
     &quot;Enabled&quot; is logged as the default value if the user didn't
     explicitly set it.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.Assistive.UserPref.PersonalInfo"
-    enum="BooleanEnabled" expires_after="2022-12-04">
-  <owner>myy@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The user's preference for personal information suggestions. Recorded when
-    AssistiveSuggester is initialised. &quot;Enabled&quot; is logged as the
-    default value if the user didn't explicitly set it.
   </summary>
 </histogram>
 

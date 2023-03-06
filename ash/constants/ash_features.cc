@@ -153,35 +153,6 @@ BASE_FEATURE(kAssistMultiWordExpanded,
              "AssistMultiWordExpanded",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable assistive personal information.
-BASE_FEATURE(kAssistPersonalInfo,
-             "AssistPersonalInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether to suggest addresses in assistive personal information. This
-// is only effective when AssistPersonalInfo flag is enabled.
-BASE_FEATURE(kAssistPersonalInfoAddress,
-             "AssistPersonalInfoAddress",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to suggest emails in assistive personal information. This is
-// only effective when AssistPersonalInfo flag is enabled.
-BASE_FEATURE(kAssistPersonalInfoEmail,
-             "AssistPersonalInfoEmail",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to suggest names in assistive personal information. This is
-// only effective when AssistPersonalInfo flag is enabled.
-BASE_FEATURE(kAssistPersonalInfoName,
-             "AssistPersonalInfoName",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to suggest phone numbers in assistive personal information.
-// This is only effective when AssistPersonalInfo flag is enabled.
-BASE_FEATURE(kAssistPersonalInfoPhoneNumber,
-             "AssistPersonalInfoPhoneNumber",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAssistantNativeIcons,
              "AssistantNativeIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);

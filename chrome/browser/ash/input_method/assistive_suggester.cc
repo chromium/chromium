@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -68,11 +67,6 @@ void RecordAssistiveDisabled(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Disabled", type);
 }
 
-void RecordAssistiveDisabledReasonForPersonalInfo(DisabledReason reason) {
-  base::UmaHistogramEnumeration("InputMethod.Assistive.Disabled.PersonalInfo",
-                                reason);
-}
-
 void RecordAssistiveDisabledReasonForEmoji(DisabledReason reason) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Disabled.Emoji", reason);
 }
@@ -80,11 +74,6 @@ void RecordAssistiveDisabledReasonForEmoji(DisabledReason reason) {
 void RecordAssistiveDisabledReasonForMultiWord(DisabledReason reason) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Disabled.MultiWord",
                                 reason);
-}
-
-void RecordAssistiveUserPrefForPersonalInfo(bool value) {
-  base::UmaHistogramBoolean("InputMethod.Assistive.UserPref.PersonalInfo",
-                            value);
 }
 
 void RecordAssistiveUserPrefForEmoji(bool value) {
@@ -177,18 +166,12 @@ void RecordMultiWordTextInputState(
 AssistiveSuggester::AssistiveSuggester(
     SuggestionHandlerInterface* suggestion_handler,
     Profile* profile,
-    std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch,
-    autofill::PersonalDataManager* personal_data_manager_for_testing)
+    std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch)
     : profile_(profile),
-      personal_info_suggester_(suggestion_handler,
-                               profile,
-                               personal_data_manager_for_testing),
       emoji_suggester_(suggestion_handler, profile),
       multi_word_suggester_(suggestion_handler, profile),
       longpress_diacritics_suggester_(suggestion_handler),
       suggester_switch_(std::move(suggester_switch)) {
-  RecordAssistiveUserPrefForPersonalInfo(
-      profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));
   RecordAssistiveUserPrefForEmoji(
       profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled));
 }
@@ -196,19 +179,14 @@ AssistiveSuggester::AssistiveSuggester(
 AssistiveSuggester::~AssistiveSuggester() = default;
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
-  return IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled() ||
-         IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled() ||
+  return IsEmojiSuggestAdditionEnabled() || IsMultiWordSuggestEnabled() ||
+         IsEnhancedEmojiSuggestEnabled() ||
          IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
 }
 
 void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback) {
   suggester_switch_->FetchEnabledSuggestionsThen(std::move(callback));
-}
-
-bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
-  return base::FeatureList::IsEnabled(features::kAssistPersonalInfo) &&
-         profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled);
 }
 
 bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
@@ -239,20 +217,6 @@ bool AssistiveSuggester::IsDiacriticsOnPhysicalKeyboardLongpressEnabled() {
          IsUsEnglishEngine(active_engine_id_) &&
          IsDiacriticsOnLongpressPrefEnabled(profile_->GetPrefs(),
                                             active_engine_id_);
-}
-
-DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo(
-    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  if (!base::FeatureList::IsEnabled(features::kAssistPersonalInfo)) {
-    return DisabledReason::kFeatureFlagOff;
-  }
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled)) {
-    return DisabledReason::kUserSettingsOff;
-  }
-  if (!enabled_suggestions.personal_info_suggestions) {
-    return DisabledReason::kUrlOrAppNotAllowed;
-  }
-  return DisabledReason::kNone;
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji(
@@ -288,22 +252,13 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord(
 AssistiveSuggester::AssistiveFeature
 AssistiveSuggester::GetAssistiveFeatureForType(AssistiveType type) {
   switch (type) {
-    case AssistiveType::kPersonalEmail:
-    case AssistiveType::kPersonalAddress:
-    case AssistiveType::kPersonalPhoneNumber:
-    case AssistiveType::kPersonalName:
-    case AssistiveType::kPersonalNumber:
-    case AssistiveType::kPersonalFirstName:
-    case AssistiveType::kPersonalLastName:
-      return AssistiveFeature::kPersonalInfoSuggestion;
     case AssistiveType::kEmoji:
       return AssistiveFeature::kEmojiSuggestion;
     case AssistiveType::kMultiWordCompletion:
     case AssistiveType::kMultiWordPrediction:
       return AssistiveFeature::kMultiWordSuggestion;
     default:
-      // We should only handle Personal Info, Emoji, and Multiword related
-      // assistive types.
+      // We should only handle Emoji and Multiword related assistive types.
       //
       // Any assistive types outside of this should not be processed in this
       // class, hence we shall DCHECK here if that ever occurs.
@@ -315,9 +270,6 @@ AssistiveSuggester::GetAssistiveFeatureForType(AssistiveType type) {
 
 bool AssistiveSuggester::IsAssistiveTypeEnabled(AssistiveType type) {
   switch (GetAssistiveFeatureForType(type)) {
-    case AssistiveFeature::kPersonalInfoSuggestion:
-      // TODO: Use value from settings when crbug/1068457 is done.
-      return IsAssistPersonalInfoEnabled();
     case AssistiveFeature::kEmojiSuggestion:
       return IsEmojiSuggestAdditionEnabled();
     case AssistiveFeature::kMultiWordSuggestion:
@@ -333,8 +285,6 @@ bool AssistiveSuggester::IsAssistiveTypeAllowedInBrowserContext(
     AssistiveType type,
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   switch (GetAssistiveFeatureForType(type)) {
-    case AssistiveFeature::kPersonalInfoSuggestion:
-      return enabled_suggestions.personal_info_suggestions;
     case AssistiveFeature::kEmojiSuggestion:
       return enabled_suggestions.emoji_suggestions;
     case AssistiveFeature::kMultiWordSuggestion:
@@ -352,7 +302,6 @@ void AssistiveSuggester::OnFocus(int context_id) {
   // a negative number, and cause unexpected behaviour.
   DCHECK(context_id > 0);
   focused_context_id_ = context_id;
-  personal_info_suggester_.OnFocus(context_id);
   emoji_suggester_.OnFocus(context_id);
   multi_word_suggester_.OnFocus(context_id);
   longpress_diacritics_suggester_.OnFocus(context_id);
@@ -371,7 +320,6 @@ void AssistiveSuggester::HandleEnabledSuggestionsOnFocus(
 void AssistiveSuggester::OnBlur() {
   focused_context_id_ = absl::nullopt;
   enabled_suggestions_from_last_onfocus_ = absl::nullopt;
-  personal_info_suggester_.OnBlur();
   emoji_suggester_.OnBlur();
   multi_word_suggester_.OnBlur();
   longpress_diacritics_suggester_.OnBlur();
@@ -535,14 +483,8 @@ void AssistiveSuggester::RecordAssistiveMatchMetrics(
     int start_pos = std::max(0, cursor_pos - kMaxTextBeforeCursorLength);
     std::u16string text_before_cursor =
         text.substr(start_pos, cursor_pos - start_pos);
-    // Personal info suggestion match
-    AssistiveType type = ProposePersonalInfoAssistiveAction(text_before_cursor);
-    if (type != AssistiveType::kGenericAction) {
-      RecordAssistiveMatchMetricsForAssistiveType(type, enabled_suggestions);
-      RecordAssistiveDisabledReasonForPersonalInfo(
-          GetDisabledReasonForPersonalInfo(enabled_suggestions));
-      // Emoji suggestion match
-    } else if (emoji_suggester_.ShouldShowSuggestion(text_before_cursor)) {
+    // Emoji suggestion match
+    if (emoji_suggester_.ShouldShowSuggestion(text_before_cursor)) {
       RecordAssistiveMatchMetricsForAssistiveType(AssistiveType::kEmoji,
                                                   enabled_suggestions);
       base::RecordAction(
@@ -603,16 +545,6 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
   if (IsSuggestionShown()) {
     return current_suggester_->TrySuggestWithSurroundingText(text,
                                                              selection_range);
-  }
-  if (IsAssistPersonalInfoEnabled() &&
-      enabled_suggestions.personal_info_suggestions &&
-      personal_info_suggester_.TrySuggestWithSurroundingText(text,
-                                                             selection_range)) {
-    current_suggester_ = &personal_info_suggester_;
-    if (personal_info_suggester_.IsFirstShown()) {
-      RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
-    }
-    return true;
   }
   if (IsEmojiSuggestAdditionEnabled() && !IsEnhancedEmojiSuggestEnabled() &&
       enabled_suggestions.emoji_suggestions &&

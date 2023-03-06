@@ -11,15 +11,15 @@ namespace input_method {
 // Must match with IMEAssistiveAction in enums.xml
 enum class AssistiveType {
   kGenericAction = 0,
-  kPersonalEmail = 1,
-  kPersonalAddress = 2,
-  kPersonalPhoneNumber = 3,
-  kPersonalName = 4,
+  // kPersonalEmail = 1,  // Deprecated, feature has been deleted.
+  // kPersonalAddress = 2,  // Deprecated, feature has been deleted.
+  // kPersonalPhoneNumber = 3,  // Deprecated, feature has been deleted.
+  // kPersonalName = 4,  // Deprecated, feature has been deleted.
   kEmoji = 5,
   kAssistiveAutocorrect = 6,
-  kPersonalNumber = 7,  // Deprecated, combined with kPersonalPhoneNumber
-  kPersonalFirstName = 8,
-  kPersonalLastName = 9,
+  // kPersonalNumber = 7,  // Deprecated, combined with kPersonalPhoneNumber
+  // kPersonalFirstName = 8,  // Deprecated, feature has been deleted.
+  // kPersonalLastName = 9,  // Deprecated, feature has been deleted.
   kAutocorrectWindowShown = 10,
   kAutocorrectUnderlined = 11,
   kAutocorrectReverted = 12,
