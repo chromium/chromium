@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 
-#include "base/strings/string_number_conversions.h"
+#include <memory>
+
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"

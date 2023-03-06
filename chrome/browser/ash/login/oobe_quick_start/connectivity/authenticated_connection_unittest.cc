@@ -5,19 +5,26 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 
 #include "base/base64.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
+#include "content/public/test/browser_task_environment.h"
+#include "fido_authentication_message_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace ash::quick_start {
+using message_helper::BuildEncodedResponseData;
 
 namespace {
 const char kBootstrapOptionsKey[] = "bootstrapOptions";
@@ -34,6 +41,8 @@ const std::vector<uint8_t> kTestBytes = {0x00, 0x01, 0x02};
 const std::vector<uint8_t> kExpectedGetInfoRequest = {0x04};
 
 const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
+constexpr uint8_t kSuccess = 0x00;
+
 }  // namespace
 
 class AuthenticatedConnectionTest : public testing::Test {
@@ -45,9 +54,13 @@ class AuthenticatedConnectionTest : public testing::Test {
 
   void SetUp() override {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
+    fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
-    authenticated_connection_ =
-        std::make_unique<AuthenticatedConnection>(nearby_connection);
+
+    authenticated_connection_ = std::make_unique<AuthenticatedConnection>(
+        nearby_connection,
+        mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
+            fake_quick_start_decoder_->GetRemote()));
   }
 
   std::string CreateFidoClientDataJson(url::Origin origin) {
@@ -67,17 +80,28 @@ class AuthenticatedConnectionTest : public testing::Test {
     authenticated_connection_->challenge_b64url_ = challenge_b64url;
   }
 
+  void VerifyAssertionInfo(absl::optional<FidoAssertionInfo> assertion_info) {
+    ran_assertion_response_callback_ = true;
+    assertion_info_ = assertion_info;
+  }
+
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  bool ran_assertion_response_callback_ = false;
   std::unique_ptr<AuthenticatedConnection> authenticated_connection_;
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
+  absl::optional<FidoAssertionInfo> assertion_info_;
 };
 
 TEST_F(AuthenticatedConnectionTest, RequestAccountTransferAssertion) {
   // Start the Quick Start account transfer flow by initially sending
   // BootstrapOptions.
   authenticated_connection_->RequestAccountTransferAssertion(
-      kChallengeBase64Url, base::DoNothing());
+      kChallengeBase64Url,
+      base::BindOnce(&AuthenticatedConnectionTest::VerifyAssertionInfo,
+                     base::Unretained(this)));
+
   std::vector<uint8_t> bootstrap_options_data =
       fake_nearby_connection_->GetWrittenData();
   std::string bootstrap_options_string(bootstrap_options_data.begin(),
@@ -99,7 +123,8 @@ TEST_F(AuthenticatedConnectionTest, RequestAccountTransferAssertion) {
   // Emulate a BootstrapConfigurations response.
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
-  // OnBootstrapOptionsResponse should trigger a write of FIDO GetInfo request.
+  // OnBootstrapOptionsResponse should trigger a write of FIDO GetInfo
+  // request.
   std::vector<uint8_t> fido_get_info_data =
       fake_nearby_connection_->GetWrittenData();
   std::string fido_get_info_string(fido_get_info_data.begin(),
@@ -148,6 +173,37 @@ TEST_F(AuthenticatedConnectionTest, RequestAccountTransferAssertion) {
   std::vector<uint8_t> cbor_encoded_request =
       CBOREncodeGetAssertionRequest(std::move(request));
   EXPECT_EQ(*get_assertion_command, cbor_encoded_request);
+
+  // Emulate a GetAssertion response.
+  std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03};
+  std::string expected_credential_id(credential_id.begin(),
+                                     credential_id.end());
+  std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
+  std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
+  std::string email = "testcase@google.com";
+  std::vector<uint8_t> user_id(email.begin(), email.end());
+  // kSuccess
+  uint8_t status = kSuccess;
+  std::vector<uint8_t> data = BuildEncodedResponseData(
+      credential_id, auth_data, signature, user_id, status);
+
+  fake_quick_start_decoder_->SetExpectedData(data);
+  fake_quick_start_decoder_->SetAssertionResponse(
+      /*status=*/mojom::GetAssertionResponse::GetAssertionStatus::kSuccess,
+      /*decoder_status=*/kSuccess,
+      /*decoder_error=*/kSuccess, /*email=*/email,
+      /*credential_id=*/expected_credential_id,
+      /*signature=*/signature, auth_data);
+  fake_nearby_connection_->AppendReadableData(data);
+  EXPECT_FALSE(fake_nearby_connection_->IsClosed());
+
+  // Wait for callback to finish and verify response
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(assertion_info_.has_value());
+  EXPECT_EQ(email, assertion_info_->email);
+  EXPECT_EQ(expected_credential_id, assertion_info_->credential_id);
+  EXPECT_EQ(auth_data, assertion_info_->authenticator_data);
+  EXPECT_EQ(signature, assertion_info_->signature);
 }
 
 TEST_F(AuthenticatedConnectionTest, CreateFidoClientDataJson) {

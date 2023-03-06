@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
@@ -113,6 +114,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   base::OnceClosure on_stop_advertising_callback_;
   std::unique_ptr<Connection> fake_connection_;
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
+  std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_;
 };
 
 }  // namespace ash::quick_start
