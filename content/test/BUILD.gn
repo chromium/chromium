@@ -1985,6 +1985,7 @@ test("content_browsertests") {
       "../browser/keyboard_lock_browsertest_ios.mm",
       "../browser/pointer_lock_browsertest_ios.mm",
     ]
+    bundle_deps = [ ":content_shell_pak_bundle_data" ]
   }
 
   if (is_chromeos_ash) {
@@ -2731,8 +2732,8 @@ test("content_unittests") {
   }
   if (is_ios) {
     bundle_deps = [
+      ":content_shell_pak_bundle_data",
       ":content_unittests_bundle_data",
-      ":content_unittests_pak_bundle_data",
       "//media/test:media_bundle_data",
     ]
   }
@@ -3190,7 +3191,7 @@ test("content_unittests") {
 }
 
 if (is_ios) {
-  bundle_data("content_unittests_pak_bundle_data") {
+  bundle_data("content_shell_pak_bundle_data") {
     testonly = true
     public_deps = [ "//content/shell:pak" ]
     sources = [ "$root_out_dir/content_shell.pak" ]
