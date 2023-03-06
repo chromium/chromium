@@ -37,6 +37,9 @@ class BookmarkNode;
 //   information should be accessed when the `delegate` sends a confirmation
 //   of folder selection.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* selectedFolder;
+// Will provide the necessary UI to create a folder. `YES` by default.
+// Should be set before calling `start`.
+@property(nonatomic) BOOL allowsNewFolders;
 
 // Initializes BookmarksFolderChooserCoordinator. The view is pushed into
 // `navigationController`.

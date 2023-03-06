@@ -147,7 +147,7 @@ using bookmarks::BookmarkNode;
   [self delayedNotifyDelegateOfSelection];
 }
 
-#pragma mark - View lifecycle
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -180,6 +180,13 @@ using bookmarks::BookmarkNode;
 
   // Load the model.
   [self reloadModel];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.delegate bookmarksFolderChooserViewControllerDidDismiss:self];
+  }
 }
 
 #pragma mark - Accessibility

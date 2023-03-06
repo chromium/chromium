@@ -259,6 +259,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.delegate bookmarksFolderEditorDidDismiss:self];
+  }
+}
+
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
@@ -330,7 +337,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self.folder) {
     hiddenNodes.insert(self.folder);
   }
-  [self.delegate showBookmarksFolderChooserWithParentFolder:self.folder
+  [self.delegate showBookmarksFolderChooserWithParentFolder:self.parentFolder
                                                 hiddenNodes:hiddenNodes];
 }
 

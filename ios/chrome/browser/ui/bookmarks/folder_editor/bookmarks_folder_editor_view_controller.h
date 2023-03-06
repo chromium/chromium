@@ -39,6 +39,11 @@ class BookmarkNode;
 // Called when the user cancels the folder creation.
 - (void)bookmarksFolderEditorDidCancel:
     (BookmarksFolderEditorViewController*)folderEditor;
+// Called when the view controller disappears either through
+// 1. swiping right.
+// 2. or pressing the back button when cancel button is not available.
+- (void)bookmarksFolderEditorDidDismiss:
+    (BookmarksFolderEditorViewController*)folderEditor;
 // Called when the controller is going to commit the title change.
 - (void)bookmarksFolderEditorWillCommitTitleChange:
     (BookmarksFolderEditorViewController*)folderEditor;

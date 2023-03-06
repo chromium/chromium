@@ -130,13 +130,11 @@
   } else {
     // If there is no `_baseNavigationController` and `_navigationController`,
     // the view controller has been already dismissed. See
-    // `presentationControllerDidDismiss:`.
+    // `presentationControllerDidDismiss:` and
+    // `bookmarksFolderEditorDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
-    // `nullptr`. This should only happend when the user is editing an existing
-    // folder node.
+    // `nullptr`.
     DCHECK(!self.baseViewController.presentedViewController);
-    DCHECK(_folderNode);
-    DCHECK(!_parentFolderNode);
   }
   _viewController = nil;
 }
@@ -161,6 +159,7 @@
                                             : _navigationController)
                                browser:self.browser
                            hiddenNodes:hiddenNodes];
+  _folderChooserCoordinator.allowsNewFolders = NO;
   _folderChooserCoordinator.selectedFolder = parent;
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
@@ -183,6 +182,13 @@
 
 - (void)bookmarksFolderEditorDidCancel:
     (BookmarksFolderEditorViewController*)folderEditor {
+  [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
+}
+
+- (void)bookmarksFolderEditorDidDismiss:
+    (BookmarksFolderEditorViewController*)folderEditor {
+  DCHECK(_baseNavigationController);
+  _baseNavigationController = nil;
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }
 
