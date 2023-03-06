@@ -70,25 +70,30 @@ def transform_emoji_data(metadata, names, keywords, firstOnly):
 
         return {'string': string, 'name': name, 'keywords': keyword_list}
     if firstOnly:
-      metadata_out = [metadata[0]]
+      metadata = [metadata[0]]
     else:
-      metadata_out = metadata[1:]
-    for group in metadata_out:
+      metadata = metadata[1:]
+
+    # Create a new object for output since they keep adding extra properties to
+    # the JSON (rather than just editing the input object).
+    out = []
+    for group in metadata:
+        newGroup = []
         for emoji in group['emoji']:
-            emoji['base'] = transform(emoji['base'],
-                                      emoji['emoticons'],
-                                      emoji.get('shortcodes',[]))
-            del emoji['emoticons']
-            if emoji.get('shortcodes'):
-              del emoji['shortcodes']
+            newobj = {
+                'base': transform(
+                    emoji['base'],
+                    emoji['emoticons'],
+                    emoji.get('shortcodes', []),
+                ),
+            }
             if emoji['alternates']:
-              emoji['alternates'] = [
+              newobj['alternates'] = [
                   transform(e,) for e in emoji['alternates']
               ]
-            else:
-              del emoji['alternates']
-
-    return metadata_out
+            newGroup.append(newobj)
+        out.append({'emoji': newGroup})
+    return out
 
 def main(args):
     parser = argparse.ArgumentParser()
