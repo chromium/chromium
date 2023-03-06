@@ -59796,6 +59796,7 @@ from previous Chrome versions.
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
   <int value="-1193375480" label="DownloadBubble:enabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
+  <int value="-1192334995" label="CrOSLateBootAudioHFPOffload:enabled"/>
   <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
   <int value="-1191392087" label="AmbientSubpageUIChange:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
@@ -62737,6 +62738,7 @@ from previous Chrome versions.
   <int value="463582989" label="CompositorThreadedScrollbarScrolling:disabled"/>
   <int value="464226051" label="CrOSComponent:enabled"/>
   <int value="464773709" label="OmniboxExperimentalSuggestScoring:enabled"/>
+  <int value="464979219" label="CrOSLateBootAudioHFPOffload:disabled"/>
   <int value="465600939" label="DefaultPassthroughCommandDecoder:enabled"/>
   <int value="466248382" label="disable-push-api-background-mode"/>
   <int value="468665559" label="TrilinearFiltering:disabled"/>

@@ -4874,6 +4874,12 @@ const char kAudioHFPMicSRName[] =
 const char kAudioHFPMicSRDescription[] =
     "Enable super-resolution Bluetooth HFP microphone recording.";
 
+const char kAudioHFPOffloadName[] =
+    "Audio Bluetooth HFP offloaded to DSP if supported";
+const char kAudioHFPOffloadDescription[] =
+    "While enabled, HFP Audio data is transmitted via the offloaded path "
+    "in DSP if supported by device.";
+
 const char kAudioSettingsPageName[] = "Audio Settings Page";
 const char kAudioSettingsPageDescription[] =
     "Enables the dedicated Audio Settings Page in system settings, which "
