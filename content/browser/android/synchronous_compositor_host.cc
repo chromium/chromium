@@ -521,7 +521,7 @@ void SynchronousCompositorHost::OnCompositorFrameTransitionDirectiveProcessed(
 void SynchronousCompositorHost::DidPresentCompositorFrames(
     viz::FrameTimingDetailsMap timing_details,
     uint32_t frame_token) {
-  timing_details_ = timing_details;
+  timing_details_.insert(timing_details.begin(), timing_details.end());
   if (!timing_details_.empty())
     AddBeginFrameRequest(BEGIN_FRAME);
 }
