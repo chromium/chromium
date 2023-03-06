@@ -215,5 +215,20 @@ TEST(HTMLDocumentParserFastpathTest, LogUnsupportedContextTagBody) {
       "Blink.HTMLFastPathParser.UnsupportedContextTag.Mask2V2", 1);
 }
 
+TEST(HTMLDocumentParserFastpathTest, CharacterReferenceCases) {
+  ScopedNullExecutionContext execution_context;
+  auto* document =
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
+  auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
+
+  // Various subtle cases of character references that have caused problems.
+  // The assertions are handled by DCHECKs in the code, specifically in
+  // serialization.cc.
+  div->setInnerHTML("Genius Nicer Dicer Plus | 18&nbsp&hellip;");
+  div->setInnerHTML("&nbsp&a");
+  div->setInnerHTML("&nbsp&");
+  div->setInnerHTML("&nbsp-");
+}
+
 }  // namespace
 }  // namespace blink
