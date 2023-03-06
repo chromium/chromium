@@ -32,22 +32,21 @@ export function generateStatsLabel(report) {
   let labels = [];
   if (['outbound-rtp', 'remote-outbound-rtp', 'inbound-rtp',
       'remote-inbound-rtp'].includes(report.type) && report.stats.values) {
-    labels = ['kind', 'mid', 'rid', 'ssrc', '[codec]']
-      .map(stat => generateLabel(stat, report.stats.values));
+    labels = ['kind', 'mid', 'rid', 'ssrc', '[codec]'];
   } else if (['local-candidate', 'remote-candidate'].includes(report.type)) {
-    labels = ['candidateType', 'tcpType', 'relayProtocol']
-      .map(stat => generateLabel(stat, report.stats.values));
+    labels = ['candidateType', 'tcpType', 'relayProtocol'];
   } else if (report.type === 'codec') {
-    labels = ['mimeType', 'payloadType']
-      .map(stat => generateLabel(stat, report.stats.values));
+    labels = ['mimeType', 'payloadType'];
   } else if (['media-playout', 'media-source'].includes(report.type)) {
-    labels = ['kind']
-      .map(stat => generateLabel(stat, report.stats.values));
+    labels = ['kind'];
   } else if (report.type === 'candidate-pair') {
-    labels = ['state']
-      .map(stat => generateLabel(stat, report.stats.values));
+    labels = ['state'];
+  } else if (report.type === 'transport') {
+    labels = ['iceState', 'dtlsState'];
   }
-  labels = labels.filter(label => !!label);
+  labels = labels
+    .map(stat => generateLabel(stat, report.stats.values))
+    .filter(label => !!label);
   if (labels.length) {
     label += labels.join(', ') + ', ';
   }
