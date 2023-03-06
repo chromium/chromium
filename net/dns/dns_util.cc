@@ -169,9 +169,8 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
   const auto entries = GetDohProviderEntriesFromNameservers(dns_servers);
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   doh_servers.reserve(entries.size());
-  std::transform(entries.begin(), entries.end(),
-                 std::back_inserter(doh_servers),
-                 [](const auto* entry) { return entry->doh_server_config; });
+  base::ranges::transform(entries, std::back_inserter(doh_servers),
+                          &DohProviderEntry::doh_server_config);
   return doh_servers;
 }
 
