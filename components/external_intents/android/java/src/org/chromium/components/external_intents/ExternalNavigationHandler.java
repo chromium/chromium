@@ -1648,9 +1648,13 @@ public class ExternalNavigationHandler {
     }
 
     // https://crbug.com/1249964
+    // https://crbug.com/1418648
     private boolean resolvesToNonExportedActivity(List<ResolveInfo> infos) {
         for (ResolveInfo info : infos) {
-            if (info.activityInfo != null && !info.activityInfo.exported) {
+            // Android will prevent launching non-exported Activities in other packages.
+            if (info.activityInfo != null && !info.activityInfo.exported
+                    && mDelegate.getContext().getPackageName().equals(
+                            info.activityInfo.packageName)) {
                 Log.w(TAG, "Web Intent resolves to non-exported Activity.");
                 return true;
             }
