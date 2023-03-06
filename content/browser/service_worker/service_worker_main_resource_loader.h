@@ -194,6 +194,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
 
   Status status_ = Status::kNotStarted;
+  absl::optional<EmbeddedWorkerStatus> initial_embedded_worker_status_;
   bool is_detached_ = false;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
