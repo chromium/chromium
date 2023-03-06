@@ -27,6 +27,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   ~SavedTabGroupKeyedService() override;
 
   SavedTabGroupModelListener* listener() { return &listener_; }
+  const SavedTabGroupModel* model() const { return &model_; }
   SavedTabGroupModel* model() { return &model_; }
   SavedTabGroupSyncBridge* bridge() { return &bridge_; }
   Profile* profile() { return profile_; }
