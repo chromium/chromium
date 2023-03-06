@@ -372,6 +372,7 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
 
 void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CompositorAnimationObserver::ResetIfActive();
   if (texture_queue_.size() >= kQueueSizeToForceUpdate) {
     DVLOG(3) << "AnimationStep callback forcing update due to texture queue "
                 "size "
