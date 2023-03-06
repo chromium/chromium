@@ -17,7 +17,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';
@@ -25,6 +26,12 @@ import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './chromevox_subpage.html.js';
+
+interface SettingsChromeVoxSubpageElement {
+  $: {
+    capitalStrategyDropdown: SettingsDropdownMenuElement,
+  };
+}
 
 const SettingsChromeVoxSubpageElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
@@ -161,6 +168,38 @@ class SettingsChromeVoxSubpageElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  /**
+   * When usePitchChanges is toggled, we should update the preference value and
+   * dropdown for capitalStrategy. (The capitalStrategy pref depends on the
+   * value of usePitchChanges.)
+   * TODO(b/270619855): Add test to verify correct dropdown state when toggling.
+   */
+  private onUsePitchChangesToggled_(event: Event): void {
+    const usePitchChanges =
+        (event.target as SettingsToggleButtonElement).checked;
+
+    if (!usePitchChanges) {
+      // Backup and disable capitalStrategy setting and set to announceCapitals.
+      this.$.capitalStrategyDropdown.disabled = true;
+      const capitalStrategy =
+          this.getPref<string>('settings.a11y.chromevox.capital_strategy')
+              .value;
+      this.setPrefValue(
+          'settings.a11y.chromevox.capital_strategy_backup', capitalStrategy);
+      this.setPrefValue(
+          'settings.a11y.chromevox.capital_strategy', 'announceCapitals');
+      return;
+    }
+
+    // Restore original capitalStrategy setting.
+    this.$.capitalStrategyDropdown.disabled = false;
+    const capitalStrategyBackup =
+        this.getPref<string>('settings.a11y.chromevox.capital_strategy_backup')
+            .value;
+    this.setPrefValue(
+        'settings.a11y.chromevox.capital_strategy', capitalStrategyBackup);
   }
 }
 
