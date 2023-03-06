@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -49,7 +50,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/net_errors.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -75,11 +75,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
   const CommonSourceInfo& common_info = source.common_info();
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), common_info.source_origin(),
-      std::vector<net::SchemefulSite>(
-          source.destination_sites().destinations().begin(),
-          source.destination_sites().destinations().end()),
-      common_info.reporting_origin(), common_info.source_time().ToJsTime(),
-      source.expiry_time().ToJsTime(),
+      source.destination_sites(), common_info.reporting_origin(),
+      common_info.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
       source.event_report_window_time().ToJsTime(),
       source.aggregatable_report_window_time().ToJsTime(),
       common_info.source_type(), source.priority(), source.debug_key(),

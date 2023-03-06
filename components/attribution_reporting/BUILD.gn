@@ -268,6 +268,12 @@ mojom("registration_mojom") {
           # value, not const ref
           move_only = true
         },
+        {
+          mojom = "attribution_reporting.mojom.DestinationSet"
+          cpp = "::attribution_reporting::DestinationSet"
+          forward_declaration =
+              "namespace attribution_reporting { class DestinationSet; }"
+        },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]
       traits_public_deps = [ ":registration_mojom_traits" ]

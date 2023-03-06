@@ -9,7 +9,6 @@ import "components/attribution_reporting/source_registration_error.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
 import "services/network/public/mojom/attribution.mojom";
-import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -103,7 +102,7 @@ struct WebUIDebugReport {
 struct WebUISource {
   uint64 source_event_id;
   url.mojom.Origin source_origin;
-  array<network.mojom.SchemefulSite> destinations;
+  attribution_reporting.mojom.DestinationSet destinations;
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;

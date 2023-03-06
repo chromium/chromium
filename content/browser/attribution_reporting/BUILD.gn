@@ -28,7 +28,6 @@ mojom("internals_mojo_bindings") {
     "//components/attribution_reporting:registration_mojom",
     "//components/attribution_reporting:source_type_mojom",
     "//services/network/public/mojom:mojom_attribution",
-    "//services/network/public/mojom:mojom_schemeful_site",
     "//url/mojom:url_mojom_origin",
   ]
   webui_module_path = "/"

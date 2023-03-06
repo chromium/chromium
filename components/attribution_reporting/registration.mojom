@@ -61,9 +61,13 @@ struct AggregatableTriggerData {
   FilterPair filters;
 };
 
-struct SourceRegistration {
-  // Target site(s) where this source can be triggered.
+// Target site(s) where a source can be attributed.
+struct DestinationSet {
   array<network.mojom.SchemefulSite> destinations;
+};
+
+struct SourceRegistration {
+  DestinationSet destinations;
 
   // Data that will be sent in attribution reports to identify this source.
   uint64 source_event_id = 0;

@@ -102,11 +102,24 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::DestinationSetDataView,
+                 attribution_reporting::DestinationSet> {
+  static const attribution_reporting::DestinationSet::Destinations&
+  destinations(const attribution_reporting::DestinationSet& set) {
+    return set.destinations();
+  }
+
+  static bool Read(attribution_reporting::mojom::DestinationSetDataView data,
+                   attribution_reporting::DestinationSet* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
-  static const base::flat_set<net::SchemefulSite>& destinations(
+  static const attribution_reporting::DestinationSet& destinations(
       const attribution_reporting::SourceRegistration& source) {
-    return source.destination_set.destinations();
+    return source.destination_set;
   }
 
   static uint64_t source_event_id(

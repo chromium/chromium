@@ -250,7 +250,7 @@ class Source {
     this.sourceEventId = mojo.sourceEventId;
     this.sourceOrigin = originToText(mojo.sourceOrigin);
     this.destinations =
-        mojo.destinations.map(d => originToText(d.siteAsOrigin));
+        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin));
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
