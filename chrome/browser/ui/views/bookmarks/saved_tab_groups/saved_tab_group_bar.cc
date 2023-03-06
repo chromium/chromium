@@ -11,6 +11,7 @@
 #include "base/guid.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
@@ -27,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -63,7 +65,9 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
       animations_enabled_(animations_enabled) {
   std::unique_ptr<views::LayoutManager> layout_manager =
       std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets::TLBR(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2,
+                            0, 0),
           GetLayoutConstant(TOOLBAR_ELEMENT_PADDING));
   SetLayoutManager(std::move(layout_manager));
 
@@ -118,7 +122,8 @@ void SavedTabGroupBar::UpdateDropIndex() {
   for (views::View* child : children()) {
     SavedTabGroupButton* button =
         views::AsViewClass<SavedTabGroupButton>(child);
-    if (!button) {
+    // Skip non-button views, or buttons that are in the overflow menu.
+    if (!button || !button->GetVisible()) {
       continue;
     }
 
@@ -146,6 +151,7 @@ void SavedTabGroupBar::UpdateDropIndex() {
   }
 
   drag_data_->SetInsertionIndex(drop_index);
+  SchedulePaint();
 }
 
 void SavedTabGroupBar::HandleDrop() {
@@ -154,6 +160,8 @@ void SavedTabGroupBar::HandleDrop() {
   // work as expected.
   saved_tab_group_model_->Reorder(drag_data_->guid(),
                                   drag_data_->insertion_index().value());
+  drag_data_.release();
+  SchedulePaint();
 }
 
 bool SavedTabGroupBar::GetDropFormats(
@@ -191,10 +199,12 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
 
 void SavedTabGroupBar::OnDragExited() {
   drag_data_.release();
+  SchedulePaint();
 }
 
 void SavedTabGroupBar::OnDragDone() {
   drag_data_.release();
+  SchedulePaint();
 }
 
 views::View::DropCallback SavedTabGroupBar::GetDropCallback(
@@ -206,6 +216,40 @@ views::View::DropCallback SavedTabGroupBar::GetDropCallback(
         drag = ui::mojom::DragOperation::kMove;
       },
       base::Unretained(this));
+}
+
+void SavedTabGroupBar::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+
+  if (drag_data_ && drag_data_->insertion_index().has_value()) {
+    const int insertion_index = drag_data_->insertion_index().value();
+    const int current_index =
+        saved_tab_group_model_->GetIndexOf(drag_data_->guid()).value();
+
+    absl::optional<int> indicator_index = insertion_index;
+    if (insertion_index > current_index) {
+      // `insertion_index` doesn't include `current_index`, add it back in if
+      // needed.
+      indicator_index = insertion_index + 1;
+    } else if (insertion_index == current_index) {
+      // Hide the indicator when the drop wouldn't reorder anything.
+      indicator_index = absl::nullopt;
+    }
+
+    if (indicator_index.has_value()) {
+      constexpr int kDropIndicatorWidth = 2;
+      const int x =
+          indicator_index > 0
+              ? children()[indicator_index.value() - 1]->bounds().right() +
+                    GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2
+              : kDropIndicatorWidth / 2;
+
+      const gfx::Rect drop_indicator_bounds = gfx::Rect(
+          x - kDropIndicatorWidth / 2, 0, kDropIndicatorWidth, height());
+      canvas->FillRect(drop_indicator_bounds, GetColorProvider()->GetColor(
+                                                  kColorBookmarkBarForeground));
+    }
+  }
 }
 
 void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::GUID& guid) {

@@ -58,6 +58,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void OnDragDone() override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
+  void OnPaint(gfx::Canvas* canvas) override;
 
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedLocally(const base::GUID& guid) override;
