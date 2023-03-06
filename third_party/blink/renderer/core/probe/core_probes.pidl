@@ -62,6 +62,7 @@ interface CoreProbes {
   class HTMLPortalElement;
   class PerformanceEntry;
   class ScriptState;
+  class SpeculationCandidate;
   class XMLHttpRequest;
 
   void DidClearDocumentOfWindowObject([Keep] LocalFrame*);
@@ -199,4 +200,5 @@ interface CoreProbes {
   void ApplyAutomationOverride(ExecutionContext*, bool& enabled);
   void DidAddSpeculationRuleSet([Keep] Document&, const SpeculationRuleSet& rule_set);
   void DidRemoveSpeculationRuleSet(Document&, const SpeculationRuleSet& rule_set);
+  void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
 }

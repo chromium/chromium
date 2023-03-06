@@ -247,6 +247,7 @@
       probes: [
         "DidAddSpeculationRuleSet",
         "DidRemoveSpeculationRuleSet",
+        "SpeculationCandidatesUpdated",
       ]
     },
     InspectorTraceEvents: {
