@@ -153,7 +153,7 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   std::string debugger_target_id;
   for (const base::Value& target_value : value->GetList()) {
     EXPECT_TRUE(target_value.is_dict());
-    absl::optional<int> id = target_value.FindIntKey("tabId");
+    absl::optional<int> id = target_value.GetDict().FindInt("tabId");
     if (id == tab_id) {
       const std::string* id_str = target_value.GetDict().FindString("id");
       EXPECT_TRUE(id_str);
