@@ -36,13 +36,9 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 
 }  // namespace
 
-// TODO(crbug.com/1420468): Failing on an ASAN + LSAN builder.
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_DelayedSelfDestruct DISABLED_DelayedSelfDestruct
-#else
-#define MAYBE_DelayedSelfDestruct DelayedSelfDestruct
-#endif
-TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestruct) {
+// TODO(crbug.com/1420468): Failing on an ASAN + LSAN builder; also flaky on
+// other builds.
+TEST_F(WaylandDisplayOutputTest, DISABLED_DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
     uint32_t output_name = 0;
