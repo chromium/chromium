@@ -140,13 +140,6 @@ using bookmarks::BookmarkNode;
   [self reloadModel];
 }
 
-- (void)notifyFolderNodeAdded:(const BookmarkNode*)folder {
-  DCHECK(folder);
-  [self reloadModel];
-  [self changeSelectedFolder:folder];
-  [self delayedNotifyDelegateOfSelection];
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {

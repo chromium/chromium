@@ -52,10 +52,6 @@ class BookmarkNode;
 // This method changes the currently selected folder and updates the UI. The
 // delegate is not notified of the change.
 - (void)changeSelectedFolder:(const bookmarks::BookmarkNode*)selectedFolder;
-// TODO(crbug.com/1402758): Remove this method after model code is moved to the
-// mediator.
-// Notifies the view controller that a new `folder` was added.
-- (void)notifyFolderNodeAdded:(const bookmarks::BookmarkNode*)folder;
 
 @end
 

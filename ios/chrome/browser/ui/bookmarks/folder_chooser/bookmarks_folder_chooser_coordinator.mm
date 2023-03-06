@@ -175,7 +175,6 @@
             (BookmarksFolderChooserViewController*)viewController
                          didFinishWithFolder:
                              (const bookmarks::BookmarkNode*)folder {
-  _editedNodes = _viewController.editedNodes;
   [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
                                       withSelectedFolder:folder];
 }
@@ -201,8 +200,8 @@
   DCHECK(folder);
   DCHECK(_folderEditorCoordinator);
   [self stopBookmarksFolderEditorCoordinator];
-
-  [_viewController notifyFolderNodeAdded:folder];
+  [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
+                                      withSelectedFolder:folder];
 }
 
 - (void)bookmarksFolderEditorCoordinatorShouldStop:
@@ -235,7 +234,7 @@
 #pragma mark - Properties
 
 - (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
-  return _editedNodes;
+  return _viewController.editedNodes;
 }
 
 #pragma mark - Private
