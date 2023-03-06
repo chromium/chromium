@@ -44,7 +44,7 @@ public class FirstRunStatus {
      */
     public static boolean getFirstRunFlowComplete() {
         return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
+                ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true);
     }
 
     /**
@@ -62,7 +62,7 @@ public class FirstRunStatus {
      */
     public static boolean shouldSkipWelcomePage() {
         return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE, false);
+                ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE, true);
     }
 
     /**
