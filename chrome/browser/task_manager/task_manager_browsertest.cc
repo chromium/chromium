@@ -1471,7 +1471,6 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
                             base::Unretained(this)));
     feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{features::kOmniboxTriggerForPrerender2, {}}},
             /*ignore_outstanding_network_request=*/false),
         /*disabled_features=*/{});
     EXPECT_TRUE(content::BackForwardCache::IsBackForwardCacheFeatureEnabled());
