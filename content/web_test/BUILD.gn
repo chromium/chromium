@@ -225,6 +225,10 @@ static_library("web_test_browser") {
   if (use_aura) {
     deps += [ "//ui/aura:test_support" ]
   }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 # TODO(crbug.com/1154721): The `allow_circular_includes_from` declared in
