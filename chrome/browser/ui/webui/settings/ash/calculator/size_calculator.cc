@@ -340,13 +340,7 @@ void AppsSizeCalculator::PerformCalculation() {
 
   UpdateAppsSize();
   UpdateAndroidAppsSize();
-  if (borealis::BorealisService::GetForProfile(profile_)
-          ->Features()
-          .IsEnabled()) {
-    UpdateBorealisAppsSize();
-  } else {
-    has_borealis_apps_size_ = true;
-  }
+  UpdateBorealisAppsSize();
 }
 
 void AppsSizeCalculator::UpdateAppsSize() {
@@ -401,6 +395,12 @@ void AppsSizeCalculator::OnGetAndroidAppsSize(
 }
 
 void AppsSizeCalculator::UpdateBorealisAppsSize() {
+  borealis::BorealisService* borealis_service =
+      borealis::BorealisService::GetForProfile(profile_);
+  if (!borealis_service || !borealis_service->Features().IsEnabled()) {
+    has_borealis_apps_size_ = true;
+    return;
+  }
   vm_tools::concierge::ListVmDisksRequest request;
   request.set_cryptohome_id(
       ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
