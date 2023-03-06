@@ -1493,6 +1493,18 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_mockito_mockito_android_java") {
+    jar_path = "libs/org_mockito_mockito_android/mockito-android-5.1.1.jar"
+    output_name = "org_mockito_mockito_android"
+    supports_android = true
+    testonly = true
+    deps = [
+      ":net_bytebuddy_byte_buddy_android_java",
+      ":org_mockito_mockito_core_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_mockito_mockito_core_java") {
     jar_path = "libs/org_mockito_mockito_core/mockito-core-5.1.1.jar"
     output_name = "org_mockito_mockito_core"
@@ -2293,7 +2305,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
 
-    # Can't find com.sun.jna classes.
+    # Can't find com.sun.jna / dalvik.system classes.
     enable_bytecode_checks = false
   }
 
@@ -2312,7 +2324,30 @@ if (!limit_android_deps) {
     ]
     testonly = true
 
-    # Can't find com.sun.jna classes.
+    # Can't find com.sun.jna / dalvik.system classes.
+    enable_bytecode_checks = false
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("net_bytebuddy_byte_buddy_android_java") {
+    jar_path =
+        "libs/net_bytebuddy_byte_buddy_android/byte-buddy-android-1.12.22.jar"
+    output_name = "net_bytebuddy_byte_buddy_android"
+    supports_android = true
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+    deps = [
+      ":net_bytebuddy_byte_buddy_java",
+      "//third_party/aosp_dalvik:aosp_dalvik_dx_java",
+    ]
+
+    # Can't find com.sun.jna / dalvik.system classes.
     enable_bytecode_checks = false
   }
 

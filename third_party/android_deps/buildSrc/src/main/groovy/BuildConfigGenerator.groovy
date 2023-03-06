@@ -920,9 +920,10 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
                 sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
                 break
+            case 'net_bytebuddy_byte_buddy_android':
             case 'net_bytebuddy_byte_buddy_agent':
             case 'net_bytebuddy_byte_buddy':
-                sb.append('  # Can\'t find com.sun.jna classes.\n')
+                sb.append('  # Can\'t find com.sun.jna / dalvik.system classes.\n')
                 sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':

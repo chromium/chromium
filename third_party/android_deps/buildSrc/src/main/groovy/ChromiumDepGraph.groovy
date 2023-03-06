@@ -168,8 +168,7 @@ class ChromiumDepGraph {
         net_bytebuddy_byte_buddy_android: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         net_sf_kxml_kxml2: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/stefanhaustein/kxml2/master/license.txt',
             licenseName: 'MIT'),
