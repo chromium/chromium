@@ -223,6 +223,10 @@ BASE_DECLARE_FEATURE(kEnableTouchscreensInDiagnosticsApp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableViewPpd);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnforceAshExtensionKeeplist);
+// TODO(b/271104781): Temporary flag while feature is being implemented. Remove
+// this once enrollment nudging policy can be fetched through a DM server API.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kEnrollmentNudgingForTesting);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolWarningNotifications);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolIncentive);
 enum class EolIncentiveType { kNone, kPerk, kCoupon };
@@ -765,6 +769,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMultiZoneRgbKeyboardEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNearbyKeepAliveFixEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEducationEnrollmentOobeFlowEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEnrollmentNudgingForTestingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewLockScreenReauthLayoutEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationExpansionAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -3047,6 +3047,20 @@
     Skip
   </message>
 
+  <!-- String for enrollment nudging pop-up -->
+  <message name="IDS_ENROLLMENT_NUDGE_TITLE" desc="The title for the modal dialog shown when managed user is required to go through enrollment during OOBE.">
+    Use enterprise enrollment for work and school accounts
+  </message>
+  <message name="IDS_ENROLLMENT_NUDGE_MESSAGE" desc="The message for the modal dialog shown when managed user is required to go through enrollment during OOBE. It mentions their email domain.">
+    To use your email address from your organization (<ph name="EMAIL_DOMAIN">$1<ex>example.com</ex></ph>), you need to use enterprise enrollment. If this device is for your personal use, sign in with your personal Google Account.
+  </message>
+  <message name="IDS_ENROLLMENT_NUDGE_ENROLL_BUTTON" desc="Button which sends a user to enterprise enrollment screen.">
+    Enterprise enrollment
+  </message>
+  <message name="IDS_ENROLLMENT_NUDGE_USE_ANOTHER_ACCOUNT_BUTTON" desc="Button which sends a user back to sign in screen where they can try to sign in with another account.">
+    Use another account
+  </message>
+
   <!-- Administrator facing strings for Active Directory screens. -->
   <message name="IDS_AD_DEVICE_NAME_INPUT_LABEL" desc="Admin-facing. Label for device name input field on the Active Directory domain join screen. User should tell us the name of their device.">
     Chromebook device name

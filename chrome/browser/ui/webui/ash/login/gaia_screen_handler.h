@@ -346,6 +346,9 @@ class GaiaScreenHandler
   void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
                            std::unique_ptr<UserContext> user_context);
 
+  bool MaybeTriggerEnrollmentNudge(const std::string& user_email);
+  void CheckIfAllowlisted(const std::string& user_email);
+
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;
 
