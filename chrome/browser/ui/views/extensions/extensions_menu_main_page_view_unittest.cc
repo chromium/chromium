@@ -426,7 +426,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtension) {
 // Tests that a when an extension is reloaded with manifest errors, and
 // therefore fails to be loaded into Chrome, it's removed from the toolbar and
 // extensions menu.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, InstalledTab_ReloadExtensionFailed) {
+TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtensionFailed) {
   extensions::TestExtensionDir extension_directory;
   constexpr char kManifest[] = R"({
         "name": "Test Extension",
