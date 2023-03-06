@@ -123,7 +123,24 @@ void AddSeparatorToStackView(UIStackView* stackView) {
 
 // Returns a GrayHighlightButton to be added to the alert for `action`.
 GrayHighlightButton* GetButtonForAction(AlertAction* action) {
-  GrayHighlightButton* button = [[GrayHighlightButton alloc] init];
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  GrayHighlightButton* button = nil;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+  UIButtonConfiguration* buttonConfiguration =
+      UIButtonConfiguration.plainButtonConfiguration;
+  buttonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
+                                  kButtonInsetBottom, kButtonInsetTrailing);
+  button = [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
+                                          primaryAction:nil];
+#else
+  button = [[GrayHighlightButton alloc] init];
+  button.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading, kButtonInsetBottom,
+                       kButtonInsetTrailing);
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+
   UIFont* font = nil;
   UIColor* textColor = nil;
   if (action.style == UIAlertActionStyleDefault) {
@@ -144,9 +161,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
   button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.contentEdgeInsets =
-      UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading, kButtonInsetBottom,
-                       kButtonInsetTrailing);
+
   button.tag = action.uniqueIdentifier;
   return button;
 }

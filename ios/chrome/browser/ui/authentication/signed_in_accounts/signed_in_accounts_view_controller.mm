@@ -165,7 +165,23 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   _infoLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_infoLabel];
 
-  _primaryButton = [[UIButton alloc] init];
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (@available(iOS 15, *)) {
+    UIButtonConfiguration* buttonConfiguration =
+        UIButtonConfiguration.plainButtonConfiguration;
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
+    _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
+                                         primaryAction:nil];
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    _primaryButton = [[UIButton alloc] init];
+    _primaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   [_primaryButton addTarget:self
                      action:@selector(onPrimaryButtonPressed:)
            forControlEvents:UIControlEventTouchUpInside];
@@ -178,11 +194,26 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                        forState:UIControlStateNormal];
   _primaryButton.titleLabel.font =
       [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
-  _primaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_primaryButton];
 
-  _secondaryButton = [[UIButton alloc] init];
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (@available(iOS 15, *)) {
+    UIButtonConfiguration* buttonConfiguration =
+        UIButtonConfiguration.plainButtonConfiguration;
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
+    _secondaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
+                                           primaryAction:nil];
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    _secondaryButton = [[UIButton alloc] init];
+    _secondaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   [_secondaryButton addTarget:self
                        action:@selector(onSecondaryButtonPressed:)
              forControlEvents:UIControlEventTouchUpInside];
@@ -195,7 +226,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                          forState:UIControlStateNormal];
   _secondaryButton.titleLabel.font =
       [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
-  _secondaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
   _secondaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_secondaryButton];
 
