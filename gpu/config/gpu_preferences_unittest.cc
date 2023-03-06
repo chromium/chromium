@@ -29,8 +29,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_zero_copy_dxgi_video,
             right.enable_zero_copy_dxgi_video);
   EXPECT_EQ(left.enable_nv12_dxgi_video, right.enable_nv12_dxgi_video);
-  EXPECT_EQ(left.enable_media_foundation_vea_on_windows7,
-            right.enable_media_foundation_vea_on_windows7);
   EXPECT_EQ(left.disable_software_rasterizer,
             right.disable_software_rasterizer);
   EXPECT_EQ(left.log_gpu_control_list_decisions,
@@ -142,7 +140,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(enable_low_latency_dxva, false)
     GPU_PREFERENCES_FIELD(enable_zero_copy_dxgi_video, true)
     GPU_PREFERENCES_FIELD(enable_nv12_dxgi_video, true)
-    GPU_PREFERENCES_FIELD(enable_media_foundation_vea_on_windows7, true)
     GPU_PREFERENCES_FIELD(disable_software_rasterizer, true)
     GPU_PREFERENCES_FIELD(log_gpu_control_list_decisions, true)
     GPU_PREFERENCES_FIELD(compile_shader_always_succeeds, true)
@@ -237,7 +234,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_BOOL(enable_low_latency_dxva);
   PRINT_BOOL(enable_zero_copy_dxgi_video);
   PRINT_BOOL(enable_nv12_dxgi_video);
-  PRINT_BOOL(enable_media_foundation_vea_on_windows7);
   PRINT_BOOL(disable_software_rasterizer);
   PRINT_BOOL(log_gpu_control_list_decisions);
   PRINT_BOOL(compile_shader_always_succeeds);
