@@ -332,8 +332,35 @@ void DualReadingListModel::SetEntryDistilledStateIfExists(
     const GURL& url,
     ReadingListEntry::DistillationState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(loaded());
+
+  scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
+  if (!entry) {
+    return;
+  }
+
+  const bool notify_observers = entry->DistilledState() != state;
+
+  if (notify_observers) {
+    NotifyObserversWithWillUpdateEntry(url);
+  }
+
+  // The update propagates to both underlying ReadingListModelImpl instances
+  // even if the `entry` distilled state is equal to `state`. This is because if
+  // `entry` was a merged entry, then its distilled state is equal to the local
+  // entry's distilled state and the account entry may have a different
+  // distilled state.
+  {
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_observer_notifications_, true);
+    local_or_syncable_model_->SetEntryDistilledStateIfExists(url, state);
+    account_model_->SetEntryDistilledStateIfExists(url, state);
+  }
+
+  if (notify_observers) {
+    NotifyObserversWithDidUpdateEntry(url);
+    NotifyObserversWithDidApplyChanges();
+  }
 }
 
 void DualReadingListModel::SetEntryDistilledInfoIfExists(

@@ -851,6 +851,8 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForLocalCommonEntry) {
   dual_model_->SetReadStatusIfExists(kUrl, false);
 
   EXPECT_FALSE(dual_model_->GetEntryByURL(kUrl)->IsRead());
+  EXPECT_FALSE(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->IsRead());
+  EXPECT_FALSE(account_model_ptr_->GetEntryByURL(kUrl)->IsRead());
 }
 
 TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForAccountCommonEntry) {
@@ -876,6 +878,8 @@ TEST_F(DualReadingListModelTest, SetReadStatusIfExistsForAccountCommonEntry) {
   dual_model_->SetReadStatusIfExists(kUrl, false);
 
   EXPECT_FALSE(dual_model_->GetEntryByURL(kUrl)->IsRead());
+  EXPECT_FALSE(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->IsRead());
+  EXPECT_FALSE(account_model_ptr_->GetEntryByURL(kUrl)->IsRead());
 }
 
 TEST_F(DualReadingListModelTest,
@@ -979,6 +983,10 @@ TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForLocalCommonEntry) {
 
   EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(),
             "old_title_will_be_used_again");
+  EXPECT_EQ(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->Title(),
+            "old_title_will_be_used_again");
+  EXPECT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->Title(),
+            "old_title_will_be_used_again");
 }
 
 TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForAccountCommonEntry) {
@@ -1004,6 +1012,10 @@ TEST_F(DualReadingListModelTest, SetEntryTitleIfExistsForAccountCommonEntry) {
   dual_model_->SetEntryTitleIfExists(kUrl, "old_title_will_be_used_again");
 
   EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->Title(),
+            "old_title_will_be_used_again");
+  EXPECT_EQ(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->Title(),
+            "old_title_will_be_used_again");
+  EXPECT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->Title(),
             "old_title_will_be_used_again");
 }
 
@@ -1115,6 +1127,11 @@ TEST_F(DualReadingListModelTest,
 
   EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->EstimatedReadTime(),
             base::Minutes(2));
+  EXPECT_EQ(
+      local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->EstimatedReadTime(),
+      base::Minutes(2));
+  EXPECT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->EstimatedReadTime(),
+            base::Minutes(2));
 }
 
 TEST_F(DualReadingListModelTest,
@@ -1143,6 +1160,11 @@ TEST_F(DualReadingListModelTest,
   dual_model_->SetEstimatedReadTimeIfExists(kUrl, base::Minutes(3));
 
   EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->EstimatedReadTime(),
+            base::Minutes(3));
+  EXPECT_EQ(
+      local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->EstimatedReadTime(),
+      base::Minutes(3));
+  EXPECT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->EstimatedReadTime(),
             base::Minutes(3));
 }
 
@@ -1177,6 +1199,122 @@ TEST_F(DualReadingListModelTest,
   EXPECT_EQ(
       local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->EstimatedReadTime(),
       base::Minutes(2));
+}
+
+TEST_F(DualReadingListModelTest,
+       SetEntryDistilledStateIfExistsForNonExistingEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->SetEntryDistilledStateIfExists(
+      kUrl, ReadingListEntry::DISTILLATION_ERROR);
+}
+
+TEST_F(DualReadingListModelTest, SetEntryDistilledStateIfExistsForLocalEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/{TestEntryBuilder(
+          kUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->SetEntryDistilledStateIfExists(
+      kUrl, ReadingListEntry::DISTILLATION_ERROR);
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
+}
+
+TEST_F(DualReadingListModelTest,
+       SetEntryDistilledStateIfExistsForAccountEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/{},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->SetEntryDistilledStateIfExists(
+      kUrl, ReadingListEntry::DISTILLATION_ERROR);
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
+}
+
+TEST_F(DualReadingListModelTest, SetEntryDistilledStateIfExistsForCommonEntry) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetDistilledState(ReadingListEntry::WILL_RETRY)},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  // The expected distilled state of the merged entry is the distilled state of
+  // the local entry.
+  ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::WILL_RETRY);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->SetEntryDistilledStateIfExists(
+      kUrl, ReadingListEntry::DISTILLATION_ERROR);
+
+  EXPECT_EQ(dual_model_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
+  EXPECT_EQ(local_or_syncable_model_ptr_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
+}
+
+TEST_F(DualReadingListModelTest,
+       SetEntryDistilledStateIfExistsForMergedEntryHasSameDistilledState) {
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())
+           .SetDistilledState(ReadingListEntry::DISTILLATION_ERROR)},
+      /*initial_account_entries_builders=*/
+      {TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::WAITING);
+  // The expected distilled state of the merged entry is the distilled state of
+  // the local entry.
+  ASSERT_EQ(dual_model_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->SetEntryDistilledStateIfExists(
+      kUrl, ReadingListEntry::DISTILLATION_ERROR);
+
+  EXPECT_EQ(account_model_ptr_->GetEntryByURL(kUrl)->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
 }
 
 // Tests that new line characters and spaces are collapsed in title.
