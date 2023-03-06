@@ -94,6 +94,7 @@ To get Chrome OS System Colors, an element must:
   --cros-separator-color: var(--cros-sys-separator);
   --cros-tab-slider-track-color: var(--cros-sys-surface_variant, 80%);
 
+  --cr-form-field-label-color: var(--cros-sys-on_surface);
   --cr-link-color: var(--cros-sys-primary);
   --cr-primary-text-color: var(--cros-sys-on_surface);
   --cr-secondary-text-color: var(--cros-sys-secondary);
@@ -113,6 +114,14 @@ To get Chrome OS System Colors, an element must:
 :host-context(body.jelly-enabled) cr-link-row::part(icon),
 :host-context(body.jelly-enabled) cr-expand-button::part(icon) {
   --cr-icon-button-fill-color: var(--cros-sys-secondary);
+}
+
+/* Input */
+:host-context(body.jelly-enabled) cr-input {
+  --cr-input-background-color: var(--cros-sys-input_field_dark);
+  --cr-input-error-color: var(--cros-sys-error);
+  --cr-input-focus-color: var(--cros-sys-primary);
+  --cr-input-placeholder-color: var(--cros-sys-secondary);
 }
 
 /* Radio button */
