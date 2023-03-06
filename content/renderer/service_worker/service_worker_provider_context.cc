@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "content/public/common/content_features.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
 #include "content/renderer/service_worker/web_service_worker_provider_impl.h"
@@ -123,6 +125,15 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
     // If the fetch handler for the main resource is skipped by
     // ServiceWorkerBypassFetchHandler, the fetch handler doesn't handle
     // subresources too.
+    return nullptr;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler) &&
+      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
+          features::ServiceWorkerBypassFetchHandlerTarget::kSubResource) {
+    CountFeature(blink::mojom::WebFeature::
+                     kServiceWorkerBypassFetchHandlerForSubResource);
     return nullptr;
   }
 

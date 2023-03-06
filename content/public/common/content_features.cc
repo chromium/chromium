@@ -1016,7 +1016,12 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>::Option
             ServiceWorkerBypassFetchHandlerTarget::
                 kAllOnlyIfServiceWorkerNotStarted,
             "all_only_if_service_worker_not_started",
-        }};
+        },
+        {
+            ServiceWorkerBypassFetchHandlerTarget::kSubResource,
+            "sub_resource",
+        },
+};
 const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
     kServiceWorkerBypassFetchHandlerTarget{
         &kServiceWorkerBypassFetchHandler, "bypass_for",

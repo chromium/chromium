@@ -4564,6 +4564,8 @@ class ServiceWorkerBypassFetchHandlerTest
       case features::ServiceWorkerBypassFetchHandlerTarget::
           kAllOnlyIfServiceWorkerNotStarted:
         return "all_only_if_service_worker_not_started";
+      case features::ServiceWorkerBypassFetchHandlerTarget::kSubResource:
+        return "sub_resource";
     }
   }
 
@@ -4583,7 +4585,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(
             features::ServiceWorkerBypassFetchHandlerTarget::kMainResource,
             features::ServiceWorkerBypassFetchHandlerTarget::
-                kAllOnlyIfServiceWorkerNotStarted)));
+                kAllOnlyIfServiceWorkerNotStarted,
+            features::ServiceWorkerBypassFetchHandlerTarget::kSubResource)));
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
   StartServerAndNavigateToSetup();
@@ -4675,6 +4678,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, All) {
       EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
       // Expect both the main resource and subresource are handled.
       EXPECT_EQ(3, EvalJs(GetPrimaryMainFrame(), script));
+      break;
+    case features::ServiceWorkerBypassFetchHandlerTarget::kSubResource:
+      // TODO(crbug.com/1371756): Consider supporing the allowlist if needed.
+      // The service worker handles the navigation request, but bypasses fetch
+      // handlers for subsequent subresources.
+      EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
       break;
   }
 }

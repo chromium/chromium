@@ -256,8 +256,9 @@ enum class ServiceWorkerBypassFetchHandlerTarget {
   // subresources. If the ServiceWorker is running, it invokes fetch handlers as
   // usual.
   kAllOnlyIfServiceWorkerNotStarted,
-  // kSubResource,
-  // kBoth
+  // Bypass fetch handlers for subresource requests. Fetch handlers will be
+  // bypassed regardless of the current ServiceWorker running status.
+  kSubResource,
 };
 CONTENT_EXPORT extern const base::FeatureParam<
     ServiceWorkerBypassFetchHandlerTarget>
