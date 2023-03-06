@@ -661,6 +661,18 @@
     'enabled': True,
     'identifier': 'JACUZZI_PUBLIC',
   },
+  'CROS_JACUZZI_CQ_PUBLIC': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '109.0.5367.0',
+      'cros_img': 'jacuzzi-public/R109-15222.0.0',
+      'bucket': 'chromiumos-image-archive',
+      'public_builder': 'cros_test_platform_public',
+      'public_builder_bucket': 'testplatform-public',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_CQ_PUBLIC',
+  },
   'CROS_KEVIN_PUBLIC': {
     'skylab': {
       'cros_board': 'kevin',

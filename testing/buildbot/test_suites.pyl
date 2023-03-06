@@ -7313,6 +7313,7 @@
       'lacros_skylab': {
         'variants': [
           'CROS_JACUZZI_PUBLIC',
+          'CROS_JACUZZI_CQ_PUBLIC',
           'CROS_KEVIN_PUBLIC',
         ]
       },
