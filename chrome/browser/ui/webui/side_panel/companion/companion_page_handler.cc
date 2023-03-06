@@ -70,7 +70,7 @@ GURL CompanionPageHandler::GetCompanionURLWithQueryParams(
       url_query_param_value.spec());
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kOriginQueryParameterKey,
-      chrome::kChromeUIUntrustedCompanionSidePanelURL);
+      kOriginQueryParameterValue);
   return url_with_query_params;
 }
 

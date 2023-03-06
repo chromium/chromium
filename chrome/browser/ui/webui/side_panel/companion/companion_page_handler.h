@@ -21,6 +21,10 @@ class CompanionSidePanelUntrustedUI;
 inline constexpr char kUrlQueryParameterKey[] = "url";
 // Query parameter for the Chrome WebUI origin.
 inline constexpr char kOriginQueryParameterKey[] = "origin";
+// Query parameter value for the Chrome WebUI origin. This needs to be different
+// from the WebUI URL constant because it does not include the last '/'.
+inline constexpr char kOriginQueryParameterValue[] =
+    "chrome-untrusted://companion-side-panel.top-chrome";
 
 class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
                              public TabStripModelObserver,
