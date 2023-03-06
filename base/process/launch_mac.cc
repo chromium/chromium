@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/mac/mach_port_rendezvous.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/environment_internal.h"
 #include "base/threading/scoped_blocking_call.h"

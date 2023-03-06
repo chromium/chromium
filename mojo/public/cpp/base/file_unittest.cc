@@ -5,6 +5,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/sync_socket.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/read_only_file_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -135,8 +136,9 @@ TEST(FileTest, ReadOnlyFileDeath) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // This should work on all platforms. This check might be relaxed in which case
-// this test can be removed.
-#if DCHECK_IS_ON()
+// this test can be removed. iOS without blink does not build SyncSocket, so do
+// not build this when blink isn't used.
+#if DCHECK_IS_ON() && (!BUILDFLAG(IS_IOS) || BUILDFLAG(MOJO_USE_APPLE_CHANNEL))
 TEST(FileTest, NonPhysicalFileDeath) {
 #if defined(OFFICIAL_BUILD)
   const char kPhysicalFileCheckFailedRegex[] = "";

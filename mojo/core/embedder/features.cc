@@ -9,7 +9,8 @@
 namespace mojo {
 namespace core {
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && \
+    !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kMojoLinuxChannelSharedMem,
              "MojoLinuxChannelSharedMem",
@@ -25,7 +26,8 @@ const base::FeatureParam<bool> kMojoLinuxChannelSharedMemEfdZeroOnWake{
 BASE_FEATURE(kMojoPosixUseWritev,
              "MojoPosixUseWritev",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) &&
+        // !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 
 BASE_FEATURE(kMojoInlineMessagePayloads,
              "MojoInlineMessagePayloads",

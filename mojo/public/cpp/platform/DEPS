@@ -2,6 +2,7 @@ include_rules = [
   # Mojo platform support must not depend on any other part of the Mojo public
   # library.
   "-mojo",
+  "+mojo/buildflags.h",
   "+mojo/public/c/system",
   "+mojo/public/cpp/platform",
   "+net/base",
