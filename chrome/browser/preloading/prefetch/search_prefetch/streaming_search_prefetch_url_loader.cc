@@ -148,10 +148,9 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
 
   RecordNavigationURLHistogram(resource_request_->url);
 
-  // At this point, we are bound to the mojo receiver, so we can release
-  // |loader|, which points to |this|.
-  receiver_.Bind(std::move(receiver));
+  // Let `this` own itself, so that it can manage its lifetime properly.
   self_pointer_ = std::move(loader);
+  receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
       &StreamingSearchPrefetchURLLoader::OnURLLoaderClientMojoDisconnect,
       weak_factory_.GetWeakPtr()));
