@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -60,10 +60,10 @@ const char kValidAuthToken[] = "validAuthToken";
 multidevice::RemoteDeviceList RefListToRawList(
     const multidevice::RemoteDeviceRefList& ref_list) {
   multidevice::RemoteDeviceList raw_list;
-  std::transform(ref_list.begin(), ref_list.end(), std::back_inserter(raw_list),
-                 [](const multidevice::RemoteDeviceRef ref) {
-                   return *GetMutableRemoteDevice(ref);
-                 });
+  base::ranges::transform(ref_list, std::back_inserter(raw_list),
+                          [](const multidevice::RemoteDeviceRef ref) {
+                            return *GetMutableRemoteDevice(ref);
+                          });
   return raw_list;
 }
 

@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/ble_scanner_impl.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -12,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -45,9 +45,9 @@ class FakeBluetoothDevice : public device::MockBluetoothDevice {
                                     false /* paired */,
                                     false /* connected */) {
     // Convert |service_data| from a std::string to a std::vector<uint8_t>.
-    std::transform(service_data.begin(), service_data.end(),
-                   std::back_inserter(service_data_vector_),
-                   [](char character) { return character; });
+    base::ranges::transform(
+        service_data, std::back_inserter(service_data_vector_),
+        [](char character) { return static_cast<uint8_t>(character); });
   }
 
   FakeBluetoothDevice(const FakeBluetoothDevice&) = delete;

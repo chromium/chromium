@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
@@ -106,20 +107,18 @@ class FakeSecureChannelClient : public SecureChannelClient {
   std::vector<ConnectionRequestArguments*>
   last_initiate_connection_request_arguments_list() {
     std::vector<ConnectionRequestArguments*> arguments_list_raw_;
-    std::transform(last_initiate_connection_request_arguments_list_.begin(),
-                   last_initiate_connection_request_arguments_list_.end(),
-                   std::back_inserter(arguments_list_raw_),
-                   [](const auto& arguments) { return arguments.get(); });
+    base::ranges::transform(last_initiate_connection_request_arguments_list_,
+                            std::back_inserter(arguments_list_raw_),
+                            &std::unique_ptr<ConnectionRequestArguments>::get);
     return arguments_list_raw_;
   }
 
   std::vector<ConnectionRequestArguments*>
   last_listen_for_connection_request_arguments_list() {
     std::vector<ConnectionRequestArguments*> arguments_list_raw_;
-    std::transform(last_listen_for_connection_request_arguments_list_.begin(),
-                   last_listen_for_connection_request_arguments_list_.end(),
-                   std::back_inserter(arguments_list_raw_),
-                   [](const auto& arguments) { return arguments.get(); });
+    base::ranges::transform(last_listen_for_connection_request_arguments_list_,
+                            std::back_inserter(arguments_list_raw_),
+                            &std::unique_ptr<ConnectionRequestArguments>::get);
     return arguments_list_raw_;
   }
 
