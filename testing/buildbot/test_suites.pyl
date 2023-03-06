@@ -3473,6 +3473,7 @@
         'desktop_args': [
           '--use-gpu-in-tests',
         ],
+        'linux_args': ['--no-xvfb'],
       },
     },
 
@@ -6419,6 +6420,7 @@
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
       'gpu_gles2_conform_gtests',
+      'gpu_vulkan_gtests',
     ],
 
     'gpu_fyi_linux_release_telemetry_tests': [
@@ -6510,7 +6512,6 @@
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
       'gpu_gles2_conform_gtests',
-      'gpu_vulkan_gtests',
     ],
 
     'gpu_fyi_win_intel_release_telemetry_tests': [
