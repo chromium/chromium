@@ -1453,6 +1453,28 @@ const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
      kOmniboxBookmarkPathsDynamicReplaceUrl,
      std::size(kOmniboxBookmarkPathsDynamicReplaceUrl), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
+    {"OmniboxSquareSuggestIconIcons", "true"}};
+const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAnswers[] = {
+    {"OmniboxSquareSuggestIconAnswers", "true"}};
+const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconEntities[] = {
+    {"OmniboxSquareSuggestIconEntities", "true"}};
+const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconAll[] = {
+    {"OmniboxSquareSuggestIconIcons", "true"},
+    {"OmniboxSquareSuggestIconAnswers", "true"},
+    {"OmniboxSquareSuggestIconEntities", "true"},
+};
+
+const FeatureEntry::FeatureVariation kOmniboxSquareSuggestionIconVariations[] =
+    {{"Favicons", kOmniboxSquareSuggestionIconFavicons,
+      std::size(kOmniboxSquareSuggestionIconFavicons), nullptr},
+     {"Answers", kOmniboxSquareSuggestionIconAnswers,
+      std::size(kOmniboxSquareSuggestionIconAnswers), nullptr},
+     {"Entities", kOmniboxSquareSuggestionIconEntities,
+      std::size(kOmniboxSquareSuggestionIconEntities), nullptr},
+     {"All", kOmniboxSquareSuggestionIconAll,
+      std::size(kOmniboxSquareSuggestionIconAll), nullptr}};
+
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches5[] = {
     {"MaxZeroSuggestMatches", "5"}};
 const FeatureEntry::FeatureParam kMaxZeroSuggestMatches6[] = {
@@ -5429,7 +5451,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-square-suggest-icons",
      flag_descriptions::kOmniboxSimplifiedUiSquareSuggestIconName,
      flag_descriptions::kOmniboxSimplifiedUiSquareSuggestIconDescription,
-     kOsAll, FEATURE_VALUE_TYPE(omnibox::kSquareSuggestIcons)},
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kSquareSuggestIcons,
+                                    kOmniboxSquareSuggestionIconVariations,
+                                    "OmniboxBundledExperimentV1")},
 
     {"omnibox-uniform-suggestion-height",
      flag_descriptions::kOmniboxSimplifiedUiUniformRowHeightName,
