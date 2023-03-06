@@ -99,7 +99,6 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -216,8 +215,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
                                      URLLoadingObserver,
-                                     ViewRevealingAnimatee,
-                                     WebStateListObserving> {
+                                     ViewRevealingAnimatee> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
 
@@ -283,9 +281,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIView* _fakeStatusBarView;
 
   std::unique_ptr<UrlLoadingObserverBridge> _URLLoadingObserverBridge;
-
-  // Bridges C++ WebStateListObserver methods to this BrowserViewController.
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
 
   // The disabler that prevents the toolbar from being scrolled offscreen when
   // the thumb strip is visible.
@@ -498,8 +493,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
 
-    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-    browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
     _URLLoadingObserverBridge =
         std::make_unique<UrlLoadingObserverBridge>(self);
     UrlLoadingNotifierBrowserAgent::FromBrowser(browser)->AddObserver(
@@ -977,7 +970,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   _bubblePresenter = nil;
 
-  self.browser->GetWebStateList()->RemoveObserver(_webStateListObserver.get());
   self.browser = nullptr;
 
   [self.contentArea removeGestureRecognizer:self.contentAreaGestureRecognizer];
@@ -989,7 +981,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.secondaryToolbarCoordinator stop];
   self.secondaryToolbarCoordinator = nil;
   _sideSwipeController = nil;
-  _webStateListObserver.reset();
   [_voiceSearchController disconnect];
   _voiceSearchController = nil;
   _fullscreenDisabler = nullptr;
@@ -1855,15 +1846,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self updateOverlayContainerOrder];
 }
 
-// TODO(crbug.com/1329088): Have a mediator inject the view to be displayed, not
-// a webstate. Makes `webState` the currently visible WebState, displaying its
-// view.
+// Makes `webState` the currently visible WebState, displaying its view.
 - (void)displayWebState:(web::WebState*)webState {
   DCHECK(webState);
   [self loadViewIfNeeded];
-
-  // Set this before triggering any of the possible page loads below.
-  webState->SetKeepRenderProcessAlive(true);
 
   if (!self.inNewTabAnimation) {
     // TODO(crbug.com/1329087): -updateToolbar will move out of the BVC; make
@@ -3109,26 +3095,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.inNewTabAnimation = NO;
 }
 
-#pragma mark - WebStateListObserving methods
-
-// TODO(crbug.com/1329088): Move BVC's tab lifeceyle event updates to a
-// mediator, and inject only the concrete UI updates into the BVC itself. Other
-// code, some of which has separate bugs, should move to dedicated browser
-// agents if it doesn't directly cause UI updates. Observer method, active
-// WebState changed.
-
-// Observer method, WebState replaced in `webStateList`.
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  // Add `newTab`'s view to the hierarchy if it's the current Tab.
-  if (self.active && self.currentWebState == newWebState) {
-    [self displayWebState:newWebState];
+- (void)displayWebStateIfActive:(web::WebState*)webState {
+  if (self.active) {
+    [self displayWebState:webState];
   }
 }
 
-#pragma mark - WebStateListObserver helpers (new tab animations)
+#pragma mark - TabConsumer helpers
 
 // Helper which execute and then clears `foregroundTabWasAddedCompletionBlock`
 // if it is still set, or does nothing.

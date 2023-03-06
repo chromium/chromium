@@ -140,6 +140,21 @@
   }
 }
 
+// Observer method, WebState replaced in `webStateList`.
+- (void)webStateList:(WebStateList*)webStateList
+    didReplaceWebState:(web::WebState*)oldWebState
+          withWebState:(web::WebState*)newWebState
+               atIndex:(int)atIndex {
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  // Add `newTab`'s view to the hierarchy if it's the current Tab.
+  if (currentWebState == newWebState) {
+    // Set this before triggering any of the possible page loads in
+    // displayWebStateIfActive.
+    newWebState->SetKeepRenderProcessAlive(true);
+    [self.consumer displayWebStateIfActive:newWebState];
+  }
+}
+
 #pragma mark - WebStateListObserving helpers (Private)
 
 - (void)didInsertActiveWebState:(web::WebState*)newWebState {
