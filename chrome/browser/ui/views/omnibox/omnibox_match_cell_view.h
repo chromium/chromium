@@ -73,8 +73,10 @@ class OmniboxMatchCellView : public views::View {
   void SetIcon(const gfx::ImageSkia& image);
 
   // Sets the answer image and, if the image is not square, sets the answer size
-  // proportional to the image size to preserve its aspect ratio.
-  void SetImage(const gfx::ImageSkia& image);
+  // proportional to the image size to preserve its aspect ratio. `match`
+  // correspond to the match for this view and is used to detect if this is a
+  // weather answer (weather answers handle images differently).
+  void SetImage(const gfx::ImageSkia& image, const AutocompleteMatch& match);
 
   // views::View:
   gfx::Insets GetInsets() const override;

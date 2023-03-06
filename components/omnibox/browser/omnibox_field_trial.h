@@ -385,6 +385,12 @@ bool IsSiteSearchStarterPackEnabled();
 extern const base::FeatureParam<bool> kSquareSuggestIconAnswers;
 // Gray rounded rect background for search loop and nav fav icons.
 extern const base::FeatureParam<bool> kSquareSuggestIconIcons;
+// Gray rounded rect background for entities.
+extern const base::FeatureParam<bool> kSquareSuggestIconEntities;
+// The entity size relative to the background. 0.5 means the entity
+// takes up half of the space. Should be (0, 1). No effect if
+// `kSquareSuggestIconEntities` is false or this is 1.
+extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
 
 // Omnibox UI simplification - uniform row heights.
 // Returns true if the feature to enable uniform row height is enabled.

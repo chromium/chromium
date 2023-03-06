@@ -413,7 +413,7 @@ void OmniboxResultView::OnMatchIconUpdated() {
 }
 
 void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
-  suggestion_view_->SetImage(image);
+  suggestion_view_->SetImage(image, match_);
 }
 
 void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,

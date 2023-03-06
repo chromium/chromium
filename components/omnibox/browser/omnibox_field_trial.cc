@@ -692,6 +692,15 @@ const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconIcons(
     &omnibox::kSquareSuggestIcons,
     "OmniboxSquareSuggestIconIcons",
     true);
+const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconEntities(
+    &omnibox::kSquareSuggestIcons,
+    "OmniboxSquareSuggestIconEntities",
+    true);
+const base::FeatureParam<double>
+    OmniboxFieldTrial::kSquareSuggestIconEntitiesScale(
+        &omnibox::kSquareSuggestIcons,
+        "OmniboxSquareSuggestIconEntitiesScale",
+        0.8722);
 
 bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
