@@ -40,6 +40,7 @@ import java.util.List;
  * Privacy Notice, and to opt-in to the usage statistics and crash reports collection ("UMA",
  * User Metrics Analysis) as defined in the Chrome Privacy Notice.
  */
+// TODO(https://crbug.com/1409385): Delete this class.
 public class ToSAndUMAFirstRunFragment
         extends Fragment implements FirstRunFragment, FreUMADialogCoordinator.Listener {
     /** Alerts about some methods once ToSAndUMAFirstRunFragment executes them. */

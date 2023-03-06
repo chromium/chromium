@@ -132,25 +132,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
         int MAX_VALUE = 6;
     }
 
-    @AnyThread
-    public static boolean isEnabled() {
-        // Switch used for tests. Disabled by default otherwise.
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
-            return false;
-        }
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE)) {
-            return true;
-        }
-        if (getFirstRunTrialGroup().equals(INITIALIZATION_FLOW_NEW_GROUP)
-                || getFirstRunTrialGroup().equals(INITIALIZATION_FLOW_OLD_GROUP)) {
-            return true;
-        }
-
-        // Group names were changed from 'Enabled' to 'Enabled2' starting from Beta experiment.
-        // getFirstRunTrialGroup.startWith() matches old groups alongside new groups.
-        return getFirstRunTrialGroup().startsWith("Enabled");
-    }
-
     @MainThread
     public static boolean shouldShowOldFreWithUmaDialog() {
         // Switch used for tests.

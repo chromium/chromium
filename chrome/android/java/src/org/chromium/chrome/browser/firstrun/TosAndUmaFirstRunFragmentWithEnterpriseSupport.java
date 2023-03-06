@@ -28,6 +28,7 @@ import org.chromium.ui.widget.LoadingView;
 /**
  * Another FirstRunFragment that is only used when running with CCT.
  */
+// TODO(https://crbug.com/1409385): Delete this class.
 public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         extends ToSAndUMAFirstRunFragment implements LoadingView.Observer {
     private static final String TAG = "TosAndUmaFragment";
