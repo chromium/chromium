@@ -172,4 +172,71 @@ TEST(IBANTest, GetObfuscatedStringForValue_ValidIbanValue) {
             GetIbanValueGroupedByFour(iban, /*is_value_masked=*/false));
 }
 
+TEST(IBANTest, ValidateIbanValue_ValidateOnLength) {
+  IBAN iban(base::GenerateGUID());
+
+  // The length of IBAN value is 15 which is invalid as valid IBAN value length
+  // should be at least 16 digits and at most 33 digits long.
+  iban.set_value(u"AL1212341234123");
+  EXPECT_FALSE(iban.IsValid());
+
+  // The length of IBAN value is 35 which is invalid as valid IBAN value length
+  // should be at least 16 digits and at most 33 digits long.
+  iban.set_value(u"AL121234123412341234123412341234123");
+  EXPECT_FALSE(iban.IsValid());
+
+  // Valid Belgium IBAN value with length of 16.
+  iban.set_value(u"BE71096123456769");
+  EXPECT_TRUE(iban.IsValid());
+
+  // Valid Russia IBAN value with length of 33.
+  iban.set_value(u"RU0204452560040702810412345678901");
+  EXPECT_TRUE(iban.IsValid());
+}
+
+TEST(IBANTest, ValidateIbanValue_ModuloOnValue) {
+  IBAN iban(base::GenerateGUID());
+
+  // The remainder of rearranged value of IBAN on division by 97 is 1
+  iban.set_value(u"GB82 WEST 1234 5698 7654 32");
+  EXPECT_TRUE(iban.IsValid());
+
+  // The remainder of rearranged value of IBAN on division by 97 is not 1.
+  iban.set_value(u"GB83 WEST 1234 5698 7654 32");
+  EXPECT_FALSE(iban.IsValid());
+
+  // The remainder of rearranged value of IBAN on division by 97 is not 1.
+  iban.set_value(u"AL36202111090000000001234567");
+  EXPECT_FALSE(iban.IsValid());
+
+  // The remainder of rearranged value of IBAN on division by 97 is not 1.
+  iban.set_value(u"DO21ACAU00000000000123456789");
+  EXPECT_FALSE(iban.IsValid());
+}
+
+TEST(IBANTest, ValidateIbanValue_ValidateOnRegexAndCountry) {
+  IBAN iban(base::GenerateGUID());
+
+  // Valid Kuwait IBAN.
+  iban.set_value(u"KW81CBKU0000000000001234560101");
+  EXPECT_TRUE(iban.IsValid());
+
+  // Valid Kuwait IBAN with lower case character in the value.
+  iban.set_value(u"Kw81CBKU0000000000001234560101");
+  EXPECT_TRUE(iban.IsValid());
+
+  // The IBAN value does not match the IBAN value regex.
+  iban.set_value(u"KWA1CBKU0000000000001234560101");
+  EXPECT_FALSE(iban.IsValid());
+
+  // Invalid Kuwait IBAN with incorrect IBAN length.
+  // KW16 will be converted into 203216, and the remainder on 97 is 1.
+  iban.set_value(u"KW1600000000000000000");
+  EXPECT_FALSE(iban.IsValid());
+
+  // The IBAN value country code is invalid.
+  iban.set_value(u"XXA1CBKU0000000000001234560101");
+  EXPECT_FALSE(iban.IsValid());
+}
+
 }  // namespace autofill
