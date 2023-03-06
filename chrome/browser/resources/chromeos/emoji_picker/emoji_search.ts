@@ -125,7 +125,7 @@ export class EmojiSearch extends PolymerElement {
    * Event handler for keydown on the search input. Used to switch focus to the
    * results list on down arrow or enter key presses.
    */
-  private onSearchKeyDown(ev: KeyboardEvent): void {
+  onSearchKeyDown(ev: KeyboardEvent): void {
     const resultsCount = this.getNumSearchResults();
     // if not searching or no results, do nothing.
     if (!this.$.search.getValue() || resultsCount === 0) {
@@ -367,7 +367,7 @@ export class EmojiSearch extends PolymerElement {
    * Calculates the total number of items in the search results.
    *
    */
-  private getNumSearchResults(): number {
+  getNumSearchResults(): number {
     return this.searchResults ?
         this.searchResults.reduce((acc, item) => acc + item.emoji.length, 0) :
         0;
