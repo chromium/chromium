@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -23,6 +24,7 @@
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -181,8 +183,8 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           this, base::BindRepeating(&VideoConferenceTray::ToggleBubble,
                                     weak_ptr_factory_.GetWeakPtr())));
 
-  auto* video_conference_tray_controller = VideoConferenceTrayController::Get();
-  video_conference_tray_controller->AddObserver(this);
+  VideoConferenceTrayController::Get()->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
 
   // Update visibility of the tray and all child icons and indicators. If this
   // lives on a secondary display, it's possible a media session already exists
@@ -195,6 +197,7 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
 }
 
 VideoConferenceTray::~VideoConferenceTray() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
   VideoConferenceTrayController::Get()->RemoveObserver(this);
 }
 
@@ -295,6 +298,11 @@ void VideoConferenceTray::UpdateTrayAndIconsState() {
   bool is_capturing_screen = controller->IsCapturingScreen();
   screen_share_icon_->SetVisible(is_capturing_screen);
   screen_share_icon_->SetIsCapturing(is_capturing_screen);
+}
+
+void VideoConferenceTray::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  SetVisiblePreferred(VideoConferenceTrayController::Get()->ShouldShowTray());
 }
 
 void VideoConferenceTray::ToggleBubble(const ui::Event& event) {

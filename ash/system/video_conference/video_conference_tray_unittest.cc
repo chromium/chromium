@@ -5,7 +5,9 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -19,6 +21,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
+
+namespace {
+
+void SetSessionState(session_manager::SessionState state) {
+  ash::SessionInfo info;
+  info.state = state;
+  ash::Shell::Get()->session_controller()->SetSessionInfo(info);
+}
+
+}  // namespace
 
 namespace ash {
 
@@ -539,6 +551,28 @@ TEST_F(VideoConferenceTrayTest, PrivacyIndicatorToggleAudioOnSecondaryDisplay) {
   LeftClickOn(secondary_audio_icon);
   ASSERT_TRUE(secondary_audio_icon->show_privacy_indicator());
   EXPECT_TRUE(audio_icon()->show_privacy_indicator());
+}
+
+// Tests that the tray is visible only in an active session.
+TEST_F(VideoConferenceTrayTest, SessionChanged) {
+  SetTrayAndButtonsVisible();
+
+  SetSessionState(session_manager::SessionState::OOBE);
+  EXPECT_FALSE(video_conference_tray()->GetVisible());
+
+  SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
+  EXPECT_FALSE(video_conference_tray()->GetVisible());
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_TRUE(video_conference_tray()->GetVisible());
+
+  // Locks screen. The tray should be hidden.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_FALSE(video_conference_tray()->GetVisible());
+
+  // Switches back to active. The tray should show.
+  SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_TRUE(video_conference_tray()->GetVisible());
 }
 
 }  // namespace ash

@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -78,7 +79,13 @@ void VideoConferenceTrayController::RemoveObserver(Observer* observer) {
 }
 
 bool VideoConferenceTrayController::ShouldShowTray() const {
-  return state_.has_media_app;
+  DCHECK(Shell::Get());
+
+  // We only show the tray in an active session and if there's a media app
+  // running.
+  return Shell::Get()->session_controller()->GetSessionState() ==
+             session_manager::SessionState::ACTIVE &&
+         state_.has_media_app;
 }
 
 bool VideoConferenceTrayController::GetHasCameraPermissions() const {
