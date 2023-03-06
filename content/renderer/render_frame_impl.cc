@@ -871,9 +871,11 @@ std::unique_ptr<DocumentState> BuildDocumentStateFromParams(
   if (commit_params.is_load_data_with_base_url)
     document_state->set_data_url(common_params.url);
 
-  document_state->set_navigation_state(NavigationState::Create(
-      common_params.Clone(), commit_params.Clone(), std::move(commit_callback),
-      std::move(navigation_client), was_initiated_in_this_frame));
+  document_state->set_navigation_state(
+      NavigationState::CreateForCrossDocumentCommit(
+          common_params.Clone(), commit_params.Clone(),
+          std::move(commit_callback), std::move(navigation_client),
+          was_initiated_in_this_frame));
   return document_state;
 }
 
@@ -3014,21 +3016,31 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
       blink::PageState::CreateFromEncodedData(commit_params->page_state)
           .IsValid());
 
+  DocumentState* document_state =
+      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
+  document_state->set_navigation_state(
+      NavigationState::CreateForSameDocumentCommitFromBrowser(
+          std::move(common_params), std::move(commit_params),
+          std::move(callback)));
+  NavigationState* navigation_state = document_state->navigation_state();
+
   blink::mojom::CommitResult commit_status = blink::mojom::CommitResult::Ok;
   WebHistoryItem item_for_history_navigation;
 
-  if (common_params->navigation_type ==
+  if (navigation_state->common_params().navigation_type ==
       blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT) {
-    DCHECK(blink::PageState::CreateFromEncodedData(commit_params->page_state)
+    DCHECK(blink::PageState::CreateFromEncodedData(
+               navigation_state->commit_params().page_state)
                .IsValid());
     // We must know the nav entry ID of the page we are navigating back to,
     // which should be the case because history navigations are routed via the
     // browser.
-    DCHECK_NE(0, commit_params->nav_entry_id);
-    DCHECK(!common_params->is_history_navigation_in_new_child_frame);
+    DCHECK_NE(0, navigation_state->commit_params().nav_entry_id);
+    DCHECK(!navigation_state->common_params()
+                .is_history_navigation_in_new_child_frame);
     commit_status = PrepareForHistoryNavigationCommit(
-        *common_params, *commit_params, &item_for_history_navigation,
-        &load_type);
+        navigation_state->common_params(), navigation_state->commit_params(),
+        &item_for_history_navigation, &load_type);
   }
 
   if (commit_status == blink::mojom::CommitResult::Ok) {
@@ -3036,45 +3048,47 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // Same-document navigations on data URLs loaded with a valid base URL
     // should keep the base URL as document URL.
     bool use_base_url_for_data_url =
-        !common_params->base_url_for_data_url.is_empty();
+        !navigation_state->common_params().base_url_for_data_url.is_empty();
 #if BUILDFLAG(IS_ANDROID)
-    use_base_url_for_data_url |= !commit_params->data_url_as_string.empty();
+    use_base_url_for_data_url |=
+        !navigation_state->commit_params().data_url_as_string.empty();
 #endif
 
     GURL url;
     if (is_main_frame_ && use_base_url_for_data_url) {
-      url = common_params->base_url_for_data_url;
+      url = navigation_state->common_params().base_url_for_data_url;
     } else {
-      url = common_params->url;
+      url = navigation_state->common_params().url;
     }
-    bool is_client_redirect =
-        !!(common_params->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
-    bool started_with_transient_activation = common_params->has_user_gesture;
-    bool is_browser_initiated = commit_params->is_browser_initiated;
+    bool is_client_redirect = !!(navigation_state->common_params().transition &
+                                 ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+    bool started_with_transient_activation =
+        navigation_state->common_params().has_user_gesture;
+    bool is_browser_initiated =
+        navigation_state->commit_params().is_browser_initiated;
     absl::optional<blink::scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id =
-            commit_params->soft_navigation_heuristics_task_id;
+            navigation_state->commit_params()
+                .soft_navigation_heuristics_task_id;
 
     WebSecurityOrigin initiator_origin;
-    if (common_params->initiator_origin)
-      initiator_origin = common_params->initiator_origin.value();
-
-    DocumentState* document_state =
-        DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
-    // This is a same-document navigation coming from the browser process (as
-    // opposed to a fragment link click, which would have been handled
-    // synchronously in the renderer process), therefore
-    // |was_initiated_in_this_frame| must be false.
-    document_state->set_navigation_state(NavigationState::Create(
-        std::move(common_params), std::move(commit_params),
-        mojom::NavigationClient::CommitNavigationCallback(), nullptr,
-        false /* was_initiated_in_this_frame */));
+    if (navigation_state->common_params().initiator_origin) {
+      initiator_origin =
+          navigation_state->common_params().initiator_origin.value();
+    }
 
     // Load the request.
     commit_status = frame_->CommitSameDocumentNavigation(
         url, load_type, item_for_history_navigation, is_client_redirect,
         started_with_transient_activation, initiator_origin,
         is_browser_initiated, soft_navigation_heuristics_task_id);
+
+    // If `commit_status` is Ok, RunCommitSameDocumentNavigationCallback() was
+    // called in DidCommitNavigationInternal(), and no further work is needed
+    // here.
+    if (commit_status == blink::mojom::CommitResult::Ok) {
+      return;
+    }
 
     // The load of the URL can result in this frame being removed. Use a
     // WeakPtr as an easy way to detect whether this has occured. If so, this
@@ -3084,12 +3098,13 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
       return;
   }
 
-  std::move(callback).Run(commit_status);
+  DCHECK_NE(commit_status, blink::mojom::CommitResult::Ok);
+  navigation_state->RunCommitSameDocumentNavigationCallback(commit_status);
+  document_state->clear_navigation_state();
 
   // The browser expects the frame to be loading this navigation. Inform it
   // that the load stopped if needed.
-  if (frame_ && !frame_->IsLoading() &&
-      commit_status != blink::mojom::CommitResult::Ok) {
+  if (frame_ && !frame_->IsLoading()) {
     GetFrameHost()->DidStopLoading();
   }
 }
@@ -4839,13 +4854,17 @@ void RenderFrameImpl::DidCommitNavigationInternal(
       commit_type, transition, permissions_policy_header,
       document_policy_header, embedding_token);
 
+  NavigationState* navigation_state =
+      DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
+          ->navigation_state();
   if (same_document_params) {
     GetFrameHost()->DidCommitSameDocumentNavigation(
         std::move(params), std::move(same_document_params));
+    // This will be a noop if this same document navigation is a synchronous
+    // renderer-initiated commit.
+    navigation_state->RunCommitSameDocumentNavigationCallback(
+        blink::mojom::CommitResult::Ok);
   } else {
-    NavigationState* navigation_state =
-        DocumentState::FromDocumentLoader(frame_->GetDocumentLoader())
-            ->navigation_state();
     if (navigation_state->has_navigation_client()) {
       navigation_state->RunCommitNavigationCallback(
           std::move(params), std::move(interface_params));
