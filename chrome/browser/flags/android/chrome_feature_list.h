@@ -108,7 +108,6 @@ BASE_DECLARE_FEATURE(kNotificationPermissionBottomSheet);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
 BASE_DECLARE_FEATURE(kOmniboxConsumesImeInsets);
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
-BASE_DECLARE_FEATURE(kOmniboxScrimOnTablets);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);
 BASE_DECLARE_FEATURE(kBookmarksImprovedSaveFlow);

@@ -5387,11 +5387,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "omnibox-scrim-on-tablets",
-    "owners": [ "pnoland", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-search-client-prefetch",
     "owners": ["ryansturm", "chrome-brapp-loading@google.com"],
     "expiry_milestone": 120

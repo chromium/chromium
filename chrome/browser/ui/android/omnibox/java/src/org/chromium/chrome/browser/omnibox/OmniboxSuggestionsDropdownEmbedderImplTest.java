@@ -122,8 +122,14 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_SCRIM_ON_TABLETS})
-    public void testRecalculateOmniboxAlignment_phone_tabletScrimEnabled() {
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    public void
+    testRecalculateOmniboxAlignment_phoneRevampEnabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
         doReturn(60).when(mHorizontalAlignmentView).getTop();
@@ -147,8 +153,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @Config(qualifiers = "w600dp-h820dp")
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-            ChromeFeatureList.OMNIBOX_SCRIM_ON_TABLETS})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -174,8 +179,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-            ChromeFeatureList.OMNIBOX_SCRIM_ON_TABLETS})
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
     @CommandLineFlags.
     Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
             "force-fieldtrials=Study/Group",
@@ -202,8 +206,14 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
     @Test
     @Config(qualifiers = "w600dp-h820dp")
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_SCRIM_ON_TABLETS})
-    public void testRecalculateOmniboxAlignment_tabletRevampEnabled() {
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    public void
+    testRecalculateOmniboxAlignment_tabletRevampEnabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(40).when(mHorizontalAlignmentView).getLeft();
         doReturn(60).when(mHorizontalAlignmentView).getTop();

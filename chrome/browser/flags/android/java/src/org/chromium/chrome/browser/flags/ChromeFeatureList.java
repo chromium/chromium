@@ -389,7 +389,6 @@ public abstract class ChromeFeatureList {
             "OmniboxRemoveExcessiveRecycledViewClearCalls";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
-    public static final String OMNIBOX_SCRIM_ON_TABLETS = "OmniboxScrimOnTablets";
     public static final String OPAQUE_ORIGIN_FOR_INCOMING_INTENTS =
             "OpaqueOriginForIncomingIntents";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
