@@ -43,6 +43,9 @@ constexpr int kInitFactor = 2;
 constexpr int kInitFactor = 1;
 #endif
 
+// Software rasterizer runs slower than hardware accelerated.
+constexpr int kSoftwareRenderingFactor = 2;
+
 }  // namespace gpu
 
 #endif  // GPU_IPC_COMMON_GPU_WATCHDOG_TIMEOUT_H_
