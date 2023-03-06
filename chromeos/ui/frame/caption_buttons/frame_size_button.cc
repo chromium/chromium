@@ -106,7 +106,9 @@ class FrameSizeButton::PieAnimationView : public views::View,
 
     animation_.Reset(0.0);
     // `SlideAnimation` is unaffected by debug tools such as
-    // "--ui-slow-animations" flag, so manually multiply the duration here.
+    // "--ui-slow-animations" flag, so manually multiply the duration here. Note
+    // that this will also cause `AnimationEnded` to run immediately if the test
+    // is using zero duration.
     animation_.SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration);
     animation_.Show();
@@ -399,7 +401,7 @@ void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
   if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
-      chromeos::TabletState::Get()->InTabletMode()) {
+      chromeos::TabletState::Get()->InTabletMode() || IsMultitaskMenuShown()) {
     return;
   }
 

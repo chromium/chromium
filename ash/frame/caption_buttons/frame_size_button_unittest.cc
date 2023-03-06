@@ -899,4 +899,19 @@ TEST_F(MultitaskMenuTest, EntryTypeHistogram) {
   histogram_tester.ExpectTotalCount(chromeos::GetEntryTypeHistogramName(), 3);
 }
 
+// Tests that we do not create a new widget when hovering on the size button
+// when the multitask menu is already opened.
+TEST_F(MultitaskMenuTest, HoverWhenMenuAlreadyShown) {
+  ShowMultitaskMenu();
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+
+  // Ensure the mouse is not already on the size button then move it back on.
+  // The menu should be the same one opened beforehand.
+  GetEventGenerator()->MoveMouseTo(
+      size_button()->GetBoundsInScreen().bottom_right() + gfx::Vector2d(2, 2));
+  GetEventGenerator()->MoveMouseTo(CenterPointInScreen(size_button()));
+  EXPECT_EQ(multitask_menu, GetMultitaskMenu());
+}
+
 }  // namespace ash
