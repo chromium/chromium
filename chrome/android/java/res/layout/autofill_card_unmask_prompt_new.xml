@@ -164,7 +164,7 @@ found in the LICENSE file.
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="16dp"
-                        android:importantForAccessibility="no" />
+                        tools:ignore="contentDescription" />
 
                     <TextView
                         android:id="@+id/new_card_link"

@@ -72,6 +72,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   int GetGooglePayImageRid() const override;
   bool ShouldOfferWebauthn() const override;
   bool GetWebauthnOfferStartState() const override;
+  std::u16string GetCvcImageAnnouncement() const override;
 #endif
   bool InputCvcIsValid(const std::u16string& input_text) const override;
   bool InputExpirationIsValid(const std::u16string& month,

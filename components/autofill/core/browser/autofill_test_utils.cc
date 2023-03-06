@@ -643,6 +643,14 @@ CreditCard GetMaskedServerCardWithNonLegacyId() {
   return credit_card;
 }
 
+CreditCard GetMaskedServerCardVisa() {
+  CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "a123");
+  test::SetCreditCardInfo(&credit_card, "Bonnie Parker", "1111" /* Visa */,
+                          NextMonth().c_str(), NextYear().c_str(), "1");
+  credit_card.SetNetworkForMaskedCard(kVisaCard);
+  return credit_card;
+}
+
 CreditCard GetMaskedServerCardAmex() {
   CreditCard credit_card(CreditCard::MASKED_SERVER_CARD, "b456");
   test::SetCreditCardInfo(&credit_card, "Justin Thyme", "8431" /* Amex */,

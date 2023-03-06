@@ -302,6 +302,7 @@ CreditCard GetIncompleteCreditCard();
 CreditCard GetMaskedServerCard();
 CreditCard GetMaskedServerCardWithNonLegacyId();
 CreditCard GetMaskedServerCardWithLegacyId();
+CreditCard GetMaskedServerCardVisa();
 CreditCard GetMaskedServerCardAmex();
 CreditCard GetMaskedServerCardWithNickname();
 CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber();

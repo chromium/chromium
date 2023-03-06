@@ -163,6 +163,9 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
       url::GURLAndroid::FromNativeGURL(env, controller_->GetCardArtUrl());
   ScopedJavaLocalRef<jstring> confirm = base::android::ConvertUTF16ToJavaString(
       env, controller_->GetOkButtonLabel());
+  ScopedJavaLocalRef<jstring> cvc_image_announcement =
+      base::android::ConvertUTF16ToJavaString(
+          env, controller_->GetCvcImageAnnouncement());
 
   return java_object_internal_ = Java_CardUnmaskBridge_create(
              env, reinterpret_cast<intptr_t>(this), dialog_title, instructions,
@@ -171,6 +174,7 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
              card_name, card_last_four_digits, card_expiration, card_art_url,
              confirm,
              ResourceMapper::MapToJavaDrawableId(controller_->GetCvcImageRid()),
+             cvc_image_announcement,
              ResourceMapper::MapToJavaDrawableId(
                  controller_->GetGooglePayImageRid()),
              controller_->IsVirtualCard(),
