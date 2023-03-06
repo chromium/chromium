@@ -180,7 +180,6 @@ TEST_F(HistoryClustersPageHandlerTest, GetFakeCluster) {
       },
       {});
 
-  const history::Cluster kSampleCluster = SampleCluster();
   test_history_clusters_service().SetClustersToReturn({});
   history_clusters::mojom::ClusterPtr cluster_mojom;
   base::MockCallback<HistoryClustersPageHandler::GetClusterCallback> callback;
@@ -230,6 +229,30 @@ TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
+}
+
+TEST_F(HistoryClustersPageHandlerTest,
+       NoClusterReturnedForInvalidModuleDataParam) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {
+          {ntp_features::kNtpHistoryClustersModule,
+           {{ntp_features::kNtpHistoryClustersModuleDataParam, "0"}}},
+      },
+      {});
+
+  const history::Cluster kSampleCluster = SampleCluster();
+  test_history_clusters_service().SetClustersToReturn({kSampleCluster});
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  base::MockCallback<HistoryClustersPageHandler::GetClusterCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cluster_mojom](history_clusters::mojom::ClusterPtr cluster_arg) {
+            cluster_mojom = std::move(cluster_arg);
+          }));
+  handler().GetCluster(callback.Get());
+  ASSERT_FALSE(cluster_mojom);
 }
 
 TEST_F(HistoryClustersPageHandlerTest, NoClusters) {
