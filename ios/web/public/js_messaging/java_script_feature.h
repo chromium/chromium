@@ -148,6 +148,11 @@ class JavaScriptFeature {
   // the WebFrames within WebFramesManager match the environment where the
   // scripts of this feature are executed. This is partifularly important if
   // frameIds are used which are not consistent across content worlds.
+  // NOTE: This helper only works for features which are defined to live in a
+  // specific content world. To obtain a WebFramesManager for a feature that is
+  // configured with ContentWorld::kAllContentWorlds, obtain the frames manager
+  // from a higher level feature or obtain the WebFramesManager from the
+  // WebState and specify the content world directly.
   WebFramesManager* GetWebFramesManager(WebState* web_state);
 
   // Returns a vector of scripts used by this feature.

@@ -10,7 +10,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
-#import "ios/web/js_messaging/java_script_content_world_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/js_messaging/web_frame_internal.h"
@@ -142,12 +141,7 @@ ContentWorld JavaScriptFeature::GetSupportedContentWorld() const {
 }
 
 WebFramesManager* JavaScriptFeature::GetWebFramesManager(WebState* web_state) {
-  JavaScriptContentWorld* java_script_content_world =
-      JavaScriptFeatureManager::FromBrowserState(web_state->GetBrowserState())
-          ->GetContentWorldForFeature(this);
-  ContentWorld content_world = ContentWorldIdentifierForWKContentWorld(
-      java_script_content_world->GetWKContentWorld());
-  return web_state->GetWebFramesManager(content_world);
+  return web_state->GetWebFramesManager(GetSupportedContentWorld());
 }
 
 const std::vector<const JavaScriptFeature::FeatureScript>
