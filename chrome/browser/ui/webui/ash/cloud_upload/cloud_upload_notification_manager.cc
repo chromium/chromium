@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -48,6 +50,10 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(
       base::NumberToString(
           ++CloudUploadNotificationManager::notification_manager_counter_);
 
+  // Set the system notification source display name to "Files".
+  display_source_ =
+      l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
+
   // Keep the new `CloudUploadNotificationManager` instance alive at least until
   // `OnNotificationManagerDone` executes.
   callback_ =
@@ -75,7 +81,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
   return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
-      base::UTF8ToUTF16(message), /*display_source=*/std::u16string(),
+      base::UTF8ToUTF16(message), /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
@@ -96,7 +102,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
-      /*display_source=*/std::u16string(),
+      /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
@@ -117,7 +123,7 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
-      /*display_source=*/std::u16string(),
+      /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/

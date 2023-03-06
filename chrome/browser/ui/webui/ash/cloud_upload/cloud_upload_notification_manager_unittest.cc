@@ -11,6 +11,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace ash::cloud_upload {
 
@@ -50,21 +52,30 @@ class CloudUploadNotificationManagerTest : public testing::Test {
   bool HaveProgressNotification() {
     return notification().has_value() &&
            notification()->type() ==
-               message_center::NotificationType::NOTIFICATION_TYPE_PROGRESS;
+               message_center::NotificationType::NOTIFICATION_TYPE_PROGRESS &&
+           notification()->display_source() ==
+               l10n_util::GetStringUTF16(
+                   IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
   }
 
   bool HaveCompleteNotification() {
     return notification().has_value() &&
            notification()->type() ==
                message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE &&
-           notification()->title().starts_with(u"Move completed");
+           notification()->title().starts_with(u"Move completed") &&
+           notification()->display_source() ==
+               l10n_util::GetStringUTF16(
+                   IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
   }
 
   bool HaveErrorNotification() {
     return notification().has_value() &&
            notification()->type() ==
                message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE &&
-           notification()->title().starts_with(u"Failed");
+           notification()->title().starts_with(u"Failed") &&
+           notification()->display_source() ==
+               l10n_util::GetStringUTF16(
+                   IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
   }
 
   content::BrowserTaskEnvironment task_environment_{

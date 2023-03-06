@@ -100,6 +100,7 @@ class CloudUploadNotificationManager
   std::string cloud_provider_name_;
   std::string notification_id_;
   std::string target_app_name_;
+  std::u16string display_source_;
   base::OnceClosure callback_;
   base::OneShotTimer in_progress_timer_;
   base::OneShotTimer complete_notification_timer_;

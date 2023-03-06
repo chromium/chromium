@@ -1736,4 +1736,7 @@
   <message name="IDS_FILE_BROWSER_DRIVE_MOVED_FILE_NUDGE" desc="Educational text that appears in the navigation tree when a file is automatically moved to Google Drive by the Office Cloud Upload feature/dialog.">
     Recently opened Microsoft files have moved to Google Drive
   </message>
+  <message name="IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES" desc="The source of a system-generated notification from the Files app, as displayed to the user.">
+  Files
+  </message>
 </grit-part>
