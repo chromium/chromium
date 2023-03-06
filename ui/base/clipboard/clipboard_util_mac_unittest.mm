@@ -101,6 +101,32 @@ TEST_F(ClipboardUtilMacTest, PasteboardItemWithFilePath) {
   ASSERT_EQ(1u, titles.count);
 }
 
+TEST_F(ClipboardUtilMacTest, PasteboardItemDisplayName) {
+  NSURL* tempdir_url = [NSURL fileURLWithPath:NSTemporaryDirectory()
+                                  isDirectory:YES];
+  ASSERT_TRUE(tempdir_url);
+  NSURL* file_url = [tempdir_url URLByAppendingPathComponent:@"a:b.txt"
+                                                 isDirectory:NO];
+  ASSERT_TRUE(tempdir_url);
+  NSString* url_string = file_url.absoluteString;
+
+  NSPasteboardItem* item = [[[NSPasteboardItem alloc] init] autorelease];
+  [item setString:url_string forType:NSPasteboardTypeFileURL];
+
+  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
+  [pasteboard->get() writeObjects:@[ item ]];
+
+  NSArray* urls = nil;
+  NSArray* titles = nil;
+  ClipboardUtil::URLsAndTitlesFromPasteboard(
+      pasteboard->get(), /*include_files=*/true, &urls, &titles);
+
+  ASSERT_EQ(1u, urls.count);
+  EXPECT_NSEQ(url_string, urls[0]);
+  ASSERT_EQ(1u, titles.count);
+  EXPECT_NSEQ(@"a/b.txt", titles[0]);
+}
+
 TEST_F(ClipboardUtilMacTest, CheckForLeak) {
   for (int i = 0; i < 10000; ++i) {
     @autoreleasepool {
