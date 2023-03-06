@@ -88,7 +88,7 @@ double GetEntityBackgroundScale() {
   DCHECK(OmniboxFieldTrial::kSquareSuggestIconEntities.Get());
   double scale = OmniboxFieldTrial::kSquareSuggestIconEntitiesScale.Get();
   DCHECK_GT(scale, 0);
-  DCHECK_LT(scale, 1);
+  DCHECK_LE(scale, 1);
   return scale;
 }
 
