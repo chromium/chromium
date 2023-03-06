@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <unordered_set>
 #include <utility>
 
@@ -179,8 +178,8 @@ BluetoothSocketCreateFunction::~BluetoothSocketCreateFunction() = default;
 ExtensionFunction::ResponseAction BluetoothSocketCreateFunction::Run() {
   DCHECK_CURRENTLY_ON(work_thread_id());
 
-  auto params = bluetooth_socket::Create::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  auto params = bluetooth_socket::Create::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   BluetoothApiSocket* socket = new BluetoothApiSocket(extension_id());
 
@@ -200,8 +199,8 @@ BluetoothSocketUpdateFunction::BluetoothSocketUpdateFunction() = default;
 BluetoothSocketUpdateFunction::~BluetoothSocketUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketUpdateFunction::Run() {
-  auto params = bluetooth_socket::Update::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  auto params = bluetooth_socket::Update::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   BluetoothApiSocket* socket = GetSocket(params->socket_id);
   if (!socket)
@@ -216,8 +215,8 @@ BluetoothSocketSetPausedFunction::BluetoothSocketSetPausedFunction() = default;
 BluetoothSocketSetPausedFunction::~BluetoothSocketSetPausedFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketSetPausedFunction::Run() {
-  auto params = bluetooth_socket::SetPaused::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  auto params = bluetooth_socket::SetPaused::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   BluetoothSocketEventDispatcher* socket_event_dispatcher =
       GetSocketEventDispatcher(browser_context());
@@ -332,9 +331,8 @@ const std::string& BluetoothSocketListenUsingRfcommFunction::uuid() const {
 }
 
 bool BluetoothSocketListenUsingRfcommFunction::CreateParams() {
-  params_ =
-      bluetooth_socket::ListenUsingRfcomm::Params::CreateDeprecated(args());
-  return params_ != nullptr;
+  params_ = bluetooth_socket::ListenUsingRfcomm::Params::Create(args());
+  return params_.has_value();
 }
 
 void BluetoothSocketListenUsingRfcommFunction::CreateService(
@@ -373,9 +371,8 @@ const std::string& BluetoothSocketListenUsingL2capFunction::uuid() const {
 }
 
 bool BluetoothSocketListenUsingL2capFunction::CreateParams() {
-  params_ =
-      bluetooth_socket::ListenUsingL2cap::Params::CreateDeprecated(args());
-  return params_ != nullptr;
+  params_ = bluetooth_socket::ListenUsingL2cap::Params::Create(args());
+  return params_.has_value();
 }
 
 void BluetoothSocketListenUsingL2capFunction::CreateService(
@@ -418,8 +415,8 @@ bool BluetoothSocketAbstractConnectFunction::PreRunValidation(
   if (!BluetoothSocketAsyncApiFunction::PreRunValidation(error))
     return false;
 
-  params_ = bluetooth_socket::Connect::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(params_.get());
+  params_ = bluetooth_socket::Connect::Params::Create(args());
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(params_);
 
   socket_event_dispatcher_ = GetSocketEventDispatcher(browser_context());
   return socket_event_dispatcher_ != nullptr;
@@ -512,8 +509,8 @@ BluetoothSocketDisconnectFunction::~BluetoothSocketDisconnectFunction() =
 ExtensionFunction::ResponseAction BluetoothSocketDisconnectFunction::Run() {
   DCHECK_CURRENTLY_ON(work_thread_id());
 
-  auto params = bluetooth_socket::Disconnect::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  auto params = bluetooth_socket::Disconnect::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   BluetoothApiSocket* socket = GetSocket(params->socket_id);
   if (!socket)
@@ -534,8 +531,8 @@ BluetoothSocketCloseFunction::BluetoothSocketCloseFunction() = default;
 BluetoothSocketCloseFunction::~BluetoothSocketCloseFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketCloseFunction::Run() {
-  auto params = bluetooth_socket::Close::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  auto params = bluetooth_socket::Close::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   BluetoothApiSocket* socket = GetSocket(params->socket_id);
   if (!socket)
     return RespondNow(Error(kSocketNotFoundError));
@@ -552,8 +549,8 @@ BluetoothSocketSendFunction::~BluetoothSocketSendFunction() = default;
 ExtensionFunction::ResponseAction BluetoothSocketSendFunction::Run() {
   DCHECK_CURRENTLY_ON(work_thread_id());
 
-  params_ = bluetooth_socket::Send::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  params_ = bluetooth_socket::Send::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params_);
 
   io_buffer_size_ = params_->data.size();
   io_buffer_ = base::MakeRefCounted<net::WrappedIOBuffer>(
@@ -586,8 +583,8 @@ BluetoothSocketGetInfoFunction::BluetoothSocketGetInfoFunction() = default;
 BluetoothSocketGetInfoFunction::~BluetoothSocketGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction BluetoothSocketGetInfoFunction::Run() {
-  auto params = bluetooth_socket::GetInfo::Params::CreateDeprecated(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  auto params = bluetooth_socket::GetInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   BluetoothApiSocket* socket = GetSocket(params->socket_id);
   if (!socket)

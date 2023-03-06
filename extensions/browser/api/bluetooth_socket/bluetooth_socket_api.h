@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -172,7 +171,7 @@ class BluetoothSocketListenUsingRfcommFunction
   ~BluetoothSocketListenUsingRfcommFunction() override;
 
  private:
-  std::unique_ptr<bluetooth_socket::ListenUsingRfcomm::Params> params_;
+  absl::optional<bluetooth_socket::ListenUsingRfcomm::Params> params_;
 };
 
 class BluetoothSocketListenUsingL2capFunction
@@ -200,7 +199,7 @@ class BluetoothSocketListenUsingL2capFunction
   ~BluetoothSocketListenUsingL2capFunction() override;
 
  private:
-  std::unique_ptr<bluetooth_socket::ListenUsingL2cap::Params> params_;
+  absl::optional<bluetooth_socket::ListenUsingL2cap::Params> params_;
 };
 
 class BluetoothSocketAbstractConnectFunction :
@@ -226,7 +225,7 @@ class BluetoothSocketAbstractConnectFunction :
  private:
   virtual void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
-  std::unique_ptr<bluetooth_socket::Connect::Params> params_;
+  absl::optional<bluetooth_socket::Connect::Params> params_;
   raw_ptr<BluetoothSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
 };
 
@@ -306,7 +305,7 @@ class BluetoothSocketSendFunction : public BluetoothSocketAsyncApiFunction {
   void OnError(BluetoothApiSocket::ErrorReason reason,
                const std::string& message);
 
-  std::unique_ptr<bluetooth_socket::Send::Params> params_;
+  absl::optional<bluetooth_socket::Send::Params> params_;
   scoped_refptr<net::IOBuffer> io_buffer_;
   size_t io_buffer_size_;
 };
