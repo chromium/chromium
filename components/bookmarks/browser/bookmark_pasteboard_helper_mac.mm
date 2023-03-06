@@ -145,7 +145,7 @@ bool ReadStandardBookmarks(NSPasteboard* pb,
                            std::vector<BookmarkNodeData::Element>* elements) {
   NSArray* urls = nil;
   NSArray* titles = nil;
-  if (!ui::clipboard_util::URLsAndTitlesFromPasteboard(
+  if (!ui::ClipboardUtil::URLsAndTitlesFromPasteboard(
           pb, /*include_files=*/false, &urls, &titles)) {
     return false;
   }
@@ -240,7 +240,7 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromBookmarks(
   CollectUrlsAndTitlesOfBookmarks(elements, url_titles, urls);
 
   NSArray<NSPasteboardItem*>* items =
-      ui::clipboard_util::PasteboardItemsFromUrls(urls, url_titles);
+      ui::ClipboardUtil::PasteboardItemsFromUrls(urls, url_titles);
 
   // 2. The plist and path for Chromium use.
 

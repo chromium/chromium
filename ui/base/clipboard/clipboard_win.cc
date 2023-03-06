@@ -425,8 +425,8 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
   size_t html_start = std::string::npos;
   size_t start_index = std::string::npos;
   size_t end_index = std::string::npos;
-  clipboard_util::CFHtmlExtractMetadata(cf_html, src_url, &html_start,
-                                        &start_index, &end_index);
+  ClipboardUtil::CFHtmlExtractMetadata(cf_html, src_url, &html_start,
+                                       &start_index, &end_index);
 
   // This might happen if the contents of the clipboard changed and CF_HTML is
   // no longer available.
@@ -535,7 +535,7 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
     return;
 
   // TODO(crbug.com/1178671): Refactor similar code in clipboard_utils_win:
-  // clipboard_util::GetFilenames() and reuse rather than duplicate.
+  // ClipboardUtil::GetFilenames() and reuse rather than duplicate.
   HANDLE data = ::GetClipboardData(
       ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat);
   if (data) {
@@ -674,7 +674,7 @@ void ClipboardWin::WriteHTML(const char* markup_data,
   if (url_len > 0)
     url.assign(url_data, url_len);
 
-  std::string html_fragment = clipboard_util::HtmlToCFHtml(
+  std::string html_fragment = ClipboardUtil::HtmlToCFHtml(
       markup, url, ClipboardContentType::kSanitized);
   HGLOBAL glob = CreateGlobalData(html_fragment);
 
@@ -714,7 +714,7 @@ void ClipboardWin::WriteRTF(const char* rtf_data, size_t data_len) {
 }
 
 void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
-  STGMEDIUM storage = clipboard_util::CreateStorageForFileNames(filenames);
+  STGMEDIUM storage = ClipboardUtil::CreateStorageForFileNames(filenames);
   if (storage.tymed == TYMED_NULL)
     return;
   WriteToClipboard(ClipboardFormatType::CFHDropType(), storage.hGlobal);

@@ -23,7 +23,7 @@ class GURL;
 namespace ui {
 
 // Contains helper functions for working with the clipboard and IDataObjects.
-namespace clipboard_util {
+namespace ClipboardUtil {
 
 /////////////////////////////////////////////////////////////////////////////
 // These methods check to see if |data_object| has the requested type.
@@ -120,7 +120,7 @@ void CFHtmlExtractMetadata(const std::string& cf_html,
                            size_t* fragment_start,
                            size_t* fragment_end);
 
-}  // namespace clipboard_util
+}  // namespace ClipboardUtil
 
 }  // namespace ui
 

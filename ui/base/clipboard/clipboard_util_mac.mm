@@ -192,7 +192,7 @@ URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
 
     NSNumber* file_size = resource_values[NSURLFileSizeKey];
     if (file_size.unsignedLongValue >
-        clipboard_util::internal::kMaximumParsableFileSize) {
+        ClipboardUtil::internal::kMaximumParsableFileSize) {
       return {};
     }
 
@@ -211,7 +211,7 @@ URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
 
     NSNumber* file_size = resource_values[NSURLFileSizeKey];
     if (file_size.unsignedLongValue >
-        clipboard_util::internal::kMaximumParsableFileSize) {
+        ClipboardUtil::internal::kMaximumParsableFileSize) {
       return {};
     }
 
@@ -234,7 +234,7 @@ URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
   }
 
   std::string found_url =
-      clipboard_util::internal::ExtractURLFromURLFileContents(
+      ClipboardUtil::internal::ExtractURLFromURLFileContents(
           base::SysNSStringToUTF8(contents));
   if (found_url.empty()) {
     return {};
@@ -341,7 +341,7 @@ UniquePasteboard::~UniquePasteboard() {
   [pasteboard_ releaseGlobally];
 }
 
-namespace clipboard_util {
+namespace ClipboardUtil {
 
 NSArray<NSPasteboardItem*>* PasteboardItemsFromUrls(
     NSArray<NSString*>* urls,
@@ -477,6 +477,6 @@ NSString* GetHTMLFromRTFOnPasteboard(NSPasteboard* pboard) {
                                 encoding:NSUTF8StringEncoding] autorelease];
 }
 
-}  // namespace clipboard_util
+}  // namespace ClipboardUtil
 
 }  // namespace ui

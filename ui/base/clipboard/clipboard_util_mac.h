@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) UniquePasteboard
   base::scoped_nsobject<NSPasteboard> pasteboard_;
 };
 
-namespace clipboard_util {
+namespace ClipboardUtil {
 
 // Returns an array of NSPasteboardItems that represent the given `urls` and
 // `titles`.
@@ -72,7 +72,7 @@ NSPasteboard* PasteboardFromBuffer(ClipboardBuffer buffer);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 NSString* GetHTMLFromRTFOnPasteboard(NSPasteboard* pboard);
 
-}  // namespace clipboard_util
+}  // namespace ClipboardUtil
 
 }  // namespace ui
 
