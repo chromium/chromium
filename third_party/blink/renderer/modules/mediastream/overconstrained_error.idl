@@ -4,13 +4,8 @@
 
 // https://w3c.github.io/mediacapture-main/#overconstrainederror-object
 
-// TODO(guidou): OverconstrainedError should be an Error subclass and not an
-// interface. http://crbug.com/769726
-[
-    Exposed=Window
-] interface OverconstrainedError {
-    constructor(DOMString constraint, DOMString message);
-    readonly attribute DOMString name;
-    readonly attribute DOMString? message;
-    readonly attribute DOMString? constraint;
+[Exposed=Window]
+interface OverconstrainedError: DOMException {
+    constructor(DOMString constraint, optional DOMString message = "");
+    readonly attribute DOMString constraint;
 };

@@ -165,6 +165,11 @@ const struct DOMExceptionEntry {
     {DOMExceptionCode::kGPUPipelineError, "GPUPipelineError",
      "A WebGPU pipeline creation failed."},
 
+    // Media Capture and Streams API
+    // https://w3c.github.io/mediacapture-main/#overconstrainederror-interface
+    {DOMExceptionCode::kOverconstrainedError, "OverconstrainedError",
+     "The desired set of constraints/capabilities cannot be met."}
+
     // Extra comment to keep the end of the initializer list on its own line.
 };
 

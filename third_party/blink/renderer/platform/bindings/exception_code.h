@@ -120,6 +120,10 @@ enum class DOMExceptionCode : ExceptionCode {
   // WebGPU https://www.w3.org/TR/webgpu/
   kGPUPipelineError,
 
+  // Media Capture and Streams API
+  // https://w3c.github.io/mediacapture-main/#overconstrainederror-interface
+  kOverconstrainedError,
+
   kNumOfCodes,
 };
 
