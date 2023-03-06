@@ -13753,9 +13753,19 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BrowsingTopicsApiAccessFailureReason">
+  <obsolete>
+    Deprecated 3/2023 in favor of BrowsingTopicsApiAccessResult.
+  </obsolete>
   <int value="0" label="Invalid requesting context"/>
   <int value="1" label="State not ready"/>
   <int value="2" label="Access disallowed by settings"/>
+</enum>
+
+<enum name="BrowsingTopicsApiAccessResult">
+  <int value="0" label="Invalid requesting context"/>
+  <int value="1" label="State not ready"/>
+  <int value="2" label="Access disallowed by settings"/>
+  <int value="3" label="Success"/>
 </enum>
 
 <enum name="BrowsingTopicsApiActionType">

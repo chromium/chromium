@@ -30,7 +30,7 @@ void RecordInvalidRequestingContextUkmMetrics(Document& document) {
       document.UkmSourceID());
 
   builder.SetFailureReason(static_cast<int64_t>(
-      browsing_topics::ApiAccessFailureReason::kInvalidRequestingContext));
+      browsing_topics::ApiAccessResult::kInvalidRequestingContext));
   builder.Record(document.UkmRecorder());
 }
 

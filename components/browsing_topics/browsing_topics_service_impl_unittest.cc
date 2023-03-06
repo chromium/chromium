@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -325,6 +326,8 @@ class BrowsingTopicsServiceImplTest
   optimization_guide::TestPageContentAnnotator test_page_content_annotator_;
 
   std::unique_ptr<TesterBrowsingTopicsService> browsing_topics_service_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(BrowsingTopicsServiceImplTest, EmptyInitialState_CalculationScheduling) {
@@ -595,14 +598,16 @@ TEST_F(BrowsingTopicsServiceImplTest,
         /*get_topics=*/true,
         /*observe=*/true, result));
     EXPECT_TRUE(result.empty());
+    histogram_tester_.ExpectBucketCount(
+        "BrowsingTopics.Result.Status",
+        browsing_topics::ApiAccessResult::kStateNotReady, 1);
   }
 
   std::vector<ApiResultUkmMetrics> metrics_entries =
       ReadApiResultUkmMetrics(ukm_recorder);
   EXPECT_EQ(1u, metrics_entries.size());
 
-  EXPECT_EQ(metrics_entries[0].failure_reason,
-            ApiAccessFailureReason::kStateNotReady);
+  EXPECT_EQ(metrics_entries[0].failure_reason, ApiAccessResult::kStateNotReady);
   EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
   EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
   EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
@@ -844,12 +849,16 @@ TEST_F(BrowsingTopicsServiceImplTest,
       /*observe=*/true, result));
   EXPECT_TRUE(result.empty());
 
+  histogram_tester_.ExpectBucketCount(
+      "BrowsingTopics.Result.Status",
+      browsing_topics::ApiAccessResult::kAccessDisallowedBySettings, 1);
+
   std::vector<ApiResultUkmMetrics> metrics_entries =
       ReadApiResultUkmMetrics(ukm_recorder);
   EXPECT_EQ(1u, metrics_entries.size());
 
   EXPECT_EQ(metrics_entries[0].failure_reason,
-            ApiAccessFailureReason::kAccessDisallowedBySettings);
+            ApiAccessResult::kAccessDisallowedBySettings);
   EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
   EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
   EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
@@ -883,6 +892,16 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
         /*observe=*/true, result));
     EXPECT_TRUE(result.empty());
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "BrowsingTopics.Result.Status",
+      browsing_topics::ApiAccessResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.RealTopicCount", 0,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "BrowsingTopics.Result.FilteredTopicCount", 0, 1);
+  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.FakeTopicCount", 1,
+                                      0);
 
   std::vector<ApiResultUkmMetrics> metrics_entries =
       ReadApiResultUkmMetrics(ukm_recorder);
@@ -941,6 +960,16 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch_Filtered) {
       /*get_topics=*/true,
       /*observe=*/true, result));
   EXPECT_TRUE(result.empty());
+
+  histogram_tester_.ExpectBucketCount(
+      "BrowsingTopics.Result.Status",
+      browsing_topics::ApiAccessResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.RealTopicCount", 0,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "BrowsingTopics.Result.FilteredTopicCount", 1, 1);
+  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.FakeTopicCount", 1,
+                                      0);
 
   std::vector<ApiResultUkmMetrics> metrics_entries =
       ReadApiResultUkmMetrics(ukm_recorder);
@@ -1539,6 +1568,16 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_3Topics) {
   EXPECT_FALSE(metrics_entries[0].topic2.should_be_filtered());
   EXPECT_EQ(metrics_entries[0].topic2.taxonomy_version(), 1);
   EXPECT_EQ(metrics_entries[0].topic2.model_version(), 5000000000LL);
+
+  histogram_tester_.ExpectBucketCount(
+      "BrowsingTopics.Result.Status",
+      browsing_topics::ApiAccessResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.RealTopicCount", 1,
+                                      1);
+  histogram_tester_.ExpectBucketCount(
+      "BrowsingTopics.Result.FilteredTopicCount", 0, 1);
+  histogram_tester_.ExpectBucketCount("BrowsingTopics.Result.FakeTopicCount", 2,
+                                      1);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {

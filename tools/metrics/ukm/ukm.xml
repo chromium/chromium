@@ -5451,7 +5451,7 @@ be describing additional metrics about the same event.
       will be recorded iff `CandidateTopic2` is recorded.
     </summary>
   </metric>
-  <metric name="FailureReason" enum="BrowsingTopicsApiAccessFailureReason">
+  <metric name="FailureReason" enum="BrowsingTopicsApiAccessResult">
     <summary>
       The reason why the API access is not allowed.
     </summary>
