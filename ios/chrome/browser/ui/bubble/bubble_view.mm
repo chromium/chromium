@@ -160,9 +160,10 @@ UIButton* BubbleCloseButton() {
                                             kCloseButtonTopTrailingPadding -
                                             buttonImage.size.width;
   UIButton* button;
-  // setImageEdgeInsets from UIButton is deprecated since iOS 15.0, the new
-  // API uses UIButtonConfiguration to set the image inset.
-  if (@available(iOS 15.0, *)) {
+
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (@available(iOS 15, *)) {
     UIButtonConfiguration* buttonConfiguration =
         UIButtonConfiguration.plainButtonConfiguration;
     [buttonConfiguration setImage:buttonImage];
@@ -173,7 +174,9 @@ UIButton* BubbleCloseButton() {
                                               kCloseButtonTopTrailingPadding)];
     button = [UIButton buttonWithConfiguration:buttonConfiguration
                                  primaryAction:nil];
-  } else {
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
     button = [UIButton buttonWithType:UIButtonTypeSystem];
     [button setImage:buttonImage forState:UIControlStateNormal];
     [button.imageView setBounds:CGRectZero];
@@ -184,6 +187,8 @@ UIButton* BubbleCloseButton() {
                                    closeButtonBottomPadding,
                                    kCloseButtonTopTrailingPadding)];
   }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   [button setTintColor:[UIColor colorNamed:kSolidButtonTextColor]];
   [button setAccessibilityLabel:l10n_util::GetNSString(IDS_IOS_ICON_CLOSE)];
   [button setAccessibilityIdentifier:kBubbleViewCloseButtonIdentifier];
