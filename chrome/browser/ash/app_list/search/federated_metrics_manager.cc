@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/federated_metrics_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -32,7 +33,8 @@ constexpr char kExamplePrefixOnLaunch[] = "L_";
 bool IsLoggingEnabled() {
   // TODO(b/262611120): Also check user metrics opt-in/out, any other relevant
   // federated flags, etc.
-  return search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
+  return ash::features::IsFederatedServiceEnabled() &&
+         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
 }
 
 void LogAction(FederatedMetricsManager::Action action) {

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/federated/federated_service_controller.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -51,7 +52,8 @@ class FederatedMetricsManagerTest : public testing::Test {
       : scoped_fake_for_test_(&fake_service_connection_),
         app_list_notifier_(&app_list_controller_) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{search_features::
+        /*enabled_features=*/{ash::features::kFederatedService,
+                              search_features::
                                   kLauncherQueryFederatedAnalyticsPHH},
         /*disabled_features=*/{});
   }
