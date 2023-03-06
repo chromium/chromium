@@ -41,7 +41,7 @@
           }
         }]
       },
-       // Should be dropped due to the unattributed reporting origin limit.
+      // Should be dropped due to the unattributed reporting origin limit.
       {
         "timestamp": "1643235575000",
         "registration_request": {
@@ -57,6 +57,29 @@
               "destination": "https://destination1.test",
               "source_event_id": "999",
               "debug_reporting": true
+            }
+          }
+        }]
+      },
+      // Should be dropped due to the unattributed reporting origin limit is
+      // reached for one of the destinations.
+      {
+        "timestamp": "1643235575001",
+        "registration_request": {
+          "source_origin": "https://source1.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": [
+                "https://destination1.test",
+                "https://destination2.test"
+              ],
+              "source_event_id": "987",
+              "priority": "2"
             }
           }
         }]
