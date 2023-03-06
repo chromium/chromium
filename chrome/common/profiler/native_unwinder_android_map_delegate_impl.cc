@@ -8,9 +8,6 @@ NativeUnwinderAndroidMapDelegateImpl::NativeUnwinderAndroidMapDelegateImpl(
     stack_unwinder::Module* module)
     : module_(module) {
   DCHECK(module);
-  // The map delegate is created on the thread being profiled, while all its
-  // methods need to be called on the profiler thread.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 NativeUnwinderAndroidMapDelegateImpl::~NativeUnwinderAndroidMapDelegateImpl() {
@@ -20,7 +17,6 @@ NativeUnwinderAndroidMapDelegateImpl::~NativeUnwinderAndroidMapDelegateImpl() {
 
 base::NativeUnwinderAndroidMemoryRegionsMap*
 NativeUnwinderAndroidMapDelegateImpl::GetMapReference() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (reference_count_ == 0) {
     DCHECK(!memory_regions_map_);
     memory_regions_map_ = module_->CreateMemoryRegionsMap();
@@ -30,7 +26,6 @@ NativeUnwinderAndroidMapDelegateImpl::GetMapReference() {
 }
 
 void NativeUnwinderAndroidMapDelegateImpl::ReleaseMapReference() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(reference_count_, 0u);
   DCHECK(memory_regions_map_);
   if (--reference_count_ == 0) {

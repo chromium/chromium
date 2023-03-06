@@ -11,15 +11,18 @@
 #include "base/functional/callback.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
-#include "base/sequence_checker.h"
 #include "chrome/android/modules/stack_unwinder/public/module.h"
 
 // The implementation of map delegate that manages the lifecycle of
 // libunwindstack resources. It is intended that this logic lives in chrome code
 // instead of in the stack unwinder dynamic feature module. A single instance of
 // this class is expected to be there for each process. The Get/Release of
-// libunwindstack resources should happen in the same thread, i.e. the profiler
-// thread.
+// libunwindstack resources should happen in the same thread, i.e. the sampling
+// thread (`StackSamplingProfiler::SamplingThread`).
+// Note: `StackSamplingProfiler::SamplingThread` will terminate itself on idle,
+// and restarts when there is task. The restarted thread is considered a new
+// thread with a different thread id. So we cannot use `base::SequenceChecker`
+// to verify that its methods are always called in the same thread.
 class NativeUnwinderAndroidMapDelegateImpl
     : public base::NativeUnwinderAndroidMapDelegate {
  public:
@@ -36,8 +39,6 @@ class NativeUnwinderAndroidMapDelegateImpl
   uint32_t reference_count_ = 0u;
   std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap>
       memory_regions_map_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // CHROME_COMMON_PROFILER_NATIVE_UNWINDER_ANDROID_MAP_DELEGATE_IMPL_H_
