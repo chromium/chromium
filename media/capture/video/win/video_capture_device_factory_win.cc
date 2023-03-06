@@ -184,6 +184,12 @@ bool IsDeviceBlockedForMediaFoundationByDisplayName(
   return base::Contains(kDisplayNamesBlockedForMediaFoundation, display_name);
 }
 
+HMODULE ExpandEnvironmentStringsAndLoadLibrary(const wchar_t* path) {
+  wchar_t expanded_path[MAX_PATH] = {0};
+  ExpandEnvironmentStringsW(path, expanded_path, std::size(expanded_path));
+  return LoadLibraryExW(expanded_path, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+}
+
 bool LoadMediaFoundationDlls() {
   static const wchar_t* const kMfDLLs[] = {
       L"%WINDIR%\\system32\\mf.dll", L"%WINDIR%\\system32\\mfplat.dll",
@@ -194,12 +200,19 @@ bool LoadMediaFoundationDlls() {
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
 
+  // Load required DLLs.
   for (const wchar_t* kMfDLL : kMfDLLs) {
-    wchar_t path[MAX_PATH] = {0};
-    ExpandEnvironmentStringsW(kMfDLL, path, std::size(path));
-    if (!LoadLibraryExW(path, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH))
+    if (!ExpandEnvironmentStringsAndLoadLibrary(kMfDLL)) {
       return false;
+    }
   }
+
+  // Load optional DLLs whose availability depends on Windows version.
+  if (base::win::GetVersion() >= base::win::Version::WIN11_22H2) {
+    ExpandEnvironmentStringsAndLoadLibrary(
+        L"%WINDIR%\\system32\\mfsensorgroup.dll");
+  }
+
   return true;
 }
 
