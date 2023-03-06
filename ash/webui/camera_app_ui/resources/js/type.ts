@@ -112,23 +112,23 @@ export enum MimeType {
  */
 export enum Mode {
   PHOTO = 'photo',
-  VIDEO = 'video',
   PORTRAIT = 'portrait',
   SCAN = 'scan',
+  VIDEO = 'video',
 }
 
 /**
  * Camera facings.
  */
 export enum Facing {
-  USER = 'user',
   ENVIRONMENT = 'environment',
   EXTERNAL = 'external',
+  USER = 'user',
   // VIRTUAL_{facing} is for labeling video device for configuring extra stream
   // from corresponding {facing} video device.
-  VIRTUAL_USER = 'virtual_user',
   VIRTUAL_ENV = 'virtual_environment',
   VIRTUAL_EXT = 'virtual_external',
+  VIRTUAL_USER = 'virtual_user',
 }
 
 export enum ViewName {
@@ -151,8 +151,8 @@ export enum ViewName {
 }
 
 export enum VideoType {
-  MP4 = 'mp4',
   GIF = 'gif',
+  MP4 = 'mp4',
 }
 
 export enum PhotoResolutionLevel {
@@ -161,16 +161,20 @@ export enum PhotoResolutionLevel {
   UNKNOWN = 'unknown',
 }
 
+/* eslint-disable cca/string-enum-order */
 export enum VideoResolutionLevel {
-  FULL = 'full',
-  MEDIUM = 'medium',
   FOUR_K = '4K',
   QUAD_HD = 'Quad HD',
   FULL_HD = 'Full HD',
   HD = 'HD',
-  UNKNOWN = 'unknown',
   THREE_SIXTY_P = '360p',
+
+  FULL = 'full',
+  MEDIUM = 'medium',
+
+  UNKNOWN = 'unknown',
 }
+/* eslint-enable cca/string-enum-order */
 
 export enum AspectRatioSet {
   RATIO_4_3 = 1.3333,
@@ -353,8 +357,8 @@ export enum ErrorType {
  * Error level used in ERROR metrics.
  */
 export enum ErrorLevel {
-  WARNING = 'WARNING',
   ERROR = 'ERROR',
+  WARNING = 'WARNING',
 }
 
 /**

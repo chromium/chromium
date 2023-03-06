@@ -693,6 +693,8 @@ module.exports = {
 
     'cca/todo-format': 'error',
 
+    'cca/string-enum-order': 'error',
+
     // go/tsstyle#constructors
     'new-parens': 'error',
 

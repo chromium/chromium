@@ -175,8 +175,8 @@ export async function initMetrics(): Promise<void> {
  * Types of different ways to launch CCA.
  */
 export enum LaunchType {
-  DEFAULT = 'default',
   ASSISTANT = 'assistant',
+  DEFAULT = 'default',
 }
 
 /**
@@ -206,9 +206,9 @@ export function sendLaunchEvent({launchType}: LaunchEventParam): void {
  * Types of intent result dimension.
  */
 export enum IntentResultType {
-  NOT_INTENT = '',
   CANCELED = 'canceled',
   CONFIRMED = 'confirmed',
+  NOT_INTENT = '',
 }
 
 /**
@@ -234,12 +234,12 @@ export enum RecordType {
  * Types of different ways to trigger shutter button.
  */
 export enum ShutterType {
-  UNKNOWN = 'unknown',
-  MOUSE = 'mouse',
-  KEYBOARD = 'keyboard',
-  TOUCH = 'touch',
-  VOLUME_KEY = 'volume-key',
   ASSISTANT = 'assistant',
+  KEYBOARD = 'keyboard',
+  MOUSE = 'mouse',
+  TOUCH = 'touch',
+  UNKNOWN = 'unknown',
+  VOLUME_KEY = 'volume-key',
 }
 
 /**

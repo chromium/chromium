@@ -9,8 +9,8 @@ import {WaitableEvent} from './waitable_event.js';
  */
 export enum Status {
   LOADING = 'loading',
-  PLAYING = 'playing',
   PAUSED = 'paused',
+  PLAYING = 'playing',
 }
 
 /**

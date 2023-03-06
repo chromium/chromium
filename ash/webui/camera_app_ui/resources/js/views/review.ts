@@ -55,9 +55,9 @@ export class Option<T> {
  * Templates to create container of options button group.
  */
 export enum ButtonGroupTemplate {
-  POSITIVE = 'review-positive-button-group-template',
-  NEGATIVE = 'review-negative-button-group-template',
   INTENT = 'review-intent-button-group-template',
+  NEGATIVE = 'review-negative-button-group-template',
+  POSITIVE = 'review-positive-button-group-template',
 }
 
 /**

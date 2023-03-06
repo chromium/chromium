@@ -20,12 +20,12 @@ export enum State {
   ENABLE_SCAN_BARCODE = 'enable-scan-barcode',
   FPS_30 = 'fps-30',
   FPS_60 = 'fps-60',
+  GRID = 'grid',
   /* eslint-disable @typescript-eslint/naming-convention */
   GRID_3x3 = 'grid-3x3',
   GRID_4x4 = 'grid-4x4',
   /* eslint-enable @typescript-eslint/naming-convention */
   GRID_GOLDEN = 'grid-golden',
-  GRID = 'grid',
   HAS_BACK_CAMERA = 'has-back-camera',
   HAS_FRONT_CAMERA = 'has-front-camera',
   HAS_PAN_SUPPORT = 'has-pan-support',
@@ -57,9 +57,9 @@ export enum State {
   TABLET_LANDSCAPE = 'tablet-landscape',
   TAKING = 'taking',
   TALL = 'tall',
+  TIMER = 'timer',
   TIMER_10SEC = 'timer-10s',
   TIMER_3SEC = 'timer-3s',
-  TIMER = 'timer',
   USE_FAKE_CAMERA = 'use-fake-camera',
 }
 

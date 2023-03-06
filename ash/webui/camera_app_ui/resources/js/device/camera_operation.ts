@@ -342,8 +342,8 @@ class Capturer {
 }
 
 enum OperationType {
-  RECONFIGURE = 'reconfigure',
   CAPTURE = 'capture',
+  RECONFIGURE = 'reconfigure',
 }
 
 export class OperationScheduler {
