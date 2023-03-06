@@ -61149,6 +61149,7 @@ from previous Chrome versions.
   <int value="-437292646" label="DeferBeginMainFrameDuringLoading:enabled"/>
   <int value="-436470115" label="TouchpadAndWheelScrollLatching:enabled"/>
   <int value="-435914745" label="ClipboardContentSetting:disabled"/>
+  <int value="-434474445" label="OmniboxSteadyStateBackgroundColor:enabled"/>
   <int value="-433879402"
       label="EnableAmbientAuthenticationInIncognito:disabled"/>
   <int value="-432612065" label="AImageReader:enabled"/>
@@ -65651,6 +65652,7 @@ from previous Chrome versions.
   <int value="2100547979" label="AdaptiveCharging:enabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>
+  <int value="2104245260" label="OmniboxSteadyStateBackgroundColor:disabled"/>
   <int value="2104340988" label="CrostiniUsername:disabled"/>
   <int value="2104439359"
       label="OmniboxDefaultTypedNavigationsToHttps:enabled"/>

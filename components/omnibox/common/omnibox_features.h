@@ -102,6 +102,7 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
 BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
+BASE_DECLARE_FEATURE(kOmniboxSteadyStateBackgroundColor);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateHeight);
 BASE_DECLARE_FEATURE(kOmniboxSteadyStateTextStyle);
 BASE_DECLARE_FEATURE(kDiscardTemporaryInputOnTabSwitch);

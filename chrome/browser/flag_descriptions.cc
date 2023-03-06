@@ -2087,6 +2087,12 @@ const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";
 
+const char kOmniboxGM3SteadyStateBackgroundColorName[] =
+    "Omnibox Steady State Background Color";
+const char kOmniboxGM3SteadyStateBackgroundColorDescription[] =
+    "Updates Omnibox steady state background color to comply with GM3 "
+    "guidelines.";
+
 const char kOmniboxGM3SteadyStateHeightName[] = "Omnibox Steady State Height";
 const char kOmniboxGM3SteadyStateHeightDescription[] =
     "Updates Omnibox steady state height to comply with GM3 guidelines.";

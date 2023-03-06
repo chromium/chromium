@@ -431,6 +431,12 @@ BASE_FEATURE(kOmniboxAssistantVoiceSearch,
              "OmniboxAssistantVoiceSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Omnibox "steady state" background color is updated to match GM3
+// guidelines.
+BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,
+             "OmniboxSteadyStateBackgroundColor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Omnibox "steady state" height is increased from 28 dp to 34 dp to
 // match GM3 guidelines.
 BASE_FEATURE(kOmniboxSteadyStateHeight,

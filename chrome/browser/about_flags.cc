@@ -5491,6 +5491,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
 
+    {"omnibox-gm3-steady-state-background-color",
+     flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorName,
+     flag_descriptions::kOmniboxGM3SteadyStateBackgroundColorDescription,
+     kOsAll, FEATURE_VALUE_TYPE(omnibox::kOmniboxSteadyStateBackgroundColor)},
+
     {"omnibox-gm3-steady-state-height",
      flag_descriptions::kOmniboxGM3SteadyStateHeightName,
      flag_descriptions::kOmniboxGM3SteadyStateHeightDescription, kOsAll,
