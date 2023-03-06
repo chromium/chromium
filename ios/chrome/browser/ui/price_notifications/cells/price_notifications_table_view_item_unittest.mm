@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_price_chip_view.h"
+#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
@@ -144,4 +145,47 @@ TEST_F(PriceNotificationsTableViewItemTest,
 
   [cell prepareForReuse];
   EXPECT_FALSE(cell.isLoading);
+}
+
+// Ensures that the PriceNotificationsTableViewItem's Track Button correctly
+// calculates its horizontal padding and width relative to the space available.
+// The track button's width should be approximately between 17.5-21% of the
+// PriceNotificationTableViewCell's width. In addition, the Track Button's side
+// padding will range between 6 - 14 pts.
+TEST_F(PriceNotificationsTableViewItemTest,
+       PriceNotificationTrackButtonIsCorrectSize) {
+  double parent_cell_width = 100;
+  double button_text_width = 5;
+
+  size_t padding = price_notifications::CalculateTrackButtonHorizontalPadding(
+      parent_cell_width, button_text_width);
+  price_notifications::WidthConstraintValues constraints =
+      price_notifications::CalculateTrackButtonWidthConstraints(
+          parent_cell_width, button_text_width, padding);
+
+  EXPECT_EQ(padding, 6u);
+  EXPECT_EQ(constraints.target_width, 17u);
+
+  // Since the text width is large relative to the size of the button, the
+  // minimum padding will be used and the button's width will be maximized.
+  button_text_width = 10;
+  padding = price_notifications::CalculateTrackButtonHorizontalPadding(
+      parent_cell_width, button_text_width);
+  constraints = price_notifications::CalculateTrackButtonWidthConstraints(
+      parent_cell_width, button_text_width, padding);
+
+  EXPECT_EQ(padding, 6u);
+  EXPECT_EQ(constraints.target_width, constraints.max_width);
+
+  // Since the text width is small relative to the size of the button, the
+  // maximum padding will be used and the button's width will be
+  parent_cell_width = 400;
+  button_text_width = 15;
+  padding = price_notifications::CalculateTrackButtonHorizontalPadding(
+      parent_cell_width, button_text_width);
+  constraints = price_notifications::CalculateTrackButtonWidthConstraints(
+      parent_cell_width, button_text_width, padding);
+
+  EXPECT_EQ(padding, 14u);
+  EXPECT_EQ(constraints.target_width, 43u);
 }
