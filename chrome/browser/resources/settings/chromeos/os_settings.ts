@@ -10,7 +10,8 @@
 /** Necessary imports to load the app */
 import '../strings.m.js';
 import './os_settings_ui/os_settings_ui.js';
-/** Other imports */
+// TODO(b/263414034) Determine if these imports are needed here at all,
+// or should be moved to lazy_load.ts
 import '../prefs/prefs.js';
 import './device_page/audio.js';
 import './device_page/cros_audio_config.js';
@@ -44,7 +45,6 @@ import './internet_page/apn_subpage.js';
 import './internet_page/cellular_roaming_toggle_button.js';
 import './internet_page/cellular_setup_dialog.js';
 import './internet_page/esim_remove_profile_dialog.js';
-import './internet_page/hotspot_subpage.js';
 import './internet_page/hotspot_summary_item.js';
 import './internet_page/internet_config.js';
 import './internet_page/internet_detail_page.js';

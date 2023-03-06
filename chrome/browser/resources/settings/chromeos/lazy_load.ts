@@ -11,6 +11,17 @@
  */
 
 import '../strings.m.js';
+/** Top-level Advanced section pages */
+import './crostini_page/crostini_page.js';
+import './date_time_page/date_time_page.js';
+import './os_files_page/os_files_page.js';
+import './os_languages_page/os_languages_section.js';
+import './os_printing_page/os_printing_page.js';
+import './os_reset_page/os_reset_page.js';
+/** Subpages */
+import './internet_page/hotspot_subpage.js';
+// TODO(b/263414034) Determine if elements below adhere to the lazy loading
+// criteria and are needed here
 import './crostini_page/bruschetta_subpage.js';
 import './crostini_page/crostini_arc_adb.js';
 import './crostini_page/crostini_arc_adb_confirmation_dialog.js';
@@ -21,12 +32,10 @@ import './crostini_page/crostini_export_import.js';
 import './crostini_page/crostini_extra_containers.js';
 import './crostini_page/crostini_extra_containers_create_dialog.js';
 import './crostini_page/crostini_import_confirmation_dialog.js';
-import './crostini_page/crostini_page.js';
 import './crostini_page/crostini_port_forwarding.js';
 import './crostini_page/crostini_port_forwarding_add_port_dialog.js';
 import './crostini_page/crostini_shared_usb_devices.js';
 import './crostini_page/crostini_subpage.js';
-import './date_time_page/date_time_page.js';
 import './date_time_page/timezone_selector.js';
 import './guest_os/guest_os_container_select.js';
 import './guest_os/guest_os_shared_usb_devices.js';
@@ -46,13 +55,11 @@ import './os_a11y_page/switch_access_setup_guide_warning_dialog.js';
 import './os_a11y_page/switch_access_subpage.js';
 import './os_a11y_page/tts_subpage.js';
 import './os_files_page/office_page.js';
-import './os_files_page/os_files_page.js';
 import './os_languages_page/input_method_options_page.js';
 import './os_languages_page/input_page.js';
 import './os_languages_page/os_edit_dictionary_page.js';
 import './os_languages_page/os_japanese_manage_user_dictionary_page.js';
 import './os_languages_page/os_languages_page_v2.js';
-import './os_languages_page/os_languages_section.js';
 import './os_languages_page/smart_inputs_page.js';
 import './os_printing_page/cups_add_print_server_dialog.js';
 import './os_printing_page/cups_add_printer_dialog.js';
@@ -66,7 +73,6 @@ import './os_printing_page/cups_printers_entry.js';
 import './os_printing_page/cups_printers.js';
 import './os_printing_page/cups_saved_printers.js';
 import './os_printing_page/cups_settings_add_printer_dialog.js';
-import './os_printing_page/os_printing_page.js';
 import './os_privacy_page/metrics_consent_toggle_button.js';
 import './os_privacy_page/os_privacy_page.js';
 import './os_privacy_page/peripheral_data_access_protection_dialog.js';
@@ -74,7 +80,6 @@ import './os_privacy_page/privacy_hub_page.js';
 import './os_privacy_page/smart_privacy_page.js';
 import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
-import './os_reset_page/os_reset_page.js';
 import './os_files_page/smb_shares_page.js';
 import '../privacy_page/secure_dns.js';
 import '../privacy_page/secure_dns_input.js';
