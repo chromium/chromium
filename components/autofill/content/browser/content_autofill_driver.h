@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +14,6 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/common/form_data_predictions.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -206,9 +204,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // may be in a different frame than |render_frame_host_|. Therefore,
   // SetKeyPressHandler() and UnsetKeyPressHandler() are forwarded to the
   // last-queried source remembered by ContentAutofillRouter.
-  // For non-Autofill forms (i.e., password forms), which are not handled by
-  // ContentAutofillDriver and ContentAutofillRouter and hence are not
-  // frame-transcending, this routing must be skipped by setting |skip_routing|.
   void SetKeyPressHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandler();

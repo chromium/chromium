@@ -6,8 +6,7 @@
 
 #include <iomanip>
 
-namespace autofill {
-namespace internal {
+namespace autofill::internal {
 
 void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
                                    FrameForm frame_and_form) {
@@ -111,5 +110,4 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
   return os;
 }
 
-}  // namespace internal
-}  // namespace autofill
+}  // namespace autofill::internal

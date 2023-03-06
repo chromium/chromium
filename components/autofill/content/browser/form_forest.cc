@@ -14,7 +14,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -134,9 +133,8 @@ FormData* FormForest::GetFormData(const FormGlobalId& form,
 }
 
 FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {
-  FrameData* frame = nullptr;
   for (;;) {
-    frame = GetFrameData(form.frame_token);
+    FrameData* frame = GetFrameData(form.frame_token);
     AFCHECK(frame, return {nullptr, nullptr});
     if (!frame->parent_form) {
       auto it = base::ranges::find(frame->child_forms, form.renderer_id,
