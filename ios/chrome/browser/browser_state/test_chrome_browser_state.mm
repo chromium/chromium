@@ -294,6 +294,11 @@ TestChromeBrowserState::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
 }
 
+void TestChromeBrowserState::DestroyOffTheRecordChromeBrowserState() {
+  DCHECK(!IsOffTheRecord());
+  otr_browser_state_.reset();
+}
+
 std::unique_ptr<TestChromeBrowserState>
 TestChromeBrowserState::Builder::Build() {
   DCHECK(!build_called_);

@@ -12,22 +12,20 @@
 #endif
 
 BrowserListImpl::BrowserListImpl() {}
-BrowserListImpl::~BrowserListImpl() {
-  observers_.Clear();
-}
+
+BrowserListImpl::~BrowserListImpl() {}
 
 // KeyedService:
 void BrowserListImpl::Shutdown() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnBrowserListShutdown(this);
-  observers_.Clear();
+  }
   for (Browser* browser : browsers_) {
     browser->RemoveObserver(this);
   }
   for (Browser* browser : incognito_browsers_) {
     browser->RemoveObserver(this);
   }
-  is_shutdown_ = true;
 }
 
 // BrowserList:
@@ -79,10 +77,6 @@ void BrowserListImpl::AddObserver(BrowserListObserver* observer) {
 // Removes an observer from the model.
 void BrowserListImpl::RemoveObserver(BrowserListObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-bool BrowserListImpl::IsShutdown() {
-  return is_shutdown_;
 }
 
 // BrowserObserver

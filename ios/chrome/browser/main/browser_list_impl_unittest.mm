@@ -142,107 +142,112 @@ TEST_F(BrowserListImplTest, AutoRemoveBrowsers) {
 // Test that values returned from AllRegularBrowsers and AllIncognitoBrowsers
 // aren't affected by subsequent changes to the browser list.
 TEST_F(BrowserListImplTest, AllBrowserValuesDontChange) {
-  Browser* browser_1 = new TestBrowser(chrome_browser_state_.get());
+  TestBrowser browser_1(chrome_browser_state_.get());
 
   // Add a browser and get the current set of browsers.
-  browser_list_->AddBrowser(browser_1);
+  browser_list_->AddBrowser(&browser_1);
   std::set<Browser*> browsers = browser_list_->AllRegularBrowsers();
   EXPECT_EQ(1UL, browsers.size());
 
   // Remove the browser.
-  browser_list_->RemoveBrowser(browser_1);
+  browser_list_->RemoveBrowser(&browser_1);
   EXPECT_EQ(0UL, browser_list_->AllRegularBrowsers().size());
-
-  // Check that the browser is still in the set.
-  auto found_browser = browsers.find(browser_1);
-  EXPECT_EQ(1UL, browsers.size());
-  EXPECT_EQ(browser_1, *found_browser);
 }
 
 // Check that an observer is informed of additions and removals to both the
 // regular and incognito browser lists.
 TEST_F(BrowserListImplTest, BrowserListObserver) {
-  TestBrowserListObserver* observer = new TestBrowserListObserver;
-  browser_list_->AddObserver(observer);
+  TestBrowserListObserver observer;
+  browser_list_->AddObserver(&observer);
 
-  Browser* browser_1 = new TestBrowser(chrome_browser_state_.get());
+  TestBrowser browser_1(chrome_browser_state_.get());
   ChromeBrowserState* incognito_browser_state =
       chrome_browser_state_->GetOffTheRecordChromeBrowserState();
-  Browser* incognito_browser_1 = new TestBrowser(incognito_browser_state);
+  TestBrowser incognito_browser_1(incognito_browser_state);
 
   // Check that a regular addition is observed.
-  browser_list_->AddBrowser(browser_1);
-  EXPECT_EQ(browser_1, observer->GetLastAddedBrowser());
-  EXPECT_EQ(1UL, observer->GetLastBrowsers().size());
+  browser_list_->AddBrowser(&browser_1);
+  EXPECT_EQ(&browser_1, observer.GetLastAddedBrowser());
+  EXPECT_EQ(1UL, observer.GetLastBrowsers().size());
 
   // Check that a no-op  removal is *not* observed.
-  browser_list_->RemoveBrowser(incognito_browser_1);
-  EXPECT_EQ(nullptr, observer->GetLastRemovedBrowser());
+  browser_list_->RemoveBrowser(&incognito_browser_1);
+  EXPECT_EQ(nullptr, observer.GetLastRemovedBrowser());
 
   // Check that a regular removal is observed.
-  browser_list_->RemoveBrowser(browser_1);
-  EXPECT_EQ(browser_1, observer->GetLastRemovedBrowser());
-  EXPECT_EQ(0UL, observer->GetLastBrowsers().size());
+  browser_list_->RemoveBrowser(&browser_1);
+  EXPECT_EQ(&browser_1, observer.GetLastRemovedBrowser());
+  EXPECT_EQ(0UL, observer.GetLastBrowsers().size());
 
   // Check that an incognito addition is observed.
-  browser_list_->AddIncognitoBrowser(incognito_browser_1);
-  EXPECT_EQ(incognito_browser_1, observer->GetLastAddedIncognitoBrowser());
-  EXPECT_EQ(1UL, observer->GetLastIncognitoBrowsers().size());
+  browser_list_->AddIncognitoBrowser(&incognito_browser_1);
+  EXPECT_EQ(&incognito_browser_1, observer.GetLastAddedIncognitoBrowser());
+  EXPECT_EQ(1UL, observer.GetLastIncognitoBrowsers().size());
 
   // Check that an incognito removal is observed.
-  browser_list_->RemoveIncognitoBrowser(incognito_browser_1);
-  EXPECT_EQ(incognito_browser_1, observer->GetLastRemovedIncognitoBrowser());
-  EXPECT_EQ(0UL, observer->GetLastIncognitoBrowsers().size());
+  browser_list_->RemoveIncognitoBrowser(&incognito_browser_1);
+  EXPECT_EQ(&incognito_browser_1, observer.GetLastRemovedIncognitoBrowser());
+  EXPECT_EQ(0UL, observer.GetLastIncognitoBrowsers().size());
 
-  browser_list_->RemoveObserver(observer);
+  browser_list_->RemoveObserver(&observer);
 }
 
+// TODO(crbug.com/1421255): when checking the ObserverList is empty when
+// BrowserList is destroyed this test will have to be modified as the
+// stack allocated TestBrowserListObserver is still registered.
 TEST_F(BrowserListImplTest, DeleteBrowserState) {
-  TestBrowserListObserver* observer = new TestBrowserListObserver;
-  browser_list_->AddObserver(observer);
-  Browser* browser_1 = new TestBrowser(chrome_browser_state_.get());
-  browser_list_->AddBrowser(browser_1);
+  TestBrowserListObserver observer;
+  browser_list_->AddObserver(&observer);
+  TestBrowser browser_1(chrome_browser_state_.get());
+  browser_list_->AddBrowser(&browser_1);
 
   // Now delete the browser state. Nothing should explode.
   chrome_browser_state_.reset();
 }
 
+// Checks that the BrowserList is still functional after the destruction of
+// the off-the-record ChromeBrowserState (since this happen during normal
+// use of the application).
 TEST_F(BrowserListImplTest, ShutdownOTRBrowserState) {
-  TestBrowserListObserver* observer = new TestBrowserListObserver;
+  TestBrowserListObserver observer;
+  browser_list_->AddObserver(&observer);
 
-  browser_list_->AddObserver(observer);
+  TestBrowser browser_1(chrome_browser_state_.get());
 
-  ChromeBrowserState* incognito_browser_state =
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState();
-  Browser* incognito_browser_1 = new TestBrowser(incognito_browser_state);
-  browser_list_->AddIncognitoBrowser(incognito_browser_1);
+  // Use a block to ensure that the Browser pointing to the off-the-record
+  // ChromeBrowserState does not outlive the object (which would cause an
+  // use-after-free access in when BrowserList is informed of the Browser
+  // destruction).
+  {
+    ChromeBrowserState* incognito_browser_state =
+        chrome_browser_state_->GetOffTheRecordChromeBrowserState();
+    TestBrowser incognito_browser_1(incognito_browser_state);
+    browser_list_->AddIncognitoBrowser(&incognito_browser_1);
 
-  // Check that adding/removing incognito is observed.
-  EXPECT_EQ(incognito_browser_1, observer->GetLastAddedIncognitoBrowser());
-  EXPECT_EQ(1UL, observer->GetLastIncognitoBrowsers().size());
+    // Check that adding/removing incognito is observed.
+    EXPECT_EQ(&incognito_browser_1, observer.GetLastAddedIncognitoBrowser());
+    EXPECT_EQ(1UL, observer.GetLastIncognitoBrowsers().size());
 
-  Browser* browser_1 = new TestBrowser(chrome_browser_state_.get());
-  browser_list_->AddBrowser(browser_1);
-  // Check that a regular addition is observed.
-  EXPECT_EQ(browser_1, observer->GetLastAddedBrowser());
-  EXPECT_EQ(1UL, observer->GetLastBrowsers().size());
+    browser_list_->AddBrowser(&browser_1);
+    // Check that a regular addition is observed.
+    EXPECT_EQ(&browser_1, observer.GetLastAddedBrowser());
+    EXPECT_EQ(1UL, observer.GetLastBrowsers().size());
+  }
 
-  // Simulate shutdown -- this isn't called on test browser states when the OTR
-  // browser state is destroyed, so in order to test that shutdown of the
-  // OTR state doesn't break anything, it's called directly for this test.
-  BrowserListFactory::GetInstance()->BrowserStateShutdown(
-      incognito_browser_state);
+  // Destroy the off-the-record ChromeBrowserState.
+  chrome_browser_state_->DestroyOffTheRecordChromeBrowserState();
+  ASSERT_FALSE(chrome_browser_state_->HasOffTheRecordChromeBrowserState());
 
-  Browser* browser_2 = new TestBrowser(chrome_browser_state_.get());
-  browser_list_->AddBrowser(browser_2);
+  TestBrowser browser_2(chrome_browser_state_.get());
+  browser_list_->AddBrowser(&browser_2);
   // Check that another regular addition is observed.
-  EXPECT_EQ(browser_2, observer->GetLastAddedBrowser());
-  EXPECT_EQ(2UL, observer->GetLastBrowsers().size());
+  EXPECT_EQ(&browser_2, observer.GetLastAddedBrowser());
+  EXPECT_EQ(2UL, observer.GetLastBrowsers().size());
 
   // Check that a regular removal is observed.
-  browser_list_->RemoveBrowser(browser_1);
-  EXPECT_EQ(browser_1, observer->GetLastRemovedBrowser());
-  EXPECT_EQ(1UL, observer->GetLastBrowsers().size());
+  browser_list_->RemoveBrowser(&browser_1);
+  EXPECT_EQ(&browser_1, observer.GetLastRemovedBrowser());
+  EXPECT_EQ(1UL, observer.GetLastBrowsers().size());
 
-  browser_list_->RemoveObserver(observer);
+  browser_list_->RemoveObserver(&observer);
 }

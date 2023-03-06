@@ -35,7 +35,7 @@ class BrowserListObserver {
 
   // Called before the browserlist is destroyed, in case the observer needs to
   // do any cleanup. After this method is called, all observers will be removed
-  // from `browser_list`, and no firther obeserver methods will be called.
+  // from `browser_list`, and no further observer methods will be called.
   virtual void OnBrowserListShutdown(BrowserList* browser_list) {}
 };
 
