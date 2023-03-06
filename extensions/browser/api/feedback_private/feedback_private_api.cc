@@ -137,6 +137,10 @@ void SendFeedback(content::BrowserContext* browser_context,
     feedback_data->set_user_email(*feedback_info.email);
   if (feedback_info.trace_id)
     feedback_data->set_trace_id(*feedback_info.trace_id);
+  if (feedback_params.send_autofill_metadata &&
+      feedback_info.autofill_metadata) {
+    feedback_data->set_autofill_metadata(*feedback_info.autofill_metadata);
+  }
 
   // Note that the blob_uuids are generated in
   // renderer/resources/feedback_private_custom_bindings.js

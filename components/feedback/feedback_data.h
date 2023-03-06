@@ -42,6 +42,9 @@ class FeedbackData : public FeedbackCommon {
   // compression.
   void SetAndCompressHistograms(std::string histograms);
 
+  // Kicks off compression of the autofill metadata for this instance.
+  void CompressAutofillMetadata();
+
   // Sets the attached file data and kicks off its compression.
   void AttachAndCompressFileData(std::string attached_filedata);
 
