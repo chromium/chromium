@@ -361,9 +361,7 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
   DCHECK(Contains(group_id));
   DCHECK(Get(group_id)->ContainsTab(tab_id));
 
-  absl::optional<SavedTabGroupTab*> maybe_tab = Get(group_id)->GetTab(tab_id);
-  SavedTabGroupTab* tab = maybe_tab.value();
-
+  SavedTabGroupTab* tab = Get(group_id)->GetTab(tab_id);
   tab->MergeTab(std::move(sync_specific));
 
   for (auto& observer : observers_) {
