@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -109,6 +110,10 @@ class TestAutofillClientTemplate : public T {
       test_personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
     }
     return test_personal_data_manager_.get();
+  }
+
+  AutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
+    return mock_autofill_optimization_guide_.get();
   }
 
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
@@ -609,6 +614,9 @@ class TestAutofillClientTemplate : public T {
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   TestAddressNormalizer test_address_normalizer_;
+  std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
+      mock_autofill_optimization_guide_ =
+          std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
   std::unique_ptr<testing::NiceMock<MockIBANManager>> mock_iban_manager_;

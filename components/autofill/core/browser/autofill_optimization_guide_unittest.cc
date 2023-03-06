@@ -11,8 +11,10 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -113,6 +115,96 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldNotFound) {
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure);
+}
+
+TEST_F(AutofillOptimizationGuideTest, ShouldBlockSingleFieldSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableIbanClientSideUrlFiltering);
+  FormData form_data;
+  test::CreateTestIbanFormData(&form_data);
+  FormStructure form_structure{form_data};
+  FormStructureTestApi(&form_structure)
+      .SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
+  GURL url("https://example.com/");
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(url),
+              testing::Eq(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  EXPECT_TRUE(autofill_optimization_guide_->ShouldBlockSingleFieldSuggestions(
+      url, form_structure.field(0)));
+}
+
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldNotBlockSingleFieldSuggestions_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableIbanClientSideUrlFiltering);
+  FormData form_data;
+  test::CreateTestIbanFormData(&form_data);
+  FormStructure form_structure{form_data};
+  FormStructureTestApi(&form_structure)
+      .SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
+  GURL url("https://example.com/");
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  testing::Eq(url),
+                  testing::Eq(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .Times(0);
+
+  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockSingleFieldSuggestions(
+      url, form_structure.field(0)));
+}
+
+TEST_F(AutofillOptimizationGuideTest, ShouldNotBlockSingleFieldSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableIbanClientSideUrlFiltering);
+  FormData form_data;
+  test::CreateTestIbanFormData(&form_data);
+  FormStructure form_structure{form_data};
+  FormStructureTestApi(&form_structure)
+      .SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
+  GURL url("https://example.com/");
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(url),
+              testing::Eq(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockSingleFieldSuggestions(
+      url, form_structure.field(0)));
+}
+
+TEST_F(AutofillOptimizationGuideTest,
+       ShouldNotBlockSingleFieldSuggestions_FieldTypeForBlockingNotFound) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableIbanClientSideUrlFiltering);
+  FormData form_data;
+  test::CreateTestIbanFormData(&form_data);
+  FormStructure form_structure{form_data};
+  GURL url("https://example.com/");
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  testing::Eq(url),
+                  testing::Eq(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED),
+                  testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                      testing::Eq(nullptr))))
+      .Times(0);
+
+  EXPECT_FALSE(autofill_optimization_guide_->ShouldBlockSingleFieldSuggestions(
+      url, form_structure.field(0)));
 }
 
 }  // namespace autofill

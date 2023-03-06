@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -60,6 +61,13 @@ class IBANManagerTest : public testing::Test {
   IBANManagerTest()
       : iban_manager_(&personal_data_manager_, /*is_off_the_record=*/false) {}
 
+  void SetUp() override {
+    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                autofill_client_.GetAutofillOptimizationGuide()),
+            ShouldBlockSingleFieldSuggestions)
+        .WillByDefault(testing::Return(false));
+  }
+
   // Sets up the TestPersonalDataManager with an IBAN.
   IBAN SetUpIBAN(base::StringPiece16 value, base::StringPiece16 nickname) {
     IBAN iban;
@@ -78,6 +86,10 @@ class IBANManagerTest : public testing::Test {
     SuggestionsContext context;
     autofill_field.SetTypeTo(AutofillType(type));
     context.focused_field = &autofill_field;
+    FormData form_data;
+    test::CreateTestIbanFormData(&form_data);
+    form_structure_ = std::make_unique<FormStructure>(form_data);
+    context.form_structure = form_structure_.get();
     return context;
   }
 
@@ -91,9 +103,11 @@ class IBANManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  autofill::test::AutofillEnvironment autofill_environment_;
   MockSuggestionsHandler suggestions_handler_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_manager_;
+  std::unique_ptr<FormStructure> form_structure_;
   IBANManager iban_manager_;
 };
 
@@ -227,7 +241,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
 }
 
 TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
-  IBAN iban_0 = SetUpIBAN(kIbanValue_0, kNickname_0);
+  SetUpIBAN(kIbanValue_0, kNickname_0);
   iban_manager_.SetOffTheRecordForTesting(true);
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
@@ -243,8 +257,28 @@ TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
       /*context=*/context));
 }
 
+TEST_F(IBANManagerTest, DoesNotShowIBANsForBlockedWebsite) {
+  SetUpIBAN(kIbanValue_0, kNickname_0);
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // the website is blocked.
+  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client_.GetAutofillOptimizationGuide()),
+          ShouldBlockSingleFieldSuggestions)
+      .WillByDefault(testing::Return(true));
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
+      /*context=*/context));
+}
+
 TEST_F(IBANManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
-  IBAN iban_0 = SetUpIBAN(kIbanValue_0, kNickname_0);
+  SetUpIBAN(kIbanValue_0, kNickname_0);
 
   AutofillField test_field;
   test_field.value = std::u16string(kIbanValue_0);

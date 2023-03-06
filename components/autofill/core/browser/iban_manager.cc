@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/iban_manager.h"
 
 #include "base/containers/contains.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -27,14 +28,20 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   // The field is eligible only if it's focused on an IBAN field.
+  AutofillField* focused_field = context.focused_field;
   bool field_is_eligible =
-      context.focused_field &&
-      context.focused_field->Type().GetStorableType() == IBAN_VALUE;
+      focused_field && focused_field->Type().GetStorableType() == IBAN_VALUE;
   if (!field_is_eligible) {
     return false;
   }
 
-  if (!is_off_the_record_ && personal_data_manager_) {
+  bool iban_suggestions_blocked_on_url_origin = false;
+  iban_suggestions_blocked_on_url_origin =
+      client.GetAutofillOptimizationGuide()->ShouldBlockSingleFieldSuggestions(
+          client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+          focused_field);
+  if (!is_off_the_record_ && personal_data_manager_ &&
+      !iban_suggestions_blocked_on_url_origin) {
     std::vector<IBAN*> ibans = personal_data_manager_->GetLocalIBANs();
     if (!ibans.empty()) {
       // Rank the IBANs by ranking score (see AutoFillDataModel for details).

@@ -7,7 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/proto/hints.pb.h"
+
+class GURL;
 
 namespace optimization_guide {
 class NewOptimizationGuideDecider;
@@ -15,6 +16,7 @@ class NewOptimizationGuideDecider;
 
 namespace autofill {
 
+class AutofillField;
 class FormStructure;
 
 // Class to enable and disable features on a per-origin basis using
@@ -33,6 +35,12 @@ class AutofillOptimizationGuide : public KeyedService {
   // `form_structure`, which is a result of the form parsing that takes place
   // once a user navigates to a new page.
   virtual void OnDidParseForm(const FormStructure& form_structure);
+
+  // Returns whether the URL origin contained in `url` is blocked from
+  // displaying suggestions for `field` by querying the optimization guide
+  // decider corresponding to `field`'s storable type.
+  virtual bool ShouldBlockSingleFieldSuggestions(const GURL& url,
+                                                 AutofillField* field) const;
 
   optimization_guide::NewOptimizationGuideDecider*
   GetOptimizationGuideKeyedServiceForTesting() const {

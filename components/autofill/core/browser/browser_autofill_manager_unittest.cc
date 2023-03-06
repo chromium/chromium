@@ -36,7 +36,6 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -46,6 +45,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
@@ -200,17 +200,6 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
 
  private:
   std::vector<FormStructure*> last_queried_forms_;
-};
-
-class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
- public:
-  MockAutofillOptimizationGuide() : AutofillOptimizationGuide(nullptr) {}
-  MockAutofillOptimizationGuide(const MockAutofillOptimizationGuide&) = delete;
-  MockAutofillOptimizationGuide& operator=(
-      const MockAutofillOptimizationGuide&) = delete;
-  ~MockAutofillOptimizationGuide() override = default;
-
-  MOCK_METHOD(void, OnDidParseForm, (const FormStructure&), (override));
 };
 
 class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
