@@ -35,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/focus/focus_manager.h"
 
 using net::test_server::BasicHttpResponse;
@@ -483,5 +484,28 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
       "PasswordManager.PasswordManagementBubble.UserAction",
       password_manager::metrics_util::PasswordManagementBubbleInteractions::
           kManagePasswordsButtonClicked,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+                       ClosesBubbleOnClickingGooglePasswordManagerLink) {
+  base::HistogramTester histogram_tester;
+
+  SetupManagingPasswords();
+  EXPECT_FALSE(IsBubbleShowing());
+  ExecuteManagePasswordsCommand();
+  ASSERT_TRUE(IsBubbleShowing());
+
+  views::View* footnote_view = PasswordBubbleViewBase::manage_password_bubble()
+                                   ->GetFootnoteViewForTesting();
+  views::Link* link =
+      static_cast<views::StyledLabel*>(footnote_view)->GetFirstLinkForTesting();
+  ClickOnView(link);
+  EXPECT_FALSE(IsBubbleShowing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordManagementBubble.UserAction",
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kGooglePasswordManagerLinkClicked,
       1);
 }

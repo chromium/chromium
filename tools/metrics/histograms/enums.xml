@@ -79106,6 +79106,8 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="PasswordManagementBubbleInteractions">
   <int value="0" label="Manage passwords button clicked"/>
+  <int value="1"
+      label="Google Password Manager link clicked in the bubble footer"/>
 </enum>
 
 <enum name="PasswordManager.AssistantStoppedBubble.CloseReason">

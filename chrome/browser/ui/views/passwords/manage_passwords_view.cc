@@ -163,6 +163,10 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
   base::RepeatingClosure open_password_manager_closure = base::BindRepeating(
       [](ManagePasswordsView* dialog) {
         dialog->controller_.OnGooglePasswordManagerLinkClicked();
+        password_manager::metrics_util::
+            LogUserInteractionsInPasswordManagementBubble(
+                PasswordManagementBubbleInteractions::
+                    kGooglePasswordManagerLinkClicked);
       },
       base::Unretained(this));
 
