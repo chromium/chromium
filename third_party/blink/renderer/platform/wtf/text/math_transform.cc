@@ -38,9 +38,7 @@ static UChar32 mathVariantLatin(UChar32 code_point, UChar32 base_char) {
   return transformed_char;
 }
 
-// TODO(https://crbug.com/1076420): this needs to handle all text-transform
-// values.
-UChar32 MathVariant(UChar32 code_point) {
+UChar32 ItalicMathVariant(UChar32 code_point) {
   // Exceptional characters with at most one possible transformation.
   if (code_point == kHoleGreekUpperTheta)
     return code_point;  // Nothing at this code point is transformed

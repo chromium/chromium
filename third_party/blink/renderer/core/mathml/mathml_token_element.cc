@@ -36,6 +36,28 @@ UChar32 TokenCodePoint(const String& text_content) {
 
 }  // namespace
 
+bool MathMLTokenElement::IsPresentationAttribute(
+    const QualifiedName& name) const {
+  if (Node::HasTagName(mathml_names::kMiTag) &&
+      name == mathml_names::kMathvariantAttr) {
+    return true;
+  }
+  return MathMLElement::IsPresentationAttribute(name);
+}
+
+void MathMLTokenElement::CollectStyleForPresentationAttribute(
+    const QualifiedName& name,
+    const AtomicString& value,
+    MutableCSSPropertyValueSet* style) {
+  if (name == mathml_names::kMathvariantAttr &&
+      EqualIgnoringASCIICase(value, "normal")) {
+    AddPropertyToPresentationAttributeStyle(
+        style, CSSPropertyID::kTextTransform, CSSValueID::kNone);
+  } else {
+    MathMLElement::CollectStyleForPresentationAttribute(name, value, style);
+  }
+}
+
 MathMLTokenElement::TokenContent MathMLTokenElement::ParseTokenContent() {
   MathMLTokenElement::TokenContent token_content;
   // Build the text content of the token element. If it contains something other

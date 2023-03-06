@@ -25,11 +25,11 @@ namespace unicode {
 // https://unicode.org/cldr/utility/character.jsp.
 // TODO(https://crbug.com/1076420): this needs to handle all mathvariants, not
 // just italics.
-WTF_EXPORT UChar32 MathVariant(UChar32 code_point);
+WTF_EXPORT UChar32 ItalicMathVariant(UChar32 code_point);
 
 }  // namespace unicode
 }  // namespace WTF
 
-using WTF::unicode::MathVariant;
+using WTF::unicode::ItalicMathVariant;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_MATH_TRANSFORM_H_

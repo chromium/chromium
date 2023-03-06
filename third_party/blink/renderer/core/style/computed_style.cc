@@ -1648,13 +1648,12 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
 
 namespace {
 
-// TODO(https://crbug.com/1076420): this needs to handle all text-transform
-// values.
-static void ApplyMathTransform(String* text, ETextTransform math_variant) {
-  DCHECK(math_variant == ETextTransform::kMathAuto);
-  DCHECK_EQ(text->length(), 1u);
+static void ApplyMathAutoTransform(String* text) {
+  if (text->length() != 1) {
+    return;
+  }
   UChar character = (*text)[0];
-  UChar32 transformed_char = MathVariant((*text)[0]);
+  UChar32 transformed_char = ItalicMathVariant((*text)[0]);
   if (transformed_char == static_cast<UChar32>(character)) {
     return;
   }
@@ -1688,9 +1687,7 @@ void ComputedStyle::ApplyTextTransform(String* text,
       return;
     }
     case ETextTransform::kMathAuto:
-      if (text->length() == 1) {
-        ApplyMathTransform(text, ETextTransform::kMathAuto);
-      }
+      ApplyMathAutoTransform(text);
       return;
   }
   NOTREACHED();

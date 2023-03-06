@@ -48,10 +48,10 @@ bool MathMLElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (name == html_names::kDirAttr || name == mathml_names::kMathsizeAttr ||
       name == mathml_names::kMathcolorAttr ||
       name == mathml_names::kMathbackgroundAttr ||
-      name == mathml_names::kMathvariantAttr ||
       name == mathml_names::kScriptlevelAttr ||
-      name == mathml_names::kDisplaystyleAttr)
+      name == mathml_names::kDisplaystyleAttr) {
     return true;
+  }
   return Element::IsPresentationAttribute(name);
 }
 
@@ -123,12 +123,6 @@ void MathMLElement::CollectStyleForPresentationAttribute(
     } else if (EqualIgnoringASCIICase(value, "true")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
                                               CSSValueID::kNormal);
-    }
-  } else if (name == mathml_names::kMathvariantAttr) {
-    // TODO(crbug.com/1076420): this needs to handle all mathvariant values.
-    if (EqualIgnoringASCIICase(value, "normal")) {
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kTextTransform, CSSValueID::kNone);
     }
   } else {
     Element::CollectStyleForPresentationAttribute(name, value, style);
