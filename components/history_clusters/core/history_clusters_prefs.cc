@@ -14,7 +14,7 @@ namespace prefs {
 const char kVisible[] = "history_clusters.visible";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kVisible, true);
+  registry->RegisterBooleanPref(prefs::kVisible, false);
 }
 
 }  // namespace prefs
