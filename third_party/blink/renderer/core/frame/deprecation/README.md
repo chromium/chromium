@@ -57,11 +57,14 @@ third_party/blink/tools/run_web_tests.py http/tests/inspector-protocol/issues
 
 ## (5) Merge steps 1-4 in a `chromium/src` CL
 
-Please tag deprecation-devtool-issues@chromium.org for review.
+Please tag deprecation-devtool-issues@chromium.org for review. (Note: this address can't be entered as a reviewer directly on Gerrit. Add it on the `cc:` line first, and then after replying, the "chip" for that address on the top left corner has a popover menu with a button called "Move CC to Reviewer". Click that.)
 
 ## (6) Manually roll dependencies from `chromium/src` to `devtools/devtools-frontend`
 
 [Check out](https://chromium.googlesource.com/devtools/devtools-frontend/+/refs/heads/main/docs/workflows.md) `devtools/devtools-frontend` on the same dev machine where you have `chromium/src` checked out.
+
+Be sure your local `chromium/src` tree is up to date and includes the patch from (5), and make sure your `devtools/devtools-frontend` is similarly up to date.
+
 Check new branch out in `devtools/devtools-frontend`, and run (adjusting directories as needed):
 ```
 ./scripts/deps/roll_deps.py ~/chromium/src ~/devtools/devtools-frontend
