@@ -12,7 +12,7 @@ test(function(t) {
   const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   const transceiver = pc.addTransceiver('video');
-  const capabilities = transceiver.headerExtensionsToOffer;
+  const capabilities = transceiver.getHeaderExtensionsToNegotiate();
   let capability = capabilities.find((capability) => {
     return capability.uri == "http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00";
   });

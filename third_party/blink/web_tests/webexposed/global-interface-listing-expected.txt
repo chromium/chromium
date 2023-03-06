@@ -7096,15 +7096,15 @@ interface RTCRtpTransceiver
     attribute @@toStringTag
     getter currentDirection
     getter direction
-    getter headerExtensionsNegotiated
-    getter headerExtensionsToOffer
     getter mid
     getter receiver
     getter sender
     getter stopped
     method constructor
+    method getHeaderExtensionsToNegotiate
+    method getNegotiatedHeaderExtensions
     method setCodecPreferences
-    method setOfferedRtpHeaderExtensions
+    method setHeaderExtensionsToNegotiate
     method stop
     setter direction
 interface RTCSctpTransport : EventTarget

@@ -312,14 +312,14 @@ void RTCRtpTransceiver::setCodecPreferences(
   }
 }
 
-void RTCRtpTransceiver::setOfferedRtpHeaderExtensions(
-    const HeapVector<Member<RTCRtpHeaderExtensionCapability>>&
-        header_extensions_to_offer,
+void RTCRtpTransceiver::setHeaderExtensionsToNegotiate(
+    const HeapVector<Member<RTCRtpHeaderExtensionCapability>>& extensions,
     ExceptionState& exception_state) {
   Vector<webrtc::RtpHeaderExtensionCapability> webrtc_hdr_exts;
-  auto webrtc_offered_exts = platform_transceiver_->HeaderExtensionsToOffer();
+  auto webrtc_offered_exts =
+      platform_transceiver_->GetHeaderExtensionsToNegotiate();
   int id = 1;
-  for (const auto& hdr_ext : header_extensions_to_offer) {
+  for (const auto& hdr_ext : extensions) {
     // Handle invalid requests for mandatory extensions as per
     // https://w3c.github.io/webrtc-extensions/#rtcrtptransceiver-interface
     // Step 2.1 (not handled on the WebRTC level).
@@ -340,7 +340,7 @@ void RTCRtpTransceiver::setOfferedRtpHeaderExtensions(
                                  *direction);
   }
   webrtc::RTCError status =
-      platform_transceiver_->SetOfferedRtpHeaderExtensions(
+      platform_transceiver_->SetHeaderExtensionsToNegotiate(
           std::move(webrtc_hdr_exts));
   if (status.type() == webrtc::RTCErrorType::UNSUPPORTED_PARAMETER) {
     // TODO(crbug.com/1051821): support DOMExceptionCode::kNotSupportedError in
@@ -355,8 +355,8 @@ void RTCRtpTransceiver::setOfferedRtpHeaderExtensions(
 }
 
 HeapVector<Member<RTCRtpHeaderExtensionCapability>>
-RTCRtpTransceiver::headerExtensionsToOffer() const {
-  auto webrtc_exts = platform_transceiver_->HeaderExtensionsToOffer();
+RTCRtpTransceiver::getHeaderExtensionsToNegotiate() const {
+  auto webrtc_exts = platform_transceiver_->GetHeaderExtensionsToNegotiate();
   HeapVector<Member<RTCRtpHeaderExtensionCapability>> exts;
   for (const auto& webrtc_ext : webrtc_exts) {
     auto* ext = MakeGarbageCollected<RTCRtpHeaderExtensionCapability>();
@@ -368,8 +368,8 @@ RTCRtpTransceiver::headerExtensionsToOffer() const {
 }
 
 HeapVector<Member<RTCRtpHeaderExtensionCapability>>
-RTCRtpTransceiver::headerExtensionsNegotiated() const {
-  auto webrtc_exts = platform_transceiver_->HeaderExtensionsNegotiated();
+RTCRtpTransceiver::getNegotiatedHeaderExtensions() const {
+  auto webrtc_exts = platform_transceiver_->GetNegotiatedHeaderExtensions();
   HeapVector<Member<RTCRtpHeaderExtensionCapability>> exts;
   for (const auto& webrtc_ext : webrtc_exts) {
     auto* ext = MakeGarbageCollected<RTCRtpHeaderExtensionCapability>();
