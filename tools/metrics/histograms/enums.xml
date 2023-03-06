@@ -4375,6 +4375,15 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Reposition by keyboard arrow keys"/>
 </enum>
 
+<enum name="ArcInputOverlayWindowStateType">
+  <summary>Defines the window state.</summary>
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Normal"/>
+  <int value="2" label="Maximized"/>
+  <int value="3" label="Fullscreen"/>
+  <int value="4" label="Snapped"/>
+</enum>
+
 <enum name="ArcIntentHandlerAction">
   <summary>Defines Arc intent handler actions</summary>
   <int value="0" label="Error after showing picker"/>

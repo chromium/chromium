@@ -227,7 +227,8 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
       base::BindRepeating(&DisplayOverlayController::OnMenuEntryPressed,
                           base::Unretained(this)),
       base::BindRepeating(&DisplayOverlayController::OnMenuEntryPositionChanged,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      this);
   menu_entry->SetPosition(CalculateMenuEntryPosition());
   menu_entry->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
@@ -672,6 +673,27 @@ void DisplayOverlayController::OnApplyMenuState() {
 
   SetInputMappingVisible(GetTouchInjectorEnable() &&
                          GetInputMappingViewVisible());
+}
+
+InputOverlayWindowStateType DisplayOverlayController::GetWindowStateType()
+    const {
+  DCHECK(touch_injector_);
+  auto* window = touch_injector_->window();
+  DCHECK(window);
+  auto* state = ash::WindowState::Get(window);
+  InputOverlayWindowStateType type = InputOverlayWindowStateType::kInvalid;
+  if (state) {
+    if (state->IsNormalStateType()) {
+      type = InputOverlayWindowStateType::kNormal;
+    } else if (state->IsMaximized()) {
+      type = InputOverlayWindowStateType::kMaximized;
+    } else if (state->IsFullscreen()) {
+      type = InputOverlayWindowStateType::kFullscreen;
+    } else if (state->IsSnapped()) {
+      type = InputOverlayWindowStateType::kSnapped;
+    }
+  }
+  return type;
 }
 
 void DisplayOverlayController::OnActionAdded(Action* action) {

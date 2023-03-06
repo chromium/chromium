@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
@@ -77,6 +79,8 @@ class DisplayOverlayController : public ui::EventHandler,
   // the view. For example, |InputMappingView| may not be visible if it is
   // hidden or input overlay is disabled.
   void OnApplyMenuState();
+  // Get window state type.
+  InputOverlayWindowStateType GetWindowStateType() const;
 
   // For editor.
   // Show the action view when adding |action|.

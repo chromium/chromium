@@ -317,7 +317,9 @@ void EditFinishView::OnMouseReleased(const ui::MouseEvent& event) {
     return;
   }
   OnDragEnd();
-  RecordInputOverlayButtonGroupReposition(RepositionType::kMouseDragRepostion);
+  RecordInputOverlayButtonGroupReposition(
+      RepositionType::kMouseDragRepostion,
+      display_overlay_controller_->GetWindowStateType());
 }
 
 ui::Cursor EditFinishView::GetCursor(const ui::MouseEvent& event) {
@@ -347,7 +349,8 @@ void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {
       OnDragEnd();
       event->SetHandled();
       RecordInputOverlayButtonGroupReposition(
-          RepositionType::kTouchscreenDragRepostion);
+          RepositionType::kTouchscreenDragRepostion,
+          display_overlay_controller_->GetWindowStateType());
       break;
     default:
       views::View::OnGestureEvent(event);
@@ -374,7 +377,8 @@ bool EditFinishView::OnKeyReleased(const ui::KeyEvent& event) {
   }
 
   RecordInputOverlayButtonGroupReposition(
-      RepositionType::kKeyboardArrowKeyReposition);
+      RepositionType::kKeyboardArrowKeyReposition,
+      display_overlay_controller_->GetWindowStateType());
   return true;
 }
 

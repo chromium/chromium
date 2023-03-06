@@ -17,6 +17,18 @@ enum class RepositionType {
   kMaxValue = kKeyboardArrowKeyReposition
 };
 
+// This is about the window state types when recording metrics data for user UI
+// reposition. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class InputOverlayWindowStateType {
+  kInvalid = 0,
+  kNormal = 1,
+  kMaximized = 2,
+  kFullscreen = 3,
+  kSnapped = 4,
+  kMaxValue = kSnapped
+};
+
 void RecordInputOverlayFeatureState(bool enable);
 
 void RecordInputOverlayMappingHintState(bool enable);
@@ -24,13 +36,18 @@ void RecordInputOverlayMappingHintState(bool enable);
 void RecordInputOverlayCustomizedUsage();
 
 // Record when finishing action dragging or releasing arrow key.
-void RecordInputOverlayActionReposition(RepositionType type);
+void RecordInputOverlayActionReposition(RepositionType reposition_type,
+                                        InputOverlayWindowStateType state_type);
 
 // Record when finishing menu entry dragging or releasing arrow key.
-void RecordInputOverlayMenuEntryReposition(RepositionType type);
+void RecordInputOverlayMenuEntryReposition(
+    RepositionType reposition_type,
+    InputOverlayWindowStateType state_type);
 
 // Record when finishing button group dragging or releasing arrow key.
-void RecordInputOverlayButtonGroupReposition(RepositionType type);
+void RecordInputOverlayButtonGroupReposition(
+    RepositionType reposition_type,
+    InputOverlayWindowStateType state_type);
 
 }  // namespace arc::input_overlay
 

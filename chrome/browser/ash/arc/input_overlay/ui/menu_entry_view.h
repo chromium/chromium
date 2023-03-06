@@ -7,10 +7,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace arc::input_overlay {
+
+class DisplayOverlayController;
 
 // MenuEntryView is for GIO menu entry button.
 class MenuEntryView : public views::ImageButton {
@@ -19,7 +22,8 @@ class MenuEntryView : public views::ImageButton {
       base::RepeatingCallback<void(bool, absl::optional<gfx::Point>)>;
 
   MenuEntryView(PressedCallback pressed_callback,
-                OnPositionChangedCallback on_position_changed_callback);
+                OnPositionChangedCallback on_position_changed_callback,
+                DisplayOverlayController* display_overlay_controller);
   MenuEntryView(const MenuEntryView&) = delete;
   MenuEntryView& operator=(const MenuEntryView&) = delete;
   ~MenuEntryView() override;
@@ -56,6 +60,8 @@ class MenuEntryView : public views::ImageButton {
   void ChangeMenuEntryOnDrag(bool is_dragging);
   // Set cusor type.
   void SetCursor(ui::mojom::CursorType cursor_type);
+
+  const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;

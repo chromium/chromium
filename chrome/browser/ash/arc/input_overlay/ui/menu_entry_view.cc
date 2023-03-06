@@ -9,6 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -56,9 +57,11 @@ constexpr float kHaloThicknessAlpha = 2;
 
 MenuEntryView::MenuEntryView(
     PressedCallback pressed_callback,
-    OnPositionChangedCallback on_position_changed_callback)
+    OnPositionChangedCallback on_position_changed_callback,
+    DisplayOverlayController* display_overlay_controller)
     : views::ImageButton(std::move(pressed_callback)),
-      on_position_changed_callback_(on_position_changed_callback) {
+      on_position_changed_callback_(on_position_changed_callback),
+      display_overlay_controller_(display_overlay_controller) {
   auto game_icon = ui::ImageModel::FromVectorIcon(
       allow_reposition_ ? kGameControlsGamepadIcon
                         : vector_icons::kVideogameAssetOutlineIcon,
@@ -132,7 +135,9 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
   } else {
     SetCursor(ui::mojom::CursorType::kGrab);
     OnDragEnd();
-    RecordInputOverlayMenuEntryReposition(RepositionType::kMouseDragRepostion);
+    RecordInputOverlayMenuEntryReposition(
+        RepositionType::kMouseDragRepostion,
+        display_overlay_controller_->GetWindowStateType());
   }
 }
 
@@ -157,7 +162,8 @@ void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
       OnDragEnd();
       event->SetHandled();
       RecordInputOverlayMenuEntryReposition(
-          RepositionType::kTouchscreenDragRepostion);
+          RepositionType::kTouchscreenDragRepostion,
+          display_overlay_controller_->GetWindowStateType());
       break;
     default:
       views::Button::OnGestureEvent(event);
@@ -184,7 +190,8 @@ bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
   on_position_changed_callback_.Run(/*leave_focus=*/false,
                                     absl::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
-      RepositionType::kKeyboardArrowKeyReposition);
+      RepositionType::kKeyboardArrowKeyReposition,
+      display_overlay_controller_->GetWindowStateType());
   return true;
 }
 

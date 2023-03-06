@@ -1405,6 +1405,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.InputOverlay.{UI}RepositionWindowStateType"
+    enum="ArcInputOverlayWindowStateType" expires_after="2023-08-28">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Records the window state type when {UI} reposition happens. Records the
+    events when users release touch, mouse or key.
+  </summary>
+  <token key="UI">
+    <variant name="Action"/>
+    <variant name="ButtonGroup"/>
+    <variant name="MenuEntry"/>
+  </token>
+</histogram>
+
 <histogram name="Arc.IntentHelper.OpenAppWithIntentAction"
     enum="ArcIntentHelperIntentAction" expires_after="2023-07-30">
   <owner>tsergeant@chromium.org</owner>

@@ -225,7 +225,9 @@ void ActionView::ApplyMouseReleased(const ui::MouseEvent& event) {
     return;
   }
   OnDragEnd();
-  RecordInputOverlayActionReposition(RepositionType::kMouseDragRepostion);
+  RecordInputOverlayActionReposition(
+      RepositionType::kMouseDragRepostion,
+      display_overlay_controller_->GetWindowStateType());
 }
 
 void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
@@ -247,7 +249,8 @@ void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
       OnDragEnd();
       event->SetHandled();
       RecordInputOverlayActionReposition(
-          RepositionType::kTouchscreenDragRepostion);
+          RepositionType::kTouchscreenDragRepostion,
+          display_overlay_controller_->GetWindowStateType());
       break;
     default:
       break;
@@ -274,7 +277,8 @@ bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
   ChangePositionBinding(gfx::Point(origin().x() + touch_point_center_->x(),
                                    origin().y() + touch_point_center_->y()));
   RecordInputOverlayActionReposition(
-      RepositionType::kKeyboardArrowKeyReposition);
+      RepositionType::kKeyboardArrowKeyReposition,
+      display_overlay_controller_->GetWindowStateType());
   return true;
 }
 
