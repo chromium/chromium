@@ -8,6 +8,7 @@ mojom("mojom") {
   sources = [
     "wayland_buffer_manager.mojom",
     "wayland_overlay_config.mojom",
+    "wayland_presentation_info.mojom",
   ]
 
   public_deps = [
@@ -33,6 +34,17 @@ mojom("mojom") {
         "//components/crash/core/common:crash_key",
         "//ui/ozone/platform/wayland:common",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "wl.mojom.WaylandPresentationInfo"
+          cpp = "::wl::WaylandPresentationInfo"
+        },
+      ]
+      traits_sources = [ "wayland_presentation_info_mojom_traits.cc" ]
+      traits_headers = [ "wayland_presentation_info_mojom_traits.h" ]
+      traits_deps = [ "//ui/ozone/platform/wayland:common" ]
     },
   ]
 }

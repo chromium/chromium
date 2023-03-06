@@ -19,6 +19,7 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
+#include "ui/ozone/platform/wayland/common/wayland_presentation_info.h"
 
 namespace ui {
 
@@ -126,6 +127,8 @@ class WaylandFrameManager {
   // Similar to ClearStates(), but does not clear submitted frames.
   void Hide();
 
+  static base::TimeDelta GetPresentationFlushTimerDurationForTesting();
+
  private:
   void PlayBackFrame(std::unique_ptr<WaylandFrame> frame);
   void DiscardFrame(std::unique_ptr<WaylandFrame> frame);
@@ -137,8 +140,17 @@ class WaylandFrameManager {
                              bool needs_opaque_region);
 
   void MaybeProcessSubmittedFrames();
-  void ProcessOldSubmittedFrame(WaylandFrame* frame,
-                                gfx::GpuFenceHandle release_fence_handle);
+  void ProcessOldSubmittedFrame(WaylandFrame* frame);
+
+  // Gets presentation feedback information ready to be sent for submitted
+  // frames. Also updates `presentation_acked` of corresponding frames to true.
+  std::vector<wl::WaylandPresentationInfo> GetReadyPresentations();
+  bool HaveReadyPresentations() const;
+
+  // Clears submitted frames that are fully released and have already sent
+  // presentation feedback info.
+  void ClearProcessedSubmittedFrames();
+
   void OnExplicitBufferRelease(WaylandSurface* surface,
                                struct wl_buffer* wl_buffer,
                                base::ScopedFD fence);
@@ -190,6 +202,9 @@ class WaylandFrameManager {
   // stablizes.
   void FreezeTimeout();
 
+  void UpdatePresentationFlushTimer();
+  void OnPresentationFlushTimerFired();
+
   const raw_ptr<WaylandWindow> window_;
 
   // When RecordFrame() is called, a Frame is pushed to |pending_frames_|. See
@@ -208,6 +223,8 @@ class WaylandFrameManager {
 
   uint32_t frames_in_flight_ = 0;
   base::OneShotTimer freeze_timeout_timer_;
+
+  base::OneShotTimer presentation_flush_timer_;
 
   base::WeakPtrFactory<WaylandFrameManager> weak_factory_;
 };

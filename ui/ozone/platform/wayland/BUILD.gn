@@ -16,6 +16,7 @@ source_set("common") {
   sources = [
     "common/wayland_overlay_config.cc",
     "common/wayland_overlay_config.h",
+    "common/wayland_presentation_info.h",
   ]
 
   deps = [ "//ui/gfx" ]

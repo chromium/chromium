@@ -9,10 +9,10 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
-import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gfx/mojom/swap_result.mojom";
 import "ui/gfx/mojom/frame_data.mojom";
 import "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom";
+import "ui/ozone/platform/wayland/mojom/wayland_presentation_info.mojom";
 
 // Used by the GPU for communication with the WaylandBufferManagerHost in
 // the browser process.
@@ -115,14 +115,17 @@ interface WaylandBufferManagerGpu {
              bool supports_acquire_fence,
              uint32 supported_surface_augmentor_version);
 
-  // Signals about swap completion.
+  // Signals about swap completion and presentation.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,
                uint32 frame_id,
                gfx.mojom.SwapResult swap_result,
-               gfx.mojom.GpuFenceHandle? release_fence_handle);
+               gfx.mojom.GpuFenceHandle? release_fence_handle,
+               array<wl.mojom.WaylandPresentationInfo> presentation_infos);
 
-  // Signals about presentation.
+  // Usually OnSubmission() piggybacks presentation feedback information. When
+  // there is pending presentation feedback information but no submission for
+  // some time, this method is called to flush the presentation feedback
+  // information.
   OnPresentation(gfx.mojom.AcceleratedWidget widget,
-                 uint32 frame_id,
-                 gfx.mojom.PresentationFeedback feedback);
+                 array<wl.mojom.WaylandPresentationInfo> presentation_infos);
 };

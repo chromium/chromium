@@ -406,25 +406,27 @@ bool WaylandBufferManagerHost::ValidateBufferExistence(uint32_t buffer_id) {
   return error_message_.empty();
 }
 
-void WaylandBufferManagerHost::OnSubmission(gfx::AcceleratedWidget widget,
-                                            uint32_t frame_id,
-                                            const gfx::SwapResult& swap_result,
-                                            gfx::GpuFenceHandle release_fence) {
+void WaylandBufferManagerHost::OnSubmission(
+    gfx::AcceleratedWidget widget,
+    uint32_t frame_id,
+    const gfx::SwapResult& swap_result,
+    gfx::GpuFenceHandle release_fence,
+    const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   DCHECK(buffer_manager_gpu_associated_);
   buffer_manager_gpu_associated_->OnSubmission(widget, frame_id, swap_result,
-                                               std::move(release_fence));
+                                               std::move(release_fence),
+                                               presentation_infos);
 }
 
 void WaylandBufferManagerHost::OnPresentation(
     gfx::AcceleratedWidget widget,
-    uint32_t frame_id,
-    const gfx::PresentationFeedback& feedback) {
+    const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   DCHECK(buffer_manager_gpu_associated_);
-  buffer_manager_gpu_associated_->OnPresentation(widget, frame_id, feedback);
+  buffer_manager_gpu_associated_->OnPresentation(widget, presentation_infos);
 }
 
 void WaylandBufferManagerHost::TerminateGpuProcess() {
