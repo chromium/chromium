@@ -91,7 +91,6 @@
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
-#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
@@ -288,6 +287,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // The service used to load url parameters in current or new tab.
   UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
+
+  // Used to notify observers of url loading state change.
+  UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
 
   // For thumb strip, when YES, fullscreen disabler is reset only when web view
   // dragging stops, to avoid closing thumb strip and going fullscreen in
@@ -486,6 +488,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.omniboxCommandsHandler = dependencies.omniboxCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
+    _urlLoadingNotifierBrowserAgent =
+        dependencies.urlLoadingNotifierBrowserAgent;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -495,7 +499,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     _URLLoadingObserverBridge =
         std::make_unique<UrlLoadingObserverBridge>(self);
-    UrlLoadingNotifierBrowserAgent::FromBrowser(browser)->AddObserver(
+    _urlLoadingNotifierBrowserAgent->AddObserver(
         _URLLoadingObserverBridge.get());
 
     // When starting the browser with an open tab, it is necessary to reset the
@@ -953,10 +957,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(!_isShutdown);
   _isShutdown = YES;
 
-  UrlLoadingNotifierBrowserAgent* notifier =
-      UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
-  if (notifier)
-    notifier->RemoveObserver(_URLLoadingObserverBridge.get());
+  if (_urlLoadingNotifierBrowserAgent) {
+    _urlLoadingNotifierBrowserAgent->RemoveObserver(
+        _URLLoadingObserverBridge.get());
+  }
 
   // Disconnect child coordinators.
   if (base::FeatureList::IsEnabled(kModernTabStrip)) {

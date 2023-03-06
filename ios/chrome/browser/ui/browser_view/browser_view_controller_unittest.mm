@@ -243,6 +243,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     fullscreen_controller_ = FullscreenController::FromBrowser(browser_.get());
 
+    url_loading_notifier_browser_agent_ =
+        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
+
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
@@ -254,6 +257,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.sideSwipeController = side_swipe_controller_;
     dependencies.bookmarksCoordinator = bookmarks_coordinator_;
     dependencies.fullscreenController = fullscreen_controller_;
+    dependencies.urlLoadingNotifierBrowserAgent =
+        url_loading_notifier_browser_agent_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
@@ -345,6 +350,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   BookmarksCoordinator* bookmarks_coordinator_;
   FullscreenController* fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;
+  UrlLoadingNotifierBrowserAgent* url_loading_notifier_browser_agent_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
