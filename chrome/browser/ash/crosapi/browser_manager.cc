@@ -1698,6 +1698,9 @@ void BrowserManager::RecordLacrosLaunchMode() {
 
   UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.ModeAndSource",
                             lacros_mode_and_source);
+  LOG(WARNING) << "Using LacrosLaunchModeAndSource "
+               << static_cast<int>(lacros_mode_and_source);
+
   if (!lacros_mode_.has_value() || !lacros_mode_and_source_.has_value() ||
       lacros_mode != *lacros_mode_ ||
       lacros_mode_and_source != *lacros_mode_and_source_) {
