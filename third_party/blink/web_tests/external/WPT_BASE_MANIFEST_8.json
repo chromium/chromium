@@ -265586,16 +265586,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "031d849c2ae37d9032f7d301dc5f7c6ddcf0a97c",
-     []
-    ],
-    "mtime.json": [
-     "a072d60914340218faec4253ac39b9d7908b166c",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -541300,6 +541290,13 @@
        ],
        "dialog-focusing-steps-prevent-autofocus.html": [
         "4d1e792c1cc9cd1fb69ac886a98b6aa6989404c6",
+        [
+         null,
+         {}
+        ]
+       ],
+       "dialog-form-submission-unusual.html": [
+        "ae0de29a89e163e7852adcd9095f2613f70448fb",
         [
          null,
          {}
