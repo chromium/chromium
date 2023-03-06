@@ -522,6 +522,8 @@ source_set("browser_sources") {
     "sandboxed_unpacker.h",
     "script_executor.cc",
     "script_executor.h",
+    "service_worker/service_worker_host.cc",
+    "service_worker/service_worker_host.h",
     "service_worker/worker_id.cc",
     "service_worker/worker_id.h",
     "service_worker/worker_id_set.cc",

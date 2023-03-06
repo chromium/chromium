@@ -338,6 +338,11 @@ bool WorkerThreadDispatcher::PostTaskToWorkerThread(int worker_thread_id,
   return task_posted;
 }
 
+void WorkerThreadDispatcher::PostTaskToIOThread(base::OnceClosure task) {
+  bool task_posted = io_task_runner_->PostTask(FROM_HERE, std::move(task));
+  DCHECK(task_posted) << "Could not PostTask IPC to IO thread.";
+}
+
 bool WorkerThreadDispatcher::Send(IPC::Message* message) {
   return message_filter_->Send(message);
 }
@@ -351,6 +356,17 @@ mojom::EventRouter* WorkerThreadDispatcher::GetEventRouterOnIO() {
     event_router_remote_.Bind(std::move(pending_event_router_remote));
   }
   return event_router_remote_.get();
+}
+
+mojom::ServiceWorkerHost* WorkerThreadDispatcher::GetServiceWorkerHostOnIO() {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  if (!service_worker_host_) {
+    mojo::PendingAssociatedRemote<mojom::ServiceWorkerHost>
+        pending_service_worker_host;
+    message_filter_->GetRemoteAssociatedInterface(&pending_service_worker_host);
+    service_worker_host_.Bind(std::move(pending_service_worker_host));
+  }
+  return service_worker_host_.get();
 }
 
 void WorkerThreadDispatcher::OnResponseWorker(
@@ -483,7 +499,14 @@ void WorkerThreadDispatcher::DidInitializeContext(
   DCHECK_EQ(service_worker_version_id, data->service_worker_version_id());
   const int thread_id = content::WorkerThread::GetCurrentId();
   DCHECK_NE(thread_id, kMainThreadId);
-  Send(new ExtensionHostMsg_DidInitializeServiceWorkerContext(
+  PostTaskToIOThread(base::BindOnce(
+      [](const ExtensionId& extension_id, int64_t service_worker_version_id,
+         int thread_id) {
+        WorkerThreadDispatcher::Get()
+            ->GetServiceWorkerHostOnIO()
+            ->DidInitializeServiceWorkerContext(
+                extension_id, service_worker_version_id, thread_id);
+      },
       data->context()->GetExtensionID(), service_worker_version_id, thread_id));
 }
 

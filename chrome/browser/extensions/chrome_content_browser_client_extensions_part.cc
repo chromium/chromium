@@ -63,6 +63,7 @@
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/service_worker/service_worker_host.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
@@ -781,6 +782,8 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
       &ExtensionsGuestView::CreateForExtensions, host->GetID()));
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
+  associated_registry->AddInterface<mojom::ServiceWorkerHost>(
+      base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
 }
 
 }  // namespace extensions

@@ -73,9 +73,6 @@ class ExtensionServiceWorkerMessageFilter
                         int64_t service_worker_version_id,
                         int thread_id,
                         int event_id);
-  void OnDidInitializeServiceWorkerContext(const ExtensionId& extension_id,
-                                           int64_t service_worker_version_id,
-                                           int thread_id);
   void OnDidStartServiceWorkerContext(
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_sequence,

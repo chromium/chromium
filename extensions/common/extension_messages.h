@@ -455,13 +455,6 @@ IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
                      int /* worker_thread_id */,
                      int /* event_id */)
 
-// Tells the browser that an extension service worker context was initialized,
-// but possibly didn't start executing its top-level JavaScript.
-IPC_MESSAGE_CONTROL3(ExtensionHostMsg_DidInitializeServiceWorkerContext,
-                     std::string /* extension_id */,
-                     int64_t /* service_worker_version_id */,
-                     int /* worker_thread_id */)
-
 // Tells the browser that an extension service worker context has started and
 // finished executing its top-level JavaScript.
 // Start corresponds to EmbeddedWorkerInstance::OnStarted notification.
