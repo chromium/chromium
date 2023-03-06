@@ -351,18 +351,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Accessibility.Android.TabSwitcherPreferenceEnabled"
-    enum="BooleanEnabled" expires_after="M81">
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Tracks whether the accessibility tab switcher is enabled when an
-    accessibility service (e.g. TalkBack or Switch Access) is enabled that would
-    typically cause the accessibility tab switcher to be used. Recorded when the
-    activity is resumed or accessibility services are turned on.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
     expires_after="2023-07-01">
   <owner>twellington@chromium.org</owner>

@@ -1934,35 +1934,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Android.MainActivity.ExplicitMainViewIntentDispatched.OnCreate"
-    enum="BooleanDispatched" expires_after="2021-01-24">
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    Whether VIEW intent sent explicitly to .Main activity was dispatched by
-    onCreate().
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.MainActivity.ExplicitMainViewIntentDispatched.OnNewIntent"
-    enum="BooleanDispatched" expires_after="2020-06-28">
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    Whether VIEW intent sent explicitly to .Main activity was dispatched by
-    onNewIntent().
-  </summary>
-</histogram>
-
-<histogram name="Android.MainActivity.UndispatchedExplicitMainViewIntentSource"
-    enum="ClientAppId" expires_after="M85">
-  <owner>wnwen@chromium.org</owner>
-  <summary>
-    Sources (ExternalAppId) of undispatched VIEW intents sent explicitly to
-    .Main activity alias.
-  </summary>
-</histogram>
-
 <histogram name="Android.ManageSpace.ActionTaken"
     enum="AndroidManageSpaceButton" expires_after="M95">
   <owner>dmurph@chromium.org</owner>

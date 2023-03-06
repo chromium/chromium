@@ -6,8 +6,6 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ShortcutManager;
@@ -275,8 +273,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         int ON_NEW_INTENT = 2;
     }
 
-    // Count histogram used to track number of tabs when we show the Overview on Return to Chrome.
-    private static final String TAB_COUNT_ON_RETURN = "Tabs.TabCountOnStartScreenShown";
     // Time histogram used to track time to inflate tab switcher views.
     private static final String TAB_SWITCHER_CREATION_TIME = "Android.TabSwitcher.CreationTime";
 
@@ -510,15 +506,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             int action = LaunchIntentDispatcher.dispatchToCustomTabActivity(this, intent);
             switch (dispatchedBy) {
                 case DispatchedBy.ON_CREATE:
-                    RecordHistogram.recordBooleanHistogram(
-                            "Android.MainActivity.ExplicitMainViewIntentDispatched.OnCreate",
-                            action != LaunchIntentDispatcher.Action.CONTINUE);
-                    break;
                 case DispatchedBy.ON_NEW_INTENT:
-
-                    RecordHistogram.recordBooleanHistogram(
-                            "Android.MainActivity.ExplicitMainViewIntentDispatched.OnNewIntent",
-                            action != LaunchIntentDispatcher.Action.CONTINUE);
                     break;
                 default:
                     assert false : "Unknown dispatchedBy value " + dispatchedBy;
@@ -527,9 +515,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // Intent was not dispatched, record its source.
                 @IntentHandler.ExternalAppId
                 int externalId = IntentHandler.determineExternalIntentSource(intent);
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Android.MainActivity.UndispatchedExplicitMainViewIntentSource", externalId,
-                        IntentHandler.ExternalAppId.NUM_ENTRIES);
 
                 // Crash if intent came from us, but only in debug builds and only if we weren't
                 // explicitly told not to. Hopefully we'll get enough reports to find where
@@ -1210,11 +1195,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean isOverviewVisible = isInOverviewMode();
 
         if (shouldShowOverviewPageOnStart && !isOverviewVisible) {
-            if (getCurrentTabModel() != null) {
-                RecordHistogram.recordCount1MHistogram(
-                        TAB_COUNT_ON_RETURN, getCurrentTabModel().getCount());
-            }
-
             mOverviewShownOnStart = true;
             // Cancel recording cold startup metrics if an overview is shown as they expect a tab to
             // be the first thing shown after startup.
@@ -1472,12 +1452,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
         }
         mIsAccessibilityTabSwitcherEnabled = accessibilityTabSwitcherEnabled;
-
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Accessibility.Android.TabSwitcherPreferenceEnabled",
-                    mIsAccessibilityTabSwitcherEnabled);
-        }
     }
 
     /**
@@ -2029,10 +2003,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         super.initDeferredStartupForActivity();
         DeferredStartupHandler.getInstance().addDeferredTask(() -> {
             if (isActivityFinishingOrDestroyed()) return;
-
-            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-            RecordHistogram.recordSparseHistogram(
-                    "MemoryAndroid.DeviceMemoryClass", am.getMemoryClass());
 
             LauncherShortcutActivity.updateIncognitoShortcut(ChromeTabbedActivity.this);
 

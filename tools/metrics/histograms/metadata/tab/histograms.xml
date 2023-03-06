@@ -1912,19 +1912,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabCountOnStartScreenShown" units="tabs"
-    expires_after="2020-07-31">
-  <owner>mattsimmons@chromium.org</owner>
-  <owner>memex-team@google.com</owner>
-  <summary>
-    The number of tabs open when the user is returned to the tab switcher on
-    start.
-
-    When the user is returned to the tab switcher on starting Chrome due to
-    inactivity, logs the overall number of tabs open. Android only.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabCountPerDomainPerLoad.{TotalTabCountBucket}"
     units="tabs" expires_after="2021-06-30">
   <owner>dpenning@chromium.org</owner>
