@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <ctype.h>
 #include <stddef.h>
-
-#include <algorithm>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/constants.h"
@@ -30,7 +30,7 @@ TEST(ExtensionResourceTest, CreateEmptyResource) {
 const base::FilePath::StringType ToLower(
     const base::FilePath::StringType& in_str) {
   base::FilePath::StringType str(in_str);
-  std::transform(str.begin(), str.end(), str.begin(), tolower);
+  base::ranges::transform(str, str.begin(), tolower);
   return str;
 }
 

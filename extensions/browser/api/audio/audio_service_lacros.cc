@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/audio/audio_service_lacros.h"
 
+#include "base/ranges/algorithm.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/api/audio/audio_service_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,8 +36,8 @@ AudioServiceLacros::CrosapiObserver::~CrosapiObserver() = default;
 void AudioServiceLacros::CrosapiObserver::OnDeviceListChanged(
     std::vector<crosapi::mojom::AudioDeviceInfoPtr> devices) {
   DeviceInfoList result;
-  std::transform(devices.begin(), devices.end(), std::back_inserter(result),
-                 extensions::ConvertAudioDeviceInfoFromMojom);
+  base::ranges::transform(devices, std::back_inserter(result),
+                          extensions::ConvertAudioDeviceInfoFromMojom);
   for (auto& observer : observer_list_) {
     observer.OnDevicesChanged(result);
   }
@@ -103,9 +104,9 @@ void AudioServiceLacros::GetDevices(
 
         if (crosapi_devices) {
           result_out = true;
-          std::transform(crosapi_devices->begin(), crosapi_devices->end(),
-                         std::back_inserter(devices_out),
-                         extensions::ConvertAudioDeviceInfoFromMojom);
+          base::ranges::transform(*crosapi_devices,
+                                  std::back_inserter(devices_out),
+                                  extensions::ConvertAudioDeviceInfoFromMojom);
         }
 
         std::move(extapi_callback).Run(result_out, std::move(devices_out));
