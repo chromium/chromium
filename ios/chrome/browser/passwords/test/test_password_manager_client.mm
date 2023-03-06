@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/test/test_password_manager_client.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/ranges/algorithm.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/test_password_store.h"
@@ -96,11 +97,9 @@ bool TestPasswordManagerClient::PromptUserToChooseCredentials(
       base::BindOnce(std::move(callback),
                      base::Owned(new password_manager::PasswordForm(*form))));
   std::vector<password_manager::PasswordForm*> raw_forms(local_forms.size());
-  std::transform(
-      local_forms.begin(), local_forms.end(), raw_forms.begin(),
-      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
-        return form.get();
-      });
+  base::ranges::transform(
+      local_forms, raw_forms.begin(),
+      &std::unique_ptr<password_manager::PasswordForm>::get);
   PromptUserToChooseCredentialsPtr(raw_forms, origin, base::DoNothing());
   return true;
 }
