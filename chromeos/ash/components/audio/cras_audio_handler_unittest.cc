@@ -213,6 +213,22 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     return noise_cancellation_state_change_count_;
   }
 
+  int output_started_change_count() const {
+    return output_started_change_count_;
+  }
+
+  int output_stopped_change_count() const {
+    return output_stopped_change_count_;
+  }
+
+  int nonchrome_output_started_change_count() const {
+    return nonchrome_output_started_change_count_;
+  }
+
+  int nonchrome_output_stopped_change_count() const {
+    return nonchrome_output_stopped_change_count_;
+  }
+
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
@@ -257,6 +273,18 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     ++noise_cancellation_state_change_count_;
   }
 
+  void OnOutputStarted() override { ++output_started_change_count_; }
+
+  void OnOutputStopped() override { ++output_stopped_change_count_; }
+
+  void OnNonChromeOutputStarted() override {
+    ++nonchrome_output_started_change_count_;
+  }
+
+  void OnNonChromeOutputStopped() override {
+    ++nonchrome_output_stopped_change_count_;
+  }
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;
@@ -267,6 +295,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int input_gain_changed_count_ = 0;
   int output_channel_remixing_changed_count_ = 0;
   int noise_cancellation_state_change_count_ = 0;
+  int output_started_change_count_ = 0;
+  int output_stopped_change_count_ = 0;
+  int nonchrome_output_stopped_change_count_ = 0;
+  int nonchrome_output_started_change_count_ = 0;
 };
 
 class SystemMonitorObserver
@@ -955,6 +987,35 @@ TEST_P(CrasAudioHandlerTest, ConnectAndDisconnectBluetoothHeadset) {
   EXPECT_EQ(kHeadphone->id, active_output.id);
   EXPECT_EQ(kHeadphone->id, cras_audio_handler_->GetPrimaryActiveOutputNode());
   EXPECT_TRUE(cras_audio_handler_->has_alternative_output());
+}
+
+TEST_P(CrasAudioHandlerTest, NumberNonChromeOutputs) {
+  AudioNodeList audio_nodes =
+      GenerateAudioNodeList({kInternalSpeaker, kHDMIOutput});
+  SetUpCrasAudioHandler(audio_nodes);
+  // start at 0.
+  EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 0);
+  EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
+
+  fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(1);
+  EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
+  EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
+  // And again, to 2. No change expected.
+  fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(2);
+  EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
+  EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 0);
+  // Down to 0? it gets stopped.
+  fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(0);
+  EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
+  EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  // Down to 0 again for some reason: already stopped.
+  fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(0);
+  EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 1);
+  EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
+  // And again, to 2. Up we go.
+  fake_cras_audio_client()->SetNumberOfNonChromeOutputStreams(2);
+  EXPECT_EQ(test_observer_->nonchrome_output_started_change_count(), 2);
+  EXPECT_EQ(test_observer_->nonchrome_output_stopped_change_count(), 1);
 }
 
 TEST_P(CrasAudioHandlerTest, InitializeWithHDMIOutput) {

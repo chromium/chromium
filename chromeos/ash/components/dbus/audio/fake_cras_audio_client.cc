@@ -176,6 +176,11 @@ void FakeCrasAudioClient::GetNodes(
   std::move(callback).Run(node_list_);
 }
 
+void FakeCrasAudioClient::GetNumberOfNonChromeOutputStreams(
+    chromeos::DBusMethodCallback<int32_t> callback) {
+  std::move(callback).Run(number_non_chrome_output_streams_);
+}
+
 void FakeCrasAudioClient::GetNumberOfActiveOutputStreams(
     chromeos::DBusMethodCallback<int> callback) {
   std::move(callback).Run(0);
@@ -239,6 +244,13 @@ void FakeCrasAudioClient::GetNoiseCancellationSupported(
 
 uint32_t FakeCrasAudioClient::GetNoiseCancellationEnabledCount() {
   return noise_cancellation_enabled_counter_;
+}
+
+void FakeCrasAudioClient::SetNumberOfNonChromeOutputStreams(int32_t streams) {
+  number_non_chrome_output_streams_ = streams;
+  for (auto& observer : observers_) {
+    observer.NumberOfNonChromeOutputStreamsChanged();
+  }
 }
 
 void FakeCrasAudioClient::SetActiveOutputNode(uint64_t node_id) {

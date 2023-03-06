@@ -140,6 +140,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     // Called when the last output stream is closed.
     virtual void OnOutputStopped();
 
+    // Called when an initial output stream, not in chrome, is opened.
+    virtual void OnNonChromeOutputStarted();
+
+    // Called when the last output stream is closed, not in chrome.
+    virtual void OnNonChromeOutputStopped();
+
     // Called when the audio survey like to trigger an audio survey.
     // CRAS owns the trigger to send out an audio survey as opposed to trigger
     // from any Chrome/UI elements as CRAS has the most context to determine
@@ -505,6 +511,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void SurveyTriggered(const base::flat_map<std::string, std::string>&
                            survey_specific_data) override;
   void SpeakOnMuteDetected() override;
+  void NumberOfNonChromeOutputStreamsChanged() override;
 
   // AudioPrefObserver overrides.
   void OnAudioPolicyPrefChanged() override;
@@ -583,6 +590,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Calls CRAS over D-Bus to get the number of active output streams.
   void GetNumberOfOutputStreams();
+
+  void GetNumberOfNonChromeOutputStreams();
 
   // Updates the current audio nodes list and switches the active device
   // if needed.
@@ -718,6 +727,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Handle dbus callback for GetNumberOfInputStreamsWithPermission.
   void HandleGetNumberOfInputStreamsWithPermission(
       absl::optional<base::flat_map<std::string, uint32_t>> num_input_streams);
+  void HandleGetNumberOfNonChromeOutputStreams(
+      absl::optional<int32_t> num_output_streams);
 
   // Calling dbus to get system AEC supported flag.
   void GetSystemAecSupported();
@@ -833,6 +844,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool system_agc_supported_ = false;
 
   int num_active_output_streams_ = 0;
+  int32_t num_active_nonchrome_output_streams_ = 0;
 
   bool fetch_media_session_duration_ = false;
 

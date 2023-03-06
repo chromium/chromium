@@ -122,10 +122,18 @@ void CrasAudioHandler::AudioObserver::OnOutputStarted() {}
 
 void CrasAudioHandler::AudioObserver::OnOutputStopped() {}
 
+void CrasAudioHandler::AudioObserver::OnNonChromeOutputStarted() {}
+
+void CrasAudioHandler::AudioObserver::OnNonChromeOutputStopped() {}
+
 void CrasAudioHandler::AudioObserver::OnSurveyTriggered(
     const AudioSurveyData& /*survey_specific_data */) {}
 
 void CrasAudioHandler::AudioObserver::OnSpeakOnMuteDetected() {}
+
+void CrasAudioHandler::NumberOfNonChromeOutputStreamsChanged() {
+  GetNumberOfNonChromeOutputStreams();
+}
 
 // static
 void CrasAudioHandler::Initialize(
@@ -1349,6 +1357,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   RequestNoiseCancellationSupported(base::BindOnce(
       &CrasAudioHandler::GetNodes, weak_ptr_factory_.GetWeakPtr()));
   GetNumberOfOutputStreams();
+  GetNumberOfNonChromeOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(
       base::FeatureList::IsEnabled(features::kBluetoothFixA2dpPacketSize));
@@ -1468,6 +1477,12 @@ void CrasAudioHandler::SetInputMuteInternal(bool mute_on) {
 void CrasAudioHandler::GetNodes() {
   CrasAudioClient::Get()->GetNodes(base::BindOnce(
       &CrasAudioHandler::HandleGetNodes, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::GetNumberOfNonChromeOutputStreams() {
+  CrasAudioClient::Get()->GetNumberOfNonChromeOutputStreams(
+      base::BindOnce(&CrasAudioHandler::HandleGetNumberOfNonChromeOutputStreams,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrasAudioHandler::GetNumberOfOutputStreams() {
@@ -2036,6 +2051,28 @@ void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
 
   for (auto& observer : observers_)
     observer.OnAudioNodesChanged();
+}
+
+void CrasAudioHandler::HandleGetNumberOfNonChromeOutputStreams(
+    absl::optional<int32_t> new_output_streams_count) {
+  if (!new_output_streams_count.has_value()) {
+    LOG(ERROR) << "Failed to retrieve number of active output streams.";
+    return;
+  }
+  DCHECK_GE(*new_output_streams_count, 0);
+
+  if (*new_output_streams_count > 0 &&
+      num_active_nonchrome_output_streams_ == 0) {
+    for (auto& observer : observers_) {
+      observer.OnNonChromeOutputStarted();
+    }
+  } else if (*new_output_streams_count == 0 &&
+             num_active_nonchrome_output_streams_ > 0) {
+    for (auto& observer : observers_) {
+      observer.OnNonChromeOutputStopped();
+    }
+  }
+  num_active_nonchrome_output_streams_ = *new_output_streams_count;
 }
 
 void CrasAudioHandler::HandleGetNumActiveOutputStreams(

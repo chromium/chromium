@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void GetSystemAgcSupported(
       chromeos::DBusMethodCallback<bool> callback) override;
   void GetNodes(chromeos::DBusMethodCallback<AudioNodeList> callback) override;
+  void GetNumberOfNonChromeOutputStreams(
+      chromeos::DBusMethodCallback<int32_t> callback) override;
   void GetNumberOfActiveOutputStreams(
       chromeos::DBusMethodCallback<int> callback) override;
   void GetNumberOfInputStreamsWithPermission(
@@ -91,6 +93,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void ResendBluetoothBattery() override;
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
+
+  // Sets the number of non chrome audio streams in output mode.
+  void SetNumberOfNonChromeOutputStreams(int32_t streams);
 
   // Modifies an AudioNode from |node_list_| based on |audio_node.id|.
   // if the |audio_node.id| cannot be found in list, Add an
@@ -157,6 +162,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   bool noise_cancellation_supported_ = false;
   uint32_t battery_level_ = 0;
   uint32_t noise_cancellation_enabled_counter_ = 0;
+  int32_t number_non_chrome_output_streams_ = 0;
   bool noise_cancellation_enabled_ = false;
   // Maps audio client type to the number of active input streams for clients
   // with the type specified

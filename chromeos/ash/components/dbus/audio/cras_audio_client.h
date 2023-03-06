@@ -78,6 +78,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when a new speak-on-mute signal is detected.
     virtual void SpeakOnMuteDetected();
 
+    // Called when NumberOfNonChromeOutputStreamsChanged is detected.
+    virtual void NumberOfNonChromeOutputStreamsChanged();
+
    protected:
     virtual ~Observer();
   };
@@ -152,6 +155,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // WBS feature is still working to be stabilized.
   virtual void GetDeprioritizeBtWbsMic(
       chromeos::DBusMethodCallback<bool> callback) = 0;
+
+  // Get the number of active non-chrome output streams.
+  virtual void GetNumberOfNonChromeOutputStreams(
+      chromeos::DBusMethodCallback<int32_t> callback) = 0;
 
   // Gets if speak-on-mute detection is enabled.
   virtual void GetSpeakOnMuteDetectionEnabled(
