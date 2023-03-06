@@ -604,8 +604,7 @@ void TraceEventDataSource::RegisterStartupHooks() {
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-void TraceEventDataSource::RegisterWithTraceLog(
-    const base::trace_event::TraceConfig& trace_config) {
+void TraceEventDataSource::RegisterWithTraceLog() {
   TraceLog::GetInstance()->SetAddTraceEventOverrides(
       &TraceEventDataSource::OnAddLegacyTraceEvent,
       &TraceEventDataSource::FlushCurrentThread,
@@ -728,14 +727,7 @@ void TraceEventDataSource::SetupStartupTracing(
   }
   EmitRecurringUpdates();
 
-  base::trace_event::TraceConfig config_for_trace_log(trace_config);
-  // Perfetto backend configures buffer sizes when tracing is started in the
-  // service (see perfetto_config.cc). Zero them out here for TraceLog to
-  // avoid DCHECKs in TraceConfig::Merge.
-  config_for_trace_log.SetTraceBufferSizeInKb(0);
-  config_for_trace_log.SetTraceBufferSizeInEvents(0);
-
-  RegisterWithTraceLog(config_for_trace_log);
+  RegisterWithTraceLog();
   CustomEventRecorder::GetInstance()->OnStartupTracingStarted(
       trace_config, privacy_filtering_enabled);
 
@@ -914,7 +906,7 @@ void TraceEventDataSource::StartTracingInternal(
     producer->BindStartupTargetBuffer(session_id,
                                       data_source_config.target_buffer());
   } else {
-    RegisterWithTraceLog(trace_config);
+    RegisterWithTraceLog();
   }
 
   // We emit the track/process descriptor another time even if we were
