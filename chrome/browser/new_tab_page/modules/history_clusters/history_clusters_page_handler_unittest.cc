@@ -127,7 +127,7 @@ history::Cluster SampleCluster() {
   sample_visit.score = 1.0f;
 
   std::string kSampleLabel = "LabelOne";
-  return history::Cluster(1, {sample_visit, sample_visit},
+  return history::Cluster(1, {3, sample_visit},
                           {{u"apples", history::ClusterKeywordData()},
                            {u"Red Oranges", history::ClusterKeywordData()}},
                           /*should_show_on_prominent_ui_surfaces=*/true,
@@ -154,7 +154,7 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
   ASSERT_EQ(1u, cluster_mojom->id);
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.label.value()),
             cluster_mojom->label.value());
-  ASSERT_EQ(2u, cluster_mojom->visits.size());
+  ASSERT_EQ(3u, cluster_mojom->visits.size());
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.visits[0].url_for_display),
             cluster_mojom->visits[0]->url_for_display);
 
@@ -162,7 +162,7 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
       "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumClusterCandidates", 1, 1);
-  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 2,
+  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 3,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
@@ -217,7 +217,7 @@ TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
   ASSERT_EQ(1u, cluster_mojom->id);
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.label.value()),
             cluster_mojom->label.value());
-  ASSERT_EQ(2u, cluster_mojom->visits.size());
+  ASSERT_EQ(3u, cluster_mojom->visits.size());
   ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.visits[0].url_for_display),
             cluster_mojom->visits[0]->url_for_display);
 
@@ -225,7 +225,7 @@ TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
       "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumClusterCandidates", 2, 1);
-  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 2,
+  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 3,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);

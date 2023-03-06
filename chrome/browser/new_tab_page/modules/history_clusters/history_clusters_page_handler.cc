@@ -33,6 +33,10 @@ namespace {
 
 constexpr int kMinRequiredRelatedSearches = 3;
 
+// The minimum number of visits to render a layout is 2 URL visits plus a SRP
+// visit.
+constexpr int kMinRequiredVisits = 3;
+
 base::flat_set<std::string> GetCategories() {
   std::string categories_string = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpHistoryClustersModuleCategories,
@@ -160,7 +164,8 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
   std::set<GURL> seen_urls = {};
   history_clusters::CullNonProminentOrDuplicateClusters("", clusters,
                                                         &seen_urls);
-  history_clusters::HideAndCullLowScoringVisits(clusters, 2);
+
+  history_clusters::HideAndCullLowScoringVisits(clusters, kMinRequiredVisits);
   history_clusters::CoalesceRelatedSearches(clusters);
   // Cull clusters that do not have the minimum required of related searches to
   // be eligible for display.
