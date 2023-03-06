@@ -58,6 +58,15 @@ void InputDeviceSettingsProvider::ObserveTouchpadSettings(
       InputDeviceSettingsController::Get()->GetConnectedTouchpads());
 }
 
+void InputDeviceSettingsProvider::ObservePointingStickSettings(
+    mojo::PendingRemote<mojom::PointingStickSettingsObserver> observer) {
+  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
+  DCHECK(InputDeviceSettingsController::Get());
+  const auto id = pointing_stick_settings_observers_.Add(std::move(observer));
+  pointing_stick_settings_observers_.Get(id)->OnPointingStickListUpdated(
+      InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
+}
+
 void InputDeviceSettingsProvider::OnKeyboardConnected(
     const ::ash::mojom::Keyboard& keyboard) {
   NotifyKeyboardsUpdated();
@@ -78,6 +87,16 @@ void InputDeviceSettingsProvider::OnTouchpadDisconnected(
   NotifyTouchpadsUpdated();
 }
 
+void InputDeviceSettingsProvider::OnPointingStickConnected(
+    const ::ash::mojom::PointingStick& pointing_stick) {
+  NotifyPointingSticksUpdated();
+}
+
+void InputDeviceSettingsProvider::OnPointingStickDisconnected(
+    const ::ash::mojom::PointingStick& pointing_stick) {
+  NotifyPointingSticksUpdated();
+}
+
 void InputDeviceSettingsProvider::NotifyKeyboardsUpdated() {
   DCHECK(InputDeviceSettingsController::Get());
   for (const auto& observer : keyboard_settings_observers_) {
@@ -91,6 +110,14 @@ void InputDeviceSettingsProvider::NotifyTouchpadsUpdated() {
   for (const auto& observer : touchpad_settings_observers_) {
     observer->OnTouchpadListUpdated(
         InputDeviceSettingsController::Get()->GetConnectedTouchpads());
+  }
+}
+
+void InputDeviceSettingsProvider::NotifyPointingSticksUpdated() {
+  DCHECK(InputDeviceSettingsController::Get());
+  for (const auto& observer : pointing_stick_settings_observers_) {
+    observer->OnPointingStickListUpdated(
+        InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
   }
 }
 

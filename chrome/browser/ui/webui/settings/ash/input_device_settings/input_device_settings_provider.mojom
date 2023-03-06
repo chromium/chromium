@@ -20,6 +20,13 @@ interface TouchpadSettingsObserver {
   OnTouchpadListUpdated(array<ash.mojom.Touchpad> touchpads);
 };
 
+// Interface for observing point stick settings changes in OSSettings SWA.
+interface PointingStickSettingsObserver {
+  // Notifies PointingStickSettingsObserver when the list of connected
+  // pointing sticks and their settings are updated.
+  OnPointingStickListUpdated(array<ash.mojom.PointingStick> pointSticks);
+};
+
 // Interface for fetching and configuring input device settings in OSSettings.
 interface InputDeviceSettingsProvider {
   // Returns the list of currently connected keyboards.
@@ -34,4 +41,10 @@ interface InputDeviceSettingsProvider {
   // The observer which is registered is immediately informed
   // of the current state via its ObserveTouchpadSettings function.
   ObserveTouchpadSettings(pending_remote<TouchpadSettingsObserver> observer);
+  // Registers an observer which will be notified every time
+  // a pointing stick connects/disconnects or when settings change.
+  // The observer which is registered is immediately informed
+  // of the current state via its ObservePointingStickSettings function.
+  ObservePointingStickSettings(
+      pending_remote<PointingStickSettingsObserver> observer);
 };

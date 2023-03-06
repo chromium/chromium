@@ -49,6 +49,16 @@ const ::ash::mojom::Touchpad kTouchpad2 =
                            /*id=*/3,
                            /*device_key=*/"fake-device-key4",
                            ::ash::mojom::TouchpadSettings::New());
+const ::ash::mojom::PointingStick kPointingStick1 =
+    ::ash::mojom::PointingStick(/*name=*/"test pointing stick",
+                                /*id=*/4,
+                                /*device_key=*/"fake-device-key5",
+                                ::ash::mojom::PointingStickSettings::New());
+const ::ash::mojom::PointingStick kPointingStick2 =
+    ::ash::mojom::PointingStick(/*name=*/"Lexmark-Unicomp FSR",
+                                /*id=*/5,
+                                /*device_key=*/"fake-device-key6",
+                                ::ash::mojom::PointingStickSettings::New());
 template <typename T>
 void ExpectListsEqual(const std::vector<T>& expected_list,
                       const std::vector<T>& actual_list) {
@@ -111,6 +121,27 @@ class FakeTouchpadSettingsObserver : public mojom::TouchpadSettingsObserver {
 
  private:
   std::vector<::ash::mojom::TouchpadPtr> touchpads_;
+  int num_times_called_ = 0;
+};
+
+class FakePointingStickSettingsObserver
+    : public mojom::PointingStickSettingsObserver {
+ public:
+  void OnPointingStickListUpdated(
+      std::vector<::ash::mojom::PointingStickPtr> pointing_sticks) override {
+    pointing_sticks_ = std::move(pointing_sticks);
+    ++num_times_called_;
+  }
+
+  const std::vector<::ash::mojom::PointingStickPtr>& pointing_sticks() {
+    return pointing_sticks_;
+  }
+
+  int num_times_called() { return num_times_called_; }
+  mojo::Receiver<mojom::PointingStickSettingsObserver> receiver{this};
+
+ private:
+  std::vector<::ash::mojom::PointingStickPtr> pointing_sticks_;
   int num_times_called_ = 0;
 };
 
@@ -193,11 +224,19 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   }
   void AddPointingStick(::ash::mojom::PointingStickPtr pointing_stick) {
     pointing_sticks_.push_back(std::move(pointing_stick));
+    observer_->OnPointingStickConnected(*pointing_sticks_.back());
   }
   void RemovePointingStick(uint32_t device_id) {
-    base::EraseIf(pointing_sticks_, [device_id](const auto& pointing_stick) {
-      return pointing_stick->id == device_id;
-    });
+    auto iter = base::ranges::find_if(pointing_sticks_,
+                                      [device_id](const auto& pointing_stick) {
+                                        return pointing_stick->id == device_id;
+                                      });
+    if (iter == pointing_sticks_.end()) {
+      return;
+    }
+    auto temp_pointing_stick = std::move(*iter);
+    pointing_sticks_.erase(iter);
+    observer_->OnPointingStickDisconnected(*temp_pointing_stick);
   }
 
  private:
@@ -305,6 +344,34 @@ TEST_F(InputDeviceSettingsProviderTest, TestTouchpadSettingsObeserver) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_called());
   ExpectListsEqual(expected_touchpads, fake_observer.touchpads());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, TestPointingStickSettingsObeserver) {
+  std::vector<::ash::mojom::PointingStickPtr> expected_pointing_sticks;
+  expected_pointing_sticks.push_back(kPointingStick1.Clone());
+  controller_->AddPointingStick(kPointingStick1.Clone());
+
+  FakePointingStickSettingsObserver fake_observer;
+  provider_->ObservePointingStickSettings(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, fake_observer.num_times_called());
+  ExpectListsEqual(expected_pointing_sticks, fake_observer.pointing_sticks());
+
+  expected_pointing_sticks.push_back(kPointingStick2.Clone());
+  controller_->AddPointingStick(kPointingStick2.Clone());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, fake_observer.num_times_called());
+  ExpectListsEqual(expected_pointing_sticks, fake_observer.pointing_sticks());
+
+  expected_pointing_sticks.pop_back();
+  controller_->RemovePointingStick(kPointingStick2.id);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, fake_observer.num_times_called());
+  ExpectListsEqual(expected_pointing_sticks, fake_observer.pointing_sticks());
 }
 
 }  // namespace ash::settings
