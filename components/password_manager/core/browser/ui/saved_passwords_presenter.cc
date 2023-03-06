@@ -256,34 +256,14 @@ void SavedPasswordsPresenter::AddCredentials(
     const std::vector<CredentialUIEntry>& credentials,
     password_manager::PasswordForm::Type type,
     AddCredentialsCallback completion) {
-  std::vector<AddResult> results;
-  results.reserve(credentials.size());
-
-  // Invalid credentials are filtered out since AddCredentialAsync() won't
-  // perform any checks on the credential and expects a valid credential.
-  std::vector<CredentialUIEntry> valid_credentials;
-  valid_credentials.reserve(credentials.size());
-
-  // TODO(crbug/1417650): Remove validation from this method. Validation needs
-  // to be carried out by the caller.
-  base::ranges::transform(credentials, std::back_inserter(results),
-                          [&](const CredentialUIEntry& credential) {
-                            AddResult result = GetExpectedAddResult(credential);
-                            if (result == AddResult::kSuccess)
-                              valid_credentials.push_back(credential);
-                            return result;
-                          });
-
-  if (valid_credentials.empty()) {
+  if (credentials.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion), std::move(results)));
+        FROM_HERE, std::move(completion));
     return;
   }
 
-  if (valid_credentials.size() == 1) {
-    AddCredentialAsync(
-        std::move(valid_credentials[0]), type,
-        base::BindOnce(std::move(completion), std::move(results)));
+  if (credentials.size() == 1) {
+    AddCredentialAsync(std::move(credentials[0]), type, std::move(completion));
     return;
   }
 
@@ -293,13 +273,13 @@ void SavedPasswordsPresenter::AddCredentials(
 
   // Reinitialize presenter after all add operations are complete.
   base::RepeatingClosure completion_barrier_closure = base::BarrierClosure(
-      valid_credentials.size(),
-      base::BindOnce(&SavedPasswordsPresenter::Init,
-                     weak_ptr_factory_.GetWeakPtr())
-          .Then(base::BindOnce(std::move(completion), std::move(results))));
+      credentials.size(), base::BindOnce(&SavedPasswordsPresenter::Init,
+                                         weak_ptr_factory_.GetWeakPtr())
+                              .Then(std::move(completion)));
 
-  for (CredentialUIEntry& credential : valid_credentials)
-    AddCredentialAsync(std::move(credential), type, completion_barrier_closure);
+  for (const CredentialUIEntry& credential : credentials) {
+    AddCredentialAsync(credential, type, completion_barrier_closure);
+  }
 }
 
 SavedPasswordsPresenter::EditResult

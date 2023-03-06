@@ -95,8 +95,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     kMaxValue = kConflictInProfileAndAccountStore,
   };
 
-  using AddCredentialsCallback =
-      base::OnceCallback<void(const std::vector<AddResult>&)>;
+  using AddCredentialsCallback = base::OnceClosure;
   using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
 
   SavedPasswordsPresenter(AffiliationService* affiliation_service,
@@ -126,15 +125,12 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                          password_manager::PasswordForm::Type::kManuallyAdded);
 
   // Adds |credentials| to the specified store.
-  // Credentials that have invalid data or already exist are ignored.
+  // Credentials are expected to be valid according to `GetExpectedAddResult`.
   //
   // NOTE: Informing observers of credentials belonging to mixed types of stores
   // is not supported.
   //
   // For a single credential the behaviour is identical to AddCredential method.
-  //
-  // The result is conveyed in AddCredentialsCallback: a vector of corresponding
-  // AddResult statuses.
   void AddCredentials(const std::vector<CredentialUIEntry>& credentials,
                       password_manager::PasswordForm::Type type,
                       AddCredentialsCallback completion);
