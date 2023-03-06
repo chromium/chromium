@@ -384,6 +384,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                          const char* url_data,
                          size_t url_len) = 0;
 
+  virtual void WriteUnsanitizedHTML(const char* markup_data,
+                                    size_t markup_len,
+                                    const char* url_data,
+                                    size_t url_len) = 0;
+
   virtual void WriteSvg(const char* markup_data, size_t markup_len) = 0;
 
   virtual void WriteRTF(const char* rtf_data, size_t data_len) = 0;

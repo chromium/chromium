@@ -419,6 +419,13 @@ void ClipboardMac::WriteHTML(const char* markup_data,
   [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
 }
 
+void ClipboardMac::WriteUnsanitizedHTML(const char* markup_data,
+                                        size_t markup_len,
+                                        const char* url_data,
+                                        size_t url_len) {
+  WriteHTML(markup_data, markup_len, url_data, url_len);
+}
+
 void ClipboardMac::WriteSvg(const char* markup_data, size_t markup_len) {
   std::string svg_str(markup_data, markup_len);
   NSString* svg = base::SysUTF8ToNSString(svg_str);

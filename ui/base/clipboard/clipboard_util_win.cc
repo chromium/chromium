@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -844,9 +845,7 @@ bool GetWebCustomData(
 std::string HtmlToCFHtml(const std::string& html,
                          const std::string& base_url,
                          ClipboardContentType content_type) {
-  // TODO(ansollan): Implement changes to correctly convert unsanitized
-  // text/html to MS CF_HTML.
-  if (html.empty() || content_type == ClipboardContentType::kUnsanitized) {
+  if (html.empty()) {
     return std::string();
   }
 
@@ -855,47 +854,120 @@ std::string HtmlToCFHtml(const std::string& html,
 #define MAKE_NUMBER_FORMAT_2(digits) "%0" #digits "u"
 #define NUMBER_FORMAT MAKE_NUMBER_FORMAT_1(MAX_DIGITS)
 
-  static const char* header = "Version:0.9\r\n"
-      "StartHTML:" NUMBER_FORMAT "\r\n"
-      "EndHTML:" NUMBER_FORMAT "\r\n"
-      "StartFragment:" NUMBER_FORMAT "\r\n"
+  static const char* kHeader =
+      "Version:0.9\r\n"
+      "StartHTML:" NUMBER_FORMAT
+      "\r\n"
+      "EndHTML:" NUMBER_FORMAT
+      "\r\n"
+      "StartFragment:" NUMBER_FORMAT
+      "\r\n"
       "EndFragment:" NUMBER_FORMAT "\r\n";
-  static const char* source_url_prefix = "SourceURL:";
+  static const char kSourceUrlPrefix[] = "SourceURL:";
+  static const char kStartMarkup[] = "<html>\r\n<body>\r\n";
+  static const char kEndMarkup[] = "\r\n</body>\r\n</html>";
+  static const char kStartFragment[] = "<!--StartFragment-->";
+  static const char kEndFragment[] = "<!--EndFragment-->";
 
-  static const char* start_markup =
-      "<html>\r\n<body>\r\n<!--StartFragment-->";
-  static const char* end_markup =
-      "<!--EndFragment-->\r\n</body>\r\n</html>";
+  // Windows apps expect HTML in the clipboard to be in the text format CF_HTML
+  // so that they can figure out the length of the HTML document and extract
+  // fragments of the content out if needed. `content_type` describes the
+  // sanitization of the markup that will be converted to CF_HTML.
 
-  // Calculate offsets
-  size_t start_html_offset = strlen(header) - strlen(NUMBER_FORMAT) * 4 +
-      MAX_DIGITS * 4;
-  if (!base_url.empty()) {
-    start_html_offset += strlen(source_url_prefix) +
-        base_url.length() + 2;  // Add 2 for \r\n.
+  // Given the following unsanitized HTML string
+  // <html>
+  //   <head> <style>p {color:blue}</style> </head>
+  //   <body>
+  //     <p>Hello World</p>
+  //     <script> alert("Hello World!"); </script>
+  //   </body>
+  // </html>
+
+  // Windows apps may extract the content from the headers to know where the
+  // HTML or fragment starts. If we wrap the content by simply "sticking" the
+  // headers (like we do with sanitized HTML), then it may result in double
+  // tags.
+
+  // Sticking the headers using the previous unsanitized HTML string (shortened
+  // for brevity):
+  // Version:0.9
+  // StartHTML:0000000132
+  // EndHTML:0000000637
+  // ...
+  // <html>
+  // <body>
+  //   <!--StartFragment-->
+  //   <html>
+  //     <head> <style>p {color:blue}</style> </head>
+  //     <body> <p>...</p> <script>...</script> </body>
+  //   </html>
+  //   <!--EndFragment-->
+  // </body>
+  // </html>
+
+  // Wrapping the unsanitized HTML string (shortened for brevity):
+  // Version:0.9
+  // StartHTML:0000000132
+  // EndHTML:0000000274
+  // ...
+  // <!--StartFragment-->
+  //   <html>
+  //     <head> <style>p {color:blue}</style> </head>
+  //     <body> <p>...</p> <script>...</script> </body>
+  //   </html>
+  // <!--EndFragment-->
+
+  // The only way to write unsanitized HTML is by using the Async Clipboard API
+  // write pipeline.
+
+  // We don't want to regress the behavior of current DataTransfer APIs and
+  // getData calls for apps that rely on markup with duplicate tags (e.g. Excel
+  // Online expects this type of markup). As a result, if the HTML is sanitized,
+  // we only "stick" the CF_HTML headers to the HTML string.
+  std::string markup;
+  if (content_type == ClipboardContentType::kSanitized) {
+    markup = kStartMarkup;
   }
-  size_t start_fragment_offset = start_html_offset + strlen(start_markup);
+  base::StrAppend(&markup, {kStartFragment, html, kEndFragment});
+  if (content_type == ClipboardContentType::kSanitized) {
+    markup += kEndMarkup;
+  }
+
+  // Calculate the offsets required for the HTML headers. This is used by Apps
+  // on Windows to figure out the length of the HTML document and fragments.
+  // Additionally, Apps can process specific parts of the HTML document. e.g.,
+  // if they choose to process fragments of the HTML document, then they can use
+  // the start and end fragments offsets to extract the content out.
+  size_t headers_offset =
+      strlen(kHeader) - strlen(NUMBER_FORMAT) * 4 + MAX_DIGITS * 4;
+  if (!base_url.empty()) {
+    headers_offset +=
+        strlen(kSourceUrlPrefix) + base_url.length() + 2;  // Add 2 for \r\n.
+  }
+
+  size_t start_html_offset = headers_offset;
+  size_t start_fragment_offset = headers_offset + strlen(kStartFragment);
+  if (content_type == ClipboardContentType::kSanitized) {
+    start_fragment_offset += strlen(kStartMarkup);
+  }
   size_t end_fragment_offset = start_fragment_offset + html.length();
-  size_t end_html_offset = end_fragment_offset + strlen(end_markup);
-
-  std::string result = base::StringPrintf(header,
-                                          start_html_offset,
-                                          end_html_offset,
-                                          start_fragment_offset,
-                                          end_fragment_offset);
-  if (!base_url.empty()) {
-    result += source_url_prefix;
-    result += base_url;
-    result += "\r\n";
+  size_t end_html_offset = end_fragment_offset + strlen(kEndFragment);
+  if (content_type == ClipboardContentType::kSanitized) {
+    end_html_offset += strlen(kEndMarkup);
   }
-  result += start_markup;
-  result += html;
-  result += end_markup;
 
-  #undef MAX_DIGITS
-  #undef MAKE_NUMBER_FORMAT_1
-  #undef MAKE_NUMBER_FORMAT_2
-  #undef NUMBER_FORMAT
+  std::string result =
+      base::StringPrintf(kHeader, start_html_offset, end_html_offset,
+                         start_fragment_offset, end_fragment_offset);
+  if (!base_url.empty()) {
+    base::StrAppend(&result, {kSourceUrlPrefix, base_url, "\r\n"});
+  }
+  result += markup;
+
+#undef MAX_DIGITS
+#undef MAKE_NUMBER_FORMAT_1
+#undef MAKE_NUMBER_FORMAT_2
+#undef NUMBER_FORMAT
 
   return result;
 }

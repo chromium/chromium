@@ -678,8 +678,16 @@ void ClipboardOzone::WriteHTML(const char* markup_data,
                                size_t markup_len,
                                const char* url_data,
                                size_t url_len) {
+  // `url_data` and `url_len` are not used in this platform.
   std::vector<uint8_t> data(markup_data, markup_data + markup_len);
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
+}
+
+void ClipboardOzone::WriteUnsanitizedHTML(const char* markup_data,
+                                          size_t markup_len,
+                                          const char* url_data,
+                                          size_t url_len) {
+  WriteHTML(markup_data, markup_len, url_data, url_len);
 }
 
 void ClipboardOzone::WriteSvg(const char* markup_data, size_t markup_len) {

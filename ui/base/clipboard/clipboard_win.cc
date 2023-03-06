@@ -681,6 +681,26 @@ void ClipboardWin::WriteHTML(const char* markup_data,
   WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
 }
 
+void ClipboardWin::WriteUnsanitizedHTML(const char* markup_data,
+                                        size_t markup_len,
+                                        const char* url_data,
+                                        size_t url_len) {
+  std::string markup(markup_data, markup_len);
+  std::string url;
+
+  if (url_len > 0) {
+    url.assign(url_data, url_len);
+  }
+
+  // Add Windows specific headers to the HTML payload before writing to the
+  // clipboard.
+  std::string html_fragment = ClipboardUtil::HtmlToCFHtml(
+      markup, url, ClipboardContentType::kUnsanitized);
+  HGLOBAL glob = CreateGlobalData(html_fragment);
+
+  WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
+}
+
 void ClipboardWin::WriteSvg(const char* markup_data, size_t markup_len) {
   std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
