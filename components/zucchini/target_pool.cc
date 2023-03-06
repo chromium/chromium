@@ -46,9 +46,8 @@ void TargetPool::InsertTargets(TargetSource* targets) {
 void TargetPool::InsertTargets(const std::vector<Reference>& references) {
   // This can be called many times, so it's better to let std::back_inserter()
   // manage |targets_| resize, instead of manually reserving space.
-  std::transform(references.begin(), references.end(),
-                 std::back_inserter(targets_),
-                 [](const Reference& ref) { return ref.target; });
+  base::ranges::transform(references, std::back_inserter(targets_),
+                          &Reference::target);
   SortAndUniquify(&targets_);
 }
 

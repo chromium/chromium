@@ -87,9 +87,8 @@ bool ContainsEqualPasswordFormsUnordered(
     const std::vector<std::unique_ptr<PasswordForm>>& actual_values,
     std::ostream* mismatch_output) {
   std::vector<PasswordForm*> remaining_expectations(expectations.size());
-  std::transform(
-      expectations.begin(), expectations.end(), remaining_expectations.begin(),
-      [](const std::unique_ptr<PasswordForm>& form) { return form.get(); });
+  base::ranges::transform(expectations, remaining_expectations.begin(),
+                          &std::unique_ptr<PasswordForm>::get);
 
   bool had_mismatched_actual_form = false;
   for (const auto& actual : actual_values) {

@@ -42,8 +42,8 @@ class MockTitledUrlNode : public bookmarks::TitledUrlNode {
   std::vector<base::StringPiece16> GetTitledUrlNodeAncestorTitles()
       const override {
     std::vector<base::StringPiece16> ancestors;
-    std::transform(
-        ancestors_.begin(), ancestors_.end(), std::back_inserter(ancestors),
+    base::ranges::transform(
+        ancestors_, std::back_inserter(ancestors),
         [](auto& ancestor) { return base::StringPiece16(ancestor); });
     return ancestors;
   }

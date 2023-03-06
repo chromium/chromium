@@ -6,6 +6,7 @@
 
 #include <functional>
 
+#include "base/ranges/algorithm.h"
 #include "components/language/content/browser/geo_language_provider.h"
 
 namespace language {
@@ -21,10 +22,11 @@ std::vector<LanguageModel::LanguageDetails> GeoLanguageModel::GetLanguages() {
       geo_language_provider_->CurrentGeoLanguages();
   std::vector<LanguageDetails> languages(geo_inferred_languages.size());
 
-  std::transform(geo_inferred_languages.begin(), geo_inferred_languages.end(),
-                 languages.begin(), [](const std::string& language) {
-                   return LanguageModel::LanguageDetails(language, 0.f);
-                 });
+  base::ranges::transform(geo_inferred_languages, languages.begin(),
+                          [](const std::string& language) {
+                            return LanguageModel::LanguageDetails(language,
+                                                                  0.0f);
+                          });
 
   return languages;
 }

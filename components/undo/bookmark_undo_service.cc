@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -306,9 +307,8 @@ BookmarkReorderOperation::BookmarkReorderOperation(
     : BookmarkUndoOperation(bookmark_model),
       parent_id_(parent->id()) {
   ordered_bookmarks_.resize(parent->children().size());
-  std::transform(parent->children().cbegin(), parent->children().cend(),
-                 ordered_bookmarks_.begin(),
-                 [](const auto& child) { return child->id(); });
+  base::ranges::transform(parent->children(), ordered_bookmarks_.begin(),
+                          &BookmarkNode::id);
 }
 
 BookmarkReorderOperation::~BookmarkReorderOperation() {

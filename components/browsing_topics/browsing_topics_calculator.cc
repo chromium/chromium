@@ -4,11 +4,10 @@
 
 #include "components/browsing_topics/browsing_topics_calculator.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/browsing_topics/util.h"
 #include "components/history/core/browser/history_service.h"
@@ -259,7 +258,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
 
   // Get the top up to `kBrowsingTopicsNumberOfTopTopicsPerEpoch` topics,
   // sorted by decreasing count.
-  std::vector<std::pair<Topic, size_t>> top_topics_count(std::min(
+  using TopicsCountValue = std::pair<Topic, size_t>;
+  std::vector<TopicsCountValue> top_topics_count(std::min(
       static_cast<size_t>(
           blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get()),
       topics_count.size()));
@@ -269,9 +269,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
       top_topics_count.end(),
       [](auto& left, auto& right) { return left.second > right.second; });
 
-  std::transform(top_topics_count.begin(), top_topics_count.end(),
-                 std::back_inserter(top_topics),
-                 [](auto& topic_count) { return topic_count.first; });
+  base::ranges::transform(top_topics_count, std::back_inserter(top_topics),
+                          &TopicsCountValue::first);
 
   padded_top_topics_start_index = top_topics.size();
 

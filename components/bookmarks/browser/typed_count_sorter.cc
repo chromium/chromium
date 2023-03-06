@@ -4,8 +4,6 @@
 
 #include "components/bookmarks/browser/typed_count_sorter.h"
 
-#include <algorithm>
-
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_client.h"
@@ -73,10 +71,8 @@ void TypedCountSorter::SortMatches(const TitledUrlNodeSet& matches,
     std::sort(url_typed_counts.begin(),
               url_typed_counts.end(),
               UrlTypedCountPairSortFunctor());
-    std::transform(url_typed_counts.begin(),
-                   url_typed_counts.end(),
-                   std::back_inserter(*sorted_nodes),
-                   UrlTypedCountPairNodeLookupFunctor(url_node_map));
+    base::ranges::transform(url_typed_counts, std::back_inserter(*sorted_nodes),
+                            UrlTypedCountPairNodeLookupFunctor(url_node_map));
   } else {
     sorted_nodes->insert(sorted_nodes->end(), matches.begin(), matches.end());
   }

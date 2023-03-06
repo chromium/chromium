@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <set>
@@ -494,18 +493,16 @@ TEST_F(HistoryQuickProviderTest,
                     false, u"https://suffix.com/prefixsuffix1",
                     std::u16string());
   std::vector<int> unbroken_scores(3);
-  std::transform(ac_matches().begin(), ac_matches().end(),
-                 unbroken_scores.begin(),
-                 [](const auto& match) { return match.relevance; });
+  base::ranges::transform(ac_matches(), unbroken_scores.begin(),
+                          &AutocompleteMatch::relevance);
 
   // Get scores for 'prefix suffix'
   RunTestWithCursor(u"prefix suffix", std::string::npos, false, expected_urls,
                     false, u"https://suffix.com/prefixsuffix1",
                     std::u16string());
   std::vector<int> broken_scores(3);
-  std::transform(ac_matches().begin(), ac_matches().end(),
-                 broken_scores.begin(),
-                 [](const auto& match) { return match.relevance; });
+  base::ranges::transform(ac_matches(), broken_scores.begin(),
+                          &AutocompleteMatch::relevance);
   // Ensure the latter scores are higher than the former.
   for (size_t i = 0; i < 3; ++i)
     EXPECT_GT(broken_scores[i], unbroken_scores[i]);

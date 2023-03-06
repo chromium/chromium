@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -21,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -576,9 +576,9 @@ class BrowserAutofillManagerTest : public testing::Test {
       FieldGlobalId field_id,
       const std::vector<std::u16string>& results) {
     std::vector<Suggestion> suggestions;
-    std::transform(results.begin(), results.end(),
-                   std::back_inserter(suggestions),
-                   [](auto result) { return Suggestion(result); });
+    base::ranges::transform(
+        results, std::back_inserter(suggestions),
+        [](const auto& result) { return Suggestion(result); });
 
     browser_autofill_manager_->OnSuggestionsReturned(
         field_id, AutoselectFirstSuggestion(false), suggestions);

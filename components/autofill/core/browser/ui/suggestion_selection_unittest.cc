@@ -93,11 +93,11 @@ class SuggestionSelectionTest : public testing::Test {
       const std::vector<AutofillProfile*>& profiles,
       const ServerFieldType& field_type) {
     std::vector<Suggestion> suggestions;
-    std::transform(profiles.begin(), profiles.end(),
-                   std::back_inserter(suggestions),
-                   [field_type](const AutofillProfile* profile) {
-                     return Suggestion(profile->GetRawInfo(field_type));
-                   });
+    base::ranges::transform(
+        profiles, std::back_inserter(suggestions),
+        [field_type](const AutofillProfile* profile) {
+          return Suggestion(profile->GetRawInfo(field_type));
+        });
 
     return suggestions;
   }
@@ -162,11 +162,8 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
 
   // Map all the pointers into an array that has the right type.
   std::vector<AutofillProfile*> profiles_pointers;
-  std::transform(profiles_data.begin(), profiles_data.end(),
-                 std::back_inserter(profiles_pointers),
-                 [](const std::unique_ptr<AutofillProfile>& profile) {
-                   return profile.get();
-                 });
+  base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
+                          &std::unique_ptr<AutofillProfile>::get);
 
   std::vector<AutofillProfile*> matched_profiles;
   auto suggestions = GetPrefixMatchedSuggestions(
@@ -258,11 +255,8 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
 
   // Map all the pointers into an array that has the right type.
   std::vector<AutofillProfile*> profiles_pointers;
-  std::transform(profiles_data.begin(), profiles_data.end(),
-                 std::back_inserter(profiles_pointers),
-                 [](const std::unique_ptr<AutofillProfile>& profile) {
-                   return profile.get();
-                 });
+  base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
+                          &std::unique_ptr<AutofillProfile>::get);
 
   std::vector<AutofillProfile*> unique_matched_profiles;
   auto unique_suggestions = GetUniqueSuggestions(
@@ -334,11 +328,9 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
 
   // Map all the pointers into an array that has the right type.
   std::vector<AutofillProfile*> all_profile_ptrs;
-  std::transform(all_profile_data.begin(), all_profile_data.end(),
-                 std::back_inserter(all_profile_ptrs),
-                 [](const std::unique_ptr<AutofillProfile>& profile) {
-                   return profile.get();
-                 });
+  base::ranges::transform(all_profile_data,
+                          std::back_inserter(all_profile_ptrs),
+                          &std::unique_ptr<AutofillProfile>::get);
 
   // Verify that disused profiles get removed from the end. Note that the last
   // four profiles have use dates more than 175 days ago.

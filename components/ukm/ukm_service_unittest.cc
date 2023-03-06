@@ -4,7 +4,6 @@
 
 #include "components/ukm/ukm_service.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -17,6 +16,7 @@
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -1626,11 +1626,8 @@ TEST_P(UkmServiceTest, FilterRejectsEvent) {
 
       std::vector<uint64_t> filtered_metrics;
       filtered_metrics.resize(entry->metrics.size());
-      std::transform(entry->metrics.begin(), entry->metrics.end(),
-                     filtered_metrics.begin(),
-                     [](decltype(entry->metrics)::value_type value) {
-                       return value.first;
-                     });
+      base::ranges::transform(entry->metrics, filtered_metrics.begin(),
+                              &decltype(entry->metrics)::value_type::first);
       filtered_metric_hashes->replace(std::move(filtered_metrics));
       // Note that the event still contains metrics.
       return false;

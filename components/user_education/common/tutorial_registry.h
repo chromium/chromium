@@ -43,7 +43,9 @@ class TutorialRegistry {
   void RemoveTutorialForTesting(TutorialIdentifier id);
 
  private:
-  std::map<TutorialIdentifier, TutorialDescription> tutorial_registry_;
+  using Registry = std::map<TutorialIdentifier, TutorialDescription>;
+
+  Registry tutorial_registry_;
 };
 
 }  // namespace user_education

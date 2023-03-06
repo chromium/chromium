@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/password_form.h"
 
-#include <algorithm>
 #include <ostream>
 #include <sstream>
 #include <string>
 
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -107,8 +107,8 @@ std::string ToString(const T& obj) {
 std::u16string ValueElementVectorToString(
     const ValueElementVector& value_element_pairs) {
   std::vector<std::u16string> pairs(value_element_pairs.size());
-  std::transform(
-      value_element_pairs.begin(), value_element_pairs.end(), pairs.begin(),
+  base::ranges::transform(
+      value_element_pairs, pairs.begin(),
       [](const ValueElementPair& p) { return p.first + u"+" + p.second; });
   return base::JoinString(pairs, u", ");
 }

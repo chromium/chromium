@@ -4,7 +4,6 @@
 
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
-#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -25,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -423,7 +423,7 @@ bool AttributeHasButtonFeature(const WebString& attribute) {
   if (attribute.IsNull())
     return false;
   std::string value = attribute.Utf8();
-  std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+  base::ranges::transform(value, value.begin(), ::tolower);
   for (const char* const button_feature : kButtonFeatures) {
     if (value.find(button_feature, 0) != std::string::npos)
       return true;

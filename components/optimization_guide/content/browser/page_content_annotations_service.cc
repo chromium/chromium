@@ -4,13 +4,13 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -571,12 +571,12 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     if (group->type != continuous_search::mojom::ResultType::kRelatedSearches) {
       continue;
     }
-    std::transform(std::begin(group->results), std::end(group->results),
-                   std::back_inserter(related_searches),
-                   [](const continuous_search::mojom::SearchResultPtr& result) {
-                     return base::UTF16ToUTF8(
-                         base::CollapseWhitespace(result->title, true));
-                   });
+    base::ranges::transform(
+        group->results, std::back_inserter(related_searches),
+        [](const continuous_search::mojom::SearchResultPtr& result) {
+          return base::UTF16ToUTF8(
+              base::CollapseWhitespace(result->title, true));
+        });
     break;
   }
 
