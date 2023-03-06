@@ -29,6 +29,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -36,6 +37,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -116,29 +118,30 @@ static constexpr char kCrossDocumentCachedResource[] =
 
 #define RESOURCE_HISTOGRAM_PREFIX "Blink.MemoryCache.RevalidationPolicy."
 
-#define DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, name)                         \
-  case ResourceType::k##name: {                                                \
-    UMA_HISTOGRAM_ENUMERATION(RESOURCE_HISTOGRAM_PREFIX prefix #name, policy); \
-    break;                                                                     \
+#define RESOURCE_TYPE_NAME(name) \
+  case ResourceType::k##name: {  \
+    return #name;                \
+    break;                       \
   }
 
-#define DEFINE_RESOURCE_HISTOGRAM(prefix)                      \
-  switch (factory.GetType()) {                                 \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, CSSStyleSheet)    \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Font)             \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Image)            \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, LinkPrefetch)     \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Manifest)         \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Audio)            \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Video)            \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Mock)             \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Raw)              \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Script)           \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, SVGDocument)      \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, TextTrack)        \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, SpeculationRules) \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, XSLStyleSheet)    \
+const std::string ResourceTypeName(ResourceType type) {
+  switch (type) {
+    RESOURCE_TYPE_NAME(CSSStyleSheet)
+    RESOURCE_TYPE_NAME(Font)
+    RESOURCE_TYPE_NAME(Image)
+    RESOURCE_TYPE_NAME(LinkPrefetch)
+    RESOURCE_TYPE_NAME(Manifest)
+    RESOURCE_TYPE_NAME(Audio)
+    RESOURCE_TYPE_NAME(Video)
+    RESOURCE_TYPE_NAME(Mock)
+    RESOURCE_TYPE_NAME(Raw)
+    RESOURCE_TYPE_NAME(Script)
+    RESOURCE_TYPE_NAME(SVGDocument)
+    RESOURCE_TYPE_NAME(TextTrack)
+    RESOURCE_TYPE_NAME(SpeculationRules)
+    RESOURCE_TYPE_NAME(XSLStyleSheet)
   }
+}
 
 ResourceLoadPriority TypeToPriority(ResourceType type) {
   switch (type) {
@@ -823,14 +826,14 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     return;
 
   if (params.IsSpeculativePreload() || params.IsLinkPreload()) {
-    DEFINE_RESOURCE_HISTOGRAM("Preload.");
+    RecordResourceHistogram("Preload.", factory.GetType(), policy);
   } else {
-    DEFINE_RESOURCE_HISTOGRAM("");
+    RecordResourceHistogram("", factory.GetType(), policy);
 
     // Log metrics to evaluate effectiveness of the memory cache if it was
     // partitioned by the top-frame site.
     if (same_top_frame_site_resource_cached)
-      DEFINE_RESOURCE_HISTOGRAM("PerTopFrameSite.");
+      RecordResourceHistogram("PerTopFrameSite.", factory.GetType(), policy);
   }
 
   // Aims to count Resource only referenced from MemoryCache (i.e. what would be
@@ -838,7 +841,7 @@ void ResourceFetcher::UpdateMemoryCacheStats(
   // references to Resource from ResourceClient and `preloads_` only, because
   // they are major sources of references.
   if (resource && !resource->IsAlive() && !ContainsAsPreload(resource)) {
-    DEFINE_RESOURCE_HISTOGRAM("Dead.");
+    RecordResourceHistogram("Dead.", factory.GetType(), policy);
   }
 
   // Async (and defer) scripts may have more cache misses, track them
@@ -2643,6 +2646,17 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
 const ResourceFetcher::ResourceFetcherSet&
 ResourceFetcher::MainThreadFetchers() {
   return MainThreadFetchersSet();
+}
+
+// The followings should match with `ResourceType` in
+// `third_party/blink/renderer/platform/loader/fetch/resource.h`
+void ResourceFetcher::RecordResourceHistogram(
+    base::StringPiece prefix,
+    ResourceType type,
+    RevalidationPolicyForMetrics policy) const {
+  base::UmaHistogramEnumeration(
+      base::StrCat({RESOURCE_HISTOGRAM_PREFIX, prefix, ResourceTypeName(type)}),
+      policy);
 }
 
 }  // namespace blink

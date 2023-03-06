@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -502,6 +503,10 @@ class PLATFORM_EXPORT ResourceFetcher
                                         const PendingResourceTimingInfo& info,
                                         base::TimeTicks response_end);
   SubresourceWebBundle* GetMatchingBundle(const KURL& url) const;
+
+  void RecordResourceHistogram(base::StringPiece prefix,
+                               ResourceType type,
+                               RevalidationPolicyForMetrics policy) const;
 
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;
