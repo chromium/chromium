@@ -23,6 +23,9 @@ class AdvancedProtectionStatusManagerFactory
 
   static AdvancedProtectionStatusManagerFactory* GetInstance();
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactoryForTesting();
+
   AdvancedProtectionStatusManagerFactory(
       const AdvancedProtectionStatusManagerFactory&) = delete;
   AdvancedProtectionStatusManagerFactory& operator=(

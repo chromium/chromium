@@ -21,6 +21,10 @@ class PrimaryAccountAccessTokenFetcher;
 }
 
 class PrefService;
+FORWARD_DECLARE_TEST(GeneratedHttpsFirstModePrefTest,
+                     AdvancedProtectionStatusChange_InitiallySignedIn);
+FORWARD_DECLARE_TEST(GeneratedHttpsFirstModePrefTest,
+                     AdvancedProtectionStatusChange_InitiallyNotSignedIn);
 
 namespace safe_browsing {
 
@@ -115,6 +119,10 @@ class AdvancedProtectionStatusManager
                            StartupAfterLongWaitRefreshesImmediately);
   FRIEND_TEST_ALL_PREFIXES(AdvancedProtectionStatusManagerTest,
                            TracksUnconsentedPrimaryAccount);
+  FRIEND_TEST_ALL_PREFIXES(::GeneratedHttpsFirstModePrefTest,
+                           AdvancedProtectionStatusChange_InitiallySignedIn);
+  FRIEND_TEST_ALL_PREFIXES(::GeneratedHttpsFirstModePrefTest,
+                           AdvancedProtectionStatusChange_InitiallyNotSignedIn);
 
   void Initialize();
 

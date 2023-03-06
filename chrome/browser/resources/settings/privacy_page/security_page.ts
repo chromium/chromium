@@ -296,6 +296,18 @@ export class SettingsSecurityPageElement extends
     return subLabel;
   }
 
+  private getHttpsFirstModeSubLabel_(): string {
+    // If the backing HTTPS-Only Mode preference is enabled, but the
+    // generated preference has its user control disabled, then additional
+    // text explaining that the feature is locked down for Advanced Protection
+    // users is added.
+    const generatedPref = this.getPref('generated.https_first_mode_enabled');
+    return this.i18n(
+        generatedPref.userControlDisabled ?
+            'httpsOnlyModeDescriptionAdvancedProtection' :
+            'httpsOnlyModeDescription');
+  }
+
   private onManageCertificatesClick_() {
     // <if expr="use_nss_certs">
     Router.getInstance().navigateTo(routes.CERTIFICATES);
