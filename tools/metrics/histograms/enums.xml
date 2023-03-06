@@ -32920,6 +32920,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1083" label="HttpsUpgradeEnabled"/>
   <int value="1084" label="RealTimeDownloadProtectionRequestAllowed"/>
   <int value="1085" label="MandatoryExtensionsForIncognitoNavigation"/>
+  <int value="1086" label="CredentialProviderPromoEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

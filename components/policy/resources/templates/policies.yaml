@@ -1084,6 +1084,7 @@ policies:
   1083: HttpsUpgradesEnabled
   1084: RealTimeDownloadProtectionRequestAllowed
   1085: MandatoryExtensionsForIncognitoNavigation
+  1086: CredentialProviderPromoEnabled
 
 atomic_groups:
   1: Homepage

@@ -96,6 +96,11 @@ const char kIosBookmarkPromoAlreadySeen[] = "ios.bookmark.promo_already_seen";
 const char kIosBookmarkSigninPromoDisplayedCount[] =
     "ios.bookmark.signin_promo_displayed_count";
 
+// Boolean that is true when the CredentialProviderPromoEnabled policy is
+// enabled.
+const char kIosCredentialProviderPromoPolicyEnabled[] =
+    "ios.credential_provider_promo_policy";
+
 // Boolean to represent if the Credential Provider Promo should stop displaying
 // the promo for the user.
 const char kIosCredentialProviderPromoStopPromo[] =

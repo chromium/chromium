@@ -271,6 +271,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(
       prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, false);
+
+  registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoPolicyEnabled,
+                                true);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
