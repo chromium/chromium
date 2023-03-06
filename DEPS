@@ -587,7 +587,7 @@ deps = {
       },
     ],
     'dep_type': 'cipd',
-    'condition': 'fetch_android_rust_toolchain',
+    'condition': 'fetch_android_chromium_rust_toolchain',
   },
 
   # We don't know target_cpu at deps time. At least until there's a universal
