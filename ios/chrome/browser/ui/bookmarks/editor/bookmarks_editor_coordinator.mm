@@ -150,7 +150,7 @@
       initWithBaseNavigationController:_navigationController
                                browser:self.browser
                            hiddenNodes:hiddenNodes];
-  _folderChooserCoordinator.selectedFolder = [_mediator folder];
+  [_folderChooserCoordinator setSelectedFolder:_mediator.folder];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
 }
@@ -238,7 +238,7 @@
 }
 
 - (void)bookmarkDidMoveToParent:(const bookmarks::BookmarkNode*)newParent {
-  _folderChooserCoordinator.selectedFolder = newParent;
+  [_folderChooserCoordinator setSelectedFolder:newParent];
 }
 
 #pragma mark - BookmarksFolderChooserCoordinatorDelegate

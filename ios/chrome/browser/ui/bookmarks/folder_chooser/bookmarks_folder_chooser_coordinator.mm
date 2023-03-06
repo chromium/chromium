@@ -43,6 +43,11 @@
   std::set<const bookmarks::BookmarkNode*> _hiddenNodes;
   // The current nodes that are considered for a move.
   std::set<const bookmarks::BookmarkNode*> _editedNodes;
+  // The folder that has a blue check mark beside it in the UI.
+  // This is only used for clients of this coordinator to update the UI. This
+  // does not reflect the folder users chose by clicking. For that information
+  // use `bookmarksFolderChooserCoordinatorDidConfirm:withSelectedFolder:`.
+  const bookmarks::BookmarkNode* _selectedFolder;
 }
 
 @end
@@ -79,6 +84,24 @@
   }
   return self;
 }
+
+- (BOOL)canDismiss {
+  if (_folderEditorCoordinator) {
+    return [_folderEditorCoordinator canDismiss];
+  }
+  return YES;
+}
+
+- (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
+  DCHECK(folder);
+  DCHECK(folder->is_folder());
+  _selectedFolder = folder;
+  if (_viewController) {
+    [_viewController changeSelectedFolder:_selectedFolder];
+  }
+}
+
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   [super start];
@@ -132,26 +155,6 @@
     DCHECK(!self.baseViewController.presentedViewController);
   }
   _viewController = nil;
-}
-
-- (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
-  DCHECK(folder);
-  DCHECK(folder->is_folder());
-  _selectedFolder = folder;
-  if (_viewController) {
-    [_viewController changeSelectedFolder:_selectedFolder];
-  }
-}
-
-- (void)changeSelectedFolder:(const bookmarks::BookmarkNode*)folder {
-  [_viewController changeSelectedFolder:folder];
-}
-
-- (BOOL)canDismiss {
-  if (_folderEditorCoordinator) {
-    return [_folderEditorCoordinator canDismiss];
-  }
-  return YES;
 }
 
 #pragma mark - BookmarksFolderChooserViewControllerPresentationDelegate

@@ -171,7 +171,7 @@
                                browser:self.browser
                            hiddenNodes:hiddenNodes];
   _folderChooserCoordinator.allowsNewFolders = NO;
-  _folderChooserCoordinator.selectedFolder = parent;
+  [_folderChooserCoordinator setSelectedFolder:parent];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
 }

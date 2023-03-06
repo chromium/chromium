@@ -666,7 +666,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       initWithBaseViewController:self.navigationController
                          browser:_browser
                      hiddenNodes:nodes];
-  _folderChooserCoordinator.selectedFolder = selectedFolder;
+  [_folderChooserCoordinator setSelectedFolder:selectedFolder];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
 }

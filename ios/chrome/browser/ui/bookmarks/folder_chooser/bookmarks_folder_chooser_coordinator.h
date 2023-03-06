@@ -29,14 +29,6 @@ class BookmarkNode;
 // through it's delegate.
 @property(nonatomic, assign, readonly)
     const std::set<const bookmarks::BookmarkNode*>& editedNodes;
-// The folder that has a blue check mark beside it in the UI. This property has
-// 2 functionality.
-// - It can be set while initializing this coordinator to already have a blue
-//   check mark beside the folder in the UI. If unset no check mark is shown.
-// - This property will also hold the folder the user selected. This
-//   information should be accessed when the `delegate` sends a confirmation
-//   of folder selection.
-@property(nonatomic, assign) const bookmarks::BookmarkNode* selectedFolder;
 // Will provide the necessary UI to create a folder. `YES` by default.
 // Should be set before calling `start`.
 @property(nonatomic) BOOL allowsNewFolders;
@@ -68,6 +60,9 @@ class BookmarkNode;
 
 // Whether the bookmark folder chooser can be dismissed.
 - (BOOL)canDismiss;
+// Puts a blue check mark beside a folder it in the UI.
+// If unset no blue check mark is shown.
+- (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder;
 
 @end
 
