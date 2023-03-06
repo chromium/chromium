@@ -2905,8 +2905,8 @@ TEST_P(CrasAudioHandlerTest, ActiveDeviceSelectionWithStableDeviceId) {
   audio_nodes.push_back(usb_headset);
   ChangeAudioNodes(audio_nodes);
 
-  // Since USB headset was inactive before it was unplugged, it won't be
-  // selected as active after it's plugged in again.
+  // Since internal speaker has higher preference priority than USB headphone,
+  // it won't be selected as active after it's plugged in again.
   EXPECT_EQ(kInternalSpeaker->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
 
@@ -4181,9 +4181,6 @@ TEST_P(CrasAudioHandlerTest, HotPlug35mmHeadphoneAndMic) {
 // priority
 // output devices already plugged and user has manually selected an active
 // output.
-// The hotplug of hdmi output should not change user's selection of active
-// device.
-// crbug.com/447826.
 TEST_P(CrasAudioHandlerTest, HotPlugHDMIChangeActiveOutput) {
   AudioNodeList audio_nodes;
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
