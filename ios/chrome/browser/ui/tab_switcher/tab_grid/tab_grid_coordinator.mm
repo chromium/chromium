@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -66,6 +67,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -1078,6 +1080,29 @@
 }
 
 #pragma mark - InactiveTabsCoordinatorDelegate
+
+- (void)inactiveTabsCoordinator:
+            (InactiveTabsCoordinator*)inactiveTabsCoordinator
+            didSelectItemWithID:(NSString*)itemID {
+  // TODO(crbug.com/1418021): Add metrics when the user activate back an
+  // inactive tab and bring it back to the active tab list.
+  WebStateList* regularWebStateList = self.regularBrowser->GetWebStateList();
+  int toInsertIndex = regularWebStateList->count();
+
+  WebStateList* inactiveWebStateList = _inactiveBrowser->GetWebStateList();
+  int toRemoveIndex = GetTabIndex(inactiveWebStateList, itemID, /*pinned=*/NO);
+
+  MoveTab(inactiveWebStateList, toRemoveIndex, regularWebStateList,
+          toInsertIndex);
+
+  // TODO(crbug.com/1420938): Adapt the animation so the grid animation is
+  // coming from the inactive panel.
+  regularWebStateList->ActivateWebStateAt(toInsertIndex);
+  [self.delegate tabGrid:self
+      shouldActivateBrowser:self.regularBrowser
+             dismissTabGrid:YES
+               focusOmnibox:NO];
+}
 
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator {

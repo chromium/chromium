@@ -12,6 +12,11 @@
 // Delegate for the coordinator.
 @protocol InactiveTabsCoordinatorDelegate
 
+// Tells the delegate that the user selected an item.
+- (void)inactiveTabsCoordinator:
+            (InactiveTabsCoordinator*)inactiveTabsCoordinator
+            didSelectItemWithID:(NSString*)itemID;
+
 // Tells the delegate that the coordinator should be dismissed.
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator;

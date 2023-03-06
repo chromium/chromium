@@ -114,7 +114,8 @@ const NSTimeInterval kDuration = 0.2;
 
 - (void)gridViewController:(GridViewController*)gridViewController
        didSelectItemWithID:(NSString*)itemID {
-  // TODO(crbug.com/1408053): Reactivate the tab.
+  [self.delegate inactiveTabsCoordinator:self didSelectItemWithID:itemID];
+  [self.delegate inactiveTabsCoordinatorDidFinish:self];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController

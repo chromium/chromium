@@ -87,7 +87,8 @@ using ScopedWebStateListObservation =
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
-  NOTREACHED();
+  // Called when the selected web state is moved (closed and opened elsewhere)
+  // from inactive to active. No op.
 }
 
 - (void)webStateList:(WebStateList*)webStateList
