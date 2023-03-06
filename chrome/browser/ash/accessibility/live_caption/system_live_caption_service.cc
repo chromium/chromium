@@ -130,7 +130,7 @@ void SystemLiveCaptionService::StopRecognizing() {
   client_.reset();
 }
 
-void SystemLiveCaptionService::OnOutputStarted() {
+void SystemLiveCaptionService::OnNonChromeOutputStarted() {
   if (!output_running_) {
     stop_countdown_timer_.reset();  // delete a death timeout.
     if (current_recognizer_status_ ==
@@ -144,7 +144,7 @@ void SystemLiveCaptionService::OnOutputStarted() {
   output_running_ = true;
 }
 
-void SystemLiveCaptionService::OnOutputStopped() {
+void SystemLiveCaptionService::OnNonChromeOutputStopped() {
   if (output_running_) {
     stop_countdown_timer_ = std::make_unique<base::OneShotTimer>();
     stop_countdown_timer_->Start(
@@ -161,7 +161,7 @@ void SystemLiveCaptionService::StopTimeoutFinished() {
 void SystemLiveCaptionService::CreateClient() {
   client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), profile_,
-      media::AudioDeviceDescription::kLoopbackInputDeviceId,
+      media::AudioDeviceDescription::kLoopbackWithoutChromeId,
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
           /*enable_formatting=*/false,

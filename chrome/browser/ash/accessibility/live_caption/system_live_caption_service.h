@@ -86,11 +86,9 @@ class SystemLiveCaptionService
   }
 
   // CrasAudioHandler::AudioObserver overrides
-  // TODO(b/253114860) update to execute with correct AudioObserver triggers,
-  // instead of the full audio.
-  void OnOutputStarted() override;
+  void OnNonChromeOutputStarted() override;
 
-  void OnOutputStopped() override;
+  void OnNonChromeOutputStopped() override;
 
  private:
   SpeechRecognizerStatus current_recognizer_status_ =

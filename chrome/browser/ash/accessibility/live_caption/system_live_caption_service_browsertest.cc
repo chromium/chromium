@@ -177,7 +177,7 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
     SystemLiveCaptionServiceFactory::GetInstance()
         ->GetForProfile(primary_profile_)
-        ->OnOutputStarted();
+        ->OnNonChromeOutputStarted();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, Triggering) {
   // Set audio output running.
   SystemLiveCaptionServiceFactory::GetInstance()
       ->GetForProfile(primary_profile_)
-      ->OnOutputStarted();
+      ->OnNonChromeOutputStarted();
   base::RunLoop().RunUntilIdle();
 
   // Should now be processing system audio.
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
   // Set audio output running
   SystemLiveCaptionServiceFactory::GetInstance()
       ->GetForProfile(primary_profile_)
-      ->OnOutputStarted();
+      ->OnNonChromeOutputStarted();
   // Enable feature so that we start listening for SODA install status.
   SetLiveCaptionsPref(primary_profile_, /*enabled=*/true);
 
