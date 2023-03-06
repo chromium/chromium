@@ -285,6 +285,11 @@ void CloudBinaryUploadService::UploadForDeepScanning(
     binary_fcm_service_->GetInstanceID(
         base::BindOnce(&CloudBinaryUploadService::OnGetInstanceID,
                        weakptr_factory_.GetWeakPtr(), raw_request));
+
+    // `request` might have been destroyed by `OnGetInstanceID`.
+    if (active_requests_.find(raw_request) == active_requests_.end()) {
+      return;
+    }
   }
 
   active_timers_[raw_request] = std::make_unique<base::OneShotTimer>();
