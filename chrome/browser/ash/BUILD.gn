@@ -2134,6 +2134,8 @@ source_set("ash") {
     "os_feedback/chrome_os_feedback_delegate.h",
     "os_feedback/os_feedback_screenshot_manager.cc",
     "os_feedback/os_feedback_screenshot_manager.h",
+    "os_url_handler.cc",
+    "os_url_handler.h",
     "ownership/fake_owner_settings_service.cc",
     "ownership/fake_owner_settings_service.h",
     "ownership/owner_key_loader.cc",

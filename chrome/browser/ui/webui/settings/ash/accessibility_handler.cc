@@ -15,16 +15,15 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/os_url_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
@@ -36,7 +35,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/display/screen.h"
 
 namespace ash::settings {
 namespace {
@@ -168,26 +166,14 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
   // app window instead of a regular Ash browser window so that the user can't
   // navigate in Ash. We do so using the OsUrlHandler SWA. Exception: Kiosk mode
   // doesn't support SWA but already hide the navigation bar.
-  // TODO(neis): Merge with similar code elsewhere and move to a common place.
   bool open_with_os_url_handler =
       !crosapi::browser_util::IsAshWebBrowserEnabled() &&
       !profiles::IsKioskSession();
   if (open_with_os_url_handler) {
     DCHECK(extensions::OptionsPageInfo::ShouldOpenInTab(extension));
     GURL url = extensions::OptionsPageInfo::GetOptionsPage(extension);
-    // NOTE: If unexpectedly the primary user profile does not yet exist,
-    // profile below will be nullptr and LaunchSystemWebAppAsync will (in
-    // release builds) only record a trace.
-    Profile* profile = Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-            user_manager::UserManager::Get()->GetPrimaryUser()));
-    ash::SystemAppLaunchParams launch_params;
-    launch_params.url = url;
-    int64_t display_id =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-    ash::LaunchSystemWebAppAsync(
-        profile, ash::SystemWebAppType::OS_URL_HANDLER, launch_params,
-        std::make_unique<apps::WindowInfo>(display_id));
+    bool launched = ash::TryLaunchOsUrlHandler(url);
+    DCHECK(launched);
   } else {
     extensions::ExtensionTabUtil::OpenOptionsPage(
         extension,

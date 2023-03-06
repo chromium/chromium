@@ -400,6 +400,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
+#include "chrome/browser/ash/os_url_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
@@ -417,7 +418,6 @@
 #include "components/user_manager/user_manager.h"
 #include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "ui/display/screen.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chrome_browser_main_linux.h"
 #elif BUILDFLAG(IS_ANDROID)
@@ -7477,24 +7477,12 @@ bool ChromeContentBrowserClient::OpenExternally(
   // If Lacros is the only browser, we intercept any WebUI URLs that would be
   // opened in a regular browser window. We open these with the OsUrlHandler SWA
   // instead, which will load them in an app window (no navigation bar).
-  bool open_with_os_url_handler =
-      from_webui && !crosapi::browser_util::IsAshWebBrowserEnabled() &&
+  if (from_webui && !crosapi::browser_util::IsAshWebBrowserEnabled() &&
       // Kiosk sessions don't support SWA and already hide the navigation bar.
       !profiles::IsKioskSession() &&
       // Terminal's tabs must remain in the Terminal SWA.
-      !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url) &&
-      !ash::GetCapturingSystemAppForURL(profile, url);
-  if (open_with_os_url_handler) {
-    ash::SystemAppLaunchParams launch_params;
-    launch_params.url = url;
-    int64_t display_id =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-    ash::LaunchSystemWebAppAsync(
-        ProfileManager::GetPrimaryUserProfile(),
-        ash::SystemWebAppType::OS_URL_HANDLER, launch_params,
-        std::make_unique<apps::WindowInfo>(display_id));
-    return true;
+      !url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return ash::TryLaunchOsUrlHandler(url);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
