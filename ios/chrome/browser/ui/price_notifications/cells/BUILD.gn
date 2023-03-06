@@ -42,7 +42,9 @@ source_set("unit_tests") {
   sources = [ "price_notifications_table_view_item_unittest.mm" ]
   deps = [
     ":cells",
+    "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/common/ui/colors",
     "//testing/gtest",
+    "//url",
   ]
 }

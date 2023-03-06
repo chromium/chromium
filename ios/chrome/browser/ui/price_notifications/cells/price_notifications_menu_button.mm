@@ -14,7 +14,7 @@
 
 namespace {
 // The length of the button's tappable area.
-const CGFloat kTappableButtonLength = 44;
+const CGFloat kTappableButtonLength = 46;
 // The length of the menu button.
 const CGFloat kMenuButtonLength = 24;
 // The size of the menu button's symbol image.
@@ -52,8 +52,7 @@ const CGFloat kMenuSymbolPointSize = 17;
   CGFloat delta = kTappableButtonLength - self.bounds.size.width;
   CGRect tappableAreaBounds =
       CGRectInset(self.bounds, -0.5 * delta, -0.5 * delta);
-  return CGRectContainsPoint(self.bounds, point) ||
-         CGRectContainsPoint(tappableAreaBounds, point);
+  return CGRectContainsPoint(tappableAreaBounds, point);
 }
 
 @end
