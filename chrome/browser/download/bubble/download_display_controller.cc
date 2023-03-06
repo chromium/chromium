@@ -34,7 +34,8 @@ using DownloadIconState = download::DownloadIconState;
 
 // The amount of time for the toolbar icon to be visible after a download is
 // completed.
-constexpr base::TimeDelta kToolbarIconVisibilityTimeInterval = base::Hours(24);
+constexpr base::TimeDelta kToolbarIconVisibilityTimeInterval =
+    base::Minutes(60);
 
 // The amount of time for the toolbar icon to stay active after a download is
 // completed. If the download completed while full screen, the timer is started

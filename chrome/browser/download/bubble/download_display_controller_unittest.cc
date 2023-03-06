@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -471,16 +472,16 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState) {
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
 
-  task_environment_.FastForwardBy(base::Hours(23));
+  task_environment_.FastForwardBy(base::Minutes(58));
   // The display is still showing because the last download is less than 1
-  // day ago.
+  // hour ago.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
 
-  task_environment_.FastForwardBy(base::Hours(1));
+  task_environment_.FastForwardBy(base::Minutes(2));
   // The display should stop showing once the last download is more than 1
-  // day ago.
+  // hour ago.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
@@ -751,9 +752,9 @@ TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::COMPLETE);
   base::Time current_time = base::Time::Now();
-  // Set the last complete time to more than 1 day ago.
+  // Set the last complete time to more than 1 hour ago.
   DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Hours(25));
+      ->SetLastCompleteTime(current_time - base::Minutes(61));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
@@ -766,9 +767,9 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::COMPLETE);
   base::Time current_time = base::Time::Now();
-  // Set the last complete time to less than 1 day ago.
+  // Set the last complete time to less than 1 hour ago.
   DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Hours(23));
+      ->SetLastCompleteTime(current_time - base::Minutes(59));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
@@ -779,7 +780,7 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NewLastDownload) {
 
   // The display should stop showing once the last download is more than 1 day
   // ago.
-  task_environment_.FastForwardBy(base::Hours(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
@@ -801,9 +802,9 @@ TEST_F(DownloadDisplayControllerTest, InitialState_InProgressDownload) {
 TEST_F(DownloadDisplayControllerTest,
        InitialState_NewLastDownloadWithEmptyItem) {
   base::Time current_time = base::Time::Now();
-  // Set the last complete time to less than 1 day ago.
+  // Set the last complete time to less than 1 hour ago.
   DownloadPrefs::FromDownloadManager(&manager())
-      ->SetLastCompleteTime(current_time - base::Hours(23));
+      ->SetLastCompleteTime(current_time - base::Minutes(59));
 
   DownloadDisplayController controller(&display(), browser(),
                                        &bubble_controller());
