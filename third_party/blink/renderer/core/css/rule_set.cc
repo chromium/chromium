@@ -117,14 +117,15 @@ RuleData::RuleData(StyleRule* rule,
       position_(position),
       specificity_(Selector().Specificity() + extra_specificity),
       link_match_type_(DetermineLinkMatchType(add_rule_flags, Selector())),
-      has_document_security_origin_(add_rule_flags &
-                                    kRuleHasDocumentSecurityOrigin),
+      has_document_security_origin_(
+          (add_rule_flags & kRuleHasDocumentSecurityOrigin) != 0),
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
       is_entirely_covered_by_bucketing_(
           false),  // Will be computed in ComputeEntirelyCoveredByBucketing().
       is_easy_(false),  // Ditto.
+      is_initial_((add_rule_flags & kRuleIsInitial) != 0),
       descendant_selector_identifier_hashes_() {}
 
 void RuleData::ComputeEntirelyCoveredByBucketing() {
@@ -703,6 +704,10 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       }
       AddChildRules(scope_rule->ChildRules(), medium, add_rule_flags,
                     container_query, cascade_layer, inner_style_scope);
+    } else if (auto* initial_rule = DynamicTo<StyleRuleInitial>(rule)) {
+      AddChildRules(initial_rule->ChildRules(), medium,
+                    add_rule_flags | kRuleIsInitial, container_query,
+                    cascade_layer, style_scope);
     }
   }
 }

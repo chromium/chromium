@@ -664,10 +664,10 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     AllowedRulesType allowed_rules,
     StyleRule* parent_rule_for_nesting) {
   if (allowed_rules == kConditionalGroupRules) {
-    if (id != CSSAtRuleID::kCSSAtRuleMedia &&     // [css-conditional-3]
-        id != CSSAtRuleID::kCSSAtRuleSupports &&  // [css-conditional-3]
-        id != CSSAtRuleID::kCSSAtRuleContainer    // [css-contain-3]
-    ) {
+    if (id != CSSAtRuleID::kCSSAtRuleMedia &&      // [css-conditional-3]
+        id != CSSAtRuleID::kCSSAtRuleSupports &&   // [css-conditional-3]
+        id != CSSAtRuleID::kCSSAtRuleContainer &&  // [css-contain-3]
+        id != CSSAtRuleID::kCSSAtRuleInitial) {
       ConsumeErroneousAtRule(stream);
       return nullptr;
     }
@@ -731,6 +731,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         return ConsumeMediaRule(stream, parent_rule_for_nesting);
       case CSSAtRuleID::kCSSAtRuleSupports:
         return ConsumeSupportsRule(stream, parent_rule_for_nesting);
+      case CSSAtRuleID::kCSSAtRuleInitial:
+        return ConsumeInitialRule(stream, parent_rule_for_nesting);
       case CSSAtRuleID::kCSSAtRuleFontFace:
         return ConsumeFontFaceRule(stream);
       case CSSAtRuleID::kCSSAtRuleFontPaletteValues:
@@ -1067,6 +1069,56 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
   return MakeGarbageCollected<StyleRuleSupports>(
       prelude_serialized, supported == CSSSupportsParser::Result::kSupported,
       std::move(rules));
+}
+
+StyleRuleInitial* CSSParserImpl::ConsumeInitialRule(
+    CSSParserTokenStream& stream,
+    StyleRule* parent_rule_for_nesting) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream)) {
+    return nullptr;
+  }
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  if (!prelude.AtEnd()) {
+    return nullptr;  // Parse error; @initial prelude should be empty
+  }
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kInitial, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  HeapVector<Member<StyleRuleBase>, 4> rules;
+  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
+      parent_rule_for_nesting != nullptr) {
+    // Parse the interior as if it were a style rule.
+    if (observer_) {
+      // Observe an empty rule header to ensure the observer has a new rule data
+      // on the stack for the following ConsumeDeclarationList.
+      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
+      observer_->EndRuleHeader(stream.Offset());
+    }
+    ConsumeDeclarationList(stream, StyleRule::kStyle, parent_rule_for_nesting,
+                           &rules);
+    if (!parsed_properties_.empty()) {
+      rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
+    }
+  } else {
+    ConsumeRuleList(stream, kRegularRuleList, parent_rule_for_nesting,
+                    [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
+  }
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.Offset());
+  }
+
+  // NOTE: There will be a copy of rules here, to deal with the different inline
+  // size.
+  return MakeGarbageCollected<StyleRuleInitial>(std::move(rules));
 }
 
 StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(

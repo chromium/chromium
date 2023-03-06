@@ -42374,6 +42374,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4483" label="ExecutedEmptyJavaScriptURLFromFrame"/>
   <int value="4484" label="ExecutedJavaScriptURLFromFrame"/>
   <int value="4485" label="ServiceWorkerBypassFetchHandlerForSubResource"/>
+  <int value="4486" label="CSSAtRuleInitial"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

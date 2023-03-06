@@ -67,6 +67,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kSupports,
     kPositionFallback,
     kTry,
+    kInitial,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -102,9 +103,10 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsImportRule() const { return GetType() == kImport; }
   bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
   bool IsTryRule() const { return GetType() == kTry; }
+  bool IsInitialRule() const { return GetType() == kInitial; }
   bool IsConditionRule() const {
     return GetType() == kContainer || GetType() == kMedia ||
-           GetType() == kSupports;
+           GetType() == kSupports || GetType() == kInitial;
   }
 
   StyleRuleBase* Copy() const;
@@ -537,6 +539,23 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   Member<ContainerQuery> container_query_;
 };
 
+class StyleRuleInitial : public StyleRuleCondition {
+ public:
+  explicit StyleRuleInitial(HeapVector<Member<StyleRuleBase>> rules);
+  StyleRuleInitial(const StyleRuleInitial&) = default;
+
+  bool ConditionIsSupported() const { return true; }
+  StyleRuleInitial* Copy() const {
+    return MakeGarbageCollected<StyleRuleInitial>(*this);
+  }
+
+  void SetConditionText(const ExecutionContext*, String);
+
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
+    StyleRuleCondition::TraceAfterDispatch(visitor);
+  }
+};
+
 // This should only be used within the CSS Parser
 class StyleRuleCharset : public StyleRuleBase {
  public:
@@ -629,6 +648,13 @@ template <>
 struct DowncastTraits<StyleRuleCharset> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsCharsetRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleInitial> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsInitialRule();
   }
 };
 

@@ -17,6 +17,7 @@ enum class CSSAtRuleID {
   kCSSAtRuleFontFace,
   kCSSAtRuleFontPaletteValues,
   kCSSAtRuleImport,
+  kCSSAtRuleInitial,
   kCSSAtRuleKeyframes,
   kCSSAtRuleLayer,
   kCSSAtRuleMedia,

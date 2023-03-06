@@ -118,6 +118,12 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     }
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
+  if (EqualIgnoringASCIICase(name, "initial")) {
+    if (RuntimeEnabledFeatures::CSSInitialPseudoEnabled()) {
+      return CSSAtRuleID::kCSSAtRuleInitial;
+    }
+    return CSSAtRuleID::kCSSAtRuleInvalid;
+  }
   if (EqualIgnoringASCIICase(name, "-webkit-keyframes")) {
     return CSSAtRuleID::kCSSAtRuleWebkitKeyframes;
   }
@@ -142,6 +148,8 @@ absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRuleFontFeatureValues;
     case CSSAtRuleID::kCSSAtRuleImport:
       return WebFeature::kCSSAtRuleImport;
+    case CSSAtRuleID::kCSSAtRuleInitial:
+      return WebFeature::kCSSAtRuleInitial;
     case CSSAtRuleID::kCSSAtRuleKeyframes:
       return WebFeature::kCSSAtRuleKeyframes;
     case CSSAtRuleID::kCSSAtRuleLayer:
