@@ -20,6 +20,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -30,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.view.OneShotPreDrawListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -217,11 +217,19 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setEnabled(buttonData.isEnabled());
         mContentDescription = buttonSpec.getContentDescription();
 
-        // If the button hasn't been laid out then try again before the next draw. This may happen
-        // if the view gets initialized while the activity is not visible (e.g. when a setting
-        // change forces an activity reset).
-        if (!ViewCompat.isLaidOut(this)) {
-            OneShotPreDrawListener.add(this, () -> startTransitionToNewButton(canAnimate));
+        // If the transition root hasn't been laid out then try again after the next layout. This
+        // may happen if the view gets initialized while the activity is not visible (e.g. when a
+        // setting change forces an activity reset).
+        if (!ViewCompat.isLaidOut(mTransitionRoot)) {
+            getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if(ViewCompat.isLaidOut(mTransitionRoot)){
+                        startTransitionToNewButton(canAnimate);
+                        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+            });
         } else {
             startTransitionToNewButton(canAnimate);
         }
