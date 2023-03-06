@@ -120,7 +120,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
     std::vector<SuccessfulCallback> success_callbacks;
   };
 
-  explicit LayerTreeImpl(LayerTreeClient* client);
+  LayerTreeImpl(LayerTreeClient* client,
+                uint32_t num_unneeded_begin_frame_before_stop);
 
   // Request a new frame sink from the client if a new frame sink is needed and
   // there isn't already a pending request.
@@ -133,6 +134,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // Call this whenever there are tree or layer changes that needs to be
   // submitted in a CompositorFrame.
   void SetNeedsDraw();
+  bool NeedsDraw() const;
   bool NeedsBeginFrames() const;
   void GenerateCompositorFrame(
       const viz::BeginFrameArgs& args,
@@ -147,6 +149,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
             const gfx::RectF& clip_in_parent);
 
   const raw_ptr<LayerTreeClient> client_;
+  const uint32_t num_unneeded_begin_frame_before_stop_;
   std::unique_ptr<FrameSinkImpl> frame_sink_;
 
   cc::UIResourceManager ui_resource_manager_;
@@ -166,6 +169,11 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   bool needs_draw_ = false;
   bool visible_ = false;
   uint32_t num_defer_begin_frame_ = 0u;
+  // Number of begin frames with no draw. Stop requesting begin frames after
+  // this reaches `num_unneeded_begin_frame_before_stop_`.
+  uint32_t num_begin_frames_with_no_draw_ =
+      num_unneeded_begin_frame_before_stop_;
+  uint32_t num_unacked_frames_ = 0u;
 
   gfx::Rect device_viewport_rect_;
   float device_scale_factor_ = 1.0f;

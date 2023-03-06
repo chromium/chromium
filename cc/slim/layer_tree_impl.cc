@@ -42,7 +42,11 @@ LayerTreeImpl::PresentationCallbackInfo&
 LayerTreeImpl::PresentationCallbackInfo::operator=(PresentationCallbackInfo&&) =
     default;
 
-LayerTreeImpl::LayerTreeImpl(LayerTreeClient* client) : client_(client) {}
+LayerTreeImpl::LayerTreeImpl(LayerTreeClient* client,
+                             uint32_t num_unneeded_begin_frame_before_stop)
+    : client_(client),
+      num_unneeded_begin_frame_before_stop_(
+          num_unneeded_begin_frame_before_stop) {}
 
 LayerTreeImpl::~LayerTreeImpl() {
   SetRoot(nullptr);
@@ -203,8 +207,14 @@ bool LayerTreeImpl::BeginFrame(
     viz::HitTestRegionList& out_hit_test_region_list) {
   // Skip any delayed BeginFrame messages that arrive even after we no longer
   // need it.
-  if (!NeedsBeginFrames()) {
-    frame_sink_->SetNeedsBeginFrame(false);
+  if (!NeedsDraw()) {
+    num_begin_frames_with_no_draw_++;
+    frame_sink_->SetNeedsBeginFrame(NeedsBeginFrames());
+    return false;
+  }
+  num_begin_frames_with_no_draw_ = 0u;
+
+  if (num_unacked_frames_) {
     return false;
   }
 
@@ -233,10 +243,13 @@ bool LayerTreeImpl::BeginFrame(
 }
 
 void LayerTreeImpl::DidReceiveCompositorFrameAck() {
+  DCHECK_GT(num_unacked_frames_, 0u);
+  num_unacked_frames_--;
   client_->DidReceiveCompositorFrameAck();
 }
 
 void LayerTreeImpl::DidSubmitCompositorFrame() {
+  num_unacked_frames_++;
   client_->DidSubmitCompositorFrame();
 }
 
@@ -351,11 +364,16 @@ void LayerTreeImpl::SetNeedsDraw() {
   UpdateNeedsBeginFrame();
 }
 
-bool LayerTreeImpl::NeedsBeginFrames() const {
+bool LayerTreeImpl::NeedsDraw() const {
   if (!visible_ || !frame_sink_ || num_defer_begin_frame_ > 0u) {
     return false;
   }
   return client_needs_one_begin_frame_ || needs_draw_;
+}
+
+bool LayerTreeImpl::NeedsBeginFrames() const {
+  return NeedsDraw() ||
+         num_begin_frames_with_no_draw_ < num_unneeded_begin_frame_before_stop_;
 }
 
 void LayerTreeImpl::GenerateCompositorFrame(

@@ -14,7 +14,10 @@ namespace cc::slim {
 class TestLayerTreeImpl : public LayerTreeImpl {
  public:
   explicit TestLayerTreeImpl(TestLayerTreeClient* client)
-      : LayerTreeImpl(client) {}
+      : LayerTreeImpl(client, /*num_unneeded_begin_frame_before_stop=*/0u) {}
+  TestLayerTreeImpl(TestLayerTreeClient* client,
+                    uint32_t num_unneeded_begin_frame_before_stop)
+      : LayerTreeImpl(client, num_unneeded_begin_frame_before_stop) {}
   ~TestLayerTreeImpl() override = default;
 
   using LayerTreeImpl::NeedsBeginFrames;
