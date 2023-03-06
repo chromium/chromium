@@ -32,14 +32,14 @@ import InvalidArgumentException = Message.InvalidArgumentException;
  * Example:
  *   cartesian([1, 2], ['a', 'b']); => [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
  */
-function cartesianProduct(...a: any[][]) {
+export function cartesianProduct(...a: any[][]) {
   return a.reduce((a: unknown[], b: unknown[]) =>
     a.flatMap((d: unknown) => b.map((e: unknown) => [d, e].flat()))
   );
 }
 
 /** Expands "AllEvents" events into atomic events. */
-function unrollEvents(
+export function unrollEvents(
   events: Session.SubscribeParametersEvent[]
 ): Session.SubscribeParametersEvent[] {
   const allEvents: Session.SubscribeParametersEvent[] = [];

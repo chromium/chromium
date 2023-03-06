@@ -15,9 +15,13 @@
  */
 
 import * as chai from 'chai';
-import {BrowsingContext} from '../../../protocol/protocol.js';
+import {BrowsingContext, CDP, Log} from '../../../protocol/protocol.js';
+import {
+  SubscriptionManager,
+  cartesianProduct,
+  unrollEvents,
+} from './SubscriptionManager.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
-import {SubscriptionManager} from './SubscriptionManager.js';
 import sinon from 'sinon';
 
 const expect = chai.expect;
@@ -56,7 +60,7 @@ describe('test SubscriptionManager', () => {
     subscriptionManager = new SubscriptionManager(browsingContextStorage);
   });
 
-  it('should re-subscribe global and specific event in proper order', () => {
+  it('should subscribe twice to global and specific event in proper order', () => {
     subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
     subscriptionManager.subscribe(SOME_EVENT, null, ANOTHER_CHANNEL);
     subscriptionManager.subscribe(ANOTHER_EVENT, null, ANOTHER_CHANNEL);
@@ -117,6 +121,47 @@ describe('test SubscriptionManager', () => {
           SOME_CONTEXT
         )
       ).to.deep.equal([]);
+    });
+
+    describe('unsubscribe all', () => {
+      it('atomicity: does not unsubscribe when there is no subscription', () => {
+        subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+        expect(() =>
+          subscriptionManager.unsubscribeAll(
+            [SOME_EVENT, ANOTHER_EVENT],
+            [null],
+            SOME_CHANNEL
+          )
+        ).to.throw('No subscription found');
+        expect(
+          subscriptionManager.getChannelsSubscribedToEvent(
+            SOME_EVENT,
+            SOME_CONTEXT
+          )
+        ).to.deep.equal([SOME_CHANNEL]);
+      });
+
+      it('happy path', () => {
+        subscriptionManager.subscribe(SOME_EVENT, null, SOME_CHANNEL);
+        subscriptionManager.subscribe(ANOTHER_EVENT, null, SOME_CHANNEL);
+        subscriptionManager.unsubscribeAll(
+          [SOME_EVENT, ANOTHER_EVENT],
+          [null],
+          SOME_CHANNEL
+        );
+        expect(
+          subscriptionManager.getChannelsSubscribedToEvent(
+            SOME_EVENT,
+            SOME_CONTEXT
+          )
+        ).to.deep.equal([]);
+        expect(
+          subscriptionManager.getChannelsSubscribedToEvent(
+            ANOTHER_EVENT,
+            SOME_CONTEXT
+          )
+        ).to.deep.equal([]);
+      });
     });
 
     it('should not unsubscribe specific context subscription', () => {
@@ -280,6 +325,7 @@ describe('test SubscriptionManager', () => {
       ).to.deep.equal([SOME_CHANNEL, ANOTHER_CHANNEL]);
     });
   });
+
   describe('with nested contexts', () => {
     it('should subscribe to top-level context when subscribed to nested context', () => {
       subscriptionManager.subscribe(
@@ -294,6 +340,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([SOME_CHANNEL]);
     });
+
     it('should not subscribe to top-level context when subscribed to nested context of another context', () => {
       subscriptionManager.subscribe(
         SOME_EVENT,
@@ -307,6 +354,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([]);
     });
+
     it('should unsubscribe from top-level context when unsubscribed from nested context', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       subscriptionManager.unsubscribe(
@@ -321,6 +369,7 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([]);
     });
+
     it('should not unsubscribe from top-level context when unsubscribed from nested context in different channel', () => {
       subscriptionManager.subscribe(SOME_EVENT, SOME_CONTEXT, SOME_CHANNEL);
       expect(() => {
@@ -329,8 +378,7 @@ describe('test SubscriptionManager', () => {
           SOME_NESTED_CONTEXT,
           ANOTHER_CHANNEL
         );
-      }).to.throw();
-
+      }).to.throw('No subscription found');
       expect(
         subscriptionManager.getChannelsSubscribedToEvent(
           SOME_EVENT,
@@ -338,5 +386,77 @@ describe('test SubscriptionManager', () => {
         )
       ).to.deep.equal([SOME_CHANNEL]);
     });
+  });
+});
+
+describe('test cartesian product', () => {
+  it('should return empty array for empty array', () => {
+    expect(cartesianProduct([], [])).to.deep.equal([]);
+  });
+
+  it('works with a single input', () => {
+    expect(cartesianProduct([1n, 2n])).to.deep.equal([1n, 2n]);
+  });
+
+  it('works with multiple inputs', () => {
+    expect(cartesianProduct([1], [2], [3])).to.deep.equal([[1, 2, 3]]);
+  });
+
+  it('happy path', () => {
+    expect(cartesianProduct([1, 2], ['A', 'B'])).to.deep.equal([
+      [1, 'A'],
+      [1, 'B'],
+      [2, 'A'],
+      [2, 'B'],
+    ]);
+  });
+});
+
+describe('test unroll events', () => {
+  it('all browser events', () => {
+    expect(unrollEvents([BrowsingContext.AllEvents])).to.deep.equal([
+      BrowsingContext.EventNames.LoadEvent,
+      BrowsingContext.EventNames.DomContentLoadedEvent,
+      BrowsingContext.EventNames.ContextCreatedEvent,
+      BrowsingContext.EventNames.ContextDestroyedEvent,
+    ]);
+  });
+
+  it('all CDP events', () => {
+    expect(unrollEvents([CDP.AllEvents])).to.deep.equal([
+      CDP.EventNames.EventReceivedEvent,
+    ]);
+  });
+
+  it('all log events', () => {
+    expect(unrollEvents([Log.AllEvents])).to.deep.equal([
+      Log.EventNames.LogEntryAddedEvent,
+    ]);
+  });
+
+  it('discrete events', () => {
+    expect(
+      unrollEvents([
+        CDP.EventNames.EventReceivedEvent,
+        Log.EventNames.LogEntryAddedEvent,
+      ])
+    ).to.deep.equal([
+      CDP.EventNames.EventReceivedEvent,
+      Log.EventNames.LogEntryAddedEvent,
+    ]);
+  });
+
+  it('all and discrete events', () => {
+    expect(
+      unrollEvents([
+        CDP.AllEvents,
+        CDP.EventNames.EventReceivedEvent,
+        Log.EventNames.LogEntryAddedEvent,
+      ])
+    ).to.deep.equal([
+      CDP.EventNames.EventReceivedEvent,
+      CDP.EventNames.EventReceivedEvent,
+      Log.EventNames.LogEntryAddedEvent,
+    ]);
   });
 });
