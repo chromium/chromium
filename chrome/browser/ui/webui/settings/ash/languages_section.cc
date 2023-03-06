@@ -9,7 +9,9 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
@@ -22,6 +24,8 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
@@ -101,6 +105,18 @@ const std::vector<SearchConcept>& GetInputPageSearchConceptsV2() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSpellCheck}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_LANGUAGES_AUTO_CORRECTION,
+       mojom::kInputMethodOptionsSubpagePath,
+       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kShowPKAutoCorrection}},
   });
   return *tags;
 }
@@ -514,6 +530,7 @@ LanguagesSection::LanguagesSection(Profile* profile,
       spellcheck::prefs::kSpellCheckEnable,
       base::BindRepeating(&LanguagesSection::UpdateSpellCheckSearchTags,
                           base::Unretained(this)));
+  observation_.Observe(input_method::InputMethodManager::Get());
 
   updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
   updater.AddSearchTags(GetInputPageSearchConceptsV2());
@@ -526,6 +543,7 @@ LanguagesSection::LanguagesSection(Profile* profile,
     if (IsEmojiSuggestionAllowed())
       updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
   }
+  updater.AddSearchTags(GetAutoCorrectionSearchConcepts());
 }
 
 LanguagesSection::~LanguagesSection() = default;
@@ -681,6 +699,22 @@ void LanguagesSection::UpdateSpellCheckSearchTags() {
   updater.RemoveSearchTags(GetEditDictionarySearchConceptsV2());
   if (IsSpellCheckEnabled()) {
     updater.AddSearchTags(GetEditDictionarySearchConceptsV2());
+  }
+}
+
+void LanguagesSection::InputMethodChanged(
+    input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  DCHECK(manager);
+  const std::string engine_id =
+      extension_ime_util::GetComponentIDByInputMethodID(
+          manager->GetActiveIMEState()->GetCurrentInputMethod().id());
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  updater.RemoveSearchTags(GetAutoCorrectionSearchConcepts());
+  if (input_method::IsAutocorrectSupported(engine_id)) {
+    updater.AddSearchTags(GetAutoCorrectionSearchConcepts());
   }
 }
 

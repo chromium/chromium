@@ -1072,6 +1072,9 @@
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS" desc="Text for search result item which, when clicked, navigates the user to suggestions settings, with a section having a toggle to enable/disable showing emoji suggestions after an user types a word.">
     Emoji suggestions
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_AUTO_CORRECTION" desc="Text for search result item which, when clicked, navigates the user to the settings page for the current input method, with a section having a toggle to enable/disable performing auto-corrections after an user types a word.">
+    Auto-correction
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_PREDICTIVE_WRITING" desc="Text for search result item which, when clicked, navigates the user to suggestions settings, with a section having a toggle to enable/disable showing predictive writing suggestions after a user types a word.">
     Predictive writing
   </message>
