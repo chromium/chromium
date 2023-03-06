@@ -4925,6 +4925,7 @@ static_library("ui") {
       "views/passwords/manage_passwords_list_view.h",
       "views/passwords/manage_passwords_view.cc",
       "views/passwords/manage_passwords_view.h",
+      "views/passwords/manage_passwords_view_ids.h",
       "views/passwords/move_to_account_store_bubble_view.cc",
       "views/passwords/move_to_account_store_bubble_view.h",
       "views/passwords/password_auto_sign_in_view.cc",

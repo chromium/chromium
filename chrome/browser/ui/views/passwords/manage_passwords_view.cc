@@ -20,10 +20,13 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view_class_properties.h"
+
+using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
 ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
                                          views::View* anchor_view)
@@ -132,6 +135,10 @@ ManagePasswordsView::CreatePasswordListView() {
                 password_manager::ManagePasswordsReferrer::
                     kManagePasswordsBubble);
             view->CloseBubble();
+            password_manager::metrics_util::
+                LogUserInteractionsInPasswordManagementBubble(
+                    PasswordManagementBubbleInteractions::
+                        kManagePasswordsButtonClicked);
           },
           base::Unretained(this)));
 }

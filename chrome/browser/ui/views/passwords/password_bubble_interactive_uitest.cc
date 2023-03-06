@@ -21,16 +21,19 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -59,6 +62,18 @@ views::EditableCombobox* GetUsernameDropdown(
   return save_bubble->username_dropdown_for_testing();
 }
 
+void ClickOnView(views::View* view) {
+  CHECK(view);
+  ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+  view->OnMousePressed(pressed);
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  view->OnMouseReleased(released_event);
+}
+
 }  // namespace
 
 namespace metrics_util = password_manager::metrics_util;
@@ -73,6 +88,16 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
       const PasswordBubbleInteractiveUiTest&) = delete;
 
   ~PasswordBubbleInteractiveUiTest() override {}
+};
+
+class PasswordManagementRevampedBubbleInteractiveUiTest
+    : public PasswordBubbleInteractiveUiTest {
+ public:
+  ~PasswordManagementRevampedBubbleInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kRevampedPasswordManagementBubble};
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, BasicOpenAndClose) {
@@ -438,4 +463,25 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SaveUIDismissalReason",
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+                       ClosesBubbleOnNavigationToFullPasswordManager) {
+  base::HistogramTester histogram_tester;
+
+  SetupManagingPasswords();
+  EXPECT_FALSE(IsBubbleShowing());
+  ExecuteManagePasswordsCommand();
+  ASSERT_TRUE(IsBubbleShowing());
+
+  ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+      static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::MANAGE_PASSWORDS_BUTTON)));
+  EXPECT_FALSE(IsBubbleShowing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordManagementBubble.UserAction",
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kManagePasswordsButtonClicked,
+      1);
 }

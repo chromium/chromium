@@ -383,4 +383,12 @@ void LogUserInteractionsWhenAddingCredentialFromSettings(
       add_credential_from_settings_user_interaction);
 }
 
+void LogUserInteractionsInPasswordManagementBubble(
+    PasswordManagementBubbleInteractions
+        password_management_bubble_interaction) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordManagementBubble.UserAction",
+      password_management_bubble_interaction);
+}
+
 }  // namespace password_manager::metrics_util

@@ -2367,6 +2367,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordManagementBubble.UserAction"
+    enum="PasswordManagementBubbleInteractions" expires_after="2023-09-01">
+  <owner>mamir@chromium.org</owner>
+  <owner>rgod@google.com</owner>
+  <summary>
+    This metrics shows how user interacted with the password management native
+    bubble triggered from the key icon in the omnibox. Recorded during the
+    interaction with the bubble.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordNoteActionInSettings"
     enum="PasswordNoteAction" expires_after="M111">
   <obsolete>

@@ -79105,6 +79105,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Malformed response"/>
 </enum>
 
+<enum name="PasswordManagementBubbleInteractions">
+  <int value="0" label="Manage passwords button clicked"/>
+</enum>
+
 <enum name="PasswordManager.AssistantStoppedBubble.CloseReason">
   <int value="0" label="User restarted the flow."/>
   <int value="1" label="User closed the bubble."/>

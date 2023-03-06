@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -82,22 +83,27 @@ ManagePasswordsListView::ManagePasswordsListView(
 
   AddChildView(std::make_unique<views::Separator>());
 
-  AddChildView(std::make_unique<RichHoverButton>(
-      std::move(on_navigate_to_settings_clicked_callback),
-      /*main_image_icon=*/
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
-                                     ui::kColorIcon),
-      /*title_text=*/
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
-      /*secondary_text=*/std::u16string(),
-      /*tooltip_text=*/
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
-      /*subtitle_text=*/std::u16string(),
-      /*action_image_icon=*/
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                     ui::kColorIconSecondary,
-                                     GetLayoutConstant(PAGE_INFO_ICON_SIZE)),
-      /*state_icon=*/absl::nullopt));
+  auto* manage_passwords_button =
+      AddChildView(std::make_unique<RichHoverButton>(
+          std::move(on_navigate_to_settings_clicked_callback),
+          /*main_image_icon=*/
+          ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                         ui::kColorIcon),
+          /*title_text=*/
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
+          /*secondary_text=*/std::u16string(),
+          /*tooltip_text=*/
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON),
+          /*subtitle_text=*/std::u16string(),
+          /*action_image_icon=*/
+          ui::ImageModel::FromVectorIcon(
+              vector_icons::kLaunchIcon, ui::kColorIconSecondary,
+              GetLayoutConstant(PAGE_INFO_ICON_SIZE)),
+          /*state_icon=*/absl::nullopt));
+  manage_passwords_button->SetID(static_cast<int>(
+      password_manager::ManagePasswordsViewIDs::MANAGE_PASSWORDS_BUTTON));
 }
 
 ManagePasswordsListView::~ManagePasswordsListView() = default;
