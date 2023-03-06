@@ -146,10 +146,6 @@ class CORE_EXPORT ElementRuleCollector {
   void SetMatchingUARules(bool matching_ua_rules) {
     matching_ua_rules_ = matching_ua_rules;
   }
-  // If true, :visited will never match. Has no effect otherwise.
-  void SetSuppressVisited(bool suppress_visited) {
-    suppress_visited_ = suppress_visited;
-  }
 
   const MatchResult& MatchedResult() const;
   StyleRuleList* MatchedStyleRuleList();
@@ -281,7 +277,6 @@ class CORE_EXPORT ElementRuleCollector {
   bool can_use_fast_reject_;
   bool same_origin_only_;
   bool matching_ua_rules_;
-  bool suppress_visited_;
   EInsideLink inside_link_;
 
   HeapVector<MatchedRule, 32> matched_rules_;

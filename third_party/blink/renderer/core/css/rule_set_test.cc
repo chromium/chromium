@@ -259,10 +259,8 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
   sheet.AddCSSRules(":-webkit-any-link { }");
   sheet.AddCSSRules("[attr]:-webkit-any-link { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  // Visited-dependent rules (which include selectors that contain :link)
-  // are added twice.
-  ASSERT_EQ(5u, rule_set.LinkPseudoClassRules().size());
-  ASSERT_EQ(5u, rule_set.AttrRules("attr").size());
+  ASSERT_EQ(3u, rule_set.LinkPseudoClassRules().size());
+  ASSERT_EQ(3u, rule_set.AttrRules("attr").size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Cue) {
@@ -432,23 +430,17 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll2) {
 // result value is stored in the order the selector is stored, which means
 // that the order of the compound selectors are reversed (see comment in
 // CSSSelectorParser::ConsumeComplexSelector()).
-//
-// A single selector may produce more than one RuleData, since visited-dependent
-// rules are added to the RuleSet twice. The `rule_index` parameter can used
-// to specify which of the added RuleData objects we want to produce bucket-
-// coverage information from.
-std::deque<bool> CoveredByBucketing(const String& selector_text,
-                                    wtf_size_t rule_index = 0) {
+std::deque<bool> CoveredByBucketing(const String& selector_text) {
   css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules(selector_text + " { }");
   RuleSet& rule_set = sheet.GetRuleSet();
   const HeapVector<RuleData>& rules = rule_set.AllRulesForTest();
-  EXPECT_LT(rule_index, rules.size());
-  if (rule_index >= rules.size()) {
+  EXPECT_EQ(1u, rules.size());
+  if (rules.size() != 1) {
     return {};
   } else {
-    const CSSSelector* selector = &rules[rule_index].Selector();
+    const CSSSelector* selector = &rules.front().Selector();
 
     std::deque<bool> covered;
     while (selector) {
@@ -457,12 +449,6 @@ std::deque<bool> CoveredByBucketing(const String& selector_text,
     }
     return covered;
   }
-}
-
-wtf_size_t RuleCount(const String& selector_text) {
-  css_test_helpers::TestStyleSheet sheet;
-  sheet.AddCSSRules(selector_text + " { }");
-  return sheet.GetRuleSet().AllRulesForTest().size();
 }
 
 TEST(RuleSetTest, IsCoveredByBucketing) {
@@ -502,25 +488,10 @@ TEST(RuleSetTest, IsCoveredByBucketing) {
   EXPECT_THAT(CoveredByBucketing(":any-link:visited"),
               ElementsAreArray({false, false}));
 
-  // The second rule added by visited-dependent selectors must not have the
-  // covered-by-bucketing flag set.
-  EXPECT_THAT(CoveredByBucketing(":visited", /* rule_index */ 1u),
-              ElementsAreArray({false}));
-  EXPECT_THAT(CoveredByBucketing(":link", /* rule_index */ 1u),
-              ElementsAreArray({false}));
-
   // Some more pseudos.
   EXPECT_THAT(CoveredByBucketing(":focus"), ElementsAreArray({true}));
   EXPECT_THAT(CoveredByBucketing(":focus-visible"), ElementsAreArray({true}));
   EXPECT_THAT(CoveredByBucketing(":host"), ElementsAreArray({false}));
-}
-
-TEST(RuleSetTest, VisitedDependentRuleCount) {
-  EXPECT_EQ(2u, RuleCount(":link"));
-  EXPECT_EQ(2u, RuleCount(":visited"));
-  // Not visited-dependent:
-  EXPECT_EQ(1u, RuleCount("#a"));
-  EXPECT_EQ(1u, RuleCount(":any-link"));
 }
 
 #endif  // DCHECK_IS_ON()

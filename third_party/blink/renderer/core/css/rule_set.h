@@ -422,6 +422,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   base::span<const RuleData> PartPseudoRules() const {
     return part_pseudo_rules_;
   }
+  base::span<const RuleData> VisitedDependentRules() const {
+    return visited_dependent_rules_;
+  }
   base::span<const RuleData> SelectorFragmentAnchorRules() const {
     return selector_fragment_anchor_rules_;
   }
@@ -552,17 +555,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      const ContainerQuery*,
                      CascadeLayer*,
                      const StyleScope*);
-
-  // Determines whether or not CSSSelector::is_covered_by_bucketing_ should
-  // be computed during calls to FindBestRuleSetAndAdd.
-  enum class BucketCoverage {
-    kIgnore,
-    kCompute,
-  };
-
-  template <BucketCoverage bucket_coverage>
   void FindBestRuleSetAndAdd(CSSSelector&, const RuleData&);
-
   void AddRule(StyleRule*,
                unsigned selector_index,
                AddRuleFlags,
@@ -631,6 +624,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<RuleData> shadow_host_rules_;
   HeapVector<RuleData> part_pseudo_rules_;
   HeapVector<RuleData> slotted_pseudo_element_rules_;
+  HeapVector<RuleData> visited_dependent_rules_;
   HeapVector<RuleData> selector_fragment_anchor_rules_;
   HeapVector<RuleData> root_element_rules_;
   RuleFeatureSet features_;
