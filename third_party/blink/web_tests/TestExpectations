@@ -2924,8 +2924,6 @@ crbug.com/626703 [ Mac11 ] virtual/shared-storage-fenced-frame-mparch-selecturl-
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-zero-resolution-rendering-2.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-zero-resolution-rendering.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Failure Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-fetch.https.html [ Timeout ]
