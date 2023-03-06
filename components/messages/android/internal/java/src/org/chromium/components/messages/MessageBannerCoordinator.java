@@ -126,13 +126,14 @@ class MessageBannerCoordinator {
                 mTimer.cancelTimer();
                 // Make it unable to be focused if it is not in the front.
                 mView.enableA11y(false);
+                announceForAccessibility(toIndex);
             } else {
                 mView.enableA11y(true);
                 setOnTouchRunnable(mTimer::resetTimer);
-                announceForAccessibility();
+                announceForAccessibility(toIndex);
                 setOnTitleChanged(() -> {
                     mTimer.resetTimer();
-                    announceForAccessibility();
+                    announceForAccessibility(toIndex);
                 });
                 mTimer.startTimer(mAutodismissDurationMs.get(), mOnTimeUp);
             }
@@ -176,9 +177,15 @@ class MessageBannerCoordinator {
         mMediator.setOnTouchRunnable(runnable);
     }
 
-    private void announceForAccessibility() {
-        mView.announceForAccessibility(mModel.get(MessageBannerProperties.TITLE) + " "
-                + mView.getResources().getString(R.string.message_screen_position));
+    private void announceForAccessibility(int toIndex) {
+        String msg = "";
+        if (toIndex == Position.FRONT) {
+            msg = mModel.get(MessageBannerProperties.TITLE) + " "
+                    + mView.getResources().getString(R.string.message_screen_position);
+        } else {
+            msg = mView.getResources().getString(R.string.message_new_actions_available);
+        }
+        mView.announceForAccessibility(msg);
     }
 
     private void setOnTitleChanged(Runnable runnable) {

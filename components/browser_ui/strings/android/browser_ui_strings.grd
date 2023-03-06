@@ -906,6 +906,12 @@
       <message name="IDS_MESSAGE_SCREEN_POSITION" desc="Accessibility label to inform users about the Message location">
         Option available near top of the screen
       </message>
+      <message name="IDS_MESSAGE_NEW_ACTIONS_AVAILABLE" desc="Accessibility label to inform a second message is shown">
+        New actions available near top of the screen
+      </message>
+      <message name="IDS_MESSAGE_DISMISS_AND_SHOW_NEXT" desc="Accessibility label to allow user to dismiss the current one in order to show the background message">
+        Dismiss and show next available action
+      </message>
 
       <!-- In-Product Help -->
       <message name="IDS_IPH_SNOOZE" desc="Snooze button text within In-Product Help tooltip.">

@@ -14,7 +14,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
@@ -65,18 +64,11 @@ public class MessageContainer extends FrameLayout {
 
     private MessageContainerA11yDelegate mA11yDelegate;
     private boolean mIsInitializingLayout;
+    private int mA11yDismissActionId = NO_ID;
 
     public MessageContainer(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setAccessibilityDelegate(new MessageContainerA11yDelegateProxy());
-        ViewCompat.replaceAccessibilityAction(
-                this, AccessibilityActionCompat.ACTION_DISMISS, null, (v, c) -> {
-                    if (mA11yDelegate != null) {
-                        mA11yDelegate.onA11yDismiss();
-                        return true;
-                    }
-                    return false;
-                });
     }
 
     /**
@@ -102,6 +94,7 @@ public class MessageContainer extends FrameLayout {
                     "Should not contain any view when adding a new message.");
         }
         super.addView(view, index);
+        onChildCountChanged();
 
         // TODO(crbug.com/1178965): clipChildren should be set to false only when the message is in
         // motion.
@@ -119,6 +112,22 @@ public class MessageContainer extends FrameLayout {
         if (getChildCount() == 0) {
             mA11yDelegate = null;
         }
+        onChildCountChanged();
+    }
+
+    private void onChildCountChanged() {
+        ViewCompat.removeAccessibilityAction(this, mA11yDismissActionId);
+        if (getChildCount() == 0) return;
+        String label = getResources().getString(
+                getChildCount() == 1 ? R.string.dismiss : R.string.message_dismiss_and_show_next);
+        mA11yDismissActionId = ViewCompat.addAccessibilityAction(this, label, (v, c) -> {
+            if (mA11yDelegate != null) {
+                assert getChildCount() != 0;
+                mA11yDelegate.onA11yDismiss();
+                return true;
+            }
+            return false;
+        });
     }
 
     public int getMessageBannerHeight() {
@@ -205,5 +214,9 @@ public class MessageContainer extends FrameLayout {
     @Deprecated
     public final void removeView(View view) {
         throw new RuntimeException("Use removeMessage instead.");
+    }
+
+    public int getA11yDismissActionIdForTesting() {
+        return mA11yDismissActionId;
     }
 }
