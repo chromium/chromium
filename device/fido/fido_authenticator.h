@@ -197,9 +197,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // PINUVDisposition enumerates the possible options for obtaining user
   // verification when making a CTAP2 request.
   enum class PINUVDisposition {
+    // The authenticator doesn't support user verification, which is ok because
+    // the request doesn't require it.
+    kUVNotSupportedNorRequired,
     // No UV (neither clientPIN nor internal) is needed to make this
     // credential.
-    kNoUV,
+    kNoUVRequired,
     // A PIN/UV Auth Token should be used to make this credential. The token
     // needs to be obtained via clientPIN or internal UV, depending on which
     // modality the device supports. The modality may need to be set up first.

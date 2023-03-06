@@ -278,6 +278,16 @@ void ReportGetAssertionResponseTransport(FidoAuthenticator* authenticator) {
   }
 }
 
+UserVerificationRequirement AtLeastUVPreferred(UserVerificationRequirement uv) {
+  switch (uv) {
+    case UserVerificationRequirement::kDiscouraged:
+      return UserVerificationRequirement::kPreferred;
+    case UserVerificationRequirement::kPreferred:
+    case UserVerificationRequirement::kRequired:
+      return uv;
+  }
+}
+
 CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
@@ -307,8 +317,15 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
       !authenticator.Options().supports_device_public_key) {
     specialized_request.device_public_key.reset();
   }
-  if (!options.prf_inputs.empty() && authenticator.Options().supports_prf) {
-    specialized_request.prf_inputs = options.prf_inputs;
+  if (!options.prf_inputs.empty()) {
+    if (authenticator.Options().supports_prf) {
+      specialized_request.prf_inputs = options.prf_inputs;
+    }
+    // CTAP2 devices have two PRFs per credential: one for non-UV assertions
+    // and another for UV assertions. WebAuthn only exposes the latter so UV
+    // is needed if supported by the authenticator.
+    specialized_request.user_verification =
+        AtLeastUVPreferred(specialized_request.user_verification);
   }
   return specialized_request;
 }
@@ -468,7 +485,14 @@ void GetAssertionRequestHandler::DispatchRequest(
   PINUVDisposition uv_disposition =
       authenticator->PINUVDispositionForGetAssertion(request, observer());
   switch (uv_disposition) {
-    case PINUVDisposition::kNoUV:
+    case PINUVDisposition::kNoUVRequired:
+      // CTAP2 devices have two PRFs per credential: one for non-UV assertions
+      // and another for UV assertions. If the authenticator is UV capable but
+      // the request isn't doing UV then we mustn't evaluate any PRF because
+      // it would be the wrong one.
+      options.prf_inputs.clear();
+      break;
+    case PINUVDisposition::kUVNotSupportedNorRequired:
     case PINUVDisposition::kNoTokenInternalUV:
     case PINUVDisposition::kNoTokenInternalUVPINFallback:
       // Proceed without a token.

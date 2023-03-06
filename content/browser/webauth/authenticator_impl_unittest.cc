@@ -5899,7 +5899,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialHMACSecret) {
       {device::UserVerificationRequirement::kDiscouraged, false, false},
       {device::UserVerificationRequirement::kPreferred, false, false},
       {device::UserVerificationRequirement::kRequired, false, true},
-      {device::UserVerificationRequirement::kDiscouraged, true, false},
+      {device::UserVerificationRequirement::kDiscouraged, true, true},
       {device::UserVerificationRequirement::kPreferred, true, true},
       {device::UserVerificationRequirement::kRequired, true, true},
   };
@@ -8394,8 +8394,9 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
       ASSERT_EQ(result->first, salt1_eval);
     }
 
-    // When uv=discouraged security keys will use a different PRF. But hybrid
-    // devices always do a UV and only have a single PRF.
+    // Security keys will use a different PRF if UV isn't done. But the PRF
+    // extension should always get the UV PRF so uv=discouraged shouldn't
+    // change the output.
     {
       auto prf_value = blink::mojom::PRFValues::New();
       prf_value->first = salt1;
@@ -8404,11 +8405,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
       auto result =
           assertion(std::move(inputs), 1,
                     device::UserVerificationRequirement::kDiscouraged);
-      if (use_prf_extension_instead) {
-        ASSERT_EQ(result->first, salt1_eval);
-      } else {
-        ASSERT_NE(result->first, salt1_eval);
-      }
+      ASSERT_EQ(result->first, salt1_eval);
     }
 
     // Should be able to evaluate two points at once.
@@ -8517,6 +8514,48 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
       ASSERT_FALSE(result->second);
     }
   }
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest,
+       PRFExtensionOnUnconfiguredAuthenticator) {
+  // If a credential is on a UV-capable, but not UV-configured authenticator and
+  // then an assertion with `prf` is requested there shouldn't be a result
+  // because it would be from the wrong PRF. (This state should only happen when
+  // the credential was created without the `prf` extension, which is an RP
+  // issue.)
+  device::VirtualCtap2Device::Config config;
+  config.hmac_secret_support = true;
+  config.internal_uv_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  config.resident_key_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+      options->allow_credentials[0].id, kTestRelyingPartyId,
+      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+  device::VirtualFidoDevice::RegistrationData& registration =
+      virtual_device_factory_->mutable_state()->registrations.begin()->second;
+  const std::array<uint8_t, 32> key1 = {1};
+  const std::array<uint8_t, 32> key2 = {2};
+  registration.hmac_key.emplace(key1, key2);
+
+  auto prf_value = blink::mojom::PRFValues::New();
+  const std::vector<uint8_t> salt1(32, 1);
+  prf_value->first = salt1;
+  std::vector<blink::mojom::PRFValuesPtr> inputs;
+  inputs.emplace_back(std::move(prf_value));
+
+  options->prf = true;
+  options->prf_inputs = std::move(inputs);
+  options->user_verification =
+      device::UserVerificationRequirement::kDiscouraged;
+  GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_FALSE(result.response->prf_results);
 }
 
 TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {

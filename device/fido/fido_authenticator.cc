@@ -89,14 +89,14 @@ FidoAuthenticator::PINUVDisposition
 FidoAuthenticator::PINUVDispositionForMakeCredential(
     const CtapMakeCredentialRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  return PINUVDisposition::kNoUV;
+  return PINUVDisposition::kUVNotSupportedNorRequired;
 }
 
 FidoAuthenticator::PINUVDisposition
 FidoAuthenticator::PINUVDispositionForGetAssertion(
     const CtapGetAssertionRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  return PINUVDisposition::kNoUV;
+  return PINUVDisposition::kUVNotSupportedNorRequired;
 }
 
 void FidoAuthenticator::GetCredentialsMetadata(

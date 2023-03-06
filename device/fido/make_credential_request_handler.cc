@@ -393,6 +393,17 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
 
   return true;
 }
+
+UserVerificationRequirement AtLeastUVPreferred(UserVerificationRequirement uv) {
+  switch (uv) {
+    case UserVerificationRequirement::kDiscouraged:
+      return UserVerificationRequirement::kPreferred;
+    case UserVerificationRequirement::kPreferred:
+    case UserVerificationRequirement::kRequired:
+      return uv;
+  }
+}
+
 }  // namespace
 
 MakeCredentialRequestHandler::MakeCredentialRequestHandler(
@@ -554,7 +565,8 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
   auto uv_disposition = authenticator->PINUVDispositionForMakeCredential(
       *request.get(), observer());
   switch (uv_disposition) {
-    case PINUVDisposition::kNoUV:
+    case PINUVDisposition::kUVNotSupportedNorRequired:
+    case PINUVDisposition::kNoUVRequired:
     case PINUVDisposition::kNoTokenInternalUV:
     case PINUVDisposition::kNoTokenInternalUVPINFallback:
       break;
@@ -1038,6 +1050,15 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->prf = auth_options.supports_prf;
     request->hmac_secret =
         !auth_options.supports_prf && auth_options.supports_hmac_secret;
+    if (request->prf || request->hmac_secret) {
+      // CTAP2 devices have two PRFs per credential: one for non-UV assertions
+      // and another for UV assertions. WebAuthn only exposes the latter so UV
+      // is needed if supported by the authenticator. When `hmac_secret` is
+      // true, uv=preferred is taken to be a stronger signal and will configure
+      // UV on authenticators without it.
+      request->user_verification =
+          AtLeastUVPreferred(request->user_verification);
+    }
   }
 
   if (request->min_pin_length_requested &&
