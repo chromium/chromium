@@ -1031,6 +1031,54 @@
   <message name="IDS_SETTINGS_CHROMEVOX_ANNOUNCE_RICH_TEXT_ATTRIBUTES" desc="In the ChromeVox settings subpage, the label for the toggle to automatically announce rich text styles." >
     Announce text styling
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_CAPITAL_STRATEGY" desc="In the ChromeVox settings subpage, the label for the multi select option for how to verbalize capital letters.">
+    When reading capitals
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_ANNOUNCE_CAPITALS" desc="In the ChromeVox settings subpage, the label for the option that sets capital description strategy to announce presence of capital letters">
+    Speak "cap" before letter
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_INCREASE_PITCH" desc="In the ChromeVox settings subpage, the label for the option that sets capital description strategy to increase pitch">
+    Increase pitch
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE" desc="In the ChromeVox settings subpage, the label for choosing how ChromeVox reads numbers.">
+    Read numbers as
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE_WORDS" desc="In the ChromeVox settings subpage, the label for an option to read numbers as words.">
+    Words
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE_DIGITS" desc="In the ChromeVox settings subpage, the label for an option to read numbers as digits.">
+    Digits
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO" desc="In the ChromeVox settings subpage, the label for choosing how ChromeVox reads punctuation.">
+    Punctuation echo
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_NONE" desc="In the ChromeVox settings subpage, the label for an option to echo (speak) no punctuation.">
+    None
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_SOME" desc="In the ChromeVox settings subpage, the label for an option to echo (speak) some punctuation.">
+    Some
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_ALL" desc="In the ChromeVox settings subpage, the label for an option to echo (speak) all punctuation.">
+    All
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_ANNOUNCE_DOWNLOAD_NOTIFICATIONS" desc="In the ChromeVox settings subpage, the label for an option to announce download notifications.">
+    Announce download notifications
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_SMART_STICKY_MODE" desc="In the ChromeVox settings subpage, the label for the toggle that enables or disables Smart Sticky Mode. The label explains how the feature works.">
+    Turn off sticky mode when editing text (Smart Sticky Mode)
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_STRATEGY" desc="In the ChromeVox settings subpage, the label for the multiselect dropdown for how to play audio when ChromeVox speaks using text to speech.">
+    When playing audio...
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_NORMAL" desc="In the ChromeVox settings subpage, the label for an option to allow audio playback to be at a normal volume even if ChromeVox is speaking.">
+    Play at normal volume even if ChromeVox is speaking
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_DUCK" desc="In the ChromeVox settings subpage, the label for an option to allow audio playback to play at lower volume when ChromeVox is speaking (use audio ducking).">
+    Play at lower volume when ChromeVox is speaking
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_SUSPEND" desc="In the ChromeVox settings subpage, the label for an option to pause audio playback when ChromeVox is speaking (use audio suspension).">
+    Pause playback when ChromeVox is speaking
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
     Full-screen magnifier
   </message>
