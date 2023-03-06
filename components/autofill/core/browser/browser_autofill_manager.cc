@@ -3441,7 +3441,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     // This reduces the UKM load by ignoring e.g. search boxes at best effort.
     if (base::FeatureList::IsEnabled(
             features::kAutofillLogUKMEventsWithSampleRate) &&
-        form_structure.ShouldBeParsed()) {
+        ShouldUploadUKM(form_structure)) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
           form_structure, *autofill_field);
     }
@@ -3454,7 +3454,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   // Log FormSummary UKM event.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate)) {
+          features::kAutofillLogUKMEventsWithSampleRate) &&
+      ShouldUploadUKM(form_structure)) {
     AutofillMetrics::FormEventSet form_events;
     form_events.insert_all(
         address_form_event_logger_->GetFormEvents(form_structure.global_id()));
@@ -3465,6 +3466,30 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         form_structure, form_events, is_in_any_main_frame,
         initial_interaction_timestamp_, form_submitted_timestamp_);
   }
+}
+
+bool BrowserAutofillManager::ShouldUploadUKM(
+    const FormStructure& form_structure) {
+  if (!form_structure.ShouldBeParsed()) {
+    return false;
+  }
+
+  // If the form contains a single field which contains the string "search" in
+  // its name/id/placeholder, the function return false and the form is not
+  // recorded into UKM.
+  if (form_structure.field_count() == 1 &&
+      (base::ToLowerASCII(form_structure.field(0)->placeholder)
+               .find(u"search") != std::string::npos ||
+       base::ToLowerASCII(form_structure.field(0)->name).find(u"search") !=
+           std::string::npos ||
+       base::ToLowerASCII(form_structure.field(0)->label).find(u"search") !=
+           std::string::npos ||
+       base::ToLowerASCII(form_structure.field(0)->aria_label)
+               .find(u"search") != std::string::npos)) {
+    return false;
+  }
+
+  return true;
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(
