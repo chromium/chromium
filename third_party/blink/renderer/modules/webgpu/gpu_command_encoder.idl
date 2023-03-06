@@ -18,17 +18,17 @@
         GPUSize64 dstOffset,
         GPUSize64 size);
 
-    void copyBufferToTexture(
+    [RaisesException] void copyBufferToTexture(
         GPUImageCopyBuffer source,
         GPUImageCopyTexture destination,
         GPUExtent3D copySize);
 
-    void copyTextureToBuffer(
+    [RaisesException] void copyTextureToBuffer(
         GPUImageCopyTexture source,
         GPUImageCopyBuffer destination,
         GPUExtent3D copySize);
 
-    void copyTextureToTexture(
+    [RaisesException] void copyTextureToTexture(
         GPUImageCopyTexture source,
         GPUImageCopyTexture destination,
         GPUExtent3D copySize);

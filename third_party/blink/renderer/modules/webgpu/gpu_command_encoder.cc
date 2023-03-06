@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_depth_stencil_attachment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_timestamp_write.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
@@ -29,25 +28,25 @@
 
 namespace blink {
 
-WGPURenderPassColorAttachment AsDawnType(
-    const GPURenderPassColorAttachment* webgpu_desc) {
-  DCHECK(webgpu_desc);
+bool ConvertToDawn(const GPURenderPassColorAttachment* in,
+                   WGPURenderPassColorAttachment* out,
+                   ExceptionState& exception_state) {
+  DCHECK(in);
+  DCHECK(out);
 
-  WGPURenderPassColorAttachment dawn_desc = {};
-  dawn_desc.view = webgpu_desc->view()->GetHandle();
-  dawn_desc.resolveTarget = webgpu_desc->hasResolveTarget()
-                                ? webgpu_desc->resolveTarget()->GetHandle()
-                                : nullptr;
-
-  if (webgpu_desc->hasClearValue()) {
-    dawn_desc.clearValue = AsDawnType(webgpu_desc->clearValue());
-  } else {
-    dawn_desc.clearValue = {};
+  *out = {};
+  out->view = in->view()->GetHandle();
+  if (in->hasResolveTarget()) {
+    out->resolveTarget = in->resolveTarget()->GetHandle();
   }
-  dawn_desc.loadOp = AsDawnEnum(webgpu_desc->loadOp());
-  dawn_desc.storeOp = AsDawnEnum(webgpu_desc->storeOp());
+  if (in->hasClearValue() &&
+      !ConvertToDawn(in->clearValue(), &out->clearValue, exception_state)) {
+    return false;
+  }
+  out->loadOp = AsDawnEnum(in->loadOp());
+  out->storeOp = AsDawnEnum(in->storeOp());
 
-  return dawn_desc;
+  return true;
 }
 
 WGPUComputePassTimestampWrite AsDawnType(
@@ -170,39 +169,21 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     ExceptionState& exception_state) {
   DCHECK(descriptor);
 
-  uint32_t color_attachment_count =
-      static_cast<uint32_t>(descriptor->colorAttachments().size());
-
-  // Check clearValue is correctly formatted before further processing.
-  for (wtf_size_t i = 0; i < color_attachment_count; ++i) {
-    const auto& maybe_color_attachment = descriptor->colorAttachments()[i];
-    // Check if the color attachment is null since it is a sparse array
-    if (!maybe_color_attachment) {
-      continue;
-    }
-    const GPURenderPassColorAttachment* color_attachment =
-        maybe_color_attachment.Get();
-
-    if (color_attachment->hasClearValue() &&
-        color_attachment->clearValue()->IsDoubleSequence() &&
-        color_attachment->clearValue()->GetAsDoubleSequence().size() != 4) {
-      exception_state.ThrowRangeError("clearValue color size must be 4");
-      return nullptr;
-    }
-  }
+  WGPURenderPassDescriptor dawn_desc = {};
 
   std::string label;
-  WGPURenderPassDescriptor dawn_desc = {};
-  dawn_desc.colorAttachmentCount = color_attachment_count;
-  dawn_desc.colorAttachments = nullptr;
   if (descriptor->hasLabel()) {
     label = descriptor->label().Utf8();
     dawn_desc.label = label.c_str();
   }
 
   std::unique_ptr<WGPURenderPassColorAttachment[]> color_attachments;
-  if (color_attachment_count > 0) {
-    color_attachments = AsDawnType(descriptor->colorAttachments());
+  dawn_desc.colorAttachmentCount = descriptor->colorAttachments().size();
+  if (dawn_desc.colorAttachmentCount > 0) {
+    if (!ConvertToDawn(descriptor->colorAttachments(), &color_attachments,
+                       exception_state)) {
+      return nullptr;
+    }
     dawn_desc.colorAttachments = color_attachments.get();
   }
 
@@ -212,14 +193,10 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
         descriptor->depthStencilAttachment();
     depthStencilAttachment = AsDawnType(device_, depth_stencil);
     dawn_desc.depthStencilAttachment = &depthStencilAttachment;
-  } else {
-    dawn_desc.depthStencilAttachment = nullptr;
   }
 
   if (descriptor->hasOcclusionQuerySet()) {
     dawn_desc.occlusionQuerySet = AsDawnType(descriptor->occlusionQuerySet());
-  } else {
-    dawn_desc.occlusionQuerySet = nullptr;
   }
 
   uint32_t timestamp_writes_count =
@@ -241,8 +218,6 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 
     timestamp_writes = AsDawnType(descriptor->timestampWrites());
     dawn_desc.timestampWrites = timestamp_writes.get();
-  } else {
-    dawn_desc.timestampWrites = nullptr;
   }
 
   WGPURenderPassDescriptorMaxDrawCount max_draw_count = {};
@@ -251,8 +226,6 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
     max_draw_count.maxDrawCount = descriptor->maxDrawCount();
     dawn_desc.nextInChain =
         reinterpret_cast<WGPUChainedStruct*>(&max_draw_count);
-  } else {
-    dawn_desc.nextInChain = nullptr;
   }
 
   GPURenderPassEncoder* encoder = MakeGarbageCollected<GPURenderPassEncoder>(
@@ -306,9 +279,14 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
 
 void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
                                             GPUImageCopyTexture* destination,
-                                            const V8GPUExtent3D* copy_size) {
-  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
-  WGPUImageCopyTexture dawn_destination = AsDawnType(destination);
+                                            const V8GPUExtent3D* copy_size,
+                                            ExceptionState& exception_state) {
+  WGPUExtent3D dawn_copy_size;
+  WGPUImageCopyTexture dawn_destination;
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+      !ConvertToDawn(destination, &dawn_destination, exception_state)) {
+    return;
+  }
 
   const char* error = nullptr;
   WGPUImageCopyBuffer dawn_source =
@@ -324,9 +302,14 @@ void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
 
 void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
                                             GPUImageCopyBuffer* destination,
-                                            const V8GPUExtent3D* copy_size) {
-  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
-  WGPUImageCopyTexture dawn_source = AsDawnType(source);
+                                            const V8GPUExtent3D* copy_size,
+                                            ExceptionState& exception_state) {
+  WGPUExtent3D dawn_copy_size;
+  WGPUImageCopyTexture dawn_source;
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+      !ConvertToDawn(source, &dawn_source, exception_state)) {
+    return;
+  }
 
   const char* error = nullptr;
   WGPUImageCopyBuffer dawn_destination =
@@ -342,10 +325,16 @@ void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
 
 void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
                                              GPUImageCopyTexture* destination,
-                                             const V8GPUExtent3D* copy_size) {
-  WGPUImageCopyTexture dawn_source = AsDawnType(source);
-  WGPUImageCopyTexture dawn_destination = AsDawnType(destination);
-  WGPUExtent3D dawn_copy_size = AsDawnType(copy_size);
+                                             const V8GPUExtent3D* copy_size,
+                                             ExceptionState& exception_state) {
+  WGPUExtent3D dawn_copy_size;
+  WGPUImageCopyTexture dawn_source;
+  WGPUImageCopyTexture dawn_destination;
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+      !ConvertToDawn(source, &dawn_source, exception_state) ||
+      !ConvertToDawn(destination, &dawn_destination, exception_state)) {
+    return;
+  }
 
   GetProcs().commandEncoderCopyTextureToTexture(
       GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);
