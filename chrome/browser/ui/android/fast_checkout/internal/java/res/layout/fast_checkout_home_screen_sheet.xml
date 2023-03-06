@@ -14,7 +14,9 @@ found in the LICENSE file.
   <LinearLayout
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
-      android:orientation="vertical">
+      android:orientation="vertical"
+      android:clickable="true"
+      android:focusable="true">
 
       <!-- Header section -->
       <ImageView
@@ -36,18 +38,14 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:gravity="center_horizontal"
           android:textAppearance="@style/TextAppearance.Headline"
-          android:text="@string/fast_checkout_home_sheet_title"
-          android:clickable="true"
-          android:focusable="true"/>
+          android:text="@string/fast_checkout_home_sheet_title"/>
 
         <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="center_horizontal"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-          android:text="@string/fast_checkout_home_sheet_subtitle"
-          android:clickable="true"
-          android:focusable="true" />
+          android:text="@string/fast_checkout_home_sheet_subtitle"/>
       </LinearLayout>
 
       <!-- Autofill Options -->
