@@ -6164,6 +6164,9 @@ if __name__ == '__main__':
   parser.add_option(
       '', '--vendor',
       help='Vendor id for vendor specific tests. Defaults to "goog"')
+  parser.add_option(
+      '', '--disable-build-check', action='store_true', default=False,
+      help='Allow ChromeDriver to run with an incompatible Chrome version')
 
   options, args = parser.parse_args()
 
@@ -6195,9 +6198,14 @@ if __name__ == '__main__':
       options.android_package not in _ANDROID_NEGATIVE_FILTER):
     parser.error('Invalid --android-package')
 
+  additional_args = []
+  if options.disable_build_check:
+    additional_args.append('--disable-build-check')
+
   global chromedriver_server
   chromedriver_server = server.Server(_CHROMEDRIVER_BINARY, options.log_path,
-                                      replayable=options.replayable)
+                                      replayable=options.replayable,
+                                      additional_args=additional_args)
 
   global _CHROMEDRIVER_SERVER_PID
   _CHROMEDRIVER_SERVER_PID = chromedriver_server.GetPid()
