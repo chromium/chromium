@@ -32,6 +32,9 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
       base::WeakPtr<PasswordsModelDelegate> delegate);
   ~ItemsBubbleController() override;
 
+  // PasswordBubbleControllerBase methods:
+  std::u16string GetTitle() const override;
+
   // Called by the view code when the manage button is clicked by the user.
   void OnManageClicked(password_manager::ManagePasswordsReferrer referrer);
 
@@ -90,7 +93,6 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
       const favicon_base::FaviconImageResult& result);
 
   // PasswordBubbleControllerBase methods:
-  std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
   // Returns the password store in which this password form is stored.

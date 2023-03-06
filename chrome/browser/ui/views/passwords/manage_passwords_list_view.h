@@ -33,7 +33,8 @@ class ManagePasswordsListView : public views::BoxLayoutView {
 
   ~ManagePasswordsListView() override;
 
-  static std::unique_ptr<views::View> CreateTitleView();
+  static std::unique_ptr<views::View> CreateTitleView(
+      const std::u16string& title);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_LIST_VIEW_H_

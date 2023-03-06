@@ -82,7 +82,7 @@ void ManagePasswordsView::AddedToWidget() {
   // BubbleDialogDelegateView::CreateBubble() *after* the construction of the
   // ManagePasswordsView, the title view cannot be set in the constructor.
   GetBubbleFrameView()->SetTitleView(
-      ManagePasswordsListView::CreateTitleView());
+      ManagePasswordsListView::CreateTitleView(controller_.GetTitle()));
 }
 
 bool ManagePasswordsView::Accept() {
@@ -214,7 +214,8 @@ void ManagePasswordsView::RecreateLayout() {
                                      ->GetInsetsMetric(views::INSETS_DIALOG)
                                      .bottom()));
   } else {
-    frame_view->SetTitleView(ManagePasswordsListView::CreateTitleView());
+    frame_view->SetTitleView(
+        ManagePasswordsListView::CreateTitleView(controller_.GetTitle()));
     frame_view->SetFootnoteView(CreateFooterView());
     page_container_->SwitchToPage(CreatePasswordListView());
     page_container_->SetProperty(views::kMarginsKey, gfx::Insets());

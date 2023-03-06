@@ -20,7 +20,8 @@
 #include "ui/views/controls/separator.h"
 
 // static
-std::unique_ptr<views::View> ManagePasswordsListView::CreateTitleView() {
+std::unique_ptr<views::View> ManagePasswordsListView::CreateTitleView(
+    const std::u16string& title) {
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   auto header = std::make_unique<views::BoxLayoutView>();
   // Set the space between the icon and title similar to the default behavior in
@@ -32,10 +33,7 @@ std::unique_ptr<views::View> ManagePasswordsListView::CreateTitleView() {
           GooglePasswordManagerVectorIcon(), ui::kColorIcon,
           layout_provider->GetDistanceMetric(
               DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE))));
-  // TODO(crbug.com/1382017): refactor to use the title provided by the
-  // controller instead.
-  header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(
-      u"Saved passwords for this site"));
+  header->AddChildView(views::BubbleFrameView::CreateDefaultTitleLabel(title));
   return header;
 }
 
