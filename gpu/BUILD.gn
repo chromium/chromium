@@ -673,6 +673,7 @@ test("gpu_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//base/test:test_trace_processor",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",

@@ -8,7 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/test/test_trace_processor.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -18,6 +20,8 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace gpu {
 
@@ -115,6 +119,36 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
               raster_decoder_state.get());
   }
 #endif
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  // TODO(crbug.com/1420217): Simplify this with a generic helper to control the
+  // test's tracing in ::base::test.
+  std::unique_ptr<perfetto::TracingSession> StartNewTraceBlocking() {
+    std::unique_ptr<perfetto::TracingSession> session =
+        perfetto::Tracing::NewTrace();
+    auto config = ::base::test::TracingEnvironment::GetDefaultTraceConfig();
+    for (auto& data_source : *config.mutable_data_sources()) {
+      perfetto::protos::gen::TrackEventConfig track_event_config;
+      track_event_config.add_disabled_categories("*");
+      track_event_config.add_enabled_categories("gpu");
+      data_source.mutable_config()->set_track_event_config_raw(
+          track_event_config.SerializeAsString());
+    }
+    session->Setup(config);
+    session->StartBlocking();
+    return session;
+  }
+
+  std::vector<char> StopAndReadTraceBlocking(
+      std::unique_ptr<perfetto::TracingSession> session) {
+    base::TrackEvent::Flush();
+    session->StopBlocking();
+    return session->ReadTraceBlocking();
+  }
+
+ private:
+  ::base::test::TracingEnvironment tracing_environment_;
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 };
 
 TEST_F(GpuChannelManagerTest, EstablishChannel) {
@@ -142,7 +176,13 @@ TEST_F(GpuChannelManagerTest, OnBackgroundedWithWebGL) {
 // Tests that peak memory usage is only reported for valid sequence numbers,
 // and that polling shuts down the monitoring.
 TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  std::unique_ptr<perfetto::TracingSession> session = StartNewTraceBlocking();
+#else
+  // TODO(crbug.com/1006541): Remove trace_analyzer usage after migration to the
+  // SDK.
   trace_analyzer::Start("gpu");
+#endif
 
   GpuChannelManager* manager = channel_manager();
   const CommandBufferId buffer_id =
@@ -165,6 +205,41 @@ TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
   EXPECT_EQ(0u, GetMonitorsPeakMemoryUsage(sequence_num));
   EXPECT_EQ(0u, GetManagersPeakMemoryUsage(sequence_num));
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  std::vector<char> raw_trace = StopAndReadTraceBlocking(std::move(session));
+  ASSERT_FALSE(raw_trace.empty());
+  base::test::TestTraceProcessor trace_processor;
+  auto status = trace_processor.ParseTrace(raw_trace);
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query =
+      R"(
+      SELECT
+        EXTRACT_ARG(arg_set_id, 'debug.start') AS start,
+        (
+          SELECT COUNT(*)
+          FROM args
+          WHERE args.arg_set_id = slice.arg_set_id
+                AND args.key GLOB 'debug.start_sources*'
+        ) > 0 AS has_start_sources,
+        EXTRACT_ARG(arg_set_id, 'debug.peak') AS peak,
+        (
+          SELECT COUNT(*)
+          FROM args
+          WHERE args.arg_set_id = slice.arg_set_id
+                AND args.key GLOB 'debug.end_sources*'
+        ) > 0 AS has_end_sources
+      FROM slice
+      where name = 'PeakMemoryTracking'
+      ORDER BY ts ASC
+      )";
+  EXPECT_THAT(trace_processor.ExecuteQuery(query),
+              ::testing::ElementsAre(
+                  std::vector<std::string>{"start", "has_start_sources", "peak",
+                                           "has_end_sources"},
+                  std::vector<std::string>{
+                      base::StringPrintf("%" PRIu64, current_memory), "1",
+                      base::StringPrintf("%" PRIu64, current_memory), "1"}));
+#else   // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;
   analyzer->FindEvents(trace_analyzer::Query::EventNameIs("PeakMemoryTracking"),
@@ -178,13 +253,7 @@ TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
   ASSERT_TRUE(events[0]->HasDictArg("start_sources"));
   EXPECT_FALSE(events[0]->GetKnownArgAsDict("start_sources").empty());
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // In Perfetto, arguments of begin and end events are merged and emitted
-  // with the begin event.
-  const int kEndArgumentsSliceIndex = 0;
-#else
   const int kEndArgumentsSliceIndex = 1;
-#endif
   ASSERT_TRUE(events[kEndArgumentsSliceIndex]->HasNumberArg("peak"));
   EXPECT_EQ(current_memory,
             static_cast<uint64_t>(
@@ -193,6 +262,7 @@ TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
   EXPECT_FALSE(events[kEndArgumentsSliceIndex]
                    ->GetKnownArgAsDict("end_sources")
                    .empty());
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 // Tests that while a channel may exist for longer than a request to monitor,
