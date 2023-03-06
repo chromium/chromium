@@ -5143,7 +5143,10 @@
     Your device can be unlocked with Smart Lock. Press Enter to unlock.
   </message>
   <message name="IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP" desc="Tooltip message shown on the lock screen when hovering above the managed icon which is shown when custom policy provided trusted anchors are present.">
-    Using an administrator provided certificate. Sign-in data you provide to <ph name="DOMAIN">$1<ex>google.com</ex></ph> can be intercepted by your administrator
+    Certificate provided by your administrator who can view credentials for <ph name="DOMAIN">$1<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_WARNING_MESSAGE" desc="Message shown on the lock screen which is shown when custom policy provided trusted anchors are present.">
+    Monitored connection
   </message>
 
   <!-- Strings for EcheApp -->

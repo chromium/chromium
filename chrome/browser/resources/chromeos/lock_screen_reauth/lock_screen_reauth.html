@@ -141,7 +141,18 @@
   }
 
   #policyCertIndicator {
-    padding: 15px;
+    color: rgb(106, 106, 106);
+    display: flex;
+    padding-inline-start: 15px;
+  }
+
+  #policyCertIcon {
+    padding-top: 8px;
+  }
+
+  #policyCertWarning {
+    padding-inline-start: 5px;
+    padding-top: 15px;
   }
 
   .title-icon {
@@ -312,13 +323,16 @@
   <div id="samlContainer">
     <div id="policyCertIndicator"
         hidden="[[!policyProvidedTrustedAnchorsUsed_()]]">
-      <cr-tooltip-icon icon-class="cr:domain"
+      <cr-tooltip-icon id="policyCertIcon" icon-class="cr:domain"
           tooltip-text="[[i18nDynamic(locale,
               'policyProvidedCaCertsTooltipMessage', authDomain_)]]"
           icon-aria-label="[[i18nDynamic(locale,
               'policyProvidedCaCertsTooltipMessage', authDomain_)]]"
           tooltip-position="bottom">
       </cr-tooltip-icon>
+      <span id="policyCertWarning">
+        $i18n{policyProvidedCaCertsWarningMessage}
+      </span>
     </div>
     <div id="samlHeader" saml-notice-message$="[[showSamlNoticeMessage_]]">
       <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">

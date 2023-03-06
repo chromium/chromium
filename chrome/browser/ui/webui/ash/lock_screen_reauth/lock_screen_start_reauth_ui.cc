@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -122,14 +123,22 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->AddString(
       "samlChangeProviderButton",
       l10n_util::GetStringUTF16(IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON));
-  source->AddBoolean(
-      "policyProvidedCaCertsPresent",
-      profile->GetPrefs()->GetBoolean(prefs::kUsedPolicyCertificates) &&
-          features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen());
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  bool policy_ca_certs_present =
+      primary_profile
+          ? primary_profile->GetPrefs()->GetBoolean(
+                prefs::kUsedPolicyCertificates) &&
+                features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen()
+          : false;
+  source->AddBoolean("policyProvidedCaCertsPresent", policy_ca_certs_present);
   source->AddString(
       "policyProvidedCaCertsTooltipMessage",
       l10n_util::GetStringUTF16(
           IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP));
+  source->AddString(
+      "policyProvidedCaCertsWarningMessage",
+      l10n_util::GetStringUTF16(
+          IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_WARNING_MESSAGE));
 
   source->AddResourcePaths(base::make_span(kLockScreenReauthResources,
                                            kLockScreenReauthResourcesSize));
