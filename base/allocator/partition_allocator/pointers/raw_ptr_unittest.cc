@@ -1564,7 +1564,7 @@ void RunBackupRefPtrImplAdvanceTest(
   // end-of-allocation address should not cause an error immediately, but it may
   // result in the pointer being poisoned.
   protected_ptr = protected_ptr + requested_size / 2;
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr = ' ', "");
   protected_ptr -= 1;  // This brings the pointer back within
                        // bounds, which causes the poison to be removed.
@@ -1585,7 +1585,7 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_CHECK_DEATH(protected_ptr -= 1);
   EXPECT_CHECK_DEATH(--protected_ptr);
 
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   // An array type that should be more than a third the size of the available
   // memory for the allocation such that incrementing a pointer to this type
   // twice causes it to point to a memory location that is too small to fit a
@@ -1936,7 +1936,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   CountingRawPtr<int> protected_ptr = ptr;
   CountingRawPtr<int> protected_ptr_end = protected_ptr + requested_elements;
 
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr_end = 1, "");
 #endif
 
@@ -2014,7 +2014,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   allocator_.root()->Free(ptr);
 }
 
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 TEST_F(BackupRefPtrTest, Duplicate) {
   size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
   char* ptr = static_cast<char*>(allocator_.root()->Alloc(requested_size, ""));
@@ -2038,7 +2038,7 @@ TEST_F(BackupRefPtrTest, Duplicate) {
 
   allocator_.root()->Free(ptr);
 }
-#endif  // PA_USE_OOB_POISON
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
 namespace {
 constexpr uint8_t kCustomQuarantineByte = 0xff;

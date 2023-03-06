@@ -1047,10 +1047,10 @@ PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
 // Return values to indicate where a pointer is pointing relative to the bounds
 // of an allocation.
 enum class PtrPosWithinAlloc {
-  // When PA_USE_OOB_POISON is disabled, end-of-allocation pointers are also
-  // considered in-bounds.
+  // When BACKUP_REF_PTR_POISON_OOB_PTR is disabled, end-of-allocation pointers
+  // are also considered in-bounds.
   kInBounds,
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   kAllocEnd,
 #endif
   kFarOOB

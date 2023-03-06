@@ -1471,7 +1471,7 @@ TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
                 PtrPosWithinAlloc::kInBounds);
       EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size / 2, 0u),
                 PtrPosWithinAlloc::kInBounds);
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
       EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size - 1, 1u),
                 PtrPosWithinAlloc::kInBounds);
       EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size, 1u),
@@ -1483,7 +1483,7 @@ TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
                       address, address + requested_size - subtrahend, 4u),
                   PtrPosWithinAlloc::kAllocEnd);
       }
-#else
+#else  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
       EXPECT_EQ(IsPtrWithinSameAlloc(address, address + requested_size, 0u),
                 PtrPosWithinAlloc::kInBounds);
 #endif
@@ -1506,7 +1506,7 @@ TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
       EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size,
                                      address + requested_size + 1, 0u),
                 PtrPosWithinAlloc::kFarOOB);
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
       EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size - 1,
                                      address + requested_size - 1, 1u),
                 PtrPosWithinAlloc::kInBounds);
@@ -1525,7 +1525,7 @@ TEST_P(PartitionAllocTest, IsPtrWithinSameAlloc) {
                                  address + requested_size - 4 + addend, 4u),
             PtrPosWithinAlloc::kAllocEnd);
       }
-#else
+#else  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
       EXPECT_EQ(IsPtrWithinSameAlloc(address + requested_size,
                                      address + requested_size, 0u),
                 PtrPosWithinAlloc::kInBounds);

@@ -168,12 +168,6 @@ static_assert(sizeof(void*) != 8, "");
 static_assert(sizeof(void*) == 8);
 #endif
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
-#define PA_CONFIG_USE_OOB_POISON() 1
-#else
-#define PA_CONFIG_USE_OOB_POISON() 0
-#endif
-
 // Build MTECheckedPtr code.
 //
 // Only applicable to code with 64-bit pointers. Currently conflicts with true

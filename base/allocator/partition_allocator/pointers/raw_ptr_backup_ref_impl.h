@@ -88,7 +88,7 @@ struct RawPtrBackupRefImpl {
     return is_in_brp_pool;
   }
 
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   // Out-Of-Bounds (OOB) poison bit is set when the pointer has overflowed by
   // one byte.
 #if defined(ARCH_CPU_X86_64)
@@ -118,12 +118,12 @@ struct RawPtrBackupRefImpl {
     return reinterpret_cast<T*>(reinterpret_cast<uintptr_t>(ptr) |
                                 OOB_POISON_BIT);
   }
-#else   // PA_USE_OOB_POISON
+#else   // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   template <typename T>
   static PA_ALWAYS_INLINE T* UnpoisonPtr(T* ptr) {
     return ptr;
   }
-#endif  // PA_USE_OOB_POISON
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
   // Wraps a pointer.
   template <typename T>
@@ -180,7 +180,7 @@ struct RawPtrBackupRefImpl {
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     PA_BASE_CHECK(!IsPtrOOB(wrapped_ptr));
 #endif
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
@@ -198,7 +198,7 @@ struct RawPtrBackupRefImpl {
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     // Some code uses invalid pointer values as indicators, so those values must
     // be passed through unchanged during extraction. The following check will
     // pass invalid values through if those values do not fall within the BRP
@@ -211,7 +211,7 @@ struct RawPtrBackupRefImpl {
     // OOB conditions, e.g., in code that extracts an end-of-allocation pointer
     // for use in a loop termination condition. The poison bit would make that
     // pointer appear to reference a very high address.
-#endif  // PA_CONFIG(USE_OOB_POISON)
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     return unpoisoned_ptr;
   }
 
@@ -293,12 +293,12 @@ struct RawPtrBackupRefImpl {
       // must be the same pool.
       PA_BASE_CHECK(ptr_pos_within_alloc !=
                     partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
       if (ptr_pos_within_alloc ==
           partition_alloc::internal::PtrPosWithinAlloc::kAllocEnd) {
         new_ptr = PoisonOOBPtr(new_ptr);
       }
-#endif
+#endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     } else {
       // Check that the new address didn't migrate into the BRP pool, as it
       // would result in more pointers pointing to an allocation than its

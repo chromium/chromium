@@ -86,7 +86,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
   uintptr_t object_end = object_addr + slot_span->GetUsableSize(root);
   if (test_address < object_addr || object_end < test_address) {
     return PtrPosWithinAlloc::kFarOOB;
-#if PA_CONFIG(USE_OOB_POISON)
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   } else if (object_end - type_size < test_address) {
     // Not even a single element of the type referenced by the pointer can fit
     // between the pointer and the end of the object.

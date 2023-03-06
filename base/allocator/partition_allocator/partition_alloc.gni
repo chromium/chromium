@@ -162,6 +162,7 @@ declare_args() {
   # to go through build_overrides
   enable_dangling_raw_ptr_perf_experiment = false
 
+  # Set to `enable_backup_ref_ptr_support && has_64_bit_pointers` when enabling.
   backup_ref_ptr_poison_oob_ptr = false
 }
 
@@ -235,6 +236,8 @@ assert(
 assert(
     enable_backup_ref_ptr_support || !backup_ref_ptr_poison_oob_ptr,
     "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled at all")
+assert(has_64_bit_pointers || !backup_ref_ptr_poison_oob_ptr,
+       "Can't enable poisoning for OOB pointers if pointers are only 32-bit")
 
 # AsanBackupRefPtr and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
 assert(
