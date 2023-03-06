@@ -4,14 +4,16 @@
 
 #include "device/bluetooth/bluetooth_device_mac.h"
 
-#include "device/bluetooth/bluetooth_adapter_mac.h"
+#import <Foundation/Foundation.h>
+
+#include "device/bluetooth/bluetooth_adapter.h"
 
 static NSString* const kConnectErrorDomain = @"ConnectErrorCode";
 static NSString* const kGattErrorDomain = @"GattErrorCode";
 
 namespace device {
 
-BluetoothDeviceMac::BluetoothDeviceMac(BluetoothAdapterMac* adapter)
+BluetoothDeviceMac::BluetoothDeviceMac(BluetoothAdapter* adapter)
     : BluetoothDevice(adapter) {}
 
 BluetoothDeviceMac::~BluetoothDeviceMac() {

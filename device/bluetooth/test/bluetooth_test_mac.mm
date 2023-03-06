@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #import "device/bluetooth/bluetooth_adapter_mac.h"
 #import "device/bluetooth/bluetooth_device_mac.h"
+#include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #import "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
 #import "device/bluetooth/bluetooth_remote_gatt_descriptor_mac.h"
 #import "device/bluetooth/bluetooth_remote_gatt_service_mac.h"
@@ -737,7 +738,8 @@ BluetoothTestMac::RetrieveConnectedPeripheralServiceUUIDs() {
   BluetoothDevice::UUIDSet service_uuids;
   for (CBUUID* uuid in
        [mock_central_manager_->get() retrieveConnectedPeripheralServiceUUIDs]) {
-    service_uuids.insert(BluetoothAdapterMac::BluetoothUUIDWithCBUUID(uuid));
+    service_uuids.insert(
+        BluetoothLowEnergyAdapterApple::BluetoothUUIDWithCBUUID(uuid));
   }
   return service_uuids;
 }

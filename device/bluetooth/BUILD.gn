@@ -219,6 +219,8 @@ component("bluetooth") {
       "bluetooth_discovery_manager_mac.mm",
       "bluetooth_l2cap_channel_mac.h",
       "bluetooth_l2cap_channel_mac.mm",
+      "bluetooth_low_energy_adapter_apple.h",
+      "bluetooth_low_energy_adapter_apple.mm",
       "bluetooth_low_energy_advertisement_manager_mac.h",
       "bluetooth_low_energy_advertisement_manager_mac.mm",
       "bluetooth_low_energy_central_manager_delegate.h",

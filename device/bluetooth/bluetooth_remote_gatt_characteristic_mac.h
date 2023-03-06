@@ -18,7 +18,7 @@
 
 namespace device {
 
-class BluetoothAdapterMac;
+class BluetoothLowEnergyAdapterApple;
 class BluetoothRemoteGattDescriptorMac;
 class BluetoothRemoteGattServiceMac;
 
@@ -98,8 +98,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicMac
   CBCharacteristicWriteType GetCBWriteType() const;
   // Returns CoreBluetooth characteristic.
   CBCharacteristic* GetCBCharacteristic() const;
-  // Returns the mac adapter.
-  BluetoothAdapterMac* GetMacAdapter() const;
+  // Returns the LowEnergyBluetooth adapter.
+  BluetoothLowEnergyAdapterApple* GetLowEnergyAdapter() const;
   // Returns CoreBluetooth peripheral.
   CBPeripheral* GetCBPeripheral() const;
   // Returns true if this characteristic has been fully discovered.

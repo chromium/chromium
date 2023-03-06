@@ -21,11 +21,11 @@
 
 namespace device {
 
-class BluetoothAdapterMac;
 class BluetoothDevice;
+class BluetoothLowEnergyAdapterApple;
+class BluetoothLowEnergyDeviceMac;
 class BluetoothRemoteGattCharacteristicMac;
 class BluetoothRemoteGattDescriptorMac;
-class BluetoothLowEnergyDeviceMac;
 
 class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceMac
     : public BluetoothRemoteGattService {
@@ -65,8 +65,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceMac
   // discovered.
   void SendNotificationIfComplete();
 
-  // Returns the mac adapter.
-  BluetoothAdapterMac* GetMacAdapter() const;
+  // Returns the LowEnergyBluetooth adapter.
+  BluetoothLowEnergyAdapterApple* GetLowEnergyAdapter() const;
   // Returns CBPeripheral.
   CBPeripheral* GetCBPeripheral() const;
   // Returns CBService.

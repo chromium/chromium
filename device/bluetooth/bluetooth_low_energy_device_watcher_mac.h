@@ -71,7 +71,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
   }
 
  private:
-  friend class BluetoothAdapterMac;
+  friend class BluetoothLowEnergyAdapterApple;
   friend class base::RefCountedThreadSafe<BluetoothLowEnergyDeviceWatcherMac>;
 
   void AddBluetoothPropertyListFileWatcher();

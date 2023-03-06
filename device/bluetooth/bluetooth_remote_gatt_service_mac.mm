@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
-#include "device/bluetooth/bluetooth_adapter_mac.h"
+#include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #include "device/bluetooth/bluetooth_low_energy_device_mac.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -26,7 +26,8 @@ BluetoothRemoteGattServiceMac::BluetoothRemoteGattServiceMac(
       service_(service, base::scoped_policy::RETAIN),
       is_primary_(is_primary),
       discovery_pending_count_(0) {
-  uuid_ = BluetoothAdapterMac::BluetoothUUIDWithCBUUID([service_ UUID]);
+  uuid_ =
+      BluetoothLowEnergyAdapterApple::BluetoothUUIDWithCBUUID([service_ UUID]);
   identifier_ = base::SysNSStringToUTF8(
       [NSString stringWithFormat:@"%s-%p", uuid_.canonical_value().c_str(),
                                  service_.get()]);
@@ -100,7 +101,8 @@ void BluetoothRemoteGattServiceMac::DidDiscoverCharacteristics() {
     if (discovery_pending_count_ == 0) {
       gatt_characteristic_mac->DiscoverDescriptors();
     }
-    GetMacAdapter()->NotifyGattCharacteristicAdded(gatt_characteristic_mac);
+    GetLowEnergyAdapter()->NotifyGattCharacteristicAdded(
+        gatt_characteristic_mac);
   }
 
   for (const std::string& identifier : characteristic_identifier_to_remove) {
@@ -110,7 +112,7 @@ void BluetoothRemoteGattServiceMac::DidDiscoverCharacteristics() {
                     *characteristic_to_remove)
              << ": Removed characteristic.";
     characteristics_.erase(pair_to_remove);
-    GetMacAdapter()->NotifyGattCharacteristicRemoved(
+    GetLowEnergyAdapter()->NotifyGattCharacteristicRemoved(
         characteristic_to_remove.get());
   }
   SendNotificationIfComplete();
@@ -144,12 +146,13 @@ void BluetoothRemoteGattServiceMac::SendNotificationIfComplete() {
       }));
   if (IsDiscoveryComplete()) {
     DVLOG(1) << *this << ": Discovery complete.";
-    GetMacAdapter()->NotifyGattServiceChanged(this);
+    GetLowEnergyAdapter()->NotifyGattServiceChanged(this);
   }
 }
 
-BluetoothAdapterMac* BluetoothRemoteGattServiceMac::GetMacAdapter() const {
-  return bluetooth_device_mac_->GetMacAdapter();
+BluetoothLowEnergyAdapterApple*
+BluetoothRemoteGattServiceMac::GetLowEnergyAdapter() const {
+  return bluetooth_device_mac_->GetLowEnergyAdapter();
 }
 
 CBPeripheral* BluetoothRemoteGattServiceMac::GetCBPeripheral() const {

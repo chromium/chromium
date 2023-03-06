@@ -17,7 +17,7 @@
 
 namespace device {
 
-class BluetoothAdapterMac;
+class BluetoothLowEnergyAdapterApple;
 class BluetoothLowEnergyCentralManagerBridge;
 class BluetoothLowEnergyDiscoveryManagerMac;
 
@@ -29,10 +29,10 @@ class BluetoothLowEnergyDiscoveryManagerMac;
   std::unique_ptr<device::BluetoothLowEnergyCentralManagerBridge> _bridge;
 }
 
-- (instancetype)initWithDiscoveryManager:
-                    (device::BluetoothLowEnergyDiscoveryManagerMac*)
-                        discovery_manager
-                              andAdapter:(device::BluetoothAdapterMac*)adapter;
+- (instancetype)
+    initWithDiscoveryManager:
+        (device::BluetoothLowEnergyDiscoveryManagerMac*)discovery_manager
+                  andAdapter:(device::BluetoothLowEnergyAdapterApple*)adapter;
 
 @end
 
