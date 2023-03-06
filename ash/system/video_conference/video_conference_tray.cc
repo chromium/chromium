@@ -199,7 +199,6 @@ VideoConferenceTray::~VideoConferenceTray() {
 }
 
 void VideoConferenceTray::CloseBubble() {
-  SetIsActive(false);
   toggle_bubble_button_->SetToggled(false);
 
   bubble_.reset();
@@ -270,14 +269,15 @@ void VideoConferenceTray::OnMicrophoneCapturingStateChange(bool is_capturing) {
 }
 
 SkScalar VideoConferenceTray::GetRotationValueForToggleBubbleButton() {
+  // If `bubble_` is not null, it means that the bubble is opened.
   switch (shelf()->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      return is_active() ? 180 : 0;
+      return bubble_ ? 180 : 0;
     case ShelfAlignment::kLeft:
-      return is_active() ? 270 : 90;
+      return bubble_ ? 270 : 90;
     case ShelfAlignment::kRight:
-      return is_active() ? 90 : 270;
+      return bubble_ ? 90 : 270;
   }
 }
 
@@ -320,7 +320,6 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
 
-  SetIsActive(true);
   toggle_bubble_button_->SetToggled(true);
 }
 

@@ -17,6 +17,8 @@
 #include "ash/system/video_conference/video_conference_media_state.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 
 namespace ash {
 
@@ -163,6 +165,23 @@ TEST_F(VideoConferenceTrayTest, ToggleBubbleButtonRotation) {
   LeftClickOn(toggle_bubble_button());
   EXPECT_EQ(90,
             video_conference_tray()->GetRotationValueForToggleBubbleButton());
+}
+
+// Makes sure that the tray does not animate to new inkdrop state when
+// activated, which is the default behavior of `TrayBackgroundView`.
+TEST_F(VideoConferenceTrayTest, ToggleBubbleInkdrop) {
+  auto* ink_drop = views::InkDrop::Get(video_conference_tray())->GetInkDrop();
+
+  SetTrayAndButtonsVisible();
+  EXPECT_EQ(views::InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
+
+  // Open bubble, the tray should not install inkdrop.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_EQ(views::InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
+
+  // Close the bubble, inkdrop should still be hidden.
+  LeftClickOn(toggle_bubble_button());
+  EXPECT_EQ(views::InkDropState::HIDDEN, ink_drop->GetTargetInkDropState());
 }
 
 TEST_F(VideoConferenceTrayTest, TrayVisibility) {
