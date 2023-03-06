@@ -9520,6 +9520,27 @@
             ]
         }
     ],
+    "Prerender2DUIConfidenceCutoff": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ExperimentalConfidenceCutoff_20230227",
+                    "enable_features": [
+                        "AutocompleteActionPredictorConfidenceCutoff"
+                    ]
+                },
+                {
+                    "name": "Control_20230227",
+                    "disable_features": [
+                        "AutocompleteActionPredictorConfidenceCutoff"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2DesktopOmniboxTriggers": [
         {
             "platforms": [
