@@ -425,10 +425,10 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 - (void)updateIdentityDiscState {
   if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
     DCHECK(self.identityDiscImage);
+    DCHECK(self.identityDiscAccessibilityLabel);
   } else {
     self.identityDiscButton.hidden = !self.identityDiscImage;
   }
-  DCHECK(self.identityDiscAccessibilityLabel);
   self.identityDiscButton.accessibilityLabel =
       self.identityDiscAccessibilityLabel;
   [self.identityDiscButton setImage:self.identityDiscImage
