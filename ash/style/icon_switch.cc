@@ -4,10 +4,10 @@
 
 #include "ash/style/icon_switch.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -103,7 +103,7 @@ SkColor IconSwitch::GetBackgroundColor() const {
   DCHECK(GetWidget());
 
   SkColor color = GetColorProvider()->GetColor(
-      features::IsJellyEnabled()
+      chromeos::features::IsJellyEnabled()
           ? cros_tokens::kCrosSysSystemOnBase
           : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive));
   if (!GetEnabled()) {

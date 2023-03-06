@@ -4,12 +4,12 @@
 
 #include "ash/style/color_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/cxx17_backports.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
 
@@ -52,7 +52,7 @@ SkColor GetUserWallpaperColor(bool use_dark_color) {
     return kInvalidWallpaperColor;
   }
 
-  if (features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     return calculated_colors->celebi_color;
   }
 
@@ -94,7 +94,7 @@ SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
     return default_color;
   }
 
-  if (features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     return wallpaper_color;
   }
 

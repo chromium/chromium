@@ -4,12 +4,12 @@
 
 #include "ash/style/ash_color_mixer.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/harmonized_colors.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -39,7 +39,7 @@ constexpr int kDisabledColorOpacity = SK_AlphaOPAQUE * 0.38f;
 
 void AddShieldAndBaseColors(ui::ColorMixer& mixer,
                             const ui::ColorProviderManager::Key& key) {
-  if (ash::features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     // Generally, shield and base colors are cros.sys.sys-base-elevated.  That
     // is cros.sys.surface3 @ 90%.  So, map all shield colors to surface3 and
     // keep all the opacities.
@@ -490,7 +490,7 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
                              const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   bool dark_mode = key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
-  if (ash::features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     AddRefPalette(mixer, key);
   } else {
     cros_tokens::AddCrosRefColorsToMixer(mixer, dark_mode);
@@ -498,7 +498,7 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
   // Add after ref colors since it needs to override them.
   AddHarmonizedColors(mixer, key);
   cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
-  if (!ash::features::IsJellyEnabled()) {
+  if (!chromeos::features::IsJellyEnabled()) {
     // Overrides some cros.sys colors with pre-Jelly values so they can used in
     // UI with the Jelly flag off.
     ReverseMapSysColors(mixer, dark_mode);
@@ -507,8 +507,9 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
   // TODO(b/234400002): Remove legacy colors once all usages are cleaned up.
   cros_tokens::AddLegacySemanticColorsToMixer(mixer, dark_mode);
 
-  if (ash::features::IsJellyEnabled())
+  if (chromeos::features::IsJellyEnabled()) {
     RemapLegacySemanticColors(mixer);
+  }
 }
 
 void AddAshColorMixer(ui::ColorProvider* provider,
@@ -558,7 +559,7 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshOnboardingFocusRing] = {cros_tokens::kColorProminentDark};
 
   mixer[ui::kColorAshSystemUIMenuBackground] = {
-      features::IsJellyEnabled()
+      chromeos::features::IsJellyEnabled()
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysAppBaseElevated)
           : kColorAshShieldAndBase80};
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
