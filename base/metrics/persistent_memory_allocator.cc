@@ -976,8 +976,6 @@ LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size) {
       ::VirtualAlloc(nullptr, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
   if (address)
     return Memory(address, MEM_VIRTUAL);
-  UmaHistogramSparse("UMA.LocalPersistentMemoryAllocator.Failures.Win",
-                     static_cast<int>(::GetLastError()));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // MAP_ANON is deprecated on Linux but MAP_ANONYMOUS is not universal on Mac.
   // MAP_SHARED is not available on Linux <2.4 but required on Mac.
@@ -985,8 +983,6 @@ LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size) {
                    MAP_ANON | MAP_SHARED, -1, 0);
   if (address != MAP_FAILED)
     return Memory(address, MEM_VIRTUAL);
-  UmaHistogramSparse("UMA.LocalPersistentMemoryAllocator.Failures.Posix",
-                     errno);
 #else
 #error This architecture is not (yet) supported.
 #endif

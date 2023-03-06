@@ -359,26 +359,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.LocalPersistentMemoryAllocator.Failures.Posix"
-    enum="PopularOSErrno" expires_after="M85">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Failures, as reported in errno, encountered while allocating local
-    persistent memory under Posix.
-  </summary>
-</histogram>
-
-<histogram name="UMA.LocalPersistentMemoryAllocator.Failures.Win"
-    enum="WinGetLastError" expires_after="M85">
-  <owner>asvitkine@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Failures, as reported by GetLastError(), encountered while allocating local
-    persistent memory under Windows.
-  </summary>
-</histogram>
-
 <histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2023-08-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
