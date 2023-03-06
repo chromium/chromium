@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/passwords/manage_passwords_details_view.h"
 
+#include <memory>
+
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -19,6 +21,8 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -32,7 +36,7 @@ constexpr int kIconSize = 16;
 // changes.
 // The height of the row in the table layout displaying the password details.
 constexpr int kDetailRowHeight = 44;
-constexpr int kMaxLinesVisibleFromPasswordNote = 3;
+constexpr int kMaxLinesVisibleFromPasswordNote = 7;
 
 void WriteToClipboard(const std::u16string& text) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
@@ -141,7 +145,7 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   return password_label_with_eye_icon_view;
 }
 
-std::unique_ptr<views::Label> CreateNoteLabel(
+std::unique_ptr<views::View> CreateNoteLabel(
     const password_manager::PasswordForm& form) {
   // TODO(crbug.com/1382017): use internationalized string.
   std::u16string note_to_display = u"No note added";
@@ -158,20 +162,30 @@ std::unique_ptr<views::Label> CreateNoteLabel(
       std::move(note_to_display), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   note_label->SetMultiLine(true);
-  // TODO(crbug.com/1408790): The label should scroll when contains more lines.
-  note_label->SetMaxLines(kMaxLinesVisibleFromPasswordNote);
   // TODO(crbug.com/1382017): Review string with UX and use internationalized
   // string.
   note_label->SetAccessibleName(u"Password Note");
-  int line_height = views::style::GetLineHeight(note_label->GetTextContext(),
-                                                note_label->GetTextStyle());
-  int vertical_margin = (kDetailRowHeight - line_height) / 2;
-  note_label->SetProperty(views::kMarginsKey,
-                          gfx::Insets::VH(vertical_margin, 0));
   note_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   note_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   note_label->SetSelectable(true);
-  return note_label;
+  int kNoteLabelMaxWidth = views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                           4 * ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                   views::DISTANCE_RELATED_CONTROL_HORIZONTAL) -
+                           2 * kIconSize;
+  note_label->SetMaximumWidth(kNoteLabelMaxWidth);
+
+  int line_height = views::style::GetLineHeight(note_label->GetTextContext(),
+                                                note_label->GetTextStyle());
+  int vertical_margin = (kDetailRowHeight - line_height) / 2;
+  auto scroll_view = std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled);
+  scroll_view->SetProperty(views::kMarginsKey,
+                           gfx::Insets::VH(vertical_margin, 0));
+  scroll_view->SetContents(std::move(note_label));
+  scroll_view->ClipHeightTo(line_height,
+                            kMaxLinesVisibleFromPasswordNote * line_height);
+  return scroll_view;
 }
 
 std::unique_ptr<views::View> CreateEditUsernameRow(
