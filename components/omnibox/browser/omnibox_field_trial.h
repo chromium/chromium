@@ -379,7 +379,12 @@ bool ShouldDisableCGIParamMatching();
 bool IsSiteSearchStarterPackEnabled();
 
 // Omnibox UI Simplification - Square icon backgrounds.
-bool IsSquareSuggestIconEnabled();
+// Blue rounded rect background icons for answers e.g. '1+1' and 'define x'.
+// Does not apply to weather answers. Also updates the shade of blue and the
+// stroke color.
+extern const base::FeatureParam<bool> kSquareSuggestIconAnswers;
+// Gray rounded rect background for search loop and nav fav icons.
+extern const base::FeatureParam<bool> kSquareSuggestIconIcons;
 
 // Omnibox UI simplification - uniform row heights.
 // Returns true if the feature to enable uniform row height is enabled.

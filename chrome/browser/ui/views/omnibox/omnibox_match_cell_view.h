@@ -69,6 +69,9 @@ class OmniboxMatchCellView : public views::View {
   void OnMatchUpdate(const OmniboxResultView* result_view,
                      const AutocompleteMatch& match);
 
+  // Set's the `icon_view_` image, possibly with a rounded square background.
+  void SetIcon(const gfx::ImageSkia& image);
+
   // Sets the answer image and, if the image is not square, sets the answer size
   // proportional to the image size to preserve its aspect ratio.
   void SetImage(const gfx::ImageSkia& image);
