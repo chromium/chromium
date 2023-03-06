@@ -44,7 +44,10 @@ class ForegroundDurationUKMObserver
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  // True when the visibility of WebContents is Visibility::VISIBLE (not
+  // OCCLUDED or HIDDEN).
   bool currently_in_foreground_ = false;
+
   base::TimeTicks last_time_shown_;
   page_load_metrics::mojom::InputTimingPtr last_page_input_timing_;
   void RecordUkmIfInForeground(base::TimeTicks end_time);

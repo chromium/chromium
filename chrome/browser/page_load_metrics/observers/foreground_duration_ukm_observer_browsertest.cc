@@ -109,23 +109,54 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, RecordSimple) {
 }
 
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
-                       PrerenderSimple) {
+                       PrerenderActivationInForeground) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL empty = https_test_server()->GetURL("/empty.html");
   GURL simple = https_test_server()->GetURL("/simple.html");
   prerender_helper().NavigatePrimaryPage(empty);
   int host_id = prerender_helper().AddPrerender(simple);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+
   ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
   ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 0);
   ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 0);
   ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 0);
   prerender_helper().NavigatePrimaryPage(simple);
   CloseAllTabs();
+
+  // The page was activated in foreground. The metrics should be recorded.
   ExpectMetricCountForUrl(simple, "ForegroundDuration", 1);
   ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 1);
   ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 1);
   ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest,
+                       PrerenderActivationInBackground) {
+  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+  GURL empty = https_test_server()->GetURL("/empty.html");
+  GURL simple = https_test_server()->GetURL("/simple.html");
+  prerender_helper().NavigatePrimaryPage(empty);
+  int host_id = prerender_helper().AddPrerender(simple);
+  prerender_helper().WaitForPrerenderLoadCompletion(host_id);
+
+  // Make the initiator page occluded. This will be treated as a background
+  // page. Note that we cannot make the initiator page hidden here as a hidden
+  // page cannot activate a prerendered page.
+  web_contents()->WasOccluded();
+
+  ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 0);
+  prerender_helper().NavigatePrimaryPage(simple);
+  CloseAllTabs();
+
+  // The page was activated in background. The metrics should not be recorded.
+  ExpectMetricCountForUrl(simple, "ForegroundDuration", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundNumInputEvents", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalInputDelay", 0);
+  ExpectMetricCountForUrl(simple, "ForegroundTotalAdjustedInputDelay", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
