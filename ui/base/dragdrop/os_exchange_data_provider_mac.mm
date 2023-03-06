@@ -162,20 +162,20 @@ void OSExchangeDataProviderMac::SetString(const std::u16string& string) {
 
 void OSExchangeDataProviderMac::SetURL(const GURL& url,
                                        const std::u16string& title) {
-  NSArray<NSPasteboardItem*>* items = ClipboardUtil::PasteboardItemsFromUrls(
+  NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
       @[ base::SysUTF8ToNSString(url.spec()) ],
       @[ base::SysUTF16ToNSString(title) ]);
-  ClipboardUtil::AddDataToPasteboard(GetPasteboard(), items.firstObject);
+  clipboard_util::AddDataToPasteboard(GetPasteboard(), items.firstObject);
 }
 
 void OSExchangeDataProviderMac::SetFilename(const base::FilePath& path) {
   std::vector<FileInfo> filenames(1, FileInfo(path, base::FilePath()));
-  ClipboardUtil::WriteFilesToPasteboard(GetPasteboard(), filenames);
+  clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
 void OSExchangeDataProviderMac::SetFilenames(
     const std::vector<FileInfo>& filenames) {
-  ClipboardUtil::WriteFilesToPasteboard(GetPasteboard(), filenames);
+  clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
 void OSExchangeDataProviderMac::SetPickledData(
@@ -212,7 +212,7 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
 
   NSArray<NSString*>* urls;
   NSArray<NSString*>* titles;
-  if (ClipboardUtil::URLsAndTitlesFromPasteboard(
+  if (clipboard_util::URLsAndTitlesFromPasteboard(
           GetPasteboard(), /*include_files=*/false, &urls, &titles)) {
     *url = GURL(base::SysNSStringToUTF8(urls.firstObject));
     *title = base::SysNSStringToUTF16(titles.firstObject);
@@ -242,7 +242,7 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
 
 bool OSExchangeDataProviderMac::GetFilename(base::FilePath* path) const {
   std::vector<FileInfo> files =
-      ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+      clipboard_util::FilesFromPasteboard(GetPasteboard());
   if (files.empty()) {
     return false;
   }
@@ -254,7 +254,7 @@ bool OSExchangeDataProviderMac::GetFilename(base::FilePath* path) const {
 bool OSExchangeDataProviderMac::GetFilenames(
     std::vector<FileInfo>* filenames) const {
   std::vector<FileInfo> files =
-      ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+      clipboard_util::FilesFromPasteboard(GetPasteboard());
   bool result = !files.empty();
   base::ranges::move(files, std::back_inserter(*filenames));
   return result;

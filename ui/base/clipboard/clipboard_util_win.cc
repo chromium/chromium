@@ -445,7 +445,7 @@ bool GetFileNameFromFirstDescriptor(IDataObject* data_object,
 
 }  // namespace
 
-namespace ClipboardUtil {
+namespace clipboard_util {
 
 bool HasUrl(IDataObject* data_object, bool convert_filenames) {
   DCHECK(data_object);
@@ -1040,6 +1040,6 @@ void CFHtmlExtractMetadata(const std::string& cf_html,
   }
 }
 
-}  // namespace ClipboardUtil
+}  // namespace clipboard_util
 
 }  // namespace ui

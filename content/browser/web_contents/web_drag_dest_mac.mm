@@ -414,7 +414,7 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   // filenames in the drag are not converted to file URLs.
   NSArray<NSString*>* urls;
   NSArray<NSString*>* titles;
-  if (ui::ClipboardUtil::URLsAndTitlesFromPasteboard(
+  if (ui::clipboard_util::URLsAndTitlesFromPasteboard(
           pboard, /*include_files=*/false, &urls, &titles)) {
     drop_data.url = GURL(base::SysNSStringToUTF8(urls.firstObject));
     drop_data.url_title = base::SysNSStringToUTF16(titles.firstObject);
@@ -434,12 +434,12 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
     NSString* html = [pboard stringForType:ui::kUTTypeChromiumImageAndHTML];
     drop_data.html = base::SysNSStringToUTF16(html);
   } else if ([types containsObject:NSPasteboardTypeRTF]) {
-    NSString* html = ui::ClipboardUtil::GetHTMLFromRTFOnPasteboard(pboard);
+    NSString* html = ui::clipboard_util::GetHTMLFromRTFOnPasteboard(pboard);
     drop_data.html = base::SysNSStringToUTF16(html);
   }
 
   // Get files.
-  drop_data.filenames = ui::ClipboardUtil::FilesFromPasteboard(pboard);
+  drop_data.filenames = ui::clipboard_util::FilesFromPasteboard(pboard);
 
   // Get custom MIME data.
   if ([types containsObject:ui::kUTTypeChromiumWebCustomData]) {

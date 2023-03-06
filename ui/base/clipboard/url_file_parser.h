@@ -10,7 +10,7 @@
 
 #include "base/strings/string_piece_forward.h"
 
-namespace ui::ClipboardUtil::internal {
+namespace ui::clipboard_util::internal {
 
 // A completely arbitrary cut-off size (16kB), above which
 // `ExtractURLFromURLFileContents` will refuse to parse. Because parsing
@@ -27,6 +27,6 @@ constexpr size_t kMaximumParsableFileSize = 16'384;
 std::string ExtractURLFromURLFileContents(
     const base::StringPiece& file_contents);
 
-}  // namespace ui::ClipboardUtil::internal
+}  // namespace ui::clipboard_util::internal
 
 #endif  // UI_BASE_CLIPBOARD_URL_FILE_PARSER_H_
