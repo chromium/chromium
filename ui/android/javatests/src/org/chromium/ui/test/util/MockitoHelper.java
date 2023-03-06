@@ -40,4 +40,12 @@ public class MockitoHelper {
             return null;
         });
     }
+
+    /** When no argument is needed. */
+    public static <T> Stubber doRunnable(Runnable runnable) {
+        return Mockito.doAnswer((ignored -> {
+            runnable.run();
+            return null;
+        }));
+    }
 }

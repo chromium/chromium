@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
+
 import android.content.Context;
 import android.view.accessibility.AccessibilityManager;
 
@@ -15,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -54,18 +59,15 @@ public class BookmarkManagerMediatorTest {
     @Mock
     BookmarkItemsAdapter mBookmarkItemsAdapter;
     @Mock
-    BookmarkToolbar mBookmarkToolbar;
-    @Mock
     LargeIconBridge mLargeIconBridge;
     @Mock
     AccessibilityManager mAccessibilityManager;
     @Mock
     BookmarkUiObserver mBookmarkUiObserver;
 
-    final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<Boolean>();
+    final ObservableSupplierImpl<Boolean> mBackPressStateSupplier = new ObservableSupplierImpl<>();
     final ObservableSupplierImpl<Boolean> mSelectableListLayoutHandleBackPressChangedSupplier =
-            new ObservableSupplierImpl<Boolean>();
+            new ObservableSupplierImpl<>();
     final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
     final BookmarkId mFolder2Id = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
 
@@ -73,26 +75,23 @@ public class BookmarkManagerMediatorTest {
 
     @Before
     public void setUp() {
-        // Setup Context
-        Mockito.doReturn(mAccessibilityManager)
+        // Setup Context.
+        doReturn(mAccessibilityManager)
                 .when(mContext)
                 .getSystemService(Context.ACCESSIBILITY_SERVICE);
 
-        // Setup BookmarkModel
-        Mockito.doReturn(true).when(mBookmarkModel).doesBookmarkExist(Mockito.any());
-        Mockito.doReturn(Arrays.asList(mFolder2Id)).when(mBookmarkModel).getChildIDs(mFolderId);
+        // Setup BookmarkModel.
+        doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
+        doReturn(Arrays.asList(mFolder2Id)).when(mBookmarkModel).getChildIDs(mFolderId);
 
-        // Setup SelectableListLayout
-        Mockito.doReturn(mContext).when(mSelectableListLayout).getContext();
-        Mockito.doReturn(mSelectableListLayoutHandleBackPressChangedSupplier)
+        // Setup SelectableListLayout.
+        doReturn(mContext).when(mSelectableListLayout).getContext();
+        doReturn(mSelectableListLayoutHandleBackPressChangedSupplier)
                 .when(mSelectableListLayout)
                 .getHandleBackPressChangedSupplier();
 
-        // Setup BookmarkUIObserver
-        Mockito.doAnswer((invocation) -> {
-                   mMediator.removeUiObserver(mBookmarkUiObserver);
-                   return null;
-               })
+        // Setup BookmarkUIObserver.
+        doRunnable(() -> mMediator.removeUiObserver(mBookmarkUiObserver))
                 .when(mBookmarkUiObserver)
                 .onDestroy();
 
@@ -127,14 +126,14 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
 
         mMediator.onDestroy();
-        Mockito.verify(mBookmarkUiObserver).onDestroy();
+        verify(mBookmarkUiObserver).onDestroy();
     }
 
     @Test
     public void onBackPressed_SelectableListLayoutIntercepts() {
         finishLoading();
 
-        Mockito.doReturn(true).when(mSelectableListLayout).onBackPressed();
+        doReturn(true).when(mSelectableListLayout).onBackPressed();
 
         Assert.assertTrue(mMediator.onBackPressed());
     }
