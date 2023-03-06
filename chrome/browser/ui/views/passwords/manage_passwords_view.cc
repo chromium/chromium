@@ -262,6 +262,9 @@ void ManagePasswordsView::AuthenticateUserAndDisplayDetailsOf(
             if (authentication_result) {
               view->RecreateLayout();
             }
+            // This is necessary on Windows since the bubble isn't activated
+            // again after the conlusion of the auth flow.
+            view->GetWidget()->Activate();
             // Delay the destruction of `pin` for 1 sec to make sure the bubble
             // remains open till the OS closes the authentication dialog and
             // reactivates the bubble.
