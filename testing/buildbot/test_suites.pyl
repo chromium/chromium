@@ -4506,6 +4506,9 @@
         'args': [
           '--enable-features=NetworkServiceSandbox',
         ],
+        'swarming': {
+          'shards': 10,
+        },
         'test': 'browser_tests',
       },
       'components_browsertests_network_sandbox': {
@@ -4514,10 +4517,22 @@
         ],
         'test': 'components_browsertests',
       },
+      'content_browsertests_network_sandbox': {
+        'args': [
+          '--enable-features=NetworkServiceSandbox',
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+        'test': 'content_browsertests',
+      },
       'interactive_ui_tests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
         ],
+        'swarming': {
+          'shards': 3,
+        },
         'test': 'interactive_ui_tests',
       },
       'sync_integration_tests_network_sandbox': {
