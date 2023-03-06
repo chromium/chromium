@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
+#include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -35,8 +36,20 @@ class HotspotMetricsHelperTest : public testing::Test {
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->Init(
         network_state_test_helper_.network_state_handler());
+    technology_state_controller_ =
+        std::make_unique<TechnologyStateController>();
+    technology_state_controller_->Init(
+        network_state_test_helper_.network_state_handler());
+    hotspot_state_handler_ = std::make_unique<HotspotStateHandler>();
+    hotspot_state_handler_->Init();
+    hotspot_controller_ = std::make_unique<HotspotController>();
+    hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
+                              hotspot_state_handler_.get(),
+                              technology_state_controller_.get());
     hotspot_metrics_helper_ = std::make_unique<HotspotMetricsHelper>();
-    hotspot_metrics_helper_->Init(hotspot_capabilities_provider_.get());
+    hotspot_metrics_helper_->Init(hotspot_capabilities_provider_.get(),
+                                  hotspot_state_handler_.get(),
+                                  hotspot_controller_.get());
 
     base::RunLoop().RunUntilIdle();
   }
@@ -50,7 +63,10 @@ class HotspotMetricsHelperTest : public testing::Test {
     network_state_test_helper_.ClearDevices();
     network_state_test_helper_.ClearServices();
     hotspot_metrics_helper_.reset();
+    hotspot_controller_.reset();
     hotspot_capabilities_provider_.reset();
+    hotspot_state_handler_.reset();
+    technology_state_controller_.reset();
     LoginState::Shutdown();
   }
 
@@ -61,6 +77,9 @@ class HotspotMetricsHelperTest : public testing::Test {
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
+  std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
+  std::unique_ptr<TechnologyStateController> technology_state_controller_;
+  std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotMetricsHelper> hotspot_metrics_helper_;
 };
 
@@ -100,6 +119,43 @@ TEST_F(HotspotMetricsHelperTest, HotspotAllowStatusHistogram) {
       HotspotMetricsHelper::HotspotMetricsAllowStatus::kAllowed, 1);
   histogram_tester_.ExpectTotalCount(
       HotspotMetricsHelper::kHotspotAllowStatusAtLoginHistogram, 1);
+}
+
+TEST_F(HotspotMetricsHelperTest, HotspotUsageConfigHistogram) {
+  SetHotspotAllowStatus(hotspot_config::mojom::HotspotAllowStatus::kAllowed);
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+  auto mojom_config = hotspot_config::mojom::HotspotConfig::New();
+  mojom_config->auto_disable = true;
+  mojom_config->band = hotspot_config::mojom::WiFiBand::kAutoChoose;
+  mojom_config->ssid = "test_ssid";
+  mojom_config->passphrase = "test_password";
+  mojom_config->bssid_randomization = true;
+  hotspot_state_handler_->SetHotspotConfig(std::move(mojom_config),
+                                           base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kSuccess, shill::kTetheringReadinessReady);
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotUsageConfigAutoDisable, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotUsageConfigAutoDisable, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotUsageConfigMAR, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotUsageConfigMAR, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotUsageConfigCompatibilityMode, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotUsageConfigCompatibilityMode, false, 1);
 }
 
 }  // namespace ash

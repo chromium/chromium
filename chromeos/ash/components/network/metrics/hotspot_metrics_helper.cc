@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 
 namespace ash {
@@ -37,6 +38,18 @@ const char HotspotMetricsHelper::kHotspotSetConfigResultHistogram[] =
 // static
 const char HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram[] =
     "Network.Ash.Hotspot.Upstream.Cellular.CheckReadiness.OperationResult";
+
+// static
+const char HotspotMetricsHelper::kHotspotUsageConfigAutoDisable[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Usage.Config.AutoDisable";
+
+// static
+const char HotspotMetricsHelper::kHotspotUsageConfigMAR[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Usage.Config.MAR";
+
+// static
+const char HotspotMetricsHelper::kHotspotUsageConfigCompatibilityMode[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Usage.Config.CompatibilityMode";
 
 // static
 void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
@@ -146,13 +159,19 @@ HotspotMetricsHelper::~HotspotMetricsHelper() {
 }
 
 void HotspotMetricsHelper::Init(
-    HotspotCapabilitiesProvider* hotspot_capabilities_provider) {
+    HotspotCapabilitiesProvider* hotspot_capabilities_provider,
+    HotspotStateHandler* hotspot_state_handler,
+    HotspotController* hotspot_controller) {
+  hotspot_state_handler_ = hotspot_state_handler;
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
   hotspot_capabilities_provider_->AddObserver(this);
   if (LoginState::IsInitialized()) {
     LoginState::Get()->AddObserver(this);
     LoggedInStateChanged();
   }
+
+  hotspot_controller->ObserveEnabledStateChanges(
+      hostpot_enabled_state_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
 void HotspotMetricsHelper::OnHotspotCapabilitiesChanged() {
@@ -222,6 +241,21 @@ HotspotMetricsHelper::GetMetricsAllowStatus() {
       // not cellular capable. Otherwise, it would drown out the metric.
       return absl::nullopt;
   }
+}
+
+void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
+  auto hotspot_config = hotspot_state_handler_->GetHotspotConfig();
+  if (!hotspot_config) {
+    NET_LOG(ERROR) << "Error getting hotspot config when hotspot is turned on.";
+    return;
+  }
+  base::UmaHistogramBoolean(kHotspotUsageConfigAutoDisable,
+                            hotspot_config->auto_disable);
+  base::UmaHistogramBoolean(
+      kHotspotUsageConfigCompatibilityMode,
+      hotspot_config->band == hotspot_config::mojom::WiFiBand::k2_4GHz);
+  base::UmaHistogramBoolean(kHotspotUsageConfigMAR,
+                            hotspot_config->bssid_randomization);
 }
 
 }  // namespace ash
