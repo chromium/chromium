@@ -172,6 +172,12 @@ TEST_F(SyncDeviceInfoObserverTest, AddingDeviceBeforeProcess) {
   // Adding a device triggers OnDeviceInfoChange().
   device_info_tracker_->Add(local_device_info.get());
 
+  // Should not be included in the count.
+  std::unique_ptr<DeviceInfo> current_device =
+      CreateDeviceInfo("current", kLocalDeviceType, kLocalDeviceOS);
+  device_info_tracker_->Add(current_device.get());
+  device_info_tracker_->SetLocalCacheGuid("current");
+
   std::vector<float> expected_result = {0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
   base::RunLoop loop;
   sync_device_info_observer_->Process(
