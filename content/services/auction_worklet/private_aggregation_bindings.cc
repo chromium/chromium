@@ -39,15 +39,15 @@ namespace {
 // Converts base value string to corresponding mojom enum.
 absl::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
     const std::string& base_value) {
-  if (base_value == "winningBid") {
+  if (base_value == "winning-bid") {
     return auction_worklet::mojom::BaseValue::kWinningBid;
-  } else if (base_value == "highestScoringOtherBid") {
+  } else if (base_value == "highest-scoring-other-bid") {
     return auction_worklet::mojom::BaseValue::kHighestScoringOtherBid;
-  } else if (base_value == "scriptRunTime") {
+  } else if (base_value == "script-run-time") {
     return auction_worklet::mojom::BaseValue::kScriptRunTime;
-  } else if (base_value == "signalsFetchTime") {
+  } else if (base_value == "signals-fetch-time") {
     return auction_worklet::mojom::BaseValue::kSignalsFetchTime;
-  } else if (base_value == "bidRejectReason") {
+  } else if (base_value == "bid-reject-reason") {
     return auction_worklet::mojom::BaseValue::kBidRejectReason;
   }
   // Invalid (out of range) base_value.
