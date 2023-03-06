@@ -129,7 +129,7 @@ class CONTENT_EXPORT CoopRelatedGroup final
   // Recorded with the first BrowsingInstance and used to create new
   // BrowsingInstances. All BrowsingInstances in a CoopRelatedGroup should share
   // the same BrowserContext, therefore recording it at creation time is fine.
-  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
 
   // Whether all the documents presented in this CoopRelatedGroup are for guest
   // views.

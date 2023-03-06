@@ -157,7 +157,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   raw_ptr<ShellBrowserMainParts, DanglingUntriaged> browser_main_parts_;
 
   // Owned by ShellBrowserMainParts.
-  raw_ptr<ShellBrowserMainDelegate> browser_main_delegate_;
+  raw_ptr<ShellBrowserMainDelegate, DanglingUntriaged> browser_main_delegate_;
 };
 
 }  // namespace extensions

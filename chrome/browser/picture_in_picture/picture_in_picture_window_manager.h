@@ -124,8 +124,8 @@ class PictureInPictureWindowManager {
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
 #endif  //! BUILDFLAG(IS_ANDROID)
 
-  raw_ptr<content::PictureInPictureWindowController> pip_window_controller_ =
-      nullptr;
+  raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>
+      pip_window_controller_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_

@@ -56,7 +56,7 @@ class SESSIONS_EXPORT SessionIdGenerator {
   void IncrementValueBy(int increment);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  raw_ptr<PrefService> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_;
   SessionID::id_type last_value_;
 
   // Used to override the random number generator for tests.
