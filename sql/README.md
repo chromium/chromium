@@ -467,10 +467,13 @@ disabled, and most
 [built-in virtual tables](https://www.sqlite.org/vtablist.html) are disabled as
 well.
 
-After
-[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
-to disable SQLite's virtual table support using
-[SQLITE_OMIT_VIRTUALTABLE](https://sqlite.org/compile.html#omit_virtualtable).
+Ideally we would disable SQLite's virtual table support using
+[SQLITE_OMIT_VIRTUALTABLE](https://sqlite.org/compile.html#omit_virtualtable)
+once [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, but
+virtual table support is required to use SQLite's [built-in corruption recovery
+module](https://www.sqlite.org/recovery.html). The [SQLITE_DBPAGE virtual
+table](https://www.sqlite.org/dbpage.html) is also enabled only for corruption
+recovery and should not be used in Chrome.
 
 #### Foreign key constraints {#no-foreign-keys}
 

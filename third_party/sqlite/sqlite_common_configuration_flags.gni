@@ -89,6 +89,7 @@ sqlite_common_configuration_flags = [
 
   # Chrome uses SQLite's built-in corruption recovery module.
   # See https://www.sqlite.org/recovery.html
+  #
   # Use of this module requires compiling a separate "sqlite3r.c" target, which
   # generates "sqlite3r.c" and "sqlite3r.h", versions of the amalgamation files
   # that include the recover extension. We then map this back to "sqlite3.h"
@@ -96,4 +97,12 @@ sqlite_common_configuration_flags = [
   # platform. If this changes, or if we ever remove this flag, we would need to
   # update the mapping in scripts/generate_amalgamation.py.
   "SQLITE_HAVE_SQLITE3R",
+
+  # See https://www.sqlite.org/dbpage.html
+  #
+  # This extension is required to use the built-in corruption recovery module
+  # (see https://sqlite.org/src/info/c1f2a1d55c180fb5), which needs read access
+  # to the sqlite_dbpage table. This table should not be accessed anywhere else
+  # in Chrome or by untrusted third-parties (i.e. WebSQL).
+  "SQLITE_ENABLE_DBPAGE_VTAB",
 ]
