@@ -3286,14 +3286,6 @@
       base_feature: "none",
       browser_process_read_write_access: true,
     },
-    // To enable the deprecation trial, use the
-    // `DisableThirdPartyStoragePartitioning` feature instead.
-    {
-      name: "ThirdPartyStoragePartitioning",
-      status: "experimental",
-      base_feature: "none",
-      browser_process_read_write_access: true,
-    },
     {
       name: "TimerThrottlingForBackgroundTabs",
       public: true,

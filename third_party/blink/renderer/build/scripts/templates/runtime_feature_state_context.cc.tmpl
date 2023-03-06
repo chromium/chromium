@@ -21,12 +21,6 @@ void RuntimeFeatureStateContext::PopulateInitialValues() {
       {blink::mojom::RuntimeFeatureState::k{{feature.name}},
         false});
   {% endfor %}
-
-  // TODO(crbug.com/1377000): Specifying each starting value this way is rigid.
-  // Find a more flexible way to do so.
-  initial_values_
-      [blink::mojom::RuntimeFeatureState::kThirdPartyStoragePartitioning] =
-          StorageKey::IsThirdPartyStoragePartitioningEnabled();
 }
 
 }  // namespace blink
