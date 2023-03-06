@@ -431,7 +431,7 @@ void InputMenuView::OnEditButtonPressed() {
   // Force key-binding labels ON before entering edit mode.
   if (!show_mapping_toggle_->GetIsOn()) {
     show_mapping_toggle_->SetIsOn(true);
-    display_overlay_controller_->SetInputMappingVisible(true);
+    display_overlay_controller_->SetInputMappingVisibleTemporary();
   }
   RecordInputOverlayCustomizedUsage();
   InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(

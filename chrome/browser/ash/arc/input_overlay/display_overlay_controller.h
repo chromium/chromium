@@ -156,6 +156,12 @@ class DisplayOverlayController : public ui::EventHandler,
   gfx::Point CalculateMenuEntryPosition();
   views::View* GetParentView();
   bool HasMenuView() const;
+  // Used for edit mode, in which the input mapping must be temporarily visible
+  // regardless of user setting, until it is overridden when the user presses
+  // save or cancel.
+  void SetInputMappingVisibleTemporary();
+  // Used for the mapping hint toggle, to save user settings regarding
+  // mapping hint visibility.
   void SetInputMappingVisible(bool visible);
   bool GetInputMappingViewVisible() const;
 

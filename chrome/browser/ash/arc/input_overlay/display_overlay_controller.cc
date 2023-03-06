@@ -301,15 +301,13 @@ void DisplayOverlayController::RemoveInputMenuView() {
 
 void DisplayOverlayController::AddInputMappingView(
     views::Widget* overlay_widget) {
-  if (input_mapping_view_) {
-    return;
+  if (!input_mapping_view_) {
+    DCHECK(overlay_widget);
+    auto input_mapping_view = std::make_unique<InputMappingView>(this);
+    input_mapping_view->SetPosition(gfx::Point());
+    input_mapping_view_ = overlay_widget->GetContentsView()->AddChildView(
+        std::move(input_mapping_view));
   }
-  DCHECK(overlay_widget);
-  auto input_mapping_view = std::make_unique<InputMappingView>(this);
-  input_mapping_view->SetPosition(gfx::Point());
-  input_mapping_view_ = overlay_widget->GetContentsView()->AddChildView(
-      std::move(input_mapping_view));
-
   // Set input mapping view visibility according to the saved status.
   DCHECK(touch_injector_);
   if (touch_injector_) {
@@ -747,10 +745,14 @@ void DisplayOverlayController::SetInputMappingVisible(bool visible) {
   }
   input_mapping_view_->SetVisible(visible);
   DCHECK(touch_injector_);
-  if (!touch_injector_) {
+  touch_injector_->store_input_mapping_visible(visible);
+}
+
+void DisplayOverlayController::SetInputMappingVisibleTemporary() {
+  if (!input_mapping_view_) {
     return;
   }
-  touch_injector_->store_input_mapping_visible(visible);
+  input_mapping_view_->SetVisible(true);
 }
 
 bool DisplayOverlayController::GetInputMappingViewVisible() const {
