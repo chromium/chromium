@@ -207,6 +207,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="117445914942805388">Til að hreinsa vafragögn úr öllum samstilltum tækjum og af Google reikningnum þínum skaltu <ph name="BEGIN_LINK" />skoða samstillingarkosti<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Stjórnandinn slökkti á þessum eiginleika.</translation>
 <translation id="1175364870820465910">&amp;Prenta...</translation>
+<translation id="1175914831232945926">Tölustafi</translation>
 <translation id="1176471985365269981">Mega ekki breyta skrám og möppum í tækinu</translation>
 <translation id="1177863135347784049">Sérsniðið</translation>
 <translation id="1178581264944972037">Gera hlé</translation>
@@ -559,7 +560,9 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1487335504823219454">Kveikt – sérsniðnar stillingar</translation>
 <translation id="1493892686965953381">Beðið eftir <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Vefsvæði geta beðið um að nota leturgerðir sem eru uppsettar í tækinu</translation>
+<translation id="1494429729245089920">Sýndarvélin „<ph name="VM_NAME" />“ er til en virðist ekki vera gild <ph name="APP_NAME" />-sýndarvél. Hafðu samband við kerfisstjórann.</translation>
 <translation id="1495677929897281669">Aftur á flipa</translation>
+<translation id="1498498210836053409">Slökkva á festistillingu þegar unnið er með texta (snjöll festistilling)</translation>
 <translation id="1500297251995790841">Óþekkt tæki [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Nánar um óstudd Chrome forrit</translation>
 <translation id="1501480321619201731">Eyða hópi</translation>
@@ -568,6 +571,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1504551620756424144">Samnýttar möppur eru aðgengilegar í Windows á <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">flytja aðgangsorð út</translation>
 <translation id="1506061864768559482">Leitarvél</translation>
+<translation id="1506187449813838456">Auka tónhæð</translation>
 <translation id="1507170440449692343">Þessari síðu var bannað að fá aðgang að myndavélinni þinni.</translation>
 <translation id="1507246803636407672">Fleygja</translation>
 <translation id="1509163368529404530">&amp;Endurheimta hóp</translation>
@@ -897,7 +901,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1778457539567749232">Merkja sem ólesið</translation>
 <translation id="1778991607452011493">Senda villuleitarskrár (mælt með)</translation>
 <translation id="1779441632304440041">Léleg aðgangsorð eru þau sem auðvelt er að giska á. Passaðu að búa til traust aðgangsorð.</translation>
-<translation id="1779453062283607806">Vertu fljótari að bera saman niðurstöður í nýja hliðarglugganum</translation>
 <translation id="1779468444204342338">Lágmark</translation>
 <translation id="177989070088644880">Forrit (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Loka hópi</translation>
@@ -2426,6 +2429,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3088128611727407543">Undirbýr forritaprófíl...</translation>
 <translation id="3088325635286126843">Endu&amp;rnefna...</translation>
 <translation id="3089137131053189723">Leit hreinsuð</translation>
+<translation id="3090227230165225418">Láta vita af niðurhalstilkynningum</translation>
 <translation id="3090589793601454425">Ekki flytja</translation>
 <translation id="3090819949319990166">Ekki er hægt að afrita ytri crx-skrá í <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">„<ph name="DEVICE_NAME" />“ parað</translation>
@@ -3113,6 +3117,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3732530910372558017">PIN-númer getur að hámarki verið 63 stafir</translation>
 <translation id="3732857534841813090">Upplýsingar sem tengjast Google hjálpara</translation>
 <translation id="3733296813637058299">Við setjum upp þessi forrit fyrir þig. Þú getur fundið fleiri forrit fyrir <ph name="DEVICE_TYPE" /> í Play Store.</translation>
+<translation id="3735039640698208086">Þegar hljóð er spilað...</translation>
 <translation id="3735740477244556633">Raða eftir</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> gögnum verður eytt eftir sólarhring</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5461,6 +5466,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5895335062901455404">Vistaðar kjörstillingar og virkni verða til reiðu í öllum ChromeOS Flex tækjum þegar þú skráir þig inn með Google reikningnum þínum. Þú getur alltaf valið hvað á að samstilla í stillingunum.</translation>
 <translation id="589541317545606110">Leita á síðu með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Ekki leyfa</translation>
+<translation id="5899860758576822363">Spila með lægri hljóðstyrk þegar ChromeVox talar</translation>
 <translation id="5900243355162006650">Tjóðrunarstilling:</translation>
 <translation id="5900302528761731119">Google prófílmynd</translation>
 <translation id="590036993063074298">Upplýsingar um gæði speglunar</translation>
@@ -5909,6 +5915,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6301300352769835063">Leyfa Google að nota vélbúnaðargögnin þín til að bæta <ph name="DEVICE_OS" />. Ef þú hafnar því verða þessi gögn samt send til Google til að leita að viðeigandi uppfærslum en gögnin verða hvorki vistuð né notuð í nokkrum öðrum tilgangi. Nánar á g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Tillögur að persónuupplýsingum</translation>
 <translation id="6305607932814307878">Altæk regla:</translation>
+<translation id="6305702903308659374">Spila með venjulegum hljóðstyrk jafnvel þótt ChromeVox sé að tala</translation>
 <translation id="6305909198255586420">Settu upp með aðalprófílnum þínum</translation>
 <translation id="630750887748244481">Foreldri þitt hefur slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome. Óheimilt er að bæta þessari viðbót við.</translation>
 <translation id="6307990684951724544">Kerfi upptekið</translation>
@@ -7223,6 +7230,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7503191893372251637">Tegund Netscape-vottorðs</translation>
 <translation id="7503985202154027481">Færsla um heimsókn þína á þetta vefsvæði verður vistuð á öryggislyklinum þínum.</translation>
 <translation id="750509436279396091">Opna niðurhalsmöppu</translation>
+<translation id="7505149250476994901">Segðu „cap“ á undan staf</translation>
 <translation id="7505717542095249632">Fela <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Þetta aðgangsorð verður vistað í þessu tæki</translation>
 <translation id="7506130076368211615">Setja upp nýtt net</translation>
@@ -7309,6 +7317,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7586498138629385861">Chrome verður áfram í gangi á meðan Chrome forrit eru opin.</translation>
 <translation id="758895749110326677">Hjálpaðu okkur að bæta leikjaspilun í Chromebook tölvum</translation>
 <translation id="7589461650300748890">Hægan, gæðingur! Gættu þín.</translation>
+<translation id="7592060599656252486">Sumt</translation>
 <translation id="7593653750169415785">Útilokað sjálfkrafa vegna þess að þú hafnaðir tilkynningum í nokkur skipti</translation>
 <translation id="7594725637786616550">Djúphreinsaðu til að endurstilla <ph name="DEVICE_TYPE" /> svo að það verði eins og nýtt.</translation>
 <translation id="7595453277607160340">Skráðu þig inn aftur og uppfærðu til að nota Android forrit og tryggja að <ph name="DEVICE_TYPE" /> haldi áfram að virka rétt.</translation>
@@ -7793,6 +7802,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8002274832045662704">Ítarlegar stillingar prentara</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> er ekki lengur til staðar</translation>
 <translation id="8004092996156083991">Við látum þig vita ef aðgangsorðin þín eru í hættu.</translation>
+<translation id="8004507136466386272">Orð</translation>
 <translation id="8004582292198964060">Vafri</translation>
 <translation id="8005600846065423578">Leyfa <ph name="HOST" /> alltaf að sjá klippiborðið</translation>
 <translation id="8006630792898017994">Bilslá eða dálkalykill</translation>
@@ -8315,6 +8325,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8473540203671727883">Textaupplestur á því sem er undir músarbendli</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8475313423285172237">Annað forrit í tölvunni þinni bætti við viðbót sem gæti breytt því hvernig Chrome virkar.</translation>
+<translation id="8476408756881832830">Gera hlé á spilun þegar ChromeVox talar</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar voru notaðir, hversu mikið minni var yfirleitt notað sem og greiningar- og notkunargögn Android-forrita. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS-tækis barnsins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á vef- og forritavirkni á Google-reikningi barnsins verða gögn barnsins hugsanlega vistuð á Google-reikningi þess. Fáðu frekari upplýsingar um þessar stillingar og hvernig þær eru stilltar á families.google.com.<ph name="END_PARAGRAPH4" /></translation>

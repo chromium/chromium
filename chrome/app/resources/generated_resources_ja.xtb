@@ -205,6 +205,7 @@
 <translation id="117445914942805388">同期しているすべてのデバイスと Google アカウントから閲覧データを削除するには、<ph name="BEGIN_LINK" />同期設定に移動<ph name="END_LINK" />してください。</translation>
 <translation id="1175131936083782305">この機能は管理者が無効にしています。</translation>
 <translation id="1175364870820465910">印刷(&amp;P)...</translation>
+<translation id="1175914831232945926">1 桁ずつ</translation>
 <translation id="1176471985365269981">デバイスのファイルやフォルダの編集を許可しないサイト</translation>
 <translation id="1177863135347784049">カスタム</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -556,6 +557,7 @@
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> を待機しています...</translation>
 <translation id="1494349716233667318">サイトがデバイスにインストールされたフォントの使用を要求できるようにする</translation>
 <translation id="1495677929897281669">タブに戻る</translation>
+<translation id="1498498210836053409">テキストの編集時にキー固定モードをオフにする（スマート キー固定モード）</translation>
 <translation id="1500297251995790841">不明なデバイス [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">サポートされていない Chrome アプリの詳細</translation>
 <translation id="1501480321619201731">グループを削除</translation>
@@ -564,6 +566,7 @@
 <translation id="1504551620756424144">共有フォルダは Windows では <ph name="BASE_DIR" /> にあります。</translation>
 <translation id="1505494256539862015">パスワードをエクスポート</translation>
 <translation id="1506061864768559482">検索エンジン</translation>
+<translation id="1506187449813838456">ピッチを上げる</translation>
 <translation id="1507170440449692343">このページはカメラへのアクセスを禁止されています。</translation>
 <translation id="1507246803636407672">破棄(&amp;D)</translation>
 <translation id="1509163368529404530">グループを復元(&amp;R)</translation>
@@ -884,7 +887,6 @@
 <translation id="1778457539567749232">未読にする</translation>
 <translation id="1778991607452011493">デバッグログを送信する（推奨）</translation>
 <translation id="1779441632304440041">脆弱なパスワードは簡単に推測されてしまいます。安全なパスワードを作成してください。</translation>
-<translation id="1779453062283607806">新しいサイドパネルで検索結果を簡単に比較</translation>
 <translation id="1779468444204342338">最小</translation>
 <translation id="177989070088644880">アプリ（<ph name="ANDROID_PACKAGE_NAME" />）</translation>
 <translation id="1780152987505130652">グループを閉じる</translation>
@@ -2404,6 +2406,7 @@
 <translation id="3088128611727407543">アプリのプロファイルを準備しています...</translation>
 <translation id="3088325635286126843">名前を変更(&amp;R)...</translation>
 <translation id="3089137131053189723">検索をクリアしました</translation>
+<translation id="3090227230165225418">ダウンロード通知を読み上げる</translation>
 <translation id="3090589793601454425">移動しない</translation>
 <translation id="3090819949319990166">外部の crx ファイルは <ph name="TEMP_CRX_FILE" /> にコピーできません。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」がペア設定されました</translation>
@@ -3090,6 +3093,7 @@
 <translation id="3732530910372558017">PIN は 63 文字以内で指定してください</translation>
 <translation id="3732857534841813090">Google アシスタントの関連情報</translation>
 <translation id="3733296813637058299">これらのアプリをインストールします。Play ストアでは他にもご利用の <ph name="DEVICE_TYPE" /> 用のアプリを探すことができます。</translation>
+<translation id="3735039640698208086">音声の再生方法:</translation>
 <translation id="3735740477244556633">並べ替え</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> のデータは 24 時間後に削除されます</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5435,6 +5439,7 @@
 <translation id="5895335062901455404">保存した設定とアクティビティは、Google アカウントでログインする他の ChromeOS Flex デバイスで使用できるようになります。同期する項目は [設定] で選択できます。</translation>
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" /> でページを検索</translation>
 <translation id="5896436821193322561">許可しない</translation>
+<translation id="5899860758576822363">ChromeVox の読み上げ中は小さい音量で再生する</translation>
 <translation id="5900243355162006650">テザリング設定:</translation>
 <translation id="5900302528761731119">Google プロフィール写真</translation>
 <translation id="590036993063074298">ミラーリング品質の詳細</translation>
@@ -5883,6 +5888,7 @@
 <translation id="6301300352769835063">Google とハードウェア データを共有して <ph name="DEVICE_OS" /> の改善に協力する。同意されない場合も、このデータは適切なアップデートを確認するため Google に送信されますが、それ以外の目的で保存または使用されることはありません。詳しくは、g.co/flex/HWDataCollection をご覧ください。</translation>
 <translation id="630292539633944562">個人情報の候補</translation>
 <translation id="6305607932814307878">グローバル ポリシー:</translation>
+<translation id="6305702903308659374">ChromeVox の読み上げ中も通常の音量で再生する</translation>
 <translation id="6305909198255586420">メインのプロファイルを使用してインストールしてください</translation>
 <translation id="630750887748244481">保護者が Chrome の「サイト、アプリ、拡張機能の権限」をオフにしました。この拡張機能は追加できません。</translation>
 <translation id="6307990684951724544">システムがビジー状態です</translation>
@@ -7192,6 +7198,7 @@
 <translation id="7503191893372251637">Netscape 証明書タイプ</translation>
 <translation id="7503985202154027481">このサイトへのアクセスの記録がセキュリティ キーに保存されます。</translation>
 <translation id="750509436279396091">ダウンロード フォルダを開く</translation>
+<translation id="7505149250476994901">「大文字の」と言ってから文字を読み上げる</translation>
 <translation id="7505717542095249632"><ph name="MERCHANT" /> を表示しない</translation>
 <translation id="7506093026325926984">このパスワードはこのデバイスに保存されます</translation>
 <translation id="7506130076368211615">新しいネットワークをセットアップ</translation>
@@ -7278,6 +7285,7 @@
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
 <translation id="758895749110326677">Chromebook でのゲームプレイの改善にご協力ください</translation>
 <translation id="7589461650300748890">データが失われる危険があります。</translation>
+<translation id="7592060599656252486">一部</translation>
 <translation id="7593653750169415785">通知を数回拒否したため、自動的にブロックしました</translation>
 <translation id="7594725637786616550">お使いの <ph name="DEVICE_TYPE" /> を出荷時の状態にリセットするために、Powerwash を実行します。</translation>
 <translation id="7595453277607160340">Android アプリを使用し、<ph name="DEVICE_TYPE" /> が適切に動作し続けるようにするには、もう一度ログインしてアップデートを行ってください。</translation>
@@ -7761,6 +7769,7 @@
 <translation id="8002274832045662704">プリンタの詳細設定</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> は利用できなくなりました</translation>
 <translation id="8004092996156083991">パスワードが不正使用された場合はお知らせします。</translation>
+<translation id="8004507136466386272">1 つの数値として</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> によるクリップボードへのアクセスを常に許可する</translation>
 <translation id="8006630792898017994">スペースキーまたは Tab キー</translation>
@@ -8284,6 +8293,7 @@
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8475313423285172237">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のある拡張機能が追加されました。</translation>
+<translation id="8476408756881832830">ChromeVox の読み上げ中は再生を一時停止する</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。障害レポートでは、Chrome OS がクラッシュした時間や使用された機能、通常のメモリ使用量、Android アプリの診断内容と使用状況が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />お子様の Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、お子様のデータがお子様の Google アカウントに保存されることがあります。これらの設定の詳細と変更方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>

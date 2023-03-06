@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           и проверите да ли је конфигурација подешена на „no proxy“ (без проксија) или „direct“ (директно).</translation>
+<translation id="6549378540556750549">Chromium омогућава и други <ph name="BEGIN_LINK_OSS" />софтвер отвореног кода<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Промене ће ступити на снагу када следећи пут поново покренете Chromium.</translation>
+<translation id="7681937895330411637">Chromium омогућава <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> пројекат отвореног кода.</translation>
 <translation id="7861509383340276692">Отворите
           Chromium мени &gt;
           <ph name="SETTINGS_TITLE" />

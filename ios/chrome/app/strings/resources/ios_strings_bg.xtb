@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">Изчистване на данните за сърфирането</translation>
 <translation id="1815941218935345331">Код за достъп</translation>
 <translation id="1820259098641718022">Добавихте към списъка за четене</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{Компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
@@ -720,6 +721,7 @@
 <translation id="6152406514676263192">Включете синхронизирането, за да виждате най-подходящото съдържание въз основа на интересите си.</translation>
 <translation id="6159839020698489198">незадължително</translation>
 <translation id="6170450281939467187">Преводът не бе успешен</translation>
+<translation id="6173499589275053515">Паролата е запазена в профила ви в Google <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Търсене в Chrome</translation>
 <translation id="6184086493125982861">Показване на разделите</translation>
 <translation id="6187302354554850004">Последно синхр.: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@
 <translation id="6193424046394092997">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“}other{Отметките бяха запазени в(ъв) „{title}“}}</translation>
 <translation id="6196207969502475924">Гласово търсене</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затваряне на {COUNT} раздел}other{Затваряне на {COUNT} раздела}}</translation>
+<translation id="6213567400989743524">Отхвърлени предупреждения</translation>
 <translation id="6219550825416862075">Добре дошли отново</translation>
 <translation id="6219688215832490856">Никога да не се превежда</translation>
 <translation id="6223816392543092032">Получете отметките, историята, паролите и другите си настройки на всичките си устройства.</translation>
@@ -750,6 +753,7 @@
 <translation id="6346549652287021269">Да се стартира ли ново изтегляне?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Този адрес ще бъде изтрит от профила ви в Google (<ph name="USER_EMAIL" />) и от това устройство.}other{Тези адреси ще бъдат изтрити от профила ви в Google (<ph name="USER_EMAIL" />) и от това устройство.}}</translation>
 <translation id="634878792104344809">Синхронизиране на вашите пароли, история и др. на всичките ви устройства</translation>
+<translation id="6355820205320395730">Ненадеждните пароли са лесни за отгатване. Уверете се, че създаваните от вас са надеждни. <ph name="BEGIN_LINK" />Вижте още съвети за сигурност<ph name="END_LINK" />.</translation>
 <translation id="6361848730467328243">Следване на <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Няма раздели в режим „инкогнито“</translation>
 <translation id="6363526231572697780">Няма потребителско име</translation>
@@ -853,6 +857,7 @@
 <translation id="6888009575607455378">Наистина ли искате да отхвърлите промените?</translation>
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6897187120838603299">Паролата ви ще бъде запазена на устройството ви.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />Само на това устройство</translation>
 <translation id="6914583639806229067">Търсене на копираното изображение</translation>
 <translation id="6914783257214138813">Паролите ви ще бъдат видими за всички, които могат да видят експортирания файл.</translation>
 <translation id="6930799952781667037">Докоснете за използване на съответния език.</translation>
@@ -1012,10 +1017,12 @@
 <translation id="8084285576995584326">Управление на данните в профила ви в Google</translation>
 <translation id="809543534949702122">История на търсенията</translation>
 <translation id="8101409298456377967">Създавайте, запазвайте и управлявайте паролите си, така че лесно да можете да влизате в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">Н</translation>
 <translation id="8105368624971345109">Изключване</translation>
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
 <translation id="81313319706244542">2. Докоснете „Пароли“.</translation>
 <translation id="8132598642024322408">Сега цената е <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">Използвайте уникална парола за всеки сайт или приложение. Ако някой разкрие повторно използвана парола, тя може да послужи за достъп до другите ви профили. Кликнете, за да отворите уебсайта и да промените съответните пароли сега.</translation>
 <translation id="8136856065410661948">Това ще даде възможност за създаване на събития в Apple Calendar чрез съдържание от Chrome и Google Обектив.</translation>
 <translation id="8156478151976189188">Синхронизирането на паролите не работи</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> профила</translation>
@@ -1027,6 +1034,7 @@
 <translation id="8225985093977202398">Кеширани изображения и файлове</translation>
 <translation id="8237382152611443140">Отворете настройките за автоматично попълване на паролите.</translation>
 <translation id="8261506727792406068">Изтриване</translation>
+<translation id="8264966119170358612">Някои от запазените ви пароли са били разкрити вследствие на нарушение на сигурността на данните извън Google. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">Приемане и вход</translation>
 <translation id="8278938988428169257">Въведете дума или фраза.</translation>
 <translation id="8281781826761538115">Стандартно – <ph name="DEFAULT_LOCALE" /></translation>

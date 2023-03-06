@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">인터넷 사용 기록 삭제</translation>
 <translation id="1815941218935345331">비밀번호</translation>
 <translation id="1820259098641718022">읽기 목록에 추가됨</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{유출된 비밀번호}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
@@ -720,6 +721,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6152406514676263192">동기화하여 내 관심분야와 가장 관련성이 높은 콘텐츠를 받아보세요.</translation>
 <translation id="6159839020698489198">선택사항</translation>
 <translation id="6170450281939467187">번역 실패</translation>
+<translation id="6173499589275053515">비밀번호가 Google 계정(<ph name="EMAIL" />)에 저장되었습니다.</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
 <translation id="6184086493125982861">탭 표시</translation>
 <translation id="6187302354554850004">최근 동기화: <ph name="LAST_USED_TIME" /></translation>
@@ -727,6 +729,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6193424046394092997">{count,plural, =1{{title}에 북마크를 생성함}other{{title}에 북마크를 생성함}}</translation>
 <translation id="6196207969502475924">음성 검색</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{탭 {COUNT}개 닫기}other{탭 {COUNT}개 닫기}}</translation>
+<translation id="6213567400989743524">닫은 경고</translation>
 <translation id="6219550825416862075">다시 방문해 주셔서 감사합니다</translation>
 <translation id="6219688215832490856">번역 안함</translation>
 <translation id="6223816392543092032">모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정을 동기화합니다</translation>
@@ -750,6 +753,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6346549652287021269">다운로드를 새로 시작하시겠습니까?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Google 계정(<ph name="USER_EMAIL" />)과 이 기기에서 이 주소가 삭제됩니다.}other{Google 계정(<ph name="USER_EMAIL" />)과 이 기기에서 이 주소가 삭제됩니다.}}</translation>
 <translation id="634878792104344809">비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
+<translation id="6355820205320395730">취약한 비밀번호는 추측하기 쉽습니다. 안전한 비밀번호를 만들어야 합니다. <ph name="BEGIN_LINK" />보안 도움말 더보기<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> 팔로우</translation>
 <translation id="6362362396625799311">시크릿 탭 없음</translation>
 <translation id="6363526231572697780">사용자 이름 없음</translation>
@@ -853,6 +857,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6888009575607455378">변경사항을 삭제하시겠습니까?</translation>
 <translation id="6896758677409633944">복사</translation>
 <translation id="6897187120838603299">비밀번호가 현재 기기에 저장됩니다.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />, 이 기기에서만 표시</translation>
 <translation id="6914583639806229067">복사한 이미지 검색</translation>
 <translation id="6914783257214138813">내보낸 파일을 볼 수 있는 모든 사용자에게 비밀번호가 표시됩니다.</translation>
 <translation id="6930799952781667037">이 언어로 변경하려면 탭하세요.</translation>
@@ -1012,10 +1017,12 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8084285576995584326">Google 계정 데이터 관리</translation>
 <translation id="809543534949702122">검색 기록</translation>
 <translation id="8101409298456377967">사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 생성, 저장, 관리하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">N</translation>
 <translation id="8105368624971345109">사용 중지</translation>
 <translation id="8114753159095730575">파일을 다운로드할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="81313319706244542">2. 비밀번호 탭하기</translation>
 <translation id="8132598642024322408">정가 <ph name="PREVIOUS_PRICE" />인 제품을 <ph name="PRICE" />에 판매 중</translation>
+<translation id="813370552429173916">사이트 또는 앱별로 다른 비밀번호를 사용하세요. 재사용된 비밀번호가 유출되면 다른 계정도 도용당할 수 있습니다. 클릭하여 웹사이트를 열고 지금 변경하세요.</translation>
 <translation id="8136856065410661948">Chrome 및 Google 렌즈에서 Apple 캘린더 일정을 만들 때 사용됩니다.</translation>
 <translation id="8156478151976189188">비밀번호 동기화가 작동하지 않음</translation>
 <translation id="8157532349231307196">계정 <ph name="NUMBER_OF_ACCOUNTS" />개</translation>
@@ -1027,6 +1034,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8225985093977202398">캐시된 이미지 및 파일</translation>
 <translation id="8237382152611443140">AutoFill Passwords(비밀번호 자동 완성) 설정을 엽니다.</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">수락 및 로그인</translation>
 <translation id="8278938988428169257">단어 또는 구문 입력</translation>
 <translation id="8281781826761538115">기본값 - <ph name="DEFAULT_LOCALE" /></translation>

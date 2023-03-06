@@ -207,6 +207,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="117445914942805388">To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />visit sync settings<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Your administrator has disabled this feature.</translation>
 <translation id="1175364870820465910">&amp;Print...</translation>
+<translation id="1175914831232945926">Digits</translation>
 <translation id="1176471985365269981">Not allowed to edit files or folders on your device</translation>
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -562,6 +563,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1494349716233667318">Sites can ask to use fonts installed on your device</translation>
 <translation id="1494429729245089920">Virtual machine '<ph name="VM_NAME" />' exists, but does not appear to be a valid <ph name="APP_NAME" /> virtual machine. Please contact your administrator.</translation>
 <translation id="1495677929897281669">Back to tab</translation>
+<translation id="1498498210836053409">Turn off sticky mode when editing text (smart sticky mode)</translation>
 <translation id="1500297251995790841">Unknown device [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Learn more about unsupported Chrome Apps</translation>
 <translation id="1501480321619201731">Delete group</translation>
@@ -570,6 +572,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1504551620756424144">Shared folders are available in Windows at <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">export passwords</translation>
 <translation id="1506061864768559482">Search engine</translation>
+<translation id="1506187449813838456">Increase pitch</translation>
 <translation id="1507170440449692343">This page has been blocked from accessing your camera.</translation>
 <translation id="1507246803636407672">&amp;Discard</translation>
 <translation id="1509163368529404530">&amp;Restore group</translation>
@@ -900,7 +903,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1778457539567749232">Mark as unread</translation>
 <translation id="1778991607452011493">Send debug logs (recommended)</translation>
 <translation id="1779441632304440041">Weak passwords are easy to guess. Make sure that you’re creating strong passwords.</translation>
-<translation id="1779453062283607806">Compare search results faster from the new side panel</translation>
 <translation id="1779468444204342338">Minimum</translation>
 <translation id="177989070088644880"><ph name="ANDROID_PACKAGE_NAME" />, app</translation>
 <translation id="1780152987505130652">Close group</translation>
@@ -2432,6 +2434,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3088128611727407543">Preparing app profile…</translation>
 <translation id="3088325635286126843">&amp;Rename...</translation>
 <translation id="3089137131053189723">Search cleared</translation>
+<translation id="3090227230165225418">Announce download notifications</translation>
 <translation id="3090589793601454425">Don't move</translation>
 <translation id="3090819949319990166">Can't copy external crx file to <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" paired</translation>
@@ -3121,6 +3124,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3732530910372558017">PIN must be at most 63 characters</translation>
 <translation id="3732857534841813090">Google Assistant related information</translation>
 <translation id="3733296813637058299">We'll install those apps for you. You can find more apps for your <ph name="DEVICE_TYPE" /> in the Play Store.</translation>
+<translation id="3735039640698208086">When playing audio...</translation>
 <translation id="3735740477244556633">Sort by</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> data will be deleted in 24 hours</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5476,6 +5480,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5895335062901455404">Your saved preferences and activity will be ready on any Chrome OS Flex device when you sign in with your Google Account. You can choose what to sync in Settings.</translation>
 <translation id="589541317545606110">Search Page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Don't Allow</translation>
+<translation id="5899860758576822363">Play at lower volume when ChromeVox is speaking</translation>
 <translation id="5900243355162006650">Tethering configuration:</translation>
 <translation id="5900302528761731119">Google Profile photo</translation>
 <translation id="590036993063074298">Mirroring quality details</translation>
@@ -5925,6 +5930,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6301300352769835063">Let Google use your hardware data to help improve <ph name="DEVICE_OS" />. If you decline, this data is still sent to Google to determine proper updates but is not stored or used otherwise. Learn more at g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Personal information suggestions</translation>
 <translation id="6305607932814307878">Global Policy:</translation>
+<translation id="6305702903308659374">Play at normal volume even if ChromeVox is speaking</translation>
 <translation id="6305909198255586420">Please install using your primary profile</translation>
 <translation id="630750887748244481">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome. Adding this extension is not allowed.</translation>
 <translation id="6307990684951724544">System busy</translation>
@@ -7239,6 +7245,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7503191893372251637">Netscape Certificate Type</translation>
 <translation id="7503985202154027481">A record of your visit to this site will be kept on your security key.</translation>
 <translation id="750509436279396091">Open downloads folder</translation>
+<translation id="7505149250476994901">Say 'cap' before letter</translation>
 <translation id="7505717542095249632">Hide <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">This password will be saved on this device</translation>
 <translation id="7506130076368211615">Set up new network</translation>
@@ -7325,6 +7332,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7586498138629385861">Chrome will keep running while Chrome Apps are open.</translation>
 <translation id="758895749110326677">Help us improve gaming on Chromebooks</translation>
 <translation id="7589461650300748890">Whoa, there. Be careful.</translation>
+<translation id="7592060599656252486">Some</translation>
 <translation id="7593653750169415785">Automatically blocked because you declined notifications a few times</translation>
 <translation id="7594725637786616550">Powerwash to reset your <ph name="DEVICE_TYPE" /> to be just like new.</translation>
 <translation id="7595453277607160340">To use Android apps and keep your <ph name="DEVICE_TYPE" /> working properly, sign in again and update.</translation>
@@ -7811,6 +7819,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8002274832045662704">Advanced printer configuration</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> is no longer available</translation>
 <translation id="8004092996156083991">If your passwords are compromised, we’ll let you know.</translation>
+<translation id="8004507136466386272">Words</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8005600846065423578">Always allow <ph name="HOST" /> to see the clipboard</translation>
 <translation id="8006630792898017994">Space or tab</translation>
@@ -8334,6 +8343,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8473540203671727883">Speak text under the mouse</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8475313423285172237">Another programme on your computer added an extension that may change the way Chrome works.</translation>
+<translation id="8476408756881832830">Pause playback when ChromeVox is speaking</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things, like when ChromeOS crashes, which features were enabled, how much memory was typically used and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4" /></translation>

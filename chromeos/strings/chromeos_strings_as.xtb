@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">উত্তম (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
+<translation id="2367335866686097760">কীমেপিং কী</translation>
 <translation id="2380886658946992094">লিগেল</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
 <translation id="2407209115954268704">ছিম লকৰ স্থিতি</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">অৱতাৰৰ প্ৰতিচ্ছবি সলনি হৈছে</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
 <translation id="3199982728237701504">নথি ফীডাৰ (দুফাল থকা)</translation>
+<translation id="3211671540163313381">কীমেপিং D-পেড</translation>
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
+<translation id="3226657629376379887">লে’আউট সম্পৰ্কীয় কাৰ্যৰ মেনু</translation>
 <translation id="3246869037381808805">১ দিনতকৈ পুৰণি প্ৰিণ্ট কাৰ্যসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="3268178239013324452">বিফল হৈছে - দুৱাৰ খোল খাই আছে</translation>
 <translation id="3275506277319227640"><ph name="DIRECTION" /> ফালে ড’ক কৰক</translation>
@@ -568,6 +571,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, আৰু +<ph name="NUMBER" /> টা এলবাম</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122277663991249694">ChromeOSৰ ইনপুট পদ্ধতি সেৱা</translation>
+<translation id="6136285399872347291">বেকস্পেচ</translation>
 <translation id="6137767437444130246">ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ</translation>
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">কোনো প্ৰতিচ্ছবি নাই</translation>
 <translation id="8336739000755212683">ডিভাইচ একাউণ্টৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
 <translation id="8347227221149377169">প্ৰিণ্টিঙৰ কামসমূহ</translation>
+<translation id="8351855506390808906">কীমেপিং টাচ্চ পইণ্ট</translation>
 <translation id="8352772353338965963">একাধিক ছাইন-ইন কৰিবলৈ এটা একাউণ্ট যোগ কৰক। ছাইন ইন কৰি থোৱা সকলো একাউণ্ট পাছৱৰ্ড অবিহনেই এক্সেছ কৰিব পাৰি, সেয়েহে এই সুবিধাটো কেৱল বিশ্বাসযোগ্য একাউণ্টৰ সৈতেহে ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="8364946094152050673">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ খালী</translation>
 <translation id="8372477600026034341">অতিৰিক্ত হ’ষ্ট</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">লেফ্ট শ্বিফ্ট</translation>
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
 <translation id="9157515863513902090">বুটামৰ ডাঙৰ ফালে ড’ক কৰক</translation>
+<translation id="9161276708550942948">স্পেচ</translation>
 <translation id="9173638680043580060">এক মিনিটতকৈ কম সময় বাকী আছে</translation>
 <translation id="917720651393141712">পৰীক্ষা কৰক</translation>
 <translation id="9188992814426075118">আপোনাৰ কীব’ৰ্ডে স্বয়ংক্ৰিয়ভাৱে আপোনাৰ ৱালপেপাৰ মিলাব পাৰে</translation>

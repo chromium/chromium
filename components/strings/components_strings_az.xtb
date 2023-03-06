@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">şriftlər</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Sistem admini ilə əlaqə yaratmağa çalışın.</translation>
+<translation id="1736158756193183352">Şəbəkəyə <ph name="BEGIN_LINK" />daxil olunur<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">Kompüter</translation>
 <translation id="1740951997222943430">Düzgün bitmə ayı daxil edin</translation>
 <translation id="1741613555002899862">Təyin edilməli və DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> olduqda, doğru dəyər olmalıdır.</translation>
@@ -1188,6 +1189,7 @@
 <translation id="3949601375789751990">Axtarış tarixçəsi burada görünür</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Yadda saxlanmış ödəniş metodu yoxdur</translation>
+<translation id="3950574001630941635">Dərsliyi yenidən başladın</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3958057596965527988">4 x 4 düym</translation>
 <translation id="3961148744525529027">Ödəniş səhifəsi yarım açıqdır</translation>

@@ -25,7 +25,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           (으)로 이동하여 '프록시 없음' 또는 '직접 연결'로 설정되어 있는지 확인합니다.</translation>
+<translation id="6549378540556750549">Chromium은 다른 <ph name="BEGIN_LINK_OSS" />오픈소스 소프트웨어<ph name="END_LINK_OSS" />를 사용하여 제작된 브라우저입니다.</translation>
 <translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>
+<translation id="7681937895330411637">Chromium은 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 오픈소스 프로젝트를 통해 제작된 브라우저입니다.</translation>
 <translation id="7861509383340276692">Chromium 메뉴 &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;

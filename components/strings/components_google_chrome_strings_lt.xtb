@@ -41,4 +41,6 @@
 <translation id="8187289872471304532">Eikite į
           „Programos“ &gt; „Sistemos nuostatos“ &gt; „Tinklas“ &gt; „Išplėstinis“ &gt; „Tarpiniai serveriai“
           ir panaikinkite visų tarpinių serverių pasirinkimą.</translation>
+<translation id="8232971017369963250">„Chrome“ pasiekiama naudojant <ph name="BEGIN_LINK_CHROMIUM" />„Chromium“<ph name="END_LINK_CHROMIUM" /> atvirojo šaltinio projektą.</translation>
+<translation id="8279509328145658601">„Chrome“ taip pat pasiekiama naudojant kitą <ph name="BEGIN_LINK_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

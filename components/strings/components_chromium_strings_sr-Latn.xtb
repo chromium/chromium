@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i proverite da li je konfiguracija podešena na „no proxy“ (bez proksija) ili „direct“ (direktno).</translation>
+<translation id="6549378540556750549">Chromium omogućava i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Promene će stupiti na snagu kada sledeći put ponovo pokrenete Chromium.</translation>
+<translation id="7681937895330411637">Chromium omogućava <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda.</translation>
 <translation id="7861509383340276692">Otvorite
           Chromium meni &gt;
           <ph name="SETTINGS_TITLE" />

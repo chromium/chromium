@@ -260,6 +260,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6010556343189461180">მომავალში Google Chrome-ის განახლებების მისაღებად დაგჭირდებათ macOS 10.15 ან უფრო ახალი ვერსია. ეს კომპიუტერი იყენებს macOS 10.14-ს.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome ახლა დაიხურება.}=1{Chrome დაიხურება 1 წამში.}other{Chrome დაიხურება # წამში.}}</translation>
 <translation id="6022659036123304283">მოირგეთ Chrome</translation>
+<translation id="6025087594896450715">Google Chrome ხელახლა გაეშვება <ph name="REMAINING_TIME" />-ში</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6070348360322141662">დამატებითი უსაფრთხოებისთვის, Google Chrome თქვენს მონაცემებს დაშიფრავს</translation>
 <translation id="608006075545470555">დაამატეთ სამსახურის პროფილი ამ ბრაუზერს</translation>

@@ -205,6 +205,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="117445914942805388">Da biste izbrisali podatke o pregledavanju sa svih svojih sinkroniziranih uređaja i svojeg Google računa, <ph name="BEGIN_LINK" />otvorite postavke sinkronizacije<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Administrator je onemogućio tu značajku.</translation>
 <translation id="1175364870820465910">&amp;Ispis...</translation>
+<translation id="1175914831232945926">Znamenke</translation>
 <translation id="1176471985365269981">Nije dopušteno uređivanje datoteka ili mapa na uređaju</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -559,6 +560,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1494349716233667318">Web-lokacije mogu zatražiti korištenje fontova instaliranih na vašem uređaju</translation>
 <translation id="1494429729245089920">Virtualni uređaj <ph name="VM_NAME" /> postoji, ali se čini da nije važeći <ph name="APP_NAME" /> virtualni uređaj. Obratite se administratoru.</translation>
 <translation id="1495677929897281669">Natrag na karticu</translation>
+<translation id="1498498210836053409">Isključi ljepljivi način prilikom uređivanja teksta (Pametni ljepljivi način)</translation>
 <translation id="1500297251995790841">Nepoznati uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Saznajte više o nepodržanim Chromeovim aplikacijama</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
@@ -567,6 +569,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1504551620756424144">Dijeljene mape dostupne su na Windowsima na <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">izvesti zaporke</translation>
 <translation id="1506061864768559482">Tražilica</translation>
+<translation id="1506187449813838456">Povećanje visine tona</translation>
 <translation id="1507170440449692343">Stranici je zabranjen pristup vašoj kameri.</translation>
 <translation id="1507246803636407672">&amp;Odbaci</translation>
 <translation id="1509163368529404530">&amp;Vrati grupu</translation>
@@ -888,7 +891,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1778457539567749232">Označi kao nepročitano</translation>
 <translation id="1778991607452011493">Pošalji zapisnike o otklanjanju pogrešaka (preporučeno)</translation>
 <translation id="1779441632304440041">Slabe zaporke lako je pogoditi. Neka vaše zaporke obavezno budu snažne.</translation>
-<translation id="1779453062283607806">Brže uspoređivanje rezultata pretraživanja s nove bočne ploče</translation>
 <translation id="1779468444204342338">Najmanje</translation>
 <translation id="177989070088644880">Aplikacija (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Zatvori grupu</translation>
@@ -2414,6 +2416,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3088128611727407543">Priprema profila aplikacije...</translation>
 <translation id="3088325635286126843">&amp;Preimenuj...</translation>
 <translation id="3089137131053189723">Pretraživanje izbrisano</translation>
+<translation id="3090227230165225418">Najavi obavijesti o preuzimanju</translation>
 <translation id="3090589793601454425">Ne premještaj</translation>
 <translation id="3090819949319990166">Nije moguće kopiranje crx datoteke u <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Upareno: "<ph name="DEVICE_NAME" />"</translation>
@@ -3101,6 +3104,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3732530910372558017">PIN ne smije biti dulji od 63 znaka</translation>
 <translation id="3732857534841813090">Informacije povezane s Google asistentom</translation>
 <translation id="3733296813637058299">Instalirat ćemo te aplikacije za vas. Više aplikacija za svoj uređaj <ph name="DEVICE_TYPE" /> možete pronaći u Trgovini Play.</translation>
+<translation id="3735039640698208086">Pri reprodukciji zvuka...</translation>
 <translation id="3735740477244556633">Poredaj po</translation>
 <translation id="3738632186060045350">Podaci uređaja <ph name="DEVICE_TYPE" /> izbrisat će se za 24 sata</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5448,6 +5452,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5895335062901455404">Vaše spremljene preferencije i aktivnosti bit će spremne na svim uređajima s ChromeOS Flexom kad se prijavite Google računom. U postavkama možete odabrati što će se sinkronizirati.</translation>
 <translation id="589541317545606110">Pretraživanje stranice pomoću usluge <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Nemoj dopustiti</translation>
+<translation id="5899860758576822363">Smanji glasnoću reprodukcije kad ChromeVox govori</translation>
 <translation id="5900243355162006650">Konfiguracija modemskog povezivanja:</translation>
 <translation id="5900302528761731119">Fotografija Google profila</translation>
 <translation id="590036993063074298">Pojedinosti o kvaliteti zrcaljenja</translation>
@@ -5895,6 +5900,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6301300352769835063">Omogućite Googleu da koristi podatke o hardveru kako bi poboljšao <ph name="DEVICE_OS" />. Ako odbijete, ti se podaci ipak šalju Googleu kako bi se utvrdila odgovarajuća ažuriranja, ali se ne pohranjuju niti koriste u druge svrhe. Saznajte više na stranici g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Prijedlozi osobnih podataka</translation>
 <translation id="6305607932814307878">Globalna pravila:</translation>
+<translation id="6305702903308659374">Zadrži normalnu glasnoću reprodukcije čak i kad ChromeVox govori</translation>
 <translation id="6305909198255586420">Instalirajte putem primarnog profila</translation>
 <translation id="630750887748244481">Tvoj je roditelj isključio postavku Dopuštenja za web-lokacije, aplikacije i proširenja za Chrome. Dodavanje tog proširenja nije dopušteno.</translation>
 <translation id="6307990684951724544">Sustav je zauzet</translation>
@@ -7212,6 +7218,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7503191893372251637">Vrsta Netscape certifikata</translation>
 <translation id="7503985202154027481">Na sigurnosnom ključu zadržat će se evidencija vašeg posjeta toj web-lokaciji.</translation>
 <translation id="750509436279396091">Otvori mapu preuzimanja</translation>
+<translation id="7505149250476994901">Recite "cap" (veliko slovo) prije slova</translation>
 <translation id="7505717542095249632">Sakrij trgovca <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Zaporka će se spremiti na ovom uređaju</translation>
 <translation id="7506130076368211615">Postavite novu mrežu</translation>
@@ -7298,6 +7305,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7586498138629385861">Chrome će se nastaviti izvoditi dok su Chromeove aplikacije otvorene.</translation>
 <translation id="758895749110326677">Pomozite nam poboljšati igranje igara na Chromebookovima</translation>
 <translation id="7589461650300748890">Polako. Pazite.</translation>
+<translation id="7592060599656252486">Neki</translation>
 <translation id="7593653750169415785">Automatski blokirano jer ste nekoliko puta odbili obavijesti</translation>
 <translation id="7594725637786616550">Izvršite Powerwash da biste vratili uređaj <ph name="DEVICE_TYPE" /> na zadano.</translation>
 <translation id="7595453277607160340">Da biste upotrebljavali Android aplikacije i da bi uređaj <ph name="DEVICE_TYPE" /> nastavio ispravno raditi, ponovo se prijavite i ažurirajte ga.</translation>
@@ -7782,6 +7790,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8002274832045662704">Napredna konfiguracija pisača</translation>
 <translation id="8002670234429879764">Pisač <ph name="PRINTER_NAME" /> više nije dostupan</translation>
 <translation id="8004092996156083991">Obavijestit ćemo vas ako su zaporke ugrožene.</translation>
+<translation id="8004507136466386272">Riječi</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8005600846065423578">Uvijek dopusti web-lokaciji <ph name="HOST" /> uvid u međuspremnik</translation>
 <translation id="8006630792898017994">Razmaknica ili tipka Tab</translation>
@@ -8305,6 +8314,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8473540203671727883">Izgovori tekst ispod pokazivača miša</translation>
 <translation id="8473863474539038330">Adrese i više</translation>
 <translation id="8475313423285172237">Drugi program na vašem računalu dodao je proširenje koje može promijeniti način na koji radi Chrome.</translation>
+<translation id="8476408756881832830">Pauziraj reprodukciju kad ChromeVox govori</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite ChromeOS uređajima da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje ChromeOS-a. Ta izvješća mogu uključivati informacije o situacijama u kojima se ChromeOS ruši, o tome koje su značajke upotrebljavane, koliko se memorije obično upotrebljavalo te dijagnostičke podatke i podatke o upotrebi Android aplikacija. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama djetetovog ChromeOS uređaja. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Ako je za Google račun vašeg djeteta uključena postavka Aktivnost na webu i u aplikacijama, podaci vašeg djeteta mogu se spremati na njegov Google račun. Više o tim postavkama i načinu na koji ih možete prilagoditi saznajte na families.google.com.<ph name="END_PARAGRAPH4" /></translation>

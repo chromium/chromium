@@ -205,6 +205,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="117445914942805388">Para borrar los datos de navegación de todos los dispositivos sincronizados y de tu cuenta de Google, ve a la <ph name="BEGIN_LINK" />configuración de sincronización<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Tu administrador ha inhabilitado esta función.</translation>
 <translation id="1175364870820465910">Im&amp;primir...</translation>
+<translation id="1175914831232945926">Dígitos</translation>
 <translation id="1176471985365269981">No pueden editar archivos ni carpetas en tu dispositivo</translation>
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1178581264944972037">Pausar</translation>
@@ -556,6 +557,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1493892686965953381">Esperando <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Los sitios pueden solicitar permiso para usar las fuentes instaladas en tu dispositivo</translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
+<translation id="1498498210836053409">Desactivar el modo Persistente al editar texto (modo Persistente inteligente)</translation>
 <translation id="1500297251995790841">Dispositivo desconocido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Más información sobre las aplicaciones de Chrome no admitidas</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
@@ -564,6 +566,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1504551620756424144">En Windows, las carpetas compartidas están disponibles en <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportar contraseñas</translation>
 <translation id="1506061864768559482">Buscador</translation>
+<translation id="1506187449813838456">Sube el tono</translation>
 <translation id="1507170440449692343">Esta página no tiene permiso para acceder a la cámara</translation>
 <translation id="1507246803636407672">&amp;Rechazar</translation>
 <translation id="1509163368529404530">&amp;Restaurar grupo</translation>
@@ -885,7 +888,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1778457539567749232">Marcar como no leída</translation>
 <translation id="1778991607452011493">Enviar registros de depuración (recomendado)</translation>
 <translation id="1779441632304440041">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de que tus contraseñas sean seguras.</translation>
-<translation id="1779453062283607806">Compara resultados de búsqueda más rápido desde el nuevo panel lateral</translation>
 <translation id="1779468444204342338">Mínimos</translation>
 <translation id="177989070088644880">Aplicación (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Cerrar grupo</translation>
@@ -2411,6 +2413,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3088128611727407543">Preparando perfil de la aplicación…</translation>
 <translation id="3088325635286126843">&amp;Cambiar nombre...</translation>
 <translation id="3089137131053189723">Se ha borrado la búsqueda</translation>
+<translation id="3090227230165225418">Anunciar notificaciones de descarga</translation>
 <translation id="3090589793601454425">No transferirlas</translation>
 <translation id="3090819949319990166">No se puede copiar el archivo crx externo en <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> vinculado</translation>
@@ -3098,6 +3101,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3732530910372558017">El PIN debe tener 63 caracteres como máximo</translation>
 <translation id="3732857534841813090">Información relacionada con el Asistente de Google</translation>
 <translation id="3733296813637058299">Vamos a instalarte algunas aplicaciones. Puedes buscar más aplicaciones para tu <ph name="DEVICE_TYPE" /> en Play Store.</translation>
+<translation id="3735039640698208086">Al reproducir el audio...</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3738632186060045350">Se eliminarán los datos del <ph name="DEVICE_TYPE" /> dentro de 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5445,6 +5449,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5895335062901455404">Encontrarás tus preferencias y tu actividad guardadas en cualquier dispositivo ChromeOS Flex cuando inicies sesión con tu cuenta de Google. Puedes elegir qué contenido quieres sincronizar en Configuración.</translation>
 <translation id="589541317545606110">Buscar en la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">No permitir</translation>
+<translation id="5899860758576822363">Reproducir a un volumen inferior cuando ChromeVox habla</translation>
 <translation id="5900243355162006650">Configuración de conexión compartida:</translation>
 <translation id="5900302528761731119">Foto de perfil de Google</translation>
 <translation id="590036993063074298">Detalles sobre la calidad de la proyección</translation>
@@ -5893,6 +5898,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6301300352769835063">Permitir que Google use tus datos de hardware para ayudar a mejorar <ph name="DEVICE_OS" />. Aunque no marques esta opción, los datos se envían a Google de todas formas para determinar las actualizaciones adecuadas, pero no se almacenan ni se usan de otro modo. Consulta más información en g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Sugerencias de información personal</translation>
 <translation id="6305607932814307878">Política global:</translation>
+<translation id="6305702903308659374">Reproducir a un volumen normal aunque ChromeVox hable</translation>
 <translation id="6305909198255586420">Instálalo usando tu perfil principal</translation>
 <translation id="630750887748244481">Tus padres han desactivado "Permisos de sitios web, aplicaciones y extensiones" en Chrome. No se puede añadir esta extensión.</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
@@ -7205,6 +7211,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7503191893372251637">Tipo de certificado de Netscape</translation>
 <translation id="7503985202154027481">Se guardará un registro de tu visita a este sitio web en tu llave de seguridad.</translation>
 <translation id="750509436279396091">Abrir carpeta de descargas</translation>
+<translation id="7505149250476994901">Di "mayúscula" después de la letra</translation>
 <translation id="7505717542095249632">Ocultar <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Esta contraseña se guardará en este dispositivo</translation>
 <translation id="7506130076368211615">Configurar red nueva</translation>
@@ -7291,6 +7298,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7586498138629385861">Chrome seguirá ejecutándose mientras estén abiertas aplicaciones de Chrome.</translation>
 <translation id="758895749110326677">Ayúdanos a mejorar la experiencia de juego en Chromebooks</translation>
 <translation id="7589461650300748890">¡Atención! Ten cuidado.</translation>
+<translation id="7592060599656252486">Alguna</translation>
 <translation id="7593653750169415785">Se ha bloqueado automáticamente porque has rechazado las notificaciones varias veces</translation>
 <translation id="7594725637786616550">Haz un Powerwash para restablecer tu <ph name="DEVICE_TYPE" /> de forma que quede como nuevo.</translation>
 <translation id="7595453277607160340">Para usar aplicaciones de Android y que tu <ph name="DEVICE_TYPE" /> siga funcionando correctamente, inicia sesión de nuevo e instala la actualización.</translation>
@@ -7775,6 +7783,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8002274832045662704">Configuración avanzada de la impresora</translation>
 <translation id="8002670234429879764">La impresora <ph name="PRINTER_NAME" /> ya no está disponible</translation>
 <translation id="8004092996156083991">Si se vulneran tus contraseñas, te avisaremos</translation>
+<translation id="8004507136466386272">Palabras</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8005600846065423578">Permitir siempre que <ph name="HOST" /> vea el portapapeles</translation>
 <translation id="8006630792898017994">Espacio o Tabulador</translation>
@@ -8298,6 +8307,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8473540203671727883">Enunciar el texto que está debajo del ratón</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8475313423285172237">Otro programa de tu ordenador ha añadido una extensión que puede cambiar el funcionamiento de Chrome.</translation>
+<translation id="8476408756881832830">Pausar la reproducción cuando ChromeVox habla</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos ChromeOS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente, así como datos de uso y diagnóstico de aplicaciones Android. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes del dispositivo ChromeOS de tu hijo/a. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Si el ajuste Actividad en la Web y en Aplicaciones está activado en la cuenta de Google de tu hijo/a, es posible que sus datos se guarden en su cuenta de Google. Consulta más información sobre estos ajustes y cómo configurarlos en families.google.com.<ph name="END_PARAGRAPH4" /></translation>

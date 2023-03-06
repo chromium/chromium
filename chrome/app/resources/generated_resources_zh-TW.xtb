@@ -205,6 +205,7 @@
 <translation id="117445914942805388">如要從所有同步的裝置和 Google 帳戶中清除瀏覽資料，請<ph name="BEGIN_LINK" />前往同步處理設定<ph name="END_LINK" />。</translation>
 <translation id="1175131936083782305">管理員已停用這項功能。</translation>
 <translation id="1175364870820465910">列印(&amp;P)...</translation>
+<translation id="1175914831232945926">數字</translation>
 <translation id="1176471985365269981">不得編輯裝置上的檔案或資料夾</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -555,7 +556,9 @@
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
 <translation id="1493892686965953381">正在等待 <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">網站可以要求使用裝置上安裝的字型</translation>
+<translation id="1494429729245089920">虛擬機器「<ph name="VM_NAME" />」已存在，但似乎不是有效的 <ph name="APP_NAME" /> 虛擬機器。請與管理員聯絡。</translation>
 <translation id="1495677929897281669">返回分頁</translation>
+<translation id="1498498210836053409">在編輯文字時停用固定模式 (智慧型固定模式)</translation>
 <translation id="1500297251995790841">不明裝置 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">進一步瞭解不支援的 Chrome 應用程式</translation>
 <translation id="1501480321619201731">刪除群組</translation>
@@ -564,6 +567,7 @@
 <translation id="1504551620756424144">在 Windows 中，你可以前往 <ph name="BASE_DIR" /> 存取共用資料夾。</translation>
 <translation id="1505494256539862015">匯出密碼</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
+<translation id="1506187449813838456">提高音調</translation>
 <translation id="1507170440449692343">系統已封鎖這個網頁存取你的攝影機。</translation>
 <translation id="1507246803636407672">捨棄(&amp;D)</translation>
 <translation id="1509163368529404530">還原群組 (&amp;R)</translation>
@@ -885,7 +889,6 @@
 <translation id="1778457539567749232">標示為未讀取</translation>
 <translation id="1778991607452011493">傳送偵錯記錄 (建議)</translation>
 <translation id="1779441632304440041">低強度密碼很容易讓有心人士猜中，請務必設定高強度密碼。</translation>
-<translation id="1779453062283607806">推出全新的側邊面板，更快比較搜尋結果</translation>
 <translation id="1779468444204342338">最小值</translation>
 <translation id="177989070088644880">應用程式 (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">關閉群組</translation>
@@ -2410,6 +2413,7 @@
 <translation id="3088128611727407543">正在準備應用程式設定檔...</translation>
 <translation id="3088325635286126843">重新命名(&amp;R)...</translation>
 <translation id="3089137131053189723">已清除搜尋內容</translation>
+<translation id="3090227230165225418">朗讀下載通知</translation>
 <translation id="3090589793601454425">不要移動</translation>
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」已配對</translation>
@@ -3097,6 +3101,7 @@
 <translation id="3732530910372558017">PIN 碼不能超過 63 個字元</translation>
 <translation id="3732857534841813090">Google 助理相關資訊</translation>
 <translation id="3733296813637058299">系統將為你安裝這些應用程式。你可以在 Play 商店中發掘更多適用於 <ph name="DEVICE_TYPE" /> 的應用程式。</translation>
+<translation id="3735039640698208086">播放音訊時...</translation>
 <translation id="3735740477244556633">排序依據</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> 資料將在 24 小時後遭到刪除</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
@@ -5442,6 +5447,7 @@
 <translation id="5895335062901455404">使用 Google 帳戶登入後，就能將已儲存的偏好設定和活動同步至任何 ChromeOS Flex 裝置。你可以在設定中選擇要同步處理的資料。</translation>
 <translation id="589541317545606110">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 搜尋網頁</translation>
 <translation id="5896436821193322561">不允許</translation>
+<translation id="5899860758576822363">ChromeVox 朗讀時調降音訊的播放音量</translation>
 <translation id="5900243355162006650">網路共用設定：</translation>
 <translation id="5900302528761731119">Google 個人資料相片</translation>
 <translation id="590036993063074298">鏡像品質詳細資訊</translation>
@@ -5889,6 +5895,7 @@
 <translation id="6301300352769835063">允許 Google 使用硬體資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，這項資料仍會傳送給 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。如要瞭解詳情，請前往 g.co/flex/HWDataCollection。</translation>
 <translation id="630292539633944562">個人資訊建議</translation>
 <translation id="6305607932814307878">全域政策：</translation>
+<translation id="6305702903308659374">ChromeVox 朗讀時仍維持音訊的標準音量</translation>
 <translation id="6305909198255586420">請使用主要設定檔安裝</translation>
 <translation id="630750887748244481">你的家長已停用 Chrome 的「網站、應用程式和擴充功能的權限」設定，你無法新增這個擴充功能。</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
@@ -7201,6 +7208,7 @@
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
 <translation id="7503985202154027481">你的安全金鑰會保留你造訪這個網站的記錄。</translation>
 <translation id="750509436279396091">開啟下載內容資料夾</translation>
+<translation id="7505149250476994901">在字母前讀出「大寫」</translation>
 <translation id="7505717542095249632">隱藏「<ph name="MERCHANT" />」</translation>
 <translation id="7506093026325926984">這組密碼會儲存在這部裝置上</translation>
 <translation id="7506130076368211615">設定新網路</translation>
@@ -7287,6 +7295,7 @@
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
 <translation id="758895749110326677">協助我們改善 Chromebook 的遊戲體驗</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
+<translation id="7592060599656252486">部分</translation>
 <translation id="7593653750169415785">由於你拒絕通知數次而自動遭到封鎖的網站</translation>
 <translation id="7594725637786616550">執行 Powerwash 以將 <ph name="DEVICE_TYPE" /> 恢復原廠設定。</translation>
 <translation id="7595453277607160340">如要使用 Android 應用程式並確保你的 <ph name="DEVICE_TYPE" /> 正常運作，請重新登入並進行更新。</translation>
@@ -7771,6 +7780,7 @@
 <translation id="8002274832045662704">進階印表機設定</translation>
 <translation id="8002670234429879764">「<ph name="PRINTER_NAME" />」已無法使用</translation>
 <translation id="8004092996156083991">如果密碼外洩，我們會通知你。</translation>
+<translation id="8004507136466386272">字詞</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8005600846065423578">一律允許 <ph name="HOST" /> 讀取剪貼簿</translation>
 <translation id="8006630792898017994">空格鍵或 Tab 鍵</translation>
@@ -8294,6 +8304,7 @@
 <translation id="8473540203671727883">請讀出滑鼠游標下方的文字</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>
+<translation id="8476408756881832830">ChromeVox 朗讀時暫停播放音訊</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在孩子的 ChromeOS 裝置設定中允許或禁止傳送這類報告。如果你是網域管理員，可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />當孩子 Google 帳戶的「網路和應用程式活動」設定開啟時，系統可能會將孩子的資料儲存到其 Google 帳戶。如要進一步瞭解這些設定和調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" /></translation>

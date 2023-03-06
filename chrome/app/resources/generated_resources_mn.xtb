@@ -207,6 +207,7 @@
 <translation id="117445914942805388">Хөтчийн өгөгдлийг синк хийсэн бүх төхөөрөмж болон Google Бүртгэлээсээ устгахын тулд <ph name="BEGIN_LINK" />синк хийх тохиргоонд зочилно уу<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Танай администратор энэ онцлогийг идэвхгүй болгосон.</translation>
 <translation id="1175364870820465910">&amp;Хэвлэх ...</translation>
+<translation id="1175914831232945926">Цифр</translation>
 <translation id="1176471985365269981">Таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг зөвшөөрөхгүй</translation>
 <translation id="1177863135347784049">Хэвийн</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
@@ -559,6 +560,7 @@
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />-ыг хүлээж байна...</translation>
 <translation id="1494349716233667318">Сайтууд таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг хүсэх боломжтой</translation>
 <translation id="1495677929897281669">Таб руу буцах</translation>
+<translation id="1498498210836053409">Текст засах үедээ бэхлэгч горимыг унтраах (Ухаалаг бэхлэгч горим)</translation>
 <translation id="1500297251995790841">Үл мэдэгдэх төхөөрөмж [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Дэмжигдээгүй Chrome Аппын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="1501480321619201731">Бүлгийг устгах</translation>
@@ -567,6 +569,7 @@
 <translation id="1504551620756424144">Хуваалцсан фолдерууд нь Windows-д <ph name="BASE_DIR" /> дээр байна.</translation>
 <translation id="1505494256539862015">нууц үгийг экспортлох</translation>
 <translation id="1506061864768559482">Хайлтын хэрэгсэл</translation>
+<translation id="1506187449813838456">Дууны өнгийг нэмэх</translation>
 <translation id="1507170440449692343">Энэ хуудас нь таны камерт хандалт хийх эрхгүй.</translation>
 <translation id="1507246803636407672">&amp; Хэрэгсэхгүй орхих</translation>
 <translation id="1509163368529404530">&amp;Бүлгийг сэргээх</translation>
@@ -892,7 +895,6 @@
 <translation id="1778457539567749232">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="1778991607452011493">Дебаг хийх логийг илгээх (санал болгосон)</translation>
 <translation id="1779441632304440041">Сул нууц үгийг таахад хялбар байдаг. Сайн нууц үг үүсгэж байгаа эсэхээ шалгаарай.</translation>
-<translation id="1779453062283607806">Шинэ хажуугийн самбараас хайлтын илэрцүүдийг илүү хурдан харьцуулаарай</translation>
 <translation id="1779468444204342338">Хамгийн бага</translation>
 <translation id="177989070088644880">Апп (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Бүлгийг хаах</translation>
@@ -2421,6 +2423,7 @@
 <translation id="3088128611727407543">Аппын профайлыг бэлтгэж байна...</translation>
 <translation id="3088325635286126843">&amp; Дахин нэр өгөх...</translation>
 <translation id="3089137131053189723">Хайлтыг устгасан</translation>
+<translation id="3090227230165225418">Таталтын мэдэгдлийг зарлах</translation>
 <translation id="3090589793601454425">Бүү зөө</translation>
 <translation id="3090819949319990166">Гадаад crx файлыг <ph name="TEMP_CRX_FILE" />-д хуулах боломжгүй байна.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" хосолсон</translation>
@@ -3108,6 +3111,7 @@
 <translation id="3732530910372558017">ПИН хамгийн ихдээ 63 тэмдэгттэй байх ёстой</translation>
 <translation id="3732857534841813090">Google Туслахтай холбоотой мэдээлэл</translation>
 <translation id="3733296813637058299">Бид эдгээр аппыг танд суулгаж өгнө. Та <ph name="DEVICE_TYPE" />-д суулгаж болох бусад аппыг Play Store-с олох боломжтой.</translation>
+<translation id="3735039640698208086">Аудио тоглуулж байх үед...</translation>
 <translation id="3735740477244556633">Дараахаар эрэмбэлэх</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-н өгөгдөл 24 цагийн дараа устана</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5456,6 +5460,7 @@
 <translation id="5895335062901455404">Таныг Google Бүртгэлээрээ нэвтрэх үед хадгалсан сонголт болон үйл ажиллагаа тань аливаа ChromeOS Flex төхөөрөмж дээр бэлэн байх болно. Та Тохиргоо хэсэгт синк хийх зүйлээ сонгох боломжтой.</translation>
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" />-р хуудас хайх</translation>
 <translation id="5896436821193322561">Бүү зөвшөөр</translation>
+<translation id="5899860758576822363">ChromeVox-г ярьж байх үед бага төвшинд тоглуулна уу</translation>
 <translation id="5900243355162006650">Модем болгох тохируулга:</translation>
 <translation id="5900302528761731119">Google-ийн танилцуулга зураг</translation>
 <translation id="590036993063074298">Тусгал үүсгэх чанарын дэлгэрэнгүй</translation>
@@ -5903,6 +5908,7 @@
 <translation id="6301300352769835063">Google-д таны техник хангамжийн өгөгдлийг <ph name="DEVICE_OS" />-г сайжруулахад ашиглахыг зөвшөөрнө үү. Хэрэв та татгалзвал энэ өгөгдлийг Google рүү зохих шинэчлэлтүүдийг тодорхойлохын тулд илгээсэн хэвээр байх хэдий ч хадгалахгүй эсвэл өөрөөр ашиглахгүй. Ta g.co/flex/HWDataCollection дээрээс нэмэлт мэдээлэл авна уу.</translation>
 <translation id="630292539633944562">Хувийн мэдээллийн зөвлөмж</translation>
 <translation id="6305607932814307878">Олон улсын удирдамж:</translation>
+<translation id="6305702903308659374">ChromeVox-г ярьж байх үед энгийн төвшинд тоглуулна уу</translation>
 <translation id="6305909198255586420">Үндсэн профайлаа ашиглан суулгана уу</translation>
 <translation id="630750887748244481">Таны эцэг эх Chrome-д "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ өргөтгөлийг нэмэхийг зөвшөөрөхгүй.</translation>
 <translation id="6307990684951724544">Систем завгүй байна</translation>
@@ -7215,6 +7221,7 @@
 <translation id="7503191893372251637">Нэтскейпийн гэрчилгээний төрөл</translation>
 <translation id="7503985202154027481">Таны энэ сайтад зочилсон бүртгэл аюулгүй байдлын түлхүүрт хадгалагдана.</translation>
 <translation id="750509436279396091">Татаж авсан файлуудын хавтсыг нээ</translation>
+<translation id="7505149250476994901">Үсгийн өмнө "том" гэж хэлнэ үү</translation>
 <translation id="7505717542095249632"><ph name="MERCHANT" />-г нуух</translation>
 <translation id="7506093026325926984">Энэ нууц үгийг энэ төхөөрөмж дээр хадгална</translation>
 <translation id="7506130076368211615">Шинэ сүлжээ тохируулах</translation>
@@ -7301,6 +7308,7 @@
 <translation id="7586498138629385861">Chrome-г хэрэглээний программыг нээсэн байгаа тохиолдолд Chrome нь ачаалласан хэвээр байна.</translation>
 <translation id="758895749110326677">Бидэнд Chromebook дээр тоглоом тоглохыг сайжруулахад тусална уу</translation>
 <translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
+<translation id="7592060599656252486">Зарим</translation>
 <translation id="7593653750169415785">Та хэд хэдэн удаа мэдэгдлээс татгалзсан тул автоматаар хориглосон</translation>
 <translation id="7594725637786616550">Өөрийн <ph name="DEVICE_TYPE" />-г шинэ мэт шинэчлэхийн тулд Powerwash хийгээрэй.</translation>
 <translation id="7595453277607160340">Андройд аппыг ашиглах болон <ph name="DEVICE_TYPE" />-н хэвийн ажиллагааг үргэлжлүүлэхийн тулд дахин нэвтрээд шинэчилнэ үү.</translation>
@@ -7783,6 +7791,7 @@
 <translation id="8002274832045662704">Хэвлэгчийн нарийвчилсан тохируулга</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> цаашид боломжгүй байна</translation>
 <translation id="8004092996156083991">Таны нууц үгнүүд алдагдсан тохиолдолд бид танд мэдэгдэнэ.</translation>
+<translation id="8004507136466386272">Үг</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
 <translation id="8005600846065423578"><ph name="HOST" />-д түр санах ойг харахыг тогтмол зөвшөөрөх</translation>
 <translation id="8006630792898017994">Зай авах товч эсвэл Tab</translation>
@@ -8305,6 +8314,7 @@
 <translation id="8473540203671727883">Хулганын доорх текстийг хэлнэ үү</translation>
 <translation id="8473863474539038330">Хаяг болон бусад</translation>
 <translation id="8475313423285172237">Таны компьютер дээрх программ өргөтгөл нэмсэн байна. Энэ нь Chrome-ийн ажиллагаанд нөлөөлж болох юм.</translation>
+<translation id="8476408756881832830">ChromeVox-г ярьж байх үед дахин тоглуулахыг түр зогсооно уу</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS төхөөрөмжүүдэд автомат тайлан илгээхийг зөвшөөрснөөр бидэнд ChromeOS-т юуг засаж, сайжруулахыг чухалчилж үзэхэд тусална. Эдгээр тайланд ChromeOS хэзээ гэмтсэн, ямар онцлогуудыг ашигласан, хэр хэмжээний санах ойг ихэвчлэн ашиглаж байсан болон Android аппын оношилгоо, ашиглалтын өгөгдөл зэргийг багтааж болно. Зарим хуримтлуулсан өгөгдөл нь мөн Android аппууд болон Android хөгжүүлэгчид зэрэг Google-н түншүүдэд тусална.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Та хүүхдийнхээ ChromeOS төхөөрөмжийн тохиргоонд эдгээр тайланг хүссэн үедээ зөвшөөрч эхлэх эсвэл зогсоох боломжтой. Хэрэв та домэйний администратор бол энэ тохиргоог хүссэн үедээ админы консолд өөрчлөх боломжтой.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Хэрэв таны хүүхдийн Google Бүртгэлд Веб, аппын үйл ажиллагааны тохиргоо асаалттай бол таны хүүхдийн өгөгдлийг Google Бүртгэлд нь хадгалж магадгүй. Эдгээр тохиргооны талаар болон тэдгээрийг хэрхэн тохируулах тухай нэмэлт мэдээллийг families.google.com дээрээс авна уу.<ph name="END_PARAGRAPH4" /></translation>

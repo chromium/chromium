@@ -205,6 +205,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="117445914942805388">Sinkronizatutako gailu guztietako eta zure Google-ko kontuko arakatze-datuak garbitzeko, <ph name="BEGIN_LINK" />joan sinkronizazio-ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Administratzaileak eginbidea desgaitu du.</translation>
 <translation id="1175364870820465910">In&amp;primatu…</translation>
+<translation id="1175914831232945926">Digituak</translation>
 <translation id="1176471985365269981">Ezin dituzte editatu gailuko fitxategiak edo karpetak</translation>
 <translation id="1177863135347784049">Pertsonalizatua</translation>
 <translation id="1178581264944972037">Pausatu</translation>
@@ -556,6 +557,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> parametroaren zain…</translation>
 <translation id="1494349716233667318">Webguneek gailuan instalatutako letrak erabiltzea eska dezakete</translation>
 <translation id="1495677929897281669">Itzuli fitxara</translation>
+<translation id="1498498210836053409">Desaktibatu modu itsaskorra testua editatzean (modu itsaskor adimenduna)</translation>
 <translation id="1500297251995790841">Identifikatu ezin den gailua [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Lortu bateragarriak ez diren Chrome-ren aplikazioei buruzko informazio gehiago</translation>
 <translation id="1501480321619201731">Ezabatu taldea</translation>
@@ -564,6 +566,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1504551620756424144">Karpeta partekatuak Windows-eko direktorio honetan daude: <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">pasahitzak esportatu nahi ditu</translation>
 <translation id="1506061864768559482">Bilatzailea</translation>
+<translation id="1506187449813838456">Igo tonua</translation>
 <translation id="1507170440449692343">Orriari kamera atzitzeko aukera blokeatu zaio.</translation>
 <translation id="1507246803636407672">&amp;Baztertu</translation>
 <translation id="1509163368529404530">Leheneratu taldea</translation>
@@ -885,7 +888,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1778457539567749232">Markatu irakurri gabeko gisa</translation>
 <translation id="1778991607452011493">Bidali arazketa-erregistroak (gomendatua)</translation>
 <translation id="1779441632304440041">Seguruak ez diren pasahitzak erraz asmatzen dira. Ziurtatu pasahitz seguruak sortzen dituzula.</translation>
-<translation id="1779453062283607806">Alderatu bilaketa-emaitzak bizkorrago alboko panel berriari esker</translation>
 <translation id="1779468444204342338">Gutxienekoak</translation>
 <translation id="177989070088644880">Aplikazioa (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Itxi taldea</translation>
@@ -2410,6 +2412,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3088128611727407543">Aplikazioko profila prestatzen…</translation>
 <translation id="3088325635286126843">&amp;Aldatu izena…</translation>
 <translation id="3089137131053189723">Garbitu da bilaketa</translation>
+<translation id="3090227230165225418">Eman deskargen jakinarazpenak aditzera</translation>
 <translation id="3090589793601454425">Ez eraman</translation>
 <translation id="3090819949319990166">Ezin da kanpoko crx fitxategia <ph name="TEMP_CRX_FILE" /> fitxategian kopiatu.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" parekatu da</translation>
@@ -3097,6 +3100,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3732530910372558017">PIN kodeak 63 karaktere izan ditzake gehienez</translation>
 <translation id="3732857534841813090">Google-ren Laguntzailea zerbitzuarekin erlazionatutako informazioa</translation>
 <translation id="3733296813637058299">Guk instalatuko dizkizugu aplikazioak. Play Store-n aplikazio gehiago aurki ditzakezu <ph name="DEVICE_TYPE" /> gailurako.</translation>
+<translation id="3735039640698208086">Audioa erreproduzitzean…</translation>
 <translation id="3735740477244556633">Ordenatzeko irizpidea</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> gailuko datuak 24 ordu barru ezabatuko dira</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5442,6 +5446,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5895335062901455404">Gordetako hobespenak eta jarduerak prest egongo dira ChromeOS Flex-eko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
 <translation id="589541317545606110">Bilatu orria <ph name="VISUAL_SEARCH_PROVIDER" /> bidez</translation>
 <translation id="5896436821193322561">Ez eman baimenik</translation>
+<translation id="5899860758576822363">Erreproduzitu bolumen baxuagoan ChromeVox hitz egiten ari bada</translation>
 <translation id="5900243355162006650">Konexioa partekatzeko aukeraren konfigurazioa:</translation>
 <translation id="5900302528761731119">Google-ko profileko argazkia</translation>
 <translation id="590036993063074298">Islatzearen kalitateari buruzko xehetasunak</translation>
@@ -5889,6 +5894,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6301300352769835063">Utzi Google-ri hardware-datuak erabiltzen <ph name="DEVICE_OS" /> hobetzeko. Aukera hau baztertu arren, datuak Google-ra bidaliko dira eguneratze egokiak zehazteko. Alabaina, ez dira ez gordeko, ez beste ezertarako erabiliko. Lortu informazio gehiago g.co/flex/HWDataCollection webgunean.</translation>
 <translation id="630292539633944562">Informazio pertsonalari buruzko iradokizunak</translation>
 <translation id="6305607932814307878">Gidalerro orokorra:</translation>
+<translation id="6305702903308659374">Erreproduzitu bolumen normalean ChromeVox hitz egiten ari bada ere</translation>
 <translation id="6305909198255586420">Instalatu profil nagusia erabilita</translation>
 <translation id="630750887748244481">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chrome-n. Ezin da gehitu luzapen hau.</translation>
 <translation id="6307990684951724544">Sistema okupatuta dago</translation>
@@ -7201,6 +7207,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7503191893372251637">Netscape ziurtagiri mota</translation>
 <translation id="7503985202154027481">Webgune hau bisitatu izana erregistratu egingo da segurtasun-giltzan.</translation>
 <translation id="750509436279396091">Ireki deskargen karpeta</translation>
+<translation id="7505149250476994901">Esan "maiuskula" hizkia baino lehen</translation>
 <translation id="7505717542095249632">Ezkutatu <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Gailu honetan gordeko da pasahitza</translation>
 <translation id="7506130076368211615">Konfiguratu beste sare bat</translation>
@@ -7287,6 +7294,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7586498138629385861">Chrome-ren aplikazioak irekita dauden bitartean, Chrome-k abian jarraituko du.</translation>
 <translation id="758895749110326677">Lagundu Chromebook-eko bideojokoak hobetzen</translation>
 <translation id="7589461650300748890">Ene! Kontuz ibili.</translation>
+<translation id="7592060599656252486">Batzuk</translation>
 <translation id="7593653750169415785">Automatikoki blokeatu dira, behin baino gehiagotan baztertu dituzulako jakinarazpenak</translation>
 <translation id="7594725637786616550">Erabili Powerwash fabrikako ezarpenak berrezartzeko, <ph name="DEVICE_TYPE" /> hasierako egoerara lehenera dadin.</translation>
 <translation id="7595453277607160340">Android-erako aplikazioak erabili ahal izan ditzazun eta zure <ph name="DEVICE_TYPE" /> gailuak behar bezala funtzionatzen jarrai dezan, hasi saioa berriro eta eguneratu gailuaren enkriptatzea.</translation>
@@ -7771,6 +7779,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8002274832045662704">Inprimagailuaren konfigurazio aurreratua</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ez dago jada erabilgarri</translation>
 <translation id="8004092996156083991">Pasahitzak arriskuan badaude, horren berri emango dizugu.</translation>
+<translation id="8004507136466386272">Hitzak</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="8005600846065423578">Eman beti arbela ikusteko baimena <ph name="HOST" /> webguneari</translation>
 <translation id="8006630792898017994">Zuriune-barra edo tabuladorea</translation>
@@ -8293,6 +8302,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8473540203671727883">Irakurri ozen saguaren kurtsorearen azpiko testua</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="8475313423285172237">Ordenagailuan duzun beste programa batek Chrome-ren funtzionamendua alda dezakeen luzapen bat gehitu du.</translation>
+<translation id="8476408756881832830">Pausatu erreprodukzioa ChromeVox hitz egiten ari bada</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan hauek sar daitezke, bestek beste: ChromeOS-en gertatzen diren hutsegiteak, zer eginbide erabiltzen diren, zenbat memoria erabili ohi den, eta Android-erako aplikazioen diagnostiko- eta erabilera-datuak. Gainera, datu bateratu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei).<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan haurraren ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Haurraren Google-ko kontuko Sareko eta aplikazioetako jarduerak ezarpena aktibatuta badago, baliteke haurraren datuak haren Google-ko kontuan gordetzea. Lortu ezarpen horiei buruzko informazio gehiago eta ikasi haiek doitzen families.google.com helbidean.<ph name="END_PARAGRAPH4" /></translation>

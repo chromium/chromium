@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">შრიფტები</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">ცადეთ სისტემის ადმინისტრატორთან დაკავშირება.</translation>
+<translation id="1736158756193183352">ქსელში <ph name="BEGIN_LINK" />შესვლა<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">კომპიუტერი</translation>
 <translation id="1740951997222943430">შეიყვანეთ მოქმედების ვადის გასვლის სწორი თვე</translation>
 <translation id="1741613555002899862">უნდა იყოს მითითებული და სწორი ფრაზა, როცა „DnsOverHttpsMode“ არის „<ph name="SECURE_DNS_MODE_SECURE" />“.</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">თქვენი დათვალიერების ისტორია აქ გამოჩნდება</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">გადახდის შენახული მეთოდები არ არის</translation>
+<translation id="3950574001630941635">სახელმძღვანელოს თავიდან გაშვება</translation>
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="3958057596965527988">4 x 4 დუიმი</translation>
 <translation id="3961148744525529027">გადახდების დამმუშავებლის გვერდი ნახევრადგახსნილია</translation>

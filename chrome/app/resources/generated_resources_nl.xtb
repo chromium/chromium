@@ -205,6 +205,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="117445914942805388">Als je browsegegevens wilt wissen van al je gesynchroniseerde apparaten en je Google-account, <ph name="BEGIN_LINK" />ga je naar synchronisatie-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Je beheerder heeft deze functie uitgezet.</translation>
 <translation id="1175364870820465910">&amp;Afdrukken...</translation>
+<translation id="1175914831232945926">Cijfers</translation>
 <translation id="1176471985365269981">Geen toestemming om bestanden of mappen op je apparaat te bewerken</translation>
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
@@ -555,7 +556,9 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1487335504823219454">Aan - aangepaste instellingen</translation>
 <translation id="1493892686965953381">Wachten op <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Sites kunnen vragen of ze de lettertypen mogen gebruiken die zijn geïnstalleerd op je apparaat</translation>
+<translation id="1494429729245089920">De virtuele machine <ph name="VM_NAME" /> bestaat, maar lijkt geen geldige virtuele <ph name="APP_NAME" />-machine te zijn. Neem contact op met je beheerder.</translation>
 <translation id="1495677929897281669">Terug naar tabblad</translation>
+<translation id="1498498210836053409">Sticky modus uitzetten tijdens tekstbewerking (Slimme sticky modus)</translation>
 <translation id="1500297251995790841">Onbekend apparaat [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Meer informatie over niet-ondersteunde Chrome-apps</translation>
 <translation id="1501480321619201731">Groep verwijderen</translation>
@@ -564,6 +567,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1504551620756424144">Gedeelde mappen zijn beschikbaar in Windows in <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">wachtwoorden exporteren</translation>
 <translation id="1506061864768559482">Zoekmachine</translation>
+<translation id="1506187449813838456">Toonhoogte verhogen</translation>
 <translation id="1507170440449692343">Deze pagina heeft geen toegang tot je camera.</translation>
 <translation id="1507246803636407672">&amp;Annuleren</translation>
 <translation id="1509163368529404530">G&amp;roep herstellen</translation>
@@ -885,7 +889,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1778457539567749232">Markeren als ongelezen</translation>
 <translation id="1778991607452011493">Logboeken voor foutopsporing sturen (aanbevolen)</translation>
 <translation id="1779441632304440041">Zwakke wachtwoorden zijn makkelijk te raden. Stel sterke wachtwoorden in.</translation>
-<translation id="1779453062283607806">Vergelijk zoekresultaten sneller via het nieuwe zijvenster</translation>
 <translation id="1779468444204342338">Minimum</translation>
 <translation id="177989070088644880">App (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Groep sluiten</translation>
@@ -2410,6 +2413,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3088128611727407543">App-profiel voorbereiden…</translation>
 <translation id="3088325635286126843">&amp;Naam wijzigen...</translation>
 <translation id="3089137131053189723">Zoekopdracht gewist</translation>
+<translation id="3090227230165225418">Downloadmeldingen aankondigen</translation>
 <translation id="3090589793601454425">Niet verplaatsen</translation>
 <translation id="3090819949319990166">Kan extern crx-bestand niet kopiëren naar <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' gekoppeld</translation>
@@ -3097,6 +3101,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3732530910372558017">Pincode mag maximaal 63 tekens lang zijn</translation>
 <translation id="3732857534841813090">Aan de Google Assistent gerelateerde informatie</translation>
 <translation id="3733296813637058299">We installeren deze apps voor je. In de Play Store vind je nog meer apps voor je <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3735039640698208086">Tijdens het afspelen van audio...</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-gegevens worden over 24 uur verwijderd</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5441,6 +5446,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5895335062901455404">Je opgeslagen voorkeuren en activiteit zijn klaar voor gebruik op elk Chrome OS Flex-apparaat als je inlogt met je Google-account. Je kunt in de instellingen bepalen wat je wilt synchroniseren.</translation>
 <translation id="589541317545606110">Pagina zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Niet toestaan</translation>
+<translation id="5899860758576822363">Afspelen met lager volume wanneer ChromeVox spreekt</translation>
 <translation id="5900243355162006650">Tethering-configuratie:</translation>
 <translation id="5900302528761731119">Google-profielfoto</translation>
 <translation id="590036993063074298">Informatie over kwaliteit van mirroring</translation>
@@ -5887,6 +5893,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6301300352769835063">Toestaan dat Google je hardwaregegevens gebruikt om <ph name="DEVICE_OS" /> te verbeteren. Als je geen toestemming geeft, worden deze gegevens nog wel naar Google gestuurd om te bepalen welke updates nodig zijn. De gegevens worden niet anderszins opgeslagen of gebruikt. Bekijk meer informatie op g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Suggesties voor persoonlijke informatie</translation>
 <translation id="6305607932814307878">Algemeen beleid:</translation>
+<translation id="6305702903308659374">Afspelen met normaal volume, ook als ChromeVox spreekt</translation>
 <translation id="6305909198255586420">Installeer dit met je primaire profiel</translation>
 <translation id="630750887748244481">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome. Deze extensie mag niet worden toegevoegd.</translation>
 <translation id="6307990684951724544">Systeem is bezet</translation>
@@ -7198,6 +7205,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7503191893372251637">Type Netscape-certificaat</translation>
 <translation id="7503985202154027481">Er wordt een record van je bezoek aan deze site geregistreerd in je beveiligingssleutel.</translation>
 <translation id="750509436279396091">Map 'Downloads' openen</translation>
+<translation id="7505149250476994901">Eerst 'hoofdletter' zeggen vóór de letter</translation>
 <translation id="7505717542095249632"><ph name="MERCHANT" /> verbergen</translation>
 <translation id="7506093026325926984">Dit wachtwoord wordt alleen opgeslagen op dit apparaat</translation>
 <translation id="7506130076368211615">Nieuw netwerk instellen</translation>
@@ -7284,6 +7292,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7586498138629385861">Chrome blijft actief terwijl er Chrome-apps zijn geopend.</translation>
 <translation id="758895749110326677">Help ons gamen op Chromebooks te verbeteren</translation>
 <translation id="7589461650300748890">Oei, wees voorzichtig!</translation>
+<translation id="7592060599656252486">Gedeeltelijk</translation>
 <translation id="7593653750169415785">Automatisch geblokkeerd omdat je meldingen een paar keer hebt geweigerd</translation>
 <translation id="7594725637786616550">Voer de Powerwash-functie uit om je <ph name="DEVICE_TYPE" /> te resetten.</translation>
 <translation id="7595453277607160340">Log opnieuw in en update de versleuteling om Android-apps te kunnen gebruiken en ervoor te zorgen dat je <ph name="DEVICE_TYPE" /> goed blijft functioneren.</translation>
@@ -7766,6 +7775,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8002274832045662704">Geavanceerde printerconfiguratie</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> is niet meer beschikbaar</translation>
 <translation id="8004092996156083991">Als je wachtwoorden zijn gehackt, laten we je dat weten.</translation>
+<translation id="8004507136466386272">Woorden</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> altijd toestaan om het klembord te bekijken</translation>
 <translation id="8006630792898017994">Spatiebalk of Tab</translation>
@@ -8289,6 +8299,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8473540203671727883">Spreek tekst onder de muisaanwijzer uit</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="8475313423285172237">Een ander programma op je computer heeft een extensie toegevoegd die de manier waarop Chrome werkt kan wijzigen.</translation>
+<translation id="8476408756881832830">Afspelen onderbreken wanneer ChromeVox spreekt</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Als je ChromeOS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in ChromeOS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals wanneer ChromeOS crasht, welke functies zijn gebruikt, hoeveel geheugen er gewoonlijk wordt gebruikt en diagnostische en gebruiksgegevens over Android-apps. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan in de instellingen van het ChromeOS-apparaat van je kind. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Als de instelling Web- en app-activiteit aanstaat voor het Google-account van je kind, kunnen de gegevens van je kind daarin worden opgeslagen. Ga naar families.google.com voor meer informatie over deze instellingen en hoe je ze kunt aanpassen.<ph name="END_PARAGRAPH4" /></translation>

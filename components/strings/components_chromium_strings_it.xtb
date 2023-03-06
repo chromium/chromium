@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           e verifica che la configurazione sia impostata su "nessun proxy" o "diretta".</translation>
+<translation id="6549378540556750549">La realizzazione di Chromium è stata possibile anche grazie ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Le modifiche verranno applicate al prossimo riavvio di Chromium.</translation>
+<translation id="7681937895330411637">La realizzazione di Chromium è stata possibile grazie al progetto open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Seleziona il menu Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> e deseleziona "<ph name="NO_PREFETCH_DESCRIPTION" />".
 Se il problema non si risolve, dovresti riselezionare questa opzione per ottenere prestazioni migliori.</translation>
 <translation id="8187289872471304532">Seleziona

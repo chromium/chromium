@@ -27,7 +27,9 @@
           &gt;
           [<ph name="PROXIES_TITLE" />]
           並確認你的設定為 [不使用 Proxy] 或 [直接連線]。</translation>
+<translation id="6549378540556750549">Chromium 的開發也受惠於其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟體<ph name="END_LINK_OSS" />。</translation>
 <translation id="6613594504749178791">你的變更將於下次重新啟動 Chromium 時生效。</translation>
+<translation id="7681937895330411637">Chromium 的開發受惠於 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼計畫。</translation>
 <translation id="7861509383340276692">前往
           Chromium 選單 &gt;
           [<ph name="SETTINGS_TITLE" />]

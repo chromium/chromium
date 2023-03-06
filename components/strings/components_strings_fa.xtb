@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">قلم‌ها</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">با سرپرست سیستم تماس بگیرید.</translation>
+<translation id="1736158756193183352"><ph name="BEGIN_LINK" />درحال ورود به سیستم<ph name="END_LINK" /> شبکه</translation>
 <translation id="1736420071277903564">رایانه</translation>
 <translation id="1740951997222943430">ماه انقضای معتبری وارد کنید</translation>
 <translation id="1741613555002899862">‏وقتی DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> است، باید مشخص شده باشد و رشته‌ای معتبر باشد</translation>
@@ -1192,6 +1193,7 @@
 <translation id="3949601375789751990">سابقه مرورتان در اینجا نشان داده می‌شود</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">روش پرداخت ذخیره‌شده‌ای وجود ندارد</translation>
+<translation id="3950574001630941635">بازراه‌اندازی آموزش گام‌به‌گام</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3958057596965527988">۴ × ۴ اینچ</translation>
 <translation id="3961148744525529027">برگ کنترل‌کننده پرداخت نیمه‌باز است</translation>

@@ -207,6 +207,7 @@
 <translation id="117445914942805388">За да изчистите данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />посетете настройките за синхронизиране<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Администраторът ви е деактивирал тази функция.</translation>
 <translation id="1175364870820465910">&amp;Печат...</translation>
+<translation id="1175914831232945926">Цифри</translation>
 <translation id="1176471985365269981">Сайтове без разрешение за редактиране на файловете и папките на устройството</translation>
 <translation id="1177863135347784049">По избор</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -558,7 +559,9 @@
 <translation id="1487335504823219454">Включено – персонализирани настройки</translation>
 <translation id="1493892686965953381">Изчаква се <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сайтовете могат да искат разрешение да използват шрифтовете, инсталирани на устройството ви</translation>
+<translation id="1494429729245089920">Виртуалната машина „<ph name="VM_NAME" />“ съществува, но изглежда, че не е валидна виртуална машина за <ph name="APP_NAME" />. Моля, обърнете се към администратора си.</translation>
 <translation id="1495677929897281669">Назад към раздела</translation>
+<translation id="1498498210836053409">Изключване на фиксирания режим при редактиране на текст (интелигентен фиксиран режим)</translation>
 <translation id="1500297251995790841">Неизвестно устройство [<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Научете повече за неподдържаните приложения за Chrome</translation>
 <translation id="1501480321619201731">Изтриване на групата</translation>
@@ -567,6 +570,7 @@
 <translation id="1504551620756424144">Споделените папки са налични в Windows в <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">експортиране на паролите</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
+<translation id="1506187449813838456">Увеличаване на височината на звука</translation>
 <translation id="1507170440449692343">Достъпът на тази страница до камерата ви е блокиран.</translation>
 <translation id="1507246803636407672">&amp;Отхвърляне</translation>
 <translation id="1509163368529404530">&amp;Възстановяване на групата</translation>
@@ -892,7 +896,6 @@
 <translation id="1778457539567749232">Означаване като непрочетено</translation>
 <translation id="1778991607452011493">Изпращане на регистрационните файлове за отстраняване на програмни грешки (препоръчително)</translation>
 <translation id="1779441632304440041">Ненадеждните пароли са лесни за отгатване. Уверете се, че създаваните от вас са надеждни.</translation>
-<translation id="1779453062283607806">Сравняването на резултати от търсенето е по-бързо с новия страничен панел</translation>
 <translation id="1779468444204342338">Минимални</translation>
 <translation id="177989070088644880">Приложение (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Затваряне на групата</translation>
@@ -2421,6 +2424,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3088128611727407543">Потребителският профил за приложението се подготвя...</translation>
 <translation id="3088325635286126843">&amp;Преименуване...</translation>
 <translation id="3089137131053189723">Търсенето бе изчистено</translation>
+<translation id="3090227230165225418">Съобщаване на известия за изтегляне</translation>
 <translation id="3090589793601454425">Без преместване</translation>
 <translation id="3090819949319990166">Външният crx файл не може да се копира в/ъв „<ph name="TEMP_CRX_FILE" />“.</translation>
 <translation id="3090871774332213558">Успешно сдвояване на <ph name="DEVICE_NAME" /></translation>
@@ -3108,6 +3112,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3732530910372558017">ПИН кодът трябва да е с дължина най-много 63 знака</translation>
 <translation id="3732857534841813090">Информация, свързана с Google Асистент</translation>
 <translation id="3733296813637058299">Ще инсталираме тези приложения за вас. В Google Play Магазин можете да намерите още приложения за устройството си <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3735039640698208086">При възпроизвеждане на звук...</translation>
 <translation id="3735740477244556633">Сортиране по</translation>
 <translation id="3738632186060045350">Данните на устройството ви <ph name="DEVICE_TYPE" /> ще бъдат изтрити след 24 часа</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5459,6 +5464,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5895335062901455404">Запазените ви предпочитания и активност ще са достъпни на всяко устройство с ChromeOS Flex, след като влезете в профила си в Google. Можете да изберете какво да се синхронизира от настройките.</translation>
 <translation id="589541317545606110">Търсене в страницата чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Забраняване</translation>
+<translation id="5899860758576822363">Възпроизвеждане с по-ниска сила на звука, когато ChromeVox говори</translation>
 <translation id="5900243355162006650">Конфигурация на тетъринга:</translation>
 <translation id="5900302528761731119">Снимка на потребителския профил в Google</translation>
 <translation id="590036993063074298">Подробности за качеството на дублиране</translation>
@@ -5907,6 +5913,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6301300352769835063">Позволете на Google да използва данните за хардуера ви с цел подобряване на <ph name="DEVICE_OS" />. Ако откажете, данните пак се изпращат до Google, за да се определят подходящите актуализации, но не се съхраняват и не се използват за други цели. Научете повече на адрес g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Предложения за лична информация</translation>
 <translation id="6305607932814307878">Глобално правило:</translation>
+<translation id="6305702903308659374">Възпроизвеждане с нормална сила на звука дори ако ChromeVox говори</translation>
 <translation id="6305909198255586420">Моля, инсталирайте чрез основния си потребителски профил</translation>
 <translation id="630750887748244481">Някой от родителите ви е изключил разрешенията за сайтове, приложения и разширения за Chrome. Добавянето на това разширение е забранено.</translation>
 <translation id="6307990684951724544">Системата е заета</translation>
@@ -7219,6 +7226,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7503191893372251637">Тип на сертификата на Netscape</translation>
 <translation id="7503985202154027481">В ключа ви за сигурност ще се съхрани запис за посещението ви на този сайт.</translation>
 <translation id="750509436279396091">Отваряне на папката за изтегляния</translation>
+<translation id="7505149250476994901">Кажете „Главна буква“ преди буквата</translation>
 <translation id="7505717542095249632">Скриване на <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Тази парола ще се запази на това устройство</translation>
 <translation id="7506130076368211615">Настройване на нова мрежа</translation>
@@ -7305,6 +7313,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7586498138629385861">Браузърът ще продължи да работи, докато приложенията в Chrome са отворени.</translation>
 <translation id="758895749110326677">Помогнете ни да подобрим изживяването от игрите на устройства Chromebook</translation>
 <translation id="7589461650300748890">Не бързайте! Внимавайте.</translation>
+<translation id="7592060599656252486">Някои</translation>
 <translation id="7593653750169415785">Автоматично блокирано, понеже сте отхвърлили известията няколко пъти</translation>
 <translation id="7594725637786616550">Използвайте функцията Powerwash, за да нулирате настройките на устройството си <ph name="DEVICE_TYPE" />, така че да бъде като ново.</translation>
 <translation id="7595453277607160340">За да използвате приложения за Android и устройството ви <ph name="DEVICE_TYPE" /> да работи правилно, влезте отново в профила си и актуализирайте.</translation>
@@ -7789,6 +7798,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8002274832045662704">Разширена конфигурация на принтер</translation>
 <translation id="8002670234429879764">Вече няма достъп до <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Ако паролите ви бъдат компрометирани, ще ви уведомим.</translation>
+<translation id="8004507136466386272">Думи</translation>
 <translation id="8004582292198964060">Браузър</translation>
 <translation id="8005600846065423578">Разрешаване винаги на <ph name="HOST" /> да преглежда буферната памет</translation>
 <translation id="8006630792898017994">Интервал или Tab</translation>
@@ -8312,6 +8322,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8473540203671727883">Изговаряне на текста под курсора на мишката</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
 <translation id="8475313423285172237">Друга програма на компютъра ви добави разширение, което може да промени начина на работа на Chrome.</translation>
+<translation id="8476408756881832830">Поставяне на възпроизвеждането на пауза, когато ChromeVox говори</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Разрешаването на устройства с ChromeOS да изпращат автоматични сигнали ни помага да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в ChromeOS, използваните функции, количеството памет, което обикновено ползвате, и диагностична информация и данни за използването на приложения за Android. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, като например програмистите за Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството с ChromeOS на детето си. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Ако настройката „Активност в мрежата и приложенията“ е включена за профила в Google на детето ви, данните му може да се запазват в профила му в Google. На адрес families.google.com можете да научите повече за тези настройки и как да ги коригирате.<ph name="END_PARAGRAPH4" /></translation>

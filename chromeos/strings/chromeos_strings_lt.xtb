@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Puikus (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2364498172489649528">Pavyko</translation>
+<translation id="2367335866686097760">Klavišų schemų klavišas</translation>
 <translation id="2380886658946992094">Teisinis</translation>
 <translation id="2391082728065870591">Siųsti atsiliepimo ataskaitą</translation>
 <translation id="2407209115954268704">SIM kortelės užrakto būsena</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Pseudoportreto vaizdas pakeistas</translation>
 <translation id="3192947282887913208">Garso įrašų failai</translation>
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
+<translation id="3211671540163313381">Klavišų schemų valdymo pultas</translation>
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
+<translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="3268178239013324452">Nepavyko – atidarytos durelės</translation>
 <translation id="3275506277319227640">Įstatyti <ph name="DIRECTION" /></translation>
@@ -616,6 +619,7 @@
 <translation id="650266656685499220">Jei norite kurti albumus, eikite į „Google“ nuotraukas</translation>
 <translation id="6516990319416533844">Norėdami patikrinti įkrovimo spartą, leiskite akumuliatoriui trumpam laikotarpiui išsikrauti</translation>
 <translation id="6517239166834772319">Explore</translation>
+<translation id="6526200165918397681">Priderinkite prie ekrano fono</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
 <translation id="6535178685492749208">Esate neprisijungę. Atsiliepimas bus išsiųstas vėliau.</translation>
 <translation id="65587193855025101">Plokščiasis</translation>
@@ -802,6 +806,7 @@
 <translation id="8318753676953949627">Vaizdų nėra</translation>
 <translation id="8336739000755212683">Keisti įrenginio paskyros vaizdą</translation>
 <translation id="8347227221149377169">Spausdinimo užduotys</translation>
+<translation id="8351855506390808906">Klavišų schemų lietimo taškas</translation>
 <translation id="8352772353338965963">Pridėkite paskyrą prie kelių paskyrų. Visos paskyros, prie kurių prisijungta, gali būti pasiekiamos be slaptažodžio, todėl ši funkcija turėtų būti naudojama tik su patikimomis paskyromis.</translation>
 <translation id="8364946094152050673">Domenų pavadinimų serveriai tušti</translation>
 <translation id="8372477600026034341">Papildomos prieglobos</translation>
@@ -899,6 +904,7 @@
 <translation id="9138630967333032450">Kairysis antrojo lygio klavišas</translation>
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
 <translation id="9157515863513902090">Įstatyti didesnėje pusėje</translation>
+<translation id="9161276708550942948">tarpo klavišas</translation>
 <translation id="9173638680043580060">Liko mažiau nei minutė</translation>
 <translation id="917720651393141712">Bandyti</translation>
 <translation id="9188992814426075118">Klaviatūra gali automatiškai atitikti ekrano foną</translation>

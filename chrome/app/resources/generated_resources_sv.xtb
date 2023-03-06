@@ -207,6 +207,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="117445914942805388"><ph name="BEGIN_LINK" />Besök inställningarna för synkronisering<ph name="END_LINK" /> om du vill rensa webbinformation från alla synkroniserade enheter och ditt Google-konto.</translation>
 <translation id="1175131936083782305">Administratören har inaktiverat den här funktionen.</translation>
 <translation id="1175364870820465910">Skriv &amp;ut...</translation>
+<translation id="1175914831232945926">Siffror</translation>
 <translation id="1176471985365269981">Får inte redigera filer eller mappar på enheten</translation>
 <translation id="1177863135347784049">Anpassat</translation>
 <translation id="1178581264944972037">Paus</translation>
@@ -561,6 +562,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1493892686965953381">Väntar på <ph name="LOAD_STATE_PARAMETER" /> ...</translation>
 <translation id="1494349716233667318">Webbplatser kan begära tillstånd att använda teckensnitt som har installerats på enheten</translation>
 <translation id="1495677929897281669">Tillbaka till flik</translation>
+<translation id="1498498210836053409">Inaktivera låstangentsläge när du redigerar text (smart låstangentsläge)</translation>
 <translation id="1500297251995790841">Okänd enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Läs mer om Chrome-appar som inte stöds</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>
@@ -569,6 +571,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1504551620756424144">Delade mappar finns i <ph name="BASE_DIR" /> i Windows.</translation>
 <translation id="1505494256539862015">exportera lösenord</translation>
 <translation id="1506061864768559482">Sökmotor</translation>
+<translation id="1506187449813838456">Öka tonhöjden</translation>
 <translation id="1507170440449692343">Den här sidan får inte använda din kamera.</translation>
 <translation id="1507246803636407672">&amp;Kasta</translation>
 <translation id="1509163368529404530">&amp;Återställ grupp</translation>
@@ -899,7 +902,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1778457539567749232">Markera som oläst</translation>
 <translation id="1778991607452011493">Skicka felsökningsloggar (rekommenderas)</translation>
 <translation id="1779441632304440041">Svaga lösenord är lätta att lista ut. Använd alltid starka lösenord.</translation>
-<translation id="1779453062283607806">Jämför sökresultat snabbare från den nya sidopanelen</translation>
 <translation id="1779468444204342338">Minimum</translation>
 <translation id="177989070088644880">App (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Stäng grupp</translation>
@@ -2429,6 +2431,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3088128611727407543">Förbereder appens profil …</translation>
 <translation id="3088325635286126843">&amp;Byt namn ...</translation>
 <translation id="3089137131053189723">Sökningen har rensats</translation>
+<translation id="3090227230165225418">Visa nedladdningsaviseringar</translation>
 <translation id="3090589793601454425">Flytta inte</translation>
 <translation id="3090819949319990166">Det går inte att kopiera den externa CRX-filen till <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> har kopplats</translation>
@@ -3118,6 +3121,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3732530910372558017">Pinkoden får högst innehålla 63 tecken</translation>
 <translation id="3732857534841813090">Relaterad information via Google Assistent</translation>
 <translation id="3733296813637058299">Vi installerar apparna åt dig. Du hittar fler appar för <ph name="DEVICE_TYPE" /> i Play Butik.</translation>
+<translation id="3735039640698208086">Vid ljuduppspelning …</translation>
 <translation id="3735740477244556633">Sortera efter</translation>
 <translation id="3738632186060045350">Data på <ph name="DEVICE_TYPE" /> raderas inom 24 timmar</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5471,6 +5475,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5895335062901455404">När du är inloggad med ditt Google-konto har du tillgång till dina sparade inställningar och din sparade aktivitet på alla ChromeOS Flex-enheter. Du kan välja vad som ska synkroniseras i inställningarna.</translation>
 <translation id="589541317545606110">Sök på sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Tillåt inte</translation>
+<translation id="5899860758576822363">Spela upp på lägre volym när ChromeVox används</translation>
 <translation id="5900243355162006650">Konfiguration för internetdelning:</translation>
 <translation id="5900302528761731119">Profilbild i Google Profiler</translation>
 <translation id="590036993063074298">Information om speglingskvalitet</translation>
@@ -5920,6 +5925,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6301300352769835063">Låt Google använda data om din maskinvara för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt. Läs mer på g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Personuppgiftsförslag</translation>
 <translation id="6305607932814307878">Global policy:</translation>
+<translation id="6305702903308659374">Spela upp på normal volym även när ChromeVox används</translation>
 <translation id="6305909198255586420">Installera med din primära profil</translation>
 <translation id="630750887748244481">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome. Det är inte tillåtet att lägga till det här tillägget.</translation>
 <translation id="6307990684951724544">Systemet är upptaget</translation>
@@ -7232,6 +7238,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7503191893372251637">Certifieringstyp för Netscape</translation>
 <translation id="7503985202154027481">Ditt besök på webbplatsen sparas i säkerhetsnyckeln.</translation>
 <translation id="750509436279396091">Öppna mappen för nedladdningar</translation>
+<translation id="7505149250476994901">Säg ”stort” före bokstaven</translation>
 <translation id="7505717542095249632">Dölj <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Lösenordet sparas på den här enheten</translation>
 <translation id="7506130076368211615">Konfigurera nytt nätverk</translation>
@@ -7318,6 +7325,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7586498138629385861">Chrome fortsätter köras när Chrome-appar är öppna.</translation>
 <translation id="758895749110326677">Hjälp oss att göra Chromebook bättre att spela på</translation>
 <translation id="7589461650300748890">Ta det försiktigt.</translation>
+<translation id="7592060599656252486">Vissa</translation>
 <translation id="7593653750169415785">Aviseringen blockerades automatiskt eftersom du har avvisat aviseringar flera gånger</translation>
 <translation id="7594725637786616550">Gör en Powerwash för att återställa <ph name="DEVICE_TYPE" /> så att den blir som ny.</translation>
 <translation id="7595453277607160340">Logga in igen och uppdatera om du vill använda Android-appar och säkerställa att <ph name="DEVICE_TYPE" /> fungerar korrekt.</translation>
@@ -7802,6 +7810,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8002274832045662704">Avancerad skrivarkonfiguration</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> är inte längre tillgänglig</translation>
 <translation id="8004092996156083991">Vi meddelar dig om dina lösenord är utsatta.</translation>
+<translation id="8004507136466386272">Ord</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8005600846065423578">Ge alltid <ph name="HOST" /> tillgång till Urklipp</translation>
 <translation id="8006630792898017994">Blanksteg eller tabb</translation>
@@ -8325,6 +8334,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8473540203671727883">Läs upp text under muspekaren</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8475313423285172237">Ett annat program i datorn har lagt till ett tillägg som kan ändra hur Chrome fungerar.</translation>
+<translation id="8476408756881832830">Pausa uppspelningen när ChromeVox används</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner som använts, hur mycket minne som brukar användas, diagnostikdata om Android-appar och data om användning. Viss samlad data används även till att förbättra appar från Google och produkter från Googles partner, till exempel Android-utvecklare.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna för barnets ChromeOS-enhet. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Om inställningen Webb- och appaktivitet har aktiverats för ditt barns Google-konto kan barnets data sparas i Google-kontot. Läs mer om inställningarna och hur du ändrar dem på families.google.com.<ph name="END_PARAGRAPH4" /></translation>

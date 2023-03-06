@@ -207,6 +207,7 @@
 <translation id="117445914942805388">अपने सभी सिंक किए हुए डिवाइस और अपने 'Google खाते' से ब्राउज़िंग डेटा साफ़ करने के लिए, <ph name="BEGIN_LINK" />सिंक सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">आपके एडमिन ने इस सुविधा को बंद कर दिया है.</translation>
 <translation id="1175364870820465910">&amp;प्रिंट करें...</translation>
+<translation id="1175914831232945926">अंक</translation>
 <translation id="1176471985365269981">आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति नहीं है</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1178581264944972037">रोकें</translation>
@@ -559,7 +560,9 @@
 <translation id="1487335504823219454">चालू - कस्टम सेटिंग</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> की प्रतीक्षा कर रहा है...</translation>
 <translation id="1494349716233667318">साइटें आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने की अनुमति मांग सकती हैं</translation>
+<translation id="1494429729245089920">वर्चुअल मशीन "<ph name="VM_NAME" />" मौजूद है, लेकिन यह मान्य <ph name="APP_NAME" /> वर्चुअल मशीन नहीं लगती. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
+<translation id="1498498210836053409">टेक्स्ट में बदलाव करते समय स्टिकी मोड को बंद कर दें (स्मार्ट स्टिकी मोड)</translation>
 <translation id="1500297251995790841">अज्ञात डिवाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ऐसे 'Chrome ऐप्स' के बारे में ज़्यादा जानें जो अब उपलब्ध नहीं हैं</translation>
 <translation id="1501480321619201731">समूह मिटाएं</translation>
@@ -568,6 +571,7 @@
 <translation id="1504551620756424144">शेयर किए गए फ़ोल्डर, Windows में <ph name="BASE_DIR" /> पर उपलब्ध हैं.</translation>
 <translation id="1505494256539862015">पासवर्ड एक्सपोर्ट करना</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
+<translation id="1506187449813838456">पिच बढ़ाएं</translation>
 <translation id="1507170440449692343">इस पेज को आपका कैमरा ऐक्सेस करने से अवरोधित कर दिया गया है.</translation>
 <translation id="1507246803636407672">&amp;छोड़ें</translation>
 <translation id="1509163368529404530">&amp;ग्रुप को पहले जैसा करना</translation>
@@ -897,7 +901,6 @@
 <translation id="1778457539567749232">'नहीं पढ़ा गया' का निशान लगाएं</translation>
 <translation id="1778991607452011493">डीबग लॉग भेजें (सुझाया गया)</translation>
 <translation id="1779441632304440041">कमज़ोर पासवर्ड आसानी से क्रैक किए जा सकते हैं. यह पक्का करें कि आपने मज़बूत पासवर्ड बनाए हों.</translation>
-<translation id="1779453062283607806">नए साइड पैनल की मदद से, खोज के नतीजों की तुलना ज़्यादा तेज़ी से करें</translation>
 <translation id="1779468444204342338">कम से कम</translation>
 <translation id="177989070088644880">ऐप्लिकेशन (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">ग्रुप बंद करें</translation>
@@ -2426,6 +2429,7 @@
 <translation id="3088128611727407543">ऐप्लिकेशन की प्रोफ़ाइल तैयार हो रही है...</translation>
 <translation id="3088325635286126843">&amp;नाम बदलें...</translation>
 <translation id="3089137131053189723">खोज हटाई गई</translation>
+<translation id="3090227230165225418">डाउनलोड सूचनाओं का एलान करें</translation>
 <translation id="3090589793601454425">Google खाते में न ले जाएं</translation>
 <translation id="3090819949319990166">बाहरी crx फ़ाइल की <ph name="TEMP_CRX_FILE" /> में कॉपी नहीं बनाई जा सकती.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" युग्मित किया गया</translation>
@@ -3113,6 +3117,7 @@
 <translation id="3732530910372558017">पिन में ज़्यादा से ज़्यादा 63 वर्ण हो सकते हैं</translation>
 <translation id="3732857534841813090">Google Assistant से जुड़ी जानकारी</translation>
 <translation id="3733296813637058299">हम आपके लिए वे ऐप्लिकेशन इंस्टॉल कर देंगे. आप 'Play Store' में जाकर, अपने <ph name="DEVICE_TYPE" /> के लिए और भी ऐप्लिकेशन डाउनलोड कर सकते हैं.</translation>
+<translation id="3735039640698208086">ऑडियो चलाते समय...</translation>
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> का डेटा 24 घंटे में मिटा दिया जाएगा</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -3180,6 +3185,7 @@
 <translation id="3790417903123637354">कोई गड़बड़ी हुई. बाद में कोशिश करें</translation>
 <translation id="379082410132524484">आपके कार्ड की समय-सीमा खत्म हो गई है</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> एक्सटेंशन</translation>
+<translation id="3794792524918736965">Windows Hello चालू करें</translation>
 <translation id="379500251094592809">आस-पास शेयर करने की सुविधा का इस्तेमाल करने के लिए, पक्का करें कि दोनों डिवाइस को अनलॉक किया गया हो और ये एक-दूसरे के पास रखे हों. साथ ही, उन पर ब्लूटूथ चालू हो. अगर आप किसी ऐसे Chromebook के साथ फ़ाइलें शेयर कर रहे हैं जो आपके संपर्क में नहीं है, तो पक्का करें कि उसमें 'आस-पास के डिवाइस को दिखे' सुविधा चालू हो (समय चुनकर, स्टेटस एरिया खोलें और फिर 'आस-पास के डिवाइस को दिखे' सुविधा चालू करें). <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">बंद है</translation>
 <translation id="3795766489237825963">ऐनिमेशन चलाएं</translation>
@@ -5461,6 +5467,7 @@
 <translation id="5895335062901455404">अपने Google खाते से साइन इन करने पर, आपकी सेव की गई सेटिंग और गतिविधि को किसी भी ChromeOS Flex वाले डिवाइस से ऐक्सेस किया जा सकेगा. सेटिंग में जाकर वे चीज़ें चुनी जा सकती हैं जिन्हें सिंक करना है.</translation>
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज खोजें</translation>
 <translation id="5896436821193322561">अनुमति न दें</translation>
+<translation id="5899860758576822363">जब ChromeVox बोल रहा हो, तब कम वॉल्यूम में चलाएं</translation>
 <translation id="5900243355162006650">टेदरिंग कॉन्फ़िगरेशन:</translation>
 <translation id="5900302528761731119">Google प्रोफ़ाइल फ़ोटो</translation>
 <translation id="590036993063074298">स्क्रीन शेयर करने की सुविधा की क्वालिटी के बारे में जानकारी</translation>
@@ -5909,6 +5916,7 @@
 <translation id="6301300352769835063"><ph name="DEVICE_OS" /> को बेहतर बनाने के लिए, Google को अपने हार्डवेयर का डेटा इस्तेमाल करने की अनुमति दें. आपकी अनुमति न मिलने पर भी Google को यह डेटा भेजा जाता है, ताकि आपके डिवाइस के हिसाब से सही अपडेट डिलीवर किए जा सकें. हालांकि, इस डेटा को न तो स्टोर किया जाता है और न ही इसे किसी और काम के लिए इस्तेमाल किया जाता है. ज़्यादा जानने के लिए, g.co/flex/HWDataCollection पर जाएं.</translation>
 <translation id="630292539633944562">निजी जानकारी के सुझाव</translation>
 <translation id="6305607932814307878">वैश्विक नीति:</translation>
+<translation id="6305702903308659374">ChromeVox के बोल रहे होने पर भी, सामान्य वॉल्यूम में ही चलाएं</translation>
 <translation id="6305909198255586420">कृपया अपनी मुख्य प्रोफ़ाइल का इस्तेमाल करके इंस्टॉल करें</translation>
 <translation id="630750887748244481">आपके माता-पिता ने Chrome के लिए, "साइटों, ऐप्लिकेशन, और एक्सटेंशन के लिए अनुमतियां" बंद कर दी हैं. इस एक्सटेंशन को जोड़ने की अनुमति नहीं है.</translation>
 <translation id="6307990684951724544">सिस्‍टम व्‍यस्‍त है</translation>
@@ -6438,6 +6446,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> को दूरस्थ रूप से जोड़ा गया है</translation>
 <translation id="6790820461102226165">व्‍यक्ति जोड़ें...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="679486139907144816">पासकी से इस साइट में साइन इन करने के लिए, सेटिंग में जाकर Windows Hello को चालू करें. इसके बाद, इस साइट पर वापस आकर फिर से कोशिश करें.</translation>
 <translation id="6795371939514004514">अपने-आप स्कैन होने की सुविधा, आपको स्क्रीन पर दिए अलग-अलग आइटम पर अपने-आप जाने देती है. जब किसी आइटम को हाइलाइट किया गया हो, तो इसे चालू करने के लिए, “चुनें” को दबाएं.</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6796509790850723820">ग्राफ़ बनाएं</translation>
@@ -7223,6 +7232,7 @@
 <translation id="7503191893372251637">Netscape प्रमाणपत्र प्रकार</translation>
 <translation id="7503985202154027481">आपके इस साइट पर आने का रिकॉर्ड आपकी सुरक्षा कुंजी पर रह जाएगा.</translation>
 <translation id="750509436279396091">डाउनलोड फ़ोल्‍डर खोलें</translation>
+<translation id="7505149250476994901">अक्षर से पहले "बड़ा" कहें</translation>
 <translation id="7505717542095249632"><ph name="MERCHANT" /> छिपाएं</translation>
 <translation id="7506093026325926984">यह पासवर्ड इस डिवाइस में सेव किया जाएगा</translation>
 <translation id="7506130076368211615">नया नेटवर्क सेट अप करें</translation>
@@ -7309,6 +7319,7 @@
 <translation id="7586498138629385861">Chrome Apps के खुले होने पर Chrome चलता रहेगा.</translation>
 <translation id="758895749110326677">Chromebook पर गेमिंग को बेहतर बनाने में मदद करें</translation>
 <translation id="7589461650300748890">अरे, सुनिए. सतर्क रहें.</translation>
+<translation id="7592060599656252486">कुछ</translation>
 <translation id="7593653750169415785">आपने कुछ सूचनाओं को अस्वीकार कर दिया, इसलिए यह अपने आप ब्लॉक हो गया है</translation>
 <translation id="7594725637786616550">पावरवॉश आपके <ph name="DEVICE_TYPE" /> को बिलकुल नए जैसा रीसेट कर देगा.</translation>
 <translation id="7595453277607160340">Android ऐप्लिकेशन का इस्तेमाल करने और आपका <ph name="DEVICE_TYPE" /> ठीक से काम करता रहे, इसके लिए फिर से साइन इन करें और अपडेट करें.</translation>
@@ -7792,6 +7803,7 @@
 <translation id="8002274832045662704">प्रिंटर के लिए बेहतर सेटिंग तय करें</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> अब उपलब्ध नहीं है</translation>
 <translation id="8004092996156083991">अगर आपके पासवर्ड हैक हुए हैं या चोरी हुए हैं, तो हम आपको इसकी जानकारी देंगे.</translation>
+<translation id="8004507136466386272">शब्द</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> को हमेशा क्‍लिपबोर्ड देखने दें</translation>
 <translation id="8006630792898017994">Space या Tab</translation>
@@ -8315,6 +8327,7 @@
 <translation id="8473540203671727883">माउस के नीचे वाला टेक्स्ट बोलें</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8475313423285172237">आपके कंप्यूटर पर किसी अन्य प्रोग्राम ने एक्सटेंशन जोड़ा है, जो Chrome के काम करने के तरीके को बदल सकता है.</translation>
+<translation id="8476408756881832830">जब ChromeVox बोल रहा हो, तब प्लेबैक रोकें</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS डिवाइसों पर, अपने-आप रिपोर्ट भेजने की सुविधा चालू करने से, हमें यह समझने में मदद मिलती है कि ChromeOS की किन गड़बड़ियों को सबसे पहले ठीक करना है और किन चीज़ों को बेहतर बनाना है. इन रिपोर्ट में बहुत सी जानकारी शामिल हो सकती है. जैसे, ChromeOS कब बंद होता है, इसकी कौनसी सुविधाओं का इस्तेमाल किया जाता है, और आम तौर पर कितनी मेमोरी इस्तेमाल होती है. साथ ही, इसमें Android ऐप्लिकेशन की परफ़ॉर्मेंस से जुड़ी जानकारी और उसके इस्तेमाल के बारे में डेटा शामिल होता है. इकट्ठा किए गए कुल डेटा से, Google के ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपर को भी मदद मिलेगी.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />बच्चे के ChromeOS डिवाइस की सेटिंग में जाकर, अपने-आप रिपोर्ट भेजने की इस सुविधा को किसी भी समय चालू या बंद किया जा सकता है. डोमेन एडमिन, Admin console में जाकर इस सेटिंग को बदल सकता है.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />अगर आपके बच्चे के Google खाते की वेब और ऐप्लिकेशन गतिविधि से जुड़ी सेटिंग चालू है, तो उसके डिवाइस का डेटा उसके Google खाते में सेव हो सकता है. इन सेटिंग और इन्हें अपने हिसाब से सेट करने के तरीके के बारे में ज़्यादा जानने के लिए, families.google.com पर जाएं.<ph name="END_PARAGRAPH4" /></translation>
@@ -8355,6 +8368,7 @@
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
 <translation id="8514746246728959655">कोई दूसरी सुरक्षा कुंजी आज़माकर देखें</translation>
 <translation id="8514955299594277296">साइटों को अपने डिवाइस पर डेटा सेव करने की अनुमति न दें. हालांकि, हम इसका सुझाव नहीं देते</translation>
+<translation id="8517759303731677493">बदलाव करें…</translation>
 <translation id="8519895319663397036">पासवर्ड इंपोर्ट नहीं किए जा सके. फ़ाइल का साइज़ 150 केबी से कम होना चाहिए.</translation>
 <translation id="8523493869875972733">बदलावों को बनाए रखें</translation>
 <translation id="8523849605371521713">पॉलिसी द्वारा जोड़ा गया</translation>

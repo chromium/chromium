@@ -261,6 +261,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6010556343189461180">Para makakuha ng mga update sa Google Chrome sa hinaharap, mangangailangan ka ng macOS 10.15 o mas bago. Gumagamit ang computer na ito ng macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Magsasara na ngayon ang Chrome.}=1{Magsasara ang Chrome sa loob ng 1 segundo.}one{Magsasara ang Chrome sa loob ng # segundo.}other{Magsasara ang Chrome sa loob ng # na segundo.}}</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
+<translation id="6025087594896450715">Magre-restart ang Google Chrome sa <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6070348360322141662">Para sa karagdagang seguridad, ie-encrypt ng Google Chrome ang iyong data</translation>
 <translation id="608006075545470555">Magdagdag ng Profile sa Trabaho sa browser na ito</translation>

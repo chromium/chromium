@@ -207,6 +207,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="117445914942805388">I glirio'r data pori o'ch holl ddyfeisiau sy'n cael eu cysoni a'ch Cyfrif Google, <ph name="BEGIN_LINK" />ewch i'r gosodiadau cysoni<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Mae eich gweinyddwr wedi analluogi'r nodwedd hon.</translation>
 <translation id="1175364870820465910">&amp;Argraffu...</translation>
+<translation id="1175914831232945926">Digidau</translation>
 <translation id="1176471985365269981">Ni chaniateir golygu ffeiliau na ffolderi ar eich dyfais</translation>
 <translation id="1177863135347784049">Personol</translation>
 <translation id="1178581264944972037">Seibio</translation>
@@ -563,6 +564,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1493892686965953381">Wrthi'n aros am <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Gall gwefannau ofyn am ddefnyddio ffontiau sydd wedi'u gosod ar eich dyfais</translation>
 <translation id="1495677929897281669">Yn ôl i'r tab</translation>
+<translation id="1498498210836053409">Diffodd y modd gludiog wrth olygu testun (Modd Gludiog Smart)</translation>
 <translation id="1500297251995790841">Dyfais anhysbys [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Dysgu rhagor am apiau Chrome sydd heb eu cefnogi</translation>
 <translation id="1501480321619201731">Dileu grŵp</translation>
@@ -571,6 +573,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1504551620756424144">Mae ffolderi cyffredin ar gael yn Windows yn <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">allforio cyfrineiriau</translation>
 <translation id="1506061864768559482">Peiriant chwilio</translation>
+<translation id="1506187449813838456">Cynyddu traw</translation>
 <translation id="1507170440449692343">Mae'r dudalen hon wedi'i rhwystro rhag cael mynediad at eich camera.</translation>
 <translation id="1507246803636407672">&amp;Gwaredu</translation>
 <translation id="1509163368529404530">&amp;Adfer y grŵp</translation>
@@ -899,7 +902,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1778457539567749232">Marcio ei fod heb ei ddarllen</translation>
 <translation id="1778991607452011493">Anfon logiau dadfygio (argymhellir)</translation>
 <translation id="1779441632304440041">Mae'n hawdd dyfalu cyfrineiriau gwan. Gwnewch yn siŵr eich bod yn creu cyfrineiriau cryf.</translation>
-<translation id="1779453062283607806">Cymharu canlyniadau chwilio yn gyflymach o'r panel ochr newydd</translation>
 <translation id="1779468444204342338">Lleiafswm</translation>
 <translation id="177989070088644880">Ap (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Cau'r Grŵp</translation>
@@ -2428,6 +2430,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3088128611727407543">Wrthi'n paratoi proffil ap...</translation>
 <translation id="3088325635286126843">&amp;Ailenwi...</translation>
 <translation id="3089137131053189723">Mae'r chwiliad wedi'i glirio</translation>
+<translation id="3090227230165225418">Cyhoeddi hysbysiadau lawrlwytho</translation>
 <translation id="3090589793601454425">Peidio â symud</translation>
 <translation id="3090819949319990166">Methu â chopïo ffeil crx allanol i <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" wedi'i baru</translation>
@@ -3115,6 +3118,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3732530910372558017">Rhaid i'r PIN fod yn 63 nod ar y mwyaf</translation>
 <translation id="3732857534841813090">Gwybodaeth sy'n ymwneud â Google Assistant</translation>
 <translation id="3733296813637058299">Byddwn yn gosod yr apiau hynny i chi. Gallwch ddod o hyd i ragor o apiau ar gyfer eich <ph name="DEVICE_TYPE" /> yn Play Store.</translation>
+<translation id="3735039640698208086">Wrth chwarae sain...</translation>
 <translation id="3735740477244556633">Trefnu yn ôl</translation>
 <translation id="3738632186060045350">Bydd data <ph name="DEVICE_TYPE" /> yn cael eu dileu mewn 24 awr</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5462,6 +5466,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5895335062901455404">Bydd eich dewisiadau a'ch gweithgarwch sydd wedi'u cadw yn barod ar unrhyw ddyfais ChromeOS Flex pan fyddwch yn mewngofnodi i'ch Cyfrif Google. Gallwch ddewis beth i'w gysoni yn y Gosodiadau.</translation>
 <translation id="589541317545606110">Chwilio Tudalen gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Peidio â Chaniatáu</translation>
+<translation id="5899860758576822363">Chwarae ar lefel sain is pan mae ChromeVox yn siarad</translation>
 <translation id="5900243355162006650">Ffurfweddiad Rhannu Cysylltiad:</translation>
 <translation id="5900302528761731119">Llun proffil Google</translation>
 <translation id="590036993063074298">Manylion Ansawdd Adlewyrchu</translation>
@@ -5910,6 +5915,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6301300352769835063">Gadael i Google ddefnyddio eich data caledwedd i helpu gwella <ph name="DEVICE_OS" /> Os ydych yn gwrthod, bydd y data yn parhau i gael ei anfon at Google i benderfynu ar ddiweddariadau cywir, ond nid yw'n cael ei storio na'i ddefnyddio fel arall. Dysgu rhagor yn g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Awgrymiadau gwybodaeth bersonol</translation>
 <translation id="6305607932814307878">Polisi Cyffredinol:</translation>
+<translation id="6305702903308659374">Chwarae ar lefel sain arferol hyd yn oed os yw ChromeVox yn siarad</translation>
 <translation id="6305909198255586420">Gosodwch gan ddefnyddio'ch prif broffil</translation>
 <translation id="630750887748244481">Mae dy riant wedi diffodd "Caniatâd ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chrome. Ni chaniateir ychwanegu'r estyniad hwn.</translation>
 <translation id="6307990684951724544">Mae'r system yn brysur</translation>
@@ -7230,6 +7236,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7503191893372251637">Math o Dystysgrif Netscape</translation>
 <translation id="7503985202154027481">Bydd cofnod o'ch ymweliad â'r wefan hon yn cael ei gadw ar eich allwedd ddiogelwch.</translation>
 <translation id="750509436279396091">Agor y ffolder lawrlwythiadau</translation>
+<translation id="7505149250476994901">Dywedwch "cap" cyn y llythyren</translation>
 <translation id="7505717542095249632">Cuddio <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Bydd y cyfrinair hwn yn cael ei gadw ar y ddyfais hon</translation>
 <translation id="7506130076368211615">Gosod rhwydwaith newydd</translation>
@@ -7316,6 +7323,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7586498138629385861">Bydd Chrome yn parhau i redeg tra bod Apiau Chrome ar agor.</translation>
 <translation id="758895749110326677">Helpwch ni i wella chwarae gemau ar Chromebooks</translation>
 <translation id="7589461650300748890">Daliwch sownd. Byddwch yn ofalus.</translation>
+<translation id="7592060599656252486">Rhai</translation>
 <translation id="7593653750169415785">Rhwystrwyd yn awtomatig oherwydd i chi wrthod hysbysiadau ychydig o weithiau</translation>
 <translation id="7594725637786616550">Defnyddiwch Powerwash i ailosod eich <ph name="DEVICE_TYPE" /> i fod yn union fel newydd.</translation>
 <translation id="7595453277607160340">I ddefnyddio apiau Android ac i gadw'ch <ph name="DEVICE_TYPE" /> yn gweithio'n iawn, mewngofnodwch eto a diweddarwch.</translation>
@@ -7800,6 +7808,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8002274832045662704">Ffurfweddiad argraffydd uwch</translation>
 <translation id="8002670234429879764">Nid yw <ph name="PRINTER_NAME" /> ar gael mwyach</translation>
 <translation id="8004092996156083991">Os yw eich cyfrineiriau wedi'u darganfod, byddwn yn rhoi gwybod i chi.</translation>
+<translation id="8004507136466386272">Geiriau</translation>
 <translation id="8004582292198964060">Porwr</translation>
 <translation id="8005600846065423578">Gadewch i <ph name="HOST" /> weld y clipfwrdd bob amser</translation>
 <translation id="8006630792898017994">Space neu Tab</translation>
@@ -8322,6 +8331,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8473540203671727883">Adrodd testun sydd o dan y llygoden</translation>
 <translation id="8473863474539038330">Cyfeiriadau a rhagor</translation>
 <translation id="8475313423285172237">Ychwanegodd rhaglen arall ar eich cyfrifiadur estyniad a allai newid y ffordd y mae Chrome yn gweithio.</translation>
+<translation id="8476408756881832830">Seibio'r chwarae pan mae ChromeVox yn siarad</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i ddyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fydd ChromeOS yn torri, pa nodweddion a ddefnyddiwyd, faint o gof a ddefnyddiwyd yn nodweddiadol, a data diagnostig a defnydd ap Android. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw bryd yng ngosodiadau dyfais ChromeOS eich plentyn. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Os yw'r gosodiad Gweithgarwch ar y We ac Apiau wedi'i droi ymlaen ar gyfer Cyfrif Google eich plentyn, gellir cadw data eich plentyn i'w Gyfrif Google. Gellir dysgu rhagor am y gosodiadau hyn a sut i'w haddasu yn family.google.com.<ph name="END_PARAGRAPH4" /></translation>

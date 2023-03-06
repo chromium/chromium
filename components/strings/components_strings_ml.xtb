@@ -345,6 +345,7 @@
 <translation id="1733064249834771892">ഫോണ്ടുകൾ</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">സിസ്റ്റം അഡ്‌മിനെ ബന്ധപ്പെടാൻ ശ്രമിക്കുക.</translation>
+<translation id="1736158756193183352">നെറ്റ്‌വർക്കിലേക്ക് <ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">കമ്പ്യൂട്ടർ</translation>
 <translation id="1740951997222943430">കാലഹരണപ്പെടുന്ന ശരിയായ മാസം നല്‍കുക</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode, <ph name="SECURE_DNS_MODE_SECURE" /> ആയിരിക്കുമ്പോൾ അക്കാര്യം വ്യക്തമാക്കിയിരിക്കണം, കൂടാതെ സാധുവായ സ്ട്രിംഗ് ആയിരിക്കുകയും വേണം.</translation>
@@ -1191,6 +1192,7 @@
 <translation id="3949601375789751990">നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">സംരക്ഷിച്ച പേയ്‌മെൻ്റ് രീതികളൊന്നുമില്ല</translation>
+<translation id="3950574001630941635">ട്യൂട്ടോറിയൽ റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="3950820424414687140">സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3958057596965527988">4 x 4 ഇഞ്ച്</translation>
 <translation id="3961148744525529027">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ് പകുതിയായി തുറന്നിരിക്കുന്നു</translation>

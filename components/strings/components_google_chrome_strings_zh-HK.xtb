@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">前往
           [應用程式] &gt; [系統偏好設定] &gt; [網絡] &gt; [進階] &gt; [Proxy]
           然後取消剔選所有已選取的 Proxy。</translation>
+<translation id="8232971017369963250">Chrome 得以面世，有賴 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼項目。</translation>
+<translation id="8279509328145658601">Chrome 的開發亦有賴其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟件<ph name="END_LINK_OSS" />。</translation>
 </translationbundle>

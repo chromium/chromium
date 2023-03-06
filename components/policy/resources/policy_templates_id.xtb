@@ -5992,6 +5992,13 @@ mengetahui detail tambahan.</translation>
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="6640748114867542396">Jangan izinkan ekstensi terkelola menggunakan Enterprise Hardware Platform API</translation>
 <translation id="6641981670621198190">Nonaktifkan dukungan untuk API grafis 3D</translation>
+<translation id="6644480111811011438">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama.
+
+                  Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
+
+                  Jika kebijakan ini disetel ke Nonaktif, fitur Set Pihak Pertama akan dinonaktifkan.
+
+                  Kebijakan ini mengontrol apakah Chrome akan mendukung integrasi terkait Set Pihak Pertama.</translation>
 <translation id="6646912445796087001">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual. Kebijakan ini hanya berlaku jika kebijakan "VirtualKeyboardEnabled" diaktifkan.
 
       Jika satu fitur dalam kebijakan ini disetel ke Benar (True), fitur tersebut akan diaktifkan di keyboard virtual.
@@ -7472,6 +7479,29 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_ENABLE
 <translation id="8020222525161221827">Aktifkan Desk API untuk kontrol ChromeOS pihak ketiga</translation>
 <translation id="802147957407376460">Putar layar sebesar 0 derajat</translation>
 <translation id="8021777486638359878">Anggap pengguna sebagai tidak ada aktivitas saat audio diputar</translation>
+<translation id="8022909529579794519">Setelan ini mengonfigurasi browser <ph name="LACROS_NAME" /> yang akan digunakan.
+
+Jika kebijakan ini disetel ke <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />, pengguna dapat menentukan browser <ph name="LACROS_NAME" /> yang akan dimuat: biner dari partisi <ph name="LACROS_ROOTFS_NAME" /> atau <ph name="LACROS_STATEFUL_NAME" />.
+Jika pengguna belum menetapkan preferensi apa pun, biner dengan versi terbaru akan dipilih.
+
+Jika kebijakan ini disetel ke <ph name="LACROS_SELECTION_ROOTFS_VALUE" />, selalu muat biner <ph name="LACROS_ROOTFS_NAME" /> dari browser <ph name="LACROS_NAME" />.
+
+Jika kebijakan ini tidak disetel, setelan defaultnya adalah <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> untuk pengguna yang dikelola perusahaan dan <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> untuk non-pengguna terkelola.
+
+Perlu diketahui bahwa mengubah nilai kebijakan dapat menyebabkan
+hilangnya data browser <ph name="LACROS_NAME" /> jika versi browser
+yang diubah lebih lama daripada versi saat ini. Misalnya, jika
+kebijakan berubah dari versi <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />
+menjadi <ph name="LACROS_SELECTION_ROOTFS_VALUE" />, dan versi yang pertama
+diupdate. Atau, jika <ph name="PRODUCT_OS_NAME" />
+diupdate bersama browser <ph name="LACROS_NAME" /> versi
+<ph name="LACROS_ROOTFS_NAME" />, dan
+<ph name="LACROS_STATEFUL_NAME" /> belum diupdate.
+Dalam skenario seperti ini, migrasi data yang benar tidak dijamin.
+
+Menggunakan <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> atau <ph name="LACROS_SELECTION_ROOTFS_VALUE" />
+adalah opsi yang aman. Beralih dari <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> ke <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />
+juga aman.</translation>
 <translation id="80243978433618492">Jangan izinkan pemfilteran parameter URL apa pun.</translation>
 <translation id="8025620823136567878">Pintasan keyboard internasional dipetakan ke lokasi tombolnya di keyboard, bukan glyph tombol.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -8107,6 +8137,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
 <translation id="859579553230883285">Nonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> untuk pengguna Anda.</translation>
+<translation id="8597758693275075382">String OEM SMBIOS yang akan diteruskan ke VM selama penginstalan. Default-nya adalah daftar kosong.</translation>
 <translation id="8598786284856179541">Aktifkan pelaporan informasi versi</translation>
 <translation id="859937827887158048">Jangan izinkan download update otomatis peer to peer</translation>
 <translation id="8603454805657060638">Menyetel kebijakan memungkinkan administrator mengubah alamat MAC (kontrol akses media) saat menghubungkan perangkat ke dok. Jika dok dihubungkan ke beberapa model perangkat, alamat MAC dok yang ditetapkan untuk perangkat akan membantu mengidentifikasi perangkat di Ethernet secara default.

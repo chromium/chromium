@@ -34,4 +34,6 @@ Se il problema non si risolve, dovresti riselezionare questa opzione per ottener
 <translation id="8187289872471304532">Seleziona
           Applicazioni &gt; Preferenze di Sistema &gt; Network &gt; Avanzate &gt; Proxy
           e deseleziona i proxy selezionati.</translation>
+<translation id="8232971017369963250">La realizzazione di Chrome è stata possibile grazie al progetto open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">La realizzazione di Chrome è stata possibile anche grazie ad altri <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

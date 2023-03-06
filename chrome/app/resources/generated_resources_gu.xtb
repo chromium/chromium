@@ -205,6 +205,7 @@
 <translation id="117445914942805388">તમારા બધા સિંક કરેલા ડિવાઇસ અને તમારા Google એકાઉન્ટમાંથી બ્રાઉઝિંગ ડેટા સાફ કરવા માટે, <ph name="BEGIN_LINK" />સિંક સેટિંગની મુલાકાત લો<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">તમારા ઍડમિનિસ્ટ્રેટરે આ સુવિધા બંધ કરી છે.</translation>
 <translation id="1175364870820465910">&amp;છાપો...</translation>
+<translation id="1175914831232945926">અંકો</translation>
 <translation id="1176471985365269981">તમારા ડિવાઇસમાંની ફાઇલોમાં કે ફોલ્ડરોમાં ફેરફાર કરવાની મંજૂરી નથી</translation>
 <translation id="1177863135347784049">કસ્ટમ</translation>
 <translation id="1178581264944972037">થોભો</translation>
@@ -557,6 +558,7 @@
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> માટે પ્રતીક્ષારત...</translation>
 <translation id="1494349716233667318">સાઇટ તમારા ડિવાઇસમાં ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="1495677929897281669">ટૅબ પર પાછા જાઓ</translation>
+<translation id="1498498210836053409">ટેક્સ્ટમાં ફેરફાર કરતી વખતે સ્ટીકી મોડ બંધ કરો (સ્માર્ટ સ્ટીકી મોડ)</translation>
 <translation id="1500297251995790841">અજાણ્યું ઉપકરણ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">સપોર્ટ ન કરવામાં આવતી Chrome ઍપ વિશે જાણો</translation>
 <translation id="1501480321619201731">જૂથ ડિલીટ કરો</translation>
@@ -565,6 +567,7 @@
 <translation id="1504551620756424144">શેર કરેલા ફોલ્ડરો Windowsમાં <ph name="BASE_DIR" />પર ઉપલબ્ધ હોય છે.</translation>
 <translation id="1505494256539862015">બધા પાસવર્ડની નિકાસ કરો</translation>
 <translation id="1506061864768559482">શોધ એન્જિન</translation>
+<translation id="1506187449813838456">પિચ વધારો</translation>
 <translation id="1507170440449692343">આ પેજને તમારા કૅમેરાને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવ્યું છે.</translation>
 <translation id="1507246803636407672">&amp;છોડી દો</translation>
 <translation id="1509163368529404530">&amp;ગ્રૂપ રિસ્ટોર કરો</translation>
@@ -882,7 +885,6 @@
 <translation id="1778457539567749232">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="1778991607452011493">ડીબગ લૉગ મોકલો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="1779441632304440041">નબળા પાસવર્ડ અનુમાન કરવામાં સરળ હોય છે. તમે સશક્ત પાસવર્ડ બનાવવાની ખાતરી કરો.</translation>
-<translation id="1779453062283607806">બાજુની નવી પૅનલમાંથી શોધ પરિણામોની વધુ ઝડપથી સરખામણી કરો</translation>
 <translation id="1779468444204342338">ઓછામાં ઓછું</translation>
 <translation id="177989070088644880">ઍપ (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">ગ્રૂપ બંધ કરો</translation>
@@ -2408,6 +2410,7 @@
 <translation id="3088128611727407543">ઍપ પ્રોફાઇલ તૈયાર કરી રહ્યાં છીએ...</translation>
 <translation id="3088325635286126843">&amp;નામ બદલો...</translation>
 <translation id="3089137131053189723">શોધ સાફ કરી</translation>
+<translation id="3090227230165225418">ડાઉનલોડ નોટિફિકેશનની ઘોષણા કરો</translation>
 <translation id="3090589793601454425">ખસેડશો નહીં</translation>
 <translation id="3090819949319990166">બાહ્ય crx ફાઇલને <ph name="TEMP_CRX_FILE" /> પર કૉપિ કરી શકતાં નથી.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />"થી જોડી બનાવી</translation>
@@ -3095,6 +3098,7 @@
 <translation id="3732530910372558017">પિનમાં વધુમા વધુ 63 અક્ષર હોવા જોઈએ</translation>
 <translation id="3732857534841813090">Google Assistant સંબંધિત માહિતી</translation>
 <translation id="3733296813637058299">અમે તમારા માટે તે ઍપ ઇન્સ્ટૉલ કરીશું. તમે Play સ્ટોરમાં તમારા <ph name="DEVICE_TYPE" /> માટે વધુ ઍપ શોધી શકો છો.</translation>
+<translation id="3735039640698208086">ઑડિઓ ચલાવતી વખતે...</translation>
 <translation id="3735740477244556633">આ પ્રમાણે સૉર્ટ કરો</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />નો ડેટા 24 કલાકમાં ડિલીટ કરવામાં આવશે</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5444,6 +5448,7 @@
 <translation id="5895335062901455404">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરશો, ત્યારે કોઈપણ ChromeOS Flex ડિવાઇસ પર તમારી પસંદગીઓ અને પ્રવૃત્તિ તૈયાર થઈ જશે. શું સિંક કરવું, તે તમે સેટિંગમાં જઈને પસંદ કરી શકો છો.</translation>
 <translation id="589541317545606110"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે પેજ શોધો</translation>
 <translation id="5896436821193322561">મંજૂરી આપશો નહીં</translation>
+<translation id="5899860758576822363">ChromeVox બોલી રહ્યું હોય ત્યારે ઓછા અવાજે ચલાવો</translation>
 <translation id="5900243355162006650">ઇન્ટરનેટ શેર કરવાની સુવિધાનું કન્ફિગ્યુરેશન:</translation>
 <translation id="5900302528761731119">Google પ્રોફાઇલ ફોટો</translation>
 <translation id="590036993063074298">મીરરીંગ ક્વૉલિટીની વિગતો</translation>
@@ -5893,6 +5898,7 @@ USB ડિવાઇસ</translation>
 <translation id="6301300352769835063"><ph name="DEVICE_OS" />ને બહેતર બનાવવામાં સહાય કરવા માટે, Googleને તમારા હાર્ડવેર ડેટાનો ઉપયોગ કરવા દો. જો તમે નકારશો, તો પણ આ ડેટા યોગ્ય અપડેટ નક્કી કરવા માટે Googleને મોકલવામાં આવે છે, પરંતુ ન તો તેને સ્ટોર કરવામાં આવે છે કે ન તો તેનો અન્યથા ઉપયોગ કરવામાં આવે છે. g.co/flex/HWDataCollection પર વધુ જાણો.</translation>
 <translation id="630292539633944562">વ્યક્તિગત માહિતીના સૂચનો</translation>
 <translation id="6305607932814307878">વૈશ્વિક પૉલિસી:</translation>
+<translation id="6305702903308659374">ChromeVox બોલી રહ્યું હોય ત્યારે પણ સામાન્ય અવાજે ચલાવો</translation>
 <translation id="6305909198255586420">કૃપા કરીને તમારી પ્રાથમિક પ્રોફાઇલનો ઉપયોગ કરીને ઇન્સ્ટૉલ કરો</translation>
 <translation id="630750887748244481">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ એક્સ્ટેન્શન ઉમેરવાની મંજૂરી નથી.</translation>
 <translation id="6307990684951724544">સિસ્ટમ વ્યસ્ત છે</translation>
@@ -7207,6 +7213,7 @@ USB ડિવાઇસ</translation>
 <translation id="7503191893372251637">નેટસ્કેપ પ્રમાણપત્રનો પ્રકાર</translation>
 <translation id="7503985202154027481">આ સાઇટની તમારી મુલાકાતનો રેકોર્ડ તમારા સુરક્ષા કોડ પર રાખવામાં આવશે.</translation>
 <translation id="750509436279396091">ડાઉનલોડ્સ ફોલ્ડર ખોલો</translation>
+<translation id="7505149250476994901">અક્ષર પહેલાં "કૅપિટલ" બોલો</translation>
 <translation id="7505717542095249632"><ph name="MERCHANT" /> છુપાવો</translation>
 <translation id="7506093026325926984">આ પાસવર્ડ આ ડિવાઇસ પર સચવાશે</translation>
 <translation id="7506130076368211615">નવા નેટવર્કનું સેટઅપ કરો</translation>
@@ -7293,6 +7300,7 @@ USB ડિવાઇસ</translation>
 <translation id="7586498138629385861">Chrome Apps ખુલ્લી હોય ત્યારે Chrome શરૂ થવાનું ચાલુ રાખશે.</translation>
 <translation id="758895749110326677">Chromebooks પર ગેમિંગને બહેતર બનાવવામાં અમને સહાય કરો</translation>
 <translation id="7589461650300748890">અરે, ત્યાં છો. સાવધ રહો.</translation>
+<translation id="7592060599656252486">અમુક</translation>
 <translation id="7593653750169415785">ઑટોમૅટિક રીતે બ્લૉક કર્યું કારણ કે તમે કેટલીક વખત નોટિફિકેશન નકાર્યાં છે</translation>
 <translation id="7594725637786616550">તમારા <ph name="DEVICE_TYPE" />ને તદન નવા ડિવાઇસ જેવું કરવા માટે પાવરવોશ વડે રીસેટ કરો.</translation>
 <translation id="7595453277607160340">Android ઍપનો ઉપયોગ કરવા અને તમારા <ph name="DEVICE_TYPE" />ને યોગ્ય રીતે કાર્ય કરતું રાખવા માટે, ફરીથી સાઇન ઇન કરો અને અપડેટ કરો.</translation>
@@ -7771,6 +7779,7 @@ USB ડિવાઇસ</translation>
 <translation id="8002274832045662704">વિગતવાર પ્રિન્ટરની ગોઠવણી</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> હવે ઉપલબ્ધ નથી</translation>
 <translation id="8004092996156083991">જો તમારા પાસવર્ડ સાથે ચેડાં કરાયેલા હોય, તો અમે તમને જણાવીશું.</translation>
+<translation id="8004507136466386272">શબ્દો</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="8005600846065423578"><ph name="HOST" />ને હંમેશા ક્લિપબોર્ડ જોવા માટે મંજૂરી આપો</translation>
 <translation id="8006630792898017994">Space કી અથવા Tab કી</translation>
@@ -8294,6 +8303,7 @@ USB ડિવાઇસ</translation>
 <translation id="8473540203671727883">માઉસ હેઠળ આવતી ટેક્સ્ટ બોલો</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="8475313423285172237">તમારા કમ્પ્યુટર પરના બીજા પ્રોગ્રામે એક એક્સ્ટેંશન ઉમેર્યું જે Chrome કાર્ય કરે છે તે રીતને બદલી શકે છે.</translation>
+<translation id="8476408756881832830">ChromeVox બોલી રહ્યું હોય ત્યારે પ્લેબેક થોભાવો</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં સુધારવી અને બહેતર બનાવવી જરૂરી બાબતોને પ્રાધાન્ય આપવામાં સહાય મળે છે. આ રિપોર્ટમાં ChromeOS ક્યારે ક્રૅશ થાય છે, કઈ સુવિધાઓનો ઉપયોગ કરવામાં આવ્યો હતો, સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરવામાં આવ્યો હતો અને Android ઍપ અને વપરાશનો ડેટા જેવી બાબતોનો સમાવેશ થઈ શકે છે. કેટલોક કુલ ડેટા Googleની ઍપ અને Android ડેવલપર જેવા તેના ભાગીદારોને પણ સહાય કરશે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમે તમારા બાળકના ChromeOS ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />જો તમારા બાળકના Google એકાઉન્ટ માટે વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો તમારા બાળકનો ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. આ સેટિંગ તેમજ તેમને ગોઠવવાની રીત વિશે families.google.com પર વધુ જાણો.<ph name="END_PARAGRAPH4" /></translation>

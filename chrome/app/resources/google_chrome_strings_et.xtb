@@ -256,6 +256,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6010556343189461180">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.15 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome suletakse nüüd.}=1{Chrome suletakse ühe sekundi pärast.}other{Chrome suletakse # sekundi pärast.}}</translation>
 <translation id="6022659036123304283">Isikupärastage Chrome'i</translation>
+<translation id="6025087594896450715">Google Chrome taaskäivitub <ph name="REMAINING_TIME" /> pärast</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6070348360322141662">Turvalisuse suurendamiseks krüpteerib Google Chrome teie andmed</translation>
 <translation id="608006075545470555">Tööprofiili lisamine sellesse brauserisse</translation>

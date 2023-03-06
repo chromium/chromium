@@ -207,6 +207,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="117445914942805388">Če želite izbrisati podatke brskanja iz vseh sinhroniziranih naprav in Google Računa, <ph name="BEGIN_LINK" />odprite nastavitve sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">To funkcijo je onemogočil skrbnik.</translation>
 <translation id="1175364870820465910">&amp;Natisni ...</translation>
+<translation id="1175914831232945926">Števke</translation>
 <translation id="1176471985365269981">Ni dovoljeno urejanje datotek ali map v napravi.</translation>
 <translation id="1177863135347784049">Po meri</translation>
 <translation id="1178581264944972037">Prekini</translation>
@@ -561,7 +562,9 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1487335504823219454">Vklopljeno – nastavitve po meri</translation>
 <translation id="1493892686965953381">Čakanje na <ph name="LOAD_STATE_PARAMETER" /> ...</translation>
 <translation id="1494349716233667318">Spletna mesta lahko zahtevajo uporabo pisave, nameščene v napravi</translation>
+<translation id="1494429729245089920">Navidezni računalnik »<ph name="VM_NAME" />« obstaja, vendar je videti, da ni veljaven navidezni računalnik <ph name="APP_NAME" />. Obrnite se na skrbnika.</translation>
 <translation id="1495677929897281669">Nazaj na zavihek</translation>
+<translation id="1498498210836053409">Izklop zaklepanja pri urejanju besedila (pametno zaklepanje)</translation>
 <translation id="1500297251995790841">Neznana naprava [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Preberite več o nepodprtih aplikacijah za Chrome</translation>
 <translation id="1501480321619201731">Izbriši skupino</translation>
@@ -570,6 +573,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1504551620756424144">Mape, deljene z drugimi, so na voljo v sistemu Windows na lokaciji <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">izvoziti gesla</translation>
 <translation id="1506061864768559482">Iskalnik</translation>
+<translation id="1506187449813838456">Povečanje višine tona</translation>
 <translation id="1507170440449692343">Tej strani je onemogočen dostop do kamere.</translation>
 <translation id="1507246803636407672">Zavrzi</translation>
 <translation id="1509163368529404530">&amp;Obnovi skupino</translation>
@@ -899,7 +903,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1778457539567749232">Označitev kot neprebrano</translation>
 <translation id="1778991607452011493">Pošiljanje dnevnikov o odpravljanju napak (priporočeno)</translation>
 <translation id="1779441632304440041">Šibka gesla je preprosto ugotoviti. Ustvarite zapletena gesla.</translation>
-<translation id="1779453062283607806">Hitrejša primerjava rezultatov iskanja v novem stranskem podoknu</translation>
 <translation id="1779468444204342338">Najmanj</translation>
 <translation id="177989070088644880">Aplikacija (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Zapri skupino</translation>
@@ -2428,6 +2431,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3088128611727407543">Pripravljanje profila aplikacije ….</translation>
 <translation id="3088325635286126843">&amp;Preimenuj ...</translation>
 <translation id="3089137131053189723">Iskanje je izbrisano</translation>
+<translation id="3090227230165225418">Najava obvestil za prenos</translation>
 <translation id="3090589793601454425">Brez premikanja</translation>
 <translation id="3090819949319990166">Zunanje datoteke crx ni mogoče kopirati v <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Naprava »<ph name="DEVICE_NAME" />« je seznanjena</translation>
@@ -3115,6 +3119,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3732530910372558017">Koda PIN ima lahko največ 63 znakov</translation>
 <translation id="3732857534841813090">Povezane informacije v Pomočniku Google</translation>
 <translation id="3733296813637058299">Namestili bomo te aplikacije. Več aplikacij za napravo <ph name="DEVICE_TYPE" /> je na voljo v Trgovini Play.</translation>
+<translation id="3735039640698208086">Ko se predvaja zvok …</translation>
 <translation id="3735740477244556633">Razvrsti po</translation>
 <translation id="3738632186060045350">Podatki v napravi <ph name="DEVICE_TYPE" /> bodo izbrisani v 24 urah</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5466,6 +5471,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5895335062901455404">Shranjene nastavitve in dejavnost bodo pripravljeni v kateri koli napravi ChromeOS Flex, ko se prijavite z računom Google. V nastavitvah lahko izberete, kaj želite sinhronizirati.</translation>
 <translation id="589541317545606110">Išči po strani s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Ne dovoli</translation>
+<translation id="5899860758576822363">Predvajaj pri nižji glasnosti, ko ChromeVox govori</translation>
 <translation id="5900243355162006650">Konfiguracija povezave računalnika z internetom prek mobilnega telefona:</translation>
 <translation id="5900302528761731119">Fotografija profila Google</translation>
 <translation id="590036993063074298">Podrobnosti o kakovosti zrcaljenja</translation>
@@ -5914,6 +5920,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6301300352769835063">Dovolite Googlu, da uporablja podatke o strojni opremi za izboljšanje operacijskega sistema <ph name="DEVICE_OS" />. Če odklonite, bodo ti podatki vseeno poslani Googlu zaradi določanja ustreznih posodobitev, vendar se ne bodo shranjevali ali kako drugače uporabljali. Več o tem: g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Predlogi osebnih podatkov</translation>
 <translation id="6305607932814307878">Globalni pravilnik:</translation>
+<translation id="6305702903308659374">Predvajaj pri običajni glasnosti, tudi če ChromeVox govori</translation>
 <translation id="6305909198255586420">Namestite z glavnim profilom.</translation>
 <translation id="630750887748244481">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Dodajanje te razširitve ni dovoljeno.</translation>
 <translation id="6307990684951724544">Sistem je zaseden</translation>
@@ -7232,6 +7239,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7503191893372251637">Vrsta Netscapeovega potrdila</translation>
 <translation id="7503985202154027481">Na varnostnem ključu se bo zabeležil obisk tega spletnega mesta.</translation>
 <translation id="750509436279396091">Odpiranje mape s prenosi</translation>
+<translation id="7505149250476994901">Pred črko izgovorite »cap« (velika črka)</translation>
 <translation id="7505717542095249632">Skrij: <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">To geslo bo shranjeno v tej napravi</translation>
 <translation id="7506130076368211615">Nastavitev novega omrežja</translation>
@@ -7318,6 +7326,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7586498138629385861">Chrome se izvaja naprej, dokler so odprte aplikacije za Chrome.</translation>
 <translation id="758895749110326677">Pomagajte nam izboljšati igranje iger v Chromebookih.</translation>
 <translation id="7589461650300748890">Počasi. Previdno.</translation>
+<translation id="7592060599656252486">Nekatera</translation>
 <translation id="7593653750169415785">Samodejno blokirano, ker ste nekajkrat zavrnili obvestila</translation>
 <translation id="7594725637786616550">Uporabite Powerwash za ponastavitev naprave <ph name="DEVICE_TYPE" />, da bo kot nova.</translation>
 <translation id="7595453277607160340">Če želite uporabljati aplikacije za Android in zagotoviti, da bo naprava <ph name="DEVICE_TYPE" /> delovala pravilno, se znova prijavite in posodobite.</translation>
@@ -7802,6 +7811,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8002274832045662704">Dodatna konfiguracija tiskalnika</translation>
 <translation id="8002670234429879764">Tiskalnik <ph name="PRINTER_NAME" /> ni več na voljo</translation>
 <translation id="8004092996156083991">Če bodo vaša gesla ogrožena, vas bomo o tem obvestili.</translation>
+<translation id="8004507136466386272">Besede</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
 <translation id="8005600846065423578">Vedno dovoli, da si <ph name="HOST" /> ogleda odložišče</translation>
 <translation id="8006630792898017994">Presledek ali tabulatorka</translation>
@@ -8325,6 +8335,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8473540203671727883">Izgovori besedilo pod miško</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="8475313423285172237">Drug program v računalniku je dodal razširitev, ki lahko spremeni način delovanja Chroma.</translation>
+<translation id="8476408756881832830">Zaustavi predvajanje, ko ChromeVox govori</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do sesutij, katere funkcije so bile uporabljene, koliko pomnilnika je bilo običajno uporabljenega in podatke o uporabi aplikacij za Android. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah otrokove naprave s sistemom ChromeOS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Če ste za otrokov račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Več o teh nastavitvah in njihovem prilagajanju lahko preberete na families.google.com.<ph name="END_PARAGRAPH4" /></translation>

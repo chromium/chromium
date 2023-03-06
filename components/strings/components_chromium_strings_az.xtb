@@ -19,7 +19,9 @@
 <translation id="4622039161600275920">Bu səhifə Chromium tərəfindən bloklanıb</translation>
 <translation id="48558539577516920">Chromium'a qoruyucu divar və ya antivirus ayarlarınızda şəbəkəyə daxil olmağa imkan verin.</translation>
 <translation id="580822234363523061">Chromium menyusuna gedin &gt;           <ph name="SETTINGS_TITLE" />           &gt;           <ph name="ADVANCED_TITLE" />           &gt;           <ph name="PROXIES_TITLE" />           və konfiqurasiyanın "heç bir proksi" və ya "birbaşa" ayarlandığına əmin olun."</translation>
+<translation id="6549378540556750549">Chromium, həmçinin <ph name="BEGIN_LINK_OSS" />digər açıq mənbə proqram təminatı<ph name="END_LINK_OSS" /> olmadan mümkün olmazdı.</translation>
 <translation id="6613594504749178791">Dəyişiklikləriniz gələn dəfə Chromium'u başlatdıqda qüvvəyə minəcək.</translation>
+<translation id="7681937895330411637">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açıq mənbə layihəsi olmadan mümkün olmazdı.</translation>
 <translation id="7861509383340276692">Buraya keçin:
           Chromium menyusu &gt;
           <ph name="SETTINGS_TITLE" />

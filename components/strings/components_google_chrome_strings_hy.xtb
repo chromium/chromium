@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Անցեք
           Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
           և ապընտեք բոլոր ընտրված պրոքսի-սերվերները:</translation>
+<translation id="8232971017369963250">Chrome-ը ստեղծվել է <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ի բաց կոդով նախագծի հիման վրա։</translation>
+<translation id="8279509328145658601">Chrome-ը նաև աշխատում է այլ <ph name="BEGIN_LINK_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_OSS" /> շնորհիվ։</translation>
 </translationbundle>

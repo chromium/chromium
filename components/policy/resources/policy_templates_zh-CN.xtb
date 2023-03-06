@@ -2117,6 +2117,7 @@
 
       在 <ph name="PRODUCT_NAME" /> 版本 81 及更高版本中，如果未设置此政策，系统将会仅在常规会话中启用静默身份验证。</translation>
 <translation id="3021562480854470924">指定允许回滚到的里程碑的数量</translation>
+<translation id="3023172689742785487">强制启用 HTTPS-Only 模式</translation>
 <translation id="3023572080620427845">与包含要在替代浏览器中加载的网址的 XML 文件对应的网址。</translation>
 <translation id="302528139996622624">图片设置</translation>
 <translation id="3026740867910702435">在登录屏幕上启用大号光标无障碍功能。
@@ -2889,6 +2890,7 @@
 <translation id="3749259744154402564">不支持</translation>
 <translation id="3749511622128647337">禁止输出音频</translation>
 <translation id="3750220015372671395">禁止在这些网站上使用密钥生成功能</translation>
+<translation id="3753267109888284695">HTTP 许可名单</translation>
 <translation id="3753959315989102457">停用设备位置信息报告功能</translation>
 <translation id="3755237588083934849">通过设置此政策，您可决定设备状态上传内容的发送频率（以毫秒为单位）。所允许的最低频率为 60 秒。
 
@@ -3093,6 +3095,7 @@
 <translation id="3898795800259311780">允许或拒绝屏幕截图</translation>
 <translation id="3903313632842363082">停用设备用户报告功能</translation>
 <translation id="3904304709151553598">停用设备风扇信息报告功能</translation>
+<translation id="3905883021371603181">启用系统音频回声消除功能</translation>
 <translation id="3907683835264956726">允许在线用户从锁定屏幕上登录。如果此政策设为 true，<ph name="POLICY" /> 等政策会触发在锁定屏幕上在线重新验证用户身份的机制。
       当用户已在锁定屏幕上或者在满足相应条件后下次锁定屏幕时，系统会立即强制重新验证用户身份。
       如果此政策设为 false 或未设置，用户始终都能使用自己的本地凭据解锁屏幕。</translation>
@@ -3171,6 +3174,7 @@
       如果此政策设为 False，则“自动填充”功能一律不会建议或填充信用卡信息，也不会保存用户在浏览网页时提交的其他信用卡信息。</translation>
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
 <translation id="3990391739475801018">系统将停用省电模式。</translation>
+<translation id="3990834929384096140">不强制启用系统音频回声消除功能</translation>
 <translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
 <translation id="399433537808390819">不为用户提供统一桌面模式选项</translation>
 <translation id="3995880046827722248">停用 Manifest V2</translation>
@@ -3351,6 +3355,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果您未设置此政策，语音反馈在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
+<translation id="4173974507809462880">在用户登录期间显示触控板滚动方向界面</translation>
 <translation id="417956245902013347">在登录屏幕上启用“插入符号突出显示”无障碍功能。
 
           如果此政策设为 true、“插入符号突出显示”在登录屏幕上将始终处于启用状态。
@@ -3934,6 +3939,12 @@
       如果这一页面大小在用户选择的打印机上不适用，系统会忽略此政策。</translation>
 <translation id="4789450349513792856">禁止这些网站显示弹出式窗口</translation>
 <translation id="4790588245699320140">允许 Google 助理访问屏幕上的内容</translation>
+<translation id="4800438168909332958">启用系统音频回声消除 (AEC) 功能。系统 AEC 是一款回声消除工具，即一种用于从麦克风信号中移除系统音频播放（回声）的音频处理模块。
+此政策只是暂时性政策，待系统 AEC 功能发布后，此政策便会被移除。
+
+  如果此政策设为 true，系统 AEC 功能将始终处于启用状态。
+
+  如果此政策设为 false 或未设置，系统仍可能会根据系统 AEC 功能的发布计划启用该功能，但此政策不会强制启用该功能。</translation>
 <translation id="4801512016965057443">允许移动数据漫游</translation>
 <translation id="4802744647065138872">限制为供执行紧急回滚时使用而保留的用户数据快照的数量。</translation>
 <translation id="4802905909524200151">配置 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新行为</translation>
@@ -4130,6 +4141,11 @@
 <translation id="4996161752665479028">启用终端系统应用中的 SSH</translation>
 <translation id="4997074784107449343">在 PDF 文档的打印预览中，“以图片形式打印”选项（若有）默认处于未选中状态。</translation>
 <translation id="500149597848135831">启用所有变体</translation>
+<translation id="5014511262203433035">此政策用于控制用户能否在“设置”中启用 HTTPS-Only 模式。HTTPS-Only 模式会将所有导航路径升级到 HTTPS。
+      如果此设置设为“allowed”或未配置，用户将能启用 HTTPS-Only 模式。
+      如果此设置设为“disallowed”，用户将无法启用 HTTPS-Only 模式。
+      如果此设置设为“force_enabled”，系统将会启用 HTTPS-Only 模式，且用户无法停用该模式。
+      从 M112 开始，系统支持强制启用 HTTPS-Only 模式。</translation>
 <translation id="5017369989680827157">如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
 
       如果此政策设为 False，“自动填充”功能一律不会建议或填充地址信息，也不会保存用户在浏览网页时提交的其他地址信息。</translation>
@@ -4193,6 +4209,9 @@
 <translation id="5105313908130842249">使用电池供电时的屏幕锁定延迟时间</translation>
 <translation id="5108031557082757679">已停用企业设备打印机</translation>
 <translation id="5109383437323376357">确定变体的可用情况</translation>
+<translation id="5109866581154565900">此政策用于控制是否让系统在用户首次登录期间向其显示触控板滚动方向界面。
+      如果此政策设为 false，系统将不会显示触控板滚动方向界面。
+      如果此政策设为 true，系统将会显示触控板滚动方向界面。</translation>
 <translation id="5118635822783657217">停用非关键组件的更新</translation>
 <translation id="5120168808610189805">允许在首次运行时导入主页</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
@@ -4421,6 +4440,13 @@
 <translation id="5293285950307241933">清除所有本地用户数据</translation>
 <translation id="5293619885162445352">允许 <ph name="PEPPER_NAME" /> 使用新版视频解码器。</translation>
 <translation id="529457411593078576">在 CCT 首次运行期间启用《服务条款》</translation>
+<translation id="5297873769621042075">通过设置此政策，您能以列表形式指定：在启用了 HTTPS-First 模式的情况下，哪些主机名或主机名格式（例如“[*.]example.com”）不会升级到 HTTPS 且不会显示错误插页。组织可以使用此政策保留对不支持 HTTPS 的服务器的访问权限，而无需停用 HTTPS 升级和/或 HTTPS-First 模式。
+
+必须将所提供的主机名规范化：任何 IDN 都必须转换为对应的 A 标签格式，而且所有 ASCII 字母都必须小写。
+
+不允许使用一揽子主机通配符（例如“*”或“[*]”），而应通过各自的具体政策明确停用 HTTPS-First 模式和 HTTPS 升级。
+
+注意：此政策不适用于 HSTS 升级。</translation>
 <translation id="5297948043665200363">允许用户在帐号身份验证失效后继续保持登录状态</translation>
 <translation id="5298949392804966105">不针对受管理的帐号添加限制</translation>
 <translation id="530134925949808452">应在一天中的什么时间（以当地时间为准）更新用量配额。</translation>
@@ -7687,6 +7713,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策已启用或未设置，用户便可在任务管理器中结束进程。</translation>
 <translation id="8367209241899435947">在 Windows 系统上启用 Chrome 清理功能</translation>
+<translation id="8367446818896241968">允许在用户登录期间显示触控板滚动方向界面</translation>
 <translation id="8367473200119029349">云报告</translation>
 <translation id="8367488518695804749">不允许任何网站显示弹出式窗口</translation>
 <translation id="8369359426872560378">停用“接入交流电时启动”</translation>
@@ -8121,6 +8148,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8801680448782904838">系统建议或要求重新启动浏览器或重启设备时，通知用户</translation>
 <translation id="8804685015028424497">停用无痕模式</translation>
 <translation id="8806478127647484805">禁止用户通过 Chrome 任务管理器终止进程</translation>
+<translation id="8807274441692477185">不在用户登录期间显示触控板滚动方向界面</translation>
 <translation id="8807313206348471682">显示让用户确认退出登录的对话框</translation>
 <translation id="8812091410765157924">允许以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与那个打开弹出式窗口的页面互动，但前提是这个页面已明确接受此类互动</translation>
 <translation id="8816370949847593408">Chrome 应用能否运行取决于弃用安排的状态。</translation>

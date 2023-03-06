@@ -205,6 +205,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="117445914942805388">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />rufe die Synchronisierungseinstellungen auf<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Dein Administrator hat diese Funktion deaktiviert.</translation>
 <translation id="1175364870820465910">&amp;Drucken...</translation>
+<translation id="1175914831232945926">Ziffern</translation>
 <translation id="1176471985365269981">Dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="1177863135347784049">Benutzerdefiniert</translation>
 <translation id="1178581264944972037">Pause</translation>
@@ -553,6 +554,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1493892686965953381">Warten auf <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Websites dürfen nachfragen, ob sie auf meinem Gerät installierte Schriftarten verwenden dürfen</translation>
 <translation id="1495677929897281669">Zurück zum Tab</translation>
+<translation id="1498498210836053409">Fixierten Modus beim Bearbeiten von Text deaktivieren (intelligenter fixierter Modus)</translation>
 <translation id="1500297251995790841">Unbekanntes Gerät [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Weitere Informationen zu nicht unterstützten Chrome-Apps</translation>
 <translation id="1501480321619201731">Gruppe löschen</translation>
@@ -561,6 +563,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1504551620756424144">Freigegebene Ordner sind auf Windows-Geräten unter <ph name="BASE_DIR" /> verfügbar.</translation>
 <translation id="1505494256539862015">Passwörter exportieren</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
+<translation id="1506187449813838456">Tonhöhe erhöhen</translation>
 <translation id="1507170440449692343">Diese Seite darf nicht auf deine Kamera zugreifen.</translation>
 <translation id="1507246803636407672">&amp;Verwerfen</translation>
 <translation id="1509163368529404530">Gruppe wiederherstellen</translation>
@@ -2399,6 +2402,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3088128611727407543">App-Profil wird vorbereitet...</translation>
 <translation id="3088325635286126843">&amp;Umbenennen...</translation>
 <translation id="3089137131053189723">Suche gelöscht</translation>
+<translation id="3090227230165225418">Download-Benachrichtigungen ankündigen</translation>
 <translation id="3090589793601454425">Nicht verschieben</translation>
 <translation id="3090819949319990166">Externe CRX-Datei konnte nicht als <ph name="TEMP_CRX_FILE" /> kopiert werden.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ist gekoppelt</translation>
@@ -3083,6 +3087,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3732530910372558017">PIN darf maximal 63 Zeichen lang sein</translation>
 <translation id="3732857534841813090">Informationen zu Google Assistant</translation>
 <translation id="3733296813637058299">Wir installieren diese Apps für dich. Im Play Store findest du weitere Apps für dein <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3735039640698208086">Bei der Wiedergabe von Audio…</translation>
 <translation id="3735740477244556633">Sortieren nach</translation>
 <translation id="3738632186060045350">Die <ph name="DEVICE_TYPE" />-Daten werden in 24 Stunden gelöscht</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5427,6 +5432,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5895335062901455404">Deine gespeicherten Einstellungen und Aktivitäten stehen auf jedem Chrome OS Flex-Gerät zur Verfügung, auf dem du dich mit deinem Google-Konto anmeldest. In den Einstellungen kannst du festlegen, was synchronisiert werden soll.</translation>
 <translation id="589541317545606110">Mit <ph name="VISUAL_SEARCH_PROVIDER" /> auf der Seite suchen</translation>
 <translation id="5896436821193322561">Nicht zulassen</translation>
+<translation id="5899860758576822363">Mit geringerer Lautstärke wiedergeben, wenn eine Sprachausgabe durch ChromeVox stattfindet</translation>
 <translation id="5900243355162006650">Tethering-Konfiguration:</translation>
 <translation id="5900302528761731119">Google Profile-Foto</translation>
 <translation id="590036993063074298">Details zur Qualität der Spiegelung</translation>
@@ -5871,6 +5877,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6301300352769835063">Google darf deine Hardwaredaten zur Verbesserung von <ph name="DEVICE_OS" /> verwenden. Wenn du ablehnst, werden deine Daten trotzdem zur Überprüfung der zu installierenden Updates an Google gesendet – sie werden jedoch nicht gespeichert oder anderweitig verwendet. Weitere Informationen findest du unter g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Vorschläge zu personenbezogenen Daten</translation>
 <translation id="6305607932814307878">Globale Richtlinien:</translation>
+<translation id="6305702903308659374">Mit normaler Lautstärke wiedergeben, auch wenn eine Sprachausgabe durch ChromeVox stattfindet</translation>
 <translation id="6305909198255586420">Bitte installiere Steam über dein primäres Profil</translation>
 <translation id="630750887748244481">Dein Elternteil hat „Berechtigungen für Websites, Apps und Erweiterungen“ für Chrome deaktiviert. Deshalb kann diese Erweiterung nicht hinzugefügt werden.</translation>
 <translation id="6307990684951724544">System ausgelastet</translation>
@@ -7178,6 +7185,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7503191893372251637">Netscape-Zertifikatstyp</translation>
 <translation id="7503985202154027481">Auf deinem Sicherheitsschlüssel wird zum Besuch dieser Website ein Datensatz angelegt.</translation>
 <translation id="750509436279396091">Downloadordner öffnen</translation>
+<translation id="7505149250476994901">Vor dem Buchstaben "Großes" ansagen</translation>
 <translation id="7505717542095249632"><ph name="MERCHANT" /> ausblenden</translation>
 <translation id="7506093026325926984">Dieses Passwort wird auf diesem Gerät gespeichert</translation>
 <translation id="7506130076368211615">Neues Netzwerk einrichten</translation>
@@ -7264,6 +7272,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7586498138629385861">Chrome wird weiter ausgeführt, solange die Chrome-Apps geöffnet sind.</translation>
 <translation id="758895749110326677">Hilf dabei, Gaming auf Chromebooks besser zu machen</translation>
 <translation id="7589461650300748890">Vorsicht!</translation>
+<translation id="7592060599656252486">Einige</translation>
 <translation id="7593653750169415785">Automatisch blockiert, weil du Benachrichtigungen mehrmals abgewiesen hast</translation>
 <translation id="7594725637786616550">Durch einen Powerwash wird dein <ph name="DEVICE_TYPE" /> auf den Werkszustand zurückgesetzt.</translation>
 <translation id="7595453277607160340">Melde dich noch einmal an und aktualisiere die Verschlüsselung, damit du Android-Apps verwenden kannst und das <ph name="DEVICE_TYPE" /> weiter richtig funktioniert.</translation>
@@ -7746,6 +7755,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8002274832045662704">Erweiterte Druckerkonfiguration</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ist nicht mehr verfügbar</translation>
 <translation id="8004092996156083991">Wenn deine Passwörter gehackt werden, informieren wir dich darüber.</translation>
+<translation id="8004507136466386272">Wörter</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> darf die Zwischenablage immer aufrufen</translation>
 <translation id="8006630792898017994">Leertaste oder Tabulatortaste</translation>
@@ -8267,6 +8277,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8473540203671727883">Text unter dem Mauszeiger vorlesen</translation>
 <translation id="8473863474539038330">Adressen</translation>
 <translation id="8475313423285172237">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
+<translation id="8476408756881832830">Wiedergabe pausieren, wenn eine Sprachausgabe durch ChromeVox stattfindet</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Diagnose- und Nutzungsdaten von Android-Apps enthalten – außerdem Informationen über ChromeOS-Abstürze und Angaben dazu, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde. Bestimmte aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen des ChromeOS-Geräts deines Kindes aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ im Google-Konto deines Kindes aktiviert ist, werden die Daten deines Kindes möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com findest du weitere Informationen zu dieser Einstellung. Dort erfährst du auch, wie du sie ändern kannst.<ph name="END_PARAGRAPH4" /></translation>

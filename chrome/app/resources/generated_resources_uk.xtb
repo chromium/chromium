@@ -207,6 +207,7 @@
 <translation id="117445914942805388">Щоб очистити дані веб-перегляду на всіх синхронізованих пристроях і в обліковому записі Google, <ph name="BEGIN_LINK" />перейдіть у налаштування синхронізації<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Ваш адміністратор вимкнув цю функцію.</translation>
 <translation id="1175364870820465910">&amp;Друк...</translation>
+<translation id="1175914831232945926">Цифри</translation>
 <translation id="1176471985365269981">Заборонено змінювати файли або папки на пристрої</translation>
 <translation id="1177863135347784049">Спеціальне</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -562,6 +563,7 @@
 <translation id="1493892686965953381">Очікування <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сайти можуть запитувати дозвіл на використання шрифтів, установлених на пристрої</translation>
 <translation id="1495677929897281669">Назад на вкладку</translation>
+<translation id="1498498210836053409">Вимкнути режим залипання клавіш під час редагування тексту (Розумний режим залипання)</translation>
 <translation id="1500297251995790841">Невідомий пристрій [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Докладніше про непідтримувані додатки Chrome</translation>
 <translation id="1501480321619201731">Видалити групу</translation>
@@ -570,6 +572,7 @@
 <translation id="1504551620756424144">Спільні папки у Windows доступні за шляхом <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">експортувати паролі</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
+<translation id="1506187449813838456">Збільшити висоту звуку</translation>
 <translation id="1507170440449692343">Доступ цієї сторінки до вашої камери заблоковано.</translation>
 <translation id="1507246803636407672">&amp;Відхилити</translation>
 <translation id="1509163368529404530">&amp;Відновити групу</translation>
@@ -899,7 +902,6 @@
 <translation id="1778457539567749232">Позначити як непрочитане</translation>
 <translation id="1778991607452011493">Надіслати журнали налагодження (рекомендовано)</translation>
 <translation id="1779441632304440041">Ненадійні паролі можна легко вгадати, тому переконайтеся, що ваші є безпечними.</translation>
-<translation id="1779453062283607806">Швидко порівнюйте результати пошуку на новій бічній панелі</translation>
 <translation id="1779468444204342338">Мінімальні</translation>
 <translation id="177989070088644880">Додаток (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Закрити групу</translation>
@@ -2428,6 +2430,7 @@
 <translation id="3088128611727407543">Готується профіль додатка…</translation>
 <translation id="3088325635286126843">&amp;Перейменувати...</translation>
 <translation id="3089137131053189723">Пошук очищено</translation>
+<translation id="3090227230165225418">Сповіщати про завантаження</translation>
 <translation id="3090589793601454425">Не переносити</translation>
 <translation id="3090819949319990166">Не вдається скопіювати зовнішній файл .crx у файл <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" />: підключено</translation>
@@ -3115,6 +3118,7 @@
 <translation id="3732530910372558017">PIN-код має містити не більше 63 символів</translation>
 <translation id="3732857534841813090">Інформація, пов'язана з Google Асистентом</translation>
 <translation id="3733296813637058299">Ці додатки буде встановлено. Більше додатків для вашого пристрою <ph name="DEVICE_TYPE" /> можна знайти в магазині Google Play.</translation>
+<translation id="3735039640698208086">Під час відтворення аудіо…</translation>
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3738632186060045350">Дані пристрою <ph name="DEVICE_TYPE" /> буде видалено через 24 години</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5462,6 +5466,7 @@
 <translation id="5895335062901455404">Ваші збережені параметри та дії будуть готові на будь-якому пристрої з ОС Chrome Flex, коли ви ввійдете в обліковий запис Google. Ви можете вибрати дані для синхронізації в налаштуваннях.</translation>
 <translation id="589541317545606110">Шукати сторінку за допомогою <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Не дозволяти</translation>
+<translation id="5899860758576822363">Відтворювати тихіше, коли ChromeVox зчитує з екрана</translation>
 <translation id="5900243355162006650">Конфігурація точки доступу:</translation>
 <translation id="5900302528761731119">Фото профілю Google</translation>
 <translation id="590036993063074298">Відомості про якість трансляції</translation>
@@ -5909,6 +5914,7 @@
 <translation id="6301300352769835063">Дозволити компанії Google використовувати дані про ваше апаратне забезпечення, щоб покращувати ОС <ph name="DEVICE_OS" />. Якщо ви відмовитеся, Google усе одно отримуватиме ці дані, щоб визначати потрібні оновлення, проте не буде зберігати чи використовувати їх для інших цілей. Докладніше: g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Підказки з особистою інформацією</translation>
 <translation id="6305607932814307878">Глобальна політика:</translation>
+<translation id="6305702903308659374">Не змінювати гучність, навіть коли ChromeVox зчитує з екрана</translation>
 <translation id="6305909198255586420">Установіть додаток за допомогою основного профілю</translation>
 <translation id="630750887748244481">Хтось із твоїх батьків вимкнув опцію "Дозволи для сайтів, додатків і розширень" у Chrome. Ти не можеш додати це розширення.</translation>
 <translation id="6307990684951724544">Система зайнята</translation>
@@ -7227,6 +7233,7 @@
 <translation id="7503191893372251637">Тип сертифіката Netscape</translation>
 <translation id="7503985202154027481">На ключі безпеки збережеться запис, що ви відвідували цей сайт.</translation>
 <translation id="750509436279396091">Відкрити папку завантажень</translation>
+<translation id="7505149250476994901">Казати "велика літера" перед буквою</translation>
 <translation id="7505717542095249632">Сховати продавця <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Цей пароль буде збережно на цьому пристрої</translation>
 <translation id="7506130076368211615">Налаштувати нову мережу</translation>
@@ -7313,6 +7320,7 @@
 <translation id="7586498138629385861">Chrome працюватиме, доки будуть відкриті додатки Chrome.</translation>
 <translation id="758895749110326677">Допоможіть нам покращити процес гри на комп’ютерах Chromebook</translation>
 <translation id="7589461650300748890">Обережно!</translation>
+<translation id="7592060599656252486">Деякі розділові знаки</translation>
 <translation id="7593653750169415785">Автоматично заблоковано, оскільки ви кілька разів відхилили сповіщення</translation>
 <translation id="7594725637786616550">Виконайте Powerwash, щоб відновити заводські налаштування пристрою <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7595453277607160340">Щоб користуватися додатками Android, а <ph name="DEVICE_TYPE" /> працював належним чином, знову ввійдіть і оновіть їх.</translation>
@@ -7797,6 +7805,7 @@
 <translation id="8002274832045662704">Розширена конфігурація принтера</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> більше не доступний</translation>
 <translation id="8004092996156083991">Якщо ваші паролі буде зламано, ми вас сповістимо.</translation>
+<translation id="8004507136466386272">Слова</translation>
 <translation id="8004582292198964060">Переглядач</translation>
 <translation id="8005600846065423578">Завжди дозволяти сайту <ph name="HOST" /> переглядати буфер обміну</translation>
 <translation id="8006630792898017994">Пробіл або Tab</translation>
@@ -8320,6 +8329,7 @@
 <translation id="8473540203671727883">Озвучити текст під мишею</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8475313423285172237">Інша програма на вашому комп’ютері додала розширення, яке може змінити роботу Chrome.</translation>
+<translation id="8476408756881832830">Призупиняти відтворення, коли ChromeVox зчитує з екрана</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Дозволивши пристроям із ChromeOS автоматично надсилати звіти, ви допомагаєте нам визначити найважливіші проблеми та напрямки покращення операційної системи. Ці звіти можуть містити дані про збої ChromeOS, застосовані функції, обсяг використаної пам’яті, а також відомості про діагностику та використання додатків для Android. Крім того, деякі зведені дані корисні для додатків і партнерів Google, наприклад розробників Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ви можете будь-коли ввімкнути чи вимкнути надсилання цих звітів у налаштуваннях пристрою з ChromeOS дитини. Адміністратори доменів можуть змінювати це налаштування в Консолі адміністратора.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Якщо в обліковому записі Google дитини ввімкнено запис історії додатків і веб-пошуку, її дані можуть зберігатися в ньому. Докладніше про ці налаштування читайте на сторінці families.google.com.<ph name="END_PARAGRAPH4" /></translation>

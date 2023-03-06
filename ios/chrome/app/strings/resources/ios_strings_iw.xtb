@@ -126,6 +126,7 @@
 <translation id="1813414402673211292">ניקוי נתוני גלישה</translation>
 <translation id="1815941218935345331">קוד גישה</translation>
 <translation id="1820259098641718022">נוסף לרשימת הקריאה</translation>
+<translation id="1829392566394960110">{COUNT,plural, =0{סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}one{{COUNT} סיסמאות שנחשפו}two{{COUNT} סיסמאות שנחשפו}other{{COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
 <translation id="1870148520156231997">הצגת הסיסמה</translation>
 <translation id="1872096359983322073">פנס</translation>
@@ -719,6 +720,7 @@
 <translation id="6152406514676263192">סנכרון התוכן הרלוונטי ביותר על סמך תחומי העניין שלך.</translation>
 <translation id="6159839020698489198">אופציונלי</translation>
 <translation id="6170450281939467187">התרגום נכשל</translation>
+<translation id="6173499589275053515">‏הסיסמה נשמרה בחשבון Google שלך, <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
 <translation id="6184086493125982861">הצגת כרטיסיות</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
@@ -726,6 +728,7 @@
 <translation id="6193424046394092997">{count,plural, =1{נוסף לסימניות בתיקייה {title}}one{Bookmarked to {title}}two{נוספו לסימניות בתיקייה {title}}other{נוספו לסימניות בתיקייה {title}}}</translation>
 <translation id="6196207969502475924">חיפוש קולי</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}one{סגירת {COUNT} כרטיסיות}two{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
+<translation id="6213567400989743524">אזהרות שנסגרו</translation>
 <translation id="6219550825416862075">שמחים שחזרת</translation>
 <translation id="6219688215832490856">לא לתרגם אף פעם</translation>
 <translation id="6223816392543092032">קבלת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים.</translation>
@@ -748,6 +751,7 @@
 <translation id="6344783595350022745">טקסט נקי</translation>
 <translation id="6346549652287021269">להתחיל הורדה חדשה?</translation>
 <translation id="634878792104344809">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים שברשותך</translation>
+<translation id="6355820205320395730">קל לנחש סיסמאות חלשות. יש לוודא שהגדרת סיסמאות חזקות. <ph name="BEGIN_LINK" />עוד טיפים לגבי אבטחה<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">מעקב אחרי <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">אין כרטיסיות אנונימיות</translation>
 <translation id="6363526231572697780">אין שם משתמש</translation>
@@ -851,6 +855,7 @@
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6897187120838603299">הסיסמה שלך תישמר במכשיר.</translation>
+<translation id="6913136913033237761"><ph name="FOLDER_NAME" />. רק במכשיר הזה.</translation>
 <translation id="6914583639806229067">חיפוש תמונה שהעתקת</translation>
 <translation id="6914783257214138813">כל מי שיוכל לגשת אל הקובץ המיוצא יוכל לראות את הסיסמאות שלך.</translation>
 <translation id="6930799952781667037">יש להקיש כדי לעבור לשפה הזו.</translation>
@@ -1010,10 +1015,12 @@
 <translation id="8084285576995584326">‏שליטה בנתונים שלך בחשבון Google</translation>
 <translation id="809543534949702122">חיפוש בהיסטוריה</translation>
 <translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="8102130909719902723">ח</translation>
 <translation id="8105368624971345109">כיבוי</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
 <translation id="81313319706244542">2. מקישים על 'סיסמאות'</translation>
 <translation id="8132598642024322408">עכשיו במחיר <ph name="PRICE" />, היה <ph name="PREVIOUS_PRICE" />.</translation>
+<translation id="813370552429173916">יש להשתמש בסיסמה ייחודית לכל אתר או אפליקציה. אם מישהו יגלה סיסמה שהשתמשת בה במקומות שונים, הוא יוכל להשתמש בה כדי להיכנס גם לשאר החשבונות שלך. יש ללחוץ כדי לפתוח את האתר ולשנות את הסיסמאות עכשיו.</translation>
 <translation id="8136856065410661948">‏הנתונים מ-Chrome ומ-Google Lens ישמשו ליצירת אירועים ב-Apple Calendar.</translation>
 <translation id="8156478151976189188">סנכרון הסיסמאות לא פועל</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> חשבונות</translation>
@@ -1025,6 +1032,7 @@
 <translation id="8225985093977202398">תמונות וקבצים במטמון</translation>
 <translation id="8237382152611443140">פותחים את הגדרות המילוי האוטומטי של סיסמאות</translation>
 <translation id="8261506727792406068">מחיקה</translation>
+<translation id="8264966119170358612">‏חלק מהסיסמאות השמורות שלך נחשפו ברשומות שאינן של Google עקב פרצה באבטחת מידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8271720166617117963">אישור וכניסה</translation>
 <translation id="8278938988428169257">מזינים מילה או ביטוי</translation>
 <translation id="8281781826761538115">ברירת מחדל - <ph name="DEFAULT_LOCALE" /></translation>

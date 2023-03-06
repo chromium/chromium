@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Отворете
 „Applications“ &gt; „System Preferences“ &gt; „Network“ &gt; „Advanced“ &gt; „Proxies“
 и премахнете отметките от избраните прокси сървъри.</translation>
+<translation id="8232971017369963250">Браузърът Chrome е възможен благодарение на проекта с отворен код <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Браузърът Chrome е възможен и благодарение на друг <ph name="BEGIN_LINK_OSS" />софтуер с отворен код<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

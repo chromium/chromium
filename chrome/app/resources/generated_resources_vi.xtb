@@ -207,6 +207,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="117445914942805388">Để xóa dữ liệu duyệt web khỏi tất cả các thiết bị đã đồng bộ hóa và Tài khoản Google của bạn, hãy <ph name="BEGIN_LINK" />truy cập vào các tùy chọn cài đặt đồng bộ hóa<ph name="END_LINK" />.</translation>
 <translation id="1175131936083782305">Quản trị viên của bạn đã tắt tính năng này.</translation>
 <translation id="1175364870820465910">&amp;In...</translation>
+<translation id="1175914831232945926">Chữ số</translation>
 <translation id="1176471985365269981">Không được phép chỉnh sửa tệp hoặc thư mục trên thiết bị của bạn</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -559,6 +560,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1493892686965953381">Đang đợi <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Trang web có thể xin phép sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
 <translation id="1495677929897281669">Quay lại thẻ</translation>
+<translation id="1498498210836053409">Tắt chế độ phím dính khi chỉnh sửa văn bản (Chế độ phím dính thông minh)</translation>
 <translation id="1500297251995790841">Thiết bị không xác định [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">Tìm hiểu thêm về ứng dụng Chrome không được hỗ trợ</translation>
 <translation id="1501480321619201731">Xóa nhóm</translation>
@@ -567,6 +569,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1504551620756424144">Bạn có thể truy cập thư mục dùng chung trong Windows tại <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">xuất mật khẩu</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
+<translation id="1506187449813838456">Tăng độ cao</translation>
 <translation id="1507170440449692343">Trang này đã bị chặn truy cập máy ảnh của bạn.</translation>
 <translation id="1507246803636407672">&amp;Hủy</translation>
 <translation id="1509163368529404530">&amp;Khôi phục nhóm</translation>
@@ -896,7 +899,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1778457539567749232">Đánh dấu là chưa đọc</translation>
 <translation id="1778991607452011493">Gửi nhật ký gỡ lỗi (khuyến nghị)</translation>
 <translation id="1779441632304440041">Mật khẩu yếu thường dễ đoán. Hãy nhớ tạo mật khẩu mạnh.</translation>
-<translation id="1779453062283607806">So sánh kết quả tìm kiếm nhanh hơn từ bảng điều khiển bên mới</translation>
 <translation id="1779468444204342338">Tối thiểu</translation>
 <translation id="177989070088644880">Ứng dụng (<ph name="ANDROID_PACKAGE_NAME" />)</translation>
 <translation id="1780152987505130652">Đóng nhóm</translation>
@@ -2425,6 +2427,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3088128611727407543">Đang chuẩn bị cấu hình cho ứng dụng...</translation>
 <translation id="3088325635286126843">Đổ&amp;i tên...</translation>
 <translation id="3089137131053189723">Đã xóa nội dung tìm kiếm</translation>
+<translation id="3090227230165225418">Công bố các thông báo tải xuống</translation>
 <translation id="3090589793601454425">Không di chuyển</translation>
 <translation id="3090819949319990166">Không thể sao chép tệp crx bên ngoài sang <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Đã ghép nối "<ph name="DEVICE_NAME" />"</translation>
@@ -3112,6 +3115,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3732530910372558017">Mã PIN chỉ được dài tối đa 63 ký tự</translation>
 <translation id="3732857534841813090">Thông tin liên quan đến Trợ lý Google</translation>
 <translation id="3733296813637058299">Chúng tôi sẽ cài đặt các ứng dụng đó cho bạn. Bạn có thể tìm thêm ứng dụng cho <ph name="DEVICE_TYPE" /> của mình trong Cửa hàng Play.</translation>
+<translation id="3735039640698208086">Khi phát âm thanh...</translation>
 <translation id="3735740477244556633">Sắp xếp theo</translation>
 <translation id="3738632186060045350">Dữ liệu trên <ph name="DEVICE_TYPE" /> sẽ bị xóa sau 24 giờ</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -5462,6 +5466,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5895335062901455404">Các tuỳ chọn ưu tiên và hoạt động bạn đã lưu sẽ sẵn sàng trên mọi thiết bị ChromeOS Flex khi bạn đăng nhập bằng Tài khoản Google. Bạn có thể chọn nội dung bạn muốn đồng bộ hoá trong phần Cài đặt.</translation>
 <translation id="589541317545606110">Tìm trên trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5896436821193322561">Không cho phép</translation>
+<translation id="5899860758576822363">Phát ở âm lượng thấp hơn khi ChromeVox đang nói</translation>
 <translation id="5900243355162006650">Cấu hình chia sẻ Internet:</translation>
 <translation id="5900302528761731119">Ảnh hồ sơ trên Google</translation>
 <translation id="590036993063074298">Thông tin chi tiết về chất lượng phản chiếu</translation>
@@ -5910,6 +5915,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6301300352769835063">Cho phép Google dùng dữ liệu phần cứng của bạn để giúp cải thiện <ph name="DEVICE_OS" />. Nếu bạn từ chối thì dữ liệu này vẫn được gửi tới Google để xác định bản cập nhật thích hợp, nhưng sẽ không được lưu trữ hay sử dụng cho mục đích khác. Tìm hiểu thêm tại g.co/flex/HWDataCollection.</translation>
 <translation id="630292539633944562">Thông tin cá nhân đề xuất</translation>
 <translation id="6305607932814307878">Chính sách toàn cầu:</translation>
+<translation id="6305702903308659374">Phát ở âm lượng bình thường ngay cả khi ChromeVox đang nói</translation>
 <translation id="6305909198255586420">Vui lòng cài đặt bằng hồ sơ chính của bạn</translation>
 <translation id="630750887748244481">Cha/mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chrome. Bạn không được phép thêm tiện ích này.</translation>
 <translation id="6307990684951724544">Hệ thống đang bận</translation>
@@ -7223,6 +7229,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7503191893372251637">Loại Chứng chỉ Netscape</translation>
 <translation id="7503985202154027481">Khóa bảo mật sẽ lưu giữ bản ghi lượt truy cập của bạn vào trang web này.</translation>
 <translation id="750509436279396091">Mở thư mục tệp đã tải xuống</translation>
+<translation id="7505149250476994901">Nói "hoa" sau chữ cái</translation>
 <translation id="7505717542095249632">Ẩn <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Mật khẩu này sẽ được lưu trên thiết bị này</translation>
 <translation id="7506130076368211615">Thiết lập mạng mới</translation>
@@ -7309,6 +7316,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7586498138629385861">Chrome sẽ tiếp tục chạy khi ứng dụng Chrome đang mở.</translation>
 <translation id="758895749110326677">Giúp chúng tôi cải thiện trải nghiệm chơi trên thiết bị Chromebook</translation>
 <translation id="7589461650300748890">Oa. Hãy cẩn thận.</translation>
+<translation id="7592060599656252486">Một vài</translation>
 <translation id="7593653750169415785">Đã tự động chặn do bạn từ chối thông báo vài lần</translation>
 <translation id="7594725637786616550">Powerwash để đặt lại <ph name="DEVICE_TYPE" /> của bạn giống như mới.</translation>
 <translation id="7595453277607160340">Để dùng ứng dụng Android và đảm bảo rằng <ph name="DEVICE_TYPE" /> của bạn hoạt động đúng cách, hãy đăng nhập lại và cập nhật.</translation>
@@ -7793,6 +7801,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8002274832045662704">Cấu hình máy in nâng cao</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> không sử dụng được nữa</translation>
 <translation id="8004092996156083991">Nếu mật khẩu của bạn bị lộ, chúng tôi sẽ thông báo cho bạn.</translation>
+<translation id="8004507136466386272">Từ</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8005600846065423578">Luôn cho phép <ph name="HOST" /> xem bảng nhớ tạm</translation>
 <translation id="8006630792898017994">Phím cách hoặc phím Tab</translation>
@@ -8316,6 +8325,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8473540203671727883">Đọc văn bản bên dưới con trỏ chuột</translation>
 <translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
 <translation id="8475313423285172237">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.</translation>
+<translation id="8476408756881832830">Tạm dừng phát lại khi ChromeVox đang nói</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị ChromeOS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong ChromeOS. Nội dung báo cáo có thể bao gồm thời điểm ChromeOS gặp sự cố, danh sách các tính năng bạn đã sử dụng, mức bộ nhớ thường được sử dụng cũng như dữ liệu sử dụng và thông tin chẩn đoán của ứng dụng Android. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome OS của con bạn. Nếu là quản trị viên miền, bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Nếu bạn bật chế độ cài đặt Hoạt động trên web và ứng dụng cho Tài khoản Google của con bạn, thì dữ liệu của trẻ có thể được lưu vào Tài khoản Google của trẻ. Tìm hiểu thêm về các chế độ cài đặt này và cách điều chỉnh tại families.google.com.<ph name="END_PARAGRAPH4" /></translation>

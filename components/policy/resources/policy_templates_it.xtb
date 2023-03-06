@@ -5906,6 +5906,13 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="6640748114867542396">Non consentire alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
+<translation id="6644480111811011438">Questo criterio consente di disattivare la funzionalità degli insiemi proprietari.
+
+                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità degli insiemi proprietari viene attivata.
+
+                  Se questo criterio viene impostato su Disattivato, la funzionalità degli insiemi proprietari viene disattivata.
+
+                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate agli insiemi proprietari.</translation>
 <translation id="6646912445796087001">Consente di attivare o disattivare diverse funzionalità per la tastiera sullo schermo. Questo criterio viene applicato soltanto se è attivato il criterio "VirtualKeyboardEnabled".
 
       Se una funzionalità in questo criterio viene impostata su True, questa viene attivata per la tastiera sullo schermo.
@@ -7342,6 +7349,19 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_ENA
 <translation id="8020222525161221827">Attiva l'API Desk per il controllo di ChromeOS da terze parti</translation>
 <translation id="802147957407376460">Ruota lo schermo di 0°</translation>
 <translation id="8021777486638359878">Considera l'utente inattivo durante la riproduzione di audio</translation>
+<translation id="8022909529579794519">Questa impostazione consente di configurare il browser <ph name="LACROS_NAME" /> da utilizzare.
+
+Se il criterio viene impostato su <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />, l'utente può decidere quale browser <ph name="LACROS_NAME" /> caricare: il programma binario della partizione <ph name="LACROS_ROOTFS_NAME" /> o <ph name="LACROS_STATEFUL_NAME" />.
+Se l'utente non ha impostato alcuna preferenza, verrà scelto il programma binario con la versione più recente.
+
+Se il criterio viene impostato su <ph name="LACROS_SELECTION_ROOTFS_VALUE" />, verrà caricato sempre il programma binario <ph name="LACROS_ROOTFS_NAME" /> del browser <ph name="LACROS_NAME" />.
+
+Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> per gli utenti gestiti a livello aziendale e <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
+
+Tieni presente che la modifica del valore del criterio può causare la perdita di dati del browser <ph name="LACROS_NAME" /> se la versione impostata è precedente alla versione attuale. Ad esempio, se il criterio cambia da <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> a <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> e la prima versione è stata aggiornata. Oppure se <ph name="PRODUCT_OS_NAME" /> è stato aggiornato insieme al browser <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /> e la versione <ph name="LACROS_STATEFUL_NAME" /> non è stata ancora aggiornata.
+In questo tipo di scenari non è garantita la corretta migrazione dei dati.
+
+È sicuro usare l'opzione <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTION_ROOTFS_VALUE" />. Va bene anche passare da <ph name="LACROS_SELECTION_ROOTFS_VALUE" /> a <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" />.</translation>
 <translation id="80243978433618492">Non consentire alcun filtro dei parametri URL.</translation>
 <translation id="8025620823136567878">Le scorciatoie da tastiera internazionali sono mappate alla posizione dei tasti sulla tastiera e non al glifo del tasto.</translation>
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
@@ -7969,6 +7989,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
 <translation id="859579553230883285">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti per i tuoi utenti.</translation>
+<translation id="8597758693275075382">Le stringhe OEM SMBIOS da passare alla VM durante l'installazione. Il valore predefinito è l'elenco vuoto.</translation>
 <translation id="8598786284856179541">Attiva la generazione di report sulle informazioni di versione</translation>
 <translation id="859937827887158048">Non consentire i download di aggiornamento automatico peer-to-peer</translation>
 <translation id="8603454805657060638">La configurazione del criterio consente all'amministratore di modificare l'indirizzo MAC (Media Access Control) quando un dispositivo viene inserito nel dock. Quando alcuni modelli di dispositivi vengono inseriti nel dock, per impostazione predefinita l'indirizzo MAC del dock designato per il dispositivo viene utilizzato per identificare il dispositivo su Ethernet.
