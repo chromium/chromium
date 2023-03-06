@@ -145,13 +145,12 @@ class CORE_EXPORT NavigationApi final
 
  private:
   friend class NavigateReaction;
-  friend class NavigationApiNavigation;
   NavigationHistoryEntry* GetEntryForRestore(
       const mojom::blink::NavigationApiHistoryEntryPtr&);
   void PopulateKeySet();
   void FinalizeWithAbortedNavigationError(ScriptState*,
                                           NavigationApiNavigation*);
-  void ResolvePromisesAndFireNavigateSuccessEvent(NavigationApiNavigation*);
+  void ResolvePromisesAndFireNavigateSuccessEvent();
   void RejectPromisesAndFireNavigateErrorEvent(NavigationApiNavigation*,
                                                ScriptValue);
 

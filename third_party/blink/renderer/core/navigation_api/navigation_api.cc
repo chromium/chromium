@@ -51,18 +51,14 @@ namespace blink {
 class NavigateReaction final : public ScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
-  static void React(ScriptState* script_state,
-                    NavigationApiNavigation* navigation,
-                    NavigateEvent* navigate_event) {
+  static void React(ScriptState* script_state, NavigateEvent* navigate_event) {
     navigate_event->GetReactionPromiseAll(script_state)
         .Then(MakeGarbageCollected<ScriptFunction>(
-                  script_state,
-                  MakeGarbageCollected<NavigateReaction>(
-                      navigation, navigate_event, ResolveType::kFulfill)),
+                  script_state, MakeGarbageCollected<NavigateReaction>(
+                                    navigate_event, ResolveType::kFulfill)),
               MakeGarbageCollected<ScriptFunction>(
-                  script_state,
-                  MakeGarbageCollected<NavigateReaction>(
-                      navigation, navigate_event, ResolveType::kReject)));
+                  script_state, MakeGarbageCollected<NavigateReaction>(
+                                    navigate_event, ResolveType::kReject)));
 
     if (navigate_event->HasNavigationActions()) {
       auto* window = LocalDOMWindow::From(script_state);
@@ -72,16 +68,11 @@ class NavigateReaction final : public ScriptFunction::Callable {
     }
   }
 
-  NavigateReaction(NavigationApiNavigation* navigation,
-                   NavigateEvent* navigate_event,
-                   ResolveType resolve_type)
-      : navigation_(navigation),
-        navigate_event_(navigate_event),
-        resolve_type_(resolve_type) {}
+  NavigateReaction(NavigateEvent* navigate_event, ResolveType resolve_type)
+      : navigate_event_(navigate_event), resolve_type_(resolve_type) {}
 
   void Trace(Visitor* visitor) const final {
     ScriptFunction::Callable::Trace(visitor);
-    visitor->Trace(navigation_);
     visitor->Trace(navigate_event_);
   }
 
@@ -98,10 +89,10 @@ class NavigateReaction final : public ScriptFunction::Callable {
     navigate_event_->Finish(resolve_type_ == ResolveType::kFulfill);
 
     if (resolve_type_ == ResolveType::kFulfill) {
-      navigation_api->ResolvePromisesAndFireNavigateSuccessEvent(navigation_);
+      navigation_api->ResolvePromisesAndFireNavigateSuccessEvent();
     } else {
-      navigation_api->RejectPromisesAndFireNavigateErrorEvent(navigation_,
-                                                              value);
+      navigation_api->RejectPromisesAndFireNavigateErrorEvent(
+          navigation_api->ongoing_navigation_, value);
     }
 
     if (navigate_event_->HasNavigationActions()) {
@@ -120,7 +111,6 @@ class NavigateReaction final : public ScriptFunction::Callable {
   }
 
  private:
-  Member<NavigationApiNavigation> navigation_;
   Member<NavigateEvent> navigate_event_;
   ResolveType resolve_type_;
 };
@@ -579,7 +569,7 @@ NavigationResult* NavigationApi::PerformNonTraverseNavigation(
 
   NavigationApiNavigation* navigation =
       MakeGarbageCollected<NavigationApiNavigation>(
-          script_state, this, options, String(), std::move(serialized_state));
+          script_state, options, String(), std::move(serialized_state));
   upcoming_non_traversal_navigation_ = navigation;
 
   window_->GetFrame()->MaybeLogAdClickNavigation();
@@ -617,8 +607,7 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
     return previous_navigation->value->GetNavigationResult();
 
   NavigationApiNavigation* ongoing_navigation =
-      MakeGarbageCollected<NavigationApiNavigation>(script_state, this, options,
-                                                    key);
+      MakeGarbageCollected<NavigationApiNavigation>(script_state, options, key);
   upcoming_traversals_.insert(key, ongoing_navigation);
   if (window_->GetFrame()->IsMainFrame()) {
     SoftNavigationHeuristics* heuristics =
@@ -744,6 +733,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       // the state, but we need to detach promise resolvers for this case since
       // we will never resolve the finished/committed promises.
       ongoing_navigation_->CleanupForWillNeverSettle();
+      CleanupApiNavigation(*ongoing_navigation_);
     }
     return DispatchResult::kContinue;
   }
@@ -856,7 +846,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   if (navigate_event->HasNavigationActions() ||
       params->event_type != NavigateEventType::kCrossDocument) {
-    NavigateReaction::React(script_state, ongoing_navigation_, navigate_event);
+    NavigateReaction::React(script_state, navigate_event);
   }
 
   // Note: we cannot clean up ongoing_navigation_ for cross-document
@@ -933,8 +923,10 @@ void NavigationApi::TraverseCancelled(
 }
 
 void NavigationApi::ContextDestroyed() {
-  if (ongoing_navigation_)
+  if (ongoing_navigation_) {
     ongoing_navigation_->CleanupForWillNeverSettle();
+    CleanupApiNavigation(*ongoing_navigation_);
+  }
 }
 
 bool NavigationApi::HasNonDroppedOngoingNavigation() const {
@@ -957,8 +949,10 @@ void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
   event->SetType(event_type_names::kNavigateerror);
   DispatchEvent(*event);
 
-  if (navigation)
+  if (navigation) {
     navigation->RejectFinishedPromise(value);
+    CleanupApiNavigation(*navigation);
+  }
 
   if (transition_) {
     transition_->RejectFinishedPromise(value);
@@ -966,12 +960,13 @@ void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
   }
 }
 
-void NavigationApi::ResolvePromisesAndFireNavigateSuccessEvent(
-    NavigationApiNavigation* navigation) {
+void NavigationApi::ResolvePromisesAndFireNavigateSuccessEvent() {
   DispatchEvent(*Event::Create(event_type_names::kNavigatesuccess));
 
-  if (navigation)
-    navigation->ResolveFinishedPromise();
+  if (ongoing_navigation_) {
+    ongoing_navigation_->ResolveFinishedPromise();
+    CleanupApiNavigation(*ongoing_navigation_);
+  }
 
   if (transition_) {
     transition_->ResolveFinishedPromise();
