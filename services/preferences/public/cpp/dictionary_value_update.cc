@@ -4,10 +4,10 @@
 
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -295,8 +295,8 @@ std::vector<std::string> DictionaryValueUpdate::ConcatPath(
     const std::vector<base::StringPiece>& path) {
   std::vector<std::string> full_path = base_path;
   full_path.reserve(full_path.size() + path.size());
-  std::transform(path.begin(), path.end(), std::back_inserter(full_path),
-                 [](base::StringPiece s) { return std::string(s); });
+  base::ranges::transform(path, std::back_inserter(full_path),
+                          [](base::StringPiece s) { return std::string(s); });
   return full_path;
 }
 

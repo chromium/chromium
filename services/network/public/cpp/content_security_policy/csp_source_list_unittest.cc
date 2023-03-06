@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
+
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -56,28 +58,24 @@ std::vector<mojom::CSPSourceListPtr> ParseToVectorOfSourceLists(
     mojom::CSPDirectiveName directive,
     const std::vector<std::string>& values) {
   std::vector<std::string> csp_values(values.size());
-  std::transform(values.begin(), values.end(), csp_values.begin(),
-                 [directive](const std::string& s) -> std::string {
-                   return ToString(directive) + " " + s;
-                 });
+  base::ranges::transform(values, csp_values.begin(),
+                          [directive](const std::string& s) {
+                            return ToString(directive) + " " + s;
+                          });
   std::vector<mojom::ContentSecurityPolicyPtr> policies = Parse(csp_values);
   std::vector<mojom::CSPSourceListPtr> sources(policies.size());
-  std::transform(policies.begin(), policies.end(), sources.begin(),
-                 [directive](mojom::ContentSecurityPolicyPtr& p)
-                     -> mojom::CSPSourceListPtr {
-                   return std::move(p->directives[directive]);
-                 });
+  base::ranges::transform(
+      policies, sources.begin(),
+      [directive](mojom::ContentSecurityPolicyPtr& p) {
+        return mojom::CSPSourceListPtr(std::move(p->directives[directive]));
+      });
   return sources;
 }
 
 std::vector<const mojom::CSPSourceList*> ToRawPointers(
     const std::vector<mojom::CSPSourceListPtr>& list) {
   std::vector<const mojom::CSPSourceList*> out(list.size());
-  std::transform(
-      list.begin(), list.end(), out.begin(),
-      [](const mojom::CSPSourceListPtr& item) -> const mojom::CSPSourceList* {
-        return item.get();
-      });
+  base::ranges::transform(list, out.begin(), &mojom::CSPSourceListPtr::get);
   return out;
 }
 

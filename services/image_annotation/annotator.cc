@@ -4,7 +4,6 @@
 
 #include "services/image_annotation/annotator.h"
 
-#include <algorithm>
 #include <tuple>
 #include <utility>
 
@@ -18,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/load_flags.h"
@@ -921,11 +921,11 @@ std::string Annotator::ComputePreferredLanguage(
 
   std::string page_language = NormalizeLanguageCode(in_page_language);
   std::vector<std::string> accept_languages = client_->GetAcceptLanguages();
-  std::transform(accept_languages.begin(), accept_languages.end(),
-                 accept_languages.begin(), NormalizeLanguageCode);
+  base::ranges::transform(accept_languages, accept_languages.begin(),
+                          NormalizeLanguageCode);
   std::vector<std::string> top_languages = client_->GetTopLanguages();
-  std::transform(top_languages.begin(), top_languages.end(),
-                 top_languages.begin(), NormalizeLanguageCode);
+  base::ranges::transform(top_languages, top_languages.begin(),
+                          NormalizeLanguageCode);
 
   // If the page language is a server language and it's in the list of accept
   // languages or top languages for this user, return that.

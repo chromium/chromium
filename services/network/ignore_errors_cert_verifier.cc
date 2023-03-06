@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "crypto/sha2.h"
@@ -99,9 +100,9 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
   if (ignore_errors) {
     verify_result->Reset();
     verify_result->verified_cert = params.certificate();
-    std::transform(spki_fingerprints.begin(), spki_fingerprints.end(),
-                   std::back_inserter(verify_result->public_key_hashes),
-                   [](const SHA256HashValue& v) { return HashValue(v); });
+    base::ranges::transform(
+        spki_fingerprints, std::back_inserter(verify_result->public_key_hashes),
+        [](const SHA256HashValue& v) { return HashValue(v); });
     if (!params.ocsp_response().empty()) {
       verify_result->ocsp_result.response_status =
           net::OCSPVerifyResult::PROVIDED;
