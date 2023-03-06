@@ -48,8 +48,8 @@ def parse_emoji_metadata(metadata_file):
         return json.load(file)
 
 
-def transform_emoji_data(metadata, names, keywords, firstOnly):
-    def transform(codepoints, emoticons = None, shortcodes = None):
+def transform_emoji_data(metadata, names, keywords, first_only):
+    def transform(codepoints, is_variant, emoticons = None, shortcodes = None):
         if emoticons is None:
           emoticons = []
         if shortcodes is None:
@@ -68,8 +68,11 @@ def transform_emoji_data(metadata, names, keywords, firstOnly):
           name = ''
           keyword_list = emoticons
 
-        return {'string': string, 'name': name, 'keywords': keyword_list}
-    if firstOnly:
+        if is_variant:
+          return {'string': string, 'name': name}
+        else:
+          return {'string': string, 'name': name, 'keywords': keyword_list}
+    if first_only:
       metadata = [metadata[0]]
     else:
       metadata = metadata[1:]
@@ -83,13 +86,14 @@ def transform_emoji_data(metadata, names, keywords, firstOnly):
             newobj = {
                 'base': transform(
                     emoji['base'],
+                    False,
                     emoji['emoticons'],
                     emoji.get('shortcodes', []),
                 ),
             }
             if emoji['alternates']:
               newobj['alternates'] = [
-                  transform(e,) for e in emoji['alternates']
+                  transform(e, True) for e in emoji['alternates']
               ]
             newGroup.append(newobj)
         out.append({'emoji': newGroup})
