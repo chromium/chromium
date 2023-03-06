@@ -301,11 +301,11 @@ void MediaSession::setPositionState(MediaPositionState* position_state,
     return;
   }
 
-  // The playback rate cannot be less than or equal to zero.
+  // The playback rate cannot be equal to zero.
   if (position_state->hasPlaybackRate() &&
-      position_state->playbackRate() <= 0) {
+      position_state->playbackRate() == 0) {
     exception_state.ThrowTypeError(
-        "The provided playbackRate cannot be less than or equal to zero.");
+        "The provided playbackRate cannot be equal to zero.");
     return;
   }
 
