@@ -43243,11 +43243,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="OpaqueRedirect"/>
 </enum>
 
-<enum name="FetchStatusWhenMatchCalled">
-  <int value="0" label="Complete"/>
-  <int value="1" label="Incomplete"/>
-</enum>
-
 <enum name="FFmpegCodecHashes">
   <int value="-2140893972" label="bfi"/>
   <int value="-2126016986" label="vp3"/>
@@ -91996,11 +91991,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="ErrorMissingFrame"/>
   <int value="2" label="ErrorDetachedFrame"/>
   <int value="3" label="ErrorMissingUkmRecorder"/>
-</enum>
-
-<enum name="ScopeMatchCalledFrom">
-  <int value="0" label="NonDocument"/>
-  <int value="1" label="Document"/>
 </enum>
 
 <enum name="ScoutActiveExtendedReportingPref">

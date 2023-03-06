@@ -128,29 +128,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="BackgroundFetch.MatchCalledFromDocumentScope"
-    enum="ScopeMatchCalledFrom" expires_after="2021-11-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether match() or matchAll() was called from Document Scope. Called
-    when match() or matchAll() is invoked in the renderer process.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundFetch.MatchCalledWhenFetchIsIncomplete"
-    enum="FetchStatusWhenMatchCalled" expires_after="2021-11-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether match() or matchAll() was called when the background fetch
-    was incomplete. Called when match() or matchAll() is invoked in the renderer
-    process.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundFetch.PercentOfRequestsForWhichUpdatesAreSent"
     units="%" expires_after="2021-11-30">
   <owner>nator@chromium.org</owner>
