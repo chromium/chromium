@@ -846,8 +846,16 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
 // Make sure the poput is attributed to the right WebContents when it is
 // triggered from a different WebContents. Regression test for
 // https://crbug.com/1128495
+// Flaky on windows: crbug.com/1422005.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PopupTriggeredFromDifferentWebContents \
+  DISABLED_PopupTriggeredFromDifferentWebContents
+#else
+#define MAYBE_PopupTriggeredFromDifferentWebContents \
+  PopupTriggeredFromDifferentWebContents
+#endif
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       PopupTriggeredFromDifferentWebContents) {
+                       MAYBE_PopupTriggeredFromDifferentWebContents) {
   const GURL url(
       embedded_test_server()->GetURL("/popup_blocker/popup-in-href.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
