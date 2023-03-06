@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <unordered_map>
 
 #include "base/functional/bind.h"
 #include "base/guid.h"
@@ -268,15 +269,24 @@ void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
 }
 
 void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
-  // TODO(tbergquist): this might be concurrent modifying while iterating?
+  // Selection sort the buttons to match the model's order.
+  std::unordered_map<std::string, SavedTabGroupButton*> buttons_by_guid;
   for (views::View* child : children()) {
-    if (child == overflow_button_) {
-      continue;
+    SavedTabGroupButton* button =
+        views::AsViewClass<SavedTabGroupButton>(child);
+    if (button) {
+      buttons_by_guid[button->guid().AsLowercaseString()] = button;
     }
+  }
 
-    const absl::optional<int> model_index = saved_tab_group_model_->GetIndexOf(
-        views::AsViewClass<SavedTabGroupButton>(child)->guid());
-    ReorderChildView(child, model_index.value());
+  int i = 0;
+  for (SavedTabGroup group : saved_tab_group_model_->saved_tab_groups()) {
+    views::View* const button =
+        buttons_by_guid[group.saved_guid().AsLowercaseString()];
+    ReorderChildView(button, i);
+    button->SetVisible(i < kMaxVisibleButtons);
+
+    i++;
   }
 
   // Ensure the overflow button is the last button in the view hierarchy.

@@ -68,7 +68,7 @@ class SavedTabGroupButton : public views::MenuButton,
     return tab_group_color_id_;
   }
 
-  const base::GUID guid() { return guid_; }
+  const base::GUID guid() const { return guid_; }
 
  private:
   std::unique_ptr<ui::DialogModel> CreateDialogModelForContextMenu();
