@@ -150,6 +150,54 @@ TEST_F(UserNotesPageHandlerTest, GetNoteOverviewWithBookmarkTitle) {
   ASSERT_EQ("title", note_overviews[0]->title);
 }
 
+TEST_F(UserNotesPageHandlerTest, GetNoteOverviewsReturnMatchedText) {
+  // Searching notes should match case insensitive.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note1"));
+  auto note_overviews = waiter.GetNoteOverviews("");
+  ASSERT_EQ(1u, note_overviews.size());
+  ASSERT_EQ("Note1", note_overviews[0]->text);
+}
+
+TEST_F(UserNotesPageHandlerTest, FindNoteOverviewsSearchOnlyText) {
+  // Searching notes should only match texts, not URL.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://new_url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("note1"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://new_url2"));
+  ASSERT_TRUE(waiter.NewNoteFinished("note2"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://new_url3"));
+  ASSERT_TRUE(waiter.NewNoteFinished("3"));
+  auto note_overviews = waiter.GetNoteOverviews("n");
+  ASSERT_EQ(2u, note_overviews.size());
+}
+
+TEST_F(UserNotesPageHandlerTest, FindNoteOverviewsCaseInsensitive) {
+  // Searching notes should match case insensitive.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note1"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url2"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note2"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url3"));
+  ASSERT_TRUE(waiter.NewNoteFinished("3"));
+  auto note_overviews = waiter.GetNoteOverviews("n");
+  ASSERT_EQ(2u, note_overviews.size());
+}
+
+TEST_F(UserNotesPageHandlerTest, FindNoteOverviewsReturnMatchedText) {
+  // Searching notes should match case insensitive.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note1"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url2"));
+  ASSERT_TRUE(waiter.NewNoteFinished("foo"));
+  auto note_overviews = waiter.GetNoteOverviews("Note");
+  ASSERT_EQ(1u, note_overviews.size());
+  ASSERT_EQ("Note1", note_overviews[0]->text);
+}
+
 TEST_F(UserNotesPageHandlerTest, CreateAndDeleteNote) {
   EXPECT_CALL(page_, NotesChanged()).Times(2);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());

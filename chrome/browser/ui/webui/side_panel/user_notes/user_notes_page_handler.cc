@@ -21,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/common/power_overview.h"
+#include "components/power_bookmarks/common/search_params.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
@@ -170,21 +171,31 @@ void UserNotesPageHandler::ShowUI() {
 
 void UserNotesPageHandler::GetNoteOverviews(const std::string& user_input,
                                             GetNoteOverviewsCallback callback) {
-  service_->GetPowerOverviewsForType(
-      sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
-      base::BindOnce(
-          [](GetNoteOverviewsCallback callback, const GURL& current_tab_url,
-             base::WeakPtr<bookmarks::BookmarkModel> bookmark_model,
-             std::vector<std::unique_ptr<power_bookmarks::PowerOverview>>
-                 power_overviews) {
-            std::vector<side_panel::mojom::NoteOverviewPtr> results;
-            for (auto& power_overview : power_overviews) {
-              results.push_back(PowerOverviewToMojo(
-                  *power_overview, current_tab_url, bookmark_model));
-            }
-            std::move(callback).Run(std::move(results));
-          },
-          std::move(callback), current_tab_url_, bookmark_model_));
+  auto service_callback =
+      [](GetNoteOverviewsCallback callback, const GURL& current_tab_url,
+         base::WeakPtr<bookmarks::BookmarkModel> bookmark_model,
+         std::vector<std::unique_ptr<power_bookmarks::PowerOverview>>
+             power_overviews) {
+        std::vector<side_panel::mojom::NoteOverviewPtr> results;
+        for (auto& power_overview : power_overviews) {
+          results.push_back(PowerOverviewToMojo(
+              *power_overview, current_tab_url, bookmark_model));
+        }
+        std::move(callback).Run(std::move(results));
+      };
+
+  if (user_input.empty()) {
+    service_->GetPowerOverviewsForType(
+        sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
+        base::BindOnce(service_callback, std::move(callback), current_tab_url_,
+                       bookmark_model_));
+  } else {
+    service_->SearchPowerOverviews(
+        {.query = user_input,
+         .power_type = sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE},
+        base::BindOnce(service_callback, std::move(callback), current_tab_url_,
+                       bookmark_model_));
+  }
 }
 
 void UserNotesPageHandler::GetNotesForCurrentTab(
