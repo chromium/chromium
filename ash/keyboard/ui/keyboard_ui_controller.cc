@@ -70,20 +70,6 @@ constexpr base::TimeDelta kReportLingeringStateDelay = base::Milliseconds(5000);
 // after the user enters their username.
 constexpr base::TimeDelta kTransientBlurThreshold = base::Milliseconds(3500);
 
-// An enumeration of different keyboard control events that should be logged.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class KeyboardControlEvent {
-  kShow = 0,
-  kHideAuto = 1,
-  kHideUser = 2,
-  kMaxValue = kHideUser
-};
-
-void LogKeyboardControlEvent(KeyboardControlEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("VirtualKeyboard.KeyboardControlEvent", event);
-}
-
 class VirtualKeyboardController : public ui::VirtualKeyboardController {
  public:
   explicit VirtualKeyboardController(
@@ -561,19 +547,6 @@ void KeyboardUIController::HideKeyboard(HideReason reason) {
 
     case KeyboardUIState::kWillHide:
     case KeyboardUIState::kShown: {
-      // Log whether this was a user or system (automatic) action.
-      switch (reason) {
-        case HIDE_REASON_SYSTEM_EXPLICIT:
-        case HIDE_REASON_SYSTEM_IMPLICIT:
-        case HIDE_REASON_SYSTEM_TEMPORARY:
-          LogKeyboardControlEvent(KeyboardControlEvent::kHideAuto);
-          break;
-        case HIDE_REASON_USER_EXPLICIT:
-        case HIDE_REASON_USER_IMPLICIT:
-          LogKeyboardControlEvent(KeyboardControlEvent::kHideUser);
-          break;
-      }
-
       NotifyKeyboardBoundsChanging(gfx::Rect());
 
       set_keyboard_locked(false);
@@ -658,8 +631,6 @@ void KeyboardUIController::HideAnimationFinished() {
 
 // private
 void KeyboardUIController::ShowAnimationFinished() {
-  MarkKeyboardLoadFinished();
-
   // Notify observers after animation finished to prevent reveal desktop
   // background during animation.
   // If the current state is not SHOWN, it means the state was changed after the
@@ -860,7 +831,6 @@ void KeyboardUIController::OnVirtualKeyboardVisibilityChangedIfEnabled(
 
 void KeyboardUIController::ShowKeyboardInternal(
     aura::Window* target_container) {
-  MarkKeyboardLoadStarted();
   PopulateKeyboardContent(target_container);
   UpdateInputMethodObserver();
 }
@@ -904,7 +874,6 @@ void KeyboardUIController::PopulateKeyboardContent(
   // are at begin states for animation.
   container_behavior_->InitializeShowAnimationStartingState(keyboard_window);
 
-  LogKeyboardControlEvent(KeyboardControlEvent::kShow);
   RecordUkmKeyboardShown();
 
   ui::LayerAnimator* container_animator =
@@ -970,8 +939,6 @@ void KeyboardUIController::ChangeState(KeyboardUIState state) {
 void KeyboardUIController::ReportLingeringState() {
   LOG(ERROR) << "KeyboardUIController lingering in "
              << StateToStr(model_.state());
-  UMA_HISTOGRAM_ENUMERATION("VirtualKeyboard.LingeringIntermediateState",
-                            model_.state());
 }
 
 gfx::Rect KeyboardUIController::GetWorkspaceOccludedBoundsInScreen() const {
@@ -1161,26 +1128,6 @@ void KeyboardUIController::EnsureCaretInWorkArea(
   } else if (ime->GetTextInputClient()) {
     ime->GetTextInputClient()->EnsureCaretNotInRect(occluded_bounds_in_screen);
   }
-}
-
-void KeyboardUIController::MarkKeyboardLoadStarted() {
-  if (!keyboard_load_time_logged_)
-    keyboard_load_time_start_ = base::Time::Now();
-}
-
-void KeyboardUIController::MarkKeyboardLoadFinished() {
-  // Possible to get a load finished without a start if navigating directly to
-  // chrome://keyboard.
-  if (keyboard_load_time_start_.is_null())
-    return;
-
-  if (keyboard_load_time_logged_)
-    return;
-
-  // Log the delta only once.
-  UMA_HISTOGRAM_TIMES("VirtualKeyboard.InitLatency.FirstLoad",
-                      base::Time::Now() - keyboard_load_time_start_);
-  keyboard_load_time_logged_ = true;
 }
 
 void KeyboardUIController::EnableFlagsChanged() {

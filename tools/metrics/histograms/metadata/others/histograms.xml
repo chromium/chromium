@@ -14362,30 +14362,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VirtualKeyboard.InitLatency.FirstLoad" units="ms"
-    expires_after="M85">
-  <owner>oka@chromium.org</owner>
-  <summary>Latency of the keyboard being loaded for the first time.</summary>
-</histogram>
-
-<histogram name="VirtualKeyboard.KeyboardControlEvent"
-    enum="KeyboardControlEvent" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    A count of various control events that can occur on the virtual keyboard,
-    such as showing and hiding.
-  </summary>
-</histogram>
-
-<histogram name="VirtualKeyboard.LingeringIntermediateState"
-    enum="VirtualKeyboardControllerState" expires_after="M85">
-  <owner>oka@chromium.org</owner>
-  <summary>
-    Records whenever an intermediate keyboard state has been active for longer
-    than a fixed timeout.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.AssistantActionPerformed{Source}"
     enum="AssistantActionPerformed" expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
