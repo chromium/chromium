@@ -24,7 +24,7 @@ To get Chrome OS System Colors, an element must:
 }
 
 :host-context([cros]) cr-dialog::part(dialog) {
-  background-color: var(--cros-bg-color-elevation-3);
+  --cr-dialog-background-color: var(--cros-bg-color-elevation-3);
   background-image: none;
   box-shadow: var(--cros-elevation-3-shadow);
 }
@@ -97,6 +97,15 @@ To get Chrome OS System Colors, an element must:
   --cr-link-color: var(--cros-sys-primary);
   --cr-primary-text-color: var(--cros-sys-on_surface);
   --cr-secondary-text-color: var(--cros-sys-secondary);
+}
+
+/* Dialog */
+:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+  --cr-dialog-background-color: var(--cros-sys-app_base_elevated);
+  background-image: none;
+
+  /* TODO(b/266837484) Replace with cros.sys.app-elevation3 when available */
+  box-shadow: 0 0 12px 0 var(--cros-sys-shadow);
 }
 
 /* Icon button */
