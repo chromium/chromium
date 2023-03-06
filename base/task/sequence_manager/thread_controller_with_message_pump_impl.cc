@@ -5,6 +5,7 @@
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
 
 #include <algorithm>
+#include <atomic>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -109,7 +110,8 @@ void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
     : ThreadController(settings.clock),
-      work_deduplicator_(associated_thread_) {}
+      work_deduplicator_(associated_thread_),
+      can_run_tasks_by_batches_(settings.can_run_tasks_by_batches) {}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,
@@ -343,7 +345,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   // When we have |g_run_tasks_by_batches| active we want to always set the flag
   // to true to have a similar behavior on Android as on the desktop platforms
   // for this experiment.
-  if (g_run_tasks_by_batches.load(std::memory_order_relaxed) ||
+  if (RunsTasksByBatches() ||
       (!main_thread_only().yield_to_native_after_batch.is_null() &&
        continuation_lazy_now.Now() <
            main_thread_only().yield_to_native_after_batch)) {
@@ -406,12 +408,10 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 
   DCHECK(main_thread_only().task_source);
 
-  // Keep running tasks for up to 8ms before yielding to the pump when
-  // |g_run_tasks_by_batches| is true.
+  // Keep running tasks for up to 8ms before yielding to the pump when tasks are
+  // run by batches.
   const base::TimeDelta batch_duration =
-      g_run_tasks_by_batches.load(std::memory_order_relaxed)
-          ? base::Milliseconds(8)
-          : base::Milliseconds(0);
+      RunsTasksByBatches() ? base::Milliseconds(8) : base::Milliseconds(0);
 
   const absl::optional<base::TimeTicks> start_time =
       batch_duration.is_zero()
@@ -516,6 +516,11 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       continuation_lazy_now);
   return main_thread_only().task_source->GetPendingWakeUp(continuation_lazy_now,
                                                           select_task_option);
+}
+
+bool ThreadControllerWithMessagePumpImpl::RunsTasksByBatches() const {
+  return can_run_tasks_by_batches_ &&
+         g_run_tasks_by_batches.load(std::memory_order_relaxed);
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {

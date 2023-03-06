@@ -196,11 +196,14 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
 
 }  // namespace
 
-class ThreadControllerWithMessagePumpTest : public testing::Test {
+class ThreadControllerWithMessagePumpTestBase : public testing::Test {
  public:
-  ThreadControllerWithMessagePumpTest()
-      : settings_(
-            SequenceManager::Settings::Builder().SetTickClock(&clock_).Build()),
+  explicit ThreadControllerWithMessagePumpTestBase(
+      bool can_run_tasks_by_batches)
+      : settings_(SequenceManager::Settings::Builder()
+                      .SetTickClock(&clock_)
+                      .SetCanRunTasksByBatches(can_run_tasks_by_batches)
+                      .Build()),
         thread_controller_(
             std::make_unique<testing::StrictMock<MockMessagePump>>(),
             settings_),
@@ -231,6 +234,22 @@ class ThreadControllerWithMessagePumpTest : public testing::Test {
   ThreadControllerForTest thread_controller_;
   raw_ptr<MockMessagePump> message_pump_;
   FakeSequencedTaskSource task_source_;
+};
+
+class ThreadControllerWithMessagePumpTest
+    : public ThreadControllerWithMessagePumpTestBase {
+ public:
+  ThreadControllerWithMessagePumpTest()
+      : ThreadControllerWithMessagePumpTestBase(
+            /* can_run_tasks_by_batches=*/true) {}
+};
+
+class ThreadControllerWithMessagePumpNoBatchesTest
+    : public ThreadControllerWithMessagePumpTestBase {
+ public:
+  ThreadControllerWithMessagePumpNoBatchesTest()
+      : ThreadControllerWithMessagePumpTestBase(
+            /* can_run_tasks_by_batches=*/false) {}
 };
 
 TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
@@ -1055,9 +1074,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatches) {
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list;
 
-  scoped_feature_list_.InitAndEnableFeature(kRunTasksByBatches);
+  scoped_feature_list.InitAndEnableFeature(kRunTasksByBatches);
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
 
   int task_counter = 0;
@@ -1071,10 +1090,29 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatches) {
   ThreadControllerWithMessagePumpImpl::ResetFeatures();
 }
 
-TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
-  base::test::ScopedFeatureList scoped_feature_list_;
+TEST_F(ThreadControllerWithMessagePumpNoBatchesTest, DoWorkBatches) {
+  base::test::ScopedFeatureList scoped_feature_list;
 
-  scoped_feature_list_.InitAndEnableFeature(kRunTasksByBatches);
+  scoped_feature_list.InitAndEnableFeature(kRunTasksByBatches);
+  ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+
+  int task_counter = 0;
+  for (int i = 0; i < 2; i++) {
+    task_source_.AddTask(
+        FROM_HERE, BindLambdaForTesting([&] { task_counter++; }), TimeTicks());
+  }
+  thread_controller_.DoWork();
+
+  // Only one task should run because the SequenceManager was configured to
+  // disallow batches.
+  EXPECT_EQ(task_counter, 1);
+  ThreadControllerWithMessagePumpImpl::ResetFeatures();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(kRunTasksByBatches);
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
 
   int task_counter = 0;

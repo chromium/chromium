@@ -140,6 +140,13 @@ SequenceManager::Settings::Builder::SetAddQueueTimeToTasks(
 }
 
 SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetCanRunTasksByBatches(
+    bool can_run_tasks_by_batches_val) {
+  settings_.can_run_tasks_by_batches = can_run_tasks_by_batches_val;
+  return *this;
+}
+
+SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetPrioritySettings(
     SequenceManager::PrioritySettings settings) {
   settings_.priority_settings = std::move(settings);

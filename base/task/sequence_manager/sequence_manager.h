@@ -169,8 +169,11 @@ class BASE_EXPORT SequenceManager {
     raw_ptr<const TickClock, DanglingUntriaged> clock =
         DefaultTickClock::GetInstance();
 
-    // If true, add the timestamp the task got queued to the task.
+    // Whether or not queueing timestamp will be added to tasks.
     bool add_queue_time_to_tasks = false;
+
+    // Whether many tasks may run between each check for native work.
+    bool can_run_tasks_by_batches = false;
 
     PrioritySettings priority_settings = PrioritySettings::CreateDefault();
 
@@ -344,6 +347,9 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
 
   // Whether or not queueing timestamp will be added to tasks.
   Builder& SetAddQueueTimeToTasks(bool add_queue_time_to_tasks);
+
+  // Whether many tasks may run between each check for native work.
+  Builder& SetCanRunTasksByBatches(bool can_run_tasks_by_batches);
 
   Builder& SetPrioritySettings(PrioritySettings settings);
 

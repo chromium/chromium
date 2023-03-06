@@ -137,6 +137,7 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
           base::sequence_manager::CreateUnboundSequenceManager(
               base::sequence_manager::SequenceManager::Settings::Builder()
                   .SetMessagePumpType(base::MessagePumpType::UI)
+                  .SetCanRunTasksByBatches(true)
                   .SetPrioritySettings(
                       internal::CreateBrowserTaskPrioritySettings())
                   .Build())),

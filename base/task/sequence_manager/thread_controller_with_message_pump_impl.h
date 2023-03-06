@@ -154,6 +154,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // tasks.
   absl::optional<WakeUp> DoWorkImpl(LazyNow* continuation_lazy_now);
 
+  bool RunsTasksByBatches() const;
+
   void InitializeSingleThreadTaskRunnerCurrentDefaultHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
 
@@ -191,6 +193,11 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   std::unique_ptr<
       base::internal::ScopedSetSequenceLocalStorageMapForCurrentThread>
       scoped_set_sequence_local_storage_map_for_current_thread_;
+
+  // Whether tasks can run by batches (i.e. multiple tasks run between each
+  // check for native work). Tasks will only run by batches if this is true and
+  // the "RunTasksByBatches" feature is enabled.
+  bool can_run_tasks_by_batches_ = false;
 
   // Reset at the start & end of each unit of work to cover the work itself and
   // the overhead between each work item (no-op if HangWatcher is not enabled
