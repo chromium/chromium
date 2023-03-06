@@ -199,6 +199,58 @@ void ReportLoginsWithSchemesMetrics(
   LogNumberOfAccountsForScheme(suffix_for_store, "Other", other_logins);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordManagerEnableState {
+  kDefault = 0,
+  kEnabledByUser = 1,
+  kEnabledByExtension = 2,
+  kEnabledByPolicy = 3,
+  kEnabledByRecommendedPolicy = 4,
+  kEnabledByOther = 5,
+  kDisabledByUser = 6,
+  kDisabledByExtension = 7,
+  kDisabledByPolicy = 8,
+  kDisabledByRecommendedPolicy = 9,
+  kDisabledByOther = 10,
+  kMaxValue = kDisabledByOther,
+};
+
+PasswordManagerEnableState
+CredentialsEnableServiceSettingToPasswordManagerEnableState(
+    const PrefService::Preference* pref) {
+  DCHECK(pref->GetValue()->GetIfBool().has_value());
+
+  if (pref->IsDefaultValue()) {
+    return PasswordManagerEnableState::kDefault;
+  }
+
+  bool credentials_service_enabled = pref->GetValue()->GetBool();
+  if (pref->IsUserControlled()) {
+    return credentials_service_enabled
+               ? PasswordManagerEnableState::kEnabledByUser
+               : PasswordManagerEnableState::kDisabledByUser;
+  }
+  if (pref->IsManaged()) {
+    return credentials_service_enabled
+               ? PasswordManagerEnableState::kEnabledByPolicy
+               : PasswordManagerEnableState::kDisabledByPolicy;
+  }
+  if (pref->IsExtensionControlled()) {
+    return credentials_service_enabled
+               ? PasswordManagerEnableState::kEnabledByExtension
+               : PasswordManagerEnableState::kDisabledByExtension;
+  }
+  if (pref->IsRecommended()) {
+    return credentials_service_enabled
+               ? PasswordManagerEnableState::kEnabledByRecommendedPolicy
+               : PasswordManagerEnableState::kDisabledByRecommendedPolicy;
+  }
+  return credentials_service_enabled
+             ? PasswordManagerEnableState::kEnabledByOther
+             : PasswordManagerEnableState::kDisabledByOther;
+}
+
 void ReportPasswordNotesMetrics(
     bool is_account_store,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
@@ -594,9 +646,11 @@ StoreMetricsReporter::StoreMetricsReporter(
   is_opted_in_account_storage_ =
       features_util::IsOptedInForAccountStorage(prefs, sync_service);
 
-  base::UmaHistogramBoolean(
-      base::StrCat({kPasswordManager, ".Enabled4"}),
-      prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
+  base::UmaHistogramEnumeration(
+      base::StrCat({kPasswordManager, ".EnableState"}),
+      CredentialsEnableServiceSettingToPasswordManagerEnableState(
+          prefs->FindPreference(
+              password_manager::prefs::kCredentialsEnableService)));
 
   ReportBiometricAuthenticationBeforeFillingMetrics(prefs);
 

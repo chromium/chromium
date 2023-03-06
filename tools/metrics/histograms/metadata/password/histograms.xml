@@ -1435,10 +1435,24 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Enabled4" enum="BooleanEnabled"
     expires_after="2023-07-09">
+  <obsolete>
+    Obsolete in M113 and superseeded by the PasswordManager.EnableState metrics.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Indicates whether the password manager is enabled. Recorded 30 seconds after
+    PasswordStore is created at most once per day for regular profiles.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.EnableState" enum="PasswordManagerEnableState"
+    expires_after="2023-07-09">
+  <owner>markusheintz@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Indicates whether the password manager is enabled or disabled and by why
+    e.g. by the user, policy, extension ... . Recorded 30 seconds after
     PasswordStore is created at most once per day for regular profiles.
   </summary>
 </histogram>
