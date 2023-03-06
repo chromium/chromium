@@ -35,7 +35,7 @@ declare_args() {
   # prevents this.
   #
   # TODO(https://crbug.com/1245714): fix std handling and check `current_os`.
-  use_chromium_rust_toolchain = host_os == "linux"
+  use_chromium_rust_toolchain = target_os == "linux" && host_os == "linux"
 
   # Build libstd locally with GN and use that instead of the prebuilts, where
   # applicable. If this is false the prebuilt libstd will always be used. If
@@ -84,7 +84,8 @@ android_toolchain_supports_platform =
      (is_android && (current_cpu == "arm" || current_cpu == "arm64" ||
                      current_cpu == "x64" || current_cpu == "x86"))) ||
     (is_linux && current_cpu == "x64")
-chromium_toolchain_supports_platform = !is_nacl
+chromium_toolchain_supports_platform =
+    !is_nacl && is_linux && current_cpu == "x64"
 custom_toolchain_supports_platform = !is_nacl || rust_toolchain_supports_nacl
 
 toolchain_has_rust =
@@ -125,9 +126,20 @@ if (enable_rust) {
     rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
     use_unverified_rust_toolchain = true
   } else if (use_chromium_rust_toolchain) {
+    if (host_os != "linux") {
+      assert(
+          false,
+          "Attempt to use Chromium Rust toolchain on an unsupported platform")
+    }
+
     rust_sysroot = "//third_party/rust-toolchain"
     use_unverified_rust_toolchain = false
   } else {
+    if (host_os != "linux") {
+      assert(false,
+             "Attempt to use Android Rust toolchain on an unsupported platform")
+    }
+
     rust_sysroot = "//third_party/android_rust_toolchain/toolchain"
     use_unverified_rust_toolchain = false
     extra_sysroot_libs += [ "libunwind.a" ]
