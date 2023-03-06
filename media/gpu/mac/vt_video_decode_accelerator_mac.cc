@@ -2294,7 +2294,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       if (!gl_image->InitializeWithCVPixelBuffer(
               frame.image.get(), plane,
               gfx::GenericSharedMemoryId(g_cv_pixel_buffer_ids.GetNext()),
-              plane_buffer_format, color_space)) {
+              plane_buffer_format)) {
         NOTIFY_STATUS("Failed to initialize GLImageIOSurface", PLATFORM_FAILURE,
                       SFT_PLATFORM_ERROR);
       }
