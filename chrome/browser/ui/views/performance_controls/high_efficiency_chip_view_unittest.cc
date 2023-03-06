@@ -105,9 +105,9 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
   }
 
   void SetHighEfficiencyModeEnabled(bool enabled) {
-    g_browser_process->local_state()->SetBoolean(
-        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-        enabled);
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->SetHighEfficiencyModeEnabled(enabled);
   }
 
   PageActionIconView* GetPageActionIconView() {

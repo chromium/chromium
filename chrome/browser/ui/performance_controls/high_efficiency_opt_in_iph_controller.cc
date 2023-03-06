@@ -37,12 +37,10 @@ void HighEfficiencyOptInIPHController::OnJankThresholdReached() {
 
 void HighEfficiencyOptInIPHController::MaybeTriggerPromo() {
   BrowserWindow* browser_window = browser_->window();
-  PrefService* prefs = g_browser_process->local_state();
   if (browser_window != nullptr &&
-      prefs
-          ->FindPreference(performance_manager::user_tuning::prefs::
-                               kHighEfficiencyModeEnabled)
-          ->IsDefaultValue()) {
+      performance_manager::user_tuning::UserPerformanceTuningManager::
+          GetInstance()
+              ->IsHighEfficiencyModeDefault()) {
     browser_window->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHHighEfficiencyModeFeature);
   }

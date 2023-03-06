@@ -60,6 +60,10 @@ class UserPerformanceTuningManager
     // deactivated
     virtual void OnBatterySaverModeChanged(bool is_active) {}
 
+    // Raised when the high efficiency mode setting is changed. Get the new
+    // state using `UserPerformanceTuningManager::IsHighEfficiencyModeActive()`
+    virtual void OnHighEfficiencyModeChanged() {}
+
     // Raised when the device is plugged in or unplugged
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power.
@@ -145,6 +149,17 @@ class UserPerformanceTuningManager
 
   // Returns true if High Efficiency mode is currently enabled.
   bool IsHighEfficiencyModeActive() const;
+
+  // Returns true if the prefs underlying High Efficiency Mode are managed by an
+  // enterprise policy.
+  bool IsHighEfficiencyModeManaged() const;
+
+  // Returns true if the prefs underlying High Efficiency Mode are still in the
+  // default state.
+  bool IsHighEfficiencyModeDefault() const;
+
+  // Enables high efficiency mode and sets the relevant prefs accordingly.
+  void SetHighEfficiencyModeEnabled(bool enabled);
 
   // Returns true if Battery Saver Mode interventions are active. If any state
   // transitions cause an observer notification, this is guaranteed to reflect

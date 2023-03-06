@@ -389,10 +389,9 @@ void MaybeRegisterChromeFeaturePromos(
           base::BindRepeating(
               [](ui::ElementContext context,
                  user_education::FeaturePromoHandle promo_handle) {
-                PrefService* prefs = g_browser_process->local_state();
-                prefs->SetBoolean(performance_manager::user_tuning::prefs::
-                                      kHighEfficiencyModeEnabled,
-                                  true);
+                performance_manager::user_tuning::UserPerformanceTuningManager::
+                    GetInstance()
+                        ->SetHighEfficiencyModeEnabled(true);
                 RecordHighEfficiencyIPHEnableMode(true);
               }))
           .SetCustomActionIsDefault(true)
