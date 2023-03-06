@@ -296,8 +296,36 @@ void DualReadingListModel::SetEstimatedReadTimeIfExists(
     const GURL& url,
     base::TimeDelta estimated_read_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(loaded());
+
+  scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
+  if (!entry) {
+    return;
+  }
+
+  const bool notify_observers =
+      entry->EstimatedReadTime() != estimated_read_time;
+
+  if (notify_observers) {
+    NotifyObserversWithWillUpdateEntry(url);
+  }
+
+  // The update propagates to both underlying ReadingListModelImpl instances
+  // even if the `entry` estimated read time is equal to `estimated_read_time`.
+  // This is because if `entry` was a merged entry, then one of the two
+  // underlying entries may have a different estimated read time.
+  {
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_observer_notifications_, true);
+    local_or_syncable_model_->SetEstimatedReadTimeIfExists(url,
+                                                           estimated_read_time);
+    account_model_->SetEstimatedReadTimeIfExists(url, estimated_read_time);
+  }
+
+  if (notify_observers) {
+    NotifyObserversWithDidUpdateEntry(url);
+    NotifyObserversWithDidApplyChanges();
+  }
 }
 
 void DualReadingListModel::SetEntryDistilledStateIfExists(
