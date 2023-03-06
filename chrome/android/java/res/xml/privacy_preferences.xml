@@ -55,10 +55,12 @@ found in the LICENSE file.
         android:key="do_not_track"
         android:title="@string/do_not_track_title"/>
     <Preference
+        app:isPreferenceVisible="false"
         android:key="privacy_sandbox"
         android:title="@string/prefs_privacy_sandbox"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragmentV3"/>
     <Preference
+        app:isPreferenceVisible="false"
         android:key="phone_as_a_security_key"
         android:title="@string/cablev2_paask_title"
         android:summary="@string/cablev2_paask_body"
@@ -66,5 +68,6 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="sync_and_services_link"
         android:summary="@string/privacy_sync_and_services_link_legacy"
+        app:isPreferenceVisible="false"
         app:allowDividerBelow="false"/>
 </PreferenceScreen>
