@@ -49,7 +49,6 @@ AlertRequest::AlertRequest(
       text_field_configs_(text_field_configs),
       button_configs_(button_configs),
       response_converter_(response_converter) {
-  DCHECK(title_.length || message_.length);
   DCHECK_GT(button_configs_.size(), 0U);
   DCHECK(!response_converter.is_null());
 }

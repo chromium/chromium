@@ -44,7 +44,6 @@ using alert_overlays::AlertResponse;
 
   AlertRequest* alertRequest = self.alertRequest;
   DCHECK(alertRequest);
-  DCHECK_GT(alertRequest->title().length + alertRequest->message().length, 0U);
 
   [_consumer setTitle:alertRequest->title()];
   [_consumer setMessage:alertRequest->message()];
