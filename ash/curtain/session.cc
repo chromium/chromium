@@ -10,6 +10,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
+#include "ash/system/power/power_button_controller.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -76,6 +77,7 @@ Session::Session(Shell* shell,
           std::make_unique<RootWindowsObserver>(this, shell)),
       scoped_audio_muter_(std::make_unique<ScopedAudioMuter>()) {
   CurtainOffAllRootWindows();
+  shell_->power_button_controller()->OnSecurityCurtainEnabled();
 }
 
 void Session::Init() {
@@ -96,6 +98,7 @@ Session::~Session() {
   if (ash::Shell::HasInstance()) {
     RemoveCurtainOfAllRootWindows();
     shell_->UpdateCursorCompositingEnabled();
+    shell_->power_button_controller()->OnSecurityCurtainDisabled();
   }
 }
 
