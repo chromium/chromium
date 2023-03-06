@@ -127,9 +127,6 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       proto::CustomInput::FILL_SYNC_DEVICE_INFO,
       std::make_unique<processing::SyncDeviceInfoObserver>(
           init_params->device_info_tracker));
-
-  result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
-      configs_, std::move(cached_result_writer_), platform_options_);
 }
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
@@ -246,8 +243,6 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   for (auto& selector : segment_selectors_) {
     selector.second->OnPlatformInitialized(&execution_service_);
   }
-
-  result_refresh_manager_->RefreshModelResults(CreateSegmentResultProviders());
 
   request_dispatcher_->OnPlatformInitialized(success, &execution_service_,
                                              CreateSegmentResultProviders());

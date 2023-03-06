@@ -181,9 +181,6 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // For routing requests to the right handler.
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
 
-  // Refreshes model results.
-  std::unique_ptr<ResultRefreshManager> result_refresh_manager_;
-
   // Segment results.
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;
 
