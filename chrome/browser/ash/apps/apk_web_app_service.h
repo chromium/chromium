@@ -88,7 +88,6 @@ class ApkWebAppService : public KeyedService,
   void SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs);
 
   bool IsWebOnlyTwa(const web_app::AppId& app_id);
-  bool IsWebOnlyTwaDeprecated(const web_app::AppId& app_id);
 
   bool IsWebAppInstalledFromArc(const web_app::AppId& web_app_id);
 
@@ -103,8 +102,6 @@ class ApkWebAppService : public KeyedService,
       const std::string& package_name);
 
   absl::optional<std::string> GetCertificateSha256Fingerprint(
-      const web_app::AppId& app_id);
-  absl::optional<std::string> GetCertificateSha256FingerprintDeprecated(
       const web_app::AppId& app_id);
 
   using WebAppCallbackForTesting =
@@ -177,6 +174,8 @@ class ApkWebAppService : public KeyedService,
                          const arc::mojom::WebAppInfoPtr& web_app_info);
   const base::Value::Dict& WebAppToApks() const;
   void SyncArcAndWebApps();
+
+  void RemoveObsoletePrefValues(const web_app::AppId& web_app_id);
 
   WebAppCallbackForTesting web_app_installed_callback_;
   WebAppCallbackForTesting web_app_uninstalled_callback_;

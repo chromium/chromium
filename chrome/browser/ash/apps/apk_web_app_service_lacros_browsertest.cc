@@ -350,48 +350,6 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest, UpdateAppType) {
   EXPECT_EQ(shelf_model->ItemIndexByID(ShelfID(*app_id_a)), pin_index);
 }
 
-// TODO(crbug/1329727): This test only tests if certain properties in
-// apk_web_apps prefs are updated when a package is updated. Remove this test
-// when |web_app::IsWebAppsCrosapiEnabled| is removed and these properties are
-// read from |ArcAppListPrefs| directly instead.
-IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
-                       UpdateDeprecatedAppProperties) {
-  auto& service = GetApkWebAppService();
-
-  // Start with one web app in ARC.
-  StartLacros();
-  StartArc(GetWebAppPackage("a"));
-
-  // App "a" is installed.
-  absl::optional<std::string> app_id_a =
-      service.GetWebAppIdForPackageName("org.example.a");
-  ASSERT_NE(app_id_a, absl::nullopt);
-  EXPECT_TRUE(service.IsWebOnlyTwaDeprecated(*app_id_a));
-  EXPECT_EQ(service.GetCertificateSha256FingerprintDeprecated(*app_id_a),
-            "a-sha1");
-
-  // Update the package (is_web_only_twa).
-  arc::mojom::ArcPackageInfoPtr package = GetWebAppPackage("a");
-  package->web_app_info->is_web_only_twa = false;
-  GetAppHost().OnPackageAdded(std::move(package));
-
-  // App "a" updated (is_web_only_twa only).
-  EXPECT_FALSE(service.IsWebOnlyTwaDeprecated(*app_id_a));
-  EXPECT_EQ(service.GetCertificateSha256FingerprintDeprecated(*app_id_a),
-            "a-sha1");
-
-  // Update the package (certificate_sha256_fingerprint).
-  package = GetWebAppPackage("a");
-  package->web_app_info->is_web_only_twa = false;
-  package->web_app_info->certificate_sha256_fingerprint = "a-sha1-updated";
-  GetAppHost().OnPackageAdded(std::move(package));
-
-  // App "a" updated.
-  EXPECT_FALSE(service.IsWebOnlyTwaDeprecated(*app_id_a));
-  EXPECT_EQ(service.GetCertificateSha256FingerprintDeprecated(*app_id_a),
-            "a-sha1-updated");
-}
-
 IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
                        DelayedLacrosInstallUninstall) {
   auto& service = GetApkWebAppService();
