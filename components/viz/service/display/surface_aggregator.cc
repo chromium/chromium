@@ -1029,10 +1029,10 @@ void SurfaceAggregator::AddRootReadbackPass() {
   // a backdrop filter.
   base::flat_set<AggregatedRenderPassId> pass_ids_drawing_to_root;
   for (auto* quad : root_render_pass->quad_list) {
-    if (quad->material != DrawQuad::Material::kAggregatedRenderPass)
-      continue;
-    pass_ids_drawing_to_root.insert(
-        AggregatedRenderPassDrawQuad::MaterialCast(quad)->render_pass_id);
+    if (auto* render_pass_quad =
+            quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
+      pass_ids_drawing_to_root.insert(render_pass_quad->render_pass_id);
+    }
   }
   if (!pass_ids_drawing_to_root.empty()) {
     for (auto& render_pass : *dest_pass_list_) {

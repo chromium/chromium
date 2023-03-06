@@ -249,12 +249,12 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
       OverlayCandidate::DisplayRectInTargetSpace(candidate);
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
-    if (overlap_iter->material == DrawQuad::Material::kAggregatedRenderPass) {
+    if (auto* render_pass_draw_quad =
+            overlap_iter->DynamicCast<AggregatedRenderPassDrawQuad>()) {
       gfx::RectF overlap_rect = cc::MathUtil::MapClippedRect(
           overlap_iter->shared_quad_state->quad_to_target_transform,
           gfx::RectF(overlap_iter->rect));
-      const auto* render_pass_draw_quad =
-          AggregatedRenderPassDrawQuad::MaterialCast(*overlap_iter);
+
       if (target_rect.Intersects(overlap_rect) &&
           render_pass_backdrop_filters.count(
               render_pass_draw_quad->render_pass_id)) {
