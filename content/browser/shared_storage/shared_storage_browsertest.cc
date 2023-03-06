@@ -737,7 +737,8 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
   void ExecuteScriptInWorklet(const ToRenderFrameHost& execution_target,
                               const std::string& script,
-                              GURL* out_module_script_url) {
+                              GURL* out_module_script_url,
+                              size_t expected_total_host_count = 1u) {
     DCHECK(out_module_script_url);
 
     base::StringPairs run_function_body_replacement;
@@ -755,7 +756,12 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
                        JsReplace("sharedStorage.worklet.addModule($1)",
                                  *out_module_script_url)));
 
-    EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+    // There may be more than one host in the worklet host manager if we are
+    // executing inside a nested fenced frame that was created using
+    // `selectURL()`.
+    EXPECT_EQ(expected_total_host_count,
+              test_worklet_host_manager().GetAttachedWorkletHostsCount());
+
     EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
     EXPECT_TRUE(ExecJs(execution_target, R"(
@@ -764,7 +770,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
     // There are 2 "worklet operations": `addModule()` and `run()`.
     test_worklet_host_manager()
-        .GetAttachedWorkletHost()
+        .GetAttachedWorkletHostForFrame(execution_target.render_frame_host())
         ->WaitForWorkletResponsesCount(2);
   }
 
@@ -2965,6 +2971,23 @@ class SharedStorageFencedFrameInteractionBrowserTestBase
                                         },
                                     },
                                     target));
+  }
+
+  // Precondition: There is exactly one existing fenced frame.
+  void NavigateExistingFencedFrame(FrameTreeNode* existing_fenced_frame,
+                                   const FencedFrameNavigationTarget& target) {
+    FrameTreeNode* root = PrimaryFrameTreeNodeRoot();
+    TestFrameNavigationObserver observer(existing_fenced_frame);
+
+    EXPECT_TRUE(ExecJs(root, "var f = document.querySelector('fencedframe');"));
+    EvalJsResult result = NavigateFencedFrame(root, target);
+
+    observer.Wait();
+
+    EXPECT_TRUE(result.error.empty());
+    if (absl::holds_alternative<GURL>(target)) {
+      EXPECT_EQ(result, absl::get<GURL>(target).spec());
+    }
   }
 
  private:
@@ -6226,6 +6249,289 @@ IN_PROC_BROWSER_TEST_P(SharedStorageReportEventLimitBrowserTest,
     RunSuccessfulReportEvents(extra_fenced_frame_root_node, responses[2].get(),
                               responses[3].get());
   }
+}
+
+class SharedStorageContextBrowserTest
+    : public SharedStorageFencedFrameInteractionBrowserTestBase {
+ public:
+  SharedStorageContextBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFencedFramesAPIChanges);
+  }
+
+  ~SharedStorageContextBrowserTest() override = default;
+
+  void GenerateFencedFrameConfig(std::string hostname) {
+    EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+    TestSelectURLFencedFrameConfigObserver config_observer(
+        GetStoragePartition());
+    GURL fenced_frame_url = https_server()->GetURL(hostname, kFencedFramePath);
+    EvalJsResult result = EvalJs(shell(), JsReplace(R"(
+      (async function() {
+        window.fencedFrameConfig = await sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [
+            {
+              url: $1,
+            }
+          ],
+          {
+            data: {'mockResult': 0},
+            resolveToConfig: true
+          }
+        );
+        if (!(fencedFrameConfig instanceof FencedFrameConfig)) {
+          throw new Error('selectURL() did not return a FencedFrameConfig.');
+        }
+        return window.fencedFrameConfig;
+      })()
+    )",
+                                                    fenced_frame_url.spec()));
+
+    EXPECT_TRUE(result.error.empty());
+    const absl::optional<GURL>& observed_urn_uuid =
+        config_observer.GetUrnUuid();
+    EXPECT_TRUE(observed_urn_uuid.has_value());
+    EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
+
+    // There are 2 "worklet operations": `addModule()` and `selectURL()`.
+    test_worklet_host_manager()
+        .GetAttachedWorkletHost()
+        ->WaitForWorkletResponsesCount(2);
+
+    ASSERT_TRUE(config_observer.ConfigObserved());
+    const absl::optional<FencedFrameConfig>& fenced_frame_config =
+        config_observer.GetConfig();
+    EXPECT_TRUE(fenced_frame_config.has_value());
+    EXPECT_EQ(fenced_frame_config->urn_uuid_, observed_urn_uuid.value());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that `blink::FencedFrameConfig::context` can be set and then accessed
+// via `sharedStorage.context`. The context must be set prior to fenced frame
+// navigation to the config.
+IN_PROC_BROWSER_TEST_F(SharedStorageContextBrowserTest,
+                       EmbedderContextSetBeforeNavigation_Defined) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  // Generate a config using `selectURL()`.
+  GenerateFencedFrameConfig("b.test");
+
+  EXPECT_EQ("Finish executing 'test-url-selection-operation'",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Set the context in the config.
+  const std::string kEmbedderContext = "some context";
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             JsReplace("window.fencedFrameConfig.setSharedStorageContext($1);",
+                       kEmbedderContext)));
+
+  // Create and navigate a fenced frame to the config.
+  FrameTreeNode* fenced_frame_root_node =
+      CreateFencedFrame(FencedFrameNavigationTarget("fencedFrameConfig"));
+  ASSERT_TRUE(fenced_frame_root_node);
+
+  // Try to retrieve the context from the root fenced frame's worklet.
+  GURL script_url;
+  ExecuteScriptInWorklet(fenced_frame_root_node, R"(
+    console.log(sharedStorage.context);
+  )",
+                         &script_url, /*expected_total_host_count=*/2u);
+
+  // The root fenced frame will have access to the context.
+  EXPECT_EQ(kEmbedderContext,
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Create and navigate to a nested iframe that is same-origin to the root
+  // fenced frame.
+  GURL same_origin_url = https_server()->GetURL("b.test", kFencedFramePath);
+  FrameTreeNode* same_origin_nested_iframe =
+      CreateIFrame(fenced_frame_root_node, same_origin_url);
+  ASSERT_TRUE(same_origin_nested_iframe);
+
+  // Try to retrieve the context from the nested same-origin iframe's worklet.
+  ExecuteScriptInWorklet(same_origin_nested_iframe, R"(
+    console.log(sharedStorage.context);
+  )",
+                         &script_url, /*expected_total_host_count=*/3u);
+
+  // A same-origin child of the fenced frame will have access to the context.
+  EXPECT_EQ(kEmbedderContext,
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Create and navigate to a nested iframe that is cross-origin to the root
+  // fenced frame.
+  GURL cross_origin_url = https_server()->GetURL("c.test", kFencedFramePath);
+  FrameTreeNode* cross_origin_nested_iframe =
+      CreateIFrame(fenced_frame_root_node, cross_origin_url);
+  ASSERT_TRUE(cross_origin_nested_iframe);
+
+  // Try to retrieve the context from the nested cross-origin iframe's worklet.
+  ExecuteScriptInWorklet(cross_origin_nested_iframe, R"(
+    console.log(sharedStorage.context);
+  )",
+                         &script_url, /*expected_total_host_count=*/4u);
+
+  // A cross-origin child of the fenced frame will not have access to the
+  // context.
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+}
+
+// Tests that `blink::FencedFrameConfig::context`, when not set and then
+// accessed via `sharedStorage.context`, will be undefined.
+IN_PROC_BROWSER_TEST_F(SharedStorageContextBrowserTest,
+                       EmbedderContextSetAfterNavigation_Undefined) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  // Generate a config using `selectURL()`.
+  GenerateFencedFrameConfig("b.test");
+
+  EXPECT_EQ("Finish executing 'test-url-selection-operation'",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Create and navigate a fenced frame to the config.
+  FrameTreeNode* fenced_frame_root_node =
+      CreateFencedFrame(FencedFrameNavigationTarget("fencedFrameConfig"));
+  ASSERT_TRUE(fenced_frame_root_node);
+
+  // Set the context in the config. Since the fenced frame has already been
+  // navigated to the config and we are not going to navigate to it again, this
+  // context will not be propagated to the browser process and so won't be
+  // accessible via `sharedStorage.context`.
+  const std::string kEmbedderContext = "some context";
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             JsReplace("window.fencedFrameConfig.setSharedStorageContext($1);",
+                       kEmbedderContext)));
+
+  // Try to retrieve the context from the root fenced frame's worklet.
+  GURL script_url;
+  ExecuteScriptInWorklet(fenced_frame_root_node, R"(
+    console.log(sharedStorage.context);
+  )",
+                         &script_url, /*expected_total_host_count=*/2u);
+
+  // The root fenced frame will see that the context is undefined because it was
+  // not set before fenced frame navigation.
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+}
+
+// Tests that `blink::FencedFrameConfig::context`, when set after a first
+// navigation to the config and before a second fenced frame navigation to the
+// same config, is updated, as seen via `sharedStorage.context`.
+IN_PROC_BROWSER_TEST_F(SharedStorageContextBrowserTest,
+                       EmbedderContextNavigateTwice_ContextUpdated) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  // Generate a config using `selectURL()`.
+  GenerateFencedFrameConfig("b.test");
+
+  EXPECT_EQ("Finish executing 'test-url-selection-operation'",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Set the context in the config.
+  const std::string kEmbedderContext = "some context";
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             JsReplace("window.fencedFrameConfig.setSharedStorageContext($1);",
+                       kEmbedderContext)));
+
+  // Create and navigate a fenced frame to the config.
+  FrameTreeNode* fenced_frame_root_node =
+      CreateFencedFrame(FencedFrameNavigationTarget("fencedFrameConfig"));
+  ASSERT_TRUE(fenced_frame_root_node);
+
+  // Try to retrieve the context from the root fenced frame's worklet.
+  GURL script_url;
+  ExecuteScriptInWorklet(fenced_frame_root_node, R"(
+    console.log(sharedStorage.context);
+  )",
+                         &script_url, /*expected_total_host_count=*/2u);
+
+  // The root fenced frame will have access to the context.
+  EXPECT_EQ(kEmbedderContext,
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Set the context in the config.
+  const std::string kNewEmbedderContext = "some different context";
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             JsReplace("window.fencedFrameConfig.setSharedStorageContext($1);",
+                       kNewEmbedderContext)));
+
+  // Navigate the fenced frame again to the updated config.
+  NavigateExistingFencedFrame(fenced_frame_root_node,
+                              FencedFrameNavigationTarget("fencedFrameConfig"));
+
+  // Try to retrieve the context from the root fenced frame's worklet.
+  ExecuteScriptInWorklet(fenced_frame_root_node, R"(
+    console.log(sharedStorage.context);
+  )",
+                         &script_url, /*expected_total_host_count=*/2u);
+
+  // The root fenced frame will have access to the updated context.
+  EXPECT_EQ(kNewEmbedderContext,
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+}
+
+// Tests that `blink::FencedFrameConfig::context` can be set and then accessed
+// via `sharedStorage.context`, but that any context string exceeding the length
+// limit is truncated.
+IN_PROC_BROWSER_TEST_F(SharedStorageContextBrowserTest,
+                       EmbedderContextExceedsLengthLimit_Truncated) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  // Generate a config using `selectURL()`.
+  GenerateFencedFrameConfig("b.test");
+
+  EXPECT_EQ("Finish executing 'test-url-selection-operation'",
+            base::UTF16ToUTF8(console_observer.messages().back().message));
+
+  // Set the context in the config.
+  const std::string kLongEmbedderContext(
+      blink::kFencedFrameConfigSharedStorageContextMaxLength, 'x');
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             JsReplace("window.fencedFrameConfig.setSharedStorageContext($1);",
+                       kLongEmbedderContext + 'X')));
+
+  // Create and navigate a fenced frame to the config.
+  FrameTreeNode* fenced_frame_root_node =
+      CreateFencedFrame(FencedFrameNavigationTarget("fencedFrameConfig"));
+  ASSERT_TRUE(fenced_frame_root_node);
+
+  // Try to retrieve the context from the root fenced frame's worklet.
+  GURL script_url;
+  ExecuteScriptInWorklet(fenced_frame_root_node, R"(
+    console.log(sharedStorage.context);
+  )",
+                         &script_url, /*expected_total_host_count=*/2u);
+
+  // The root fenced frame will have access to the context, which will be
+  // truncated.
+  EXPECT_EQ(kLongEmbedderContext,
+            base::UTF16ToUTF8(console_observer.messages().back().message));
 }
 
 }  // namespace content

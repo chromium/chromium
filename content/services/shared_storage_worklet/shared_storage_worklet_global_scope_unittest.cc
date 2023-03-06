@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
@@ -27,6 +28,9 @@
 namespace shared_storage_worklet {
 
 namespace {
+
+constexpr char WorkletContextDefinedHistogram[] =
+    "Storage.SharedStorage.Worklet.Context.IsDefined";
 
 std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> CreateBatchResult(
     std::vector<std::pair<std::u16string, std::u16string>> input) {
@@ -268,7 +272,8 @@ class SharedStorageWorkletGlobalScopeTest : public testing::Test {
     mock_private_aggregation_host_ =
         std::make_unique<MockMojomPrivateAggregationHost>();
     global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*embedder_context=*/absl::nullopt);
   }
 
   ~SharedStorageWorkletGlobalScopeTest() override = default;
@@ -442,6 +447,7 @@ TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedSuccess) {
   EXPECT_EQ(GetTypeOf("sharedStorage.entries"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.length"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.remainingBudget"), "function");
+  EXPECT_EQ(GetTypeOf("sharedStorage.context"), "undefined");
   EXPECT_EQ(GetTypeOf("privateAggregation"), "object");
   EXPECT_EQ(GetTypeOf("privateAggregation.sendHistogramReport"), "function");
 }
@@ -1472,7 +1478,8 @@ TEST_F(SharedStorageRunOperationTest,
 TEST_F(SharedStorageRunOperationTest,
        UnnamedOperationWithPrivateAggregationCall_PAPermissionsPolicyDisabled) {
   OverrideGlobalScope(std::make_unique<SharedStorageWorkletGlobalScope>(
-      /*private_aggregation_permissions_policy_allowed=*/false));
+      /*private_aggregation_permissions_policy_allowed=*/false,
+      /*embedder_context=*/absl::nullopt));
 
   SimulateAddModule(R"(
       class TestClass {
@@ -2247,6 +2254,70 @@ TEST_F(SharedStorageObjectMethodTest, ConsoleLogOperation_MultipleArguments) {
   EXPECT_EQ(test_client()->observed_console_log_messages().size(), 1u);
   EXPECT_EQ(test_client()->observed_console_log_messages()[0],
             "123 456 true undefined null [object Object]");
+}
+
+class SharedStorageObjectPropertyTest : public SharedStorageRunOperationTest {
+ public:
+  SharedStorageObjectPropertyTest() = default;
+
+  void SetEmbedderContext(absl::optional<std::u16string> embedder_context) {
+    OverrideGlobalScope(std::make_unique<SharedStorageWorkletGlobalScope>(
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        embedder_context));
+
+    // Run AddModule so that sharedStorage is exposed.
+    SimulateAddModule(R"()");
+  }
+
+  void ExecuteScript(const std::string& script_body) {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    v8::Local<v8::Context> context = LocalContext();
+    v8::Context::Scope context_scope(context);
+
+    v8::Local<v8::Value> v8_result = EvalJs(script_body);
+
+    ASSERT_TRUE(!v8_result.IsEmpty());
+    ASSERT_FALSE(v8_result->IsPromise());
+
+    v8_result_value_ =
+        v8::Global<v8::Value>(Isolate(), v8_result.As<v8::Value>());
+  }
+
+  v8::Local<v8::Value> v8_result_value() {
+    v8::Local<v8::Value> v8_result_value = v8_result_value_.Get(Isolate());
+    return v8_result_value;
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  v8::Global<v8::Value> v8_result_value_;
+};
+
+TEST_F(SharedStorageObjectPropertyTest, ContextOperation_String) {
+  SetEmbedderContext(absl::make_optional(u"some embedder context"));
+  EXPECT_EQ(GetTypeOf("sharedStorage.context"), "string");
+
+  ExecuteScript("sharedStorage.context");
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  EXPECT_TRUE(v8_result_value()->IsString());
+  EXPECT_EQ(gin::V8ToString(Isolate(), v8_result_value()),
+            "some embedder context");
+  histogram_tester_.ExpectUniqueSample(WorkletContextDefinedHistogram, true, 2);
+}
+
+TEST_F(SharedStorageObjectPropertyTest, ContextOperation_Undefined) {
+  SetEmbedderContext(absl::nullopt);
+  EXPECT_EQ(GetTypeOf("sharedStorage.context"), "undefined");
+
+  ExecuteScript("sharedStorage.context");
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  EXPECT_TRUE(v8_result_value()->IsUndefined());
+  histogram_tester_.ExpectUniqueSample(WorkletContextDefinedHistogram, false,
+                                       2);
 }
 
 class SharedStoragePrivateAggregationTest

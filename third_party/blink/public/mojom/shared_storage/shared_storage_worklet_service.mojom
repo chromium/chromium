@@ -108,7 +108,8 @@ interface SharedStorageWorkletService {
   Initialize(
     pending_associated_remote<SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
-    pending_remote<PrivateAggregationHost>? pa_host);
+    pending_remote<PrivateAggregationHost>? pa_host,
+    mojo_base.mojom.String16? embedder_context);
 
   // Handle sharedStorage.worklet.addModule(): download and load the script in
   // the worklet environment. The origin of the `script_source_url` should be

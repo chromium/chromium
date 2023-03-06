@@ -36,8 +36,9 @@ class SharedStorage;
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
  public:
-  explicit SharedStorageWorkletGlobalScope(
-      bool private_aggregation_permissions_policy_allowed);
+  SharedStorageWorkletGlobalScope(
+      bool private_aggregation_permissions_policy_allowed,
+      const absl::optional<std::u16string>& embedder_context);
   ~SharedStorageWorkletGlobalScope();
 
   void AddModule(
@@ -92,6 +93,12 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
   std::unique_ptr<UnnamedOperationHandler> unnamed_operation_handler_;
 
   std::map<std::string, v8::Global<v8::Function>> operation_definition_map_;
+
+  // If this worklet is inside a fenced frame or a URN iframe,
+  // `embedder_context_` represents any contextual information written to the
+  // frame's `blink::FencedFrameConfig` by the embedder before navigation to the
+  // config. `embedder_context_` is passed to the worklet upon initialization.
+  absl::optional<std::u16string> embedder_context_;
 
   base::WeakPtrFactory<SharedStorageWorkletGlobalScope> weak_ptr_factory_{this};
 };

@@ -64,8 +64,9 @@ void LogTimingHistogramForVoidOperation(
 }  // namespace
 
 SharedStorage::SharedStorage(
-    blink::mojom::SharedStorageWorkletServiceClient* client)
-    : client_(client) {}
+    blink::mojom::SharedStorageWorkletServiceClient* client,
+    const absl::optional<std::u16string>& embedder_context)
+    : client_(client), embedder_context_(embedder_context) {}
 
 SharedStorage::~SharedStorage() = default;
 
@@ -82,7 +83,8 @@ gin::ObjectTemplateBuilder SharedStorage::GetObjectTemplateBuilder(
       .SetMethod("keys", &SharedStorage::Keys)
       .SetMethod("entries", &SharedStorage::Entries)
       .SetMethod("length", &SharedStorage::Length)
-      .SetMethod("remainingBudget", &SharedStorage::RemainingBudget);
+      .SetMethod("remainingBudget", &SharedStorage::RemainingBudget)
+      .SetProperty("context", &SharedStorage::Context);
 }
 
 const char* SharedStorage::GetTypeName() {
@@ -333,6 +335,20 @@ v8::Local<v8::Promise> SharedStorage::RemainingBudget(gin::Arguments* args) {
       start_time));
 
   return promise;
+}
+
+v8::Local<v8::Value> SharedStorage::Context(gin::Arguments* args) {
+  v8::Isolate* isolate = args->isolate();
+
+  if (!embedder_context_) {
+    base::UmaHistogramBoolean("Storage.SharedStorage.Worklet.Context.IsDefined",
+                              false);
+    return v8::Undefined(isolate);
+  }
+
+  base::UmaHistogramBoolean("Storage.SharedStorage.Worklet.Context.IsDefined",
+                            true);
+  return gin::ConvertToV8(isolate, embedder_context_.value());
 }
 
 void SharedStorage::OnVoidOperationFinished(

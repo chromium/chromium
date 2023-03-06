@@ -1040,6 +1040,20 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
   return result;
 }
 
+absl::optional<std::u16string>
+FrameTreeNode::GetEmbedderSharedStorageContextIfAllowed() {
+  absl::optional<FencedFrameProperties>& properties =
+      GetFencedFramePropertiesForEditing();
+  // We only return embedder context for frames that are same origin with the
+  // fenced frame root or ancestor URN iframe.
+  if (!properties || !properties->mapped_url_.has_value() ||
+      !current_origin().IsSameOriginWith(url::Origin::Create(
+          properties->mapped_url_->GetValueIgnoringVisibility()))) {
+    return absl::nullopt;
+  }
+  return properties->embedder_shared_storage_context_;
+}
+
 const scoped_refptr<BrowsingContextState>&
 FrameTreeNode::GetBrowsingContextStateForSubframe() const {
   DCHECK(!IsMainFrame());

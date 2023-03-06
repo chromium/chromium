@@ -30,11 +30,13 @@ class SharedStorageWorkletServiceImpl
   ~SharedStorageWorkletServiceImpl() override;
 
   // blink::mojom::SharedStorageWorkletService implementation:
-  void Initialize(mojo::PendingAssociatedRemote<
-                      blink::mojom::SharedStorageWorkletServiceClient> client,
-                  bool private_aggregation_permissions_policy_allowed,
-                  mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-                      private_aggregation_host) override;
+  void Initialize(
+      mojo::PendingAssociatedRemote<
+          blink::mojom::SharedStorageWorkletServiceClient> client,
+      bool private_aggregation_permissions_policy_allowed,
+      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+          private_aggregation_host,
+      const absl::optional<std::u16string>& embedder_context) override;
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
                      pending_url_loader_factory,
                  const GURL& script_source_url,
@@ -80,6 +82,12 @@ class SharedStorageWorkletServiceImpl
   mojo::Remote<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
 
   std::unique_ptr<SharedStorageWorkletGlobalScope> global_scope_;
+
+  // If this worklet is inside a fenced frame or a URN iframe,
+  // `embedder_context_` represents any contextual information written to the
+  // frame's `blink::FencedFrameConfig` by the embedder before navigation to the
+  // config. `embedder_context_` is passed to the worklet upon initialization.
+  absl::optional<std::u16string> embedder_context_;
 };
 
 }  // namespace shared_storage_worklet

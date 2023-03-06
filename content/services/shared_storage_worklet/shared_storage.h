@@ -20,8 +20,8 @@ namespace shared_storage_worklet {
 
 class SharedStorage final : public gin::Wrappable<SharedStorage> {
  public:
-  explicit SharedStorage(
-      blink::mojom::SharedStorageWorkletServiceClient* client);
+  SharedStorage(blink::mojom::SharedStorageWorkletServiceClient* client,
+                const absl::optional<std::u16string>& embedder_context);
   ~SharedStorage() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -41,6 +41,7 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
   v8::Local<v8::Object> Entries(gin::Arguments* args);
   v8::Local<v8::Promise> Length(gin::Arguments* args);
   v8::Local<v8::Promise> RemainingBudget(gin::Arguments* args);
+  v8::Local<v8::Value> Context(gin::Arguments* args);
 
   void OnVoidOperationFinished(
       v8::Isolate* isolate,
@@ -75,6 +76,12 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
       double bits);
 
   raw_ptr<blink::mojom::SharedStorageWorkletServiceClient> client_;
+
+  // If this worklet is inside a fenced frame or a URN iframe,
+  // `embedder_context_` represents any contextual information written to the
+  // frame's `blink::FencedFrameConfig` by the embedder before navigation to the
+  // config. `embedder_context_` is passed to the worklet upon initialization.
+  absl::optional<std::u16string> embedder_context_;
 
   base::WeakPtrFactory<SharedStorage> weak_ptr_factory_{this};
 };

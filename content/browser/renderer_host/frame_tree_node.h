@@ -578,6 +578,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   std::vector<const SharedStorageBudgetMetadata*>
   FindSharedStorageBudgetMetadata();
 
+  // Returns any shared storage context string that was written to a
+  // `blink::FencedFrameConfig` before navigation via
+  // `setSharedStorageContext()`, as long as the request is for a same-origin
+  // frame within the config's fenced frame tree (or a same-origin descendant of
+  // a URN iframe).
+  absl::optional<std::u16string> GetEmbedderSharedStorageContextIfAllowed();
+
   // Accessor to BrowsingContextState for subframes only. Only main frame
   // navigations can change BrowsingInstances and BrowsingContextStates,
   // therefore for subframes associated BrowsingContextState never changes. This

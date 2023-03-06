@@ -8,6 +8,12 @@
 async function init() {
   const [ancestorKey] = parseKeylist();
 
+  await addModuleOnce("embedder-context-module.js");
+  await sharedStorage.run("report-context",
+                          {
+                            data: {'ancestorKey': ancestorKey}
+                          });
+
   await writeValueToServer(ancestorKey, "embedder_context_inner_loaded");
 }
 

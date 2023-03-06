@@ -934,6 +934,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Worklet.Context.IsDefined"
+    units="BooleanIsDefined" expires_after="2023-12-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records true if a given call to `sharedStorage.context()` returns a defined
+    string, false if the call to `sharedStorage.context()` returns undefined.
+    Recorded in the worklet service in the call to `SharedStorage::Context()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Worklet.DestroyedStatus"
     enum="SharedStorageWorkletDestroyedStatus" expires_after="2023-07-31">
   <owner>cammie@chromium.org</owner>

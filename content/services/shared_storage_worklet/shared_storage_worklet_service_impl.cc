@@ -27,13 +27,15 @@ void SharedStorageWorkletServiceImpl::Initialize(
         blink::mojom::SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
     mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
-        private_aggregation_host) {
+        private_aggregation_host,
+    const absl::optional<std::u16string>& embedder_context) {
   DCHECK(!global_scope_);
   client_.Bind(std::move(client));
   private_aggregation_permissions_policy_allowed_ =
       private_aggregation_permissions_policy_allowed;
   if (private_aggregation_host)
     private_aggregation_host_.Bind(std::move(private_aggregation_host));
+  embedder_context_ = embedder_context;
 }
 
 void SharedStorageWorkletServiceImpl::AddModule(
@@ -68,7 +70,7 @@ SharedStorageWorkletGlobalScope*
 SharedStorageWorkletServiceImpl::GetGlobalScope() {
   if (!global_scope_) {
     global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>(
-        private_aggregation_permissions_policy_allowed_);
+        private_aggregation_permissions_policy_allowed_, embedder_context_);
   }
 
   return global_scope_.get();

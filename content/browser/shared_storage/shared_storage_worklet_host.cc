@@ -858,10 +858,14 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
     driver_->StartWorkletService(
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver());
 
+    auto embedder_context = static_cast<RenderFrameHostImpl&>(
+                                document_service_->render_frame_host())
+                                .frame_tree_node()
+                                ->GetEmbedderSharedStorageContextIfAllowed();
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
         private_aggregation_permissions_policy_allowed,
-        MaybeBindPrivateAggregationHost());
+        MaybeBindPrivateAggregationHost(), embedder_context);
   }
 
   return shared_storage_worklet_service_.get();

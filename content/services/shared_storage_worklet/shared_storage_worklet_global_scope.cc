@@ -44,9 +44,11 @@ void InitV8() {
 }  // namespace
 
 SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
-    bool private_aggregation_permissions_policy_allowed)
+    bool private_aggregation_permissions_policy_allowed,
+    const absl::optional<std::u16string>& embedder_context)
     : private_aggregation_permissions_policy_allowed_(
-          private_aggregation_permissions_policy_allowed) {}
+          private_aggregation_permissions_policy_allowed),
+      embedder_context_(embedder_context) {}
 
 SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
 
@@ -150,7 +152,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
 
   // After the module script execution, create and expose the shared storage
   // object.
-  shared_storage_ = std::make_unique<SharedStorage>(client);
+  shared_storage_ = std::make_unique<SharedStorage>(client, embedder_context_);
   context->Global()
       ->Set(context, gin::StringToSymbol(Isolate(), "sharedStorage"),
             shared_storage_->GetWrapper(Isolate()).ToLocalChecked())
