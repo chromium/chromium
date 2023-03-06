@@ -52,7 +52,9 @@ void DoWithRetry(BlockWithError callback,
       DoWithRetry(callback, retryCount - 1, blockName);
     } else {
       if (callback) {
-        callback(error);
+        dispatch_async(dispatch_get_main_queue(), ^{
+          callback(error);
+        });
       }
     }
   };
@@ -77,7 +79,11 @@ NSString* const kSpotlightTopSitesPrefix = @"com.google.chrome.topsites.";
 
 NSString* const kSpotlightActionsDomain = @"com.google.chrome.actions";
 NSString* const kSpotlightActionsPrefix = @"com.google.chrome.actions.";
+
+NSString* const kSpotlightReadingListDomain = @"org.chromium.readinglist";
+NSString* const kSpotlightReadingListPrefix = @"org.chromium.readinglist.";
 #else
+
 NSString* const kSpotlightBookmarkDomain = @"org.chromium.bookmarks";
 NSString* const kSpotlightBookmarkPrefix = @"org.chromium.bookmarks.";
 
@@ -86,6 +92,10 @@ NSString* const kSpotlightTopSitesPrefix = @"org.chromium.topsites.";
 
 NSString* const kSpotlightActionsDomain = @"org.chromium.actions";
 NSString* const kSpotlightActionsPrefix = @"org.chromium.actions.";
+
+NSString* const kSpotlightReadingListDomain = @"org.chromium.readinglist";
+NSString* const kSpotlightReadingListPrefix = @"org.chromium.readinglist.";
+
 #endif
 
 }  // namespace
@@ -112,6 +122,8 @@ Domain SpotlightDomainFromString(NSString* domain) {
     return DOMAIN_TOPSITES;
   } else if ([domain hasPrefix:kSpotlightActionsPrefix]) {
     return DOMAIN_ACTIONS;
+  } else if ([domain hasPrefix:kSpotlightReadingListPrefix]) {
+    return DOMAIN_READING_LIST;
   }
   // On normal flow, it is not possible to reach this point. When testing the
   // app, it may be possible though if the app is downgraded.
@@ -127,6 +139,8 @@ NSString* StringFromSpotlightDomain(Domain domain) {
       return kSpotlightTopSitesDomain;
     case DOMAIN_ACTIONS:
       return kSpotlightActionsDomain;
+    case DOMAIN_READING_LIST:
+      return kSpotlightReadingListDomain;
     default:
       // On normal flow, it is not possible to reach this point. When testing
       // the app, it may be possible though if the app is downgraded.
