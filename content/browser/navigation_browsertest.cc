@@ -6091,7 +6091,7 @@ class NavigationBrowserTestWarnSandboxIneffective
 
   static constexpr char kSandboxEscapeWarningMessage[] =
       "An iframe which has both allow-scripts and allow-same-origin for its "
-      "sandbox attribute can remove its sandboxing.";
+      "sandbox attribute can escape its sandboxing.";
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,

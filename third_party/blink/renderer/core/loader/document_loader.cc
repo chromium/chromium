@@ -359,7 +359,7 @@ void WarnIfSandboxIneffective(LocalDOMWindow* window) {
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "An iframe which has both allow-scripts and allow-same-origin for its "
-        "sandbox attribute can remove its sandboxing."));
+        "sandbox attribute can escape its sandboxing."));
     window->CountUse(WebFeature::kSandboxIneffectiveAllowOriginAllowScript);
   }
 

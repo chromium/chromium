@@ -1,4 +1,4 @@
-CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can remove its sandboxing.
+CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
 CONSOLE MESSAGE: Blink Test Plugin: initializing
 CONSOLE ERROR: Failed to load '' as a plugin, because the frame into which the plugin is loading is sandboxed.
 This test verifies that a sandboxed iframe CAN navigate both itself and a child in the frame tree. It also verifies that the sandbox attribute remains intact after a frame has been navigated, and that sandbox attributes are propagated through the frame hierarchy.

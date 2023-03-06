@@ -1,4 +1,4 @@
-CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can remove its sandboxing.
+CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
 CONSOLE MESSAGE: Script executed in iframe.
 CONSOLE MESSAGE: PASS: Iframe was not in a unique origin
 
