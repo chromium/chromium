@@ -20,7 +20,7 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 ctx.fillStyle = '#0f0';
 ctx.fillRect(0, 0, 100, 50);
 ctx.strokeStyle = '#f00';
@@ -49,7 +49,7 @@ ctx.strokeRect(0, Infinity, Infinity, Infinity);
 ctx.strokeRect(0, Infinity, 100, Infinity);
 ctx.strokeRect(0, 0, Infinity, Infinity);
 _assertPixel(canvas, 50,25, 0,255,0,255);
-});
+})(canvas, ctx);
 t.done();
 
 });

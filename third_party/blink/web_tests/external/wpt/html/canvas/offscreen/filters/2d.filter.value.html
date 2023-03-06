@@ -20,7 +20,7 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 _assert(ctx.filter == 'none', "ctx.filter == 'none'");
 ctx.filter = 'blur(5px)';
 _assert(ctx.filter == 'blur(5px)', "ctx.filter == 'blur(5px)'");
@@ -51,7 +51,7 @@ _assert(ctx.filter == 'blur(5px)', "ctx.filter == 'blur(5px)'");
 
 ctx.filter = 'blur(  5px)';
 assert_equals(ctx.filter, 'blur(  5px)');
-});
+})(canvas, ctx);
 t.done();
 
 });

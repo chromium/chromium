@@ -20,7 +20,7 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 // From https://www.w3.org/TR/SVG11/filters.html#feComponentTransferElement
 function getTransformedValue(C, V) {
     // Get the right interval
@@ -62,7 +62,7 @@ for (const color of inputColors) {
     ctx.fillRect(0, 0, 10, 10);
     _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, 2);
 }
-});
+})(canvas, ctx);
 t.done();
 
 });

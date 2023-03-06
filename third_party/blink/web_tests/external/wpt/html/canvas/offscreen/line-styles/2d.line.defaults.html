@@ -20,12 +20,12 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 _assertSame(ctx.lineWidth, 1, "ctx.lineWidth", "1");
 _assertSame(ctx.lineCap, 'butt', "ctx.lineCap", "'butt'");
 _assertSame(ctx.lineJoin, 'miter', "ctx.lineJoin", "'miter'");
 _assertSame(ctx.miterLimit, 10, "ctx.miterLimit", "10");
-});
+})(canvas, ctx);
 t.done();
 
 });

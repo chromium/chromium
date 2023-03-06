@@ -20,7 +20,7 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 const errorTestCases = [
   {baseFrequency: {}},
   {baseFrequency: -1},
@@ -125,7 +125,7 @@ for (testCase of workingTestCases) {
   const filterOptions = {...{filter: "turbulence"}, ...testCase};
   _assert(new CanvasFilter(filterOptions) != null, "new CanvasFilter(filterOptions) != null");
 }
-});
+})(canvas, ctx);
 t.done();
 
 });

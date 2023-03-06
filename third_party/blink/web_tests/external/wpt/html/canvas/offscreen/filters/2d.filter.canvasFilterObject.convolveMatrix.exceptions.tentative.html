@@ -20,7 +20,7 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix"}); });
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", divisor: 2}); });
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: null}); });
@@ -32,7 +32,7 @@ assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatr
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "convolveMatrix", kernelMatrix: []}); });
 // This should not throw an error
 ctx.filter = new CanvasFilter({filter: "convolveMatrix", kernelMatrix: [[]]});
-});
+})(canvas, ctx);
 t.done();
 
 });

@@ -20,7 +20,7 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "colorMatrix", values: undefined}); });
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "colorMatrix", values: "foo"}); });
 assert_throws_js(TypeError, function() { new CanvasFilter({filter: "colorMatrix", values: null}); });
@@ -64,7 +64,7 @@ _assertPixelApprox(canvas, 10,10, 0,255,0,255, 2);
 _assertPixelApprox(canvas, 60,10, 0,255,0,255, 2);
 _assertPixelApprox(canvas, 10,30, 0,255,0,255, 2);
 _assertPixelApprox(canvas, 60,30, 0,255,0,255, 2);
-});
+})(canvas, ctx);
 t.done();
 
 });

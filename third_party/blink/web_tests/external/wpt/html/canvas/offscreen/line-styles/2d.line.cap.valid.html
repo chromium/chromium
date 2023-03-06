@@ -20,7 +20,7 @@ t.step(async function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-await (function() {
+await (function(canvas, ctx) {
 ctx.lineCap = 'butt'
 _assertSame(ctx.lineCap, 'butt', "ctx.lineCap", "'butt'");
 
@@ -29,7 +29,7 @@ _assertSame(ctx.lineCap, 'round', "ctx.lineCap", "'round'");
 
 ctx.lineCap = 'square';
 _assertSame(ctx.lineCap, 'square', "ctx.lineCap", "'square'");
-});
+})(canvas, ctx);
 t.done();
 
 });
