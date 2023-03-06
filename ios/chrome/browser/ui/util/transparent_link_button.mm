@@ -87,9 +87,25 @@ const CGFloat kHighlightViewBackgroundAlpha = 0.25;
       CGRectInset(linkFrame, -linkWidthExpansion, -linkHeightExpansion);
   if ((self = [super initWithFrame:frame])) {
     DCHECK(URL.is_valid());
-    self.contentEdgeInsets =
-        UIEdgeInsetsMake(linkHeightExpansion, linkWidthExpansion,
-                         linkHeightExpansion, linkWidthExpansion);
+
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          UIButtonConfiguration.plainButtonConfiguration;
+      buttonConfiguration.contentInsets =
+          NSDirectionalEdgeInsetsMake(linkHeightExpansion, linkWidthExpansion,
+                                      linkHeightExpansion, linkWidthExpansion);
+      self.configuration = buttonConfiguration;
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      self.contentEdgeInsets =
+          UIEdgeInsetsMake(linkHeightExpansion, linkWidthExpansion,
+                           linkHeightExpansion, linkWidthExpansion);
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
     self.backgroundColor = [UIColor clearColor];
     self.exclusiveTouch = YES;
     _linkFrame = linkFrame;
