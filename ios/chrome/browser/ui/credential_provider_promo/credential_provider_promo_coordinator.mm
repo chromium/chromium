@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -111,11 +112,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
     [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
     // Open iOS settings.
-    [[UIApplication sharedApplication]
-                  openURL:[NSURL
-                              URLWithString:UIApplicationOpenSettingsURLString]
-                  options:{}
-        completionHandler:nil];
+    ios::provider::PasswordsInOtherAppsOpensSettings();
     [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
   }
 }
