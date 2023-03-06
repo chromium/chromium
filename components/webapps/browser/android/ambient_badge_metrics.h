@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_AMBIENT_BADGE_METRICS_H_
 
 #include "components/messages/android/message_enums.h"
+#include "components/webapps/browser/android/add_to_homescreen_params.h"
 
 namespace webapps {
 
@@ -16,9 +17,9 @@ enum class AppType {
   kMaxValue = kWebApp,
 };
 
-void RecordAmbientBadgeDisplayEvent(bool native_app);
-void RecordAmbientBadgeDismissEvent(bool native_app);
-void RecordAmbientBadgeClickEvent(bool native_app);
+void RecordAmbientBadgeDisplayEvent(AddToHomescreenParams::AppType type);
+void RecordAmbientBadgeDismissEvent(AddToHomescreenParams::AppType type);
+void RecordAmbientBadgeClickEvent(AddToHomescreenParams::AppType type);
 void RecordAmbientBadgeMessageDismissReason(messages::DismissReason event);
 
 }  // namespace webapps

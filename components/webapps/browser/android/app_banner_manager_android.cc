@@ -132,7 +132,9 @@ void AppBannerManagerAndroid::RequestAppBanner(const GURL& validated_url) {
 }
 
 void AppBannerManagerAndroid::AddToHomescreenFromBadge() {
-  RecordAmbientBadgeClickEvent(!native_app_data_.is_null());
+  RecordAmbientBadgeClickEvent(native_app_data_.is_null()
+                                   ? AddToHomescreenParams::AppType::WEBAPK
+                                   : AddToHomescreenParams::AppType::NATIVE);
   ShowBannerUi(InstallableMetrics::GetInstallSource(
       web_contents(), InstallTrigger::AMBIENT_BADGE));
 
@@ -150,7 +152,9 @@ bool AppBannerManagerAndroid::HasSufficientEngagementForAmbientBadge() {
 }
 
 void AppBannerManagerAndroid::BadgeDismissed() {
-  RecordAmbientBadgeDismissEvent(!native_app_data_.is_null());
+  RecordAmbientBadgeDismissEvent(native_app_data_.is_null()
+                                     ? AddToHomescreenParams::AppType::WEBAPK
+                                     : AddToHomescreenParams::AppType::NATIVE);
   badge_state_ = AmbientBadgeState::DISMISSED;
 
   AppBannerSettingsHelper::RecordBannerEvent(
@@ -679,7 +683,9 @@ bool AppBannerManagerAndroid::ShouldSuppressAmbientBadge() {
 }
 
 void AppBannerManagerAndroid::ShowAmbientBadge() {
-  RecordAmbientBadgeDisplayEvent(!native_app_data_.is_null());
+  RecordAmbientBadgeDisplayEvent(native_app_data_.is_null()
+                                     ? AddToHomescreenParams::AppType::WEBAPK
+                                     : AddToHomescreenParams::AppType::NATIVE);
   badge_state_ = AmbientBadgeState::SHOWING;
 
   if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage) &&

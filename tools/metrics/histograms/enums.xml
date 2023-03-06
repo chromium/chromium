@@ -52866,7 +52866,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 
 <enum name="InstallAmbientBadgeAppType">
   <int value="0" label="Native app"/>
-  <int value="1" label="Web app"/>
+  <int value="1" label="WebAPK"/>
+  <int value="2" label="Shortcut"/>
 </enum>
 
 <enum name="InstallationCounterReasonEnum">

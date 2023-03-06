@@ -18,25 +18,21 @@ constexpr char kAmbientBadgeClickEventHistogram[] = "Webapp.AmbientBadge.Click";
 constexpr char kAmbientBadgeMessageDismissReasonHistogram[] =
     "Webapp.AmbientBadge.Messages.DismissReason";
 
-AppType getAppType(bool native_app) {
-  return native_app ? AppType::kNativeApp : AppType::kWebApp;
-}
-
 }  // namespace
 
-void RecordAmbientBadgeDisplayEvent(bool native_app) {
-  base::UmaHistogramEnumeration(kAmbientBadgeDisplayEventHistogram,
-                                getAppType(native_app));
+void RecordAmbientBadgeDisplayEvent(AddToHomescreenParams::AppType type) {
+  base::UmaHistogramEnumeration(kAmbientBadgeDisplayEventHistogram, type,
+                                AddToHomescreenParams::AppType::COUNT);
 }
 
-void RecordAmbientBadgeDismissEvent(bool native_app) {
-  base::UmaHistogramEnumeration(kAmbientBadgeDismissEventHistogram,
-                                getAppType(native_app));
+void RecordAmbientBadgeDismissEvent(AddToHomescreenParams::AppType type) {
+  base::UmaHistogramEnumeration(kAmbientBadgeDismissEventHistogram, type,
+                                AddToHomescreenParams::AppType::COUNT);
 }
 
-void RecordAmbientBadgeClickEvent(bool native_app) {
-  base::UmaHistogramEnumeration(kAmbientBadgeClickEventHistogram,
-                                getAppType(native_app));
+void RecordAmbientBadgeClickEvent(AddToHomescreenParams::AppType type) {
+  base::UmaHistogramEnumeration(kAmbientBadgeClickEventHistogram, type,
+                                AddToHomescreenParams::AppType::COUNT);
 }
 
 void RecordAmbientBadgeMessageDismissReason(
