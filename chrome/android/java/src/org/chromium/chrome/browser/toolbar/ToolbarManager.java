@@ -1670,7 +1670,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public void onUrlFocusChange(boolean hasFocus) {
         mToolbar.onUrlFocusChange(hasFocus);
 
-        if (mIsStartSurfaceRefactorEnabled
+        if (mIsStartSurfaceRefactorEnabled && mLayoutManager != null
                 && mLayoutManager.isLayoutVisible(LayoutType.START_SURFACE)) {
             mToolbar.updateStartSurfaceToolbarState(null, !hasFocus, LayoutType.START_SURFACE);
         }
