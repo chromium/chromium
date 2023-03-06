@@ -1247,7 +1247,7 @@ void DlpFilesController::ReturnAllowedUploads(
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
-    std::move(result_callback).Run(std::vector<ui::SelectedFileInfo>());
+    std::move(result_callback).Run(std::move(selected_files));
     return;
   }
   std::set<base::FilePath> restricted_files(response.files_paths().begin(),
