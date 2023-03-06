@@ -2483,32 +2483,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Tabs.Tasks.HubAndSpokeNavigationUsage{HubAndSpokeNavigationUsageType}"
-    units="spokes" expires_after="2020-06-01">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    The cumulative number of &quot;spokes&quot; from any &quot;hub&quot; page in
-    every tab. A &quot;hub&quot; is any page that the user navigates away from,
-    and a &quot;spoke&quot; is a page that's navigated to. The
-    &quot;spokes&quot; count is incremented and recorded each time the user
-    navigates back to a &quot;hub&quot; page via navigation back button and then
-    navigates to a new &quot;spoke&quot;. {HubAndSpokeNavigationUsageType}
-  </summary>
-  <token key="HubAndSpokeNavigationUsageType">
-    <variant name=""/>
-    <variant name=".FromDefaultSearchEngine"
-        summary="User navigates to a new page from default search engine
-                 result page"/>
-    <variant name=".FromFormSubmit"
-        summary="User navigates to a new page from a form submit page"/>
-    <variant name=".FromOther"
-        summary="User navigates to a new page from a page other than a
-                 default search engine result page or a form submit page"/>
-  </token>
-</histogram>
-
 <histogram name="Tabs.Tasks.OrderValidOnStartup" units="boolean"
     expires_after="2023-07-16">
   <owner>ckitagawa@chromium.org</owner>
