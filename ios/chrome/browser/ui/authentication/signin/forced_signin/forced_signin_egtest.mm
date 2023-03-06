@@ -67,7 +67,8 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
 
-  return grey_allOf(grey_accessibilityLabel(buttonTitle),
+  return grey_allOf(grey_kindOfClassName(@"UILabel"),
+                    grey_accessibilityLabel(buttonTitle),
                     grey_sufficientlyVisible(), nil);
 }
 

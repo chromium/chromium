@@ -94,7 +94,7 @@ void DismissDefaultBrowserPromo() {
           first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
-      nil);
+      grey_kindOfClassName(@"UILabel"), nil);
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
 }

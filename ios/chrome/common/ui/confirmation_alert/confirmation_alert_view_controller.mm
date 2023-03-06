@@ -695,14 +695,29 @@ const CGFloat kFaviconBadgeSideLength = 24;
                   forControlEvents:UIControlEventTouchUpInside];
   [secondaryActionButton setTitle:self.secondaryActionString
                          forState:UIControlStateNormal];
-  secondaryActionButton.contentEdgeInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
   [secondaryActionButton setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
                                                 ? self.secondaryActionTextColor
                                                 : kBlueColor];
   [secondaryActionButton setTitleColor:titleColor
                               forState:UIControlStateNormal];
+
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (@available(iOS 15, *)) {
+    UIButtonConfiguration* buttonConfiguration =
+        UIButtonConfiguration.plainButtonConfiguration;
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    secondaryActionButton.configuration = buttonConfiguration;
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    secondaryActionButton.contentEdgeInsets =
+        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   secondaryActionButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
@@ -726,8 +741,23 @@ const CGFloat kFaviconBadgeSideLength = 24;
                  forControlEvents:UIControlEventTouchUpInside];
   [tertiaryActionButton setTitle:self.tertiaryActionString
                         forState:UIControlStateNormal];
-  tertiaryActionButton.contentEdgeInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (@available(iOS 15, *)) {
+    UIButtonConfiguration* buttonConfiguration =
+        UIButtonConfiguration.plainButtonConfiguration;
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    tertiaryActionButton.configuration = buttonConfiguration;
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    tertiaryActionButton.contentEdgeInsets =
+        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   [tertiaryActionButton setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:kBlueColor];
   [tertiaryActionButton setTitleColor:titleColor forState:UIControlStateNormal];
