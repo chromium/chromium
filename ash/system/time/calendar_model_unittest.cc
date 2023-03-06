@@ -4,7 +4,6 @@
 
 #include "ash/system/time/calendar_model.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <memory>
@@ -24,6 +23,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -1017,9 +1017,8 @@ TEST_F(CalendarModelTest, ShouldFilterEvents) {
   EXPECT_FALSE(events.empty());
 
   std::vector<std::string> filtered_event_ids;
-  std::transform(events.begin(), events.end(),
-                 std::back_inserter(filtered_event_ids),
-                 [](CalendarEvent& event) { return event.id(); });
+  base::ranges::transform(events, std::back_inserter(filtered_event_ids),
+                          &CalendarEvent::id);
   EXPECT_THAT(filtered_event_ids,
               testing::UnorderedElementsAreArray(std::vector<std::string>{
                   "confirmed+accepted", "tentative+accepted",

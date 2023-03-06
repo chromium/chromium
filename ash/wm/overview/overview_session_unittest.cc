@@ -3303,8 +3303,8 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   }
 
   std::vector<aura::Window*> windows_to_throttle(window_count, nullptr);
-  std::transform(windows.begin(), windows.end(), windows_to_throttle.begin(),
-                 [](std::unique_ptr<aura::Window>& w) { return w.get(); });
+  base::ranges::transform(windows, windows_to_throttle.begin(),
+                          &std::unique_ptr<aura::Window>::get);
   EXPECT_CALL(observer,
               OnThrottlingStarted(
                   testing::UnorderedElementsAreArray(windows_to_throttle),
