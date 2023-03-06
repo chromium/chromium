@@ -34,6 +34,7 @@ ci.builder(
             apply_configs = [
                 "android",
                 "checkout_clang_libs",
+                "fetch_android_chromium_rust_toolchain",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -60,6 +61,7 @@ ci.builder(
             apply_configs = [
                 "android",
                 "checkout_clang_libs",
+                "fetch_android_chromium_rust_toolchain",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -86,6 +88,7 @@ ci.builder(
             apply_configs = [
                 "android",
                 "checkout_clang_libs",
+                "fetch_android_chromium_rust_toolchain",
             ],
         ),
         chromium_config = builder_config.chromium_config(
