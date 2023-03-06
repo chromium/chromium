@@ -12,7 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -445,12 +445,15 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   const std::string& proper_json =
       contains_xssi_escape ? response.substr(sizeof(kXssiEscape) - 1)
                            : response;
-  JSONStringValueDeserializer deserializer(proper_json);
-  std::unique_ptr<base::Value> root =
-      deserializer.Deserialize(nullptr, nullptr);
-  const base::Value::Dict* dict = root->GetIfDict();
-  if (!dict)
+  absl::optional<base::Value> root = base::JSONReader::Read(proper_json);
+  if (!root) {
     return;
+  }
+
+  const base::Value::Dict* dict = root->GetIfDict();
+  if (!dict) {
+    return;
+  }
 
   auto extract_string = [&dict](base::StringPiece key, std::string* out) {
     const std::string* string_pointer = dict->FindString(key);
