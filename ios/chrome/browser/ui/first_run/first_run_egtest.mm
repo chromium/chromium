@@ -89,12 +89,24 @@ id<GREYMatcher> GetSyncSettings() {
 
 // Dismiss default browser promo.
 void DismissDefaultBrowserPromo() {
-  id<GREYMatcher> buttonMatcher = grey_allOf(
-      grey_ancestor(grey_accessibilityID(
-          first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
-      grey_kindOfClassName(@"UILabel"), nil);
+  id<GREYMatcher> buttonMatcher = nil;
+
+  if (@available(iOS 15.0, *)) {
+    buttonMatcher = grey_allOf(
+        grey_ancestor(grey_accessibilityID(
+            first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
+        grey_accessibilityLabel(l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
+        grey_kindOfClassName(@"UILabel"), nil);
+  } else {
+    buttonMatcher = grey_allOf(
+        grey_ancestor(grey_accessibilityID(
+            first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
+        grey_accessibilityLabel(l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION)),
+        nil);
+  }
+
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
 }

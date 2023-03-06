@@ -67,9 +67,16 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
       IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
 
-  return grey_allOf(grey_kindOfClassName(@"UILabel"),
-                    grey_accessibilityLabel(buttonTitle),
-                    grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> matcher = nil;
+  if (@available(iOS 15.0, *)) {
+    matcher = grey_allOf(grey_kindOfClassName(@"UILabel"),
+                         grey_accessibilityLabel(buttonTitle),
+                         grey_sufficientlyVisible(), nil);
+  } else {
+    matcher = grey_allOf(grey_accessibilityLabel(buttonTitle),
+                         grey_sufficientlyVisible(), nil);
+  }
+  return matcher;
 }
 
 // Returns a matcher for the whole forced sign-in screen.
