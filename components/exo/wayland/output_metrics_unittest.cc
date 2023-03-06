@@ -4,6 +4,7 @@
 
 #include "components/exo/wayland/output_metrics.h"
 
+#include "base/bit_cast.h"
 #include "components/exo/test/exo_test_base.h"
 #include "ui/base/wayland/wayland_display_util.h"
 
@@ -12,7 +13,7 @@ namespace exo::wayland {
 using OutputMetricsTest = test::ExoTestBase;
 
 TEST_F(OutputMetricsTest, CorrectlyMapsDisplayStateToOutputMetrics) {
-  constexpr int kDisplayScaleFactor = 2;
+  constexpr float kDisplayScaleFactor = 2;
   constexpr gfx::Point kDisplayOrigin(10, 20);
   constexpr gfx::Size kDisplaySize(800, 600);
   constexpr gfx::Rect kDisplayBounds(kDisplayOrigin, kDisplaySize);
@@ -47,8 +48,9 @@ TEST_F(OutputMetricsTest, CorrectlyMapsDisplayStateToOutputMetrics) {
   EXPECT_EQ(ZAURA_OUTPUT_CONNECTION_TYPE_UNKNOWN,
             output_metrics.connection_type);
   EXPECT_EQ(kDisplayInsets, output_metrics.logical_insets);
-  EXPECT_EQ(uint32_t{kDisplayScaleFactor * 1000},
-            output_metrics.device_scale_factor);
+  EXPECT_EQ(static_cast<uint32_t>(kDisplayScaleFactor * 1000),
+            output_metrics.device_scale_factor_deprecated);
+  EXPECT_EQ(kDisplayScaleFactor, output_metrics.device_scale_factor);
   EXPECT_EQ(WL_OUTPUT_TRANSFORM_180, output_metrics.logical_transform);
 }
 

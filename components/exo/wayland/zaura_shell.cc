@@ -1030,8 +1030,8 @@ bool AuraOutput::SendDisplayMetrics(const display::Display& display,
 
   if (wl_resource_get_version(resource_) >=
       ZAURA_OUTPUT_DEVICE_SCALE_FACTOR_SINCE_VERSION) {
-    zaura_output_send_device_scale_factor(resource_,
-                                          output_metrics.device_scale_factor);
+    zaura_output_send_device_scale_factor(
+        resource_, output_metrics.device_scale_factor_deprecated);
   }
 
   if (wl_resource_get_version(resource_) >= ZAURA_OUTPUT_INSETS_SINCE_VERSION) {

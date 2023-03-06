@@ -4,6 +4,7 @@
 
 #include "components/exo/wayland/output_metrics.h"
 
+#include "base/bit_cast.h"
 #include "components/exo/wayland/wayland_display_util.h"
 #include "components/exo/wm_helper.h"
 #include "ui/display/display.h"
@@ -82,7 +83,9 @@ OutputMetrics::OutputMetrics(const display::Display& display)
                           ? ZAURA_OUTPUT_CONNECTION_TYPE_INTERNAL
                           : ZAURA_OUTPUT_CONNECTION_TYPE_UNKNOWN),
       logical_insets(display.bounds().InsetsFrom(display.work_area())),
-      device_scale_factor(GetDisplayInfo(display).device_scale_factor() * 1000),
+      device_scale_factor_deprecated(
+          GetDisplayInfo(display).device_scale_factor() * 1000),
+      device_scale_factor(display.device_scale_factor()),
       logical_transform(OutputTransform(display.rotation())) {
   const display::ManagedDisplayInfo& info = GetDisplayInfo(display);
 

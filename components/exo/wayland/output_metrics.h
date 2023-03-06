@@ -79,7 +79,7 @@ struct OutputMetrics {
   std::string description;
 
   //////////////////////////////////////////////////////////////////////////////
-  // aura_output metrics
+  // aura output metrics
 
   // Aura's display id associated with this output.
   ui::wayland::WaylandDisplayIdPair display_id;
@@ -100,8 +100,17 @@ struct OutputMetrics {
   // which the work area can be calculated.
   gfx::Insets logical_insets;
 
-  // Describes the device specific scale factor for the output.
-  uint32_t device_scale_factor;
+  // A deprecated description of the device scale factor for the output. This is
+  // calculated by taking `ManagedDisplayInfo::device_scale_factor_`,
+  // multiplying it by 1000 and casting it to a unit32_t (truncating towards
+  // zero).
+  // TODO(tluk): Migrate clients to the new device_scale_factor value below and
+  // remove this.
+  uint32_t device_scale_factor_deprecated;
+
+  // Describes the device scale factor for the output. Maps directly to
+  // `Display::device_scale_factor_`.
+  float device_scale_factor;
 
   // Describes the logical transform for the output. Whereas
   // wl_output.geometry's transform corresponds to the display's panel rotation,
