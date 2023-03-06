@@ -48,6 +48,16 @@ NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
   return NavigationQueueingFeatureLevel::kNone;
 }
 
+bool ShouldAvoidRedundantNavigationCancellations() {
+  return GetNavigationQueueingFeatureLevel() >=
+         NavigationQueueingFeatureLevel::kAvoidRedundantCancellations;
+}
+
+bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
+  return GetNavigationQueueingFeatureLevel() ==
+         NavigationQueueingFeatureLevel::kFull;
+}
+
 BASE_FEATURE(kRestrictCanAccessDataForOriginToUIThread,
              "RestrictCanAccessDataForOriginToUIThread",
              base::FEATURE_ENABLED_BY_DEFAULT);

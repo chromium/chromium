@@ -47,6 +47,13 @@ enum class NavigationQueueingFeatureLevel {
 CONTENT_EXPORT NavigationQueueingFeatureLevel
 GetNavigationQueueingFeatureLevel();
 
+// Returns true if GetNavigationQueueingFeatureLevel() returns at least
+// kAvoidRedundantCancellations.
+CONTENT_EXPORT bool ShouldAvoidRedundantNavigationCancellations();
+
+// Returns true if GetNavigationQueueingFeatureLevel() is kFull.
+CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
+
 // When enabled, CanAccessDataForOrigin can only be called from the UI thread.
 // This is related to Citadel desktop protections. See
 // https://crbug.com/1286501.

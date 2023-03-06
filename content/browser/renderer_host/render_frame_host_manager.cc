@@ -1067,8 +1067,7 @@ void RenderFrameHostManager::RestorePage(
   // with prerender activation, it should have been cleared out earlier.
   // TODO(https://crbug.com/1220337): Ensure we aren't deleting a pending commit
   // RFH.
-  DCHECK(GetNavigationQueueingFeatureLevel() >=
-             NavigationQueueingFeatureLevel::kAvoidRedundantCancellations ||
+  DCHECK(ShouldAvoidRedundantNavigationCancellations() ||
          !speculative_render_frame_host_);
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "spec_rfh_exists",
                         !!speculative_render_frame_host_);
@@ -1139,8 +1138,7 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     // what is done inside GetFrameHostForNavigation(request), but we avoid
     // calling that method for navigations which will be forced into the current
     // document.
-    if (GetNavigationQueueingFeatureLevel() >=
-        NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
+    if (ShouldAvoidRedundantNavigationCancellations()) {
       // When avoiding redundant navigation cancellations, only delete the
       // speculative RFH if it is unused. In particular, this means that a
       // speculative RFH with a pending-commit navigation won't be deleted
@@ -1280,8 +1278,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     if (speculative_render_frame_host_ &&
         speculative_render_frame_host_
             ->HasPendingCommitForCrossDocumentNavigation() &&
-        GetNavigationQueueingFeatureLevel() >=
-            NavigationQueueingFeatureLevel::kFull) {
+        ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
       return base::unexpected(
           GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
     }
@@ -1336,8 +1333,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     // `DiscardSpeculativeRFHIfUnused()` can work correctly.
     request->SetAssociatedRFHType(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
-    if (GetNavigationQueueingFeatureLevel() >
-        NavigationQueueingFeatureLevel::kNone) {
+    if (ShouldAvoidRedundantNavigationCancellations()) {
       // When avoiding redundant navigation cancellations, only delete the
       // speculative RFH if it is unused.
       DiscardSpeculativeRFHIfUnused(NavigationDiscardReason::kNewNavigation);
@@ -1365,8 +1361,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       // navigation, avoid discarding it now: the commit needs to complete in
       // order for the browser and the renderer state to remain in sync. See
       // https://crbug.com/838348.
-      if (GetNavigationQueueingFeatureLevel() >=
-              NavigationQueueingFeatureLevel::kFull &&
+      if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
           speculative_render_frame_host_ &&
           speculative_render_frame_host_
               ->HasPendingCommitForCrossDocumentNavigation()) {
@@ -1583,15 +1578,13 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
               "RenderFrameHostManager::UnsetSpeculativeRenderFrameHost",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
-  if (GetNavigationQueueingFeatureLevel() >=
-      NavigationQueueingFeatureLevel::kFull) {
-    if (HasPendingCommitForCrossDocumentNavigation()) {
-      // With navigation queueing, pending commit navigations in speculative
-      // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
-      // renderer process is gone/will be gone soon.
-      CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
-            reason == NavigationDiscardReason::kWillRemoveFrame);
-    }
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
+      HasPendingCommitForCrossDocumentNavigation()) {
+    // With navigation queueing, pending commit navigations in speculative
+    // RenderFrameHosts shouldn't get deleted, unless the FrameTreeNode or
+    // renderer process is gone/will be gone soon.
+    CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
+          reason == NavigationDiscardReason::kWillRemoveFrame);
   }
 
   speculative_render_frame_host_->GetProcess()->RemovePendingView();
@@ -1605,8 +1598,7 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
   } else {
     DCHECK_EQ(speculative_render_frame_host_->lifecycle_state(),
               LifecycleStateImpl::kPendingCommit);
-    if (GetNavigationQueueingFeatureLevel() <
-        NavigationQueueingFeatureLevel::kFull) {
+    if (!ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
       // The browser process already asked the renderer to commit the
       // navigation. The renderer is guaranteed to commit the navigation and
       // swap in the provisional `RenderFrame` to replace the current

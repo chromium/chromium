@@ -1994,8 +1994,7 @@ NavigationRequest::~NavigationRequest() {
   // NavigationRequest's attempt to commit "too soon" will just re-queue the
   // request, whereas accidentally forgetting to resume it sometimes will lead
   // to a navigation just silently not working.
-  if (GetNavigationQueueingFeatureLevel() >=
-          NavigationQueueingFeatureLevel::kFull &&
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
       frame_tree_node_->navigation_request()) {
     frame_tree_node_->navigation_request()->ResumeCommitIfNeeded();
   }
@@ -8954,8 +8953,7 @@ void NavigationRequest::ComputeDownloadPolicy() {
 }
 
 void NavigationRequest::ResumeCommitIfNeeded() {
-  DCHECK_GE(GetNavigationQueueingFeatureLevel(),
-            NavigationQueueingFeatureLevel::kFull);
+  DCHECK(ShouldQueueNavigationsWhenPendingCommitRFHExists());
   // TODO(crbug.com/1220337): Add some metrics for how often:
   // - this is run
   // - how often it ends up having to simply re-queue itself

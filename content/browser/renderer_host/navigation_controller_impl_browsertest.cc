@@ -22495,8 +22495,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(b1_navigation.WaitForResponse());
   StartNavigationOnReadyToCommit(shell(), b1_navigation, url_a3);
 
-  if (GetNavigationQueueingFeatureLevel() >=
-      NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
+  if (ShouldAvoidRedundantNavigationCancellations()) {
     // Assert that the navigation to B1 didn't get cancelled, and finish
     // committing B1. This shouldn't cancel the navigation to A3.
     ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
@@ -22605,8 +22604,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // cancel other navigations happening in the same FrameTreeNode.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        UnloadingPreviousRFHOnCommitWontCancelNavigation) {
-  if (GetNavigationQueueingFeatureLevel() <
-      NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
+  if (!ShouldAvoidRedundantNavigationCancellations()) {
     return;
   }
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
