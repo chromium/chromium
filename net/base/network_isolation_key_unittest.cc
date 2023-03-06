@@ -174,79 +174,6 @@ TEST(NetworkIsolationKeyTest, KeyWithOneOpaqueOrigin) {
             key2.ToDebugString());
 }
 
-TEST(NetworkIsolationKeyTest, ValueRoundTripEmpty) {
-  const SchemefulSite kJunkSite = SchemefulSite(GURL("data:text/html,junk"));
-
-  // Convert empty key to value and back, expecting the same value.
-  NetworkIsolationKey no_frame_site_key;
-  base::Value no_frame_site_value;
-  ASSERT_TRUE(no_frame_site_key.ToValue(&no_frame_site_value));
-
-  // Fill initial value with junk data, to make sure it's overwritten.
-  NetworkIsolationKey out_key(kJunkSite, kJunkSite);
-  EXPECT_TRUE(NetworkIsolationKey::FromValue(no_frame_site_value, &out_key));
-  EXPECT_EQ(no_frame_site_key, out_key);
-}
-
-TEST(NetworkIsolationKeyTest, ValueRoundTripNonEmpty) {
-  const SchemefulSite kJunkSite = SchemefulSite(GURL("data:text/html,junk"));
-
-  NetworkIsolationKey key1(SchemefulSite(GURL("https://foo.test/")),
-                           SchemefulSite(GURL("https://foo.test/")));
-  base::Value value;
-  ASSERT_TRUE(key1.ToValue(&value));
-
-  // Fill initial value with junk data, to make sure it's overwritten.
-  NetworkIsolationKey key2(kJunkSite, kJunkSite);
-  EXPECT_TRUE(NetworkIsolationKey::FromValue(value, &key2));
-  EXPECT_EQ(key1, key2);
-}
-
-TEST(NetworkIsolationKeyTest, ToValueTransientSite) {
-  const SchemefulSite kSiteWithTransientOrigin =
-      SchemefulSite(GURL("data:text/html,transient"));
-  NetworkIsolationKey key(kSiteWithTransientOrigin, kSiteWithTransientOrigin);
-  EXPECT_TRUE(key.IsTransient());
-  base::Value value;
-  EXPECT_FALSE(key.ToValue(&value));
-}
-
-TEST(NetworkIsolationKeyTest, FromValueBadData) {
-  base::Value::List not_a_url_list;
-  not_a_url_list.Append("not-a-url");
-
-  base::Value::List transient_origin_list;
-  transient_origin_list.Append("data:text/html,transient");
-
-  base::Value::List too_many_origins_list;
-  too_many_origins_list.Append("https://too/");
-  too_many_origins_list.Append("https://many/");
-  too_many_origins_list.Append("https://origins/");
-
-  const base::Value kTestCases[] = {
-      base::Value(std::string()),
-      base::Value(base::Value::Dict()),
-      base::Value(std::move(not_a_url_list)),
-      base::Value(std::move(transient_origin_list)),
-      base::Value(std::move(too_many_origins_list)),
-  };
-
-  for (const auto& test_case : kTestCases) {
-    NetworkIsolationKey key;
-    // Write the value on failure.
-    EXPECT_FALSE(NetworkIsolationKey::FromValue(test_case, &key)) << test_case;
-  }
-
-  base::Value::List triple_key_list;
-  triple_key_list.Append("http://www.triple.com");
-  triple_key_list.Append("http://www.key.com");
-  NetworkIsolationKey key;
-  base::Value triple_key_case(std::move(triple_key_list));
-
-  EXPECT_FALSE(NetworkIsolationKey::FromValue(triple_key_case, &key))
-      << triple_key_case;
-}
-
 TEST(NetworkIsolationKeyTest, WithFrameSite) {
   NetworkIsolationKey key(SchemefulSite(GURL("http://b.test")),
                           SchemefulSite(GURL("http://a.test/")));
@@ -346,37 +273,10 @@ TEST(NetworkIsolationKeyTest, CreateTransient) {
   EXPECT_FALSE(transient_key.IsEmpty());
   EXPECT_EQ(transient_key, transient_key);
 
-  // Transient values can't be saved to disk.
-  base::Value value;
-  EXPECT_FALSE(transient_key.ToValue(&value));
-
   // Make sure that subsequent calls don't return the same NIK.
   for (int i = 0; i < 1000; ++i) {
     EXPECT_NE(transient_key, NetworkIsolationKey::CreateTransient());
   }
-}
-
-TEST(NetworkIsolationKeyFeatureShiftTest, ValueRoundTrip) {
-  const SchemefulSite kJunkSite = SchemefulSite(GURL("data:text/html,junk"));
-
-  // Create a triple key.
-  NetworkIsolationKey created_triple_key(
-      SchemefulSite(GURL("https://foo.test/")),
-      SchemefulSite(GURL("https://bar.test/")));
-
-  // Assert round trip of triple key succeeds and key is a correctly formed
-  // triple key.
-  base::Value created_triple_key_value;
-  ASSERT_TRUE(created_triple_key.ToValue(&created_triple_key_value));
-  // Fill initial value with junk data, to make sure it's overwritten.
-  NetworkIsolationKey created_triple_key2(kJunkSite, kJunkSite);
-  EXPECT_TRUE(NetworkIsolationKey::FromValue(created_triple_key_value,
-                                             &created_triple_key2));
-  EXPECT_EQ(created_triple_key, created_triple_key2);
-
-  // Serialize a triple key value with frame site enabled.
-  base::Value created_triple_key_value2;
-  ASSERT_TRUE(created_triple_key.ToValue(&created_triple_key_value2));
 }
 
 }  // namespace
