@@ -32,7 +32,7 @@ build_webui_tests("build") {
     "emoji_picker_test_util.js",
     "emoji_picker_trie_test.js",
     "emoji_picker_validation_gif_test.js",
-    "test_emoji_picker_api_proxy.js",
+    "test_emoji_picker_api_proxy.ts",
     "test_emoji_picker_offline_api_proxy.ts",
   ]
 }
