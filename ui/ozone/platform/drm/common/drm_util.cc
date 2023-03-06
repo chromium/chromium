@@ -391,12 +391,12 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
 
   std::vector<ScopedDrmConnectorPtr> connectors;
   std::vector<drmModeConnector*> available_connectors;
-  for (int i = 0; i < resources->count_connectors; ++i) {
+  const size_t count_connectors = resources->count_connectors;
+  for (size_t i = 0; i < count_connectors; ++i) {
     if (i >= kMaxDrmConnectors) {
       LOG(WARNING) << "Reached the current limit of " << kMaxDrmConnectors
                    << " connectors per DRM. Ignoring the remaining "
-                   << resources->count_connectors - kMaxDrmConnectors
-                   << " connectors.";
+                   << count_connectors - kMaxDrmConnectors << " connectors.";
       break;
     }
 
