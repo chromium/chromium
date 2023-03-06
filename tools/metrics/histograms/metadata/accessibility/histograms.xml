@@ -1683,6 +1683,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.Color" enum="ReadAnythingColor"
+    expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen color theme for the Read Anything panel.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.FontScale" units="em"
+    expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen font scale for the Read Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.LetterSpacing"
     enum="ReadAnythingLetterSpacing" expires_after="2023-11-30">
   <owner>abigailbklein@google.com</owner>

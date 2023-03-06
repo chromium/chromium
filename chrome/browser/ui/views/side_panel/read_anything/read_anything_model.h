@@ -74,6 +74,18 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
   ReadAnythingColorsModel& operator=(const ReadAnythingColorsModel&) = delete;
   ~ReadAnythingColorsModel() override;
 
+  // Enum for logging the user-chosen color.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReadAnythingColor {
+    kDefault = 0,
+    kLight = 1,
+    kDark = 2,
+    kYellow = 3,
+    kBlue = 4,
+    kMaxValue = kBlue,
+  };
+
   // Simple struct to hold the various colors to keep code cleaner.
   struct ColorInfo {
     // The name of the colors, e.g. Default, Light, Dark.
@@ -91,6 +103,9 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
     // The separator color, used for visual separators between elements in the
     // toolbar.
     ui::ColorId separator_color_id;
+
+    // The enum value used to log this theme.
+    ReadAnythingColorsModel::ReadAnythingColor logging_value;
   };
 
   bool IsValidIndex(size_t index) override;
@@ -249,6 +264,9 @@ class ReadAnythingModel {
   }
   read_anything::mojom::LetterSpacing letter_spacing() {
     return letter_spacing_;
+  }
+  ReadAnythingColorsModel::ReadAnythingColor color_logging_value() {
+    return colors_model_->GetColorsAt(colors_combobox_index_).logging_value;
   }
 
  private:

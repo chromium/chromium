@@ -268,28 +268,43 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
   ColorInfo kDefaultColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_DEFAULT_COLOR_LABEL),
-      IDS_READING_MODE_DEFAULT_PNG, kColorReadAnythingForeground,
-      kColorReadAnythingBackground, kColorReadAnythingSeparator};
+      IDS_READING_MODE_DEFAULT_PNG,
+      kColorReadAnythingForeground,
+      kColorReadAnythingBackground,
+      kColorReadAnythingSeparator,
+      ReadAnythingColor::kDefault};
 
   ColorInfo kLightColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_LIGHT_COLOR_LABEL),
-      IDS_READING_MODE_LIGHT_PNG, kColorReadAnythingForegroundLight,
-      kColorReadAnythingBackgroundLight, kColorReadAnythingSeparatorLight};
+      IDS_READING_MODE_LIGHT_PNG,
+      kColorReadAnythingForegroundLight,
+      kColorReadAnythingBackgroundLight,
+      kColorReadAnythingSeparatorLight,
+      ReadAnythingColor::kLight};
 
   ColorInfo kDarkColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_DARK_COLOR_LABEL),
-      IDS_READING_MODE_DARK_PNG, kColorReadAnythingForegroundDark,
-      kColorReadAnythingBackgroundDark, kColorReadAnythingSeparatorDark};
+      IDS_READING_MODE_DARK_PNG,
+      kColorReadAnythingForegroundDark,
+      kColorReadAnythingBackgroundDark,
+      kColorReadAnythingSeparatorDark,
+      ReadAnythingColor::kDark};
 
   ColorInfo kYellowColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_YELLOW_COLOR_LABEL),
-      IDS_READING_MODE_YELLOW_PNG, kColorReadAnythingForegroundYellow,
-      kColorReadAnythingBackgroundYellow, kColorReadAnythingSeparatorYellow};
+      IDS_READING_MODE_YELLOW_PNG,
+      kColorReadAnythingForegroundYellow,
+      kColorReadAnythingBackgroundYellow,
+      kColorReadAnythingSeparatorYellow,
+      ReadAnythingColor::kYellow};
 
   ColorInfo kBlueColors = {
       l10n_util::GetStringUTF16(IDS_READING_MODE_BLUE_COLOR_LABEL),
-      IDS_READING_MODE_BLUE_PNG, kColorReadAnythingForegroundBlue,
-      kColorReadAnythingBackgroundBlue, kColorReadAnythingSeparatorBlue};
+      IDS_READING_MODE_BLUE_PNG,
+      kColorReadAnythingForegroundBlue,
+      kColorReadAnythingBackgroundBlue,
+      kColorReadAnythingSeparatorBlue,
+      ReadAnythingColor::kBlue};
 
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);

@@ -13,5 +13,7 @@ const char kLetterSpacingHistogramName[] =
     "Accessibility.ReadAnything.LetterSpacing";
 const char kLineSpacingHistogramName[] =
     "Accessibility.ReadAnything.LineSpacing";
+const char kColorHistogramName[] = "Accessibility.ReadAnything.Color";
+const char kFontScaleHistogramName[] = "Accessibility.ReadAnything.FontScale";
 
 }  // namespace string_constants

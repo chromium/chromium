@@ -21,6 +21,17 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
+namespace {
+
+int GetNormalizedFontScale(double font_scale) {
+  DCHECK(font_scale >= kReadAnythingMinimumFontScale &&
+         font_scale <= kReadAnythingMaximumFontScale);
+  return (font_scale - kReadAnythingMinimumFontScale) *
+         (1 / kReadAnythingFontScaleIncrement);
+}
+
+}  // namespace
+
 ReadAnythingContainerView::ReadAnythingContainerView(
     ReadAnythingCoordinator* coordinator,
     std::unique_ptr<ReadAnythingToolbarView> toolbar,
@@ -82,6 +93,15 @@ void ReadAnythingContainerView::OnCoordinatorDestroyed() {
 }
 
 void ReadAnythingContainerView::LogTextStyle() {
+  int maximum_font_scale_logging =
+      GetNormalizedFontScale(kReadAnythingMaximumFontScale);
+  double font_scale = coordinator_->GetModel()->GetFontScale();
+  base::UmaHistogramExactLinear(string_constants::kFontScaleHistogramName,
+                                GetNormalizedFontScale(font_scale),
+                                maximum_font_scale_logging + 1);
+  ReadAnythingColorsModel::ReadAnythingColor color =
+      coordinator_->GetModel()->color_logging_value();
+  base::UmaHistogramEnumeration(string_constants::kColorHistogramName, color);
   read_anything::mojom::LineSpacing line_spacing =
       coordinator_->GetModel()->line_spacing();
   base::UmaHistogramEnumeration(string_constants::kLineSpacingHistogramName,

@@ -87966,6 +87966,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Laugh Cry"/>
 </enum>
 
+<enum name="ReadAnythingColor">
+  <int value="0" label="Default"/>
+  <int value="1" label="Light"/>
+  <int value="2" label="Dark"/>
+  <int value="3" label="Yellow"/>
+  <int value="4" label="Blue"/>
+</enum>
+
 <enum name="ReadAnythingLetterSpacing">
   <int value="0" label="Tight (Deprecated)"/>
   <int value="1" label="Standard"/>
