@@ -229,7 +229,9 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->model_.AddTree(tree_id, std::move(tree));
   }
 
-  size_t GetNumPendingUpdates() { return controller_->pending_updates_.size(); }
+  size_t GetNumPendingUpdates() {
+    return controller_->model_.pending_updates().size();
+  }
 
   ui::AXTreeID tree_id_;
   MockAXTreeDistiller* distiller_ = nullptr;

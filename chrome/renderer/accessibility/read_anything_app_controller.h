@@ -190,12 +190,6 @@ class ReadAnythingAppController
   mojo::Remote<read_anything::mojom::PageHandler> page_handler_;
   mojo::Receiver<read_anything::mojom::Page> receiver_{this};
 
-  // State:
-
-  // A queue of pending updates on the active AXTree, which will be
-  // unserialized once distillation completes.
-  std::vector<ui::AXTreeUpdate> pending_updates_;
-
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};

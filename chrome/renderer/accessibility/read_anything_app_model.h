@@ -13,6 +13,7 @@
 namespace ui {
 class AXNode;
 class AXSerializableTree;
+class AXTreeObserver;
 }  // namespace ui
 
 class ReadAnythingAppControllerTest;
@@ -45,6 +46,10 @@ class ReadAnythingAppModel {
     return active_ukm_source_id_;
   }
   const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
+
+  const std::vector<ui::AXTreeUpdate>& pending_updates() const {
+    return pending_updates_;
+  }
 
 #if DCHECK_IS_ON()
   const ui::AXTreeID& pending_updates_bundle_id() const {
@@ -88,12 +93,25 @@ class ReadAnythingAppModel {
 
   void EraseTree(ui::AXTreeID tree_id);
 
+  void UnserializePendingUpdates();
+
+  void ClearPendingUpdates();
+
+  void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
+                                  const std::vector<ui::AXTreeUpdate>& updates,
+                                  ui::AXTreeObserver* tree_observer);
+
  private:
   friend ReadAnythingAppControllerTest;
   double GetLetterSpacingValue(
       read_anything::mojom::LetterSpacing letter_spacing) const;
   double GetLineSpacingValue(
       read_anything::mojom::LineSpacing line_spacing) const;
+  void AddPendingUpdates(const std::vector<ui::AXTreeUpdate>& updates);
+
+  void UnserializeUpdates(std::vector<ui::AXTreeUpdate> updates,
+                          const ui::AXTreeID& tree_id);
+
   size_t NumTreesForTesting() const;
 
   // State.
@@ -111,6 +129,10 @@ class ReadAnythingAppModel {
   // This boolean marks when distillation is in progress to avoid sending
   // new distillation requests during that time.
   bool distillation_in_progress_ = false;
+
+  // A queue of pending updates on the active AXTree, which will be
+  // unserialized once distillation completes.
+  std::vector<ui::AXTreeUpdate> pending_updates_;
 
 #if DCHECK_IS_ON()
   // The bundle ID for the pending updates.
