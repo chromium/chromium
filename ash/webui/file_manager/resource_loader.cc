@@ -4,9 +4,9 @@
 
 #include "ash/webui/file_manager/resource_loader.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 namespace file_manager {
@@ -16,7 +16,7 @@ void AddFilesAppResources(content::WebUIDataSource* source,
                           size_t size) {
   // For Jelly we need to remap some resource dependencies.
   std::map<std::string, int> resource_map;
-  if (ash::features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     for (size_t i = 0; i < size; ++i) {
       const base::FilePath file_path(entries[i].path);
       if (file_path.Extension() == ".css") {
@@ -32,7 +32,7 @@ void AddFilesAppResources(content::WebUIDataSource* source,
       // Files app UI has all paths relative to //ui/file_manager/file_manager/
       // so we remove the leading file_manager/ to match the existing paths.
       base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
-      if (ash::features::IsJellyEnabled()) {
+      if (chromeos::features::IsJellyEnabled()) {
         // Serve CSS files that have the suffix _gm3.css as if they were named
         // without the suffix, serve the content of foo_gm3.css for requests
         // for foo.css.
