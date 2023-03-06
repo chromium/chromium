@@ -336,9 +336,9 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
   AtomicString part_name;
   CSSSelector::PseudoType pseudo_type = CSSSelector::kPseudoUnknown;
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   all_rules_.push_back(rule_data);
-#endif
+#endif  // DCHECK_IS_ON()
 
   bool is_exact_attr;
   const CSSSelector* it = ExtractBestSelectorValues(
@@ -1104,17 +1104,17 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(layer_intervals_);
   visitor->Trace(container_query_intervals_);
   visitor->Trace(scope_intervals_);
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   visitor->Trace(all_rules_);
-#endif
+#endif  // DCHECK_IS_ON()
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 void RuleSet::Show() const {
   for (const RuleData& rule : all_rules_) {
     rule.Selector().Show();
   }
 }
-#endif
+#endif  // DCHECK_IS_ON()
 
 }  // namespace blink

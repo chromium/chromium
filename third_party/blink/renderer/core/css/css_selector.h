@@ -414,10 +414,10 @@ class CORE_EXPORT CSSSelector {
                           : false;
   }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void Show() const;
   void Show(int indent) const;
-#endif
+#endif  // DCHECK_IS_ON()
 
   bool IsASCIILower(const AtomicString& value);
   void SetValue(const AtomicString&, bool match_lower_case);

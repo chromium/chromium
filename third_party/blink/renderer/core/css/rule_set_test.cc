@@ -423,7 +423,7 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll2) {
   EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
 }
 
-#ifndef NDEBUG  // Requires all_rules_, to find back the rules we add.
+#if DCHECK_IS_ON()  // Requires all_rules_, to find back the rules we add.
 
 // Parse the given selector, buckets it and returns which of the constituent
 // simple selectors were marked as covered by that bucketing. Note the the
@@ -494,7 +494,7 @@ TEST(RuleSetTest, IsCoveredByBucketing) {
   EXPECT_THAT(CoveredByBucketing(":host"), ElementsAreArray({false}));
 }
 
-#endif  // NDEBUG
+#endif  // DCHECK_IS_ON()
 
 TEST(RuleSetTest, SelectorIndexLimit) {
   // It's not feasible to run this test for a large number of bits. If the

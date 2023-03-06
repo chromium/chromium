@@ -517,10 +517,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return scope_intervals_;
   }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void Show() const;
   const HeapVector<RuleData>& AllRulesForTest() const { return all_rules_; }
-#endif
+#endif  // DCHECK_IS_ON()
 
   void Trace(Visitor*) const;
 
@@ -652,9 +652,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // Empty vector if the stylesheet doesn't use any @scopes.
   HeapVector<Interval<StyleScope>> scope_intervals_;
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   HeapVector<RuleData> all_rules_;
-#endif
+#endif  // DCHECK_IS_ON()
 };
 
 }  // namespace blink

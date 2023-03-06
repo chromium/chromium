@@ -47,9 +47,9 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 #include <stdio.h>
-#endif
+#endif  // DCHECK_IS_ON()
 
 namespace blink {
 
@@ -643,7 +643,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   return static_cast<CSSSelector::PseudoType>(match->type);
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 void CSSSelector::Show(int indent) const {
   printf("%*sSelectorText(): %s\n", indent, "", SelectorText().Ascii().c_str());
   printf("%*smatch_: %d\n", indent, "", match_);
@@ -676,7 +676,7 @@ void CSSSelector::Show() const {
   Show(2);
   printf("******* end *******\n");
 }
-#endif
+#endif  // DCHECK_IS_ON()
 
 void CSSSelector::UpdatePseudoPage(const AtomicString& value,
                                    const Document* document) {
