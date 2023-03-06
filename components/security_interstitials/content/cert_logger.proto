@@ -251,14 +251,19 @@ message ChromeRootStoreDebugInfo {
 }
 
 message TrustStoreNSSDebugInfo {
+  reserved 2;
+
   optional bool ignore_system_trust_settings = 1;
 
+  // Corresponds to TrustStoreNSS:ResultDebugData::SlotFilterType, however the
+  // numeric values are NOT equivalent.
   enum SlotFilterType {
-    DONT_FILTER = 0;
-    DO_NOT_ALLOW_USER_SLOTS = 1;
-    ALLOW_SPECIFIED_USER_SLOT = 2;
-  };
-  optional SlotFilterType slot_filter_type = 2;
+    UNKNOWN_SLOT_FILTER_TYPE = 0;
+    DONT_FILTER = 1;
+    DO_NOT_ALLOW_USER_SLOTS = 2;
+    ALLOW_SPECIFIED_USER_SLOT = 3;
+  }
+  optional SlotFilterType slot_filter_type = 3;
 }
 
 // Contains the results of verification by the trial verifier. All fields
