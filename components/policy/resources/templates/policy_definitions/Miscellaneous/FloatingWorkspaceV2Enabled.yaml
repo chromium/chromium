@@ -19,7 +19,7 @@ owners:
 - yzd@chromium.org
 schema:
   type: boolean
-supported_on:
-- chrome_os:110-
+future_on:
+- chrome_os
 tags: []
 type: main
