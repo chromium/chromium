@@ -1426,6 +1426,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Helper method getting the selected status.
   bool ISelectionItemProviderIsSelected() const;
 
+  // Helper method for getting the toggle state.
+  ToggleState GetToggleStateImpl();
+
   // Helper method for IsInaccessibleForUIA.
   bool IsNodeInaccessibleForUIA() const;
 

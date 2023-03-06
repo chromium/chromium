@@ -2950,6 +2950,17 @@ bool AXPlatformNodeWin::ISelectionItemProviderIsSelected() const {
   return GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 }
 
+ToggleState AXPlatformNodeWin::GetToggleStateImpl() {
+  const auto checked_state = GetData().GetCheckedState();
+  if (checked_state == ax::mojom::CheckedState::kTrue) {
+    return ToggleState_On;
+  } else if (checked_state == ax::mojom::CheckedState::kMixed) {
+    return ToggleState_Indeterminate;
+  } else {
+    return ToggleState_Off;
+  }
+}
+
 bool AXPlatformNodeWin::IsNodeInaccessibleForUIA() const {
   // Ignored nodes and those that are descendants of a leaf node shouldn't be
   // exposed to UIA. For example, an atomic text field can have text children
@@ -3126,14 +3137,7 @@ IFACEMETHODIMP AXPlatformNodeWin::Toggle() {
 IFACEMETHODIMP AXPlatformNodeWin::get_ToggleState(ToggleState* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TOGGLE_GET_TOGGLESTATE);
   UIA_VALIDATE_CALL_1_ARG(result);
-  const auto checked_state = GetData().GetCheckedState();
-  if (checked_state == ax::mojom::CheckedState::kTrue) {
-    *result = ToggleState_On;
-  } else if (checked_state == ax::mojom::CheckedState::kMixed) {
-    *result = ToggleState_Indeterminate;
-  } else {
-    *result = ToggleState_Off;
-  }
+  *result = GetToggleStateImpl();
   return S_OK;
 }
 
@@ -5384,6 +5388,12 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
         result->vt = VT_I4;
         result->intVal = *set_size;
       }
+      break;
+    }
+
+    case UIA_ToggleToggleStatePropertyId: {
+      result->vt = VT_I4;
+      result->intVal = GetToggleStateImpl();
       break;
     }
 
