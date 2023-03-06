@@ -532,9 +532,7 @@ chromium-metrics-reviews@google.com.
     is showing at this point, so there aren't any UI elements for a user to
     interact with.
 
-    It includes code loading, static initializers and the execution time
-    contained in Startup.ColdStartWithExternalURLTime and
-    Startup.ColdStartWithoutExternalURLTime metrics.
+    It includes code loading and static initializers.
 
     The total counts in this histogram can be compared with the number of emits
     to the user action MobileWillEnterForeground. The former reports the number
@@ -543,24 +541,6 @@ chromium-metrics-reviews@google.com.
 
     Do not modify this metric in any way without contacting
     chrome-analysis-team@google.com.
-  </summary>
-</histogram>
-
-<histogram name="Startup.ColdStartWithExternalURLTime" units="ms"
-    expires_after="2021-04-18">
-  <owner>jif@chromium.org</owner>
-  <summary>
-    The duration of all initializations in a cold start triggered by an external
-    URL.
-  </summary>
-</histogram>
-
-<histogram name="Startup.ColdStartWithoutExternalURLTime" units="ms"
-    expires_after="M82">
-  <owner>jif@chromium.org</owner>
-  <summary>
-    The duration of all initializations in a cold start not triggered by an
-    external URL.
   </summary>
 </histogram>
 

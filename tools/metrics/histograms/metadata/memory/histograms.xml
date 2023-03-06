@@ -2913,14 +2913,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MemoryWarning.OccurrencesPerSession" units="units"
-    expires_after="M85">
-  <owner>marq@chromium.org</owner>
-  <summary>
-    The number of memory warnings during a given foreground session.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
