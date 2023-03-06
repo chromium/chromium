@@ -23,7 +23,6 @@ kDefaultWaylandProtocols = [
   "//third_party/wayland-protocols/src/unstable/pointer-gestures/pointer-gestures-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/relative-pointer/relative-pointer-unstable-v1.xml",
   "//third_party/wayland-protocols/src/unstable/text-input/text-input-unstable-v1.xml",
-  "//third_party/wayland-protocols/src/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
   "//third_party/wayland-protocols/unstable/alpha-compositing/alpha-compositing-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/cursor-shapes/cursor-shapes-unstable-v1.xml",
   "//third_party/wayland-protocols/unstable/gaming-input/gaming-input-unstable-v2.xml",

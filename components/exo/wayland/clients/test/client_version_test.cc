@@ -34,7 +34,6 @@
 #include <weston-test-server-protocol.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
-#include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include <memory>
 #include <string>
@@ -79,7 +78,6 @@ struct Globals {
   std::unique_ptr<wl_data_device_manager> wl_data_device_manager;
   std::unique_ptr<wp_content_type_manager_v1> wp_content_type_manager_v1;
   std::unique_ptr<wp_viewporter> wp_viewporter;
-  std::unique_ptr<zxdg_shell_v6> zxdg_shell_v6;
   std::unique_ptr<xdg_wm_base> xdg_wm_base;
   std::unique_ptr<zwp_text_input_manager_v1> zwp_text_input_manager_v1;
   std::unique_ptr<zcr_secure_output_v1> zcr_secure_output_v1;
@@ -173,7 +171,6 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(wp_content_type_manager_v1,
                             wp_content_type_manager_v1),
           REGISTRY_CALLBACK(wp_viewporter, wp_viewporter),
-          REGISTRY_CALLBACK(zxdg_shell_v6, zxdg_shell_v6),
           REGISTRY_CALLBACK(xdg_wm_base, xdg_wm_base),
           REGISTRY_CALLBACK(zwp_text_input_manager_v1,
                             zwp_text_input_manager_v1),
