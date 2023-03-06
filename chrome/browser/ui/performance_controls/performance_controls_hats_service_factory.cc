@@ -45,6 +45,12 @@ KeyedService* PerformanceControlsHatsServiceFactory::BuildServiceInstanceFor(
                kPerformanceControlsBatterySaverOptOutSurvey))) {
     return nullptr;
   }
+
+  // Restrict these surveys to users who have HighEfficiency mode available.
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable)) {
+    return nullptr;
+  }
   Profile* profile = Profile::FromBrowserContext(context);
 
   // If there is no HaTS service, or the HaTS service reports the user is not
