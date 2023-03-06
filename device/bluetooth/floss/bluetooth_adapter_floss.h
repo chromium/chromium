@@ -200,6 +200,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void Init();
 
   void NotifyDeviceFound(uint8_t scanner_id, const std::string& address);
+  BluetoothDeviceFloss* CreateOrGetDeviceForUpdate(const std::string& address,
+                                                   const std::string& name);
 
   // Helper function to create a Floss device
   std::unique_ptr<BluetoothDeviceFloss> CreateBluetoothDeviceFloss(
