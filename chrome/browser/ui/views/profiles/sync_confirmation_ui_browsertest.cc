@@ -294,9 +294,7 @@ class SyncConfirmationUIDialogPixelTest
   std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
-// TODO(crbug.com/1417934): Re-enable this test
-IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest,
-                       DISABLED_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
