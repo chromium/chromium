@@ -407,12 +407,8 @@ class MockHashRealTimeService : public HashRealTimeService {
             /*threat_type=*/url_details_[url].threat_type));
   }
 
-  bool IsInBackoffMode() const override { return is_in_backoff_mode_; }
-  void EnableBackoffMode() { is_in_backoff_mode_ = true; }
-
  private:
   base::flat_map<std::string, UrlDetail> url_details_;
-  bool is_in_backoff_mode_ = false;
   base::WeakPtrFactory<MockHashRealTimeService> weak_factory_{this};
 };
 

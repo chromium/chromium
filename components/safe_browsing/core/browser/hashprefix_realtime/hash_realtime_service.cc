@@ -179,13 +179,6 @@ bool HashRealTimeService::IsThreatTypeMoreSevere(
   return candidate_severity < baseline_severity;
 }
 
-bool HashRealTimeService::IsInBackoffMode() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool in_backoff = backoff_operator_->IsInBackoffMode();
-  base::UmaHistogramBoolean("SafeBrowsing.HPRT.Backoff.State", in_backoff);
-  return in_backoff;
-}
-
 std::set<std::string> HashRealTimeService::GetHashPrefixesSet(
     const GURL& url) const {
   std::vector<std::string> full_hashes;
@@ -250,6 +243,17 @@ void HashRealTimeService::StartLookup(
         FROM_HERE,
         base::BindOnce(std::move(response_callback),
                        /*is_lookup_successful=*/true, sb_threat_type));
+    return;
+  }
+
+  // If the service is in backoff mode, don't send a request.
+  bool in_backoff = backoff_operator_->IsInBackoffMode();
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.BackoffState", in_backoff);
+  if (in_backoff) {
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_callback),
+                                  /*is_lookup_successful=*/false,
+                                  /*sb_threat_type=*/absl::nullopt));
     return;
   }
 

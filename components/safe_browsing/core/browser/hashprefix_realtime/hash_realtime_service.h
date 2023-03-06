@@ -68,11 +68,6 @@ class HashRealTimeService : public KeyedService {
   // it).
   bool IsEnhancedProtectionEnabled();
 
-  // Returns true if the lookups are currently in backoff mode due to too many
-  // prior errors. If this happens, the checking falls back to hash-based
-  // database method.
-  virtual bool IsInBackoffMode() const;
-
   // Start the lookup for |url|, and call |response_callback| on
   // |callback_task_runner| when response is received.
   virtual void StartLookup(
@@ -96,6 +91,11 @@ class HashRealTimeService : public KeyedService {
                            TestLookupFailure_IncorrectFullHashLength);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_MissingCacheDuration);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestBackoffModeSet);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeRespected_FullyCached);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeRespected_NotCached);
 
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
   using PendingHPRTLookupRequests =

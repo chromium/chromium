@@ -1018,14 +1018,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.Backoff.State" enum="BooleanEnabled"
+<histogram name="SafeBrowsing.HPRT.BackoffState" enum="BooleanEnabled"
     expires_after="2023-07-20">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs if the hash-prefix real-time lookup service is currently in backoff
-    state due to previous errors. Logged whenever the hash-prefix real-time
-    check is enabled and is run for a particular URL.
+    state due to previous errors. Logs whenever a hash-prefix real-time request
+    is about to be attempted, which will not go through if the service is in
+    backoff mode.
   </summary>
 </histogram>
 
@@ -1101,15 +1102,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.IsLookupServiceAvailable"
-    enum="BooleanAvailable" expires_after="2023-07-20">
+<histogram name="SafeBrowsing.HPRT.IsLookupServiceFound" enum="BooleanFound"
+    expires_after="2023-07-20">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs whether the hash-prefix real-time lookup service is available when a
-    hash-prefix real-time check is needed. The lookup service is available if it
-    is not nullptr and it is not in backoff mode. Logged when the hash-prefix
-    real-time check is enabled and the URL doesn't match the allowlist.
+    Logs whether the hash-prefix real-time lookup service is found when a hash-
+    prefix real-time check is needed. The lookup service is available if it is
+    not nullptr. Logged when the hash-prefix real-time check is enabled and the
+    URL doesn't match the allowlist.
   </summary>
 </histogram>
 
