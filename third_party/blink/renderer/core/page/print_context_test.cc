@@ -634,6 +634,49 @@ TEST_P(PrintContextTest, ScaledHorizontalTB3) {
   EXPECT_EQ(3, page_count);
 }
 
+TEST_P(PrintContextTest, SvgMarkersOnMultiplePages) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      svg {
+        display: block;
+      }
+    </style>
+    <svg style="break-after: page">
+      <marker id="m1" markerUnits="userSpaceOnUse" overflow="visible">
+        <rect width="100" height="75" transform="translate(1,0)"/>
+      </marker>
+      <path d="M0,0h1" marker-start="url(#m1)"/>
+    </svg>
+    <svg>
+      <marker id="m2" markerUnits="userSpaceOnUse" overflow="visible">
+        <rect width="50" height="25" transform="translate(2,0)"/>
+      </marker>
+      <path d="M0,0h1" marker-start="url(#m2)"/>
+    </svg>
+  )HTML");
+
+  class MockCanvas : public SkCanvas {
+   public:
+    MockCanvas() : SkCanvas(kPageWidth, kPageHeight) {}
+
+    MOCK_METHOD2(onDrawRect, void(const SkRect&, const SkPaint&));
+    MOCK_METHOD2(didTranslate, void(SkScalar, SkScalar));
+  };
+
+  MockCanvas first_page_canvas;
+  EXPECT_CALL(first_page_canvas, didTranslate(1, 0)).Times(1);
+  EXPECT_CALL(first_page_canvas, onDrawRect(SkRect::MakeWH(100, 75), _))
+      .Times(1);
+  PrintSinglePage(first_page_canvas, 0);
+
+  MockCanvas second_page_canvas;
+  EXPECT_CALL(second_page_canvas, didTranslate(0, 799)).Times(1);
+  EXPECT_CALL(second_page_canvas, didTranslate(2, 0)).Times(1);
+  EXPECT_CALL(second_page_canvas, onDrawRect(SkRect::MakeWH(50, 25), _))
+      .Times(1);
+  PrintSinglePage(second_page_canvas, 1);
+}
+
 INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextFrameTest);
 
 TEST_P(PrintContextFrameTest, WithSubframe) {
