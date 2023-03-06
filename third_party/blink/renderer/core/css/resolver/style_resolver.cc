@@ -1749,6 +1749,7 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
       state.ElementContext(), StyleRecalcContext::FromAncestors(*element),
       selector_filter_, match_result, EInsideLink::kNotInsideLink);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
+  collector.SetSuppressVisited(true);
   CollectPseudoRulesForElement(*element, collector, kPseudoIdNone, g_null_atom,
                                rules_to_include);
   return collector.MatchedStyleRuleList();
