@@ -137,6 +137,11 @@ class ReadWriter {
 
   base::ScopedFD temp_file_;
 
+  // The first (if any) write error we encounter. When non-zero, all future
+  // Write calls fail and Save-on-Close is a no-op (other than running the
+  // Close2Callback).
+  int write_posix_error_code_ = 0;
+
   // True when the FD in |temp_file_| has been loaned out to a separate thread
   // (separate from the content::BrowserThread::IO thread that this lives on,
   // which should not be used for blocking I/O).
