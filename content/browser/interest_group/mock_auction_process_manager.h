@@ -397,7 +397,7 @@ class MockAuctionProcessManager
   // that those only include cumulative worklets not claimed by
   // TakeBidderWorklet() and TakeSellerWorklet()
   // - once a worklet has been claimed by the consumer, it no longer counts
-  // towads these totals.
+  // towards these totals.
   size_t waiting_for_num_bidders_ = 0;
   size_t waiting_for_num_sellers_ = 0;
 
