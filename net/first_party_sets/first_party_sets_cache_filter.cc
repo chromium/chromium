@@ -24,9 +24,7 @@ FirstPartySetsCacheFilter::FirstPartySetsCacheFilter(
     base::flat_map<net::SchemefulSite, int64_t> filter,
     int64_t browser_run_id)
     : filter_(std::move(filter)), browser_run_id_(std::move(browser_run_id)) {
-  if (browser_run_id_ == 0) {
-    DCHECK(filter_.empty());
-  }
+  CHECK(browser_run_id != 0 || filter_.empty());
 }
 
 FirstPartySetsCacheFilter::FirstPartySetsCacheFilter(

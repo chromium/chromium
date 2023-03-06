@@ -44,7 +44,7 @@ FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
   for (const auto& set : set_list) {
     for (const auto& site_and_entry : set) {
       bool inserted = sets.emplace(site_and_entry).second;
-      DCHECK(inserted);
+      CHECK(inserted);
     }
   }
   return sets;
@@ -105,8 +105,8 @@ GlobalFirstPartySets::GlobalFirstPartySets(
       return entries_.contains(pair.second);
     }));
   } else {
-    DCHECK(entries_.empty());
-    DCHECK(aliases_.empty());
+    CHECK(entries_.empty());
+    CHECK(aliases_.empty());
   }
 }
 
@@ -238,7 +238,7 @@ bool GlobalFirstPartySets::IsContextSamePartyWithSite(
 
 void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
     const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries) {
-  DCHECK(manual_config_.empty());
+  CHECK(manual_config_.empty());
   // We handle the manually-specified set the same way as we handle
   // replacement enterprise policy sets.
   manual_config_ = ComputeConfig(
@@ -247,7 +247,7 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
 
 void GlobalFirstPartySets::UnsafeSetManualConfig(
     FirstPartySetsContextConfig manual_config) {
-  DCHECK(manual_config_.empty());
+  CHECK(manual_config_.empty());
   manual_config_ = std::move(manual_config);
 }
 
@@ -313,7 +313,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
         entry.has_value() && entry->primary() == site) {
       // Site was an owner in the existing sets.
       bool inserted = replaced_existing_owners.emplace(site).second;
-      DCHECK(inserted);
+      CHECK(inserted);
     }
   }
 
@@ -423,7 +423,7 @@ GlobalFirstPartySets::NormalizeAdditionSets(
                          FirstPartySetEntry(rep_primary, SiteType::kAssociated,
                                             absl::nullopt))
                 .second;
-        DCHECK(inserted);
+        CHECK(inserted);
       }
     }
     normalized_additions.push_back(normalized);
@@ -440,7 +440,7 @@ bool GlobalFirstPartySets::ForEachPublicSetEntry(
   }
   for (const auto& [alias, canonical] : aliases_) {
     auto it = entries_.find(canonical);
-    DCHECK(it != entries_.end());
+    CHECK(it != entries_.end());
     if (!f(alias, it->second))
       return false;
   }

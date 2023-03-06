@@ -29,7 +29,7 @@ FirstPartySetEntry::FirstPartySetEntry(
   switch (site_type_) {
     case SiteType::kPrimary:
     case SiteType::kService:
-      DCHECK(!site_index_.has_value());
+      CHECK(!site_index_.has_value());
       break;
     case SiteType::kAssociated:
       break;

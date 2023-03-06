@@ -31,7 +31,7 @@ class ClearingTask : public BrowsingDataRemover::Observer {
     // for it to be destroyed should be the "delete this" part in
     // OnBrowsingDataRemoverDone() function, and it invokes the |callback_|. So
     // when this destructor is called, the |callback_| should be null.
-    DCHECK(!callback_);
+    CHECK(!callback_);
   }
 
   void RunAndDestroySelfWhenDone() {
@@ -65,13 +65,13 @@ class ClearingTask : public BrowsingDataRemover::Observer {
             BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
         std::move(origin_filter_builder), this);
 
-    DCHECK_GT(task_count_, 0);
+    CHECK_GT(task_count_, 0);
   }
 
  private:
   // BrowsingDataRemover::Observer:
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
-    DCHECK_GT(task_count_, 0);
+    CHECK_GT(task_count_, 0);
     failed_data_types_ |= failed_data_types;
     if (--task_count_)
       return;

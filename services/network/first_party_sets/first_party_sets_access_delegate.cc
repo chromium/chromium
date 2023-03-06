@@ -139,7 +139,7 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(context_config());
+  CHECK(context_config());
   // NB: since `ComputeMetadata` returns early if the delegate is disabled,
   // we're guaranteed that for any queued query, the delegate must have been
   // enabled when the query was received. However, the delegate may have been
@@ -163,7 +163,7 @@ void FirstPartySetsAccessDelegate::FindEntriesAndInvoke(
     base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
         callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(context_config());
+  CHECK(context_config());
   // NB: since `FindEntries` returns early if the delegate is disabled,
   // we're guaranteed that for any queued query, the delegate must have been
   // enabled when the query was received. However, the delegate may have been
@@ -187,7 +187,7 @@ void FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke(
     base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
         callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cache_filter());
+  CHECK(cache_filter());
   // NB: since `GetCacheFilterMatchInfo` returns early if the delegate is
   // disabled, we're guaranteed that for any queued query, the delegate must
   // have been enabled when the query was received. However, the delegate may
@@ -198,8 +198,8 @@ void FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke(
 
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ready_event_.has_value());
-  DCHECK(pending_queries_);
+  CHECK(ready_event_.has_value());
+  CHECK(pending_queries_);
 
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration."
@@ -227,8 +227,8 @@ void FirstPartySetsAccessDelegate::InvokePendingQueries() {
 void FirstPartySetsAccessDelegate::EnqueuePendingQuery(
     base::OnceClosure run_query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_queries_);
-  DCHECK(!ready_event_.has_value());
+  CHECK(pending_queries_);
+  CHECK(!ready_event_.has_value());
 
   if (!first_async_query_timer_.has_value())
     first_async_query_timer_ = {base::ElapsedTimer()};

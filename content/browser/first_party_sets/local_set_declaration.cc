@@ -48,9 +48,9 @@ absl::optional<FirstPartySetParser::SingleSet> CanonicalizeSet(
 
   for (const auto& [alias, canonical] : aliases) {
     auto it = entries.find(canonical);
-    DCHECK(it != entries.end());
+    CHECK(it != entries.end());
     bool inserted = entries.emplace(alias, it->second).second;
-    DCHECK(inserted);
+    CHECK(inserted);
   }
 
   return absl::make_optional(std::move(entries));
@@ -80,9 +80,9 @@ LocalSetDeclaration& LocalSetDeclaration::operator=(LocalSetDeclaration&&) =
     default;
 
 const FirstPartySetParser::SingleSet& LocalSetDeclaration::GetSet() const {
-  DCHECK(!empty());
+  CHECK(!empty());
   const FirstPartySetParser::SingleSet& set = parsed_set_.value();
-  DCHECK(!set.empty());
+  CHECK(!set.empty());
   return set;
 }
 
