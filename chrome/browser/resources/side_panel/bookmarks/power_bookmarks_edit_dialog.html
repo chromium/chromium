@@ -1,4 +1,4 @@
-<style include="cr-icons cr-shared-style">
+<style include="cr-icons cr-shared-style sp-shared-style">
   :host {
     --cr-dialog-body-padding-horizontal: 16px;
     --cr-dialog-title-slot-padding-start: 16px;
@@ -54,7 +54,7 @@
   }
 
   .input-row {
-    align-items: flex-start;
+    align-items: center;
     display: grid;
     grid-template-columns: 52px auto;
   }
@@ -76,13 +76,13 @@
     <div class="input-section" hidden="[[moveOnly_]]">
       <div class="input-row name-input">
         <span class="input-label" aria-hidden="true">$i18n{editName}</span>
-        <cr-input id="nameInput"
+        <cr-input class="sp-labelless-input" id="nameInput"
             value="[[getBookmarkName_(selectedBookmarks_.*)]]"
             aria-label="$i18n{editName}"></cr-input>
       </div>
       <div class="input-row">
         <span class="input-label" aria-hidden="true">$i18n{editUrl}</span>
-        <cr-input id="urlInput" type="url"
+        <cr-input class="sp-labelless-input" id="urlInput" type="url"
             value="[[getBookmarkUrl_(selectedBookmarks_.*)]]"
             error-message="$i18n{editInvalidUrl}"
             aria-label="$i18n{editUrl}"></cr-input>
