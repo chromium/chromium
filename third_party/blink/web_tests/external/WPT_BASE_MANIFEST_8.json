@@ -366535,10 +366535,6 @@
      "02e98540f4dd316b49a3e48e34c2d655adff31ea",
      []
     ],
-    "positionstate-expected.txt": [
-     "d298b26908c628cca32834adb10a9a36f9c0b07a",
-     []
-    ],
     "positionstate.html.ini": [
      "f9a2fb18b39931e47d10ad3eb529c8352042b442",
      []
@@ -530242,13 +530238,6 @@
        ]
       },
       "contenteditable": {
-       "contentEditable-invalidvalue.html": [
-        "b8c17c3a41677fb137919dda1488137a24470016",
-        [
-         null,
-         {}
-        ]
-       ],
        "contentEditable-slotted-inherit.html": [
         "42da515920e6eacf35bc2ac9ffd43765b667a362",
         [
@@ -530257,7 +530246,7 @@
         ]
        ],
        "contenteditable-enumerated-ascii-case-insensitive.html": [
-        "209686680e91472bf064f7b37972c54f47bc8a15",
+        "0125b95667f200770f4c7530464c790c558ae3b8",
         [
          null,
          {}
@@ -530271,7 +530260,7 @@
         ]
        ],
        "user-interaction-editing-contenteditable.html": [
-        "2e51109fa7abe71fb763b9b4beb11aac9b1e8ad9",
+        "19b21863e09ef388eb69f3033c2f0b998c336ccb",
         [
          null,
          {}
