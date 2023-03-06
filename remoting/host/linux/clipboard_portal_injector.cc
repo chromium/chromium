@@ -209,7 +209,9 @@ void ClipboardPortalInjector::OnSelectionWriteCallback(GObject* object,
     } else {
       request_successes[serial] =
           base::WriteFileDescriptor(fd.get(), that->write_data_);
-      LOG(ERROR) << "Failed to write clipboard data to file descriptor";
+      if (!request_successes[serial]) {
+        LOG(ERROR) << "Failed to write clipboard data to file descriptor";
+      }
     }
   }
 
