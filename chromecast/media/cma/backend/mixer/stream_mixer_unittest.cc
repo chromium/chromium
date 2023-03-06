@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -11,6 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1080,8 +1080,7 @@ TEST_F(StreamMixerTest, PostProcessorDelayListedDeviceId) {
   delays.push_back(common_delay + kTtsProcessorDelay);
 
   // Convert delay from frames to microseconds.
-  std::transform(delays.begin(), delays.end(), delays.begin(),
-                 &FramesToDelayUs);
+  base::ranges::transform(delays, delays.begin(), &FramesToDelayUs);
 
   for (size_t i = 0; i < inputs.size(); ++i) {
     EXPECT_CALL(*inputs[i], InitializeAudioPlayback(_, _)).Times(1);
