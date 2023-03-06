@@ -208,7 +208,6 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] WebGLCa
 
 # WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23 or Lacros FYI
 # x64 Release (Intel) yet.
-crbug.com/1230619 [ android android-pixel-4 ] TraceTest_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-sm-a235m ] TraceTest_WebGLFloat [ Failure ]
 
 crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
