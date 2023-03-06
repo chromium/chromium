@@ -3,8 +3,8 @@
 <body>
 <script type="module">
 import { isSessionStorage } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
-        
-// Step 4 (wpt_internal/webstorage/storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
+
+// Step 4 (wpt_internal/webstorage/{general-}storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
 const iframe = document.createElement("iframe");
 iframe.src = "https://{{host}}:{{ports[https][0]}}/wpt_internal/webstorage/resources/storage-deprecation-trial-iframe-iframe.html" + (isSessionStorage() ? "?session" : "");
 document.body.appendChild(iframe);
