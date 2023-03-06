@@ -212,29 +212,6 @@ bool HitTestCulledInlineAncestors(
       hit_test_location, fallback_accumulated_offset);
 }
 
-// Returns if this fragment may not be laid out by LayoutNG.
-//
-// This function is for an optimization to skip a few virtual
-// calls. When this is |false|, we know |LayoutObject::Paint()| calls
-// |NGBoxFragmentPainter|, and that we can instantiate a child
-// |NGBoxFragmentPainter| directly. All code should work without this.
-//
-// TODO(kojii): This may become more complicated when we use
-// |NGBoxFragmentPainter| for all fragments, and we still want this
-// optimization.
-bool FragmentRequiresLegacyFallback(const NGPhysicalFragment& fragment) {
-  // If |fragment| is |IsFormattingContextRoot|, it may be legacy.
-  // Avoid falling back to |LayoutObject| if |CanTraverse|, because it
-  // cannot handle block fragmented objects.
-  if (!fragment.IsFormattingContextRoot() || fragment.CanTraverse())
-    return false;
-  // We may get here in multiple-fragment cases if the object is repeated
-  // (inside table headers and footers, for instance).
-  DCHECK(!To<NGPhysicalBoxFragment>(&fragment)->BreakToken() ||
-         To<NGPhysicalBoxFragment>(&fragment)->BreakToken()->IsRepeated());
-  return true;
-}
-
 // Returns a vector of backplates that surround the paragraphs of text within
 // line_boxes.
 //
@@ -1722,22 +1699,7 @@ void NGBoxFragmentPainter::PaintBoxItem(
     return;
 
   if (child_fragment.IsAtomicInline() || child_fragment.IsListMarker()) {
-    if (FragmentRequiresLegacyFallback(child_fragment)) {
-      // The legacy painter may be confused when painting fragmented descendant
-      // PaintLayers (which should not be fragmented but legacy layout does) and
-      // will produce duplicated PaintChunk ids for the fragments. Skip display
-      // item cache to tolerate that.
-      absl::optional<DisplayItemCacheSkipper> skipper;
-      if (paint_info.context.GetPaintController().CurrentFragment())
-        skipper.emplace(paint_info.context);
-      const LayoutObject* child_layout_object =
-          child_fragment.GetLayoutObject();
-      DCHECK(child_layout_object);
-      DCHECK(child_layout_object->IsAtomicInlineLevel());
-      PaintFragment(To<NGPhysicalBoxFragment>(child_fragment), paint_info);
-      return;
-    }
-    NGBoxFragmentPainter(child_fragment).PaintAllPhasesAtomically(paint_info);
+    PaintFragment(child_fragment, paint_info);
     return;
   }
 
@@ -2245,39 +2207,29 @@ bool NGBoxFragmentPainter::HitTestInlineChildBoxFragment(
     is_in_atomic_painting_pass = hit_test.phase == HitTestPhase::kForeground;
   }
 
-  if (!FragmentRequiresLegacyFallback(fragment)) {
-    if (fragment.IsPaintedAtomically()) {
-      if (!is_in_atomic_painting_pass)
-        return false;
-      return HitTestAllPhasesInFragment(fragment, hit_test.location,
-                                        physical_offset, hit_test.result);
-    }
-    NGInlineCursor cursor(backward_cursor);
-    const NGFragmentItem* item = cursor.Current().Item();
-    DCHECK(item);
-    DCHECK_EQ(item->BoxFragment(), &fragment);
-    if (!fragment.MayIntersect(*hit_test.result, hit_test.location,
-                               physical_offset))
+  if (fragment.IsPaintedAtomically()) {
+    if (!is_in_atomic_painting_pass) {
       return false;
-
-    if (fragment.IsInlineBox()) {
-      return NGBoxFragmentPainter(cursor, *item, fragment, inline_context_)
-          .NodeAtPoint(hit_test, physical_offset);
     }
-
-    DCHECK(fragment.IsBlockInInline());
-    return NGBoxFragmentPainter(fragment).NodeAtPoint(hit_test,
-                                                      physical_offset);
+    return HitTestAllPhasesInFragment(fragment, hit_test.location,
+                                      physical_offset, hit_test.result);
+  }
+  NGInlineCursor cursor(backward_cursor);
+  const NGFragmentItem* item = cursor.Current().Item();
+  DCHECK(item);
+  DCHECK_EQ(item->BoxFragment(), &fragment);
+  if (!fragment.MayIntersect(*hit_test.result, hit_test.location,
+                             physical_offset)) {
+    return false;
   }
 
-  if (fragment.IsInline() && hit_test.phase != HitTestPhase::kForeground)
-    return false;
+  if (fragment.IsInlineBox()) {
+    return NGBoxFragmentPainter(cursor, *item, fragment, inline_context_)
+        .NodeAtPoint(hit_test, physical_offset);
+  }
 
-  DCHECK(fragment.IsPaintedAtomically());
-  if (!is_in_atomic_painting_pass)
-    return false;
-  return HitTestAllPhasesInFragment(fragment, hit_test.location,
-                                    physical_offset, hit_test.result);
+  DCHECK(fragment.IsBlockInInline());
+  return NGBoxFragmentPainter(fragment).NodeAtPoint(hit_test, physical_offset);
 }
 
 bool NGBoxFragmentPainter::HitTestChildBoxItem(
