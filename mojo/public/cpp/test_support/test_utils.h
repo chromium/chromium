@@ -23,7 +23,13 @@ namespace test {
 // structure type is given as an input, and returned as an output.
 template <typename MojomType,
           typename UserStructType,
-          std::enable_if_t<!std::is_enum<UserStructType>::value, int> = 0>
+          std::enable_if_t<
+              !std::is_same<mojo::InlinedStructPtr<MojomType>,
+                            std::remove_const_t<UserStructType>>::value &&
+                  !std::is_same<mojo::StructPtr<MojomType>,
+                                std::remove_const_t<UserStructType>>::value &&
+                  !std::is_enum<UserStructType>::value,
+              int> = 0>
 bool SerializeAndDeserialize(UserStructType& input,
                              std::remove_const_t<UserStructType>& output) {
   mojo::Message message = MojomType::SerializeAsMessage(&input);

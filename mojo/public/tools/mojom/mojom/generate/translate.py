@@ -377,12 +377,6 @@ def _MapKind(kind):
   }
   if kind.endswith('?'):
     base_kind = _MapKind(kind[0:-1])
-    # NOTE: This doesn't rule out enum types. Those will be detected later, when
-    # cross-reference is established.
-    reference_kinds = ('m', 's', 'h', 'a', 'r', 'x', 'asso', 'rmt', 'rcv',
-                       'rma', 'rca')
-    if re.split('[^a-z]', base_kind, 1)[0] not in reference_kinds:
-      raise Exception('A type (spec "%s") cannot be made nullable' % base_kind)
     return '?' + base_kind
   if kind.endswith('}'):
     lbracket = kind.rfind('{')
@@ -557,9 +551,6 @@ def _Kind(kinds, spec, scope):
 
   if spec.startswith('?'):
     kind = _Kind(kinds, spec[1:], scope)
-    if not mojom.IsReferenceKind(kind):
-      raise Exception('Unknown spec: %s. Check for missing imports.' % spec)
-
     kind = kind.MakeNullableKind()
   elif spec.startswith('a:'):
     kind = mojom.Array(_Kind(kinds, spec[2:], scope))

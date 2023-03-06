@@ -108,16 +108,43 @@ class Kind:
     module: {Module} The defining module. Set to None for built-in types.
     parent_kind: The enclosing type. For example, an enum defined
         inside an interface has that interface as its parent. May be None.
+    is_nullable: True if the type is nullable.
   """
 
-  def __init__(self, spec=None, module=None):
+  def __init__(self, spec=None, is_nullable=False, module=None):
     self.spec = spec
     self.module = module
     self.parent_kind = None
+    self.is_nullable = is_nullable
+    self.shared_definition = {}
+
+  @classmethod
+  def AddSharedProperty(cls, name):
+    """Adds a property |name| to |cls|, which accesses the corresponding item in
+       |shared_definition|.
+
+       The reason of adding such indirection is to enable sharing definition
+       between a reference kind and its nullable variation. For example:
+         a = Struct('test_struct_1')
+         b = a.MakeNullableKind()
+         a.name = 'test_struct_2'
+         print(b.name)  # Outputs 'test_struct_2'.
+    """
+    def Get(self):
+      try:
+        return self.shared_definition[name]
+      except KeyError:  # Must raise AttributeError if property doesn't exist.
+        raise AttributeError
+
+    def Set(self, value):
+      self.shared_definition[name] = value
+
+    setattr(cls, name, property(Get, Set))
 
   def Repr(self, as_ref=True):
     # pylint: disable=unused-argument
-    return '<%s spec=%r>' % (self.__class__.__name__, self.spec)
+    return '<%s spec=%r is_nullable=%r>' % (self.__class__.__name__, self.spec,
+                                            self.is_nullable)
 
   def __repr__(self):
     # Gives us a decent __repr__ for all kinds.
@@ -126,7 +153,8 @@ class Kind:
   def __eq__(self, rhs):
     # pylint: disable=unidiomatic-typecheck
     return (type(self) == type(rhs)
-            and (self.spec, self.parent_kind) == (rhs.spec, rhs.parent_kind))
+            and (self.spec, self.parent_kind, self.is_nullable)
+            == (rhs.spec, rhs.parent_kind, rhs.is_nullable))
 
   def __hash__(self):
     # TODO(crbug.com/1060471): Remove this and other __hash__ methods on Kind
@@ -134,11 +162,101 @@ class Kind:
     # some primitive Kinds as dict keys. The default hash (object identity)
     # breaks these dicts when a pickled Module instance is unpickled and used
     # during a subsequent run of the parser.
-    return hash((self.spec, self.parent_kind))
+    return hash((self.spec, self.parent_kind, self.is_nullable))
 
   # pylint: disable=unused-argument
   def IsBackwardCompatible(self, rhs, checker):
     return self == rhs
+
+
+class ValueKind(Kind):
+  """ValueKind represents values that aren't reference kinds.
+
+  The primary difference is the wire representation for nullable value kinds
+  still reserves space for the value type itself, even if that value itself
+  is logically null.
+  """
+  def __init__(self, spec=None, is_nullable=False, module=None):
+    assert spec is None or is_nullable == spec.startswith('?')
+    Kind.__init__(self, spec, is_nullable, module)
+
+  def MakeNullableKind(self):
+    assert not self.is_nullable
+
+    if self == BOOL:
+      return NULLABLE_BOOL
+    if self == INT8:
+      return NULLABLE_INT8
+    if self == INT16:
+      return NULLABLE_INT16
+    if self == INT32:
+      return NULLABLE_INT32
+    if self == INT64:
+      return NULLABLE_INT64
+    if self == UINT8:
+      return NULLABLE_UINT8
+    if self == UINT16:
+      return NULLABLE_UINT16
+    if self == UINT32:
+      return NULLABLE_UINT32
+    if self == UINT64:
+      return NULLABLE_UINT64
+    if self == FLOAT:
+      return NULLABLE_FLOAT
+    if self == DOUBLE:
+      return NULLABLE_DOUBLE
+
+    nullable_kind = type(self)()
+    nullable_kind.shared_definition = self.shared_definition
+    if self.spec is not None:
+      nullable_kind.spec = '?' + self.spec
+    nullable_kind.is_nullable = True
+    nullable_kind.parent_kind = self.parent_kind
+    nullable_kind.module = self.module
+
+    return nullable_kind
+
+  def MakeUnnullableKind(self):
+    assert self.is_nullable
+
+    if self == NULLABLE_BOOL:
+      return BOOL
+    if self == NULLABLE_INT8:
+      return INT8
+    if self == NULLABLE_INT16:
+      return INT16
+    if self == NULLABLE_INT32:
+      return INT32
+    if self == NULLABLE_INT64:
+      return INT64
+    if self == NULLABLE_UINT8:
+      return UINT8
+    if self == NULLABLE_UINT16:
+      return UINT16
+    if self == NULLABLE_UINT32:
+      return UINT32
+    if self == NULLABLE_UINT64:
+      return UINT64
+    if self == NULLABLE_FLOAT:
+      return FLOAT
+    if self == NULLABLE_DOUBLE:
+      return DOUBLE
+
+    nullable_kind = type(self)()
+    nullable_kind.shared_definition = self.shared_definition
+    if self.spec is not None:
+      nullable_kind.spec = self.spec[1:]
+    nullable_kind.is_nullable = False
+    nullable_kind.parent_kind = self.parent_kind
+    nullable_kind.module = self.module
+
+    return nullable_kind
+
+  def __eq__(self, rhs):
+    return (isinstance(rhs, ValueKind) and super().__eq__(rhs))
+
+  def __hash__(self):  # pylint: disable=useless-super-delegation
+    return super().__hash__()
 
 
 class ReferenceKind(Kind):
@@ -146,20 +264,11 @@ class ReferenceKind(Kind):
 
   A type is nullable if null (for pointer types) or invalid handle (for handle
   types) is a legal value for the type.
-
-  Attributes:
-    is_nullable: True if the type is nullable.
   """
 
   def __init__(self, spec=None, is_nullable=False, module=None):
     assert spec is None or is_nullable == spec.startswith('?')
-    Kind.__init__(self, spec, module)
-    self.is_nullable = is_nullable
-    self.shared_definition = {}
-
-  def Repr(self, as_ref=True):
-    return '<%s spec=%r is_nullable=%r>' % (self.__class__.__name__, self.spec,
-                                            self.is_nullable)
+    Kind.__init__(self, spec, is_nullable, module)
 
   def MakeNullableKind(self):
     assert not self.is_nullable
@@ -189,54 +298,36 @@ class ReferenceKind(Kind):
 
     return nullable_kind
 
-  @classmethod
-  def AddSharedProperty(cls, name):
-    """Adds a property |name| to |cls|, which accesses the corresponding item in
-       |shared_definition|.
-
-       The reason of adding such indirection is to enable sharing definition
-       between a reference kind and its nullable variation. For example:
-         a = Struct('test_struct_1')
-         b = a.MakeNullableKind()
-         a.name = 'test_struct_2'
-         print(b.name)  # Outputs 'test_struct_2'.
-    """
-
-    def Get(self):
-      try:
-        return self.shared_definition[name]
-      except KeyError:  # Must raise AttributeError if property doesn't exist.
-        raise AttributeError
-
-    def Set(self, value):
-      self.shared_definition[name] = value
-
-    setattr(cls, name, property(Get, Set))
-
   def __eq__(self, rhs):
-    return (isinstance(rhs, ReferenceKind) and super().__eq__(rhs)
-            and self.is_nullable == rhs.is_nullable)
+    return (isinstance(rhs, ReferenceKind) and super().__eq__(rhs))
 
-  def __hash__(self):
-    return hash((super().__hash__(), self.is_nullable))
-
-  def IsBackwardCompatible(self, rhs, checker):
-    return (super().IsBackwardCompatible(rhs, checker)
-            and self.is_nullable == rhs.is_nullable)
+  def __hash__(self):  # pylint: disable=useless-super-delegation
+    return super().__hash__()
 
 
 # Initialize the set of primitive types. These can be accessed by clients.
-BOOL = Kind('b')
-INT8 = Kind('i8')
-INT16 = Kind('i16')
-INT32 = Kind('i32')
-INT64 = Kind('i64')
-UINT8 = Kind('u8')
-UINT16 = Kind('u16')
-UINT32 = Kind('u32')
-UINT64 = Kind('u64')
-FLOAT = Kind('f')
-DOUBLE = Kind('d')
+BOOL = ValueKind('b')
+INT8 = ValueKind('i8')
+INT16 = ValueKind('i16')
+INT32 = ValueKind('i32')
+INT64 = ValueKind('i64')
+UINT8 = ValueKind('u8')
+UINT16 = ValueKind('u16')
+UINT32 = ValueKind('u32')
+UINT64 = ValueKind('u64')
+FLOAT = ValueKind('f')
+DOUBLE = ValueKind('d')
+NULLABLE_BOOL = ValueKind('?b', True)
+NULLABLE_INT8 = ValueKind('?i8', True)
+NULLABLE_INT16 = ValueKind('?i16', True)
+NULLABLE_INT32 = ValueKind('?i32', True)
+NULLABLE_INT64 = ValueKind('?i64', True)
+NULLABLE_UINT8 = ValueKind('?u8', True)
+NULLABLE_UINT16 = ValueKind('?u16', True)
+NULLABLE_UINT32 = ValueKind('?u32', True)
+NULLABLE_UINT64 = ValueKind('?u64', True)
+NULLABLE_FLOAT = ValueKind('?f', True)
+NULLABLE_DOUBLE = ValueKind('?d', True)
 STRING = ReferenceKind('s')
 HANDLE = ReferenceKind('h')
 DCPIPE = ReferenceKind('h:d:c')
@@ -265,6 +356,17 @@ PRIMITIVES = (
     UINT64,
     FLOAT,
     DOUBLE,
+    NULLABLE_BOOL,
+    NULLABLE_INT8,
+    NULLABLE_INT16,
+    NULLABLE_INT32,
+    NULLABLE_INT64,
+    NULLABLE_UINT8,
+    NULLABLE_UINT16,
+    NULLABLE_UINT32,
+    NULLABLE_UINT64,
+    NULLABLE_FLOAT,
+    NULLABLE_DOUBLE,
     STRING,
     HANDLE,
     DCPIPE,
@@ -450,14 +552,14 @@ class Struct(ReferenceKind):
         if it's a native struct.
   """
 
-  ReferenceKind.AddSharedProperty('mojom_name')
-  ReferenceKind.AddSharedProperty('name')
-  ReferenceKind.AddSharedProperty('native_only')
-  ReferenceKind.AddSharedProperty('custom_serializer')
-  ReferenceKind.AddSharedProperty('fields')
-  ReferenceKind.AddSharedProperty('enums')
-  ReferenceKind.AddSharedProperty('constants')
-  ReferenceKind.AddSharedProperty('attributes')
+  Kind.AddSharedProperty('mojom_name')
+  Kind.AddSharedProperty('name')
+  Kind.AddSharedProperty('native_only')
+  Kind.AddSharedProperty('custom_serializer')
+  Kind.AddSharedProperty('fields')
+  Kind.AddSharedProperty('enums')
+  Kind.AddSharedProperty('constants')
+  Kind.AddSharedProperty('attributes')
 
   def __init__(self, mojom_name=None, module=None, attributes=None):
     if mojom_name is not None:
@@ -610,11 +712,11 @@ class Union(ReferenceKind):
         which Java class name to use to represent it in the generated
         bindings.
   """
-  ReferenceKind.AddSharedProperty('mojom_name')
-  ReferenceKind.AddSharedProperty('name')
-  ReferenceKind.AddSharedProperty('fields')
-  ReferenceKind.AddSharedProperty('attributes')
-  ReferenceKind.AddSharedProperty('default_field')
+  Kind.AddSharedProperty('mojom_name')
+  Kind.AddSharedProperty('name')
+  Kind.AddSharedProperty('fields')
+  Kind.AddSharedProperty('attributes')
+  Kind.AddSharedProperty('default_field')
 
   def __init__(self, mojom_name=None, module=None, attributes=None):
     if mojom_name is not None:
@@ -735,8 +837,8 @@ class Array(ReferenceKind):
     length: The number of elements. None if unknown.
   """
 
-  ReferenceKind.AddSharedProperty('kind')
-  ReferenceKind.AddSharedProperty('length')
+  Kind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('length')
 
   def __init__(self, kind=None, length=None):
     if kind is not None:
@@ -781,8 +883,8 @@ class Map(ReferenceKind):
     key_kind: {Kind} The type of the keys. May be None.
     value_kind: {Kind} The type of the elements. May be None.
   """
-  ReferenceKind.AddSharedProperty('key_kind')
-  ReferenceKind.AddSharedProperty('value_kind')
+  Kind.AddSharedProperty('key_kind')
+  Kind.AddSharedProperty('value_kind')
 
   def __init__(self, key_kind=None, value_kind=None):
     if (key_kind is not None and value_kind is not None):
@@ -823,7 +925,7 @@ class Map(ReferenceKind):
 
 
 class PendingRemote(ReferenceKind):
-  ReferenceKind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('kind')
 
   def __init__(self, kind=None):
     if kind is not None:
@@ -848,7 +950,7 @@ class PendingRemote(ReferenceKind):
 
 
 class PendingReceiver(ReferenceKind):
-  ReferenceKind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('kind')
 
   def __init__(self, kind=None):
     if kind is not None:
@@ -873,7 +975,7 @@ class PendingReceiver(ReferenceKind):
 
 
 class PendingAssociatedRemote(ReferenceKind):
-  ReferenceKind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('kind')
 
   def __init__(self, kind=None):
     if kind is not None:
@@ -899,7 +1001,7 @@ class PendingAssociatedRemote(ReferenceKind):
 
 
 class PendingAssociatedReceiver(ReferenceKind):
-  ReferenceKind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('kind')
 
   def __init__(self, kind=None):
     if kind is not None:
@@ -925,7 +1027,7 @@ class PendingAssociatedReceiver(ReferenceKind):
 
 
 class InterfaceRequest(ReferenceKind):
-  ReferenceKind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('kind')
 
   def __init__(self, kind=None):
     if kind is not None:
@@ -949,7 +1051,7 @@ class InterfaceRequest(ReferenceKind):
 
 
 class AssociatedInterfaceRequest(ReferenceKind):
-  ReferenceKind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('kind')
 
   def __init__(self, kind=None):
     if kind is not None:
@@ -1106,12 +1208,12 @@ class Method:
 
 
 class Interface(ReferenceKind):
-  ReferenceKind.AddSharedProperty('mojom_name')
-  ReferenceKind.AddSharedProperty('name')
-  ReferenceKind.AddSharedProperty('methods')
-  ReferenceKind.AddSharedProperty('enums')
-  ReferenceKind.AddSharedProperty('constants')
-  ReferenceKind.AddSharedProperty('attributes')
+  Kind.AddSharedProperty('mojom_name')
+  Kind.AddSharedProperty('name')
+  Kind.AddSharedProperty('methods')
+  Kind.AddSharedProperty('enums')
+  Kind.AddSharedProperty('constants')
+  Kind.AddSharedProperty('attributes')
 
   def __init__(self, mojom_name=None, module=None, attributes=None):
     if mojom_name is not None:
@@ -1287,7 +1389,7 @@ class Interface(ReferenceKind):
 
 
 class AssociatedInterface(ReferenceKind):
-  ReferenceKind.AddSharedProperty('kind')
+  Kind.AddSharedProperty('kind')
 
   def __init__(self, kind=None):
     if kind is not None:
@@ -1344,16 +1446,25 @@ class EnumField:
                                          rhs.attributes, rhs.numeric_value))
 
 
-class Enum(Kind):
+class Enum(ValueKind):
+  Kind.AddSharedProperty('mojom_name')
+  Kind.AddSharedProperty('name')
+  Kind.AddSharedProperty('native_only')
+  Kind.AddSharedProperty('fields')
+  Kind.AddSharedProperty('attributes')
+  Kind.AddSharedProperty('min_value')
+  Kind.AddSharedProperty('max_value')
+  Kind.AddSharedProperty('default_field')
+
   def __init__(self, mojom_name=None, module=None, attributes=None):
-    self.mojom_name = mojom_name
-    self.name = None
-    self.native_only = False
     if mojom_name is not None:
       spec = 'x:' + mojom_name
     else:
       spec = None
-    Kind.__init__(self, spec, module)
+    ValueKind.__init__(self, spec, False, module)
+    self.mojom_name = mojom_name
+    self.name = None
+    self.native_only = False
     self.fields = []
     self.attributes = attributes
     self.min_value = None
@@ -1527,15 +1638,15 @@ class Module:
 
 
 def IsBoolKind(kind):
-  return kind.spec == BOOL.spec
+  return kind.spec == BOOL.spec or kind.spec == NULLABLE_BOOL.spec
 
 
 def IsFloatKind(kind):
-  return kind.spec == FLOAT.spec
+  return kind.spec == FLOAT.spec or kind.spec == NULLABLE_FLOAT.spec
 
 
 def IsDoubleKind(kind):
-  return kind.spec == DOUBLE.spec
+  return kind.spec == DOUBLE.spec or kind.spec == NULLABLE_DOUBLE.spec
 
 
 def IsIntegralKind(kind):
@@ -1543,7 +1654,14 @@ def IsIntegralKind(kind):
           or kind.spec == INT16.spec or kind.spec == INT32.spec
           or kind.spec == INT64.spec or kind.spec == UINT8.spec
           or kind.spec == UINT16.spec or kind.spec == UINT32.spec
-          or kind.spec == UINT64.spec)
+          or kind.spec == UINT64.spec or kind.spec == NULLABLE_BOOL.spec
+          or kind.spec == NULLABLE_INT8.spec or kind.spec == NULLABLE_INT16.spec
+          or kind.spec == NULLABLE_INT32.spec
+          or kind.spec == NULLABLE_INT64.spec
+          or kind.spec == NULLABLE_UINT8.spec
+          or kind.spec == NULLABLE_UINT16.spec
+          or kind.spec == NULLABLE_UINT32.spec
+          or kind.spec == NULLABLE_UINT64.spec)
 
 
 def IsStringKind(kind):
@@ -1629,7 +1747,7 @@ def IsReferenceKind(kind):
 
 
 def IsNullableKind(kind):
-  return IsReferenceKind(kind) and kind.is_nullable
+  return kind.is_nullable
 
 
 def IsMapKind(kind):
