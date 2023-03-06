@@ -20,10 +20,8 @@
       }
   `);
 
-  SDK.consoleModel.addEventListener(
-      SDK.ConsoleModel.Events.MessageAdded, ConsoleTestRunner.wrapListener(messageAdded));
-  SDK.consoleModel.addEventListener(
-      SDK.ConsoleModel.Events.MessageUpdated, ConsoleTestRunner.wrapListener(messageUpdated));
+  SDK.targetManager.addModelListener(SDK.ConsoleModel, SDK.ConsoleModel.Events.MessageAdded, messageAdded);
+  SDK.targetManager.addModelListener(SDK.ConsoleModel, SDK.ConsoleModel.Events.MessageUpdated, messageUpdated);
 
   Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
   TestRunner.addResult('Creating worker with promise');

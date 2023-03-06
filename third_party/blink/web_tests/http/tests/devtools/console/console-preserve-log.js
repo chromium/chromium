@@ -7,7 +7,8 @@
   await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
-  SDK.consoleModel.addMessage(new SDK.ConsoleMessage(
+  const consoleModel = SDK.targetManager.primaryPageTarget().model(SDK.ConsoleModel);
+  consoleModel.addMessage(new SDK.ConsoleMessage(
       TestRunner.runtimeModel, Protocol.Log.LogEntrySource.Other,
       Protocol.Log.LogEntryLevel.Info, 'PASS'));
   Common.settingForTest('preserveConsoleLog').set(true);

@@ -20,7 +20,7 @@
     await ConsoleTestRunner.waitForConsoleMessagesPromise(1);
 
     await TestRunner.reloadPagePromise();
-    TestRunner.addResult(`After reload, Console message count: ${SDK.consoleModel.messages.length}`);
+    TestRunner.addResult(`After reload, Console message count: ${SDK.ConsoleModel.allMessagesUnordered().length}`);
     TestRunner.completeTest();
   }
 })();

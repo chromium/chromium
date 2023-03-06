@@ -29,7 +29,7 @@
 
   function waitForConsoleMessage(regex) {
     return new Promise(function(resolve) {
-      SDK.consoleModel.addEventListener(SDK.ConsoleModel.Events.MessageAdded, sniff);
+      SDK.targetManager.addModelListener(SDK.ConsoleModel, SDK.ConsoleModel.Events.MessageAdded, sniff);
 
       function sniff(e) {
         if (e.data && regex.test(e.data.messageText)) {

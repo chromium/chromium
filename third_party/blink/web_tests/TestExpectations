@@ -4648,24 +4648,7 @@ crbug.com/1149734 http/tests/devtools/sources/debugger-ui/inline-scope-variables
 #Sheriff 2020-11-24
 crbug.com/1087242 crbug.com/1271141 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Timeout ]
 crbug.com/1149771 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure Pass Timeout ]
-
-# Temporarily disable to land DevTools changes (crbug.com/1393057)
-crbug.com/1393057 http/tests/devtools/console/console-bad-stacktrace.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-eval-throw.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-group-similar.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-links-on-messages-before-inspection.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-preserve-log.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-revoke-error-in-worker.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-revoke-error.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-save-to-temp-var.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console/console-timestamp.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/bindings/ignore-listed-sourcemap-detach.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/input-event-warning.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure Pass ]
-crbug.com/1393057 http/tests/devtools/service-workers/user-agent-override.js [ Failure Pass Timeout ]
-crbug.com/1393057 http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Failure Pass Timeout ]
-crbug.com/1393057 http/tests/devtools/sources/debugger/dynamic-script-tag.js [ Failure Pass ]
+crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Pass Timeout ]
 
 #Sheriff 2020-11-26
 crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Timeout ]
