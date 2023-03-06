@@ -236,7 +236,6 @@ void DriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kSuccess:
       move_progress_ = 100;
-      notification_manager_->SetDestinationPath(status.outputs[0].url.path());
       UpdateProgressNotification();
       DCHECK_EQ(status.outputs.size(), 1u);
       return;
