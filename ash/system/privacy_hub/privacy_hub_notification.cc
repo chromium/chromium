@@ -29,6 +29,22 @@ bool HasNotification(const std::string& id) {
 
 namespace ash {
 
+bool operator<(const PrivacyHubNotificationDescriptor& descriptor1,
+               const PrivacyHubNotificationDescriptor& descriptor2) {
+  return descriptor1.sensors().ToEnumBitmask() <
+         descriptor2.sensors().ToEnumBitmask();
+}
+
+bool operator<(const PrivacyHubNotificationDescriptor& descriptor,
+               const uint64_t& sensors_bitmask) {
+  return descriptor.sensors().ToEnumBitmask() < sensors_bitmask;
+}
+
+bool operator<(const uint64_t& sensors_bitmask,
+               const PrivacyHubNotificationDescriptor& descriptor) {
+  return sensors_bitmask < descriptor.sensors().ToEnumBitmask();
+}
+
 PrivacyHubNotificationClickDelegate::PrivacyHubNotificationClickDelegate(
     base::RepeatingClosure button_click) {
   button_callbacks_[0] = std::move(button_click);
@@ -71,11 +87,11 @@ void PrivacyHubNotificationClickDelegate::RunCallbackIfNotNull(
 PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(
     const SensorDisabledNotificationDelegate::SensorSet& sensors,
     const int title_id,
-    const int button_id,
+    const std::vector<int>& button_ids,
     const std::vector<int>& message_ids,
     const scoped_refptr<PrivacyHubNotificationClickDelegate> delegate)
     : title_id_(title_id),
-      button_id_(button_id),
+      button_ids_(button_ids),
       sensors_(sensors),
       message_ids_(message_ids),
       delegate_(delegate) {
@@ -83,6 +99,8 @@ PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(
   DCHECK(delegate);
   DCHECK(message_ids.size() < 2u || !sensors.Empty())
       << "Specify at least one sensor when providing more than one message ID";
+  DCHECK_LE(button_ids.size(), 2u) << "Privacy hub notifications are not "
+                                      "supposed to have more than two buttons.";
 }
 
 PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(
@@ -97,18 +115,26 @@ PrivacyHubNotification::PrivacyHubNotification(
     const std::string& id,
     const ash::NotificationCatalogName catalog_name,
     const PrivacyHubNotificationDescriptor& descriptor)
-    : id_(id),
-      message_ids_(descriptor.message_ids()),
-      sensors_(descriptor.sensors()),
-      delegate_(descriptor.delegate()),
-      button_text_(l10n_util::GetStringUTF16(descriptor.button_id_)) {
+    : id_(id), sensors_(descriptor.sensors()), catalog_name_(catalog_name) {
+  notification_descriptors_.emplace(descriptor);
+  SetNotificationContent();
+
   builder_.SetId(id)
       .SetCatalogName(catalog_name)
-      .SetDelegate(descriptor.delegate())
-      .SetTitleId(descriptor.title_id_)
-      .SetOptionalFields(MakeOptionalFields())
       .SetSmallImage(vector_icons::kSettingsIcon)
       .SetWarningLevel(message_center::SystemNotificationWarningLevel::NORMAL);
+}
+
+PrivacyHubNotification::PrivacyHubNotification(
+    const std::string& id,
+    const ash::NotificationCatalogName catalog_name,
+    const std::vector<PrivacyHubNotificationDescriptor>& descriptors)
+    : PrivacyHubNotification(id, catalog_name, descriptors.at(0)) {
+  DCHECK_GT(descriptors.size(), 1u);
+
+  for (unsigned int i = 1; i < descriptors.size(); ++i) {
+    notification_descriptors_.emplace(descriptors.at(i));
+  }
 }
 
 PrivacyHubNotification::~PrivacyHubNotification() = default;
@@ -132,7 +158,16 @@ void PrivacyHubNotification::Show() {
   last_time_shown_ = base::Time::Now();
 }
 
-void PrivacyHubNotification::Hide() {
+void PrivacyHubNotification::Hide(const bool ignore_delay) {
+  if (ignore_delay) {
+    if (remove_timer_.IsRunning()) {
+      remove_timer_.Stop();
+    }
+    RemoveNotification(id_);
+    last_time_shown_.reset();
+    return;
+  }
+
   if (!last_time_shown_) {
     return;
   }
@@ -157,16 +192,20 @@ void PrivacyHubNotification::Update() {
   }
 }
 
-void PrivacyHubNotification::SetSecondButton(base::RepeatingClosure callback,
-                                             int title_id) {
-  message_center::RichNotificationData optional_fields = MakeOptionalFields();
-  optional_fields.buttons.emplace_back(l10n_util::GetStringUTF16(title_id));
-  builder_.SetOptionalFields(optional_fields);
-  delegate_->SetSecondButtonCallback(std::move(callback));
+void PrivacyHubNotification::SetSensors(
+    const SensorDisabledNotificationDelegate::SensorSet sensors) {
+  DCHECK_GT(notification_descriptors_.size(), 1u)
+      << "`sensors_` should only be updated when multiple notification "
+         "descriptors are provided.";
+
+  if (sensors_ != sensors) {
+    sensors_ = sensors;
+    has_sensors_changed_ = true;
+  }
 }
 
-std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()
-    const {
+std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors(
+    const size_t number_of_apps) const {
   std::vector<std::u16string> app_names;
 
   if (SensorDisabledNotificationDelegate* delegate =
@@ -177,7 +216,7 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()
         if (!base::Contains(app_names, app)) {
           app_names.push_back(app);
         }
-        if (app_names.size() == message_ids_.size()) {
+        if (app_names.size() == number_of_apps) {
           return app_names;
         }
       }
@@ -188,22 +227,41 @@ std::vector<std::u16string> PrivacyHubNotification::GetAppsAccessingSensors()
 }
 
 void PrivacyHubNotification::SetNotificationContent() {
-  const std::vector<std::u16string> apps = GetAppsAccessingSensors();
+  auto descriptor = notification_descriptors_.find(sensors_.ToEnumBitmask());
+  DCHECK(descriptor != notification_descriptors_.end());
 
-  if (const size_t num_apps = apps.size(); num_apps < message_ids_.size()) {
-    builder_.SetMessageWithArgs(message_ids_.at(num_apps), apps);
-  } else {
-    builder_.SetMessageId(message_ids_.at(0));
+  if (has_sensors_changed_) {
+    message_center::RichNotificationData optional_fields;
+    optional_fields.remove_on_click = true;
+
+    for (int button_id : descriptor->button_ids()) {
+      optional_fields.buttons.emplace_back(
+          l10n_util::GetStringUTF16(button_id));
+    }
+
+    builder_.SetDelegate(descriptor->delegate())
+        .SetOptionalFields(optional_fields);
+
+    if (catalog_name_ != NotificationCatalogName::kCameraPrivacySwitch) {
+      builder_.SetTitleId(descriptor->title_id_);
+    }
+
+    has_sensors_changed_ = false;
   }
-}
 
-message_center::RichNotificationData
-PrivacyHubNotification::MakeOptionalFields() const {
-  message_center::RichNotificationData optional_fields;
-  optional_fields.remove_on_click = true;
-  optional_fields.buttons.emplace_back(button_text_);
+  if (catalog_name_ == NotificationCatalogName::kCameraPrivacySwitch) {
+    return;
+  }
 
-  return optional_fields;
+  const std::vector<std::u16string> apps =
+      GetAppsAccessingSensors(descriptor->message_ids().size());
+
+  if (const size_t num_apps = apps.size();
+      num_apps < descriptor->message_ids().size()) {
+    builder_.SetMessageWithArgs(descriptor->message_ids().at(num_apps), apps);
+  } else {
+    builder_.SetMessageId(descriptor->message_ids().at(0));
+  }
 }
 
 }  // namespace ash

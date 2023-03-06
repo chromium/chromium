@@ -114,7 +114,8 @@ class PrivacyHubNotificationTest : public AshTestBase {
                 SensorDisabledNotificationDelegate::SensorSet{
                     SensorDisabledNotificationDelegate::Sensor::kMicrophone},
                 IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
-                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON,
+                std::vector<int>{
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON},
                 std::vector<int>{
                     IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
                     IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
@@ -270,26 +271,6 @@ TEST_F(PrivacyHubNotificationTest, UpdateNotification) {
   // the message center.
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetPopupNotification());
-}
-
-TEST_F(PrivacyHubNotificationTest, AddButton) {
-  notification().Show();
-
-  EXPECT_EQ(GetNotification()->rich_notification_data().buttons.size(), 1u);
-
-  int second_button_clicked = 0;
-  notification().SetSecondButton(
-      base::BindLambdaForTesting(
-          [&second_button_clicked]() { second_button_clicked++; }),
-      IDS_PRIVACY_HUB_OPEN_SETTINGS_PAGE_BUTTON);
-
-  notification().Update();
-  message_center::Notification* test_notification = GetNotification();
-  ASSERT_EQ(test_notification->rich_notification_data().buttons.size(), 2u);
-
-  EXPECT_EQ(second_button_clicked, 0);
-  test_notification->delegate()->Click(1, absl::nullopt);
-  EXPECT_EQ(second_button_clicked, 1);
 }
 
 TEST_F(PrivacyHubNotificationTest, WithApps) {

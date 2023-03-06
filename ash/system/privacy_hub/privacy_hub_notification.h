@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -61,7 +62,7 @@ class ASH_EXPORT PrivacyHubNotificationDescriptor {
   PrivacyHubNotificationDescriptor(
       const SensorDisabledNotificationDelegate::SensorSet& sensors,
       int title_id,
-      int button_id,
+      const std::vector<int>& button_ids,
       const std::vector<int>& message_ids,
       scoped_refptr<PrivacyHubNotificationClickDelegate> delegate);
   PrivacyHubNotificationDescriptor(
@@ -69,6 +70,8 @@ class ASH_EXPORT PrivacyHubNotificationDescriptor {
   PrivacyHubNotificationDescriptor& operator=(
       const PrivacyHubNotificationDescriptor& other);
   ~PrivacyHubNotificationDescriptor();
+
+  const std::vector<int>& button_ids() const { return button_ids_; }
 
   const SensorDisabledNotificationDelegate::SensorSet& sensors() const {
     return sensors_;
@@ -81,9 +84,9 @@ class ASH_EXPORT PrivacyHubNotificationDescriptor {
   }
 
   int title_id_;
-  int button_id_;
 
  private:
+  std::vector<int> button_ids_;
   SensorDisabledNotificationDelegate::SensorSet sensors_;
   std::vector<int> message_ids_;
   scoped_refptr<PrivacyHubNotificationClickDelegate> delegate_;
@@ -98,28 +101,50 @@ class ASH_EXPORT PrivacyHubNotification {
 
   // Create a new notification.
   // When calling `Show() or `Update()`:
-  // If `sensors_` is empty, the generic notification message will be displayed.
+  // If `sensors_` is empty, the generic notification message from `descriptor`
+  // will be displayed.
   // If `sensors_` is non-empty and `n` applications are using the sensors in
   // `sensors_`, the displayed notification message will contain `n` application
-  // names. If a notification message with `n` application names is not
-  // provided, the generic notification message will be displayed.
+  // names. If `descriptor` does not contain a notification message with `n`
+  // application names, the generic notification message from `descriptor` will
+  // be displayed.
   PrivacyHubNotification(const std::string& id,
                          NotificationCatalogName catalog_name,
                          const PrivacyHubNotificationDescriptor& descriptor);
+
+  // When PrivacyHubNotification is constructed with multiple
+  // `PrivacyHubNotificationDescriptor`s, which descriptor to use will be
+  // decided depending on the value of `sensors_`. When `sensors_` changes, the
+  // descriptor to use will also change.
+  //`descriptors` must have multiple `PrivacyHubNotificationDescriptor` objects,
+  // use the previous constructor otherwise please.
+  PrivacyHubNotification(
+      const std::string& id,
+      NotificationCatalogName catalog_name,
+      const std::vector<PrivacyHubNotificationDescriptor>& descriptors);
+
   PrivacyHubNotification(PrivacyHubNotification&&) = delete;
   PrivacyHubNotification& operator=(PrivacyHubNotification&&) = delete;
+
   ~PrivacyHubNotification();
 
   // Show the notification to the user for at least `kMinShowTime`. Every time
   // `Show()` is called, the notification will pop up. For silent updates, use
-  // the `Update()` function. Calls to `Hide()` are delayed until `kMinShowTime`
-  // time has passed and the notification is hidden then.
+  // the `Update()` function.
   void Show();
 
-  // Hide the notification from the user if it has already been shown for at
-  // least `kMinShowTime`. If not the notification will be shown for the
-  // remaining time and then hidden.
-  void Hide();
+  // Hide the notification from the user. Calls to `Hide()` are delayed until
+  // `kMinShowTime` time has passed since the time notification was last
+  // displayed.
+  // When `ignore_delay` is true, the notification is instantly hidden from the
+  // message center. `ignore_delay` should always be false except for some
+  // special cases.
+  // For example, microphone software switch notification and hardware switch
+  // notification are represented by different notification objects and the
+  // notifications represent the same information except the action buttons. In
+  // such cases, displaying both of the simultaneously may seem redundant. This
+  // is a perfect example to use `Hide()` with `ignore_delay = true`.
+  void Hide(bool ignore_delay = false);
 
   // Silently updates the notification when needed, for example, when an
   // application stops accessing a sensor and the name of that application needs
@@ -127,10 +152,8 @@ class ASH_EXPORT PrivacyHubNotification {
   // again.
   void Update();
 
-  // Add an additional button to the notification. The button title will be
-  // generated from the `title_id`. Clicking the button will invoke the
-  // `callback`. Only one additional button can be active at the same time.
-  void SetSecondButton(base::RepeatingClosure callback, int title_id);
+  // Updates the value of `sensors_`.
+  void SetSensors(SensorDisabledNotificationDelegate::SensorSet sensors);
 
   // Get the underlying `SystemNotificationBuilder` to do modifications beyond
   // what this wrapper allows you to do. If you change the ID of the message
@@ -138,26 +161,48 @@ class ASH_EXPORT PrivacyHubNotification {
   SystemNotificationBuilder& builder() { return builder_; }
 
  private:
-  // Get names of apps accessing sensors in `sensors_`. At most
-  // `message_ids_.size()` elements will be returned.
-  std::vector<std::u16string> GetAppsAccessingSensors() const;
+  // Get names of apps accessing sensors in `sensors_`. At most `number_of_apps`
+  // elements will be returned.
+  std::vector<std::u16string> GetAppsAccessingSensors(
+      size_t number_of_apps) const;
 
-  // Sets the content(message, title, buttons etc.) of the notification
-  // depending on the values of `sensors_` and `message_ids_`.
+  // Propagates information about the update in notification content (message,
+  // title, buttons etc.) to the underlying `SystemNotificationBuilder`. This is
+  // always done before showing or updating a notification.
   void SetNotificationContent();
 
-  // Create an object of optional data fields with the defaults applying to
-  // every Privacy Hub notification.
-  message_center::RichNotificationData MakeOptionalFields() const;
-
   std::string id_;
-  SystemNotificationBuilder builder_;
-  std::vector<int> message_ids_;
+
+  // A set of `PrivacyHubNotificationDescriptor`s. Appropriate
+  // `PrivacyHubNotificationDescriptor` for a specific `SensorSet` can be found
+  // using the standard `find` function. `sensors_.ToEnumBitmask()` can be used
+  // as the key for the `find` function.
+  std::set<PrivacyHubNotificationDescriptor, std::less<>>
+      notification_descriptors_;
+
   SensorDisabledNotificationDelegate::SensorSet sensors_;
+
+  // `notification_descriptors_` is a set of
+  // `PrivacyHubNotificationDescriptor`s. The content in the descriptors are
+  // used to update the underlying `SystemNotificationBuilder`. Before a call to
+  // `Show()` or `Update()`, the underlying builder needs to be updated. Content
+  // of which descriptor to use to update the builder depends on the value
+  // current value of `sensors_` enumset.
+  // `has_sensors_changed_` being true means that `sensors_` was updated but the
+  // underlying builder was not updated after that.
+  bool has_sensors_changed_ = true;
+
+  SystemNotificationBuilder builder_;
+
   absl::optional<base::Time> last_time_shown_;
   base::OneShotTimer remove_timer_;
-  scoped_refptr<PrivacyHubNotificationClickDelegate> delegate_;
-  std::u16string button_text_;
+
+  // TODO(b/271809217): Refactor camera HW switch notification implementation
+  // Notification for the camera hardware switch is currently using only a
+  // subset of `PrivacyHubNotification` properties. `catalog_name_` is stored to
+  // determine if the notification is for the camera hardware switch to handle
+  // it specially.
+  NotificationCatalogName catalog_name_;
 };
 
 }  // namespace ash

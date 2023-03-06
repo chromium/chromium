@@ -280,7 +280,7 @@ MediaClientImpl::MediaClientImpl()
           ash::PrivacyHubNotificationDescriptor{
               ash::SensorDisabledNotificationDelegate::SensorSet{},
               IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE,
-              IDS_ASH_LEARN_MORE,
+              std::vector<int>{IDS_ASH_LEARN_MORE},
               std::vector<int>{
                   IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE},
               base::MakeRefCounted<
