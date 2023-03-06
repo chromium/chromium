@@ -177,6 +177,7 @@ BASE_DECLARE_FEATURE(kTrustedWebActivityPostMessage);
 BASE_DECLARE_FEATURE(kTrustedWebActivityQualityEnforcement);
 BASE_DECLARE_FEATURE(kTrustedWebActivityQualityEnforcementForced);
 BASE_DECLARE_FEATURE(kTrustedWebActivityQualityEnforcementWarning);
+BASE_DECLARE_FEATURE(kResizeOnlyActiveTab);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
 BASE_DECLARE_FEATURE(kStartSurfaceOnTablet);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);

@@ -307,6 +307,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTrustedWebActivityQualityEnforcement,
     &kTrustedWebActivityQualityEnforcementForced,
     &kTrustedWebActivityQualityEnforcementWarning,
+    &kResizeOnlyActiveTab,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
@@ -1025,6 +1026,10 @@ BASE_FEATURE(kTrustedWebActivityQualityEnforcementForced,
 
 BASE_FEATURE(kTrustedWebActivityQualityEnforcementWarning,
              "TrustedWebActivityQualityEnforcementWarning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kResizeOnlyActiveTab,
+             "ResizeOnlyActiveTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceAndroid,
