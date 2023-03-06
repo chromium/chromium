@@ -42,9 +42,9 @@ using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::UseSuggestedPasswordMatcher;
 using testing::ElementWithAccessibilityLabelSubstring;
 
-id<GREYMatcher> PasswordInfobar(int prompt_id) {
+id<GREYMatcher> PasswordInfobarLabels(int prompt_id) {
   return grey_allOf(
-      grey_accessibilityID(kInfobarBannerViewIdentifier),
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
       ElementWithAccessibilityLabelSubstring(l10n_util::GetNSString(prompt_id)),
       nil);
 }
@@ -116,7 +116,7 @@ BOOL WaitForKeyboardToAppear() {
   // Wait until the save password prompt becomes visible.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
-          PasswordInfobar(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
 
   [[EarlGrey selectElementWithMatcher:PasswordInfobarButton(
                                           IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON)]
@@ -125,7 +125,7 @@ BOOL WaitForKeyboardToAppear() {
   // Wait until the save password infobar disappears.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
-          PasswordInfobar(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT)];
 
   int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
@@ -155,7 +155,7 @@ BOOL WaitForKeyboardToAppear() {
   // Wait until the update password prompt becomes visible.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
-          PasswordInfobar(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
 
   [[EarlGrey
       selectElementWithMatcher:PasswordInfobarButton(
@@ -165,7 +165,7 @@ BOOL WaitForKeyboardToAppear() {
   // Wait until the update password infobar disappears.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:
-          PasswordInfobar(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
+          PasswordInfobarLabels(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD)];
 
   credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(1, credentialsCount, @"Wrong number of final credentials.");

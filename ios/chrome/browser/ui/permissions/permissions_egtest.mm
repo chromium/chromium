@@ -41,16 +41,17 @@ using ::base::test::ios::WaitUntilConditionOrTimeout;
 
 // Matcher for banner shown when camera permission is enabled.
 id<GREYMatcher> InfobarBannerCameraOnly() {
-  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
-                    grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE)),
-                    nil);
+  return grey_allOf(
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_ACCESSIBLE)),
+      nil);
 }
 
 // Matcher for banner shown when microphone permission is enabled.
 id<GREYMatcher> InfobarBannerMicrophoneOnly() {
   return grey_allOf(
-      grey_accessibilityID(kInfobarBannerViewIdentifier),
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_PERMISSIONS_INFOBAR_BANNER_MICROPHONE_ACCESSIBLE)),
       nil);
@@ -60,7 +61,7 @@ id<GREYMatcher> InfobarBannerMicrophoneOnly() {
 // enabled.
 id<GREYMatcher> InfobarBannerCameraAndMicrophone() {
   return grey_allOf(
-      grey_accessibilityID(kInfobarBannerViewIdentifier),
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
       grey_accessibilityLabel(l10n_util::GetNSString(
           IDS_IOS_PERMISSIONS_INFOBAR_BANNER_CAMERA_AND_MICROPHONE_ACCESSIBLE)),
       nil);

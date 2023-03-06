@@ -141,8 +141,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
         setShadowColor:[UIColor colorNamed:kToolbarShadowColor].CGColor];
   }];
   self.view.accessibilityIdentifier = kInfobarBannerViewIdentifier;
-  self.view.isAccessibilityElement = YES;
-  self.view.accessibilityLabel = [self accessibilityLabel];
   self.view.accessibilityCustomActions = [self accessibilityActions];
 
   // Icon setup.
@@ -225,6 +223,10 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   labelsStackView.layoutMarginsRelativeArrangement = YES;
   labelsStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
       kContainerStackVerticalPadding, 0, kContainerStackVerticalPadding, 0);
+  labelsStackView.accessibilityIdentifier =
+      kInfobarBannerLabelsStackViewIdentifier;
+  labelsStackView.isAccessibilityElement = YES;
+  labelsStackView.accessibilityLabel = [self accessibilityLabel];
 
   // Button setup.
   self.infobarButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -286,6 +288,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                                       forAxis:UILayoutConstraintAxisHorizontal];
   self.openModalButton.accessibilityIdentifier =
       kInfobarBannerOpenModalButtonIdentifier;
+  self.openModalButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_INFOBAR_BANNER_OPTIONS_HINT);
   [containerStack addArrangedSubview:self.openModalButton];
   // Hide open modal button if user shouldn't be allowed to open the modal.
   self.openModalButton.hidden = !self.presentsModal;

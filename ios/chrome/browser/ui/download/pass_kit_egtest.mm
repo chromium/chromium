@@ -31,11 +31,12 @@ using base::test::ios::kWaitForDownloadTimeout;
 namespace {
 
 // Returns matcher for PassKit error infobar.
-id<GREYMatcher> PassKitErrorInfobar() {
-  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
-                    grey_accessibilityLabel(
-                        l10n_util::GetNSString(IDS_IOS_GENERIC_PASSKIT_ERROR)),
-                    nil);
+id<GREYMatcher> PassKitErrorInfobarLabels() {
+  return grey_allOf(
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_GENERIC_PASSKIT_ERROR)),
+      nil);
 }
 
 // PassKit landing page and download request handler.
@@ -84,7 +85,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   bool infobarShown = WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:PassKitErrorInfobar()]
+    [[EarlGrey selectElementWithMatcher:PassKitErrorInfobarLabels()]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return (error == nil);

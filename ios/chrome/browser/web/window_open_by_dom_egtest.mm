@@ -29,10 +29,10 @@ namespace {
 // URL of the file-based page supporting these tests.
 const char kTestURL[] = "/window_open.html";
 
-// Returns matcher for Blocked Popup infobar.
+// Returns matcher for Blocked Popup infobar labels.
 id<GREYMatcher> PopupBlocker() {
   return grey_allOf(
-      grey_accessibilityID(kInfobarBannerViewIdentifier),
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
       grey_accessibilityLabel(base::SysUTF16ToNSString(
           l10n_util::GetStringFUTF16(IDS_IOS_POPUPS_BLOCKED_MOBILE, u"1"))),
       nil);

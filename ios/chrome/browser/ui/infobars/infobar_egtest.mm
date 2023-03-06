@@ -41,11 +41,10 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   const BOOL banner_shown =
       WaitUntilConditionOrTimeout(kDelay, ^{
         NSError* error = nil;
-        [[EarlGrey
-            selectElementWithMatcher:grey_allOf(
-                                         grey_accessibilityID(
-                                             kInfobarBannerViewIdentifier),
-                                         grey_accessibilityLabel(message), nil)]
+        [[EarlGrey selectElementWithMatcher:
+                       grey_allOf(grey_accessibilityID(
+                                      kInfobarBannerLabelsStackViewIdentifier),
+                                  grey_accessibilityLabel(message), nil)]
             assertWithMatcher:expected_visibility
                         error:&error];
         return error == nil;

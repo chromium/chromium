@@ -9,6 +9,8 @@
 #endif
 
 NSString* const kInfobarBannerViewIdentifier = @"kInfobarBannerViewIdentifier";
+NSString* const kInfobarBannerLabelsStackViewIdentifier =
+    @"kInfobarBannerLabelsStackViewIdentifier";
 NSString* const kInfobarBannerAcceptButtonIdentifier =
     @"kInfobarBannerAcceptButtonIdentifier";
 NSString* const kInfobarBannerOpenModalButtonIdentifier =
