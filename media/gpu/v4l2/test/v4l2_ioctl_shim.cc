@@ -101,6 +101,18 @@ void LogIoctlResult(int ret, int request_code) {
       << V4L2RequestCodeToString(request_code) << " succeeded.";
 }
 
+// Enumeration Ioctls are expected to return an error at the end of the list.
+// Don't error on this message because this is the way that the client knows
+// there are no more values to enumerate.
+void LogIoctlResultForEnum(int ret, int request_code) {
+  if (ret != kIoctlOk) {
+    VLOG(1) << V4L2RequestCodeToString(request_code) << " failed(" << ret
+            << ").";
+  } else {
+    VLOG(4) << V4L2RequestCodeToString(request_code) << " succeeded.";
+  }
+}
+
 MmapedBuffer::MmapedBuffer(const base::PlatformFile ioctl_fd,
                            const struct v4l2_buffer& v4l2_buffer)
     : num_planes_(v4l2_buffer.length), buffer_id_(0) {
@@ -198,7 +210,7 @@ bool V4L2IoctlShim::Ioctl(int request_code,
   LOG_ASSERT(query_ctrl != nullptr) << "|query_ctrl| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, query_ctrl);
-  LogIoctlResult(ret, request_code);
+  LogIoctlResultForEnum(ret, request_code);
 
   return ret == kIoctlOk;
 }
@@ -210,7 +222,7 @@ bool V4L2IoctlShim::Ioctl(int request_code,
   LOG_ASSERT(fmtdesc != nullptr) << "|fmtdesc| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, fmtdesc);
-  LogIoctlResult(ret, request_code);
+  LogIoctlResultForEnum(ret, request_code);
 
   return ret == kIoctlOk;
 }
@@ -222,7 +234,7 @@ bool V4L2IoctlShim::Ioctl(int request_code,
   LOG_ASSERT(frame_size != nullptr) << "|frame_size| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, frame_size);
-  LogIoctlResult(ret, request_code);
+  LogIoctlResultForEnum(ret, request_code);
 
   return ret == kIoctlOk;
 }
