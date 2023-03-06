@@ -226,10 +226,10 @@ class UnretainedRefWrapper {
   // instantiating UnretainedWrapper with a T that is not supported by
   // raw_ref would trigger raw_ref<T>'s static_assert.
   template <typename U = T>
-  explicit UnretainedRefWrapper(const raw_ref<U, PtrTraits>& o)
-      : ref_(o.get()) {}
+  explicit UnretainedRefWrapper(const raw_ref<U, PtrTraits>& o) : ref_(o) {}
   template <typename U = T>
-  explicit UnretainedRefWrapper(raw_ref<U, PtrTraits>&& o) : ref_(o.get()) {}
+  explicit UnretainedRefWrapper(raw_ref<U, PtrTraits>&& o)
+      : ref_(std::move(o)) {}
 
   T& get() const {
     // `ref_` is either a `raw_ref` or a regular C++ reference.

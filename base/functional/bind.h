@@ -195,7 +195,7 @@ inline auto Unretained(const raw_ref<T, Traits>& o) {
 template <typename T, RawPtrTraits Traits>
 inline auto Unretained(raw_ref<T, Traits>&& o) {
   return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle,
-                                        Traits>(o);
+                                        Traits>(std::move(o));
 }
 
 // Similar to `Unretained()`, but allows dangling pointers, e.g.:
@@ -260,7 +260,7 @@ auto UnsafeDangling(const raw_ref<T, Traits>& o) {
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDangling(raw_ref<T, Traits>&& o) {
   return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle,
-                                        Traits>(o);
+                                        Traits>(std::move(o));
 }
 
 // Like `UnsafeDangling()`, but used to annotate places that still need to be
@@ -296,7 +296,7 @@ auto UnsafeDanglingUntriaged(const raw_ref<T, Traits>& o) {
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDanglingUntriaged(raw_ref<T, Traits>&& o) {
   return internal::UnretainedRefWrapper<
-      T, unretained_traits::MayDangleUntriaged, Traits>(o);
+      T, unretained_traits::MayDangleUntriaged, Traits>(std::move(o));
 }
 
 // RetainedRef() accepts a ref counted object and retains a reference to it.
