@@ -46,6 +46,7 @@ class SavedTabGroupModel {
   // vector.
   const SavedTabGroup* Get(const tab_groups::TabGroupId local_group_id) const;
   const SavedTabGroup* Get(const base::GUID& id) const;
+
   // TODO(crbug/1372503): Remove non-const accessor functions.
   SavedTabGroup* Get(const tab_groups::TabGroupId local_group_id);
   SavedTabGroup* Get(const base::GUID& id);

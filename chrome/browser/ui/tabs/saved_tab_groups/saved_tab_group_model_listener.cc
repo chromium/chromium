@@ -152,7 +152,8 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
     return;
 
   // If the group is not currently saved then there is nothing to do.
-  SavedTabGroup* new_saved_group = model_->Get(new_local_group_id.value());
+  const SavedTabGroup* new_saved_group =
+      model_->Get(new_local_group_id.value());
   if (new_saved_group == nullptr)
     return;
 

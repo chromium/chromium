@@ -296,7 +296,7 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
     bool notify_sync) {
   std::string group_id =
       specifics.has_tab() ? specifics.tab().group_guid() : specifics.guid();
-  SavedTabGroup* existing_group =
+  const SavedTabGroup* existing_group =
       model_->Get(base::GUID::ParseLowercase(group_id));
 
   // Cases where `specifics` is a group.
@@ -391,7 +391,7 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
     syncer::ModelTypeStore::WriteBatch* write_batch) {
   auto tab_iterator = tabs_missing_groups_.begin();
   while (tab_iterator != tabs_missing_groups_.end()) {
-    SavedTabGroup* group = model_->Get(
+    const SavedTabGroup* group = model_->Get(
         base::GUID::ParseLowercase(tab_iterator->tab().group_guid()));
     if (!group) {
       base::Time last_update_time = base::Time::FromDeltaSinceWindowsEpoch(

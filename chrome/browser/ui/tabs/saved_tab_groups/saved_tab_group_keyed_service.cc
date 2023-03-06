@@ -193,7 +193,7 @@ void SavedTabGroupKeyedService::SaveGroup(
 void SavedTabGroupKeyedService::UnsaveGroup(
     const tab_groups::TabGroupId& group_id) {
   // Get the guid since disconnect removes the local id.
-  SavedTabGroup* group = model_.Get(group_id);
+  const SavedTabGroup* group = model_.Get(group_id);
   CHECK(group);
 
   // Stop listening to the local group.
@@ -223,9 +223,6 @@ void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
         browser_owning_tab_group->tab_strip_model()->GetWebContentsAt(i);
     listener_.StopTrackingWebContents(browser_owning_tab_group, web_contents);
   }
-
-  SavedTabGroup* group = model_.Get(group_id);
-  CHECK(group);
 
   // Stop listening to the current tab group and notify observers.
   model_.OnGroupClosedInTabStrip(group_id);
