@@ -190,7 +190,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.chrome.browser.vr.ArDelegateProvider;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -223,7 +222,8 @@ import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
-import org.chromium.components.webxr.ArDelegate;
+import org.chromium.components.webxr.XrDelegate;
+import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
@@ -2211,9 +2211,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        if (arDelegate != null && arDelegate.onBackPressed()) {
-            BackPressManager.record(Type.AR_DELEGATE);
+        XrDelegate xrDelegate = XrDelegateProvider.getDelegate();
+        if (xrDelegate != null && xrDelegate.onBackPressed()) {
+            BackPressManager.record(Type.XR_DELEGATE);
             return true;
         }
 
@@ -2270,8 +2270,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
             mBackPressManager.addHandler(VrModuleProvider.getDelegate(), Type.VR_DELEGATE);
 
-            if (ArDelegateProvider.getDelegate() != null) {
-                mBackPressManager.addHandler(ArDelegateProvider.getDelegate(), Type.AR_DELEGATE);
+            if (XrDelegateProvider.getDelegate() != null) {
+                mBackPressManager.addHandler(XrDelegateProvider.getDelegate(), Type.XR_DELEGATE);
             }
 
             mLayoutManagerSupplier.addObserver((layoutManager) -> {

@@ -35,10 +35,11 @@ import java.util.List;
 public class BackPressManager implements Destroyable {
     private static final SparseIntArray sMetricsMap;
     static {
-        SparseIntArray map = new SparseIntArray(17);
+        // Max value is 18 - 1 obsolete value +1 for 0 indexing = 18 elements.
+        SparseIntArray map = new SparseIntArray(18);
         map.put(Type.TEXT_BUBBLE, 0);
         map.put(Type.VR_DELEGATE, 1);
-        map.put(Type.AR_DELEGATE, 2);
+        // map.put(Type.AR_DELEGATE, 2);
         map.put(Type.SCENE_OVERLAY, 3);
         map.put(Type.START_SURFACE, 4);
         map.put(Type.SELECTION_POPUP, 5);
@@ -54,6 +55,7 @@ public class BackPressManager implements Destroyable {
         map.put(Type.MINIMIZE_APP_AND_CLOSE_TAB, 15);
         map.put(Type.FIND_TOOLBAR, 16);
         map.put(Type.LOCATION_BAR, 17);
+        map.put(Type.XR_DELEGATE, 18);
         // Add new one here and update array size.
         sMetricsMap = map;
     }

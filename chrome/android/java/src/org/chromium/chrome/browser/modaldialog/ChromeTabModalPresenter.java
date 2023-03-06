@@ -30,10 +30,10 @@ import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.vr.ArDelegateProvider;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
-import org.chromium.components.webxr.ArDelegate;
+import org.chromium.components.webxr.XrDelegate;
+import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -308,9 +308,9 @@ public class ChromeTabModalPresenter
         // without exiting fullscreen. So if we are in one we need to ensure that we:
         // 1) Don't exit fullscreen
         // 2) Toggle the Controls visibility appropriately.
-        // Note that if we don't have an ArDelegate, then we can't have an AR Session.
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        boolean isInArSession = (arDelegate != null && arDelegate.hasActiveArSession());
+        // Note that if we don't have an XrDelegate, then we can't have an AR Session.
+        XrDelegate xrDelegate = XrDelegateProvider.getDelegate();
+        boolean isInArSession = (xrDelegate != null && xrDelegate.hasActiveArSession());
 
         // If needed, exit fullscreen mode before showing the tab modal dialog view.
         if (!isInArSession) {

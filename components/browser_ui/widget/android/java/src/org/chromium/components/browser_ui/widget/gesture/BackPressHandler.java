@@ -23,7 +23,7 @@ public interface BackPressHandler {
     // When adding a new identifier, make corresponding changes in the
     // - tools/metrics/histograms/enums.xml: <enum name="BackPressConsumer">
     // - chrome/browser/back_press/android/.../BackPressManager.java: sMetricsMap
-    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.SCENE_OVERLAY,
+    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.XR_DELEGATE, Type.SCENE_OVERLAY,
             Type.START_SURFACE, Type.SELECTION_POPUP, Type.MANUAL_FILLING, Type.TAB_MODAL_HANDLER,
             Type.FULLSCREEN, Type.TAB_SWITCHER, Type.CLOSE_WATCHER, Type.FIND_TOOLBAR,
             Type.LOCATION_BAR, Type.TAB_HISTORY, Type.TAB_RETURN_TO_CHROME_START_SURFACE,
@@ -32,7 +32,7 @@ public interface BackPressHandler {
     @interface Type {
         int TEXT_BUBBLE = 0;
         int VR_DELEGATE = 1;
-        int AR_DELEGATE = 2;
+        int XR_DELEGATE = 2;
         int SCENE_OVERLAY = 3;
         int START_SURFACE = 4;
         int SELECTION_POPUP = 5;

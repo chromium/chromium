@@ -611,7 +611,7 @@ if (current_toolchain == default_toolchain) {
 
     if (enable_arcore) {
       deps += [
-        "//components/webxr/android:ar_java_base",
+        "//components/webxr/android:ar_java",
         "//components/webxr/android:webxr_android_enums_java",
       ]
     }

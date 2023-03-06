@@ -56,11 +56,26 @@ source_set("android") {
   libs = [ "android" ]
 }
 
+android_resources("xr_java_resources") {
+  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
+}
+
+java_cpp_enum("webxr_android_enums") {
+  sources = [ "arcore_install_helper.h" ]
+}
+
+android_library("webxr_android_enums_java") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+  srcjar_deps = [ ":webxr_android_enums" ]
+}
+
 android_library("ar_java_interfaces") {
   sources = [
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
-    "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegate.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegate.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateProvider.java",
   ]
 
   deps = [
@@ -78,6 +93,7 @@ android_library("ar_java_base") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -89,7 +105,10 @@ android_library("ar_java_base") {
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegate.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegateImpl.java",
     "//components/webxr/android/java/src/org/chromium/components/webxr/ArImmersiveOverlay.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.webxr"
@@ -118,14 +137,4 @@ if (enable_arcore) {
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
     ]
   }
-}
-
-java_cpp_enum("webxr_android_enums") {
-  sources = [ "arcore_install_helper.h" ]
-}
-
-android_library("webxr_android_enums_java") {
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-
-  srcjar_deps = [ ":webxr_android_enums" ]
 }
