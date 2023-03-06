@@ -33,6 +33,7 @@ class ChromiumDiscoverFeedService final : public DiscoverFeedService {
   void UpdateTheme() final {}
   void RefreshFeedIfNeeded() final {}
   void RefreshFeed(bool feed_visible) final {}
+  void RefreshFeed(FeedRefreshTrigger trigger) final {}
 
   void PerformBackgroundRefreshes(void (^completion)(BOOL)) final {}
   void HandleBackgroundRefreshTaskExpiration() final {}

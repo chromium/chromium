@@ -74,9 +74,11 @@ enum class FeedRefreshTrigger {
   kForegroundFeedVisibleOther = 6,
   kForegroundNotForced = 7,
   kForegroundFeedNotVisible = 8,
+  kForegroundNewFeedViewController = 9,
+  kForegroundAppClose = 10,
 
   // Change this to match max value.
-  kMaxValue = kForegroundFeedNotVisible,
+  kMaxValue = kForegroundAppClose,
 };
 
 // Enum class contains values indicating the type of follow request. Ex.

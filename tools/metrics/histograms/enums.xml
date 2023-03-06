@@ -42914,7 +42914,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Foreground account change"/>
   <int value="5" label="Foreground user triggered"/>
   <int value="6" label="Foreground feed visible other">
-    The feed is visible and trigger is not already one of the other triggers.
+    The feed is visible and trigger is not already one of the other foreground
+    visible triggers.
   </int>
   <int value="7" label="Foreground not forced">
     A server request is only made if the feed model is considered stale.
@@ -42922,6 +42923,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Foreground but feed not visible">
     The feed is not visible but the app is in the foreground (e.g., user is in
     another tab).
+  </int>
+  <int value="9" label="Foreground new feed view controller">
+    A new feed view controller has been configured and has become visible to the
+    user.
+  </int>
+  <int value="10" label="Foreground app close">
+    The app is backgrounding from the foreground and the refresh is running on
+    an app extended execution time.
   </int>
 </enum>
 
