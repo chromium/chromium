@@ -55,7 +55,7 @@ OR
 ```c++
   MyBrowserSideFunction() {
     ...
-    page_load_metrics::MetricsWebContentObserver::RecordFeatureUsage(
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
       render_frame_host, blink::mojom::WebFeature::kMyFeature);
     ...
   }
