@@ -6361,6 +6361,27 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
 
     // If this frame is same-origin with the outermost frame we no longer need
     // to make a request and can resolve the promise.
+
+    // Deviation from spec: we set the has_storage_access bool here, so that
+    // downstream cookie accesses will know that this frame opted into storage
+    // access. This knowledge is necessary since Chromium considers the entire
+    // frame hierarchy when deciding if a context is first-party or third-party;
+    // rather than just considering the current frame and top frame.
+    //
+    // As a concrete example, consider an A(B(A)) embedding context. The inner A
+    // iframe is same-origin with the top-level A document. However, because
+    // Chromium's block-third-party-cookies behavior considers the whole frame
+    // hierarchy, block-third-party-cookies would still prevent the inner A
+    // iframe from accessing its cookies, even though document.hasStorageAccess
+    // and document.requestStorageAccess are written (in the spec) with early
+    // returns to imply that access should be granted in such a same-origin
+    // scenario. If we set the has_storage_access bool here, and modify
+    // consumers of the storage-access permission such that they do not require
+    // an explicit permission for contexts in which the frame and the top-level
+    // frame are same-origin, then the "actual" cookie access will match the
+    // "implied" cookie access in the spec.
+    dom_window_->SetHasStorageAccess();
+
     resolver->Resolve();
     return promise;
   }

@@ -902,11 +902,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetNestedFrame()));
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
-  // TODO(https://crbug.com/1420320): Even though the API says access has been
-  // granted, cookies are still not accessible. The behavior should be updated
-  // so that it is consistent: either reject/return false, or *really* grant
-  // cookie access.
-  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), NoCookies());
+  // The iframe ought to have access to its cookies, since the API said it does.
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA),
+            CookieBundle("cross-site=a.test"));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,

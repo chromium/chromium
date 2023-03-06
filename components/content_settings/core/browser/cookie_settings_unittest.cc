@@ -26,8 +26,10 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
@@ -313,12 +315,32 @@ TEST_P(CookieSettingsTest, CookiesBlockThirdParty) {
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
   // Cookie is allowed only when block is overridden.
+
+  // A(B) context. Inner frame is cross-origin from top-level frame.
   EXPECT_EQ(
       IsForceAllowThirdPartyCookies(),
       cookie_settings_->IsFullCookieAccessAllowed(
           kBlockedSite, kFirstPartySiteForCookies,
           /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
+  EXPECT_EQ(IsForceAllowThirdPartyCookies(),
+            cookie_settings_->IsFullCookieAccessAllowed(
+                kBlockedSite, net::SiteForCookies(),
+                /*top_frame_origin=*/url::Origin::Create(kFirstPartySite),
+                GetCookieSettingOverrides()));
+  EXPECT_EQ(
+      IsForceAllowThirdPartyCookies(),
+      cookie_settings_->IsFullCookieAccessAllowed(
+          kBlockedSite, net::SiteForCookies(),
+          /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kBlockedSite));
+
+  // A(B(A)) context. The inner frame is same-origin with the top-level frame,
+  // but there's an intermediate cross-site frame.
+  EXPECT_EQ(IsForceAllowThirdPartyCookies() || IsStorageAccessGrantEligible(),
+            cookie_settings_->IsFullCookieAccessAllowed(
+                kBlockedSite, net::SiteForCookies(),
+                /*top_frame_origin=*/url::Origin::Create(kBlockedSite),
+                GetCookieSettingOverrides()));
 }
 
 TEST_P(CookieSettingsTest, CookiesControlsDefault) {
