@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/cxx20_is_constant_evaluated.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -37,6 +38,7 @@ struct RawPtrBackupRefImpl {
   // threads modify the same smart pointer object without synchronization, a
   // data race will occur.
 
+ private:
   static PA_ALWAYS_INLINE bool IsSupportedAndNotNull(uintptr_t address) {
     // There are many situations where the compiler can prove that
     // `ReleaseWrappedPtr` is called on a value that is always nullptr, but the
@@ -125,9 +127,13 @@ struct RawPtrBackupRefImpl {
   }
 #endif  // BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
+ public:
   // Wraps a pointer.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  constexpr static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return ptr;
+    }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(ptr));
     if (IsSupportedAndNotNull(address)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -158,7 +164,10 @@ struct RawPtrBackupRefImpl {
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
+  constexpr static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return;
+    }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(wrapped_ptr));
     if (IsSupportedAndNotNull(address)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -178,7 +187,11 @@ struct RawPtrBackupRefImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+  constexpr static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     PA_BASE_CHECK(!IsPtrOOB(wrapped_ptr));
@@ -196,7 +209,11 @@ struct RawPtrBackupRefImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+  constexpr static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     // Some code uses invalid pointer values as indicators, so those values must
@@ -218,7 +235,11 @@ struct RawPtrBackupRefImpl {
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+  constexpr static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
     // This may be used for unwrapping an end-of-allocation pointer to be used
     // as an endpoint in an iterative algorithm, so this removes the OOB poison
     // bit.
@@ -227,7 +248,7 @@ struct RawPtrBackupRefImpl {
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static PA_ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
+  constexpr static PA_ALWAYS_INLINE To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -314,7 +335,10 @@ struct RawPtrBackupRefImpl {
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+  constexpr static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr + delta_elems;
+    }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
     return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
         unpoisoned_ptr, unpoisoned_ptr + delta_elems);
@@ -326,17 +350,26 @@ struct RawPtrBackupRefImpl {
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+  constexpr static PA_ALWAYS_INLINE T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr - delta_elems;
+    }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
     return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
         unpoisoned_ptr, unpoisoned_ptr - delta_elems);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
-                                                  T* wrapped_ptr2) {
+  constexpr static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                                            T* wrapped_ptr2) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr1 - wrapped_ptr2;
+    }
     T* unpoisoned_ptr1 = UnpoisonPtr(wrapped_ptr1);
     T* unpoisoned_ptr2 = UnpoisonPtr(wrapped_ptr2);
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return unpoisoned_ptr1 - unpoisoned_ptr2;
+    }
     uintptr_t address1 = partition_alloc::UntagPtr(unpoisoned_ptr1);
     uintptr_t address2 = partition_alloc::UntagPtr(unpoisoned_ptr2);
     // Ensure that both pointers are within the same slot, and pool!
@@ -356,7 +389,10 @@ struct RawPtrBackupRefImpl {
   // memory was freed or not.
   // This method increments the reference count of the allocation slot.
   template <typename T>
-  static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  constexpr static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
     return WrapRawPtr(wrapped_ptr);
   }
 
@@ -369,19 +405,29 @@ struct RawPtrBackupRefImpl {
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
-    return WrapRawPtr(ptr);
+  constexpr static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return ptr;
+    } else {
+      return WrapRawPtr(ptr);
+    }
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
-    return UnpoisonPtr(wrapped_ptr);
+  constexpr static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    } else {
+      return UnpoisonPtr(wrapped_ptr);
+    }
   }
 
   // This is for accounting only, used by unit tests.
-  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
+  constexpr static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
+  constexpr static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
+  constexpr static PA_ALWAYS_INLINE void
+  IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
   // We've evaluated several strategies (inline nothing, various parts, or

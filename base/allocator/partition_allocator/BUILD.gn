@@ -92,6 +92,7 @@ component("partition_alloc") {
     "partition_alloc_base/cpu.cc",
     "partition_alloc_base/cpu.h",
     "partition_alloc_base/cxx17_backports.h",
+    "partition_alloc_base/cxx20_is_constant_evaluated.h",
     "partition_alloc_base/debug/alias.cc",
     "partition_alloc_base/debug/alias.h",
     "partition_alloc_base/gtest_prod_util.h",

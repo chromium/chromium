@@ -974,7 +974,7 @@ class SchemaNodesGenerator:
       f.write('};\n\n')
 
     f.write('const internal::SchemaData* GetChromeSchemaData() {\n')
-    f.write('  static const internal::SchemaData kChromeSchemaData = {\n'
+    f.write('  static constexpr internal::SchemaData chrome_schema_data = {\n'
             '    kSchemas,\n')
     f.write('    kPropertyNodes,\n' if self.property_nodes else '  nullptr,\n')
     f.write('    kProperties,\n' if self.properties_nodes else '  nullptr,\n')
@@ -988,7 +988,7 @@ class SchemaNodesGenerator:
     f.write('    %d,  // validation_schema root index\n' %
             self.validation_schema_root_index)
     f.write('  };\n\n')
-    f.write('  return &kChromeSchemaData;\n' '}\n\n')
+    f.write('  return &chrome_schema_data;\n' '}\n\n')
 
   def GetByID(self, id_str):
     if not isinstance(id_str, string_type):
@@ -1248,9 +1248,9 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
           'const std::string& policy) {\n')
   if schema_generator.property_nodes:
     f.write('  // First index in kPropertyNodes of the Chrome policies.\n'
-            '  static const int begin_index = %s;\n'
+            '  static constexpr int begin_index = %s;\n'
             '  // One-past-the-end of the Chrome policies in kPropertyNodes.\n'
-            '  static const int end_index = %s;\n' %
+            '  static constexpr int end_index = %s;\n' %
             (schema_generator.root_properties_begin,
              schema_generator.root_properties_end))
     f.write('''  const internal::PropertyNode* begin =
