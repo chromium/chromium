@@ -19,6 +19,10 @@ namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
+namespace image_service {
+class ImageService;
+}  // namespace image_service
+
 namespace optimization_guide {
 
 // WARNING: This class is not quite ready for use yet -- use
@@ -55,9 +59,9 @@ class NewOptimizationGuideDecider {
   virtual ~NewOptimizationGuideDecider() = default;
 
  private:
-  // ShoppingService is a friend class since it is a consumer of the
-  // CanApplyOptimizationOnDemand API.
+  // These friend are consumers of the CanApplyOptimizationOnDemand API.
   friend class commerce::ShoppingService;
+  friend class image_service::ImageService;
 
   // Invokes |callback| with the decision for all types contained in
   // |optimization_types| for each URL contained in |urls|, when sufficient
