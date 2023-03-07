@@ -269,6 +269,12 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
     return;
   }
 
+  if (!contents) {
+    update_stages_.erase(app_id);
+    NotifyResult(url, app_id, ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
+
   UpdateStage& update_stage = update_stage_it->second;
   DCHECK_EQ(update_stage.stage, UpdateStage::Stage::kCheckingManifestDiff);
   update_stage.stage = UpdateStage::Stage::kPendingAppWindowClose;
@@ -401,7 +407,6 @@ void ManifestUpdateManager::OnUpdateStopped(const GURL& url,
   if (update_stage_it == update_stages_.end())
     return;
   update_stages_.erase(app_id);
-  // apps_with_no_windows_for_testing_.erase(app_id);
   NotifyResult(url, app_id, result);
 }
 
