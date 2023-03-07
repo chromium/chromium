@@ -21,7 +21,7 @@
 #include "ui/gfx/native_pixmap.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
