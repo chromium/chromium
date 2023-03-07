@@ -1391,6 +1391,12 @@ BASE_FEATURE(kEcheLauncherIconsInMoreAppsButton,
              "EcheLauncherIconsInMoreAppsButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Phone Hub recent apps loading and error views based on the
+// connection status with the phone.
+BASE_FEATURE(kEcheNetworkConnectionState,
+             "EcheNetworkConnectionState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables multi-zone rgb keyboard customization.
 BASE_FEATURE(kMultiZoneRgbKeyboard,
              "MultiZoneRgbKeyboard",
@@ -2842,6 +2848,11 @@ bool IsEcheLauncherIconsInMoreAppsButtonEnabled() {
 bool IsEcheLauncherListViewEnabled() {
   return IsEcheLauncherEnabled() &&
          base::FeatureList::IsEnabled(kEcheLauncherListView);
+}
+
+bool IsEcheNetworkConnectionStateEnabled() {
+  return base::FeatureList::IsEnabled(kEcheNetworkConnectionState) &&
+         base::FeatureList::IsEnabled(kEcheSWA);
 }
 
 bool IsNearbyKeepAliveFixEnabled() {

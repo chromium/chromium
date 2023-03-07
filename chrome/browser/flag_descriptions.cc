@@ -5413,6 +5413,12 @@ const char kEcheLauncherIconsInMoreAppsButtonName[] =
 const char kEcheLauncherIconsInMoreAppsButtonDescription[] =
     "Show app icons in the Eche launcher more apps button";
 
+const char kEcheNetworkConnectionStateName[] =
+    "Enable loading and error states for Eche.";
+const char kEcheNetworkConnectionStateDescription[] =
+    "Shows loading and error states in Phone Hub's recent apps section based "
+    "on the connection state with the Phone.";
+
 const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
 const char kEcheSWADebugModeDescription[] =
     "Save console logs of Eche in the system log";
