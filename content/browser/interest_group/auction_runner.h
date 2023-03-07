@@ -94,13 +94,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  returns are destroyed. `attribution_manager` could be null in
   //  Incognito mode or in test.
   //
-  // `log_private_aggregation_requests_callback` will be invoked with private
-  //  aggregation requests before they're uploaded, allowing them to be logged.
-  //  It may be invoked multiple times. It may be invoked ether directly by
-  //  AuctionRunner (when an auction has no winner) or by the returned
-  //  InterestGroupAuctionReporter (when an auction has a winner). It will never
-  //  be passed an empty set of pending reports.
-  //
   // `auction_config` is the configuration provided by client JavaScript in
   //  the renderer in order to initiate the auction.
   //
@@ -240,9 +233,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   const raw_ptr<AttributionManager> attribution_manager_;
 
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
-
-  const InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
-      log_private_aggregation_requests_callback_;
 
   const url::Origin main_frame_origin_;
   const url::Origin frame_origin_;

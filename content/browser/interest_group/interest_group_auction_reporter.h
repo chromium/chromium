@@ -80,13 +80,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
-  // Invoked before sending private aggregation requests. Logs that requests
-  // were made.
+  // Invoked when private aggregation requests are received from the worklet.
   using LogPrivateAggregationRequestsCallback = base::RepeatingCallback<void(
-      const std::map<
-          url::Origin,
-          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>&
-          private_aggregation_requests)>;
+      const PrivateAggregationRequests& private_aggregation_requests)>;
 
   // Seller-specific information about the winning bid. The top-level seller and
   // (if present) component seller associated with the winning bid have separate
@@ -250,15 +246,10 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // the corresponding requests. Does nothing if `private_aggregation_requests`
   // is empty.
   //
-  // Only invokes `log_private_aggregation_requests_callback` if
-  // `private_aggregation_manager` is nullptr.
-  //
   // Static so that this can be invoked when there's no winner, and a reporter
   // isn't needed.
   static void OnFledgePrivateAggregationRequests(
       PrivateAggregationManager* private_aggregation_manager,
-      LogPrivateAggregationRequestsCallback
-          log_private_aggregation_requests_callback,
       const url::Origin& main_frame_origin,
       std::map<
           url::Origin,

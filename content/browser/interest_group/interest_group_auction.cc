@@ -18,6 +18,7 @@
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -1161,6 +1162,7 @@ class InterestGroupAuction::BuyerHelper
         pa_requests,
         [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
                request_ptr) { return request_ptr.is_null(); }));
+    auction_->MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
       PrivateAggregationRequests& pa_requests_for_bidder =
           state->private_aggregation_requests[interest_group.owner];
@@ -1444,7 +1446,10 @@ InterestGroupAuction::InterestGroupAuction(
     const InterestGroupAuction* parent,
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    base::Time auction_start_time)
+    base::Time auction_start_time,
+    base::RepeatingCallback<
+        void(const PrivateAggregationRequests& private_aggregation_requests)>
+        maybe_log_private_aggregation_web_features_callback)
     : trace_id_(base::trace_event::GetNextGlobalTraceId()),
       kanon_mode_(kanon_mode),
       auction_worklet_manager_(auction_worklet_manager),
@@ -1453,7 +1458,9 @@ InterestGroupAuction::InterestGroupAuction(
       config_promises_resolved_(config_->NumPromises() == 0),
       parent_(parent),
       auction_start_time_(auction_start_time),
-      creation_time_(base::TimeTicks::Now()) {
+      creation_time_(base::TimeTicks::Now()),
+      maybe_log_private_aggregation_web_features_callback_(
+          std::move(maybe_log_private_aggregation_web_features_callback)) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", *trace_id_,
                                     "decision_logic_url",
                                     config_->decision_logic_url);
@@ -1464,10 +1471,11 @@ InterestGroupAuction::InterestGroupAuction(
     // Nested component auctions are not supported.
     DCHECK(!parent_);
     component_auctions_.emplace(
-        child_pos, std::make_unique<InterestGroupAuction>(
-                       kanon_mode_, &component_auction_config, /*parent=*/this,
-                       auction_worklet_manager, interest_group_manager,
-                       auction_start_time));
+        child_pos,
+        std::make_unique<InterestGroupAuction>(
+            kanon_mode_, &component_auction_config, /*parent=*/this,
+            auction_worklet_manager, interest_group_manager, auction_start_time,
+            maybe_log_private_aggregation_web_features_callback_));
     ++child_pos;
   }
 }
@@ -1630,8 +1638,6 @@ std::unique_ptr<InterestGroupAuctionReporter>
 InterestGroupAuction::CreateReporter(
     AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
-    InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
-        log_private_aggregation_requests_callback,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<blink::AuctionConfig> auction_config,
     const url::Origin& main_frame_origin,
@@ -1743,7 +1749,8 @@ InterestGroupAuction::CreateReporter(
 
   return std::make_unique<InterestGroupAuctionReporter>(
       interest_group_manager_, auction_worklet_manager_, attribution_manager,
-      private_aggregation_manager, log_private_aggregation_requests_callback,
+      private_aggregation_manager,
+      maybe_log_private_aggregation_web_features_callback_,
       std::move(auction_config), main_frame_origin, frame_origin,
       std::move(client_security_state), std::move(url_loader_factory),
       std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
@@ -2219,6 +2226,14 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
     }
   }
   return base::flat_set<std::string>(std::move(k_anon_keys_to_join));
+}
+
+void InterestGroupAuction::MaybeLogPrivateAggregationWebFeatures(
+    const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
+        private_aggregation_requests) {
+  DCHECK(maybe_log_private_aggregation_web_features_callback_);
+  maybe_log_private_aggregation_web_features_callback_.Run(
+      private_aggregation_requests);
 }
 
 const InterestGroupAuction::LeaderInfo& InterestGroupAuction::leader_info()
@@ -2758,6 +2773,7 @@ void InterestGroupAuction::OnScoreAdComplete(
         pa_requests,
         [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
                request_ptr) { return request_ptr.is_null(); }));
+    MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
       DCHECK(config_);
       PrivateAggregationRequests& pa_requests_for_seller =

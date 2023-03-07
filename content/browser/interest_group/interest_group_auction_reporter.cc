@@ -174,14 +174,10 @@ InterestGroupAuctionReporter::OnNavigateToWinningAdCallback() {
 
 void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     PrivateAggregationManager* private_aggregation_manager,
-    LogPrivateAggregationRequestsCallback
-        log_private_aggregation_requests_callback,
     const url::Origin& main_frame_origin,
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests) {
-  DCHECK(log_private_aggregation_requests_callback);
-
   // Empty vectors should've been filtered out.
   DCHECK(base::ranges::none_of(private_aggregation_requests,
                                [](auto& it) { return it.second.empty(); }));
@@ -189,8 +185,6 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
   if (private_aggregation_requests.empty()) {
     return;
   }
-
-  log_private_aggregation_requests_callback.Run(private_aggregation_requests);
 
   if (!private_aggregation_manager) {
     return;
@@ -331,6 +325,8 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
       pa_requests,
       [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
              request_ptr) { return request_ptr.is_null(); }));
+
+  log_private_aggregation_requests_callback_.Run(pa_requests);
 
   const url::Origin& seller = seller_info->auction_config->seller;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
@@ -548,6 +544,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
       [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
              request_ptr) { return request_ptr.is_null(); }));
 
+  log_private_aggregation_requests_callback_.Run(pa_requests);
+
   const url::Origin& bidder =
       winning_bid_info_.storage_interest_group->interest_group.owner;
   const SellerWinningBidInfo& seller_info = GetBidderAuction();
@@ -695,8 +693,8 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
       url_loader_factory_);
   pending_report_urls_.clear();
   OnFledgePrivateAggregationRequests(
-      private_aggregation_manager_, log_private_aggregation_requests_callback_,
-      main_frame_origin_, std::move(private_aggregation_requests_reserved_));
+      private_aggregation_manager_, main_frame_origin_,
+      std::move(private_aggregation_requests_reserved_));
   private_aggregation_requests_reserved_.clear();
 
   if (base::FeatureList::IsEnabled(content::kPrivateAggregationApi) &&

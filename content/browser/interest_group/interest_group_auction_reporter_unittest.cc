@@ -1439,7 +1439,6 @@ TEST_F(InterestGroupAuctionReporterTest,
 // completes.
 TEST_F(InterestGroupAuctionReporterTest,
        PrivateAggregationRequestsNonReserved) {
-  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
   private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
   private_aggregation_event_map_["event_type2"].push_back(
@@ -1496,7 +1495,6 @@ TEST_F(InterestGroupAuctionReporterTest,
 // case where a navigation occurs after all reporting scripts have completed.
 TEST_F(InterestGroupAuctionReporterTest,
        PrivateAggregationRequestsNonReservedLateNavigation) {
-  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
   private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
   private_aggregation_event_map_["event_type2"].push_back(
@@ -1533,6 +1531,41 @@ TEST_F(InterestGroupAuctionReporterTest,
                         ElementsAreRequests(kBonusPrivateAggregationRequest))));
 
   WaitForCompletion();
+}
+
+// Check that private aggregation requests are passed along to trigger use
+// counter logging as appropriate.
+TEST_F(InterestGroupAuctionReporterTest,
+       PrivateAggregationLoggingForUseCounter) {
+  SetUpAndStartSingleSellerAuction();
+  WaitForReportResultAndRunCallback(
+      kSellerScriptUrl,
+      /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+      MakeRequestPtrVector(kReportResultPrivateAggregationRequest.Clone()));
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+      MakeRequestPtrVector(
+          kReportWinNonReservedPrivateAggregationRequest.Clone()));
+
+  // Requests encountered in reportResult() and reportWin() are passed along.
+  EXPECT_THAT(
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
+      ElementsAreRequests(kReportResultPrivateAggregationRequest,
+                          kReportWinNonReservedPrivateAggregationRequest));
+}
+
+// Check that no private aggregation requests are passed along to trigger use
+// counter logging if the API was not used.
+TEST_F(InterestGroupAuctionReporterTest,
+       PrivateAggregationLoggingForUseCounterNotUsed) {
+  SetUpAndStartSingleSellerAuction();
+  WaitForReportResultAndRunCallback(kSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt);
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/absl::nullopt);
+  EXPECT_TRUE(
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests()
+          .empty());
 }
 
 // Test the case that the InterestGroupAutionReporter is destroyed while calling
@@ -1755,7 +1788,6 @@ class InterestGroupAuctionReporterPrivateAggregationDisabledTest
 
 TEST_F(InterestGroupAuctionReporterPrivateAggregationDisabledTest,
        PrivateAggregationRequestsNonReserved) {
-  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
   // This is possible currently because we're not checking the feature flags
   // when collecting PA requests and sending to InterestGroupAuctionReporter,
   // and a compromised worklet can send PA requests to browser process when
@@ -1814,7 +1846,6 @@ class InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest
 TEST_F(
     InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest,
     PrivateAggregationRequestsNonReserved) {
-  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
   // This is possible currently because we're not checking the feature flags
   // when collecting PA requests and sending to InterestGroupAuctionReporter,
   // and a compromised worklet can send PA requests to browser process when

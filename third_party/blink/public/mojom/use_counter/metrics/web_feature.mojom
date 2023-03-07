@@ -3825,6 +3825,7 @@ enum WebFeature {
   kExecutedJavaScriptURLFromFrame = 4484,
   kServiceWorkerBypassFetchHandlerForSubResource = 4485,
   kCSSAtRuleInitial = 4486,
+  kPrivateAggregationApiFledgeExtensions = 4487,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

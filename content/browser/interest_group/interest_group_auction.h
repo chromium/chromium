@@ -398,12 +398,16 @@ class CONTENT_EXPORT InterestGroupAuction
   // is destroyed. `config` is typically owned by the AuctionRunner's
   // `owned_auction_config_` field. `parent` should be the parent
   // InterestGroupAuction if this is a component auction, and null, otherwise.
-  InterestGroupAuction(auction_worklet::mojom::KAnonymityBidMode kanon_mode,
-                       const blink::AuctionConfig* config,
-                       const InterestGroupAuction* parent,
-                       AuctionWorkletManager* auction_worklet_manager,
-                       InterestGroupManagerImpl* interest_group_manager,
-                       base::Time auction_start_time);
+  InterestGroupAuction(
+      auction_worklet::mojom::KAnonymityBidMode kanon_mode,
+      const blink::AuctionConfig* config,
+      const InterestGroupAuction* parent,
+      AuctionWorkletManager* auction_worklet_manager,
+      InterestGroupManagerImpl* interest_group_manager,
+      base::Time auction_start_time,
+      base::RepeatingCallback<
+          void(const PrivateAggregationRequests& private_aggregation_requests)>
+          maybe_log_private_aggregation_web_features_callback);
 
   InterestGroupAuction(const InterestGroupAuction&) = delete;
   InterestGroupAuction& operator=(const InterestGroupAuction&) = delete;
@@ -450,8 +454,6 @@ class CONTENT_EXPORT InterestGroupAuction
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
       AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager,
-      InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
-          log_private_aggregation_requests_callback,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<blink::AuctionConfig> auction_config,
       const url::Origin& main_frame_origin,
@@ -576,6 +578,13 @@ class CONTENT_EXPORT InterestGroupAuction
   // join the k-anon sets if it's informed the winning ad has been navigated to,
   // so there's no need for anything else to invoke this method.
   base::flat_set<std::string> GetKAnonKeysToJoin() const;
+
+  // Depending on the requests present and whether the features have already
+  // been logged for this page, may log one or more Private Aggregation API web
+  // features.
+  void MaybeLogPrivateAggregationWebFeatures(
+      const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
+          private_aggregation_requests);
 
   // Returns the top bid of whichever auction (k-anon or not, depending on the
   // configuration) is actually to be used for the user-facing results. May only
@@ -1019,6 +1028,12 @@ class CONTENT_EXPORT InterestGroupAuction
   // request's event type.
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
+
+  // Callback for passing encountered PrivateAggregationRequests up in order to
+  // maybe trigger Private Aggregation web features, as appropriate.
+  base::RepeatingCallback<void(
+      const PrivateAggregationRequests& private_aggregation_requests)>
+      maybe_log_private_aggregation_web_features_callback_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;

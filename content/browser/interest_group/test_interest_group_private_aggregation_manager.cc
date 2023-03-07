@@ -6,15 +6,18 @@
 
 #include <map>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,33 +68,6 @@ void TestInterestGroupPrivateAggregationManager::SendHistogramReport(
               NewHistogramContribution(std::move(contributions[0])),
           aggregation_mode, std::move(debug_mode_details));
 
-  if (!should_match_logged_requests_) {
-    // Currently non-reserved private aggregation requests are not passed to
-    // LogPrivateAggregationRequestsCallback(), and not stored in
-    // `logged_private_aggregation_requests_`.
-    DCHECK(logged_private_aggregation_requests_.empty());
-    private_aggregation_requests_[worklet_origin].push_back(std::move(request));
-    return;
-  }
-
-  bool found_matching_logged_request = false;
-  InterestGroupAuctionReporter::PrivateAggregationRequests&
-      logged_requests_for_origin =
-          logged_private_aggregation_requests_[worklet_origin];
-  for (auto it = logged_requests_for_origin.begin();
-       it != logged_requests_for_origin.end(); ++it) {
-    if (**it == *request) {
-      found_matching_logged_request = true;
-      logged_requests_for_origin.erase(it);
-      if (logged_requests_for_origin.empty()) {
-        logged_private_aggregation_requests_.erase(worklet_origin);
-      }
-      break;
-    }
-  }
-  EXPECT_TRUE(found_matching_logged_request)
-      << "Request unexpectedly not logged for origin: "
-      << worklet_origin.Serialize();
   private_aggregation_requests_[worklet_origin].push_back(std::move(request));
 }
 
@@ -106,29 +82,27 @@ TestInterestGroupPrivateAggregationManager::
 std::map<url::Origin, InterestGroupAuctionReporter::PrivateAggregationRequests>
 TestInterestGroupPrivateAggregationManager::TakePrivateAggregationRequests() {
   base::RunLoop().RunUntilIdle();
-  // All logged events should have had a matching SendHistogramReport() call.
-  EXPECT_TRUE(logged_private_aggregation_requests_.empty());
   return std::exchange(private_aggregation_requests_, {});
 }
 
-void TestInterestGroupPrivateAggregationManager::SetShouldMatchLoggedRequests(
-    bool should_match_logged_requests) {
-  should_match_logged_requests_ = should_match_logged_requests;
+std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+TestInterestGroupPrivateAggregationManager::
+    TakeLoggedPrivateAggregationRequests() {
+  return std::move(logged_private_aggregation_requests_);
 }
 
 void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
-    const std::map<
-        url::Origin,
-        std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>&
+    const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
         private_aggregation_requests) {
-  DCHECK(should_match_logged_requests_ || private_aggregation_requests.empty());
-  for (auto& pair : private_aggregation_requests) {
-    auto& requests_for_origin =
-        logged_private_aggregation_requests_[pair.first];
-    for (auto& request : pair.second) {
-      requests_for_origin.push_back(request.Clone());
-    }
-  }
+  logged_private_aggregation_requests_.reserve(
+      logged_private_aggregation_requests_.size() +
+      private_aggregation_requests.size());
+  base::ranges::for_each(
+      private_aggregation_requests,
+      [this](
+          const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
+        logged_private_aggregation_requests_.push_back(request->Clone());
+      });
 }
 
 }  // namespace content

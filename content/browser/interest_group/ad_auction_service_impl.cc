@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -249,7 +250,7 @@ void AdAuctionServiceImpl::RunAdAuction(
       // Unlike other callbacks, this needs to be safe to call after destruction
       // of the AdAuctionServiceImpl, so that the reporter can outlive it.
       base::BindRepeating(
-          &AdAuctionServiceImpl::MaybeLogPrivateAggregationFeature,
+          &AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures,
           weak_ptr_factory_.GetWeakPtr()),
       config, main_frame_origin_, origin(), GetClientSecurityState(),
       GetRefCountedTrustedURLLoaderFactory(),
@@ -621,16 +622,28 @@ void AdAuctionServiceImpl::OnReporterComplete(
   reporters_.erase(reporter_it);
 }
 
-void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeature(
-    const std::map<
-        url::Origin,
-        std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>&
+void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
+    const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
         private_aggregation_requests) {
   // TODO(crbug.com/1356654): Improve coverage of these use counters, i.e.
   // for API usage that does not result in a successful request.
-  // TODO(crbug.com/1410322): Use separate use counters for SendHistogram() and
-  // reportContributionForEvent().
-  if (!private_aggregation_requests.empty()) {
+  if (private_aggregation_requests.empty()) {
+    return;
+  }
+
+  if (!has_logged_extended_private_aggregation_web_feature_ &&
+      base::ranges::any_of(
+          private_aggregation_requests, [](const auto& request) {
+            return request->contribution->is_for_event_contribution();
+          })) {
+    has_logged_extended_private_aggregation_web_feature_ = true;
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &render_frame_host(),
+        blink::mojom::WebFeature::kPrivateAggregationApiFledgeExtensions);
+  }
+
+  if (!has_logged_private_aggregation_web_features_) {
+    has_logged_private_aggregation_web_features_ = true;
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         &render_frame_host(),
         blink::mojom::WebFeature::kPrivateAggregationApiAll);

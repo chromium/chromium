@@ -133,13 +133,8 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   void OnReporterComplete(ReporterList::iterator reporter_it);
 
-  // Calls LogWebFeatureForCurrentPage() for the frame to inform it of FLEDGE
-  // private aggregation API usage, if `private_aggregation_requests` is
-  // non-empty.
-  void MaybeLogPrivateAggregationFeature(
-      const std::map<
-          url::Origin,
-          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>&
+  void MaybeLogPrivateAggregationFeatures(
+      const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
           private_aggregation_requests);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;
@@ -173,6 +168,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // Safe to keep as it will outlive the associated `RenderFrameHost` and
   // therefore `this`, being tied to the lifetime of the `StoragePartition`.
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
+
+  // Whether a UseCounter has already been logged for usage of the Private
+  // Aggregation API in general and the extended Private Aggregation API,
+  // respectively.
+  bool has_logged_private_aggregation_web_features_ = false;
+  bool has_logged_extended_private_aggregation_web_feature_ = false;
 
   base::WeakPtrFactory<AdAuctionServiceImpl> weak_ptr_factory_{this};
 };

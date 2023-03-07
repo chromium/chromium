@@ -76,7 +76,8 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, interest_group_manager, attribution_manager,
-      private_aggregation_manager, log_private_aggregation_requests_callback,
+      private_aggregation_manager,
+      std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
       frame_origin, std::move(client_security_state),
       std::move(url_loader_factory),
@@ -259,8 +260,7 @@ void AuctionRunner::FailAuction(
         *client_security_state_, url_loader_factory_);
 
     InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
-        private_aggregation_manager_,
-        log_private_aggregation_requests_callback_, main_frame_origin_,
+        private_aggregation_manager_, main_frame_origin_,
         auction_.TakeReservedPrivateAggregationRequests());
   }
 
@@ -297,8 +297,6 @@ AuctionRunner::AuctionRunner(
     : interest_group_manager_(interest_group_manager),
       attribution_manager_(attribution_manager),
       private_aggregation_manager_(private_aggregation_manager),
-      log_private_aggregation_requests_callback_(
-          log_private_aggregation_requests_callback),
       main_frame_origin_(main_frame_origin),
       frame_origin_(frame_origin),
       client_security_state_(std::move(client_security_state)),
@@ -316,7 +314,8 @@ AuctionRunner::AuctionRunner(
                /*parent=*/nullptr,
                auction_worklet_manager,
                interest_group_manager,
-               /*auction_start_time=*/base::Time::Now()) {}
+               /*auction_start_time=*/base::Time::Now(),
+               std::move(log_private_aggregation_requests_callback)) {}
 
 void AuctionRunner::StartAuction() {
   auction_.StartLoadInterestGroupsPhase(
@@ -362,9 +361,9 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
           attribution_manager_, private_aggregation_manager_,
-          log_private_aggregation_requests_callback_, url_loader_factory_,
-          std::move(owned_auction_config_), main_frame_origin_, frame_origin_,
-          client_security_state_.Clone(), std::move(interest_groups_that_bid));
+          url_loader_factory_, std::move(owned_auction_config_),
+          main_frame_origin_, frame_origin_, client_security_state_.Clone(),
+          std::move(interest_groups_that_bid));
   DCHECK(reporter);
 
   state_ = State::kSucceeded;

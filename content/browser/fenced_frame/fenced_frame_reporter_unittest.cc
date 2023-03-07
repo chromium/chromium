@@ -471,7 +471,6 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
 // Test sending non-reserved private aggregation requests, when events from
 // fenced frame is received after FLEDGE non-reserved PA requests are ready.
 TEST_F(FencedFrameReporterTest, FledgeEventsReceivedAfterRequestsReady) {
-  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
           shared_url_loader_factory(), attribution_manager(),
@@ -557,7 +556,6 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedAfterRequestsReady) {
 // Test sending non-reserved private aggregation requests, when events from
 // fenced frame is received before FLEDGE non-reserved PA requests are ready.
 TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
-  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
           shared_url_loader_factory(), attribution_manager(),

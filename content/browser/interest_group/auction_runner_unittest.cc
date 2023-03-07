@@ -1010,7 +1010,7 @@ BuildPrivateAggregationRequest(absl::uint128 bucket, int value) {
       blink::mojom::DebugModeDetails::New());
 }
 
-auction_worklet::mojom::PrivateAggregationRequestPtr
+const auction_worklet::mojom::PrivateAggregationRequestPtr
 BuildPrivateAggregationForEventRequest(absl::uint128 bucket,
                                        int value,
                                        std::string event_type) {
@@ -2522,12 +2522,34 @@ TEST_F(AuctionRunnerTest, Basic) {
                             kExpectedReportResultPrivateAggregationRequest))));
 
   EXPECT_THAT(
-      result_.private_aggregation_event_map,
-      testing::UnorderedElementsAre(testing::Pair(
-          "click",
-          ElementsAreRequests(
-              BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/22),
-              BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/42)))));
+      private_aggregation_manager_.TakeLoggedPrivateAggregationRequests(),
+      ElementsAreRequests(
+          kExpectedGenerateBidPrivateAggregationRequest,
+          kExpectedGenerateBidPrivateAggregationRequest,
+          kExpectedReportWinPrivateAggregationRequest,
+          kExpectedScoreAdPrivateAggregationRequest,
+          kExpectedScoreAdPrivateAggregationRequest,
+          kExpectedReportResultPrivateAggregationRequest,
+          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/21,
+                                                 /*event_type=*/"click"),
+          BuildPrivateAggregationForEventRequest(/*bucket=*/10, /*value=*/22,
+                                                 /*event_type=*/"click"),
+          BuildPrivateAggregationForEventRequest(/*bucket=*/30, /*value=*/42,
+                                                 /*event_type=*/"click"),
+          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
+                                                 /*event_type=*/"click"),
+          BuildPrivateAggregationForEventRequest(/*bucket=*/50, /*value=*/60,
+                                                 /*event_type=*/"click"),
+          BuildPrivateAggregationForEventRequest(/*bucket=*/70, /*value=*/80,
+                                                 /*event_type=*/"click")));
+
+  EXPECT_THAT(result_.private_aggregation_event_map,
+              testing::UnorderedElementsAre(testing::Pair(
+                  "click", ElementsAreRequests(
+                               BuildPrivateAggregationRequest(/*bucket=*/10,
+                                                              /*value=*/22),
+                               BuildPrivateAggregationRequest(/*bucket=*/30,
+                                                              /*value=*/42)))));
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
@@ -2535,7 +2557,8 @@ TEST_F(AuctionRunnerTest, Basic) {
             result_.winning_group_ad_metadata);
   EXPECT_TRUE(result_.errors.empty());
   CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_interest_groups=*/2,
+                  /*expected_owners=*/2,
                   /*expected_sellers=*/1);
   EXPECT_THAT(observer_log_,
               testing::UnorderedElementsAre(
