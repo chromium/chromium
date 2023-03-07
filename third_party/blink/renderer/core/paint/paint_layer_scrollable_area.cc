@@ -3179,30 +3179,6 @@ DOMNodeId PaintLayerScrollableArea::ScrollCornerDisplayItemClient::OwnerNodeId()
       ->OwnerNodeId();
 }
 
-std::unique_ptr<TracedValue>
-PaintLayerScrollableArea::TraceDataForComputeScrollbarExistence(
-    ComputeScrollbarExistenceReason reason,
-    bool needs_horizontal_scrollbar,
-    bool needs_vertical_scrollbar,
-    ComputeScrollbarExistenceOption option,
-    bool early_exit,
-    mojom::blink::ScrollbarMode h_mode,
-    mojom::blink::ScrollbarMode v_mode) const {
-  auto value = std::make_unique<TracedValue>();
-  value->SetInteger("reason", reason);
-  value->SetBoolean("needs_horizontal", needs_horizontal_scrollbar);
-  value->SetBoolean("needs_vertical", needs_vertical_scrollbar);
-  value->SetInteger("option", option);
-  value->SetBoolean("early_exit", early_exit);
-  value->SetInteger("h_mode", static_cast<int>(h_mode));
-  value->SetInteger("v_mode", static_cast<int>(v_mode));
-  value->SetString("layer_size", Layer()->Size().ToString());
-  value->SetString("overflow_rect", overflow_rect_.ToString());
-  value->SetBoolean("is_root", Layer()->IsRootLayer());
-  value->SetBoolean("is_main_frame", GetLayoutBox()->GetFrame()->IsMainFrame());
-  return value;
-}
-
 void PaintLayerScrollableArea::TraceComputeScrollbarExistence(
     ComputeScrollbarExistenceReason reason,
     bool needs_horizontal_scrollbar,
@@ -3211,12 +3187,22 @@ void PaintLayerScrollableArea::TraceComputeScrollbarExistence(
     bool early_exit,
     mojom::blink::ScrollbarMode h_mode,
     mojom::blink::ScrollbarMode v_mode) const {
-  TRACE_EVENT_INSTANT1(
+  TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.scrollbars"),
-      "ComputeScrollbarExistence", TRACE_EVENT_SCOPE_THREAD, "data",
-      TraceDataForComputeScrollbarExistence(reason, needs_horizontal_scrollbar,
-                                            needs_vertical_scrollbar, option,
-                                            early_exit, h_mode, v_mode));
+      "ComputeScrollbarExistence", [&](perfetto::EventContext ctx) {
+        ctx.AddDebugAnnotation("reason", reason);
+        ctx.AddDebugAnnotation("needs_horizontal", needs_horizontal_scrollbar);
+        ctx.AddDebugAnnotation("needs_vertical", needs_vertical_scrollbar);
+        ctx.AddDebugAnnotation("option", option);
+        ctx.AddDebugAnnotation("early_exit", early_exit);
+        ctx.AddDebugAnnotation("h_mode", static_cast<int>(h_mode));
+        ctx.AddDebugAnnotation("v_mode", static_cast<int>(v_mode));
+        ctx.AddDebugAnnotation("layer_size", Layer()->Size().ToString());
+        ctx.AddDebugAnnotation("overflow_rect", overflow_rect_.ToString());
+        ctx.AddDebugAnnotation("is_root", Layer()->IsRootLayer());
+        ctx.AddDebugAnnotation("is_main_frame",
+                               GetLayoutBox()->GetFrame()->IsMainFrame());
+      });
 }
 
 }  // namespace blink

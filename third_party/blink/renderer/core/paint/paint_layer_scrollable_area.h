@@ -70,7 +70,6 @@ struct PaintInvalidatorContext;
 class PaintLayer;
 class ScrollingCoordinator;
 class SubtreeLayoutScope;
-class TracedValue;
 
 struct CORE_EXPORT PaintLayerScrollableAreaRareData final
     : public GarbageCollected<PaintLayerScrollableAreaRareData> {
@@ -684,14 +683,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
                                       bool early_exit,
                                       mojom::blink::ScrollbarMode h_mode,
                                       mojom::blink::ScrollbarMode v_mode) const;
-  std::unique_ptr<TracedValue> TraceDataForComputeScrollbarExistence(
-      ComputeScrollbarExistenceReason reason,
-      bool needs_horizontal_scrollbar,
-      bool needs_vertical_scrollbar,
-      ComputeScrollbarExistenceOption option,
-      bool early_exit,
-      mojom::blink::ScrollbarMode h_mode,
-      mojom::blink::ScrollbarMode v_mode) const;
 
   // If the content fits entirely in the area without auto scrollbars, returns
   // true to try to remove them. This is a heuristic and can be incorrect if the
