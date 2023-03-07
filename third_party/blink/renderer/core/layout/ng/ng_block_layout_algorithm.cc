@@ -1090,6 +1090,11 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     const NGInlineBreakToken** inline_break_token_out) {
   DCHECK(previous_result_);
 
+  // No lines are reusable if this block uses `NGParagraphLineBreaker`.
+  if (Style().TextWrap() == ETextWrap::kBalance) {
+    return false;
+  }
+
   const auto& previous_fragment =
       To<NGPhysicalBoxFragment>(previous_result_->PhysicalFragment());
   const NGFragmentItems* previous_items = previous_fragment.Items();
