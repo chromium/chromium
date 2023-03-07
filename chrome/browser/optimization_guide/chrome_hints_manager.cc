@@ -98,10 +98,12 @@ void ChromeHintsManager::OnPredictionUpdated(
   // Per comments in NavigationPredictorKeyedService::Prediction, this pointer
   // should be valid while OnPredictionUpdated is on the call stack.
   content::WebContents* web_contents = prediction->web_contents();
-  DCHECK(web_contents);
+  CHECK(web_contents);
   auto* observer =
       OptimizationGuideWebContentsObserver::FromWebContents(web_contents);
-  DCHECK(observer);
+  if (!observer) {
+    return;
+  }
 
   std::vector<GURL> urls_to_fetch;
   for (const auto& url : prediction->sorted_predicted_urls()) {
