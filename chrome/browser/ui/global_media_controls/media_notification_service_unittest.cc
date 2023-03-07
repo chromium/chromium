@@ -209,9 +209,9 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
 
   media_router::MediaRoute CreateMediaRoute(
       media_router::MediaRoute::Id route_id) {
-    media_router::MediaRoute media_route(route_id,
-                                         media_router::MediaSource("source_id"),
-                                         "sink_id", "description", true);
+    media_router::MediaRoute media_route(
+        route_id, media_router::MediaSource("cast:123456"), "sink_id",
+        "description", true);
     media_route.set_controller_type(
         media_router::RouteControllerType::kGeneric);
     return media_route;
