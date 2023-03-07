@@ -113,7 +113,6 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   // 3-finger swipes in Ash/ChromeOS.
   bool delegated = MaybeDelegateHandlingToLacros(event);
   if (delegated) {
-    event->StopPropagation();
     return;
   }
 #endif
@@ -373,6 +372,7 @@ void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
 bool TabScrubberChromeOS::MaybeDelegateHandlingToLacros(
     ui::ScrollEvent* event) {
   auto* active_window =
@@ -385,14 +385,20 @@ bool TabScrubberChromeOS::MaybeDelegateHandlingToLacros(
     return false;
   }
 
-  // TODO(crbug.com/1414649): FlingScrollEvent should be sent to Lacros as well,
-  // but only sending event with kFingerCount for now as a quick fix for
-  // crbug.com/1414649.
-  if (event->finger_count() != kFingerCount) {
-    return false;
+  if (event->IsFlingScrollEvent()) {
+    // Do NOT stop propagation for fling scroll event since it may be consumed
+    // elsewhere.
+    crosapi::BrowserManager::Get()->HandleTabScrubbing(
+        event->x_offset(), /*is_fling_scroll_event=*/true);
+    return true;
+  } else if (event->finger_count() == kFingerCount) {
+    crosapi::BrowserManager::Get()->HandleTabScrubbing(
+        event->x_offset(),
+        /*is_fling_scroll_event=*/false);
+    event->StopPropagation();
+    return true;
   }
 
-  crosapi::BrowserManager::Get()->HandleTabScrubbing(event->x_offset(), false);
-  return true;
+  return false;
 }
 #endif
