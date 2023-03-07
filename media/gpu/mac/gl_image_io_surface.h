@@ -21,8 +21,15 @@
 
 namespace media {
 
+class VTVideoDecodeAccelerator;
+
+// GLImage subclass that is used by VTVideoDecodeAccelerator.
+// NOTE: No new usage of this class should be introduced, as it is in the
+// process of being eliminated.
 class MEDIA_GPU_EXPORT GLImageIOSurface : public gl::GLImage {
- public:
+ private:
+  friend VTVideoDecodeAccelerator;
+
   static GLImageIOSurface* Create(const gfx::Size& size);
 
   GLImageIOSurface(const GLImageIOSurface&) = delete;
@@ -47,7 +54,6 @@ class MEDIA_GPU_EXPORT GLImageIOSurface : public gl::GLImage {
   // Overridden from GLImage:
   gfx::Size GetSize() override;
 
- private:
   GLImageIOSurface(const gfx::Size& size);
   ~GLImageIOSurface() override;
 
