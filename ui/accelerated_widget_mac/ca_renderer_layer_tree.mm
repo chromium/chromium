@@ -840,7 +840,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
       }
 
       if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
-        if (@available(macOS 10.15, *)) {
+        if (@available(macOS 11, *)) {
           type_ = CALayerType::kVideo;
           video_type_can_downgrade_ = false;
         }
@@ -1204,7 +1204,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         ca_layer_.reset([av_layer_ retain]);
         [av_layer_ setVideoGravity:AVLayerVideoGravityResize];
         if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
-          if (@available(macOS 10.15, *)) {
+          if (@available(macOS 11, *)) {
             [av_layer_ setPreventsCapture:true];
           }
         }
