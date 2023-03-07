@@ -36161,6 +36161,7 @@ Called by update_extension_histograms.py.-->
   <int value="1764" label="BOOKMARKMANAGERPRIVATE_IMPORT"/>
   <int value="1765" label="BOOKMARKMANAGERPRIVATE_EXPORT"/>
   <int value="1766" label="PASSWORDSPRIVATE_SHOWEXPORTEDFILEINSHELL"/>
+  <int value="1767" label="FILEMANAGERPRIVATE_TOGGLEBULKPINNING"/>
 </enum>
 
 <enum name="ExtensionIconState">

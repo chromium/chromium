@@ -1827,6 +1827,7 @@ enum HistogramValue {
   BOOKMARKMANAGERPRIVATE_IMPORT = 1764,
   BOOKMARKMANAGERPRIVATE_EXPORT = 1765,
   PASSWORDSPRIVATE_SHOWEXPORTEDFILEINSHELL = 1766,
+  FILEMANAGERPRIVATE_TOGGLEBULKPINNING = 1767,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

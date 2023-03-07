@@ -1697,6 +1697,12 @@ chrome.fileManagerPrivate.openManageSyncSettings = function() {};
 chrome.fileManagerPrivate.parseTrashInfoFiles = function(entries, callback) {};
 
 /**
+ * Sets the bulk pinning feature as enabled (true) or disabled (false).
+ * @param {boolean} shouldEnable
+ */
+chrome.fileManagerPrivate.toggleBulkPinning = function(shouldEnable) {};
+
+/**
  * @type {!ChromeEvent}
  */
 chrome.fileManagerPrivate.onMountCompleted;
