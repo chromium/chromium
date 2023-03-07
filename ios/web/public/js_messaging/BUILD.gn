@@ -33,7 +33,6 @@ source_set("content_world_header") {
 }
 
 compile_ts("util_scripts") {
-  allow_js = true
   sources = [ "resources/utils.ts" ]
 }
 
