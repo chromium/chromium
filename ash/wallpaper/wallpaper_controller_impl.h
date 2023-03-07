@@ -14,6 +14,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -21,7 +22,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell_observer.h"
-#include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
@@ -83,7 +83,7 @@ class ASH_EXPORT WallpaperControllerImpl
       public OverviewObserver,
       public ui::CompositorLockClient,
       public ui::NativeThemeObserver,
-      public ScheduledFeature::CheckpointObserver {
+      public ColorModeObserver {
  public:
   // Directory names of custom wallpapers.
   static const char kSmallWallpaperSubDir[];
@@ -337,9 +337,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
-  // ScheduledFeature::CheckpointObserver:
-  void OnCheckpointChanged(const ScheduledFeature* src,
-                           const ScheduleCheckpoint new_checkpoint) override;
+  // ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;

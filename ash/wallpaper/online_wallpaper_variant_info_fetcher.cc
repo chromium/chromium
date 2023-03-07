@@ -4,7 +4,6 @@
 
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 
-#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
@@ -20,74 +19,40 @@
 namespace ash {
 namespace {
 
-// Note: This method should only be called by
-// |IsSuitableOnlineWallpaperVariant()| and |FirstValidVariant()|.
-//
-// Not all wallpapers have variants that map 1:1 to the checkpoints. D/L
-// wallpapers are an example. In order to gracefully support these wallpapers,
-// this method accepts a boolean |match_subtype| so that if true, variants with
-// |backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE| is also considered valid
-// for |ScheduleCheckpoint::kMorning| and |ScheduleCheckpoint::kLateAfternoon|.
-bool IsSuitableOnlineWallpaperVariantInternal(
-    const OnlineWallpaperVariant& variant,
-    ScheduleCheckpoint checkpoint,
-    bool match_subtype) {
-  if (variant.type == backdrop::Image_ImageType_IMAGE_TYPE_UNKNOWN) {
-    return true;
-  }
-  switch (checkpoint) {
-    case ScheduleCheckpoint::kSunrise:
-    //`kDisabled` is equivalent to Light mode.
-    case ScheduleCheckpoint::kDisabled:
-      return variant.type == backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE;
-    case ScheduleCheckpoint::kMorning:
-      return variant.type ==
-                 backdrop::Image_ImageType_IMAGE_TYPE_MORNING_MODE ||
-             (match_subtype &&
-              variant.type == backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE);
-    case ScheduleCheckpoint::kLateAfternoon:
-      return variant.type ==
-                 backdrop::Image_ImageType_IMAGE_TYPE_LATE_AFTERNOON_MODE ||
-             (match_subtype &&
-              variant.type == backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE);
-    case ScheduleCheckpoint::kSunset:
-    //`kEnabled` is equivalent to Dark mode.
-    case ScheduleCheckpoint::kEnabled:
-      return variant.type == backdrop::Image_ImageType_IMAGE_TYPE_DARK_MODE;
-  }
-}
+// Convenience alias for ColorMode enum.
+using ColorMode = OnlineWallpaperVariantInfoFetcher::ColorMode;
 
-// Checks if the given |variant| is suitable for the current system's
-// checkpoint.
+// Checks if the given |variant| is suitable for the current system's color
+// mode. Image with type |Image_ImageType_IMAGE_TYPE_UNKNOWN| is not D/L aware
+// and should be used regardless of color mode.
 bool IsSuitableOnlineWallpaperVariant(const OnlineWallpaperVariant& variant,
-                                      ScheduleCheckpoint checkpoint) {
-  return IsSuitableOnlineWallpaperVariantInternal(variant, checkpoint,
-                                                  /*match_subtype=*/true);
+                                      ColorMode mode) {
+  switch (variant.type) {
+    case backdrop::Image_ImageType_IMAGE_TYPE_UNKNOWN:
+      return true;
+    case backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE:
+      return mode == ColorMode::kLightMode;
+    case backdrop::Image_ImageType_IMAGE_TYPE_DARK_MODE:
+      return mode == ColorMode::kDarkMode;
+    case backdrop::Image_ImageType_IMAGE_TYPE_MORNING_MODE:
+    case backdrop::Image_ImageType_IMAGE_TYPE_LATE_AFTERNOON_MODE:
+      // TODO(b/266612412): Handle these image types properly.
+      return false;
+  }
 }
 
 // Returns a pointer to the first matching variant in |variants| if one
 // exists.
 const OnlineWallpaperVariant* FirstValidVariant(
     const std::vector<OnlineWallpaperVariant>& variants,
-    ScheduleCheckpoint checkpoint) {
-  // Attempt to find the exact 1:1 match for |variant| and |checkpoint|.
-  auto iter =
-      base::ranges::find_if(variants, [checkpoint](const auto& variant) {
-        return IsSuitableOnlineWallpaperVariantInternal(
-            variant, checkpoint,
-            /*match_subtype=*/false);
+    ColorMode mode) {
+  const auto iter =
+      base::ranges::find_if(variants, [mode](const auto& variant) {
+        return IsSuitableOnlineWallpaperVariant(variant, mode);
       });
-  if (iter != variants.end()) {
+  if (iter != variants.end())
     return &(*iter);
-  }
-  // Attempt to find a subtype |variant| for |checkpoint|.
-  iter = base::ranges::find_if(variants, [checkpoint](const auto& variant) {
-    return IsSuitableOnlineWallpaperVariantInternal(variant, checkpoint,
-                                                    /*match_subtype=*/true);
-  });
-  if (iter != variants.end()) {
-    return &(*iter);
-  }
+
   return nullptr;
 }
 
@@ -106,7 +71,7 @@ class VariantMatches {
   // |mode|.
   static absl::optional<VariantMatches> FromImages(
       uint64_t asset_id,
-      ScheduleCheckpoint checkpoint,
+      ColorMode mode,
       const std::vector<backdrop::Image>& images) {
     // Find the exact image in the |images| collection.
     auto image_iter =
@@ -126,8 +91,7 @@ class VariantMatches {
       }
     }
 
-    const OnlineWallpaperVariant* variant =
-        FirstValidVariant(variants, checkpoint);
+    const OnlineWallpaperVariant* variant = FirstValidVariant(variants, mode);
     if (!variant) {
       // At least one usable variant must be found to use this set of images.
       return absl::nullopt;
@@ -169,12 +133,12 @@ OnlineWallpaperVariantInfoFetcher::OnlineWallpaperRequest::
                            const std::string& collection_id_in,
                            WallpaperLayout layout_in,
                            bool daily_refresh_enabled_in,
-                           ScheduleCheckpoint checkpoint_in)
+                           ColorMode mode_in)
     : account_id(account_id_in),
       collection_id(collection_id_in),
       layout(layout_in),
       daily_refresh_enabled(daily_refresh_enabled_in),
-      checkpoint(checkpoint_in) {}
+      mode(mode_in) {}
 
 OnlineWallpaperVariantInfoFetcher::OnlineWallpaperRequest::
     ~OnlineWallpaperRequest() = default;
@@ -192,7 +156,7 @@ void OnlineWallpaperVariantInfoFetcher::SetClient(
 void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
     const AccountId& account_id,
     const WallpaperInfo& info,
-    ScheduleCheckpoint checkpoint,
+    ColorMode mode,
     FetchParamsCallback callback) {
   DCHECK(IsOnlineWallpaper(info.type));
 
@@ -201,12 +165,11 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
   if (info.unit_id.has_value() && !info.variants.empty()) {
     // |info| already has all of the data we need.
     const OnlineWallpaperVariant* variant =
-        FirstValidVariant(info.variants, checkpoint);
+        FirstValidVariant(info.variants, mode);
     if (!variant) {
-      // TODO(b/266612412): Add a meaningful name for
-      // |ScheduleCheckpoint| enum.
-      LOG(ERROR) << "No suitable wallpaper for " << static_cast<int>(checkpoint)
-                 << " checkpoint in collection";
+      NOTREACHED() << "No suitable wallpaper for "
+                   << (mode == ColorMode::kDarkMode ? "dark" : "lite")
+                   << " mode in collection";
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
       return;
@@ -229,7 +192,7 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
 
   bool daily = IsDaily(info);
   auto request = std::make_unique<OnlineWallpaperRequest>(
-      account_id, info.collection_id, info.layout, daily, checkpoint);
+      account_id, info.collection_id, info.layout, daily, mode);
 
   auto collection_id = request->collection_id;
   wallpaper_controller_client_->FetchImagesForCollection(
@@ -243,18 +206,17 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
 bool OnlineWallpaperVariantInfoFetcher::FetchDailyWallpaper(
     const AccountId& account_id,
     const WallpaperInfo& info,
-    ScheduleCheckpoint checkpoint,
+    ColorMode mode,
     FetchParamsCallback callback) {
   DCHECK(IsDaily(info));
 
   // We might not have a client yet.
-  if (!wallpaper_controller_client_) {
+  if (!wallpaper_controller_client_)
     return false;
-  }
 
   bool daily = true;  // This is always a a daily wallpaper.
   auto request = std::make_unique<OnlineWallpaperRequest>(
-      account_id, info.collection_id, info.layout, daily, checkpoint);
+      account_id, info.collection_id, info.layout, daily, mode);
   wallpaper_controller_client_->FetchDailyRefreshWallpaper(
       info.collection_id,
       base::BindOnce(&OnlineWallpaperVariantInfoFetcher::OnSingleFetch,
@@ -299,7 +261,7 @@ void OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants(
   }
 
   absl::optional<VariantMatches> matches =
-      VariantMatches::FromImages(asset_id, request->checkpoint, images);
+      VariantMatches::FromImages(asset_id, request->mode, images);
   if (!matches) {
     LOG(ERROR) << "No valid variants";
     std::move(callback).Run(absl::nullopt);
@@ -307,7 +269,7 @@ void OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants(
   }
 
   const OnlineWallpaperVariant& first_image = matches->first_match;
-  DCHECK(IsSuitableOnlineWallpaperVariant(first_image, request->checkpoint));
+  DCHECK(IsSuitableOnlineWallpaperVariant(first_image, request->mode));
 
   std::move(callback).Run(ash::OnlineWallpaperParams{
       request->account_id, first_image.asset_id, first_image.raw_url,

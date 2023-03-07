@@ -15,7 +15,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/image_downloader.h"
-#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -30,7 +29,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
@@ -536,6 +534,13 @@ void DownloadGooglePhotosImage(
   ImageDownloader::Get()->Download(url_with_dimensions,
                                    kDownloadGooglePhotoTrafficAnnotation,
                                    account_id, headers, std::move(callback));
+}
+
+// Returns an appropriate ColorMode value based on the Light/Dark mode state.
+OnlineWallpaperVariantInfoFetcher::ColorMode GetColorMode() {
+  return Shell::Get()->dark_light_mode_controller()->IsDarkModeEnabled()
+             ? OnlineWallpaperVariantInfoFetcher::ColorMode::kDarkMode
+             : OnlineWallpaperVariantInfoFetcher::ColorMode::kLightMode;
 }
 
 }  // namespace
@@ -1616,14 +1621,14 @@ void WallpaperControllerImpl::OnShellInitialized() {
   auto* shell = Shell::Get();
   shell->tablet_mode_controller()->AddObserver(this);
   shell->overview_controller()->AddObserver(this);
-  shell->dark_light_mode_controller()->AddCheckpointObserver(this);
+  shell->dark_light_mode_controller()->AddObserver(this);
 }
 
 void WallpaperControllerImpl::OnShellDestroying() {
   auto* shell = Shell::Get();
   shell->tablet_mode_controller()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
-  shell->dark_light_mode_controller()->RemoveCheckpointObserver(this);
+  shell->dark_light_mode_controller()->RemoveObserver(this);
 }
 
 void WallpaperControllerImpl::OnWallpaperResized() {
@@ -1707,12 +1712,9 @@ void WallpaperControllerImpl::OnTabletModeEnded() {
   RepaintWallpaper();
 }
 
-void WallpaperControllerImpl::OnCheckpointChanged(
-    const ScheduledFeature* src,
-    const ScheduleCheckpoint new_checkpoint) {
-  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+void WallpaperControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted())
     return;
-  }
   AccountId account_id = GetActiveAccountId();
   WallpaperInfo local_info;
   if (!pref_manager_->GetLocalWallpaperInfo(account_id, &local_info))
@@ -3006,9 +3008,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
       // Fetch can fail if wallpaper_controller_client has been cleared or
       // |info| is malformed.
       if (!variant_info_fetcher_->FetchDailyWallpaper(
-              account_id, info,
-              Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
-              std::move(fetch_callback))) {
+              account_id, info, GetColorMode(), std::move(fetch_callback))) {
         // Could not start fetch of wallpaper variants. Likely because the
         // chrome client isn't ready. Schedule for later.
         NOTREACHED() << "Failed to initiate daily wallpaper fetch";
@@ -3205,9 +3205,7 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
                      weak_factory_.GetWeakPtr(), info.type,
                      /*start_daily_refresh_timer=*/true, base::DoNothing());
   if (!variant_info_fetcher_->FetchDailyWallpaper(
-          account_id, info,
-          Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
-          std::move(callback))) {
+          account_id, info, GetColorMode(), std::move(callback))) {
     NOTREACHED() << "Fetch of daily wallpaper info failed.";
   }
 }
@@ -3259,10 +3257,8 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
                      weak_factory_.GetWeakPtr(), info.type,
                      /*start_daily_refresh_timer=*/false, base::DoNothing());
 
-  variant_info_fetcher_->FetchOnlineWallpaper(
-      account_id, info,
-      Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
-      std::move(callback));
+  variant_info_fetcher_->FetchOnlineWallpaper(account_id, info, GetColorMode(),
+                                              std::move(callback));
 }
 
 void WallpaperControllerImpl::CleanUpBeforeSettingUserWallpaperInfo(
