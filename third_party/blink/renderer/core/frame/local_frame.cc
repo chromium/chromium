@@ -2087,17 +2087,29 @@ void LocalFrame::WasShown() {
   }
 }
 
-bool LocalFrame::ClipsContent() const {
+bool LocalFrame::ClipsContent(ScrollbarDisableReason* out_reason) const {
   // A paint preview shouldn't clip to the viewport. Each frame paints to a
   // separate canvas in full to allow scrolling.
-  if (GetDocument()->GetPaintPreviewState() != Document::kNotPaintingPreview)
+  if (GetDocument()->GetPaintPreviewState() != Document::kNotPaintingPreview) {
+    if (out_reason) {
+      *out_reason = ScrollbarDisableReason::kPaintPreview;
+    }
     return false;
+  }
 
-  if (ShouldUsePrintingLayout())
+  if (ShouldUsePrintingLayout()) {
+    if (out_reason) {
+      *out_reason = ScrollbarDisableReason::kPrinting;
+    }
     return false;
+  }
 
-  if (IsOutermostMainFrame())
-    return GetSettings()->GetMainFrameClipsContent();
+  if (IsOutermostMainFrame() && !GetSettings()->GetMainFrameClipsContent()) {
+    if (out_reason) {
+      *out_reason = ScrollbarDisableReason::kMainFrameClipsContentFalse;
+    }
+    return false;
+  }
   // By default clip to viewport.
   return true;
 }

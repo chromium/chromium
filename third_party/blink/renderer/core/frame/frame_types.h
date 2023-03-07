@@ -32,6 +32,21 @@
 namespace blink {
 
 enum class ClientRedirectPolicy { kNotClientRedirect, kClientRedirect };
+
+// Used for tracing LayoutView::CalculateScrollbarModes.
+enum class ScrollbarDisableReason {
+  kAutosizeMode = 0,
+  kNullDomWindow,
+  kNullFrame,
+  kPaintPreview,
+  kPrinting,
+  kMainFrameClipsContentFalse,
+  kIframeScrollingNo,
+  kFrameSet,
+  kFrameViewCanHaveScrollbarsFalse,
+  kSVGRoot,
+  kOverflowHidden
+};
 }
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_TYPES_H_
