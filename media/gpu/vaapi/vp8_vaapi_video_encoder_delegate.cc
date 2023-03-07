@@ -17,6 +17,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.h"
 
 namespace media {
@@ -421,14 +422,26 @@ BitstreamBufferMetadata VP8VaapiVideoEncoderDelegate::GetMetadata(
 }
 
 void VP8VaapiVideoEncoderDelegate::BitrateControlUpdate(
-    uint64_t encoded_chunk_size_bytes) {
+    const BitstreamBufferMetadata& metadata) {
   if (!rate_ctrl_) {
     DLOG(ERROR) << __func__ << "() is called when no bitrate controller exists";
     return;
   }
 
-  DVLOGF(4) << "|encoded_chunk_size_bytes|=" << encoded_chunk_size_bytes;
-  rate_ctrl_->PostEncodeUpdate(encoded_chunk_size_bytes);
+  DVLOGF(4) << "temporal_idx="
+            << (metadata.vp8 ? metadata.vp8->temporal_idx : 0)
+            << ", encoded chunk size=" << metadata.payload_size_bytes;
+
+  libvpx::VP8FrameParamsQpRTC frame_params{};
+  frame_params.frame_type = metadata.key_frame
+                                ? libvpx::RcFrameType::kKeyFrame
+                                : libvpx::RcFrameType::kInterFrame;
+  if (metadata.vp8) {
+    frame_params.temporal_layer_id =
+        base::saturated_cast<int>(metadata.vp8->temporal_idx);
+  }
+
+  rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
 }
 
 bool VP8VaapiVideoEncoderDelegate::UpdateRates(
@@ -513,8 +526,8 @@ void VP8VaapiVideoEncoderDelegate::SetFrameHeader(
   }
 
   libvpx::VP8FrameParamsQpRTC frame_params{};
-  frame_params.frame_type =
-      keyframe ? FRAME_TYPE::KEY_FRAME : FRAME_TYPE::INTER_FRAME;
+  frame_params.frame_type = keyframe ? libvpx::RcFrameType::kKeyFrame
+                                     : libvpx::RcFrameType::kInterFrame;
   frame_params.temporal_layer_id =
       picture.metadata_for_encoding.has_value()
           ? picture.metadata_for_encoding->temporal_idx

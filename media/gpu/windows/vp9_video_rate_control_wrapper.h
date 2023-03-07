@@ -24,6 +24,10 @@ template <>
 int VP9RateControl::GetLoopfilterLevel() const;
 
 template <>
+void VP9RateControl::PostEncodeUpdate(uint64_t encoded_frame_size,
+                                      const FrameParams& frame_params);
+
+template <>
 libvpx::VP9RateControlRtcConfig VP9RateControl::ConvertControlConfig(
     const RateControlConfig& config);
 

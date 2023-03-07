@@ -188,10 +188,11 @@ class VaapiVideoEncoderDelegate {
   // run them.
   virtual bool PrepareEncodeJob(EncodeJob& encode_job) = 0;
 
-  // Notifies the encoded chunk size in bytes to update a bitrate controller in
+  // Notifies the encoded chunk size in bytes with layers info through
+  // BitstreamBufferMetadata to update a bitrate controller in
   // VaapiVideoEncoderDelegate. This should be called only if constant
   // quantization encoding is used, which currently is true for VP8 and VP9.
-  virtual void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes);
+  virtual void BitrateControlUpdate(const BitstreamBufferMetadata& metadata);
 };
 }  // namespace media
 
