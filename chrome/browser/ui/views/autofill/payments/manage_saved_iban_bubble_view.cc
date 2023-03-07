@@ -97,6 +97,9 @@ void ManageSavedIbanBubbleView::Init() {
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
   SetID(DialogViewId::MAIN_CONTENT_VIEW_LOCAL);
+  SetProperty(views::kMarginsKey, gfx::Insets());
+  const int row_height = views::style::GetLineHeight(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   views::TableLayout* layout =
       SetLayoutManager(std::make_unique<views::TableLayout>());
   layout
@@ -110,8 +113,12 @@ void ManageSavedIbanBubbleView::Init() {
       .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kCenter, 1.0,
                  views::TableLayout::ColumnSize::kFixed, 0, 0)
-      // Add a row for IBAN label and the value of IBAN.
-      .AddRows(1, views::TableLayout::kFixedSize);
+      // Add a row for IBAN label and the value of IBAN. It might happen that
+      // the revealed IBAN value is too long to fit in a single line while the
+      // obscured IBAN value can fit in one line, so fix the height to fit both
+      // cases so toggling visibility does not change the bubble's overall
+      // height.
+      .AddRows(1, views::TableLayout::kFixedSize, row_height * 2);
 
   AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_LABEL),

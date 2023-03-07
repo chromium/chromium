@@ -10,6 +10,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
@@ -20,16 +21,18 @@ ObscurableLabelWithToggleButton::ObscurableLabelWithToggleButton(
     const std::u16string& toggle_button_tooltip,
     const std::u16string& toggle_button_toggled_tooltip)
     : obscured_value_(obscured_value), revealed_value_(revealed_value) {
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
+  SetBetweenChildSpacing(
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
   value_ = AddChildView(std::make_unique<views::Label>(
       obscured_value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY));
-  // TODO(crbug.com/1349109): Revisit how the value will be shown if it's too
-  // long.
   value_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kScaleToMaximum));
   value_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  value_->SetMultiLine(true);
 
   toggle_obscured_ = AddChildView(std::make_unique<views::ToggleImageButton>(
       base::BindRepeating(&ObscurableLabelWithToggleButton::ToggleValueObscured,

@@ -65,8 +65,8 @@ void SaveIbanBubbleView::AddedToWidget() {
 
   GetBubbleFrameView()->SetHeaderView(
       std::make_unique<ThemeTrackingNonAccessibleImageView>(
-          *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_SECURELY),
-          *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_SECURELY_DARK),
+          *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
+          *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
           base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                               base::Unretained(this))));
 
@@ -90,14 +90,15 @@ void SaveIbanBubbleView::WindowClosing() {
 SaveIbanBubbleView::~SaveIbanBubbleView() = default;
 
 void SaveIbanBubbleView::CreateMainContentView() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
-  auto* iban_view = AddChildView(std::make_unique<views::BoxLayoutView>());
-  iban_view->SetID(DialogViewId::MAIN_CONTENT_VIEW_LOCAL);
+  SetID(DialogViewId::MAIN_CONTENT_VIEW_LOCAL);
+  SetProperty(views::kMarginsKey, gfx::Insets());
+  const int row_height = views::style::GetLineHeight(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   views::TableLayout* layout =
-      iban_view->SetLayoutManager(std::make_unique<views::TableLayout>());
+      SetLayoutManager(std::make_unique<views::TableLayout>());
+
   layout
       ->AddColumn(views::LayoutAlignment::kStart,
                   views::LayoutAlignment::kCenter,
@@ -109,20 +110,24 @@ void SaveIbanBubbleView::CreateMainContentView() {
       .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kStretch, 1.0,
                  views::TableLayout::ColumnSize::kFixed, 0, 0)
-      // Add a row for IBAN label and the value of IBAN.
-      .AddRows(1, views::TableLayout::kFixedSize)
+      // Add a row for IBAN label and the value of IBAN. It might happen that
+      // the revealed IBAN value is too long to fit in a single line while the
+      // obscured IBAN value can fit in one line, so fix the height to fit both
+      // cases so toggling visibility does not change the bubble's overall
+      // height.
+      .AddRows(1, views::TableLayout::kFixedSize, row_height * 2)
       .AddPaddingRow(views::TableLayout::kFixedSize,
                      ChromeLayoutProvider::Get()->GetDistanceMetric(
-                         DISTANCE_CONTROL_LIST_VERTICAL))
+                         views::DISTANCE_RELATED_CONTROL_VERTICAL))
       // Add a row for nickname label and the input text field.
       .AddRows(1, views::TableLayout::kFixedSize);
 
-  iban_view->AddChildView(std::make_unique<views::Label>(
+  AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_LABEL),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
 
   iban_value_and_toggle_ =
-      iban_view->AddChildView(std::make_unique<ObscurableLabelWithToggleButton>(
+      AddChildView(std::make_unique<ObscurableLabelWithToggleButton>(
           controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
               /*is_value_masked=*/true),
           controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
@@ -130,11 +135,10 @@ void SaveIbanBubbleView::CreateMainContentView() {
           l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_SHOW_VALUE),
           l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_HIDE_VALUE)));
 
-  iban_view->AddChildView(std::make_unique<views::Label>(
+  AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-  nickname_textfield_ =
-      iban_view->AddChildView(std::make_unique<views::Textfield>());
+  nickname_textfield_ = AddChildView(std::make_unique<views::Textfield>());
   nickname_textfield_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME));
   nickname_textfield_->SetTextInputType(
