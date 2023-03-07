@@ -337,9 +337,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // damaged, skip the rendering.
   const bool allow_undamaged_nonroot_render_pass_to_skip_;
 
-  // Whether it's valid to SwapBuffers with an empty rect. Trivially true when
-  // using partial swap.
-  bool allow_empty_swap_ = false;
   // Whether partial swap can be used.
   bool use_partial_swap_ = false;
 

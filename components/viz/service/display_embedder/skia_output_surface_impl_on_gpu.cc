@@ -2096,19 +2096,11 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     output_device_->SchedulePrimaryPlane(output_surface_plane_);
 
     if (frame->sub_buffer_rect) {
-      if (capabilities().supports_post_sub_buffer) {
-        output_device_->PostSubBuffer(*frame->sub_buffer_rect,
-                                      buffer_presented_callback_,
-                                      std::move(*frame));
+      DCHECK(capabilities().supports_post_sub_buffer);
+      output_device_->PostSubBuffer(*frame->sub_buffer_rect,
+                                    buffer_presented_callback_,
+                                    std::move(*frame));
 
-      } else if (capabilities().supports_commit_overlay_planes) {
-        // CommitOverlayPlanes() can only be used for empty swap.
-        DCHECK(frame->sub_buffer_rect->IsEmpty());
-        output_device_->CommitOverlayPlanes(buffer_presented_callback_,
-                                            std::move(*frame));
-      } else {
-        NOTREACHED();
-      }
     } else {
       output_device_->SwapBuffers(buffer_presented_callback_,
                                   std::move(*frame));

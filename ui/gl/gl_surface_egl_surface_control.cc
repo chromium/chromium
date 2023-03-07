@@ -396,10 +396,6 @@ bool GLSurfaceEGLSurfaceControl::SupportsPlaneGpuFences() const {
   return true;
 }
 
-bool GLSurfaceEGLSurfaceControl::SupportsCommitOverlayPlanes() {
-  return true;
-}
-
 void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback,

@@ -63,7 +63,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
                gfx::FrameData data) override;
 
   bool SupportsPlaneGpuFences() const override;
-  bool SupportsCommitOverlayPlanes() override;
   void SetFrameRate(float frame_rate) override;
   void SetChoreographerVsyncIdForNextFrame(
       absl::optional<int64_t> choreographer_vsync_id) override;

@@ -115,7 +115,6 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
     capabilities_.supports_two_yuv_hardware_overlays = true;
   }
-  capabilities_.supports_commit_overlay_planes = false;
   capabilities_.supports_gpu_vsync = true;
   capabilities_.supports_dc_layers = true;
 
@@ -417,9 +416,7 @@ SkiaOutputDeviceDCompPresenter::SkiaOutputDeviceDCompPresenter(
       shared_image_factory_(shared_image_factory) {
   DCHECK(presenter_);
   DCHECK(presenter_->SupportsGpuVSync());
-  DCHECK(!presenter_->SupportsCommitOverlayPlanes());
 
-  capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps = 1;
 }

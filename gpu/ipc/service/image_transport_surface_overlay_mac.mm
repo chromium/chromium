@@ -206,10 +206,6 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
                      std::move(presentation_callback), feedback));
 }
 
-bool ImageTransportSurfaceOverlayMacEGL::SupportsCommitOverlayPlanes() {
-  return true;
-}
-
 bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
     gl::OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,

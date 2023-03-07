@@ -19,10 +19,6 @@ namespace gl {
 Presenter::Presenter() = default;
 Presenter::~Presenter() = default;
 
-bool Presenter::SupportsCommitOverlayPlanes() {
-  return false;
-}
-
 bool Presenter::SupportsOverridePlatformSize() const {
   return false;
 }

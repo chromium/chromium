@@ -48,8 +48,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
 
-  // TODO(vasilyt): Remove this.
-  bool SupportsCommitOverlayPlanes() override;
   bool ScheduleOverlayPlane(
       gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,

@@ -128,7 +128,6 @@ class NoopDCompPresenter : public gl::Presenter {
   NoopDCompPresenter() = default;
 
   bool SupportsGpuVSync() const override { return true; }
-  bool SupportsCommitOverlayPlanes() override { return false; }
   bool SupportsDelegatedInk() override { return false; }
 
   bool SetDrawRectangle(const gfx::Rect& rectangle) override { return true; }

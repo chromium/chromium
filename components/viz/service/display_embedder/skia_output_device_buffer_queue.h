@@ -47,8 +47,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   void PostSubBuffer(const gfx::Rect& rect,
                      BufferPresentedCallback feedback,
                      OutputSurfaceFrame frame) override;
-  void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                           OutputSurfaceFrame frame) override;
   bool Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
                float device_scale_factor,

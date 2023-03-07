@@ -139,8 +139,6 @@ void OutputPresenterGL::InitializeCapabilities(
     OutputSurface::Capabilities* capabilities) {
   capabilities->android_surface_control_feature_enabled = true;
   capabilities->supports_post_sub_buffer = true;
-  capabilities->supports_commit_overlay_planes =
-      presenter_->SupportsCommitOverlayPlanes();
   capabilities->supports_viewporter = presenter_->SupportsViewporter();
 
   // Set supports_surfaceless to enable overlays.

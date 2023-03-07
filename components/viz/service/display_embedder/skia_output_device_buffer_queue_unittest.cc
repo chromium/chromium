@@ -430,8 +430,8 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
   }
 
   void CommitOverlayPlanes() {
-    output_device_->CommitOverlayPlanes(base::DoNothing(),
-                                        OutputSurfaceFrame());
+    output_device_->PostSubBuffer(gfx::Rect(), base::DoNothing(),
+                                  OutputSurfaceFrame());
   }
 
   void PageFlipComplete() { presenter_->SwapComplete(); }

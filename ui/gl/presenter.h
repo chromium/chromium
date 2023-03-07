@@ -77,7 +77,6 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
 
   Presenter();
 
-  virtual bool SupportsCommitOverlayPlanes();
   virtual bool SupportsOverridePlatformSize() const;
   virtual bool SupportsViewporter() const;
   virtual bool SupportsPlaneGpuFences() const;

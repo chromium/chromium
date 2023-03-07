@@ -132,8 +132,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   virtual void PostSubBuffer(const gfx::Rect& rect,
                              BufferPresentedCallback feedback,
                              OutputSurfaceFrame frame);
-  virtual void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                                   OutputSurfaceFrame frame);
   virtual bool EnsureMinNumberOfBuffers(size_t n);
 
   // Set the rectangle that will be drawn into on the surface.
