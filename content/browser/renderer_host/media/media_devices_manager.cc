@@ -658,6 +658,13 @@ blink::WebMediaDeviceInfoArray MediaDevicesManager::GetCachedDeviceInfo(
   return current_snapshot_[static_cast<size_t>(type)];
 }
 
+void MediaDevicesManager::RegisterDispatcherHost(
+    std::unique_ptr<blink::mojom::MediaDevicesDispatcherHost> dispatcher_host,
+    mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  dispatcher_hosts_.Add(std::move(dispatcher_host), std::move(receiver));
+}
+
 void MediaDevicesManager::SetPermissionChecker(
     std::unique_ptr<MediaDevicesPermissionChecker> permission_checker) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

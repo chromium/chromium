@@ -25,6 +25,7 @@
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
@@ -147,6 +148,13 @@ class CONTENT_EXPORT MediaDevicesManager
 
   const MediaDeviceSaltAndOriginCallback& salt_and_origin_callback() const {
     return salt_and_origin_callback_;
+  }
+
+  void RegisterDispatcherHost(
+      std::unique_ptr<blink::mojom::MediaDevicesDispatcherHost> dispatcher_host,
+      mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver);
+  size_t num_registered_dispatcher_hosts() const {
+    return dispatcher_hosts_.size();
   }
 
   // Used for testing only.
@@ -347,6 +355,9 @@ class CONTENT_EXPORT MediaDevicesManager
 
   std::map<uint32_t, EnumerationState> enumeration_states_;
   uint32_t next_enumeration_state_id_ = 0;
+
+  mojo::UniqueReceiverSet<blink::mojom::MediaDevicesDispatcherHost>
+      dispatcher_hosts_;
 
   base::WeakPtrFactory<MediaDevicesManager> weak_factory_{this};
 };
