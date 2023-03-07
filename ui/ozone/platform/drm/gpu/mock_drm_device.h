@@ -164,6 +164,7 @@ class MockDrmDevice : public DrmDevice {
     PlaneProperties& AddPlane(uint32_t crtc_id, uint32_t type);
     PlaneProperties& AddPlane(const std::vector<uint32_t>& crtc_ids,
                               uint32_t type);
+    bool HasResources() const;
 
     std::vector<CrtcProperties> crtc_properties;
     std::vector<ConnectorProperties> connector_properties;

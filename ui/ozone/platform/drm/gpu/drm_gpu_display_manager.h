@@ -79,6 +79,8 @@ class DrmGpuDisplayManager {
   void SetColorSpace(int64_t crtc_id, const gfx::ColorSpace& color_space);
 
  private:
+  friend class DrmGpuDisplayManagerTest;
+
   DrmDisplay* FindDisplay(int64_t display_id);
 
   // Notify ScreenManager of all the displays that were present before the
