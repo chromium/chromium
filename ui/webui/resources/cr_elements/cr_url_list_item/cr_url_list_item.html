@@ -76,9 +76,21 @@
     width: 16px;
   }
 
+  :host-context([chrome-refresh-2023]) #iconContainer {
+    background: var(--color-list-item-url-favicon-background,
+        var(--cr-fallback-color-neutral-container));
+  }
+
+  :host-context([chrome-refresh-2023]):host([is-folder_]) #iconContainer {
+    background: var(--color-list-item-folder-icon-background,
+        var(--cr-fallback-color-primary-container));
+    color: var(--color-list-item-folder-icon-foreground,
+        var(--cr-fallback-color-on-primary-container));
+  }
+
   :host-context([chrome-refresh-2023]):host([size=compact]) #iconContainer {
     height: 24px;
-    marign-inline-end: 8px;
+    margin-inline-end: 8px;
     width: 24px;
   }
 
@@ -111,6 +123,7 @@
   }
 
   .folder {
+    --cr-icon-color: currentColor;
     height: 16px;
     margin: 0;
     width: 16px;

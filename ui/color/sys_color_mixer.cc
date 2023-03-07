@@ -122,7 +122,7 @@ void AddSysColorMixer(ColorProvider* provider,
                                             : kColorRefPrimary80};
   mixer[kColorSysNeutralOutline] = {dark_mode ? kColorRefNeutral50
                                               : kColorRefNeutral80};
-  mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutral17
+  mixer[kColorSysNeutralContainer] = {dark_mode ? kColorRefNeutral15
                                                 : kColorRefNeutral95};
 
   // Chrome surfaces.

@@ -71,6 +71,7 @@
   E_CPONLY(kColorRefNeutral6) \
   E_CPONLY(kColorRefNeutral10) \
   E_CPONLY(kColorRefNeutral12) \
+  E_CPONLY(kColorRefNeutral15) \
   E_CPONLY(kColorRefNeutral17) \
   E_CPONLY(kColorRefNeutral20) \
   E_CPONLY(kColorRefNeutral22) \
@@ -278,6 +279,9 @@
   E_CPONLY(kColorLinkForeground) \
   E_CPONLY(kColorLinkForegroundDisabled) \
   E_CPONLY(kColorLinkForegroundPressed) \
+  E_CPONLY(kColorListItemFolderIconBackground) \
+  E_CPONLY(kColorListItemFolderIconForeground) \
+  E_CPONLY(kColorListItemUrlFaviconBackground) \
   E_CPONLY(kColorLiveCaptionBubbleBackgroundDefault) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIcon) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIconDisabled) \
