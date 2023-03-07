@@ -2027,8 +2027,9 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
 
   // An Animation with zero playback rate will produce no visual output, so
   // there is no reason to composite it.
-  if (EffectivePlaybackRate() == 0)
+  if (IsWithinAnimationTimeEpsilon(0, EffectivePlaybackRate())) {
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+  }
 
   // Animation times with large magnitudes cannot be accurately reflected by
   // TimeTicks. These animations will stall, be finished next frame, or
