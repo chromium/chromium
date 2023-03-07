@@ -174,9 +174,10 @@
           on-click="onBulkEditClicked_"></cr-icon-button>
     </sp-heading>
 
-    <div id="bookmarks" class="bookmarks" hidden="[[!shownBookmarks_.length]]"
+    <div id="bookmarks" class="bookmarks"
+        hidden="[[!shownBookmarks_.length]]"
         role="[[getBookmarksListRole_(editing_)]]"
-        aria-multiselectable="[[editing_]]">
+        aria-multiselectable="[[editing_]]" scrollable>
       <iron-list id="shownBookmarksIronList"
           items="[[shownBookmarks_]]" scroll-target="bookmarks">
         <template>
