@@ -5,6 +5,7 @@ include_rules = [
   "+components/headless",
   "+components/os_crypt",
   "+components/services/print_compositor/public",
+  "+components/version_info/version_info.h",
   "+content/public/app",
   "+content/public/browser",
   "+content/public/renderer",

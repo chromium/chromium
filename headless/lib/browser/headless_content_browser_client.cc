@@ -319,6 +319,10 @@ std::string HeadlessContentBrowserClient::GetUserAgent() {
   return browser_->options()->user_agent;
 }
 
+blink::UserAgentMetadata HeadlessContentBrowserClient::GetUserAgentMetadata() {
+  return HeadlessBrowser::GetUserAgentMetadata();
+}
+
 void HeadlessContentBrowserClient::BindBadgeService(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
