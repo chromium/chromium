@@ -10113,9 +10113,8 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10149,9 +10148,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportBiddingDuration) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders,
@@ -10188,8 +10186,7 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetAllSellerCapabilities(
-              blink::InterestGroup::SellerCapabilities::kLatencyStats)
+          .SetAllSellerCapabilities(blink::SellerCapabilities::kLatencyStats)
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10226,9 +10223,8 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10265,9 +10261,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportInfiniteScale) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10301,9 +10296,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportNaNScale) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10337,9 +10331,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportNegativeScale) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10374,9 +10367,8 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10434,9 +10426,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersNoReportBuyerKeys) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10461,9 +10452,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersNoReportBuyers) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10494,9 +10484,8 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(bidders, {kTrustedSignalsFetchDuration});
@@ -10529,9 +10518,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportMultipleBidders) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
   bidders.emplace_back(MakeInterestGroup(
       blink::TestInterestGroupBuilder(kBidder2, kBidder2Name)
@@ -10540,9 +10528,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportMultipleBidders) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(
@@ -10590,9 +10577,8 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
   bidders.emplace_back(MakeInterestGroup(
       blink::TestInterestGroupBuilder(kBidder2, kBidder2Name)
@@ -10601,9 +10587,8 @@ TEST_F(AuctionRunnerTest,
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities(
-              {{{url::Origin::Create(kSellerUrl),
-                 blink::InterestGroup::SellerCapabilities::kLatencyStats}}})
+          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
+                                    blink::SellerCapabilities::kLatencyStats}}})
           .Build()));
 
   RunExtendedPABuyersAuction(
@@ -10641,9 +10626,9 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportBidCount) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
-                                    blink::InterestGroup::SellerCapabilities::
-                                        kInterestGroupCounts}}})
+          .SetSellerCapabilities(
+              {{{url::Origin::Create(kSellerUrl),
+                 blink::SellerCapabilities::kInterestGroupCounts}}})
           .Build()));
   bidders.emplace_back(MakeInterestGroup(
       blink::TestInterestGroupBuilder(kBidder2, kBidder2Name)
@@ -10652,9 +10637,9 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportBidCount) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
-                                    blink::InterestGroup::SellerCapabilities::
-                                        kInterestGroupCounts}}})
+          .SetSellerCapabilities(
+              {{{url::Origin::Create(kSellerUrl),
+                 blink::SellerCapabilities::kInterestGroupCounts}}})
           .Build()));
 
   RunExtendedPABuyersAuction(
@@ -10697,9 +10682,9 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportInterestGroupCount) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
-                                    blink::InterestGroup::SellerCapabilities::
-                                        kInterestGroupCounts}}})
+          .SetSellerCapabilities(
+              {{{url::Origin::Create(kSellerUrl),
+                 blink::SellerCapabilities::kInterestGroupCounts}}})
           .Build()));
   bidders.emplace_back(MakeInterestGroup(
       blink::TestInterestGroupBuilder(kBidder2, kBidder2Name)
@@ -10708,9 +10693,9 @@ TEST_F(AuctionRunnerTest, PrivateAggregationBuyersReportInterestGroupCount) {
           .SetTrustedBiddingSignalsKeys({{"k1", "k2"}})
           .SetAds({{blink::InterestGroup::Ad(GURL("https://ad1.com"),
                                              absl::nullopt)}})
-          .SetSellerCapabilities({{{url::Origin::Create(kSellerUrl),
-                                    blink::InterestGroup::SellerCapabilities::
-                                        kInterestGroupCounts}}})
+          .SetSellerCapabilities(
+              {{{url::Origin::Create(kSellerUrl),
+                 blink::SellerCapabilities::kInterestGroupCounts}}})
           .Build()));
 
   RunExtendedPABuyersAuction(

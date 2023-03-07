@@ -86,15 +86,14 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetPrioritySignalsOverrides(
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetSellerCapabilities(
-    absl::optional<
-        base::flat_map<url::Origin, InterestGroup::SellerCapabilitiesType>>
+    absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
         seller_capabilities) {
   interest_group_.seller_capabilities = std::move(seller_capabilities);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetAllSellerCapabilities(
-    InterestGroup::SellerCapabilitiesType all_sellers_capabilities) {
+    SellerCapabilitiesType all_sellers_capabilities) {
   interest_group_.all_sellers_capabilities =
       std::move(all_sellers_capabilities);
   return *this;

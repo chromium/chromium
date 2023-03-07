@@ -176,24 +176,21 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (!maybe_dict->is_dict())
     return false;
 
-  std::vector<
-      std::pair<url::Origin, blink::InterestGroup::SellerCapabilitiesType>>
+  std::vector<std::pair<url::Origin, blink::SellerCapabilitiesType>>
       seller_capabilities_vec;
   for (const std::pair<const std::string&, const base::Value&> pair :
        maybe_dict->GetDict()) {
     if (!pair.second.is_list())
       return false;
-    blink::InterestGroup::SellerCapabilitiesType capabilities;
+    blink::SellerCapabilitiesType capabilities;
     for (const base::Value& maybe_capability : pair.second.GetList()) {
       if (!maybe_capability.is_string())
         return false;
       const std::string& capability = maybe_capability.GetString();
       if (capability == "interestGroupCounts") {
-        capabilities.Put(
-            blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+        capabilities.Put(blink::SellerCapabilities::kInterestGroupCounts);
       } else if (capability == "latencyStats") {
-        capabilities.Put(
-            blink::InterestGroup::SellerCapabilities::kLatencyStats);
+        capabilities.Put(blink::SellerCapabilities::kLatencyStats);
       } else {
         return false;
       }

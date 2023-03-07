@@ -42,11 +42,10 @@ class TestInterestGroupBuilder {
       absl::optional<base::flat_map<std::string, double>>
           priority_signals_overrides);
   TestInterestGroupBuilder& SetSellerCapabilities(
-      absl::optional<
-          base::flat_map<url::Origin, InterestGroup::SellerCapabilitiesType>>
+      absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
           seller_capabilities);
   TestInterestGroupBuilder& SetAllSellerCapabilities(
-      InterestGroup::SellerCapabilitiesType all_sellers_capabilities);
+      SellerCapabilitiesType all_sellers_capabilities);
   TestInterestGroupBuilder& SetExecutionMode(
       InterestGroup::ExecutionMode execution_mode);
   TestInterestGroupBuilder& SetBiddingUrl(absl::optional<GURL> bidding_url);

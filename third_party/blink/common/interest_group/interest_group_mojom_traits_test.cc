@@ -134,17 +134,17 @@ TEST(InterestGroupMojomTraitsTest,
   InterestGroup interest_group = CreateInterestGroup();
 
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kInterestGroupCounts);
+      SellerCapabilities::kInterestGroupCounts);
   SerializeAndDeserializeAndCompare(interest_group);
 
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kLatencyStats);
+      SellerCapabilities::kLatencyStats);
   SerializeAndDeserializeAndCompare(interest_group);
 
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kInterestGroupCounts);
+      SellerCapabilities::kInterestGroupCounts);
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kLatencyStats);
+      SellerCapabilities::kLatencyStats);
   SerializeAndDeserializeAndCompare(interest_group);
 }
 

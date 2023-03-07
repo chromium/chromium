@@ -195,7 +195,7 @@ static const char* ScoreAdTraceEventName(const InterestGroupAuction::Bid& bid) {
 // `interest_group`'s seller capabilities has authorized `capability` for
 // `seller`.
 bool CanReportPaBuyersValue(const blink::InterestGroup& interest_group,
-                            blink::InterestGroup::SellerCapabilities capability,
+                            blink::SellerCapabilities capability,
                             const url::Origin& seller) {
   if (interest_group.seller_capabilities) {
     auto it = interest_group.seller_capabilities->find(seller);
@@ -1748,7 +1748,7 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
 
 bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
     const blink::InterestGroup& interest_group,
-    blink::InterestGroup::SellerCapabilities capability,
+    blink::SellerCapabilities capability,
     blink::AuctionConfig::NonSharedParams::BuyerReportType buyer_report_type,
     int value) {
   if (!CanReportPaBuyersValue(interest_group, capability, config_->seller)) {
@@ -1990,8 +1990,7 @@ bool InterestGroupAuction::ReportInterestGroupCount(
     const blink::InterestGroup& interest_group,
     size_t count) {
   return ReportPaBuyersValueIfAllowed(
-      interest_group,
-      blink::InterestGroup::SellerCapabilities::kInterestGroupCounts,
+      interest_group, blink::SellerCapabilities::kInterestGroupCounts,
       blink::AuctionConfig::NonSharedParams::BuyerReportType::
           kInterestGroupCount,
       count);
@@ -2001,29 +2000,28 @@ bool InterestGroupAuction::ReportBidCount(
     const blink::InterestGroup& interest_group,
     size_t count) {
   return ReportPaBuyersValueIfAllowed(
-      interest_group,
-      blink::InterestGroup::SellerCapabilities::kInterestGroupCounts,
+      interest_group, blink::SellerCapabilities::kInterestGroupCounts,
       blink::AuctionConfig::NonSharedParams::BuyerReportType::kBidCount, count);
 }
 
 void InterestGroupAuction::ReportTrustedSignalsFetchLatency(
     const blink::InterestGroup& interest_group,
     base::TimeDelta trusted_signals_fetch_latency) {
-  ReportPaBuyersValueIfAllowed(
-      interest_group, blink::InterestGroup::SellerCapabilities::kLatencyStats,
-      blink::AuctionConfig::NonSharedParams::BuyerReportType::
-          kTotalSignalsFetchLatency,
-      trusted_signals_fetch_latency.InMilliseconds());
+  ReportPaBuyersValueIfAllowed(interest_group,
+                               blink::SellerCapabilities::kLatencyStats,
+                               blink::AuctionConfig::NonSharedParams::
+                                   BuyerReportType::kTotalSignalsFetchLatency,
+                               trusted_signals_fetch_latency.InMilliseconds());
 }
 
 void InterestGroupAuction::ReportBiddingLatency(
     const blink::InterestGroup& interest_group,
     base::TimeDelta bidding_latency) {
-  ReportPaBuyersValueIfAllowed(
-      interest_group, blink::InterestGroup::SellerCapabilities::kLatencyStats,
-      blink::AuctionConfig::NonSharedParams::BuyerReportType::
-          kTotalGenerateBidLatency,
-      bidding_latency.InMilliseconds());
+  ReportPaBuyersValueIfAllowed(interest_group,
+                               blink::SellerCapabilities::kLatencyStats,
+                               blink::AuctionConfig::NonSharedParams::
+                                   BuyerReportType::kTotalGenerateBidLatency,
+                               bidding_latency.InMilliseconds());
 }
 
 base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
