@@ -206,7 +206,7 @@ class PrintContextFrameTest : public PrintContextTest {
 INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextTest);
 
 TEST_P(PrintContextTest, LinkTarget) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
       AbsoluteBlockHtmlForLink(50, 60, 70, 80, "http://www.google.com") +
       AbsoluteBlockHtmlForLink(150, 160, 170, 180,
@@ -224,7 +224,7 @@ TEST_P(PrintContextTest, LinkTarget) {
 
 TEST_P(PrintContextTest, LinkTargetUnderAnonymousBlockBeforeBlock) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML("<div style='padding-top: 50px'>" +
                    InlineHtmlForLink("http://www.google.com",
                                      "<img style='width: 111; height: 10'>") +
@@ -243,7 +243,7 @@ TEST_P(PrintContextTest, LinkTargetUnderAnonymousBlockBeforeBlock) {
 }
 
 TEST_P(PrintContextTest, LinkTargetContainingABlock) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
       "<div style='padding-top: 50px; width:555px;'>" +
       InlineHtmlForLink("http://www.google2.com",
@@ -262,7 +262,7 @@ TEST_P(PrintContextTest, LinkTargetContainingABlock) {
 }
 
 TEST_P(PrintContextTest, LinkTargetUnderInInlines) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
       "<span><b><i><img style='width: 40px; height: 40px'><br>" +
       InlineHtmlForLink("http://www.google3.com",
@@ -277,7 +277,7 @@ TEST_P(PrintContextTest, LinkTargetUnderInInlines) {
 }
 
 TEST_P(PrintContextTest, LinkTargetUnderInInlinesMultipleLines) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
       "<span><b><i><img style='width: 40px; height: 40px'><br>" +
       InlineHtmlForLink("http://www.google3.com",
@@ -293,7 +293,7 @@ TEST_P(PrintContextTest, LinkTargetUnderInInlinesMultipleLines) {
 }
 
 TEST_P(PrintContextTest, LinkTargetUnderInInlinesMultipleLinesCulledInline) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML("<span><b><i><br>" +
                    InlineHtmlForLink("http://www.google3.com", "xxx<br>xxx") +
                    "</i></b></span>");
@@ -319,7 +319,7 @@ TEST_P(PrintContextTest, LinkTargetRelativelyPositionedInline) {
 }
 
 TEST_P(PrintContextTest, LinkTargetUnderRelativelyPositionedInline) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
         + "<span style='position: relative; top: 50px; left: 50px'><b><i><img style='width: 1px; height: 40px'><br>"
         + InlineHtmlForLink("http://www.google3.com", "<img style='width: 155px; height: 50px'>")
@@ -334,7 +334,7 @@ TEST_P(PrintContextTest, LinkTargetUnderRelativelyPositionedInline) {
 
 TEST_P(PrintContextTest,
        LinkTargetUnderRelativelyPositionedInlineMultipleLines) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
         + "<span style='position: relative; top: 50px; left: 50px'><b><i><img style='width: 1px; height: 40px'><br>"
         + InlineHtmlForLink(
@@ -351,7 +351,7 @@ TEST_P(PrintContextTest,
 
 TEST_P(PrintContextTest,
        LinkTargetUnderRelativelyPositionedInlineMultipleLinesCulledInline) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
       +"<span style='position: relative; top: 50px; left: 50px'><b><i><br>" +
       InlineHtmlForLink("http://www.google3.com", "xxx<br>xxx") +
@@ -363,7 +363,7 @@ TEST_P(PrintContextTest,
 }
 
 TEST_P(PrintContextTest, LinkTargetSvg) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(R"HTML(
     <svg width='100' height='100'>
     <a xlink:href='http://www.w3.org'><rect x='20' y='20' width='50'
@@ -385,7 +385,7 @@ TEST_P(PrintContextTest, LinkTargetSvg) {
 }
 
 TEST_P(PrintContextTest, LinkedTarget) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   GetDocument().SetBaseURLOverride(KURL("http://a.com/"));
   // Careful about locations, the page is 800x600 and only one page is printed.
   SetBodyInnerHTML(
@@ -441,7 +441,7 @@ TEST_P(PrintContextTest, LinkedTarget) {
 }
 
 TEST_P(PrintContextTest, EmptyLinkedTarget) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   GetDocument().SetBaseURLOverride(KURL("http://a.com/"));
   SetBodyInnerHTML(AbsoluteBlockHtmlForLink(50, 60, 70, 80, "#fragment") +
                    HtmlForAnchor(250, 260, "fragment", ""));
@@ -457,7 +457,7 @@ TEST_P(PrintContextTest, EmptyLinkedTarget) {
 }
 
 TEST_P(PrintContextTest, LinkTargetBoundingBox) {
-  MockPageContextCanvas canvas;
+  testing::NiceMock<MockPageContextCanvas> canvas;
   SetBodyInnerHTML(
       AbsoluteBlockHtmlForLink(50, 60, 70, 20, "http://www.google.com",
                                "<img style='width: 200px; height: 100px'>"));
@@ -489,7 +489,7 @@ TEST_P(PrintContextTest, LinkInFragmentedContainer) {
     </div>
   )HTML");
 
-  MockPageContextCanvas first_page_canvas;
+  testing::NiceMock<MockPageContextCanvas> first_page_canvas;
   gfx::Rect page_rect = PrintSinglePage(first_page_canvas, 0);
   Vector<MockPageContextCanvas::Operation> operations =
       first_page_canvas.RecordedOperations();
@@ -502,7 +502,7 @@ TEST_P(PrintContextTest, LinkInFragmentedContainer) {
   EXPECT_GE(page1_link1.rect.y(), page_rect.height() - 90);
   EXPECT_LE(page1_link1.rect.bottom(), page_rect.height() - 40);
 
-  MockPageContextCanvas second_page_canvas;
+  testing::NiceMock<MockPageContextCanvas> second_page_canvas;
   page_rect = PrintSinglePage(second_page_canvas, 1);
   operations = second_page_canvas.RecordedOperations();
 
