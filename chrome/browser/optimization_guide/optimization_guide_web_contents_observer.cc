@@ -140,13 +140,19 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
           navigation_handle->GetRedirectChain()));
 }
 
+void OptimizationGuideWebContentsObserver::WebContentsDestroyed() {
+  // The web contents are being destroyed. Stop observing.
+  Observe(/*web_contents=*/nullptr);
+}
+
 void OptimizationGuideWebContentsObserver::PostFetchHintsUsingManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!web_contents()
-           ->GetPrimaryMainFrame()
-           ->GetLastCommittedURL()
-           .SchemeIsHTTPOrHTTPS())
+  if (!web_contents() || !web_contents()
+                              ->GetPrimaryMainFrame()
+                              ->GetLastCommittedURL()
+                              .SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   if (!optimization_guide_keyed_service_)
     return;
@@ -180,7 +186,6 @@ void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(
     std::unique_ptr<OptimizationGuideNavigationData> navigation_data,
     const std::vector<GURL>& navigation_redirect_chain) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   if (optimization_guide_keyed_service_) {
     optimization_guide_keyed_service_->OnNavigationFinish(
         navigation_redirect_chain);
@@ -190,12 +195,18 @@ void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(
   // happening for the navigation that can happen after commit, such as a fetch
   // for the navigation successfully completing (which is not guaranteed to come
   // back before commit, if at all).
+  if (!web_contents()) {
+    return;
+  }
   PageData& page_data = GetPageData(web_contents()->GetPrimaryPage());
   page_data.SetNavigationData(std::move(navigation_data));
 }
 
 void OptimizationGuideWebContentsObserver::FlushLastNavigationData() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!web_contents()) {
+    return;
+  }
   PageData& page_data = GetPageData(web_contents()->GetPrimaryPage());
   page_data.SetNavigationData(nullptr);
 }
