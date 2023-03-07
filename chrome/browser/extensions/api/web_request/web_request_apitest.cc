@@ -1042,7 +1042,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 // Tests redirects around workers. To test service workers, the HTTPS test
 // server is used.
 // TODO(crbug.com/1413434): test is flaky on linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1422191): test is flaky on Mac10.14.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_WebRequestRedirectsWorkers DISABLED_WebRequestRedirectsWorkers
 #else
 #define MAYBE_WebRequestRedirectsWorkers WebRequestRedirectsWorkers
