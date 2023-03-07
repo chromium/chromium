@@ -25,6 +25,15 @@ found in the LICENSE file.
                 <action android:name="org.chromium.weblayer.intent.action.BROWSERINPROCESS" />
             </intent-filter>
         </service>
+         <service android:name="org.chromium.weblayer.MediaSessionService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
+
+
 
       <meta-data android:name="org.chromium.weblayer.skipOriginVerification" android:value="false" />
       <meta-data android:name="org.chromium.weblayer.strictLocalhostVerification" android:value="true" />
