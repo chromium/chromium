@@ -10,6 +10,10 @@ from blinkpy.tool.commands.copy_existing_baselines import CopyExistingBaselines
 from blinkpy.web_tests.port.base import VirtualTestSuite
 
 
+# TODO(crbug.com/1376646): Migrate existing copy tests to
+# `baseline_copier_unittest.py` with optimizer-style assertions.
+
+
 class TestCopyExistingBaselines(BaseTestCase):
     command_constructor = CopyExistingBaselines
 
@@ -329,17 +333,3 @@ class TestCopyExistingBaselines(BaseTestCase):
                 self.baseline_path(
                     'platform/test-win-win10/virtual/linux-only/failures/expected/image-expected.txt'
                 )))
-
-    def test_port_for_primary_baseline(self):
-        # Testing a protected method - pylint: disable=protected-access
-        self.assertEqual(
-            self.command._port_for_primary_baseline('test-linux-trusty').
-            name(), 'test-linux-trusty')
-        self.assertEqual(
-            self.command._port_for_primary_baseline('test-mac-mac10.11').
-            name(), 'test-mac-mac10.11')
-
-    def test_port_for_primary_baseline_not_found(self):
-        # Testing a protected method - pylint: disable=protected-access
-        with self.assertRaises(Exception):
-            self.command._port_for_primary_baseline('test-foo-foo4.7')

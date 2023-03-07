@@ -135,10 +135,10 @@ class BaselineOptimizer:
         extension = '.' + suffix
 
         with _indent_log():
-            nonvirtual_test, virtual_tests = self._get_tests_to_optimize(
+            nonvirtual_test, virtual_tests = self.get_tests_to_optimize(
                 test_name)
             paths = list(
-                self._generate_search_paths(nonvirtual_test, virtual_tests))
+                self.generate_search_paths(nonvirtual_test, virtual_tests))
             baseline_name = self._default_port.output_filename(
                 nonvirtual_test, self._default_port.BASELINE_SUFFIX, extension)
             digests = self._digest(frozenset().union(*paths), baseline_name,
@@ -152,7 +152,7 @@ class BaselineOptimizer:
                 self._maybe_promote_root(root, predecessors, digests,
                                          baseline_name)
             for location in find_redundant_locations(paths, digests):
-                self._filesystem.remove(self._path(location, baseline_name))
+                self._filesystem.remove(self.path(location, baseline_name))
                 _log.debug('Removed %s (redundant)', location)
 
             _log.debug('Digests:')
@@ -162,7 +162,7 @@ class BaselineOptimizer:
                         _log.debug('%s -> %s', location, digests[location])
         return True
 
-    def _get_tests_to_optimize(self, test_name: str) -> Tuple[str, List[str]]:
+    def get_tests_to_optimize(self, test_name: str) -> Tuple[str, List[str]]:
         """Translate a test name into all associated tests to optimize.
 
         For convenience, we optimize nonvirtual and virtual tests together.
@@ -185,10 +185,10 @@ class BaselineOptimizer:
             virtual_tests.append(test_name)
         return nonvirtual_test, virtual_tests
 
-    def _generate_search_paths(
-            self,
-            nonvirtual_test: str,
-            virtual_tests: List[str],
+    def generate_search_paths(
+        self,
+        nonvirtual_test: str,
+        virtual_tests: List[str],
     ) -> Iterator[SearchPath]:
         """Generate search paths taken by each port on each provided test.
 
@@ -206,7 +206,7 @@ class BaselineOptimizer:
                 continue
             search_path = self._baseline_search_path(port)
             nonvirtual_locations = [
-                self._location(path) for path in search_path
+                self.location(path) for path in search_path
             ]
             yield nonvirtual_locations
             for virtual_test in virtual_tests:
@@ -214,7 +214,7 @@ class BaselineOptimizer:
                     skipped_ports_by_test[virtual_test].append(port)
                     continue
                 virtual_locations = [
-                    self._location(self._filesystem.join(path, virtual_test))
+                    self.location(self._filesystem.join(path, virtual_test))
                     for path in search_path
                 ]
                 yield virtual_locations + nonvirtual_locations
@@ -234,7 +234,7 @@ class BaselineOptimizer:
     def write_by_directory(self, results_by_directory, writer, indent):
         """Logs results_by_directory in a pretty format."""
         for path in sorted(results_by_directory):
-            writer('%s%s: %s' % (indent, self._location(path).platform
+            writer('%s%s: %s' % (indent, self.location(path).platform
                                  or '(generic)', results_by_directory[path]))
 
     def read_results_by_directory(self, test_name, baseline_name):
@@ -246,12 +246,12 @@ class BaselineOptimizer:
         locations = set()
         for port in self._ports.values():
             locations.update(
-                map(self._location, self._baseline_search_path(port)))
+                map(self.location, self._baseline_search_path(port)))
 
         digests = self._digest(locations, baseline_name,
                                self._is_reftest(test_name))
         return {
-            self._path(location, baseline_name): digest
+            self.path(location, baseline_name): digest
             for location, digest in digests.items()
         }
 
@@ -263,7 +263,7 @@ class BaselineOptimizer:
     ) -> DigestMap:
         digests = {}
         for location in locations:
-            path = self._path(location, baseline_name)
+            path = self.path(location, baseline_name)
             if self._filesystem.exists(path):
                 digests[location] = ResultDigest.from_file(
                     self._filesystem, path, is_reftest)
@@ -285,8 +285,8 @@ class BaselineOptimizer:
             # predecessors will be removed later in the redundant baseline
             # removal phase.
             predecessor, *_ = predecessors
-            source = self._path(predecessor, baseline_name)
-            dest = self._path(root, baseline_name)
+            source = self.path(predecessor, baseline_name)
+            dest = self.path(root, baseline_name)
             self._filesystem.maybe_make_directory(
                 self._filesystem.dirname(dest))
             self._filesystem.copyfile(source, dest)
@@ -299,11 +299,11 @@ class BaselineOptimizer:
             # Remove the root if it can never (and should never) be reached.
             # If at least one predecessor has the same digest, that
             # predecessor will be deleted later instead of the root.
-            self._filesystem.remove(self._path(root, baseline_name))
+            self._filesystem.remove(self.path(root, baseline_name))
             _log.debug('Removed %s (unreachable)', root)
 
     @memoized
-    def _path(self, location: BaselineLocation, baseline_name: str) -> str:
+    def path(self, location: BaselineLocation, baseline_name: str) -> str:
         """Build an absolute path from a baseline location and name.
 
         This is the inverse of `_location(...)`. The path has the format:
@@ -325,7 +325,7 @@ class BaselineOptimizer:
         return bool(self._default_port.reference_files(test_name))
 
     @memoized
-    def _location(self, filename: str) -> BaselineLocation:
+    def location(self, filename: str) -> BaselineLocation:
         """Guess a baseline location's parameters from a path.
 
         Arguments:
