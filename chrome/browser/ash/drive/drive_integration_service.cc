@@ -545,6 +545,10 @@ class DriveIntegrationService::DriveFsHolder
     }
     native_message_host_bridge_.Bind(std::move(bridge));
     native_message_host_bridge_.reset_on_disconnect();
+
+    if (pending_connect_to_extension_request_) {
+      std::move(pending_connect_to_extension_request_).Run();
+    }
   }
 
  private:
@@ -637,8 +641,18 @@ class DriveIntegrationService::DriveFsHolder
       override {
     if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
       if (!native_message_host_bridge_) {
-        std::move(callback).Run(
-            drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound);
+        // DriveFS only sends one ConnectToExtension request at a time, so if
+        // there is already an existing request, it means that DriveFS has
+        // restarted and we can just drop the previous request.
+        //
+        // Unretained is fine here because this callback is owned and only
+        // called by `this`.
+        pending_connect_to_extension_request_ = base::BindOnce(
+            &DriveFsHolder::ConnectToExtension, base::Unretained(this),
+            std::move(params), std::move(port), std::move(host),
+            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                std::move(callback),
+                drivefs::mojom::ExtensionConnectionStatus::kUnknownError));
         return;
       }
       native_message_host_bridge_->ConnectToExtension(
@@ -678,6 +692,7 @@ class DriveIntegrationService::DriveFsHolder
 
   mojo::Remote<crosapi::mojom::DriveFsNativeMessageHostBridge>
       native_message_host_bridge_;
+  base::OnceClosure pending_connect_to_extension_request_;
 };
 
 DriveIntegrationService::DriveIntegrationService(

@@ -676,15 +676,15 @@ class MockDriveFsNativeMessageHostBridge
 };
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTestLacros,
-                       ConnectToExtensionWithoutBridge) {
+                       ConnectToExtensionWithPendingRequest) {
   base::RunLoop run_loop;
+  base::RunLoop run_loop2;
 
   base::MockCallback<
       drivefs::mojom::DriveFsDelegate::ConnectToExtensionCallback>
       mock_callback;
-  EXPECT_CALL(
-      mock_callback,
-      Run(drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound))
+  EXPECT_CALL(mock_callback,
+              Run(drivefs::mojom::ExtensionConnectionStatus::kUnknownError))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> extension_port;
@@ -695,7 +695,41 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTestLacros,
       extension_port.InitWithNewPipeAndPassReceiver(),
       drivefs_host.InitWithNewPipeAndPassRemote(), mock_callback.Get());
 
+  // A second connection request should overwrite the first and force the first
+  // request to return an error.
+  base::MockCallback<
+      drivefs::mojom::DriveFsDelegate::ConnectToExtensionCallback>
+      mock_callback2;
+  EXPECT_CALL(mock_callback2,
+              Run(drivefs::mojom::ExtensionConnectionStatus::kSuccess))
+      .WillOnce(RunClosure(run_loop2.QuitClosure()));
+
+  mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> extension_port2;
+  mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost> drivefs_host2;
+  fake_drivefs->delegate()->ConnectToExtension(
+      drivefs::mojom::ExtensionConnectionParams::New("extension_id2"),
+      extension_port2.InitWithNewPipeAndPassReceiver(),
+      drivefs_host2.InitWithNewPipeAndPassRemote(), mock_callback2.Get());
+
   run_loop.Run();
+
+  // Registering the bridge should cause the second request to succeed.
+  MockDriveFsNativeMessageHostBridge mock_bridge;
+  EXPECT_CALL(mock_bridge, ConnectToExtension(_, _, _, _))
+      .WillOnce([](drivefs::mojom::ExtensionConnectionParamsPtr params, auto,
+                   auto,
+                   crosapi::mojom::DriveFsNativeMessageHostBridge::
+                       ConnectToExtensionCallback callback) {
+        EXPECT_EQ("extension_id2", params->extension_id);
+        std::move(callback).Run(
+            drivefs::mojom::ExtensionConnectionStatus::kSuccess);
+      });
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(profile());
+  drive_service->RegisterDriveFsNativeMessageHostBridge(
+      mock_bridge.receiver()->BindNewPipeAndPassRemote());
+
+  run_loop2.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTestLacros,
