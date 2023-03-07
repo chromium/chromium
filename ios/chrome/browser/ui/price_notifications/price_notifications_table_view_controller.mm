@@ -73,8 +73,12 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   // A boolean value that indicates that the loading state is currently being
   // displayed.
   BOOL _displayedLoadingState;
-
+  // Indicates whether the TableViewController's tableViewModel has been
+  // initialized.
   BOOL _hasModelBeenInitialized;
+  // Indicates whether the user has tracked an item over the TableView's life
+  // time.
+  BOOL _hasExecutedItemTracking;
 }
 
 #pragma mark - UIViewController
@@ -288,6 +292,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   TableViewModel* model = self.tableViewModel;
   SectionIdentifier trackableSectionID =
       SectionIdentifierTrackableItemsOnCurrentSite;
+  _hasExecutedItemTracking = YES;
 
   // This code removes the price trackable item from the trackable section and
   // adds it to the tracked section at the beginning of the list. It assumes
@@ -501,10 +506,16 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
     return header;
   }
 
-  if (self.itemOnCurrentSiteIsTracked) {
+  if (self.itemOnCurrentSiteIsTracked && _hasExecutedItemTracking) {
     header.subtitle = l10n_util::GetNSString(
         IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM);
     header.URLs = @[ [[CrURL alloc] initWithGURL:GURL(kBookmarksSettingsURL)] ];
+    return header;
+  }
+
+  if (self.itemOnCurrentSiteIsTracked) {
+    header.subtitle = l10n_util::GetNSString(
+        IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED);
     return header;
   }
 
