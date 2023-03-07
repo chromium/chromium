@@ -51,7 +51,6 @@ class AppContextSurface {
   AppContextSurface& operator=(const AppContextSurface&) = delete;
 
   void MakeCurrent() { context_->MakeCurrent(surface_.get()); }
-  void ReleaseCurrent() { context_->ReleaseCurrent(surface_.get()); }
 
  private:
   scoped_refptr<gl::GLSurface> surface_;
