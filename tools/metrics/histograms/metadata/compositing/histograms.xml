@@ -22,6 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="LCDTextDisallowedReasonDPI">
+  <variant name="HighDPI"
+      summary="In web pages where device scale factor is greater than or
+               equal to 1.5."/>
+  <variant name="LowDPI"
+      summary="In web pages where device scale factor is less than 1.5."/>
+</variants>
+
 <histogram name="Compositing.Browser.LayersUpdateTime" units="microseconds"
     expires_after="2023-07-30">
   <owner>pdr@chromium.org</owner>
@@ -645,8 +653,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Renderer.LCDTextDisallowedReasonKPixels"
-    enum="LCDTextDisallowedReason" expires_after="2023-08-20">
+<histogram name="Compositing.Renderer.LCDTextDisallowedReasonKPixels2.{DPI}"
+    enum="LCDTextDisallowedReason" expires_after="2023-09-30">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -656,16 +664,18 @@ chromium-metrics-reviews@google.com.
     Recorded when the renderer is idle, at minimum interval of the longer of 1
     minute and 500 begin frames for each local frame tree.
   </summary>
+  <token key="DPI" variants="LCDTextDisallowedReasonDPI"/>
 </histogram>
 
-<histogram name="Compositing.Renderer.LCDTextDisallowedReasonLayers"
-    enum="LCDTextDisallowedReason" expires_after="2023-07-16">
+<histogram name="Compositing.Renderer.LCDTextDisallowedReasonLayers2.{DPI}"
+    enum="LCDTextDisallowedReason" expires_after="2023-09-30">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Records the number of layers containing text by LCD-text disallowed reasons.
     Recorded along with Compositing.Renderer.LCDTextDisallowedReasonKPixels.
   </summary>
+  <token key="DPI" variants="LCDTextDisallowedReasonDPI"/>
 </histogram>
 
 <histogram name="Compositing.Renderer.NumActiveLayers" units="layers"

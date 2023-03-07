@@ -859,41 +859,49 @@ LCDTextDisallowedReason PictureLayerImpl::ComputeLCDTextDisallowedReason(
     return LCDTextDisallowedReason::kNoText;
   }
 
-  if (layer_tree_impl()->settings().layers_always_allowed_lcd_text)
+  if (layer_tree_impl()->settings().layers_always_allowed_lcd_text) {
     return LCDTextDisallowedReason::kNone;
-  if (!layer_tree_impl()->settings().can_use_lcd_text)
+  }
+  if (!layer_tree_impl()->settings().can_use_lcd_text) {
     return LCDTextDisallowedReason::kSetting;
-  if (!contents_opaque_for_text()) {
-    if (!background_color().isOpaque())
-      return LCDTextDisallowedReason::kBackgroundColorNotOpaque;
-    return LCDTextDisallowedReason::kContentsNotOpaque;
+  }
+
+  TransformNode* transform_node =
+      GetTransformTree().Node(transform_tree_index());
+  if (transform_node->node_or_ancestors_will_change_transform) {
+    return LCDTextDisallowedReason::kWillChangeTransform;
+  }
+
+  if (screen_space_transform_is_animating()) {
+    return LCDTextDisallowedReason::kTransformAnimation;
+  }
+
+  EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
+  if (effect_node->node_or_ancestor_has_filters ||
+      effect_node->affected_by_backdrop_filter) {
+    return LCDTextDisallowedReason::kPixelOrColorEffect;
   }
 
   // If raster translation aligns pixels, we can ignore fractional layer offset
   // and transform for LCD text.
   if (!raster_translation_aligns_pixels) {
     if (static_cast<int>(offset_to_transform_parent().x()) !=
-        offset_to_transform_parent().x())
+        offset_to_transform_parent().x()) {
       return LCDTextDisallowedReason::kNonIntegralXOffset;
+    }
     if (static_cast<int>(offset_to_transform_parent().y()) !=
-        offset_to_transform_parent().y())
+        offset_to_transform_parent().y()) {
       return LCDTextDisallowedReason::kNonIntegralYOffset;
+    }
     return LCDTextDisallowedReason::kNonIntegralTranslation;
   }
 
-  TransformNode* transform_node =
-      GetTransformTree().Node(transform_tree_index());
-  if (transform_node->node_or_ancestors_will_change_transform)
-    return LCDTextDisallowedReason::kWillChangeTransform;
-
-  if (screen_space_transform_is_animating())
-    return LCDTextDisallowedReason::kTransformAnimation;
-
-  EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
-  if (effect_node->node_or_ancestor_has_filters ||
-      effect_node->affected_by_backdrop_filter)
-    return LCDTextDisallowedReason::kPixelOrColorEffect;
-
+  if (!contents_opaque_for_text()) {
+    if (!background_color().isOpaque()) {
+      return LCDTextDisallowedReason::kBackgroundColorNotOpaque;
+    }
+    return LCDTextDisallowedReason::kContentsNotOpaque;
+  }
   return LCDTextDisallowedReason::kNone;
 }
 
