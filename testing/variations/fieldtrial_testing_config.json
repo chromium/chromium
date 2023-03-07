@@ -6418,6 +6418,25 @@
             ]
         }
     ],
+    "IOSPartialTranslate": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "IOSEditMenuPartialTranslateNoIncognitoParam": "true"
+                    },
+                    "enable_features": [
+                        "IOSCustomBrowserEditMenu",
+                        "IOSEditMenuPartialTranslate"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasswordManagerCrossOriginIframeSupport": [
         {
             "platforms": [
