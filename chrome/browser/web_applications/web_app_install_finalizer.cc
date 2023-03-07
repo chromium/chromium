@@ -75,6 +75,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::CHROME_SERVICE:
     case InstallSource::OMNIBOX_INSTALL_ICON:
     case InstallSource::MENU_CREATE_SHORTCUT:
+    case InstallSource::PROFILE_MENU:
       return true;
     case InstallSource::DEVTOOLS:
     case InstallSource::MANAGEMENT_API:

@@ -56629,6 +56629,8 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="32" label="Lock screen"/>
   <int value="33" label="App Home Page (chrome://apps)"/>
   <int value="34" label="Reparenting"/>
+  <int value="35"
+      label="Profile menu of installable chrome://password-manager WebUI)"/>
 </enum>
 
 <enum name="LaunchType">
@@ -107871,6 +107873,7 @@ others/histograms.xml -->
   <int value="23" label="Lock screen app infrastructure"/>
   <int value="24" label="OEM apps installed by the App Preload Service"/>
   <int value="25" label="Via Microsoft 365 setup dialog"/>
+  <int value="26" label="Profile menu view in the app."/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">

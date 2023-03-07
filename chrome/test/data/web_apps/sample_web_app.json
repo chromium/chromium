@@ -170,7 +170,7 @@
    },
    "last_badging_time": "1970-01-15 16:10:56.662 UTC",
    "last_launch_time": "1970-01-21 15:31:39.413 UTC",
-   "latest_install_source": 17,
+   "latest_install_source": 26,
    "launch_handler": {
       "client_mode": "kNavigateExisting"
    },

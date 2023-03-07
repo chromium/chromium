@@ -159,6 +159,7 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromAppHomePage:
     case apps::LaunchSource::kFromReparenting:
+    case apps::LaunchSource::kFromProfileMenu:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }

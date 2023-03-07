@@ -57,10 +57,12 @@ enum class LaunchSource {
   kFromLockScreen = 32,                // Lock screen app launcher.
   kFromAppHomePage = 33,               // App Home (chrome://apps) page.
   kFromReparenting = 34,               // Moving content into an app.
+  kFromProfileMenu =
+      35,  // Profile menu of installable chrome://password-manager WebUI.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromReparenting,
+  kMaxValue = kFromProfileMenu,
 };
 
 // Don't remove items or change the order of this enum.  It's used in

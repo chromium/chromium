@@ -912,6 +912,7 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:
     case apps::LaunchSource::kFromReparenting:
+    case apps::LaunchSource::kFromProfileMenu:
       NOTREACHED();
       return crosapi::mojom::LaunchSource::kUnknown;
   }

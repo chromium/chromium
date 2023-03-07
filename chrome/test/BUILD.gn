@@ -2859,6 +2859,7 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
+        "../browser/password_manager/web_app_profile_switcher_browsertest.cc",
       ]
     }
 

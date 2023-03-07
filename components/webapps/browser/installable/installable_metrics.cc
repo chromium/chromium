@@ -45,6 +45,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::MICROSOFT_365_SETUP:
     case WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case WebappInstallSource::PRELOADED_OEM:
+    case WebappInstallSource::PROFILE_MENU:
     case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::SYSTEM_DEFAULT:
       return true;

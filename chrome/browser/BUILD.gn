@@ -3978,6 +3978,8 @@ static_library("browser") {
       "page_info/about_this_site_tab_helper.h",
       "password_manager/generated_password_leak_detection_pref.cc",
       "password_manager/generated_password_leak_detection_pref.h",
+      "password_manager/web_app_profile_switcher.cc",
+      "password_manager/web_app_profile_switcher.h",
       "performance_manager/mechanisms/page_discarder.cc",
       "performance_manager/mechanisms/page_discarder.h",
       "performance_manager/mechanisms/page_loader.cc",

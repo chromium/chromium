@@ -39,6 +39,9 @@ enum class InstallTrigger {
 // histogram and must be treated as append-only. A Java counterpart will be
 // generated for this enum.
 //
+// This should be kept in sync with WebappInstallSource in
+// tools/metrics/histograms/enums.xml.
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
 enum class WebappInstallSource {
   // Menu item in a browser tab.
@@ -119,6 +122,10 @@ enum class WebappInstallSource {
 
   // Installed via the Microsoft 365 setup dialog.
   MICROSOFT_365_SETUP = 25,
+
+  // Profile picking in ProfileMenuView (for installable
+  // WebUIs).
+  PROFILE_MENU = 26,
 
   // Add any new values above this one.
   COUNT,

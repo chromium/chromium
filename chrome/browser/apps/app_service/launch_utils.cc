@@ -323,6 +323,7 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
       return extensions::AppLaunchSource::kSourceAppHomePage;
     // No equivalent extensions launch source or not needed in extensions:
     case LaunchSource::kFromReparenting:
+    case LaunchSource::kFromProfileMenu:
       return extensions::AppLaunchSource::kSourceNone;
   }
 }

@@ -257,6 +257,7 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::CHROME_SERVICE:
     case webapps::WebappInstallSource::KIOSK:
     case webapps::WebappInstallSource::MICROSOFT_365_SETUP:
+    case webapps::WebappInstallSource::PROFILE_MENU:
       return apps::InstallSource::kBrowser;
     case webapps::WebappInstallSource::ARC:
       return apps::InstallSource::kPlayStore;
