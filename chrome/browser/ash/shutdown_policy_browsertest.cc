@@ -128,19 +128,13 @@ class ShutdownPolicyInSessionTest : public ShutdownPolicyBaseTest {
 
   // Returns true if the shutdown button's tooltip matches |tooltip|.
   bool HasShutdownButtonTooltip(const std::string& tooltip) {
-    std::u16string actual_tooltip =
-        tray_test_api_->GetBubbleViewTooltip(VIEW_ID_QS_POWER_BUTTON);
+    std::u16string actual_tooltip = tray_test_api_->GetShutdownButtonTooltip();
     return base::UTF8ToUTF16(tooltip) == actual_tooltip;
   }
 };
 
 // Tests that by default the shutdown button tooltip is "Shut down".
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyInSessionTest, TestBasic) {
-  // TODO: (b/270609503) test the revapmped power button.
-  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
-    return;
-  }
-
   OpenSystemTrayMenu();
   EXPECT_TRUE(HasShutdownButtonTooltip("Shut down"));
   CloseSystemTrayMenu();

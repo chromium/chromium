@@ -60,7 +60,8 @@ QuickSettingsFooter::QuickSettingsFooter(
               views::BoxLayout::Orientation::kHorizontal));
   button_container_layout->set_between_child_spacing(16);
 
-  front_buttons_container->AddChildView(std::make_unique<PowerButton>());
+  power_button_ =
+      front_buttons_container->AddChildView(std::make_unique<PowerButton>());
   if (Shell::Get()->session_controller()->login_status() !=
       LoginStatus::NOT_LOGGED_IN) {
     auto* user_avatar_button = front_buttons_container->AddChildView(

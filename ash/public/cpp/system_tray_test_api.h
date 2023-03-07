@@ -61,6 +61,10 @@ class ASH_EXPORT SystemTrayTestApi {
   // does not exist.
   std::u16string GetBubbleViewTooltip(int view_id);
 
+  // Returns the tooltip for the "Shut down" button, or the empty string if the
+  // view does not exist.
+  std::u16string GetShutdownButtonTooltip();
+
   // Returns the text for a bubble view, or the empty string if the view
   // does not exist. This method only works if the bubble view is a label.
   std::u16string GetBubbleViewText(int view_id);
