@@ -7,10 +7,9 @@ import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome:/
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {VolumeEntry} from '../../../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {metrics} from '../../../common/js/metrics.js';
-import {strf, util} from '../../../common/js/util.js';
+import {str, strf, util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -1978,8 +1977,8 @@ export class DirectoryTree extends Tree {
   constructor() {
     super();
 
-    /** @type {?HTMLElement} */
-    this.activeRow_ = null;
+    /** @type {?DirectoryItem} */
+    this.activeItem_ = null;
 
     /** @type {NavigationListModel} */
     this.dataModel_ = null;
@@ -2369,15 +2368,16 @@ export class DirectoryTree extends Tree {
   async onCurrentDirectoryChanged_(event) {
     await this.selectByEntry(event.newDirEntry);
 
-    const selectedItem = this.selectedItem;
-
-    if (this.activeRow_) {
-      this.activeRow_.removeAttribute('active');
+    if (this.activeItem_) {
+      this.activeItem_.removeAttribute('aria-description');
+      this.activeItem_.rowElement.removeAttribute('active');
     }
 
-    this.activeRow_ = selectedItem ? selectedItem.rowElement : null;
-    if (this.activeRow_) {
-      this.activeRow_.setAttribute('active', '');
+    this.activeItem_ = this.selectedItem;
+    if (this.activeItem_) {
+      this.activeItem_.setAttribute(
+          'aria-description', str('CURRENT_DIRECTORY_LABEL'));
+      this.activeItem_.rowElement.setAttribute('active', '');
     }
 
     this.updateSubDirectories(false /* recursive */, () => {});

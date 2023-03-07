@@ -199,6 +199,10 @@
     Selected all entries.
   </message>
 
+  <message name="IDS_FILE_BROWSER_CURRENT_DIRECTORY_LABEL" desc="Message spoken by Chromevox/screenreader when the selected directory in the directory tree is the current directory.">
+    Current directory
+  </message>
+
   <message name="IDS_FILE_BROWSER_SIZE_BYTES" desc="Size in bytes.">
     <ph name="NUMBER_OF_BYTES">$1<ex>42</ex></ph> bytes
   </message>
