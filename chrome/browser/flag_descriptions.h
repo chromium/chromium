@@ -3584,6 +3584,11 @@ extern const char kGetDisplayMediaSetAutoSelectAllScreensDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
+extern const char kRunOnOsLoginName[];
+extern const char kRunOnOsLoginDescription[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrOSDspBasedAecAllowedName[];
 extern const char kCrOSDspBasedAecAllowedDescription[];
 

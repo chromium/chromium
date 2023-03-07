@@ -6172,6 +6172,12 @@ const char kGetDisplayMediaSetAutoSelectAllScreensDescription[] =
 
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kRunOnOsLoginName[] = "Run on OS login";
+const char kRunOnOsLoginDescription[] =
+    "When enabled, allows PWAs to be automatically run on OS login.";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kDesktopCaptureLacrosV2Name[] = "Enable Lacros Desktop Capture V2";
 const char kDesktopCaptureLacrosV2Description[] =

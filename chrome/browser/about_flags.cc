@@ -7837,6 +7837,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
+    {"enable-run-on-os-login", flag_descriptions::kRunOnOsLoginName,
+     flag_descriptions::kRunOnOsLoginDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
     {"default-chrome-apps-migration",
      flag_descriptions::kDefaultChromeAppsMigrationName,
      flag_descriptions::kDefaultChromeAppsMigrationDescription, kOsCrOS,
@@ -7850,6 +7856,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosColorManagementDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kLacrosColorManagement)},
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"preinstalled-web-app-window-experiment",
      flag_descriptions::kPreinstalledWebAppWindowExperimentName,
