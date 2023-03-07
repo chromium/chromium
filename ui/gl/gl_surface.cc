@@ -10,8 +10,8 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_context.h"
@@ -30,8 +30,9 @@ struct DCLayerOverlayParams {};
 namespace gl {
 
 namespace {
-base::LazyInstance<base::ThreadLocalPointer<GLSurface>>::Leaky
-    current_surface_ = LAZY_INSTANCE_INITIALIZER;
+
+ABSL_CONST_INIT thread_local GLSurface* current_surface = nullptr;
+
 }  // namespace
 
 // static
@@ -223,7 +224,7 @@ void GLSurface::InitDelegatedInkPointRendererReceiver(
 void GLSurface::SetGpuVSyncEnabled(bool enabled) {}
 
 GLSurface* GLSurface::GetCurrent() {
-  return current_surface_.Pointer()->Get();
+  return current_surface;
 }
 
 bool GLSurface::IsCurrent() {
@@ -251,16 +252,17 @@ GpuPreference GLSurface::AdjustGpuPreference(GpuPreference gpu_preference) {
 }
 
 GLSurface::~GLSurface() {
-  if (GetCurrent() == this)
+  if (GetCurrent() == this) {
     ClearCurrent();
+  }
 }
 
 void GLSurface::ClearCurrent() {
-  current_surface_.Pointer()->Set(nullptr);
+  current_surface = nullptr;
 }
 
 void GLSurface::SetCurrent() {
-  current_surface_.Pointer()->Set(this);
+  current_surface = this;
 }
 
 bool GLSurface::ExtensionsContain(const char* c_extensions, const char* name) {

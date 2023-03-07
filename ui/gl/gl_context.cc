@@ -13,9 +13,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -32,11 +32,10 @@
 namespace gl {
 
 namespace {
-base::LazyInstance<base::ThreadLocalPointer<GLContext>>::Leaky
-    current_context_ = LAZY_INSTANCE_INITIALIZER;
 
-base::LazyInstance<base::ThreadLocalPointer<GLContext>>::Leaky
-    current_real_context_ = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local GLContext* current_context = nullptr;
+ABSL_CONST_INIT thread_local GLContext* current_real_context = nullptr;
+
 }  // namespace
 
 // static
@@ -311,11 +310,11 @@ bool GLContext::LosesAllContextsOnContextLost() {
 }
 
 GLContext* GLContext::GetCurrent() {
-  return current_context_.Pointer()->Get();
+  return current_context;
 }
 
 GLContext* GLContext::GetRealCurrent() {
-  return current_real_context_.Pointer()->Get();
+  return current_real_context;
 }
 
 std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
@@ -324,7 +323,7 @@ std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
 }
 
 void GLContext::SetCurrent(GLSurface* surface) {
-  current_context_.Pointer()->Set(surface ? this : nullptr);
+  current_context = surface ? this : nullptr;
   if (surface) {
     surface->SetCurrent();
   } else {
@@ -480,13 +479,14 @@ const gfx::ExtensionSet& GLContextReal::GetExtensions() {
 }
 
 GLContextReal::~GLContextReal() {
-  if (GetRealCurrent() == this)
-    current_real_context_.Pointer()->Set(nullptr);
+  if (GetRealCurrent() == this) {
+    current_real_context = nullptr;
+  }
 }
 
 void GLContextReal::SetCurrent(GLSurface* surface) {
   GLContext::SetCurrent(surface);
-  current_real_context_.Pointer()->Set(surface ? this : nullptr);
+  current_real_context = surface ? this : nullptr;
 }
 
 scoped_refptr<GLContext> InitializeGLContext(scoped_refptr<GLContext> context,
