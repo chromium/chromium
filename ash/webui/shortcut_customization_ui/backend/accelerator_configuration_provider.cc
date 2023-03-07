@@ -15,6 +15,7 @@
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
+#include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "ash/shell.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
@@ -33,8 +35,16 @@
 
 namespace ash {
 
+namespace {
+
+using ::ash::shortcut_customization::mojom::AcceleratorResultData;
+using ::ash::shortcut_customization::mojom::AcceleratorResultDataPtr;
+using ::ash::shortcut_customization::mojom::SimpleAccelerator;
+using ::ash::shortcut_customization::mojom::SimpleAcceleratorPtr;
 using mojom::AcceleratorConfigResult;
 
+// Gets the parts of the string that don't contain replacements.
+// Ex: "Press and " -> ["Press ", " and "]
 std::vector<std::u16string> SplitStringOnOffsets(
     const std::u16string& input,
     const std::vector<size_t>& offsets) {
@@ -65,6 +75,10 @@ std::vector<std::u16string> SplitStringOnOffsets(
   return parts;
 }
 
+// Creates text accelerator parts needed to properly display kText accelerators
+// in the UI. Uses the list of offsets which must be sorted and contains the
+// start points of our replacements to place the |plain_text_parts| and
+// |replacement_parts| in the correct order.
 std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
     const std::vector<std::u16string>& plain_text_parts,
     const std::vector<TextAcceleratorPart>& replacement_parts,
@@ -111,8 +125,6 @@ std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
   DCHECK_EQ(offset_index, offsets.size());
   return result;
 }
-
-namespace {
 
 mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(
     const ui::Accelerator& accelerator) {
@@ -260,6 +272,36 @@ void AcceleratorConfigurationProvider::OnTopRowKeysAreFKeysChanged() {
 void AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos(
     GetAcceleratorLayoutInfosCallback callback) {
   std::move(callback).Run(mojo::Clone(layout_infos_));
+}
+
+void AcceleratorConfigurationProvider::RemoveAccelerator(
+    mojom::AcceleratorSource source,
+    uint32_t action_id,
+    const ui::Accelerator& accelerator,
+    RemoveAcceleratorCallback callback) {
+  DCHECK(::features::IsShortcutCustomizationEnabled());
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+
+  if (source != mojom::AcceleratorSource::kAsh) {
+    // Only ash accelerators can be modified, return early since all other
+    // sources are locked.
+    result_data->result = AcceleratorConfigResult::kActionLocked;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Verify that `action_id` is a valid Ash accelerator ID. If validity checks
+  // fail, return `kNotFound`.
+  if (!ash_accelerator_configuration_->IsValid(action_id)) {
+    result_data->result = AcceleratorConfigResult::kNotFound;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  AcceleratorConfigResult result =
+      ash_accelerator_configuration_->RemoveAccelerator(action_id, accelerator);
+  result_data->result = result;
+  std::move(callback).Run(std::move(result_data));
 }
 
 void AcceleratorConfigurationProvider::BindInterface(

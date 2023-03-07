@@ -150,10 +150,17 @@ copy_generated_mojo("copy_accelerator_configuration_mojo") {
   mojo_files = [ "accelerator_configuration.mojom-webui.js" ]
 }
 
+copy_generated_mojo("copy_accelerator_keys_mojo") {
+  deps = [ "//ash/public/mojom:accelerator_keys_webui_js" ]
+  dir = "ash/public/mojom"
+  mojo_files = [ "accelerator_keys.mojom-webui.js" ]
+}
+
 ts_definitions("build_mojo_dts") {
   extra_deps = [
     ":copy_accelerator_configuration_mojo",
     ":copy_accelerator_info_mojo",
+    ":copy_accelerator_keys_mojo",
     ":copy_shortcuts_mojo",
     ":copy_shortcuts_search_mojo",
   ]
@@ -187,6 +194,9 @@ ts_library("build_ts") {
                   root_build_dir) +
       rebase_path(get_target_outputs(":copy_accelerator_configuration_mojo"),
                   root_dir,
+                  root_build_dir) +
+      rebase_path(get_target_outputs(":copy_accelerator_keys_mojo"),
+                  root_dir,
                   root_build_dir)
 
   deps = [
@@ -209,6 +219,7 @@ ts_library("build_ts") {
     ":build_mojo_dts",
     ":copy_accelerator_configuration_mojo",
     ":copy_accelerator_info_mojo",
+    ":copy_accelerator_keys_mojo",
     ":copy_shortcuts_mojo",
     ":copy_shortcuts_search_mojo",
     ":preprocess",
@@ -237,6 +248,7 @@ generate_grd("build_mojo_grdp") {
   deps = [
     "//ash/public/mojom:accelerator_configuration_webui_js",
     "//ash/public/mojom:accelerator_info_webui_js",
+    "//ash/public/mojom:accelerator_keys_webui_js",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings_webui_js",
     "//ash/webui/shortcut_customization_ui/mojom:mojom_webui_js",
   ]
@@ -245,6 +257,7 @@ generate_grd("build_mojo_grdp") {
   input_files = [
     "mojom-webui/ash/public/mojom/accelerator_configuration.mojom-webui.js",
     "mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js",
+    "mojom-webui/ash/public/mojom/accelerator_keys.mojom-webui.js",
     "mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js",
     "mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js",
   ]

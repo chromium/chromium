@@ -308,6 +308,11 @@ AshAcceleratorConfiguration::GetDefaultAcceleratorsForId(
   return iter->second;
 }
 
+bool AshAcceleratorConfiguration::IsValid(uint32_t id) const {
+  return id_to_accelerators_.contains(id) &&
+         default_id_to_accelerators_cache_.contains(id);
+}
+
 void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {
   accelerators_.clear();
   accelerators_.reserve(accelerator_to_id_.size());

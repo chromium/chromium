@@ -12,6 +12,7 @@
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
@@ -20,6 +21,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
+#include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -36,6 +38,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -48,6 +51,9 @@ using NonConfigurableActionToParts =
                    const std::vector<mojom::TextAcceleratorPartPtr&>>;
 
 namespace {
+using shortcut_customization::mojom::AcceleratorResultDataPtr;
+using shortcut_customization::mojom::SimpleAccelerator;
+using shortcut_customization::mojom::SimpleAcceleratorPtr;
 
 using mojom::AcceleratorConfigResult;
 
@@ -219,6 +225,36 @@ std::vector<mojom::TextAcceleratorPartPtr> RemovePlainTextParts(
   return res;
 }
 
+std::vector<std::u16string> SplitStringOnOffsets(
+    const std::u16string& input,
+    const std::vector<size_t>& offsets) {
+  DCHECK(std::is_sorted(offsets.begin(), offsets.end()));
+
+  std::vector<std::u16string> parts;
+  // At most there will be len(offsets) + 1 text parts.
+  parts.reserve(offsets.size() + 1);
+  size_t upto = 0;
+
+  for (auto offset : offsets) {
+    DCHECK_LE(offset, input.size());
+
+    if (offset == upto) {
+      continue;
+    }
+
+    DCHECK(offset >= upto);
+    parts.push_back(input.substr(upto, offset - upto));
+    upto = offset;
+  }
+
+  // Handles the case where there's plain text after the last replacement.
+  if (upto < input.size()) {
+    parts.push_back(input.substr(upto));
+  }
+
+  return parts;
+}
+
 }  // namespace
 
 namespace shortcut_ui {
@@ -254,7 +290,9 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kImprovedKeyboardShortcuts}, {});
+        {::features::kImprovedKeyboardShortcuts,
+         ::features::kShortcutCustomization},
+        {});
     input_method_manager_ = new TestInputMethodManager();
     input_method::InputMethodManager::Initialize(input_method_manager_);
 
@@ -857,6 +895,90 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableReverseLookup) {
       }
     }
   }
+}
+
+// TODO(jimmyxgong): This is removing a default accelerator, update this when
+// disabling accelerators is implemented.
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+       SWAP_PRIMARY_DISPLAY},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators are populated.
+  EXPECT_EQ(sizeof(test_data) / sizeof(AcceleratorData),
+            config->GetAllAccelerators().size());
+
+  // Remove the accelerator.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        EXPECT_EQ(AcceleratorConfigResult::kSuccess, result->result);
+        EXPECT_FALSE(result->shortcut_name.has_value());
+        // Verify the accelerator was removed.
+        std::vector<ui::Accelerator> updated_accelerators =
+            config->GetAllAccelerators();
+        EXPECT_EQ(1u, updated_accelerators.size());
+        ui::Accelerator expected_accelerator(ui::VKEY_ZOOM, ui::EF_ALT_DOWN);
+        EXPECT_EQ(expected_accelerator, updated_accelerators[0]);
+      }));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAcceleratorThatDoesntExist) {
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+       SWAP_PRIMARY_DISPLAY},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the accelerator.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+      ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        EXPECT_EQ(AcceleratorConfigResult::kNotFound, result->result);
+        EXPECT_FALSE(result->shortcut_name.has_value());
+      }));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAcceleratorNonAsh) {
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+       SWAP_PRIMARY_DISPLAY},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the accelerator.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kBrowser, TOGGLE_MIRROR_MODE,
+      ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        EXPECT_EQ(AcceleratorConfigResult::kActionLocked, result->result);
+        EXPECT_FALSE(result->shortcut_name.has_value());
+      }));
+  base::RunLoop().RunUntilIdle();
 }
 
 using FlagsKeyboardCodesVariant =

@@ -117,6 +117,9 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   std::vector<ui::Accelerator> GetDefaultAcceleratorsForId(
       AcceleratorActionId id);
 
+  // Returns true if the `id` is a valid ash accelerator ID.
+  bool IsValid(uint32_t id) const;
+
  private:
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;

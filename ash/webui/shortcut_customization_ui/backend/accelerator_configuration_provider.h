@@ -8,6 +8,7 @@
 #include <map>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
+#include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -22,24 +23,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
-namespace ash {
-// Gets the parts of the string that don't contain replacements.
-// Ex: "Press and " -> ["Press ", " and "]
-std::vector<std::u16string> SplitStringOnOffsets(
-    const std::u16string& input,
-    const std::vector<size_t>& offsets);
-
-// Creates text accelerator parts needed to properly display kText accelerators
-// in the UI. Uses the list of offsets which must be sorted and contains the
-// start points of our replacements to place the |plain_text_parts| and
-// |replacement_parts| in the correct order.
-std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
-    const std::vector<std::u16string>& plain_text_parts,
-    const std::vector<TextAcceleratorPart>& replacement_parts,
-    const std::vector<size_t>& offsets,
-    size_t str_size);
-
-namespace shortcut_ui {
+namespace ash::shortcut_ui {
 
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
@@ -72,6 +56,10 @@ class AcceleratorConfigurationProvider
                        observer) override;
   void GetAcceleratorLayoutInfos(
       GetAcceleratorLayoutInfosCallback callback) override;
+  void RemoveAccelerator(mojom::AcceleratorSource source,
+                         uint32_t action_id,
+                         const ui::Accelerator& accelerator,
+                         RemoveAcceleratorCallback callback) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
@@ -135,7 +123,7 @@ class AcceleratorConfigurationProvider
       shortcut_customization::mojom::AcceleratorConfigurationProvider>
       receiver_{this};
 
-  AcceleratorConfiguration* ash_accelerator_configuration_;
+  AshAcceleratorConfiguration* ash_accelerator_configuration_;
 
   // One accelerator action ID can potentially have multiple accelerators
   // associated with it.
@@ -154,7 +142,6 @@ class AcceleratorConfigurationProvider
 
 std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
 
-}  // namespace shortcut_ui
-}  // namespace ash
+}  // namespace ash::shortcut_ui
 
 #endif  // ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_BACKEND_ACCELERATOR_CONFIGURATION_PROVIDER_H_

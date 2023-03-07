@@ -11,7 +11,6 @@ mojom("mojom") {
   disable_variants = true
 
   sources = [
-    "accelerator_keys.mojom",
     "assistant_volume_control.mojom",
     "tray_action.mojom",
   ]
@@ -19,6 +18,7 @@ mojom("mojom") {
   public_deps = [
     ":accelerator_configuration",
     ":accelerator_info",
+    ":accelerator_keys",
     ":input_device_settings",
     "//chromeos/ash/components/proximity_auth/public/mojom",
     "//components/account_id/mojom",
@@ -30,23 +30,6 @@ mojom("mojom") {
     "//ui/gfx/image/mojom",
     "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
-  ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "ash.accelerator_keys.mojom.VKey"
-          cpp = "::ui::KeyboardCode"
-        },
-      ]
-
-      traits_headers = [
-        "//ui/events/keycodes/keyboard_codes_posix.h",
-        "accelerator_keys_mojom_traits.h",
-      ]
-      traits_sources = [ "accelerator_keys_mojom_traits.cc" ]
-    },
   ]
 
   component_output_prefix = "ash_public_interfaces"
@@ -99,4 +82,34 @@ mojom("accelerator_configuration") {
   sources = [ "accelerator_configuration.mojom" ]
 
   public_deps = []
+}
+
+# This is a separate target so that downstream WebUI targets can take
+# advantage of JS module Mojom files, without having to generate WebUI Mojom
+# files for all dependencies (and their dependencies) in //ash/public/mojom.
+mojom("accelerator_keys") {
+  disable_variants = true
+
+  webui_module_path = "/ash/public/mojom"
+
+  sources = [ "accelerator_keys.mojom" ]
+
+  public_deps = []
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.mojom.VKey"
+          cpp = "::ui::KeyboardCode"
+        },
+      ]
+
+      traits_headers = [
+        "//ui/events/keycodes/keyboard_codes_posix.h",
+        "accelerator_keys_mojom_traits.h",
+      ]
+      traits_sources = [ "accelerator_keys_mojom_traits.cc" ]
+    },
+  ]
 }
