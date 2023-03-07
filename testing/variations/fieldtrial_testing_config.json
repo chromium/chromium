@@ -8,7 +8,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AboveNormalCompositingBrowserWin"
+                        "AboveNormalCompositingBrowserWin",
+                        "MainThreadCompositingPriority"
                     ]
                 }
             ]
@@ -7570,8 +7571,7 @@
                 "fuchsia",
                 "ios",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
