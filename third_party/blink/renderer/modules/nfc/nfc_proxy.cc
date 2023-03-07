@@ -30,12 +30,14 @@ NFCProxy* NFCProxy::From(LocalDOMWindow& window) {
 // NFCProxy
 NFCProxy::NFCProxy(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window),
+      nfc_remote_(window.GetExecutionContext()),
       client_receiver_(this, window.GetExecutionContext()) {}
 
 NFCProxy::~NFCProxy() = default;
 
 void NFCProxy::Trace(Visitor* visitor) const {
   visitor->Trace(client_receiver_);
+  visitor->Trace(nfc_remote_);
   visitor->Trace(writers_);
   visitor->Trace(readers_);
   Supplement<LocalDOMWindow>::Trace(visitor);

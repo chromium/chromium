@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
@@ -80,8 +81,7 @@ class MODULES_EXPORT NFCProxy final : public GarbageCollected<NFCProxy>,
   using WriterSet = HeapHashSet<WeakMember<NDEFReader>>;
   WriterSet writers_;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<device::mojom::blink::NFC> nfc_remote_;
+  HeapMojoRemote<device::mojom::blink::NFC> nfc_remote_;
   HeapMojoReceiver<device::mojom::blink::NFCClient, NFCProxy> client_receiver_;
 };
 
