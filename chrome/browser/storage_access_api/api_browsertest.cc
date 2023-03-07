@@ -62,6 +62,9 @@ constexpr char kHostD[] = "d.test";
 constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
 constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 
+// Path for URL of custom response
+const char* kEchoCookiesWithCorsPath = "/echocookieswithcors";
+
 enum class TestType { kFrame, kWorker };
 
 // Helpers to express expected
@@ -91,6 +94,38 @@ std::tuple<std::string, std::string, std::string> NoCookiesWithContent() {
       "None",  // cookie string via `echoheader?cookie`
       "None",  // cookie string via frame content (also via `echoheader?cookie`)
   };
+}
+
+// Responds to a request to /echocookieswithcors with the cookies that were sent
+// with the request. We can't use the default handler /echoheader?Cookie here,
+// because it doesn't send the appropriate Access-Control-Allow-Origin and
+// Access-Control-Allow-Credentials headers (which are required for this to
+// work for cross-origin requests in the tests).
+std::unique_ptr<net::test_server::HttpResponse>
+HandleEchoCookiesWithCorsRequest(const net::test_server::HttpRequest& request) {
+  if (request.relative_url != kEchoCookiesWithCorsPath) {
+    return nullptr;
+  }
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  std::string content = "None";
+  // Get the 'Cookie' header that was sent in the request.
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
+      it != request.headers.end()) {
+    content = it->second;
+  }
+
+  http_response->set_code(net::HTTP_OK);
+  http_response->set_content_type("text/plain");
+  // Set the cors enabled headers.
+  if (auto it = request.headers.find(net::HttpRequestHeaders::kOrigin);
+      it != request.headers.end()) {
+    http_response->AddCustomHeader("Access-Control-Allow-Origin", it->second);
+    http_response->AddCustomHeader("Vary", "origin");
+    http_response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
+  }
+  http_response->set_content(content);
+
+  return http_response;
 }
 
 class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
@@ -140,6 +175,8 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromDirectory(path);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
     ASSERT_TRUE(https_server_.Start());
   }
 
@@ -255,11 +292,10 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
 
   std::string CookiesFromFetch(content::RenderFrameHost* render_frame_host,
                                const std::string& subresource_host) {
-    return content::EvalJs(render_frame_host,
-                           base::StringPrintf(
-                               "fetch('%s').then((resp) => resp.text())",
-                               EchoCookiesURL(subresource_host).spec().c_str()))
-        .ExtractString();
+    return storage::test::FetchWithCredentials(
+        render_frame_host,
+        https_server_.GetURL(subresource_host, kEchoCookiesWithCorsPath),
+        /*cors_enabled=*/true);
   }
 
   // Reads cookies via `document.cookie` in the provided RFH, and via a
@@ -441,15 +477,26 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
 // other's granted permission.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
                        ThirdPartyCookiesCrossSiteSiblingIFrameRequestsAccess) {
-  SetBlockThirdPartyCookies(true);
-
   // Set cross-site cookies on all hosts.
   SetCrossSiteCookieOnHost(kHostA);
   SetCrossSiteCookieOnHost(kHostB);
   SetCrossSiteCookieOnHost(kHostC);
 
   NavigateToPageWithTwoFrames(kHostA);
+  NavigateFirstFrameTo(EchoCookiesURL(kHostB));
+  NavigateSecondFrameTo(EchoCookiesURL(kHostC));
 
+  // Verify that both same-origin subresource request and cross-origin
+  // subresource request can access cookies for the kHostB iframe.
+  ASSERT_EQ(CookiesFromFetch(GetFirstFrame(), kHostB), "cross-site=b.test");
+  ASSERT_EQ(CookiesFromFetch(GetFirstFrame(), kHostC), "cross-site=c.test");
+
+  // Verify that both same-origin subresource request and cross-origin
+  // subresource request can access cookies for the kHostC iframe.
+  ASSERT_EQ(CookiesFromFetch(GetSecondFrame(), kHostC), "cross-site=c.test");
+  ASSERT_EQ(CookiesFromFetch(GetSecondFrame(), kHostB), "cross-site=b.test");
+
+  SetBlockThirdPartyCookies(true);
   // Navigate the first iframe to kHostB and grant Storage Access.
   NavigateFirstFrameTo(EchoCookiesURL(kHostB));
   EXPECT_EQ(ReadCookiesAndContent(GetFirstFrame(), kHostB),
@@ -471,12 +518,12 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
             CookieBundle("cross-site=c.test"));
 
   // Verify same-origin subresource request has cookie access whereas the
-  // cross-origin subresource request does not for iframe1.
+  // cross-origin subresource request does not for the kHostB iframe.
   EXPECT_EQ(CookiesFromFetch(GetFirstFrame(), kHostB), "cross-site=b.test");
   EXPECT_EQ(CookiesFromFetch(GetFirstFrame(), kHostC), "None");
 
   // Verify same-origin subresource request has cookie access whereas the
-  // cross-origin subresource request does not for iframe2.
+  // cross-origin subresource request does not for the kHostC iframe.
   EXPECT_EQ(CookiesFromFetch(GetSecondFrame(), kHostC), "cross-site=c.test");
   EXPECT_EQ(CookiesFromFetch(GetSecondFrame(), kHostB), "None");
 }
