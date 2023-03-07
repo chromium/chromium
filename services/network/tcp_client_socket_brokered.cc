@@ -26,11 +26,15 @@ TCPClientSocketBrokered::TCPClientSocketBrokered(
     : addresses_(addresses),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       network_quality_estimator_(network_quality_estimator),
-      net_log_(net_log),
-      source_(source),
-      client_socket_factory_(client_socket_factory) {}
+      net_log_source_(
+          net::NetLogWithSource::Make(net_log, net::NetLogSourceType::SOCKET)),
+      client_socket_factory_(client_socket_factory) {
+  net_log_source_.BeginEventReferencingSource(
+      net::NetLogEventType::BROKERED_SOCKET_ALIVE, source);
+}
 
 TCPClientSocketBrokered::~TCPClientSocketBrokered() {
+  net_log_source_.EndEvent(net::NetLogEventType::BROKERED_SOCKET_ALIVE);
   Disconnect();
 }
 
@@ -77,6 +81,8 @@ int TCPClientSocketBrokered::Connect(net::CompletionOnceCallback callback) {
 
   is_connect_in_progress_ = true;
 
+  net_log_source_.BeginEvent(net::NetLogEventType::BROKERED_CREATE_SOCKET);
+
   // TODO(https://crbug.com/1321274): Pass in AddressFamily of single IPEndPoint
   client_socket_factory_->BrokerCreateTcpSocket(
       addresses_.begin()->GetFamily(),
@@ -117,6 +123,8 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
     network::TransferableSocket socket,
     int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  net_log_source_.EndEventWithNetErrorCode(
+      net::NetLogEventType::BROKERED_CREATE_SOCKET, result);
   if (result != net::OK) {
     std::move(callback).Run(result);
     return;
@@ -125,7 +133,7 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
   // Create an unconnected TCPSocket with the socket fd that was opened in the
   // browser process.
   std::unique_ptr<net::TCPSocket> tcp_socket = std::make_unique<net::TCPSocket>(
-      std::move(socket_performance_watcher_), net_log_, source_);
+      std::move(socket_performance_watcher_), net_log_source_);
   tcp_socket->AdoptUnconnectedSocket(socket.TakeSocket());
 
   // TODO(liza): Pass through the NetworkHandle.
@@ -137,6 +145,8 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
     int callback_result = before_connect_callback_.Run();
     DCHECK_NE(net::ERR_IO_PENDING, callback_result);
     if (callback_result != net::OK) {
+      net_log_source_.AddEventWithNetErrorCode(net::NetLogEventType::FAILED,
+                                               callback_result);
       std::move(callback).Run(callback_result);
       return;
     }
@@ -190,10 +200,7 @@ int TCPClientSocketBrokered::GetLocalAddress(net::IPEndPoint* address) const {
 
 const net::NetLogWithSource& TCPClientSocketBrokered::NetLog() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!brokered_socket_) {
-    return NetLog();
-  }
-  return brokered_socket_->NetLog();
+  return net_log_source_;
 }
 
 bool TCPClientSocketBrokered::WasEverUsed() const {

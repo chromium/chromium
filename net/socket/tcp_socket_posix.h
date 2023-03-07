@@ -43,6 +43,10 @@ class NET_EXPORT TCPSocketPosix {
       NetLog* net_log,
       const NetLogSource& source);
 
+  TCPSocketPosix(
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetLogWithSource net_log_source);
+
   TCPSocketPosix(const TCPSocketPosix&) = delete;
   TCPSocketPosix& operator=(const TCPSocketPosix&) = delete;
 

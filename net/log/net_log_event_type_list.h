@@ -403,6 +403,28 @@ EVENT_TYPE(SUBMITTED_TO_RESOLVER_THREAD)
 EVENT_TYPE(SOCKET_ALIVE)
 
 // ------------------------------------------------------------------------
+// Brokered Socket (Shared by stream and datagram sockets)
+// ------------------------------------------------------------------------
+
+// Marks the begin/end of a brokered socket (TCP/UDP)
+// The BEGIN phase contains the following parameters:
+//
+//   {
+//     "source_dependency": <Source identifier for the controlling entity>,
+//   }
+EVENT_TYPE(BROKERED_SOCKET_ALIVE)
+
+// The start/end of creating a new socketfd in the network service sandbox. This
+// event is only used when a socket needs to be created outside of the network
+// sandbox.
+//
+// The END event wil contain the following parameters:
+//   {
+//     "net_error": <Net integer error code>
+//   }
+EVENT_TYPE(BROKERED_CREATE_SOCKET)
+
+// ------------------------------------------------------------------------
 // StreamSocket
 // ------------------------------------------------------------------------
 

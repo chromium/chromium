@@ -165,6 +165,14 @@ TCPSocketPosix::TCPSocketPosix(
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
 
+TCPSocketPosix::TCPSocketPosix(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLogWithSource net_log_source)
+    : socket_performance_watcher_(std::move(socket_performance_watcher)),
+      net_log_(net_log_source) {
+  net_log_.BeginEvent(NetLogEventType::SOCKET_ALIVE);
+}
+
 TCPSocketPosix::~TCPSocketPosix() {
   net_log_.EndEvent(NetLogEventType::SOCKET_ALIVE);
   Close();
