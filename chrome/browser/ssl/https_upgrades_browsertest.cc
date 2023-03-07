@@ -45,6 +45,9 @@
 
 using security_interstitials::https_only_mode::Event;
 using security_interstitials::https_only_mode::kEventHistogram;
+using security_interstitials::https_only_mode::
+    kNavigationRequestSecurityLevelHistogram;
+using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
 
 // Many of the following tests have only minor variations for HTTPS-First Mode
 // vs. HTTPS-Upgrades. These get parameterized so the tests run under both
@@ -235,11 +238,25 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                     1);
     histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded,
                                     1);
+
+    // Also record general request metrics.
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kSecure, 1);
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kInsecure,
+                                    1);
   } else {
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
     histograms()->ExpectTotalCount(kEventHistogram, 1);
     histograms()->ExpectBucketCount(kEventHistogram,
                                     Event::kUpgradeNotAttempted, 1);
+
+    // Also record general request metrics.
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 1);
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kInsecure,
+                                    1);
   }
 }
 
@@ -254,6 +271,11 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // Verify that navigation event metrics were not recorded as the navigation
   // was not upgraded.
   histograms()->ExpectTotalCount(kEventHistogram, 0);
+
+  // General navigation metrics should still be recorded.
+  histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 1);
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kSecure, 1);
 }
 
 // If the user navigates to a localhost URL, the navigation should end up on
@@ -266,6 +288,12 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, Localhost_ShouldNotUpgrade) {
   // Verify that navigation event metrics were not recorded as the navigation
   // was not upgraded.
   histograms()->ExpectTotalCount(kEventHistogram, 0);
+
+  // Verify that general navigation request metrics were recorded.
+  histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 1);
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kLocalhost,
+                                  1);
 }
 
 // If the user navigates to an HTTPS URL, the navigation should end up on that
@@ -1126,6 +1154,14 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, PreferHstsOverHttpsFirstMode) {
   // Verify that no HFM event histograms were emitted (to check that HFM did not
   // trigger for this navigation at all).
   histograms()->ExpectTotalCount(kEventHistogram, 0);
+
+  // Verify that general navigation request metrics were recorded.
+  histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 2);
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kHstsUpgraded,
+                                  1);
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kSecure, 1);
 }
 
 // Regression test for crbug.com/1272781. Previously, performing back/forward

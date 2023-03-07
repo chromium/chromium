@@ -31,8 +31,6 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
-class PrefService;
-
 // A class that attempts to intercept HTTP navigation requests and redirect them
 // to HTTPS, and then if the upgraded requests fail redirect them back to HTTP.
 // Its lifetime matches that of the content/ navigation loader code.
@@ -77,7 +75,8 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
   void MaybeCreateLoaderOnHstsQueryCompleted(
       const network::ResourceRequest& tentative_resource_request,
       content::URLLoaderRequestInterceptor::LoaderCallback callback,
-      PrefService* prefs,
+      Profile* profile,
+      content::WebContents* web_contents,
       HttpsOnlyModeTabHelper* tab_helper,
       bool is_hsts_active_for_host);
 
