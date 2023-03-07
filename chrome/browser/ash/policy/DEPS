@@ -11,6 +11,9 @@ include_rules = [
   # Allow includes for remoting events reporting.
   "+remoting/host/chromeos",
   "+remoting/host/mojom",
+
+  # Allow includes for error codes.
+  "+remoting/protocol/errors.h",
 ]
 
 specific_include_rules = {

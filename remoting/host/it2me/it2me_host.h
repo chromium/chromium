@@ -193,6 +193,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
       const std::string& remote_jid,
       protocol::ValidatingAuthenticator::ResultCallback result_callback);
 
+  // Determines the policy key used to determine whether the remote support
+  // connection is allowed. Enterprise connections use a separate policy.
+  const char* GetRemoteSupportPolicyKey() const;
+
   // Caller supplied fields.
   std::unique_ptr<ChromotingHostContext> host_context_;
   base::WeakPtr<It2MeHost::Observer> observer_;

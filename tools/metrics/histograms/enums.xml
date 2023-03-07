@@ -31361,6 +31361,7 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="FAILURE_NO_ICE_CONFIG"/>
   <int value="6" label="FAILURE_CRD_HOST_ERROR"/>
   <int value="7" label="FAILURE_UNMANAGED_ENVIRONMENT"/>
+  <int value="8" label="FAILURE_DISABLED_BY_POLICY"/>
 </enum>
 
 <enum name="EnterpriseCrdUserType">
@@ -32925,6 +32926,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1084" label="RealTimeDownloadProtectionRequestAllowed"/>
   <int value="1085" label="MandatoryExtensionsForIncognitoNavigation"/>
   <int value="1086" label="CredentialProviderPromoEnabled"/>
+  <int value="1087"
+      label="RemoteAccessHostAllowEnterpriseRemoteSupportConnections"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

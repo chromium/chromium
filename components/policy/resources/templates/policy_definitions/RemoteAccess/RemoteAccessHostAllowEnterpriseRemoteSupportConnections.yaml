@@ -1,0 +1,29 @@
+caption: Allow enterprise remote support connections to this machine
+default: true
+desc: |-
+  If this policy is disabled, remote support sessions cannot be started using the admin console.
+
+  This policy does not affect remote access scenarios.
+
+  This policy prevents enterprise admins from connecting to managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.
+
+  This policy has no effect if enabled, left empty, or is not set.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+items:
+- caption: Allow remote support connections from enterprise admins to this machine
+  value: true
+- caption: Prevent remote support connections from enterprise admins to this machine
+  value: false
+owners:
+- file://remoting/OWNERS
+- crmullins@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:113-
+tags: []
+type: main

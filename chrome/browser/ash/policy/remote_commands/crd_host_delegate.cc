@@ -16,6 +16,7 @@
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
+#include "remoting/protocol/errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -112,6 +113,12 @@ class CrdHostDelegate::CrdHostSession
   }
   void OnHostStateError(int64_t error_code) override {
     CRD_DVLOG(3) << __FUNCTION__ << " with error code: " << error_code;
+
+    if (error_code == remoting::protocol::ErrorCode::DISALLOWED_BY_POLICY) {
+      ReportError(ResultCode::FAILURE_DISABLED_BY_POLICY,
+                  "enterprise remote support disabled");
+      return;
+    }
 
     ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "host state error");
   }

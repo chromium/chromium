@@ -51,7 +51,11 @@ enum class ResultCode {
   // environment.
   FAILURE_UNMANAGED_ENVIRONMENT = 7,
 
-  kMaxValue = FAILURE_UNMANAGED_ENVIRONMENT
+  // Failed because RemoteAccessHostAllowEnterpriseRemoteSupportConnections
+  // policy is disabled.
+  FAILURE_DISABLED_BY_POLICY = 8,
+
+  kMaxValue = FAILURE_DISABLED_BY_POLICY
 };
 
 // Returns the time since the last user activity on this device.

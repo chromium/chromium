@@ -380,17 +380,11 @@ void It2MeHost::OnPolicyUpdate(base::Value::Dict policies) {
     return;
   }
 
-  // The policy to disallow remote support connections should not apply to
-  // support sessions initiated by the enterprise admin via a RemoteCommand.
-  if (!is_enterprise_session_) {
-    // Retrieve the policy value on whether to allow connections but don't apply
-    // it until after we've finished reading the rest of the policies and
-    // started the connection process.
-    absl::optional<bool> remote_support_connections_allowed = policies.FindBool(
-        policy::key::kRemoteAccessHostAllowRemoteSupportConnections);
-    remote_support_connections_allowed_ =
-        remote_support_connections_allowed.value_or(true);
-  }
+  // Retrieve the policy value on whether to allow connections but don't apply
+  // it until after we've finished reading the rest of the policies and started
+  // the connection process.
+  remote_support_connections_allowed_ =
+      policies.FindBool(GetRemoteSupportPolicyKey()).value_or(true);
 
   absl::optional<bool> nat_policy_value =
       policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
@@ -762,6 +756,21 @@ void It2MeHost::OnConfirmationResult(ValidationResultCallback result_callback,
       DisconnectOnNetworkThread(ErrorCode::SESSION_REJECTED);
       break;
   }
+}
+
+const char* It2MeHost::GetRemoteSupportPolicyKey() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // The policy to disallow remote support connections
+  // (RemoteAccessHostAllowRemoteSupportConnections) does not apply to support
+  // sessions initiated by the enterprise admin via a RemoteCommand. This case
+  // is handled specifically by the policy to disallow enterprise remote support
+  // connections (RemoteAccessHostAllowEnterpriseRemoteSupportConnections).
+  if (is_enterprise_session_) {
+    return policy::key::
+        kRemoteAccessHostAllowEnterpriseRemoteSupportConnections;
+  }
+#endif
+  return policy::key::kRemoteAccessHostAllowRemoteSupportConnections;
 }
 
 It2MeHostFactory::It2MeHostFactory() = default;

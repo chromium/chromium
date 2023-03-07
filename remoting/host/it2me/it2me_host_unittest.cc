@@ -918,6 +918,31 @@ TEST_F(It2MeHostTest, EnterpriseSessionsShouldNotCheckHostDomain) {
   ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
   ASSERT_EQ(ErrorCode::OK, last_error_code_);
 }
+
+TEST_F(
+    It2MeHostTest,
+    EnterpriseSessionsFailWhenEnterpriseRemoteSupportConnectionsPolicyDisabled) {
+  SetPolicies(
+      {{policy::key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
+        base::Value(false)}});
+
+  is_enterprise_session_ = true;
+  StartHost();
+  ASSERT_EQ(It2MeHostState::kError, last_host_state_);
+  ASSERT_EQ(ErrorCode::DISALLOWED_BY_POLICY, last_error_code_);
+}
+
+TEST_F(
+    It2MeHostTest,
+    RemoteSupportSessionsSucceedWhenEnterpriseRemoteSupportConnectionsPolicyDisabled) {
+  SetPolicies(
+      {{policy::key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
+        base::Value(false)}});
+
+  is_enterprise_session_ = false;
+  StartHost();
+  ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
+}
 #endif
 
 }  // namespace remoting
