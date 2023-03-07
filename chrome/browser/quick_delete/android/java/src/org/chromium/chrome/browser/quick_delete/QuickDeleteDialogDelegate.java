@@ -58,8 +58,9 @@ class QuickDeleteDialogDelegate {
     }
 
     void showDialog() {
-        mModalDialogManager.showDialog(mModalDialogPropertyModel,
-                ModalDialogManager.ModalDialogType.APP,
-                ModalDialogManager.ModalDialogPriority.HIGH);
+        // TODO(crbug.com/1412087): Show proper dialog.
+        // mModalDialogManager.showDialog(mModalDialogPropertyModel,
+        //         ModalDialogManager.ModalDialogType.APP,
+        //         ModalDialogManager.ModalDialogPriority.HIGH);
     }
 }
