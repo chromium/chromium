@@ -540,7 +540,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info,
     uint8_t device_index,
-    const gfx::Point& origin,
     const display::DrmFormatsAndModifiers& drm_formats_and_modifiers) {
   const uint8_t display_index =
       display::ConnectorIndex8(device_index, info->index());
@@ -578,7 +577,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   std::string display_name;
   // Make sure the ID contains non index part.
   int64_t port_display_id = display_index | 0x100;
-  int64_t edid_display_id = display::kInvalidDisplayId;
+  int64_t edid_display_id = port_display_id;
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
@@ -631,7 +630,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
 
   return std::make_unique<display::DisplaySnapshot>(
       port_display_id, port_display_id, edid_display_id, connector_index,
-      origin, physical_size, type, base_connector_id, path_topology,
+      gfx::Point(), physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
       color_correction_in_linear_space, display_color_space, bits_per_channel,

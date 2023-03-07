@@ -29,10 +29,6 @@ namespace display {
 class DisplayMode;
 }  // namespace display
 
-namespace gfx {
-class Point;
-}
-
 namespace ui {
 // TODO(b/193019614): clean |kMaxDrmCount|'s and |kMaxDrmConnectors|'s
 // assignment up once EDID-based ID migration is complete and the flag is
@@ -145,7 +141,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info,
     uint8_t device_index,
-    const gfx::Point& origin,
     const display::DrmFormatsAndModifiers& drm_formats_and_modifiers);
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);

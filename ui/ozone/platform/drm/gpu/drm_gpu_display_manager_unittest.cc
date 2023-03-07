@@ -43,6 +43,33 @@ constexpr unsigned char kHPz32x[] =
     "\x00\x1A\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x3E";
 constexpr size_t kHPz32xLength = std::size(kHPz32x);
 
+// An EDID that can be found on an internal panel.
+constexpr unsigned char kInternalDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\xa3\x42\x31\x00\x00\x00\x00"
+    "\x00\x15\x01\x03\x80\x1a\x10\x78\x0a\xd3\xe5\x95\x5c\x60\x90\x27"
+    "\x19\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\x9e\x1b\x00\xa0\x50\x20\x12\x30\x10\x30"
+    "\x13\x00\x05\xa3\x10\x00\x00\x19\x00\x00\x00\x0f\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x23\x87\x02\x64\x00\x00\x00\x00\xfe\x00\x53"
+    "\x41\x4d\x53\x55\x4e\x47\x0a\x20\x20\x20\x20\x20\x00\x00\x00\xfe"
+    "\x00\x31\x32\x31\x41\x54\x31\x31\x2d\x38\x30\x31\x0a\x20\x00\x45";
+constexpr size_t kInternalDisplayLength = std::size(kInternalDisplay);
+
+// Serial number is unavailable. Omitted from bytes 12-15 of block zero and SN
+// descriptor (tag: 0xff). Displays like this will produce colliding EDID-based
+// display IDs.
+constexpr unsigned char kNoSerialNumberDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x00\x00\x00\x00"
+    "\x02\x16\x01\x04\xb5\x40\x28\x78\xe2\x8d\x85\xad\x4f\x35\xb1\x25"
+    "\x0e\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xe2\x68\x00\xa0\xa0\x40\x2e\x60\x30\x20"
+    "\x36\x00\x81\x90\x21\x00\x00\x1a\xbc\x1b\x00\xa0\x50\x20\x17\x30"
+    "\x30\x20\x36\x00\x81\x90\x21\x00\x00\x1a\x00\x00\x00\xfc\x00\x48"
+    "\x50\x20\x5a\x52\x33\x30\x77\x0a\x20\x20\x20\x20\x00\x00\x00\x10"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x71";
+constexpr size_t kNoSerialNumberDisplayLength =
+    std::size(kNoSerialNumberDisplay);
+
 const char kDefaultTestGraphicsCardPattern[] = "/test/dri/card%d";
 
 const std::vector<ResolutionAndRefreshRate> kStandardModes = {
@@ -344,6 +371,80 @@ TEST_F(DrmGpuDisplayManagerTest,
   ASSERT_EQ(display3->origin(), display3_origin);
 
   ASSERT_TRUE(ConfigureDisplays(display_snapshots));
+}
+
+TEST_F(DrmGpuDisplayManagerTest, TestEdidIdConflictResolution) {
+  // One DRM device.
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+
+  // First, add the internal display.
+  {
+    AddCrtcAndPlanes(drm_state);
+
+    auto& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = 0b1;
+
+    auto& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardModes[3]};
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+    connector.edid_blob = std::vector<uint8_t>(
+        kInternalDisplay, kInternalDisplay + kInternalDisplayLength);
+  }
+
+  // Next, add two external displays that will produce an EDID-based ID
+  // collision, since their EDIDs do not include viable serial numbers.
+  {
+    AddCrtcAndPlanes(drm_state);
+
+    auto& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = 0b10;
+
+    auto& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.modes = kStandardModes;
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+    connector.edid_blob = std::vector<uint8_t>(
+        kNoSerialNumberDisplay,
+        kNoSerialNumberDisplay + kNoSerialNumberDisplayLength);
+  }
+
+  {
+    AddCrtcAndPlanes(drm_state);
+
+    auto& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = 0b100;
+
+    auto& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.modes = kStandardModes;
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+    connector.edid_blob = std::vector<uint8_t>(
+        kNoSerialNumberDisplay,
+        kNoSerialNumberDisplay + kNoSerialNumberDisplayLength);
+  }
+
+  AddAndInitializeDrmDeviceWithState(drm_state);
+
+  auto display_snapshots = drm_gpu_display_manager_->GetDisplays();
+  ASSERT_EQ(display_snapshots.size(), 3u);
+
+  // First, ensure all display IDs are unique.
+  ASSERT_NE(display_snapshots[0]->edid_display_id(),
+            display_snapshots[1]->edid_display_id());
+  ASSERT_NE(display_snapshots[0]->edid_display_id(),
+            display_snapshots[2]->edid_display_id());
+  ASSERT_NE(display_snapshots[1]->edid_display_id(),
+            display_snapshots[2]->edid_display_id());
+
+  // The EDID-based display IDs occupy the first 32 bits of the id field.
+  // Extract unresolved EDID IDs from the snapshots and show that they are
+  // equal, and thus have been successfully resolved.
+  const int64_t unresolved_display_id1 =
+      display_snapshots[1]->edid_display_id() & 0xffffffff;
+  const int64_t unresolved_display_id2 =
+      display_snapshots[2]->edid_display_id() & 0xffffffff;
+  ASSERT_EQ(unresolved_display_id1, unresolved_display_id2);
 }
 
 }  // namespace ui

@@ -162,6 +162,7 @@ void DrmDisplay::Update(HardwareDisplayControllerInfo* info,
   display_id_ = display_snapshot->display_id();
   base_connector_id_ = display_snapshot->base_connector_id();
   modes_ = GetDrmModeVector(connector_.get());
+  origin_ = display_snapshot->origin();
   is_hdr_capable_ = display_snapshot->bits_per_channel() > 8 &&
                     display_snapshot->color_space().IsHDR();
   privacy_screen_property_ =
