@@ -14,7 +14,8 @@ struct GetAssertionResponse {
     kSuccess = 0,
     kCtapResponseError = 1,
     kCborDecoderError = 2,
-    kUnknownError = 3,
+    kMessagePayloadParseError = 3,
+    kUnknownError = 4,
   };
 
   GetAssertionStatus status;

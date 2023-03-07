@@ -122,8 +122,9 @@ TEST_F(QuickStartDecoderTest, ConvertCtapDeviceResponseCodeTest_InRange) {
   uint8_t status_code = 0x3A;
   std::vector<uint8_t> data = BuildEncodedResponseData(
       credential_id, auth_data, signature, user_id, status_code);
+  std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
+      DoDecodeGetAssertionResponse(std::move(message));
   EXPECT_EQ(response->ctap_device_response_code, status_code);
   EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
   EXPECT_TRUE(response->credential_id.empty());
@@ -137,8 +138,9 @@ TEST_F(QuickStartDecoderTest, ConvertCtapDeviceRespnoseCodeTest_OutOfRange) {
   uint8_t status_code = 0x07;
   std::vector<uint8_t> data = BuildEncodedResponseData(
       kValidCredentialId, auth_data, signature, user_id, status_code);
+  std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
+      DoDecodeGetAssertionResponse(std::move(message));
   EXPECT_EQ(response->ctap_device_response_code, status_code);
   EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
   EXPECT_TRUE(response->credential_id.empty());
@@ -152,11 +154,24 @@ TEST_F(QuickStartDecoderTest, CborDecodeGetAssertionResponse_DecoderError) {
 
   // Include 0x00 as first byte for kSuccess CtapDeviceResponse status.
   std::vector<uint8_t> data = {0x00, 0x63, 0x00, 0x00, 0xA6};
+  std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   int expected = kCborDecoderErrorInvalidUtf8;
   mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
+      DoDecodeGetAssertionResponse(std::move(message));
   EXPECT_EQ(response->cbor_decoder_error, expected);
   EXPECT_EQ(response->status, GetAssertionStatus::kCborDecoderError);
+  EXPECT_TRUE(response->credential_id.empty());
+}
+
+TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ResponseIsNotJson) {
+  std::vector<uint8_t> data;
+  uint8_t expected_device_response_code = kCtap2ErrInvalidCBOR;
+  int expected_decoder_error = kCborDecoderUnknownError;
+  mojom::GetAssertionResponsePtr response =
+      DoDecodeGetAssertionResponse(std::move(data));
+  EXPECT_EQ(response->ctap_device_response_code, expected_device_response_code);
+  EXPECT_EQ(response->cbor_decoder_error, expected_decoder_error);
+  EXPECT_EQ(response->status, GetAssertionStatus::kMessagePayloadParseError);
   EXPECT_TRUE(response->credential_id.empty());
 }
 
@@ -164,8 +179,9 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_EmptyResponse) {
   std::vector<uint8_t> data{};
   uint8_t expected_device_response_code = kCtap2ErrInvalidCBOR;
   int expected_decoder_error = kCborDecoderUnknownError;
+  std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
+      DoDecodeGetAssertionResponse(std::move(message));
   EXPECT_EQ(response->ctap_device_response_code, expected_device_response_code);
   EXPECT_EQ(response->cbor_decoder_error, expected_decoder_error);
   EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
@@ -176,8 +192,9 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_OnlyStatusCode) {
   std::vector<uint8_t> data{0x00};
   uint8_t expected_device_response_code = kCtap2ErrInvalidCBOR;
   int expected_decoder_error = kCborDecoderUnknownError;
+  std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
+      DoDecodeGetAssertionResponse(std::move(message));
   EXPECT_EQ(response->ctap_device_response_code, expected_device_response_code);
   EXPECT_EQ(response->cbor_decoder_error, expected_decoder_error);
   EXPECT_EQ(response->status, GetAssertionStatus::kCtapResponseError);
@@ -193,8 +210,9 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
   uint8_t status = kSuccess;
   std::vector<uint8_t> data = BuildEncodedResponseData(
       kValidCredentialId, kValidAuthData, kValidSignature, user_id, status);
+  std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
+      DoDecodeGetAssertionResponse(std::move(message));
   EXPECT_EQ(response->ctap_device_response_code, kSuccess);
   EXPECT_EQ(response->cbor_decoder_error, kCborDecoderNoError);
   EXPECT_EQ(response->status, GetAssertionStatus::kSuccess);
@@ -214,8 +232,9 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
   uint8_t status = kSuccess;
   std::vector<uint8_t> data = BuildEncodedResponseData(
       credential_id, kValidAuthData, kValidSignature, user_id, status);
+  std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   mojom::GetAssertionResponsePtr response =
-      DoDecodeGetAssertionResponse(std::move(data));
+      DoDecodeGetAssertionResponse(std::move(message));
   EXPECT_EQ(response->ctap_device_response_code, kSuccess);
   EXPECT_EQ(response->cbor_decoder_error, kCborDecoderNoError);
   EXPECT_EQ(response->status, GetAssertionStatus::kSuccess);

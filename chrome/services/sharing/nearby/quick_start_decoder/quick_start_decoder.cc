@@ -127,16 +127,26 @@ QuickStartDecoder::~QuickStartDecoder() = default;
 
 mojom::GetAssertionResponsePtr QuickStartDecoder::DoDecodeGetAssertionResponse(
     const std::vector<uint8_t>& data) {
-  if (data.size() < 2) {
+  absl::optional<std::vector<uint8_t>> parsed_response_bytes =
+      ExtractFidoDataFromJsonResponse(data);
+  if (!parsed_response_bytes.has_value()) {
+    LOG(ERROR) << "Failed to extract Fido data from JSON response.";
+    return BuildGetAssertionResponseError(
+        GetAssertionStatus::kMessagePayloadParseError, kCtap2ErrInvalidCBOR,
+        kCborDecoderUnknownError);
+  }
+
+  std::vector<unsigned char>& response_bytes = parsed_response_bytes.value();
+  if (response_bytes.size() < 2) {
     LOG(ERROR) << "GetAssertionResponse requires a status code byte and "
                   "response bytes. Data in size: "
-               << data.size();
+               << response_bytes.size();
     return BuildGetAssertionResponseError(
         GetAssertionStatus::kCtapResponseError, kCtap2ErrInvalidCBOR,
         kCborDecoderUnknownError);
   }
-  uint8_t ctap_status = data[0];
-  base::span<const uint8_t> cbor_bytes(data);
+  uint8_t ctap_status = response_bytes[0];
+  base::span<const uint8_t> cbor_bytes(response_bytes);
   cbor_bytes = cbor_bytes.subspan(1);
   if (ctap_status != kCtapDeviceResponseSuccess) {
     LOG(ERROR) << "Ctap Device Response Status Code is not Success(0x00). Got: "
