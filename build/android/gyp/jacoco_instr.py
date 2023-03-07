@@ -21,6 +21,9 @@ import zipfile
 
 from util import build_utils
 
+# This should be same as recipe side token. See bit.ly/3STSPcE.
+INSTRUMENT_ALL_JACOCO_OVERRIDE_TOKEN = 'INSTRUMENT_ALL_JACOCO'
+
 
 def _AddArguments(parser):
   """Adds arguments related to instrumentation to parser.
@@ -203,22 +206,27 @@ def _RunInstrumentCommand(parser):
     ]
 
     if not args.files_to_instrument:
-      _InstrumentClassFiles(instrument_cmd, args.input_path, args.output_path,
-                            temp_dir)
+      affected_source_files = None
     else:
       affected_files = build_utils.ReadSourcesList(args.files_to_instrument)
-      source_set = set(source_files)
-      affected_source_files = [f for f in affected_files if f in source_set]
+      # Check if coverage recipe decided to instrument everything by overriding
+      # the try builder default setting(selective instrumentation). This can
+      # happen in cases like a DEPS roll of jacoco library
+      if INSTRUMENT_ALL_JACOCO_OVERRIDE_TOKEN in affected_files:
+        affected_source_files = None
+      else:
+        source_set = set(source_files)
+        affected_source_files = [f for f in affected_files if f in source_set]
 
-      # Copy input_path to output_path and return if no source file affected.
-      if not affected_source_files:
-        shutil.copyfile(args.input_path, args.output_path)
-        # Create a dummy sources_json_file.
-        _CreateSourcesJsonFile([], None, args.sources_json_file,
-                               build_utils.DIR_SOURCE_ROOT)
-        return 0
-      _InstrumentClassFiles(instrument_cmd, args.input_path, args.output_path,
-                            temp_dir, affected_source_files)
+        # Copy input_path to output_path and return if no source file affected.
+        if not affected_source_files:
+          shutil.copyfile(args.input_path, args.output_path)
+          # Create a dummy sources_json_file.
+          _CreateSourcesJsonFile([], None, args.sources_json_file,
+                                 build_utils.DIR_SOURCE_ROOT)
+          return 0
+    _InstrumentClassFiles(instrument_cmd, args.input_path, args.output_path,
+                          temp_dir, affected_source_files)
 
   source_dirs = _GetSourceDirsFromSourceFiles(source_files)
   # TODO(GYP): In GN, we are passed the list of sources, detecting source
