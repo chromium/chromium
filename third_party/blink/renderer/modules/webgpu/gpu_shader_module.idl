@@ -9,5 +9,9 @@
     SecureContext
 ] interface GPUShaderModule {
     [CallWith=ScriptState] Promise<GPUCompilationInfo> getCompilationInfo();
+    // Deprecated. compilationInfo() has been renamed to getCompilationInfo()
+    // in the WebGPU specification. But we keep this until CTS will be rolled.
+    // We will remove this when CTS is rolled.
+    [CallWith=ScriptState] Promise<GPUCompilationInfo> compilationInfo();
 };
 GPUShaderModule includes GPUObjectBase;
