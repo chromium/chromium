@@ -480,6 +480,13 @@ ios_builder(
 )
 
 ios_builder(
+    name = "ios-wpt-fyi-rel",
+    mirrors = [
+        "ci/ios-wpt-fyi-rel",
+    ],
+)
+
+ios_builder(
     name = "ios15-beta-simulator",
     mirrors = ["ci/ios15-beta-simulator"],
 )
