@@ -95,6 +95,9 @@ _NEGATIVE_FILTER = [
     'MobileEmulationCapabilityTest.*',
     # crbug.com/chromedriver/4379
     'ChromeDriverTest.testClickElementInAnotherFrame',
+    # crbug.com/chromedriver/4362
+    'BidiTest.testSwitchWindows',
+    'BidiTest.testOpenMultipleTabsInJavaScript',
 ]
 
 
@@ -5998,6 +6001,44 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     div = webelement.WebElement(self._driver, node_id)
     div.Click()
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
+
+  def testSwitchWindows(self):
+    """Regression test for crbug.com/chromedriver/4362"""
+    self._http_server.SetDataForPath('/iframes.html',
+       bytes('<title>iframes</title><iframe src="about:blank"/>', 'utf-8'))
+    self._http_server.SetDataForPath('/original.html',
+     bytes("""
+       <title>original</title>
+       <a href="/iframes.html" target="_blank" id="iframes">iframes</a>
+       """, 'utf-8'))
+
+    self._driver.Load(self.GetHttpUrlForFile('/original.html'))
+    old_handles = self._driver.GetWindowHandles()
+    self._driver.FindElement('css selector', '#iframes').Click()
+    self.WaitForNewWindow(self._driver, old_handles)
+
+    handles = self._driver.GetWindowHandles()
+    titles = []
+    for handle in handles:
+      self._driver.SwitchToWindow(handle)
+      titles.append(self._driver.GetTitle())
+    self.assertEqual(len(titles), 2)
+    self.assertIn('iframes', titles)
+    self.assertIn('original', titles)
+
+  def testOpenMultipleTabsInJavaScript(self):
+    """Regression test for crbug.com/chromedriver/4362"""
+    self._http_server.SetDataForPath('/iframes.html',
+       bytes('<title>iframes</title><iframe src="about:blank"/> </body>', 'utf-8'))
+    script = 'for (let i=0; i<10; ++i){ window.open("%s"); }' % self.GetHttpUrlForFile('/iframes.html')
+    self._driver.ExecuteScript(script)
+    handles = self._driver.GetWindowHandles()
+    titles = []
+    for handle in handles:
+      self._driver.SwitchToWindow(handle)
+      titles.append(self._driver.GetTitle())
+    expected_titles = [''] + ['iframes' for _ in range(0, 10)]
+    self.assertListEqual(expected_titles, sorted(titles))
 
 
 
