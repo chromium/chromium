@@ -415,7 +415,7 @@ CreditCardAccessoryControllerImpl::GetAllCreditCards() const {
     // If any of cards is enrolled for virtual cards and the feature is active,
     // then insert a virtual card suggestion right before the actual card.
     if (ShouldCreateVirtualCard(card)) {
-      cards.push_back(CreditCard::CreateVirtualCard(*card));
+      cards.push_back(CreditCard::CreateVirtualCardWithGuidSuffix(*card));
     }
     cards.push_back(card);
   }

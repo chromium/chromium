@@ -587,6 +587,12 @@ BASE_FEATURE(kAutofillLogUKMEventsWithSampleRate,
              "AutofillLogUKMEventsWithSampleRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether virtual card suggestions are shown on the touch to fill
+// surface for credit cards on Android.
+BASE_FEATURE(kAutofillVirtualCardsOnTouchToFillAndroid,
+             "AutofillVirtualCardsOnTouchToFillAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.

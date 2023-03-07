@@ -141,6 +141,28 @@ std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
 
 }  // namespace internal
 
+// static
+CreditCard CreditCard::CreateVirtualCard(const CreditCard& card) {
+  // Virtual cards can be created only from masked server cards.
+  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
+  CreditCard virtual_card = card;
+  virtual_card.set_record_type(VIRTUAL_CARD);
+  return virtual_card;
+}
+
+// static
+std::unique_ptr<CreditCard> CreditCard::CreateVirtualCardWithGuidSuffix(
+    const CreditCard& card) {
+  // Virtual cards can be created only from masked server cards.
+  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
+  auto virtual_card = std::make_unique<CreditCard>(card);
+  virtual_card->set_record_type(VIRTUAL_CARD);
+  // Add a suffix to the guid to help differentiate the virtual card from the
+  // server card.
+  virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
+  return virtual_card;
+}
+
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
     : AutofillDataModel(guid, origin),
       record_type_(LOCAL_CARD),
@@ -1041,19 +1063,6 @@ bool CreditCard::HasNonEmptyValidNickname() const {
 
 std::u16string CreditCard::NicknameAndLastFourDigitsForTesting() const {
   return NicknameAndLastFourDigits();
-}
-
-// static
-std::unique_ptr<CreditCard> CreditCard::CreateVirtualCard(
-    const CreditCard& card) {
-  // Virtual cards can be created only from masked server cards.
-  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
-  auto virtual_card = std::make_unique<CreditCard>(card);
-  virtual_card->set_record_type(VIRTUAL_CARD);
-  // Add a suffix to the guid to help differentiate the virtual card from the
-  // server card.
-  virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
-  return virtual_card;
 }
 
 void CreditCard::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
