@@ -108,13 +108,15 @@ class CrasInputStreamTest : public testing::Test {
                                 const std::string& device_id) {
     AudioParameters params(kTestFormat, layout, kTestSampleRate,
                            samples_per_packet);
-    return new CrasInputStream(params, mock_manager_.get(), device_id);
+    return new CrasInputStream(params, mock_manager_.get(), device_id,
+                               AudioManager::LogCallback());
   }
 
   void CaptureSomeFrames(const AudioParameters& params,
                          unsigned int duration_ms) {
     CrasInputStream* test_stream = new CrasInputStream(
-        params, mock_manager_.get(), AudioDeviceDescription::kDefaultDeviceId);
+        params, mock_manager_.get(), AudioDeviceDescription::kDefaultDeviceId,
+        AudioManager::LogCallback());
 
     EXPECT_CALL(*mock_manager_.get(), RegisterSystemAecDumpSource(_));
     EXPECT_CALL(*mock_manager_.get(), DeregisterSystemAecDumpSource(_));
@@ -174,9 +176,9 @@ TEST_F(CrasInputStreamTest, BadSampleRate) {
   AudioParameters bad_rate_params(
       kTestFormat, ChannelLayoutConfig::FromLayout<kTestChannelLayout>(), 0,
       kTestFramesPerPacket);
-  CrasInputStream* test_stream =
-      new CrasInputStream(bad_rate_params, mock_manager_.get(),
-                          AudioDeviceDescription::kDefaultDeviceId);
+  CrasInputStream* test_stream = new CrasInputStream(
+      bad_rate_params, mock_manager_.get(),
+      AudioDeviceDescription::kDefaultDeviceId, AudioManager::LogCallback());
   EXPECT_EQ(test_stream->Open(), AudioInputStream::OpenOutcome::kFailed);
   test_stream->Close();
 }
