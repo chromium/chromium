@@ -63,21 +63,43 @@ constexpr int kMaxAppsWithMoreAppsButton = 5;
 constexpr gfx::Rect kMoreAppsButtonArea = gfx::Rect(57, 32);
 constexpr int kMoreAppsButtonRadius = 16;
 
-class HeaderView : public views::Label {
+constexpr int kRecentAppsHeaderSpacing = 220;
+
+class HeaderView : public views::View {
  public:
   HeaderView() {
-    SetText(l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE));
-    SetLineHeight(kHeaderLabelLineHeight);
-    SetFontList(font_list()
-                    .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
-                                         font_list().GetFontSize())
-                    .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
-    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
-    SetAutoColorReadabilityEnabled(false);
-    SetSubpixelRenderingEnabled(false);
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+    layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    layout->set_between_child_spacing(kRecentAppsHeaderSpacing);
+
+    auto* label = AddChildView(std::make_unique<views::Label>());
+    label->SetText(
+        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE));
+    label->SetLineHeight(kHeaderLabelLineHeight);
+    label->SetFontList(
+        label->font_list()
+            .DeriveWithSizeDelta(kHeaderTextFontSizeDip -
+                                 label->font_list().GetFontSize())
+            .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
+    label->SetAutoColorReadabilityEnabled(false);
+    label->SetSubpixelRenderingEnabled(false);
+    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+    if (features::IsEcheNetworkConnectionStateEnabled()) {
+      error_button_ = AddChildView(std::make_unique<views::ImageButton>());
+      gfx::ImageSkia image = gfx::CreateVectorIcon(
+          kPhoneHubEcheErrorStatusIcon,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorWarning));
+      error_button_->SetImage(views::Button::STATE_NORMAL, image);
+      error_button_->SetVisible(false);
+    }
   }
   ~HeaderView() override = default;
   HeaderView(HeaderView&) = delete;
@@ -85,6 +107,9 @@ class HeaderView : public views::Label {
 
   // views::View:
   const char* GetClassName() const override { return "HeaderView"; }
+
+ private:
+  views::ImageButton* error_button_;
 };
 
 }  // namespace
