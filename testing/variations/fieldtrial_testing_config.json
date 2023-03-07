@@ -5214,22 +5214,22 @@
             ]
         }
     ],
-    "FirstPartySetsInitLatencyExperiment": [
+    "FirstPartySets": [
         {
             "platforms": [
                 "android",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230221",
                     "enable_features": [
-                        "FirstPartySets"
+                        "FirstPartySets",
+                        "PrivacySandboxFirstPartySetsUI"
                     ]
                 }
             ]

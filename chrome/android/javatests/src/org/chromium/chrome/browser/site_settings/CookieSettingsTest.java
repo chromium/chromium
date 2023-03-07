@@ -77,7 +77,11 @@ public class CookieSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderCookiePage() throws IOException {
+        // This test is written for when First-Party Sets UI is disabled. When
+        // First-Party Sets UI is eventually enabled by default, this test will
+        // be rewritten or deleted.
         setCookiesEnabled(mSettingsActivity, false);
         View view = mSettingsActivity.getMainFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
