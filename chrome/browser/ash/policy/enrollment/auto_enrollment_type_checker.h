@@ -54,22 +54,22 @@ class AutoEnrollmentTypeChecker {
     kUnknownDueToMissingSystemClockSync = 4,
   };
 
-  // Returns true if forced re-enrollment is enabled based on command-line flags
-  // and official build status.
+  // Returns true if forced re-enrollment is enabled based on command-line
+  // switch and official build status.
   static bool IsFREEnabled();
 
   // Returns true if initial enrollment is enabled based on command-line
-  // flags and official build status.
+  // switch and official build status.
   static bool IsInitialEnrollmentEnabled();
 
   // Returns true if any either FRE or initial enrollment are enabled.
   static bool IsEnabled();
 
   // Returns whether the FRE auto-enrollment check is required. Ignores all
-  // command lines setups and checks with VPD directly. When kCheckEnrollmentKey
+  // command-line switches and checks the VPD directly. When kCheckEnrollmentKey
   // VPD entry is present, it is explicitly stating whether the forced
   // re-enrollment is required or not. Otherwise, for backward compatibility
-  // with devices upgrading from an older version of Chrome OS, the
+  // with devices upgrading from an older version of ChromeOS, the
   // kActivateDateKey VPD entry is queried. If it's missing, FRE is not
   // required. This enables factories to start full guest sessions for testing,
   // see http://crbug.com/397354 for more context. The requirement for the
@@ -87,7 +87,7 @@ class AutoEnrollmentTypeChecker {
   // supposed to call this again after the system clock has been synchronized.
   //
   // `dev_disable_boot == true` forces FRE unless explicitly disabled via
-  // commandline flag.
+  // command-line switch.
   static CheckType DetermineAutoEnrollmentCheckType(
       bool is_system_clock_synchronized,
       ash::system::StatisticsProvider* statistics_provider,

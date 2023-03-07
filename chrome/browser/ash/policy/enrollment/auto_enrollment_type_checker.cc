@@ -172,7 +172,7 @@ AutoEnrollmentTypeChecker::FRERequirement
 AutoEnrollmentTypeChecker::GetFRERequirement(
     ash::system::StatisticsProvider* statistics_provider,
     bool dev_disable_boot) {
-  // Skip FRE check if it is not enabled by command-line switches.
+  // Skip FRE check if it is not enabled by command-line switch.
   if (!IsFREEnabled()) {
     LOG(WARNING) << "FRE disabled.";
     return FRERequirement::kDisabled;
@@ -205,7 +205,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
     bool is_system_clock_synchronized,
     ash::system::StatisticsProvider* statistics_provider) {
   // Skip Initial State Determination if it is not enabled according to
-  // command-line flags.
+  // command-line switch.
   if (!IsInitialEnrollmentEnabled()) {
     LOG(WARNING) << "Initial Enrollment is disabled.";
     return InitialStateDeterminationRequirement::kDisabled;

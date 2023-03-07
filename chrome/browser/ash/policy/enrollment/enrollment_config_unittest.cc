@@ -44,14 +44,14 @@ class EnrollmentConfigTest : public testing::TestWithParam<ZeroTouchParam> {
                                              "fake-hardware");
   }
 
-  void SetupZeroTouchFlag();
+  void SetupZeroTouchCommandLineSwitch();
 
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   TestingPrefServiceSimple local_state_;
   ash::StubInstallAttributes install_attributes_;
 };
 
-void EnrollmentConfigTest::SetupZeroTouchFlag() {
+void EnrollmentConfigTest::SetupZeroTouchCommandLineSwitch() {
   const ZeroTouchParam& param = GetParam();
   if (param.enable_zero_touch_flag != nullptr) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -61,7 +61,7 @@ void EnrollmentConfigTest::SetupZeroTouchFlag() {
 }
 
 TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
-  SetupZeroTouchFlag();
+  SetupZeroTouchCommandLineSwitch();
 
   // Default configuration is empty.
   EnrollmentConfig config = EnrollmentConfig::GetPrescribedEnrollmentConfig(
@@ -139,7 +139,7 @@ TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 }
 
 TEST_P(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
-  SetupZeroTouchFlag();
+  SetupZeroTouchCommandLineSwitch();
 
   // If OOBE is complete, we may re-enroll to the domain configured in install
   // attributes. This is only enforced after detecting enrollment loss.
