@@ -11,10 +11,14 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "base/time/time.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/ash/arc_vm_data_migration_confirmation_dialog.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -61,11 +65,19 @@ void ArcVmDataMigrationNotifier::OnArcStarted() {
 
   // TODO(b/258278176): Check policies and eligibility (e.g. whether LVM
   // application containers are enabled) before showing a notification.
-  if (ShouldShowNotification(profile_)) {
-    SetArcVmDataMigrationStatus(profile_->GetPrefs(),
-                                ArcVmDataMigrationStatus::kNotified);
-    ShowNotification();
+  if (!ShouldShowNotification(profile_)) {
+    return;
   }
+
+  if (GetArcVmDataMigrationStatus(profile_->GetPrefs()) ==
+      ArcVmDataMigrationStatus::kUnnotified) {
+    profile_->GetPrefs()->SetTime(
+        prefs::kArcVmDataMigrationNotificationFirstShownTime,
+        base::Time::Now());
+  }
+  SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                              ArcVmDataMigrationStatus::kNotified);
+  ShowNotification();
 }
 
 void ArcVmDataMigrationNotifier::OnArcSessionStopped(ArcStopReason reason) {
@@ -73,12 +85,17 @@ void ArcVmDataMigrationNotifier::OnArcSessionStopped(ArcStopReason reason) {
 }
 
 void ArcVmDataMigrationNotifier::ShowNotification() {
-  // TODO(b/258278176): Replace strings with l10n ones.
-  // TODO(b/258278176): Replace icons once the final design decision is made.
+  const int days_until_deadline =
+      GetDaysUntilArcVmDataMigrationDeadline(profile_->GetPrefs());
+
   message_center::Notification notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-      u"Update ChromeOS" /* title */, u"Up to 10 minutes needed" /* message */,
-      u"ChromeOS" /* display_source */, GURL() /* origin_url */,
+      l10n_util::GetStringUTF16(IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_TITLE),
+      l10n_util::GetPluralStringFUTF16(
+          IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_DAYS_UNTIL_DEADLINE,
+          days_until_deadline),
+      l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME),
+      GURL() /* origin_url */,
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
           ash::NotificationCatalogName::kArcVmDataMigration),
@@ -89,12 +106,19 @@ void ArcVmDataMigrationNotifier::ShowNotification() {
               weak_ptr_factory_.GetWeakPtr())),
       ash::kSystemMenuUpdateIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
-  notification.set_buttons({message_center::ButtonInfo(u"Update")});
+  notification.set_buttons(
+      {message_center::ButtonInfo(l10n_util::GetStringUTF16(
+          IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_ACCEPT_BUTTON_LABEL))});
 
-  // Make the notification persist.
-  // TODO(b/259278176): Check and decide what is an appropriate behavior here.
+  // Set the highest (system) priority.
+  notification.SetSystemPriority();
+  // Set no timeout so that the notification never disappears spontaneously.
   notification.set_never_timeout(true);
-  notification.set_pinned(true);
+  if (!ArcVmDataMigrationShouldBeDismissible(days_until_deadline)) {
+    // Pin the notification so that it is moved from the desktop to the
+    // notification list when the close button is clicked.
+    notification.set_pinned(true);
+  }
 
   NotificationDisplayService::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
@@ -120,6 +144,7 @@ void ArcVmDataMigrationNotifier::OnNotificationClicked(
   CloseNotification();
 
   ShowArcVmDataMigrationConfirmationDialog(
+      profile_->GetPrefs(),
       base::BindOnce(&ArcVmDataMigrationNotifier::OnRestartAccepted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

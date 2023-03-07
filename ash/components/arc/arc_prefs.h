@@ -45,6 +45,7 @@ ARC_EXPORT extern const char kArcSkippedReportingNotice[];
 ARC_EXPORT extern const char kArcTermsAccepted[];
 ARC_EXPORT extern const char kArcVisibleExternalStorages[];
 ARC_EXPORT extern const char kArcVmDataMigrationStatus[];
+ARC_EXPORT extern const char kArcVmDataMigrationNotificationFirstShownTime[];
 ARC_EXPORT extern const char kArcIsManaged[];
 ARC_EXPORT extern const char kEcryptfsMigrationStrategy[];
 ARC_EXPORT extern const char kEngagementPrefsPrefix[];

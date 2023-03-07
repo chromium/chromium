@@ -101,4 +101,37 @@
   <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_DONT_ALLOW_BUTTON" desc="The label for the buton for user to disallow an app to set up WiFi networks through Passpoint.">
     Don't allow
   </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_TITLE" desc="Title of the notification to inform that there is an important update to improve the performance of Android apps on ChromeOS.">
+    ChromeOS update for Android apps
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_DAYS_UNTIL_DEADLINE" desc="Message of the notification to inform that an important update to improve the performance of Android apps on ChromeOS needs to be done within specific days.">
+    {DAYS_UNTIL_DEADLINE, plural,
+      =1 {Update required today}
+      =2 {Update required by tomorrow}
+      other {Update required within # days}}
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_ACCEPT_BUTTON_LABEL" desc="Label of a notification button to accept an important update to improve the performance of Android apps on ChromeOS.">
+    Update now
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_TITLE" desc="Text to inform that Chrome tabs and apps will be closed when an update to improve the performance of Android apps on ChromeOS is started. The text is displayed as the title of a dialog.">
+    Your Chrome tabs and apps will close when the update starts
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_SAVE_WORK_MESSAGE" desc="Text to ask the user to save their work before starting an update to improve the performance of Android apps on ChromeOS.">
+    Please save your work and start the update when you're ready.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_DAYS_UNTIL_DEADLINE" desc="Text to inform that an update to improve the performance of Android apps on ChromeOS needs to be done within the specified days.">
+    {DAYS_UNTIL_DEADLINE, plural,
+      =1 {Update required now}
+      =2 {Update required by tomorrow}
+      other {Update required within # days}}
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_UPDATE_NOW_BUTTON_LABEL" desc="Label of a button in the dialog to start an update to improve the performance of Android apps on ChromeOS. This label is used when the update does not need to happen right now and can be skipped.">
+    Start update now
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_SKIP_BUTTON_LABEL" desc="Label of a button in the dialog to skip an update to improve the performance of Android apps on ChromeOS.">
+    Remind me later
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_UPDATE_BUTTON_LABEL" desc="Label of a button in the dialog to start an update to improve the performance of Android apps on ChromeOS. This label is used when the update needs to happen right now and there is no skip button.">
+    Start update
+  </message>
 </grit-part>

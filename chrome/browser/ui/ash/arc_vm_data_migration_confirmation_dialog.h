@@ -9,6 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
+class PrefService;
+
 namespace arc {
 
 using ArcVmDataMigrationConfirmationCallback = base::OnceCallback<void(bool)>;
@@ -18,7 +20,8 @@ using ArcVmDataMigrationConfirmationCallback = base::OnceCallback<void(bool)>;
 // clicked.
 class ArcVmDataMigrationConfirmationDialog : public views::DialogDelegate {
  public:
-  explicit ArcVmDataMigrationConfirmationDialog(
+  ArcVmDataMigrationConfirmationDialog(
+      PrefService* prefs,
       ArcVmDataMigrationConfirmationCallback callback);
 
   ArcVmDataMigrationConfirmationDialog(
@@ -29,7 +32,7 @@ class ArcVmDataMigrationConfirmationDialog : public views::DialogDelegate {
   ~ArcVmDataMigrationConfirmationDialog() override;
 
  private:
-  void InitializeView();
+  void InitializeView(int days_until_deadline);
   void OnButtonClicked(bool accepted);
 
   ArcVmDataMigrationConfirmationCallback callback_;
@@ -39,6 +42,7 @@ class ArcVmDataMigrationConfirmationDialog : public views::DialogDelegate {
 };
 
 void ShowArcVmDataMigrationConfirmationDialog(
+    PrefService* prefs,
     ArcVmDataMigrationConfirmationCallback callback);
 
 }  // namespace arc

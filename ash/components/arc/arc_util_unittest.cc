@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/shell_surface_util.h"
@@ -699,6 +700,41 @@ TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_ArcVmDataMigration_Finished) {
   SetArcVmDataMigrationStatus(profile_prefs(),
                               ArcVmDataMigrationStatus::kFinished);
   EXPECT_TRUE(ShouldUseVirtioBlkData(profile_prefs()));
+}
+
+// Tests that GetDaysUntilArcVmDataMigrationDeadline() returns the correct value
+// when it is called just after the ARCVM /data migration notification is shown
+// for the first time.
+TEST_F(ArcUtilTest,
+       GetDaysUntilArcVmDataMigrationDeadline_JustAfterFirstNotification) {
+  profile_prefs()->SetTime(prefs::kArcVmDataMigrationNotificationFirstShownTime,
+                           base::Time::Now());
+  const int days_until_deadline =
+      GetDaysUntilArcVmDataMigrationDeadline(profile_prefs());
+  EXPECT_TRUE(days_until_deadline ==
+              kArcVmDataMigrationDismissibleTimeDelta.InDays());
+}
+
+// Tests that GetDaysUntilArcVmDataMigrationDeadline() returns the correct value
+// when it is called after kArcVmDataMigrationDismissibleTimeDelta has passed.
+TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_JustAfterDeadline) {
+  // Remaining days should be 1 (i.e., the migration should be done today).
+  profile_prefs()->SetTime(
+      prefs::kArcVmDataMigrationNotificationFirstShownTime,
+      base::Time::Now() - kArcVmDataMigrationDismissibleTimeDelta);
+  EXPECT_EQ(GetDaysUntilArcVmDataMigrationDeadline(profile_prefs()), 1);
+}
+
+// Tests that GetDaysUntilArcVmDataMigrationDeadline() returns the correct value
+// when it is called after more days than kArcVmDataMigrationDismissibleDays
+// have passed.
+TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_Overdue) {
+  // Remaining days should be kept 1.
+  profile_prefs()->SetTime(
+      prefs::kArcVmDataMigrationNotificationFirstShownTime,
+      base::Time::Now() -
+          (kArcVmDataMigrationDismissibleTimeDelta + base::Days(10)));
+  EXPECT_EQ(GetDaysUntilArcVmDataMigrationDeadline(profile_prefs()), 1);
 }
 
 }  // namespace
