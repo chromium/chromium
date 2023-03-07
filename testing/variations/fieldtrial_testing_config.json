@@ -6093,6 +6093,21 @@
             ]
         }
     ],
+    "IOSEmailExperience": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableEmailsExperience"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSExpKitAppleCalendar": [
         {
             "platforms": [
