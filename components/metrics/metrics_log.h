@@ -80,7 +80,6 @@ class MetricsLog {
   // |client_id| is the identifier for this profile on this installation
   // |session_id| is an integer that's incremented on each application launch
   // |client| is used to interact with the embedder.
-  // |local_state| is the PrefService that this instance should use.
   // Note: |this| instance does not take ownership of the |client|, but rather
   // stores a weak pointer to it. The caller should ensure that the |client| is
   // valid for the lifetime of this class.
@@ -132,6 +131,9 @@ class MetricsLog {
       const std::string& application_locale,
       const std::string& package_name,
       SystemProfileProto* system_profile);
+
+  // Assign a unique record id to this log.
+  void AssignRecordId(PrefService* local_state);
 
   // Records a user-initiated action.
   void RecordUserAction(const std::string& key, base::TimeTicks action_time);

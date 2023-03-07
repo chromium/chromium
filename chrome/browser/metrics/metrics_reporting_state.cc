@@ -202,6 +202,7 @@ void UpdateMetricsPrefsOnPermissionChange(
 
   local_state->ClearPref(metrics::prefs::kMetricsClientID);
   local_state->ClearPref(metrics::prefs::kMetricsProvisionalClientID);
+  local_state->ClearPref(metrics::prefs::kMetricsLogRecordId);
 
   // Don't clear the entropy state if the user opted out in the FRE. This is to
   // prevent experiments that have been randomized based on the low-entropy

@@ -272,6 +272,12 @@ class MetricsService {
   bool IsInForegroundForTesting() const { return is_in_foreground_; }
 #endif
 
+  // Creates a new MetricsLog instance with the given |log_type|.
+  std::unique_ptr<MetricsLog> CreateLogForTesting(
+      MetricsLog::LogType log_type) {
+    return CreateLog(log_type);
+  }
+
  protected:
   // Sets the persistent system profile. Virtual for tests.
   virtual void SetPersistentSystemProfile(const std::string& serialized_proto,

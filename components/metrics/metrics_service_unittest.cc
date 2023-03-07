@@ -494,6 +494,23 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool()));
 
+TEST_P(MetricsServiceTestWithFeatures, RecordId) {
+  // Set an initial value for the record-ids, to make them predictable.
+  GetLocalState()->SetInteger(prefs::kMetricsLogRecordId, 1000);
+
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
+                             &client, GetLocalState());
+
+  auto log1 = service.CreateLogForTesting(MetricsLog::ONGOING_LOG);
+  auto log2 = service.CreateLogForTesting(MetricsLog::INITIAL_STABILITY_LOG);
+  auto log3 = service.CreateLogForTesting(MetricsLog::INDEPENDENT_LOG);
+
+  EXPECT_EQ(1001, log1->uma_proto()->record_id());
+  EXPECT_EQ(1002, log2->uma_proto()->record_id());
+  EXPECT_EQ(1003, log3->uma_proto()->record_id());
+}
+
 TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAfterCleanShutDown) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();

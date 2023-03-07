@@ -658,6 +658,7 @@ void MetricsService::ResetClientId() {
   // Pref must be cleared in order for ForceClientIdCreation to generate a new
   // client ID.
   local_state_->ClearPref(prefs::kMetricsClientID);
+  local_state_->ClearPref(prefs::kMetricsLogRecordId);
   state_manager_->ForceClientIdCreation();
   client_->SetMetricsClientId(state_manager_->client_id());
 }
@@ -1237,6 +1238,7 @@ std::unique_ptr<MetricsLog> MetricsService::CreateLog(
     MetricsLog::LogType log_type) {
   auto new_metrics_log = std::make_unique<MetricsLog>(
       state_manager_->client_id(), session_id_, log_type, client_);
+  new_metrics_log->AssignRecordId(local_state_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<std::string> user_id = GetCurrentUserId();
@@ -1422,6 +1424,7 @@ MetricsService::FinalizedLog MetricsService::FinalizeLog(
     bool truncate_events,
     std::string current_app_version,
     std::string signing_key) {
+  DCHECK(log->uma_proto()->has_record_id());
   std::string log_data;
   log->FinalizeLog(truncate_events, current_app_version, &log_data);
 
