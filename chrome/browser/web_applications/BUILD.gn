@@ -272,6 +272,8 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
+      "web_app_run_on_os_login_manager.cc",
+      "web_app_run_on_os_login_manager.h",
     ]
   }
 
@@ -325,7 +327,7 @@ source_set("web_applications") {
     ]
   }
 
-  if (!is_android && !is_chromeos) {
+  if (!is_android) {
     sources += [
       "policy/web_app_settings_policy_handler.cc",
       "policy/web_app_settings_policy_handler.h",
@@ -453,6 +455,7 @@ source_set("web_applications") {
     deps += [
       "//ash/components/arc:arc_base",
       "//ash/constants",
+      "//ash/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/system_web_apps/types",
@@ -621,6 +624,7 @@ source_set("web_applications_unit_tests") {
     "os_integration/web_app_protocol_handler_manager_unittest.cc",
     "os_integration/web_app_shortcut_unittest.cc",
     "policy/pre_redirection_url_observer_unittest.cc",
+    "policy/web_app_policy_manager_unittest.cc",
     "preinstalled_web_app_manager_unittest.cc",
     "preinstalled_web_app_utils_unittest.cc",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
@@ -685,6 +689,8 @@ source_set("web_applications_unit_tests") {
     sources += [
       "isolated_web_apps/policy/isolated_web_app_exteral_install_options_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_unittest.cc",
+      "os_integration/web_app_run_on_os_login_chromeos_unittest.cc",
+      "web_app_run_on_os_login_manager_unittest.cc",
     ]
   }
 
@@ -729,6 +735,7 @@ source_set("web_applications_unit_tests") {
       "//ash/constants",
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/types",
       "//components/arc:arc_test_support",
     ]

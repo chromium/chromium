@@ -293,6 +293,12 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
+
+#if (BUILDFLAG(IS_CHROMEOS))
+  web_app_run_on_os_login_manager_ =
+      std::make_unique<WebAppRunOnOsLoginManager>(registrar_.get(),
+                                                  command_scheduler_.get());
+#endif
 }
 
 void WebAppProvider::ConnectSubsystems() {
@@ -364,6 +370,12 @@ void WebAppProvider::OnSyncBridgeReady() {
   install_manager_->Start();
   preinstalled_web_app_manager_->Start(external_manager_barrier);
   web_app_policy_manager_->Start(external_manager_barrier);
+#if (BUILDFLAG(IS_CHROMEOS))
+  on_external_managers_synchronized_.Post(
+      FROM_HERE,
+      base::BindOnce(&WebAppRunOnOsLoginManager::Start,
+                     web_app_run_on_os_login_manager_->GetWeakPtr()));
+#endif
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();

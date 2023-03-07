@@ -368,7 +368,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                                         app_id, install_url, install_source);
               }
               return ExternallyManagedAppManager::InstallResult(
-                  install_result_code_);
+                  install_result_code_, app_id);
             }));
     fake_externally_managed_app_manager_->SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(
@@ -381,10 +381,12 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
               }
               return true;
             }));
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     web_app_policy_manager_->SetSystemWebAppDelegateMap(
         &system_app_manager().system_app_delegates());
 #endif
+
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 

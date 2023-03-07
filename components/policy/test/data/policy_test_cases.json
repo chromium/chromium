@@ -18784,9 +18784,19 @@
       "win",
       "linux",
       "mac",
-      "fuchsia"
+      "fuchsia",
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile.web_app.policy_settings": {
+            "default_value": []
+          }
+        }
+       },
       {
         "policies": {
           "WebAppSettings": [

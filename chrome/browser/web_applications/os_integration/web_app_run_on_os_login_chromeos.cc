@@ -10,17 +10,19 @@ namespace web_app {
 
 namespace internals {
 
-// This boilerplate function is used for platforms that don't support Run On OS
-// Login.
 bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
-  return false;
+  // `web_app::ScheduleRegisterRunOnOsLogin` already updates the
+  // RunOnOsLoginMode of the WebApp. On ChromeOS, the RunOnOsLoginMode is
+  // checked after Login to start the WebApp as no platform shortcuts can be
+  // used. Return true to ensure that InstallOsHooks does not fail here.
+  return true;
 }
 
-// This boilerplate function is used for platforms that don't support Run On OS
-// Login.
 Result UnregisterRunOnOsLogin(const std::string& app_id,
                               const base::FilePath& profile_path,
                               const std::u16string& shortcut_title) {
+  // `web_app::ScheduleRegisterRunOnOsLogin` already updates the
+  // RunOnOsLoginMode of the WebApp. No shortcuts needs to be removed.
   return Result::kOk;
 }
 

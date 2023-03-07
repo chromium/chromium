@@ -179,7 +179,8 @@ enum class NotificationCatalogName {
   kDictationOnlySodaDownloaded = 164,
   kIPHGoogleOneOffer = 165,
   kLockScreen = 166,
-  kMaxValue = kLockScreen
+  kWebAppSettings = 167,
+  kMaxValue = kWebAppSettings
 };
 
 // A living catalog that registers system nudges.
