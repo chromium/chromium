@@ -330,16 +330,7 @@ void DisplayOverlayController::AddEditFinishView(
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);
 
-  edit_finish_view_ = parent_view->AddChildView(
-      EditFinishView::BuildView(this, parent_view->size()));
-
-  // Since |input_menu_view_| is removed when adding |edit_finish_view_| and
-  // |FocusManager| lost the focused view. Set |edit_finish_view_| explicitly
-  // as the focused view so Tab traversal key can work as expected.
-  auto* focus_manager = edit_finish_view_->GetFocusManager();
-  if (focus_manager) {
-    focus_manager->SetFocusedView(edit_finish_view_);
-  }
+  edit_finish_view_ = EditFinishView::BuildView(this, parent_view);
 }
 
 void DisplayOverlayController::RemoveEditFinishView() {
