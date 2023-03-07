@@ -194,6 +194,215 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, ConcatTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building Concat with one input.
+    Vector<uint32_t> input_a_shape({4, 4, 3});
+    Vector<uint32_t> output_shape({4, 4, 3});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = 2;
+    auto* output = builder->concat({input_a}, axis, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), output_shape);
+    const MLOperator* concat = output->Operator();
+    EXPECT_NE(concat, nullptr);
+    EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
+    EXPECT_EQ(concat->IsConnected(), true);
+    EXPECT_EQ(concat->Options(), nullptr);
+  }
+  {
+    // Test building Concat with two inputs.
+    Vector<uint32_t> input_a_shape({3, 1, 5});
+    Vector<uint32_t> input_b_shape({3, 2, 5});
+    Vector<uint32_t> output_shape({3, 3, 5});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = 1;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), output_shape);
+    const MLOperator* concat = output->Operator();
+    EXPECT_NE(concat, nullptr);
+    EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
+    EXPECT_EQ(concat->IsConnected(), true);
+    EXPECT_EQ(concat->Options(), nullptr);
+  }
+  {
+    // Test building Concat with three inputs.
+    Vector<uint32_t> input_a_shape({3, 5, 1});
+    Vector<uint32_t> input_b_shape({3, 5, 2});
+    Vector<uint32_t> input_c_shape({3, 5, 3});
+    Vector<uint32_t> output_shape({3, 5, 6});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_c =
+        BuildInput(builder, "input_c", input_c_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = 2;
+    auto* output = builder->concat({input_a, input_b, input_c}, axis,
+                                   scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), output_shape);
+    const MLOperator* concat = output->Operator();
+    EXPECT_NE(concat, nullptr);
+    EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
+    EXPECT_EQ(concat->IsConnected(), true);
+    EXPECT_EQ(concat->Options(), nullptr);
+  }
+  {
+    // Test building Concat with two 1D inputs.
+    Vector<uint32_t> input_a_shape({1});
+    Vector<uint32_t> input_b_shape({1});
+    Vector<uint32_t> output_shape({2});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = 0;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), output_shape);
+    const MLOperator* concat = output->Operator();
+    EXPECT_NE(concat, nullptr);
+    EXPECT_EQ(concat->Kind(), MLOperator::OperatorKind::kConcat);
+    EXPECT_EQ(concat->IsConnected(), true);
+    EXPECT_EQ(concat->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when the inputs are empty.
+    int32_t axis = 0;
+    auto* output = builder->concat({}, axis, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The inputs should not be empty.");
+  }
+  {
+    // Test throwing exception when the argument types are inconsistent.
+    Vector<uint32_t> input_a_shape({1, 1});
+    Vector<uint32_t> input_b_shape({1, 1});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kInt32, scope.GetExceptionState());
+    int32_t axis = 0;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input types don't match.");
+  }
+  {
+    // Test throwing exception when the inputs have different dimension.
+    Vector<uint32_t> input_a_shape({1, 1});
+    Vector<uint32_t> input_b_shape({1, 1, 1});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = 0;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "All input tensors must have the same dimension.");
+  }
+  {
+    // Test throwing exception when the axis smaller than 0.
+    Vector<uint32_t> input_a_shape({1, 1});
+    Vector<uint32_t> input_b_shape({1, 1});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = -1;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The value of axis should be in the interval [0, N) where N is "
+              "the rank of all the inputs.");
+  }
+  {
+    // Test throwing exception when the axis greater than the size of dimension.
+    Vector<uint32_t> input_a_shape({1, 1});
+    Vector<uint32_t> input_b_shape({1, 1});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = 2;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The value of axis should be in the interval [0, N) where N is "
+              "the rank of all the inputs.");
+  }
+  {
+    // Test throwing exception when the inputs have other axes with different
+    // sizes except on the axis.
+    Vector<uint32_t> input_a_shape({1, 1, 1});
+    Vector<uint32_t> input_b_shape({1, 2, 3});
+    auto* input_a =
+        BuildInput(builder, "input_a", input_a_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* input_b =
+        BuildInput(builder, "input_b", input_b_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    int32_t axis = 1;
+    auto* output =
+        builder->concat({input_a, input_b}, axis, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "All input tensors must have the same shape, except for the size "
+              "of the dimension to concatenate on.");
+  }
+}
+
 MLOperand* BuildConv2d(V8TestingScope& scope,
                        MLGraphBuilder* builder,
                        const MLOperand* input,

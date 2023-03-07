@@ -846,6 +846,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method build
 [Worker]     method buildSync
 [Worker]     method clamp
+[Worker]     method concat
 [Worker]     method constant
 [Worker]     method constructor
 [Worker]     method conv2d

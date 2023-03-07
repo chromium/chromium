@@ -82,6 +82,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperator* clamp(const MLClampOptions* options,
                     ExceptionState& exception_state);
 
+  MLOperand* concat(const HeapVector<Member<MLOperand>>& inputs,
+                    int32_t axis,
+                    ExceptionState& exception_state);
+
   MLOperand* conv2d(const MLOperand* input,
                     const MLOperand* filter,
                     const MLConv2dOptions* options,

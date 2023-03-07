@@ -549,6 +549,98 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
   return constant_operand;
 }
 
+MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
+                                  int32_t axis,
+                                  ExceptionState& exception_state) {
+  auto* concat =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kConcat);
+  if (inputs.empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The inputs should not be empty.");
+    return nullptr;
+  }
+  const auto& first_input_shape = inputs[0]->Dimensions();
+  const auto first_input_rank = first_input_shape.size();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
+  // the axis that the inputs concatenate along, with the value in the interval
+  // [0, N) where N is the rank of all the inputs. We just check the first input
+  // rank here because we will check all inputs have same rank in the following
+  // loop.
+  //
+  // TODO(crbug.com/1273291): There is a WebNN spec issue discussing whether to
+  // support signed axis with [-N, N) range or unsigned integer. Update the
+  // implementation once the WG makes the consensus.
+  // https://github.com/webmachinelearning/webnn/issues/345
+  if (axis < 0 || base::MakeStrictNum(axis) >= first_input_rank) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The value of axis should be in the interval [0, N) where N is the "
+        "rank of all the inputs.");
+    return nullptr;
+  }
+  const auto concat_axis = base::checked_cast<uint32_t>(axis);
+  const auto output_type = inputs[0]->Type();
+  // The loop skips the first input to avoid repeated checks.
+  for (wtf_size_t i = 1; i < inputs.size(); ++i) {
+    if (inputs[i]->Type() != output_type) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The input types don't match.");
+      return nullptr;
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same dimension.
+    if (inputs[i]->Dimensions().size() != first_input_rank) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All input tensors must have the same dimension.");
+      return nullptr;
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same shape, except for the size of the dimension to
+    // concatenate on.
+    for (wtf_size_t dim = 0; dim < first_input_rank; ++dim) {
+      if (dim == concat_axis ||
+          inputs[i]->Dimensions()[dim] == first_input_shape[dim]) {
+        continue;
+      }
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All input tensors must have the same shape, except for the size of "
+          "the dimension to concatenate on.");
+      return nullptr;
+    }
+  }
+  // Calculate the output shape according to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, the output tensor
+  // has the same shape except on the dimension that all the inputs concatenated
+  // along. The size of that dimension is computed as the sum of all the input
+  // sizes of the same dimension.
+  auto concat_axis_size = base::MakeCheckedNum<uint32_t>(0);
+  for (auto& input : inputs) {
+    concat_axis_size += input->Dimensions()[concat_axis];
+  }
+  auto output_shape = first_input_shape;
+  if (!concat_axis_size.AssignIfValid(&output_shape[concat_axis])) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The concatenated dimension size is too large.");
+    return nullptr;
+  }
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, output_type, output_shape, concat, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  concat->Connect((HeapVector<Member<const MLOperand>>)inputs, {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
                                  const MLClampOptions* options,
                                  ExceptionState& exception_state) {

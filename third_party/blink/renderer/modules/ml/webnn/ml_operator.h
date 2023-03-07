@@ -24,6 +24,7 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
     kClamp,
+    kConcat,
     kConv2d,
     kAdd,
     kSub,

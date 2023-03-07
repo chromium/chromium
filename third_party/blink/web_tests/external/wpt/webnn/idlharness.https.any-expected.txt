@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 403 tests; 233 PASS, 170 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 403 tests; 236 PASS, 167 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -186,7 +186,7 @@ PASS MLGraphBuilder interface: member buildSync
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 PASS MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
 PASS MLGraphBuilder interface: operation clamp(optional MLClampOptions)
-FAIL MLGraphBuilder interface: operation concat(sequence<MLOperand>, long) assert_own_property: interface prototype object missing non-static operation expected property "concat" missing
+PASS MLGraphBuilder interface: operation concat(sequence<MLOperand>, long)
 PASS MLGraphBuilder interface: operation conv2d(MLOperand, MLOperand, optional MLConv2dOptions)
 FAIL MLGraphBuilder interface: operation convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "convTranspose2d" missing
 PASS MLGraphBuilder interface: operation add(MLOperand, MLOperand)
@@ -271,8 +271,8 @@ PASS MLGraphBuilder interface: builder must inherit property "clamp(MLOperand, o
 PASS MLGraphBuilder interface: calling clamp(MLOperand, optional MLClampOptions) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "clamp(optional MLClampOptions)" with the proper type
 PASS MLGraphBuilder interface: calling clamp(optional MLClampOptions) on builder with too few arguments must throw TypeError
-FAIL MLGraphBuilder interface: builder must inherit property "concat(sequence<MLOperand>, long)" with the proper type assert_inherits: property "concat" not found in prototype chain
-FAIL MLGraphBuilder interface: calling concat(sequence<MLOperand>, long) on builder with too few arguments must throw TypeError assert_inherits: property "concat" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "concat(sequence<MLOperand>, long)" with the proper type
+PASS MLGraphBuilder interface: calling concat(sequence<MLOperand>, long) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "conv2d(MLOperand, MLOperand, optional MLConv2dOptions)" with the proper type
 PASS MLGraphBuilder interface: calling conv2d(MLOperand, MLOperand, optional MLConv2dOptions) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions)" with the proper type assert_inherits: property "convTranspose2d" not found in prototype chain
