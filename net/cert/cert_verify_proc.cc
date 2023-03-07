@@ -415,7 +415,8 @@ base::Value::Dict CertVerifyParams(
 
 }  // namespace
 
-#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
@@ -424,10 +425,6 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
       std::move(cert_net_fetcher));
 #elif BUILDFLAG(IS_IOS)
   return base::MakeRefCounted<CertVerifyProcIOS>();
-#elif BUILDFLAG(IS_MAC)
-  return base::MakeRefCounted<CertVerifyProcMac>();
-#elif BUILDFLAG(IS_WIN)
-  return base::MakeRefCounted<CertVerifyProcWin>();
 #else
 #error Unsupported platform
 #endif
