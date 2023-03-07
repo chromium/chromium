@@ -7,8 +7,10 @@
 #import "base/values.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,6 +22,7 @@ constexpr CGFloat kCustomSpacingAfterImageWithAnimation = 24;
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
 constexpr CGFloat kPreferredCornerRadius = 20;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
+NSString* const kPasswordOptionsKeypath = @"text_password_options";
 }  // namespace
 
 @interface CredentialProviderPromoViewController ()
@@ -99,6 +102,20 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   _animationViewWrapperDarkMode = [self
       createAnimation:[animationAssetName
                           stringByAppendingString:kDarkModeAnimationSuffix]];
+
+  NSString* passwordSettingsTitle;
+  if (@available(iOS 16, *)) {
+    passwordSettingsTitle = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
+  } else {
+    passwordSettingsTitle = l10n_util::GetNSString(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16);
+  }
+  // Set the text localization.
+  NSDictionary* textProvider =
+      @{kPasswordOptionsKeypath : passwordSettingsTitle};
+  [_animationViewWrapper setDictionaryTextProvider:textProvider];
+  [_animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
 }
 
 #pragma mark - Private
