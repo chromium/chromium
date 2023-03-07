@@ -159,7 +159,7 @@ def CreateStderrFilter(show_desugar_default_interface_warnings):
     if os.environ.get('R8_SHOW_ALL_OUTPUT', '0') != '0':
       return output
 
-    warnings = re.split(r'^(?=Warning)', output, flags=re.MULTILINE)
+    warnings = re.split(r'^(?=Warning|Error)', output, flags=re.MULTILINE)
     preamble, *warnings = warnings
 
     patterns = list(_IGNORE_WARNINGS)
