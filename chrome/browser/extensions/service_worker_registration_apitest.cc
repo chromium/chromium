@@ -4,6 +4,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -14,6 +15,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
@@ -72,8 +74,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   ASSERT_TRUE(task_queue);
 
   base::Version stored_version =
-      task_queue->RetrieveRegisteredServiceWorkerVersionForTest(
-          extension->id());
+      task_queue->RetrieveRegisteredServiceWorkerVersion(extension->id());
   ASSERT_TRUE(stored_version.IsValid());
   EXPECT_EQ("0.1", stored_version.GetString());
   EXPECT_EQ(content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER,
@@ -245,6 +246,109 @@ IN_PROC_BROWSER_TEST_F(
   UninstallExtension(extension->id());
   EXPECT_EQ(content::ServiceWorkerCapability::NO_SERVICE_WORKER,
             GetServiceWorkerRegistrationState(*extension_ref));
+}
+
+// Verifies that a service worker registration associated with an extension's
+// manifest cannot be removed via the `chrome.browsingData` API.
+// Regression test for https://crbug.com/1392498.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
+                       RegistrationCannotBeRemovedByBrowsingDataAPI) {
+  // Load two extensions: one with a service worker-based background context and
+  // a second with access to the browsingData API.
+  static constexpr char kServiceWorkerManifest[] =
+      R"({
+           "name": "Service Worker Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kServiceWorkerBackground[] =
+      R"(chrome.tabs.onCreated.addListener(tab => {
+           chrome.test.sendMessage('received event');
+         });)";
+
+  TestExtensionDir service_worker_extension_dir;
+  service_worker_extension_dir.WriteManifest(kServiceWorkerManifest);
+  service_worker_extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                                         kServiceWorkerBackground);
+
+  static constexpr char kBrowsingDataManifest[] =
+      R"({
+           "name": "Browsing Data Remover",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["browsingData"]
+         })";
+  static constexpr char kClearDataJs[] =
+      R"(chrome.test.runTests([
+           async function clearServiceWorkers() {
+             // From the extension's perspective, this call should succeed (it
+             // will remove any service workers for extensions that aren't the
+             // root-scoped background service worker).
+             await chrome.browsingData.removeServiceWorkers(
+                 {originTypes: {extension: true}});
+             chrome.test.succeed();
+           },
+         ]);)";
+
+  TestExtensionDir browsing_data_extension_dir;
+  browsing_data_extension_dir.WriteManifest(kBrowsingDataManifest);
+  browsing_data_extension_dir.WriteFile(
+      FILE_PATH_LITERAL("clear_data.html"),
+      R"(<html><script src="clear_data.js"></script></html>)");
+  browsing_data_extension_dir.WriteFile(FILE_PATH_LITERAL("clear_data.js"),
+                                        kClearDataJs);
+
+  const Extension* service_worker_extension =
+      LoadExtension(service_worker_extension_dir.UnpackedPath(),
+                    {.wait_for_registration_stored = true});
+  ASSERT_TRUE(service_worker_extension);
+
+  const Extension* browsing_data_extension =
+      LoadExtension(browsing_data_extension_dir.UnpackedPath());
+  ASSERT_TRUE(browsing_data_extension);
+
+  auto open_new_tab = [this](const GURL& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  };
+
+  // Verify the initial state. The service worker-based extension should have a
+  // worker registered...
+  EXPECT_EQ(content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER,
+            GetServiceWorkerRegistrationState(*service_worker_extension));
+
+  const GURL about_blank("about:blank");
+
+  // ... And the worker should be able to receive incoming events.
+  {
+    ExtensionTestMessageListener listener("received event");
+    open_new_tab(about_blank);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Open a page to the browsing data extension, which will trigger a call to
+  // the browsingData API to remove registered service workers for extensions.
+  {
+    ResultCatcher result_catcher;
+    open_new_tab(browsing_data_extension->GetResourceURL("clear_data.html"));
+    EXPECT_TRUE(result_catcher.GetNextResult());
+  }
+
+  // The removal above should *not* have resulted in the background service
+  // worker for the extension being removed (which would put the extension into
+  // a broken state). The only way to remove a service worker from an extension
+  // manifest is to uninstall the extension.
+  // The worker should still be registered, and should still receive new events.
+  EXPECT_EQ(content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER,
+            GetServiceWorkerRegistrationState(*service_worker_extension));
+
+  {
+    ExtensionTestMessageListener listener("received event");
+    open_new_tab(about_blank);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
 }
 
 }  // namespace extensions

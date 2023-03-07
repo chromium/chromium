@@ -138,6 +138,13 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // task queue.
   void ActivateIncognitoSplitModeExtensions(ServiceWorkerTaskQueue* other);
 
+  // Retrieves the version of the extension that has currently registered
+  // and stored an extension service worker. If there is no such version (if
+  // there was never a service worker or if the worker was unregistered),
+  // returns an invalid version.
+  base::Version RetrieveRegisteredServiceWorkerVersion(
+      const ExtensionId& extension_id);
+
   // content::ServiceWorkerContextObserver:
   void OnRegistrationStored(int64_t registration_id,
                             const GURL& scope) override;
@@ -174,11 +181,6 @@ class ServiceWorkerTaskQueue : public KeyedService,
 
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
 
-  base::Version RetrieveRegisteredServiceWorkerVersionForTest(
-      const ExtensionId& extension_id) {
-    return RetrieveRegisteredServiceWorkerVersion(extension_id);
-  }
-
  private:
   using SequencedContextId = std::pair<LazyContextId, base::UnguessableToken>;
 
@@ -212,17 +214,11 @@ class ServiceWorkerTaskQueue : public KeyedService,
   void DidStartWorkerFail(const SequencedContextId& context_id,
                           blink::ServiceWorkerStatusCode status_code);
 
-  // The following three methods retrieve, store, and remove information
-  // about Service Worker registration of SW based background pages:
-  //
-  // Retrieves the last version of the extension, returns invalid version if
-  // there isn't any such extension.
-  base::Version RetrieveRegisteredServiceWorkerVersion(
-      const ExtensionId& extension_id);
   // Records that the extension with |extension_id| and |version| successfully
   // registered a Service Worker.
   void SetRegisteredServiceWorkerInfo(const ExtensionId& extension_id,
                                       const base::Version& version);
+
   // Clears any record of registered Service Worker for the given extension with
   // |extension_id|.
   void RemoveRegisteredServiceWorkerInfo(const ExtensionId& extension_id);
