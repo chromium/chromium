@@ -1434,6 +1434,8 @@ crbug.com/1381545 [ Release Win ] virtual/wasm-code-caching/http/tests/wasm/cach
 
 crbug.com/1293315 external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Slow ]
 
+crbug.com/1410608 http/tests/inspector-protocol/storage/dom-storage-set-items-by-storage-key.js [ Slow ]
+
 crbug.com/1372747 [ Win ] http/tests/uri/css-href.php [ Slow ]
 
 crbug.com/1376679 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
