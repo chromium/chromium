@@ -310,6 +310,7 @@ void NetworkDeviceHandlerImpl::DeviceListChanged() {
   ApplyUsbEthernetMacAddressSourceToShill();
   ApplyUseAttachApnToShill();
   ApplyWakeOnWifiAllowedToShill();
+  ApplyPasspointInterworkingSelectEnabledToShill();
 }
 
 void NetworkDeviceHandlerImpl::DevicePropertiesUpdated(
@@ -417,6 +418,18 @@ void NetworkDeviceHandlerImpl::ApplyWakeOnWifiAllowedToShill() {
   ApplyWifiFeatureToShillIfSupported(
       shill::kWakeOnWiFiAllowedProperty, wake_on_wifi_allowed_,
       shill::kWakeOnWiFiSupportedProperty, &wake_on_wifi_supported_);
+}
+
+void NetworkDeviceHandlerImpl::
+    ApplyPasspointInterworkingSelectEnabledToShill() {
+  // Get the setting from feature flags.
+  passpoint_allowed_ =
+      base::FeatureList::IsEnabled(features::kPasspointARCSupport);
+  // Passpoint is supported on all WiFi devices.
+  passpoint_supported_ = WifiFeatureSupport::SUPPORTED;
+  ApplyWifiFeatureToShillIfSupported(
+      shill::kPasspointInterworkingSelectEnabledProperty, passpoint_allowed_,
+      /*support_property_name=*/"", &passpoint_supported_);
 }
 
 void NetworkDeviceHandlerImpl::ApplyUsbEthernetMacAddressSourceToShill() {
