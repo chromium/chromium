@@ -5,12 +5,18 @@
 #ifndef BASE_FUCHSIA_FUCHSIA_LOGGING_H_
 #define BASE_FUCHSIA_FUCHSIA_LOGGING_H_
 
+#include <lib/fidl/cpp/wire/connect_service.h>
+#include <lib/fidl/cpp/wire/traits.h>
 #include <lib/fit/function.h>
+#include <lib/zx/result.h>
 #include <zircon/types.h>
+
+#include <string>
 
 #include "base/base_export.h"
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 
 // Use the ZX_LOG family of macros along with a zx_status_t containing a Zircon
@@ -79,6 +85,15 @@ class Location;
 BASE_EXPORT fit::function<void(zx_status_t)> LogFidlErrorAndExitProcess(
     const Location& from_here,
     StringPiece protocol_name);
+
+template <typename Protocol>
+BASE_EXPORT std::string FidlConnectionErrorMessage(
+    const zx::result<fidl::ClientEnd<Protocol>>& result) {
+  DCHECK(result.is_error());
+  return base::StringPrintf("Failed to connect to %s: %s",
+                            fidl::DiscoverableProtocolName<Protocol>,
+                            result.status_string());
+}
 
 }  // namespace base
 

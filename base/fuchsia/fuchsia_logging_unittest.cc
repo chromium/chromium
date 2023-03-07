@@ -4,6 +4,7 @@
 
 #include "base/fuchsia/scoped_fx_logger.h"
 
+#include <fidl/base.testfidl/cpp/fidl.h>
 #include <fuchsia/logger/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
@@ -115,6 +116,16 @@ TEST(FuchsiaLoggingTest, FuchsiaLogging) {
 
   ZX_CHECK(true, ZX_ERR_INTERNAL);
   ZX_DCHECK(true, ZX_ERR_INTERNAL);
+}
+
+TEST(FuchsiaLoggingTest, ConnectionErrorMessage) {
+  zx::result<fidl::ClientEnd<base_testfidl::TestInterface>> result =
+      zx::error_result{ZX_ERR_PEER_CLOSED};
+
+  EXPECT_EQ(
+      "Failed to connect to base.testfidl.TestInterface: "
+      "ZX_ERR_PEER_CLOSED",
+      base::FidlConnectionErrorMessage(result));
 }
 
 }  // namespace base
