@@ -54,13 +54,18 @@
 namespace android_webview {
 namespace {
 
-class ContextReleaser {
+class ScopedCurrentContext {
  public:
-  explicit ContextReleaser(gpu::SharedContextState* state) : state_(state) {}
-  ~ContextReleaser() { state_->ReleaseCurrent(nullptr); }
+  explicit ScopedCurrentContext(gpu::SharedContextState* state,
+                                gl::GLSurface* surface)
+      : state_(state), surface_(surface) {
+    state_->MakeCurrent(surface_);
+  }
+  ~ScopedCurrentContext() { state_->ReleaseCurrent(surface_); }
 
  private:
   const raw_ptr<gpu::SharedContextState> state_;
+  gl::GLSurface* surface_;
 };
 
 }  // namespace
@@ -408,11 +413,14 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
-  // Release the context before returning, it is required for the external ANGLE
-  // context. For non-ANGLE case, fake context and surface are used, so
-  // releasing current context should be very cheap.
-  ContextReleaser context_releaser(
-      output_surface_provider_.shared_context_state().get());
+  // Ensure that the context is current and that it is released before
+  // returning. When using ANGLE, the former is not guaranteed to be true and
+  // the latter is required for the external ANGLE context. For non-ANGLE case,
+  // fake context and surface are used, so releasing current context should be
+  // very cheap.
+  ScopedCurrentContext scoped_context(
+      output_surface_provider_.shared_context_state().get(),
+      output_surface_provider_.gl_surface().get());
 
   viz::FrameTimingDetailsMap timing_details;
 
