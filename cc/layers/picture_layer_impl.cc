@@ -1699,10 +1699,6 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
 void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
     const std::vector<PictureLayerTiling*>& used_tilings) {
 
-  // https://linear.app/replay/issue/RUN-550
-  recordreplay::Assert("[RUN-550-1409] PictureLayerImpl::CleanUpTilingsOnActiveLayer Start %u",
-    (unsigned) tilings_->num_tilings());
-
   DCHECK(layer_tree_impl()->IsActiveTree());
   if (tilings_->num_tilings() == 0)
     return;
@@ -1721,6 +1717,12 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
         {max_acceptable_high_res_scale, twin->raster_contents_scale_key(),
          twin->ideal_contents_scale_key()});
   }
+
+  recordreplay::Assert(
+      "[RUN-550-1469] PictureLayerImpl::CleanUpTilingsOnActiveLayer %zu %f %f",
+      tilings_->num_tilings(),
+      min_acceptable_high_res_scale,
+      max_acceptable_high_res_scale);
 
   PictureLayerTilingSet* twin_set = twin ? twin->tilings_.get() : nullptr;
   tilings_->CleanUpTilings(min_acceptable_high_res_scale,

@@ -256,6 +256,14 @@ void PictureLayerTilingSet::CleanUpTilings(
   std::vector<PictureLayerTiling*> to_remove;
   for (const auto& tiling : tilings_) {
     // Keep all tilings within the min/max scales.
+
+    auto rect = tiling->GetCurrentVisibleRectForTesting();
+    recordreplay::Assert(
+        "[RUN-550-1469] PictureLayerTilingSet::CleanUpTilings A %f, %d %d, %d %d %d %d",
+        tiling->contents_scale_key(),
+        (int)tiling->resolution(), base::Contains(needed_tilings, tiling.get()),
+        rect.x(), rect.y(), rect.width(), rect.height());
+
     if (tiling->contents_scale_key() >= min_acceptable_high_res_scale_key &&
         tiling->contents_scale_key() <= max_acceptable_high_res_scale_key) {
       continue;
@@ -272,6 +280,8 @@ void PictureLayerTilingSet::CleanUpTilings(
 
     to_remove.push_back(tiling.get());
   }
+
+  recordreplay::Assert("[RUN-550-1469] PictureLayerTilingSet::CleanUpTilings B %zu", to_remove.size());
 
   for (auto* tiling : to_remove) {
     DCHECK_NE(HIGH_RESOLUTION, tiling->resolution());

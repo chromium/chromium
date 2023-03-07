@@ -120,8 +120,6 @@ Layer::Layer()
       ignore_set_needs_commit_for_test_(false),
       bitflags_(0u),
       subtree_property_changed_(false) {
-  // https://linear.app/replay/issue/RUN-1229
-  recordreplay::Assert("Layer::Layer %d", this->layer_id_);
 }
 
 Layer::~Layer() {
@@ -1236,6 +1234,10 @@ void Layer::SetTransformTreeIndex(int index) {
   if (transform_tree_index_.Read(*this) == index)
     return;
   SetHasTransformNode(index != kInvalidPropertyNodeId);
+
+  recordreplay::Assert("[RUN-550-1469] Layer::SetTransformTreeIndex %d %d",
+                       layer_id_, index);
+
   transform_tree_index_.Write(*this) = index;
   SetNeedsPushProperties();
 }
