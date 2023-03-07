@@ -35,18 +35,6 @@ BASE_FEATURE(kAutofillAutoTriggerManualFallbackForCards,
              "AutofillAutoTriggerManualFallbackForCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the use of platform authenticators through WebAuthn to retrieve
-// credit cards from Google payments.
-BASE_FEATURE(kAutofillCreditCardAuthentication,
-             "AutofillCreditCardAuthentication",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-             // Better Auth project is fully launched on Win/Mac/Clank.
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // When enabled, card art images (instead of network icons) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,

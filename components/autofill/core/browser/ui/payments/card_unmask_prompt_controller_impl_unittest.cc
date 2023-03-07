@@ -194,8 +194,6 @@ class CardUnmaskPromptControllerImplTest
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(CardUnmaskPromptControllerImplTest,
        FidoAuthOfferCheckboxStatePersistent) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillCreditCardAuthentication);
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
   EXPECT_TRUE(pref_service_->GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
@@ -207,8 +205,6 @@ TEST_F(CardUnmaskPromptControllerImplTest,
 
 TEST_F(CardUnmaskPromptControllerImplTest,
        PopulateCheckboxToUserProvidedUnmaskDetails) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillCreditCardAuthentication);
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
 
   EXPECT_TRUE(delegate_->details().enable_fido_auth);

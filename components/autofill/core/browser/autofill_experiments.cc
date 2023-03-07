@@ -299,12 +299,9 @@ bool IsInAutofillSuggestionsDisabledExperiment() {
 }
 
 bool IsCreditCardFidoAuthenticationEnabled() {
-  // The feature is enabled if the flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kAutofillCreditCardAuthentication))
-    return true;
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-  // Better Auth project is fully launched on Windows, Android, and the Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+  // Better Auth project is fully launched on Windows/Mac for Desktop, and
+  // Android for mobile.
   return true;
 #else
   return false;

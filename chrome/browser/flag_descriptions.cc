@@ -879,13 +879,6 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
-const char kEnableAutofillCreditCardAuthenticationName[] =
-    "Allow using platform authenticators to retrieve server cards";
-const char kEnableAutofillCreditCardAuthenticationDescription[] =
-    "When enabled, users will be given the option to use a platform "
-    "authenticator (if available) to verify card ownership when retrieving "
-    "credit cards from Google Payments.";
-
 const char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";
 const char kEnableExperimentalCookieFeaturesDescription[] =

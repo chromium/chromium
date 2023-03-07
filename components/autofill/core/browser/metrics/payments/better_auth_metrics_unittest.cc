@@ -33,8 +33,6 @@ class BetterAuthMetricsTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 
   FormData SetUpCreditCardUnmaskingPreflightCallTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillCreditCardAuthentication);
     auto* access_manager = autofill_manager().GetCreditCardAccessManager();
     access_manager->SetUnmaskDetailsRequestInProgressForTesting(
         IsUnmaskDetailsRequestInProgress());
@@ -70,9 +68,6 @@ class BetterAuthMetricsTest : public AutofillMetricsBaseTest,
       "Autofill.BetterAuth.CardUnmaskPreflightDuration";
   const std::string kPreflightFlowInitiatedMetrics =
       "Autofill.BetterAuth.CardUnmaskPreflightInitiated";
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that we log preflight calls for credit card unmasking when the user is
