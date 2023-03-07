@@ -9,7 +9,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash, "Face ML App is ash-chrome only")
 
 ts_library("trusted_ts") {
-  allow_js = true
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
 

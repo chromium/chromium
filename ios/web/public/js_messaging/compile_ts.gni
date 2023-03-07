@@ -53,7 +53,6 @@ template("compile_ts") {
   ts_library(target_name) {
     forward_variables_from(invoker,
                            [
-                             "allow_js",
                              "deps",
                              "testonly",
                            ])

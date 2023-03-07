@@ -12,7 +12,6 @@ assert(!is_official_build,
        "Sample System Web App is only built for unofficial builds")
 
 ts_library("trusted_ts") {
-  allow_js = true
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
 

@@ -19,7 +19,7 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
@@ -47,7 +47,6 @@ def main(argv):
   parser.add_argument('--manifest_excludes', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
-  parser.add_argument('--allow_js', action='store_true')
   parser.add_argument('--platform',
                       choices=['other', 'ios', 'chromeos_ash'],
                       default='other')
@@ -114,7 +113,13 @@ def main(argv):
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
 
-  if args.allow_js:
+  includes_js = False
+  if (args.in_files):
+    for file in args.in_files:
+      if file.endswith('.js'):
+        includes_js = True
+
+  if includes_js or isUnsupportedJsTarget(args.gen_dir, args.root_gen_dir):
     source_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
                                                root_dir)).replace('\\', '/')
     out_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,

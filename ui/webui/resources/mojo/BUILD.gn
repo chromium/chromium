@@ -128,7 +128,6 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/preprocessed"
   out_dir = tsc_folder
   composite = true
-  allow_js = true
 
   in_files = mojo_js_files + mojo_ts_files
 

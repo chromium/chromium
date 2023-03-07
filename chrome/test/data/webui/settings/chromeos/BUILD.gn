@@ -239,7 +239,6 @@ copy("copy_mojom") {
 }
 
 ts_library("build_ts") {
-  allow_js = true
   tsconfig_base = "tsconfig_base.json"
   root_dir = "$target_gen_dir/$preprocessed_folder"
   out_dir = "$target_gen_dir/$tsc_folder"

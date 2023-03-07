@@ -88,8 +88,7 @@ html_to_wrapper("html_wrapper_files") {
 }
 
 # TODO(b/270653607) Update this to generate TS sources instead and remove
-# allow_js argument from :build_ts. Also remove listing in
-# tools/typescript/validate_tsconfig.py.
+# listing in tools/typescript/validate_tsconfig.py.
 copy("copy_mojo") {
   deps = [
     "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
@@ -103,7 +102,6 @@ copy("copy_mojo") {
 }
 
 ts_library("build_ts") {
-  allow_js = true
   tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   deps = [
     "//ash/webui/common/resources:build_ts",

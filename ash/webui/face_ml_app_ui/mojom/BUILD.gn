@@ -17,7 +17,6 @@ mojom("trusted") {
 }
 
 ts_library("mojom_ts") {
-  allow_js = true
   mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
   root_dir = mojom_gen_dir
   out_dir = "$mojom_gen_dir/tsc"

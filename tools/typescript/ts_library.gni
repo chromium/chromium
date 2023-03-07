@@ -121,10 +121,6 @@ template("ts_library") {
       args += [ "--composite" ]
     }
 
-    if (defined(invoker.allow_js) && invoker.allow_js) {
-      args += [ "--allow_js" ]
-    }
-
     if (defined(invoker.enable_source_maps) && invoker.enable_source_maps) {
       args += [ "--enable_source_maps" ]
     }
