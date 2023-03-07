@@ -231,7 +231,8 @@ TEST(UpdateClientUtils, GetArchitecture) {
   const std::string arch = GetArchitecture();
 
 #if BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(arch == kArchIntel || arch == kArchAmd64) << arch;
+  EXPECT_TRUE(arch == kArchIntel || arch == kArchAmd64 || arch == kArchArm64)
+      << arch;
 #endif  // BUILDFLAG(IS_WIN)
 }
 
