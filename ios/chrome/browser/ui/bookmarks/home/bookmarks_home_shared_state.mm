@@ -27,11 +27,12 @@ const NSUInteger kMaxDownloadFaviconCount = 50;
   std::set<const bookmarks::BookmarkNode*> _editNodes;
 }
 
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                    displayedRootNode:
-                        (const bookmarks::BookmarkNode*)displayedRootNode {
+- (instancetype)
+    initWithProfileBookmarkModel:(bookmarks::BookmarkModel*)profileBookmarkModel
+               displayedRootNode:
+                   (const bookmarks::BookmarkNode*)displayedRootNode {
   if ((self = [super init])) {
-    _bookmarkModel = bookmarkModel;
+    _profileBookmarkModel = profileBookmarkModel;
     _tableViewDisplayedRootNode = displayedRootNode;
   }
   return self;

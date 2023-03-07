@@ -104,7 +104,7 @@ const int kMaxBookmarksSearchResults = 50;
   // Set up observers.
   ChromeBrowserState* browserState = _browser->GetBrowserState();
   _modelBridge = std::make_unique<BookmarkModelBridge>(
-      self, self.sharedState.bookmarkModel);
+      self, self.sharedState.profileBookmarkModel);
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
@@ -154,14 +154,14 @@ const int kMaxBookmarksSearchResults = 50;
             BookmarksHomeSectionIdentifierMessages];
 
   // Regenerate the list of all bookmarks.
-  if (!self.sharedState.bookmarkModel->loaded() ||
+  if (!self.sharedState.profileBookmarkModel->loaded() ||
       !self.sharedState.tableViewDisplayedRootNode) {
     [self updateTableViewBackground];
     return;
   }
 
   if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.bookmarkModel->root_node()) {
+      self.sharedState.profileBookmarkModel->root_node()) {
     [self generateTableViewDataForRootNode];
     [self updateTableViewBackground];
     return;
@@ -199,7 +199,7 @@ const int kMaxBookmarksSearchResults = 50;
 
   // Add "Mobile Bookmarks" to the table.
   const BookmarkNode* mobileNode =
-      self.sharedState.bookmarkModel->mobile_node();
+      self.sharedState.profileBookmarkModel->mobile_node();
   BookmarksHomeNodeItem* mobileItem =
       [[BookmarksHomeNodeItem alloc] initWithType:BookmarksHomeItemTypeBookmark
                                      bookmarkNode:mobileNode];
@@ -211,7 +211,7 @@ const int kMaxBookmarksSearchResults = 50;
 
   // Add "Bookmarks Bar" and "Other Bookmarks" only when they are not empty.
   const BookmarkNode* bookmarkBar =
-      self.sharedState.bookmarkModel->bookmark_bar_node();
+      self.sharedState.profileBookmarkModel->bookmark_bar_node();
   if (!bookmarkBar->children().empty()) {
     BookmarksHomeNodeItem* barItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
@@ -224,7 +224,7 @@ const int kMaxBookmarksSearchResults = 50;
   }
 
   const BookmarkNode* otherBookmarks =
-      self.sharedState.bookmarkModel->other_node();
+      self.sharedState.profileBookmarkModel->other_node();
   if (!otherBookmarks->children().empty()) {
     BookmarksHomeNodeItem* otherItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
@@ -264,7 +264,7 @@ const int kMaxBookmarksSearchResults = 50;
   bookmarks::QueryFields query;
   query.word_phrase_query.reset(new std::u16string);
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
-  GetBookmarksMatchingProperties(self.sharedState.bookmarkModel, query,
+  GetBookmarksMatchingProperties(self.sharedState.profileBookmarkModel, query,
                                  kMaxBookmarksSearchResults, &nodes);
 
   int count = 0;
@@ -300,8 +300,9 @@ const int kMaxBookmarksSearchResults = 50;
   // the spinner backgound.  Otherwise, check if we need to show the empty
   // background.
   if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.bookmarkModel->root_node()) {
-    if (self.sharedState.bookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
+      self.sharedState.profileBookmarkModel->root_node()) {
+    if (self.sharedState.profileBookmarkModel
+            ->HasNoUserCreatedBookmarksOrFolders() &&
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarksHomeBackgroundStyleLoading];
@@ -331,7 +332,7 @@ const int kMaxBookmarksSearchResults = 50;
   // We show promo cell only on the root view, that is when showing
   // the permanent nodes.
   BOOL promoVisible = ((self.sharedState.tableViewDisplayedRootNode ==
-                        self.sharedState.bookmarkModel->root_node()) &&
+                        self.sharedState.profileBookmarkModel->root_node()) &&
                        self.bookmarkPromoController.shouldShowSigninPromo &&
                        !self.sharedState.currentlyShowingSearchResults) &&
                       !self.isSyncDisabledByAdministrator;
@@ -526,7 +527,7 @@ const int kMaxBookmarksSearchResults = 50;
   // refresh here.
   [self.consumer refreshContents];
   if (self.sharedState.tableViewDisplayedRootNode !=
-          self.sharedState.bookmarkModel->root_node() &&
+          self.sharedState.profileBookmarkModel->root_node() &&
       !self.isSyncDisabledByAdministrator) {
     [self updateTableViewBackground];
   }
@@ -547,7 +548,7 @@ const int kMaxBookmarksSearchResults = 50;
 
 - (BOOL)hasBookmarksOrFolders {
   if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.bookmarkModel->root_node()) {
+      self.sharedState.profileBookmarkModel->root_node()) {
     // The root node always has its permanent nodes. If all the permanent nodes
     // are empty, we treat it as if the root itself is empty.
     const auto& childrenOfRootNode =

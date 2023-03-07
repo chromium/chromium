@@ -48,8 +48,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // The model backing the table view.
 @property(nonatomic, strong) TableViewModel* tableViewModel;
 
-// The model holding bookmark data.
-@property(nonatomic, readonly, assign) bookmarks::BookmarkModel* bookmarkModel;
+// The model holding profile bookmark data.
+@property(nonatomic, readonly, assign)
+    bookmarks::BookmarkModel* profileBookmarkModel;
 
 // Views.
 
@@ -109,9 +110,10 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // Max number of favicon download requests in the lifespan of this tableView.
 + (NSUInteger)maxDownloadFaviconCount;
 
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                    displayedRootNode:
-                        (const bookmarks::BookmarkNode*)displayedRootNode
+- (instancetype)initWithProfileBookmarkModel:
+                    (bookmarks::BookmarkModel*)profileBookmarkModel
+                           displayedRootNode:
+                               (const bookmarks::BookmarkNode*)displayedRootNode
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
