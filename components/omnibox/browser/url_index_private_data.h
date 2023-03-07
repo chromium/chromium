@@ -21,6 +21,7 @@
 #include "components/omnibox/browser/scored_history_match.h"
 
 class HistoryQuickProviderTest;
+class OmniboxTriggeredFeatureService;
 class TemplateURLService;
 
 namespace bookmarks {
@@ -72,7 +73,8 @@ class URLIndexPrivateData
       const std::string& host_filter,
       size_t max_matches,
       bookmarks::BookmarkModel* bookmark_model,
-      TemplateURLService* template_url_service);
+      TemplateURLService* template_url_service,
+      OmniboxTriggeredFeatureService* triggered_feature_service);
 
   // Returns URL hosts that have been visited more than a threshold.
   const std::vector<std::string>& HighlyVisitedHosts() const;
@@ -247,12 +249,14 @@ class URLIndexPrivateData
 
   // Helper function for HistoryItemsForTerms().  Fills in |scored_items| from
   // the matches listed in |history_ids|.
-  void HistoryIdsToScoredMatches(HistoryIDVector history_ids,
-                                 const std::u16string& lower_raw_string,
-                                 const std::string& host_filter,
-                                 const TemplateURLService* template_url_service,
-                                 bookmarks::BookmarkModel* bookmark_model,
-                                 ScoredHistoryMatches* scored_items) const;
+  void HistoryIdsToScoredMatches(
+      HistoryIDVector history_ids,
+      const std::u16string& lower_raw_string,
+      const std::string& host_filter,
+      const TemplateURLService* template_url_service,
+      bookmarks::BookmarkModel* bookmark_model,
+      ScoredHistoryMatches* scored_items,
+      OmniboxTriggeredFeatureService* triggered_feature_service) const;
 
   // Fills in |terms_to_word_starts_offsets| according to where the word starts
   // in each term.  For example, in the term "-foo" the word starts at offset 1.

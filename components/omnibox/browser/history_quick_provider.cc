@@ -96,7 +96,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   // Get the matching URLs from the DB.
   ScoredHistoryMatches matches = in_memory_url_index_->HistoryItemsForTerms(
       autocomplete_input_.text(), autocomplete_input_.cursor_position(), "",
-      max_matches);
+      max_matches, client()->GetOmniboxTriggeredFeatureService());
   if (matches.empty())
     return;
 
@@ -154,7 +154,8 @@ void HistoryQuickProvider::DoAutocomplete() {
     ScoredHistoryMatches host_matches =
         in_memory_url_index_->HistoryItemsForTerms(
             autocomplete_input_.text(), autocomplete_input_.cursor_position(),
-            host, max_host_matches);
+            host, max_host_matches,
+            client()->GetOmniboxTriggeredFeatureService());
     // TODO(manukh): Consider using a new `AutocompleteMatchType` for domain
     //  suggestions to distinguish them in metrics.
     if (!host_matches.empty()) {
@@ -375,10 +376,5 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
                              history_match.raw_score_before_domain_boosting);
   match.RecordAdditionalInfo("raw score after domain boosting",
                              history_match.raw_score_after_domain_boosting);
-  if (history_match.raw_score_before_domain_boosting <
-      history_match.raw_score_after_domain_boosting) {
-    client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        OmniboxTriggeredFeatureService::Feature::kDomainSuggestions);
-  }
   return match;
 }

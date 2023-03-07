@@ -414,7 +414,8 @@ bool HistoryDatabase::SetSegmentID(VisitID visit_id, SegmentID segment_id) {
       "UPDATE visits SET segment_id = ? WHERE id = ?"));
   s.BindInt64(0, segment_id);
   s.BindInt64(1, visit_id);
-  DCHECK(db_.GetLastChangeCount() == 1);
+  DCHECK_EQ(db_.GetLastChangeCount(), 1)
+      << "segment_id: " << segment_id << ", visit_id: " << visit_id;
 
   return s.Run();
 }

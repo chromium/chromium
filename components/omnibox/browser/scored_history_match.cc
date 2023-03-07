@@ -284,9 +284,13 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   const float topicality_score =
       GetTopicalityScore(terms_vector.size(), gurl, adjustments,
                          terms_to_word_starts_offsets, word_starts);
-  const float frequency_score = GetFrequency(now, is_url_bookmarked, visits);
-  const float specificity_score =
-      GetDocumentSpecificityScore(num_matching_pages);
+  float frequency_score = 0, specificity_score = 0;
+  if (topicality_score > 0) {
+    // No need to calculate these intermediates; when `topicality_score` is 0,
+    // they'll be unused.
+    frequency_score = GetFrequency(now, is_url_bookmarked, visits);
+    specificity_score = GetDocumentSpecificityScore(num_matching_pages);
+  }
   raw_score_before_domain_boosting =
       base::saturated_cast<int>(GetFinalRelevancyScore(
           topicality_score, frequency_score, specificity_score, 1));
@@ -978,8 +982,11 @@ float ScoredHistoryMatch::GetFinalRelevancyScore(float topicality_score,
   DCHECK(!relevance_buckets->empty());
   DCHECK_EQ(0.0, (*relevance_buckets)[0].first);
 
-  if (topicality_score == 0)
+  if (topicality_score == 0) {
+    DCHECK_EQ(frequency_score, 0);
+    DCHECK_EQ(specificity_score, 0);
     return 0;
+  }
 
   // Compute an intermediate score by multiplying the topicality, specificity,
   // and frequency scores, then map it to the range [0, 1399].  For typical
