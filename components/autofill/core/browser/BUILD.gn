@@ -162,8 +162,6 @@ static_library("browser") {
     "data_model/iban.h",
     "data_model/phone_number.cc",
     "data_model/phone_number.h",
-    "data_model/test_data_creator.cc",
-    "data_model/test_data_creator.h",
     "field_filler.cc",
     "field_filler.h",
     "field_type_utils.cc",

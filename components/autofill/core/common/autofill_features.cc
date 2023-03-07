@@ -703,11 +703,6 @@ BASE_FEATURE(kAutofillCreateAccountProfilesFromSettings,
              "AutofillCreateAccountProfilesFromSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, three address profiles are created for testing.
-BASE_FEATURE(kAutofillCreateDataForTest,
-             "AutofillCreateDataForTest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or Disables (mostly for hermetic testing) autofill server
 // communication. The URL of the autofill server can further be controlled via
 // the autofill-server-url param. The given URL should specify the complete
