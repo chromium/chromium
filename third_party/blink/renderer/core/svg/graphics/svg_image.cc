@@ -533,7 +533,9 @@ absl::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
 
   view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
 
-  return view->GetPaintRecord(cull_rect);
+  return view->GetPaintRecord(
+      RuntimeEnabledFeatures::SvgRasterOptimizationsEnabled() ? cull_rect
+                                                              : nullptr);
 }
 
 static bool DrawNeedsLayer(const cc::PaintFlags& flags) {

@@ -325,6 +325,7 @@ public final class ProductionSupportedFlagList {
                             + "viewport."),
             Flag.baseFeature(BlinkFeatures.SCROLL_OVERLAP_OPTIMIZATION,
                     "Enables scroll overlap optimization. See https://crbug.com/1401086#c29."),
+            Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
             Flag.baseFeature("PreconnectOnRedirect"),
             Flag.baseFeature("PreconnectInNetworkService"), Flag.baseFeature("PrefetchDNSWithURL"),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,

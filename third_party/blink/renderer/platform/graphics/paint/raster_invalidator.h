@@ -148,7 +148,9 @@ class PLATFORM_EXPORT RasterInvalidator {
                          const PaintChunk& old_chunk,
                          const PaintChunkInfo& new_chunk_info,
                          const PaintChunkInfo& old_chunk_info,
-                         const PropertyTreeState& layer_state) const;
+                         const PropertyTreeState& layer_state,
+                         const float absolute_translation_tolerance,
+                         const float other_transform_tolerance) const;
 
   // Clip a rect in the layer space by the layer bounds.
   template <typename Rect>

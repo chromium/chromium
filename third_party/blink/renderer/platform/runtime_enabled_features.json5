@@ -3219,6 +3219,10 @@
       status: "stable",
     },
     {
+      name: "SvgRasterOptimizations",
+      status: "experimental",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
       base_feature: "none",
