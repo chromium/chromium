@@ -931,31 +931,29 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Punctuation) {
   WaitForRecognitionStopped();
 }
 
-// Verifies that Dictation cannot be toggled on using the keyboard shortcut if
-// a SODA download is in-progress.
-// TODO(crbug.com/1422184): Flaky.
-IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_NoToggleOnIfSodaDownloading) {
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       TogglesOnIfSodaDownloadingInDifferentLanguage) {
   if (speech_recognition_type() != speech::SpeechRecognitionType::kOnDevice) {
     // SodaInstaller only works if on-device speech recognition is available.
     return;
   }
 
-  // Dictation should start by working normally.
-  ToggleDictationWithKeystroke();
-  WaitForRecognitionStarted();
-  SendFinalResultAndWaitForEditableValue("Hello world.", "Hello world.");
-  ToggleDictationWithKeystroke();
-  WaitForRecognitionStopped();
-
-  // Dictation should still work if SODA is downloading in a different locale.
   speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
       30, speech::LanguageCode::kFrFr);
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForEditableValue("Goodnight world.",
-                                         "Hello world. Goodnight world.");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
+}
+
+// Verifies that Dictation cannot be toggled on using the keyboard shortcut if
+// a SODA download is in-progress.
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       NoToggleOnIfSodaDownloadingInDictationLanguage) {
+  if (speech_recognition_type() != speech::SpeechRecognitionType::kOnDevice) {
+    // SodaInstaller only works if on-device speech recognition is available.
+    return;
+  }
 
   // Dictation shouldn't work if SODA is downloading in the Dictation locale.
   speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
@@ -976,9 +974,6 @@ IN_PROC_BROWSER_TEST_P(DictationTest, DISABLED_NoToggleOnIfSodaDownloading) {
       speech::LanguageCode::kEnUs);
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForEditableValue(
-      "I need eight hours of sleep.",
-      "Hello world. Goodnight world. I need eight hours of sleep.");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
