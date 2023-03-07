@@ -19,6 +19,8 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/root_window_controller.h"
+#include "ash/rounded_display/rounded_display_provider.h"
+#include "ash/rounded_display/rounded_display_provider_test_api.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -201,6 +203,10 @@ class DisplayManagerTest : public AshTestBase,
     check_root_window_on_destruction_ = false;
   }
 
+  base::test::ScopedFeatureList& scoped_feature_list() {
+    return scoped_features_;
+  }
+
  private:
   vector<display::Display> changed_;
   vector<display::Display> added_;
@@ -212,7 +218,63 @@ class DisplayManagerTest : public AshTestBase,
   bool check_root_window_on_destruction_ = true;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+
+  // Currently `display::features::kRoundedDisplay` feature is used during the
+  // `ash::Shell` shutdown as we call `AshTestBase::TearDown()`, therefore
+  // `scoped_features_` needs to outlive the call.
+  base::test::ScopedFeatureList scoped_features_;
 };
+
+TEST_F(DisplayManagerTest,
+       RoundedDisplayProviderIsOnlyCreatedForEachRoundedDisplay) {
+  scoped_feature_list().InitAndEnableFeature(
+      display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // Have 4 displays out of which 2 displays have rounded-corners. Value after
+  // '~' specifies radii of the display.
+  UpdateDisplay("500x400,400x300~15,400x300~16,500x400");
+  ASSERT_EQ(4U, display_manager()->GetNumDisplays());
+
+  for (auto& display : display_manager()->active_display_list()) {
+    const display::ManagedDisplayInfo& display_info =
+        display_manager()->GetDisplayInfo(display.id());
+    const RoundedDisplayProvider* rounded_display_provider =
+        window_tree_host_manager->GetRoundedDisplayProvider(display.id());
+    EXPECT_EQ(!!rounded_display_provider,
+              !display_info.rounded_corners_radii().IsEmpty());
+  }
+}
+
+TEST_F(DisplayManagerTest, RoundedDisplayProviderIsRemovedForRemovedDisplay) {
+  scoped_feature_list().InitAndEnableFeature(
+      display::features::kRoundedDisplay);
+
+  WindowTreeHostManager* window_tree_host_manager =
+      Shell::Get()->window_tree_host_manager();
+
+  // Have 4 displays out of which 2 displays have rounded-corners. Value after
+  // '~' specifies radii of the display.
+  UpdateDisplay("500x400,400x300~15,400x300~16,500x400");
+  ASSERT_EQ(4U, display_manager()->GetNumDisplays());
+
+  auto to_be_removed_display_id = display_manager()->GetDisplayAt(2).id();
+
+  const RoundedDisplayProvider* rounded_display_provider =
+      window_tree_host_manager->GetRoundedDisplayProvider(
+          to_be_removed_display_id);
+  EXPECT_TRUE(rounded_display_provider);
+
+  // Remove one display that had rounded corners.
+  UpdateDisplay("500x400,400x300~15");
+
+  rounded_display_provider =
+      window_tree_host_manager->GetRoundedDisplayProvider(
+          to_be_removed_display_id);
+  EXPECT_FALSE(rounded_display_provider);
+}
 
 TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
@@ -3685,8 +3747,8 @@ TEST_F(DisplayManagerTest, DisconnectedInternalDisplayShouldUpdateDisplayInfo) {
 
 // TODO(crbug/1262970): Delete when we can read radius from command line.
 TEST_F(DisplayManagerTest, SettingDefaultRoundedCornersOnInternalDisplay) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(display::features::kRoundedDisplay);
+  scoped_feature_list().InitAndEnableFeature(
+      display::features::kRoundedDisplay);
 
   Shell* shell = Shell::Get();
   display::DisplayChangeObserver observer(shell->display_manager());
@@ -3714,11 +3776,14 @@ TEST_F(DisplayManagerTest, SettingDefaultRoundedCornersOnInternalDisplay) {
   WindowTreeHostManager* window_manager =
       Shell::Get()->window_tree_host_manager();
 
-  aura::Window* primary_root =
-      window_manager->GetRootWindowForDisplayId(primary_display.id());
+  auto* primary_display_provider =
+      window_manager->GetRoundedDisplayProvider(primary_display.id());
+
+  ash::RoundedDisplayProviderTestApi primary_display_provider_test(
+      primary_display_provider);
 
   EXPECT_EQ(gfx::RoundedCornersF(16.0),
-            primary_root->layer()->rounded_corner_radii());
+            primary_display_provider_test.GetCurrentPanelRadii());
 }
 
 TEST_F(DisplayManagerTest, UpdateInternalDisplayNativeBounds) {

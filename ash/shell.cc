@@ -841,6 +841,11 @@ Shell::~Shell() {
   // https://crbug.com/1350711.
   capture_mode_controller_.reset();
 
+  // This must be called before deleting all the windows below in
+  // `CloseAllRootWindowChildWindows()` since host_windows(which gets destroyed)
+  // are needed for proper deletion of RoundedDisplayProviders.
+  window_tree_host_manager_->ShutdownRoundedDisplays();
+
   // Close all widgets (including the shelf) and destroy all window containers.
   CloseAllRootWindowChildWindows();
 

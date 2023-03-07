@@ -20,11 +20,13 @@
 #include "ash/host/root_window_transformer.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
+#include "ash/rounded_display/rounded_display_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/window_util.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
@@ -98,19 +100,6 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
   host->SetDisplayTransformHint(
       display::DisplayRotationToOverlayTransform(effective_rotation));
 
-  const display::ManagedDisplayInfo& display_info =
-      GetDisplayManager()->GetDisplayInfo(display.id());
-  if (display::features::IsRoundedDisplayEnabled()) {
-    // Set/Update rounded corners on the display.
-    ui::Layer* root_layer = host->window()->layer();
-    DCHECK(root_layer);
-    root_layer->SetRoundedCornerRadius(display_info.rounded_corners_radii());
-    // If root_layer does not have rounded corners, setting the fast rounded
-    // corner optimization on does not have any effect.
-    root_layer->SetIsFastRoundedCorner(
-        !display_info.rounded_corners_radii().IsEmpty());
-  }
-
   // Just moving the display requires the full redraw.
   // chrome-os-partner:33558.
   host->compositor()->ScheduleFullRedraw();
@@ -141,8 +130,8 @@ int GetEffectiveResolutionUMAIndex(const display::Display& display) {
 void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
                                      bool is_first_run) {
   display::Display internal_display;
-  const auto* session_controller = Shell::Get()->session_controller();
 
+  const auto* session_controller = Shell::Get()->session_controller();
   // Record the UMA only when this is an active user session and the
   // internal display is present.
   if (display::HasInternalDisplay() &&
@@ -251,7 +240,10 @@ WindowTreeHostManager::WindowTreeHostManager()
   primary_display_id = display::kInvalidDisplayId;
 }
 
-WindowTreeHostManager::~WindowTreeHostManager() = default;
+WindowTreeHostManager::~WindowTreeHostManager() {
+  DCHECK(rounded_display_providers_map_.empty())
+      << "ShutdownRoundedDisplays() must be called before this is destroyed";
+}
 
 void WindowTreeHostManager::Start() {
   display_observer_.emplace(this);
@@ -271,15 +263,23 @@ void WindowTreeHostManager::Start() {
                           true /*is_first_run=*/));
 }
 
+void WindowTreeHostManager::ShutdownRoundedDisplays() {
+  if (display::features::IsRoundedDisplayEnabled()) {
+    rounded_display_providers_map_.clear();
+  }
+}
+
 void WindowTreeHostManager::Shutdown() {
   for (auto& observer : observers_)
     observer.OnWindowTreeHostManagerShutdown();
 
   effective_resolution_UMA_timer_->Reset();
 
+  auto* display_manager = Shell::Get()->display_manager();
+
   // Unset the display manager's delegate here because
   // DisplayManager outlives WindowTreeHostManager.
-  Shell::Get()->display_manager()->set_delegate(nullptr);
+  display_manager->set_delegate(nullptr);
 
   cursor_window_controller_.reset();
   mirror_window_controller_.reset();
@@ -333,6 +333,15 @@ void WindowTreeHostManager::InitHosts() {
       AshWindowTreeHost* ash_host =
           AddWindowTreeHostForDisplay(display, AshWindowTreeHostInitParams());
       RootWindowController::CreateForSecondaryDisplay(ash_host);
+    }
+  }
+
+  if (display::features::IsRoundedDisplayEnabled()) {
+    // We need to initialize rounded display providers after we have initialized
+    // the root controllers for each display.
+    for (size_t i = 0; i < display_manager->GetNumDisplays(); ++i) {
+      const display::Display& display = display_manager->GetDisplayAt(i);
+      EnableRoundedCorners(display);
     }
   }
 
@@ -587,6 +596,10 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
         AddWindowTreeHostForDisplay(display, AshWindowTreeHostInitParams());
     RootWindowController::CreateForSecondaryDisplay(ash_host);
   }
+
+  if (display::features::IsRoundedDisplayEnabled()) {
+    EnableRoundedCorners(display);
+  }
 }
 
 void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
@@ -617,6 +630,10 @@ void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
 void WindowTreeHostManager::OnDisplayRemoved(const display::Display& display) {
   AshWindowTreeHost* host_to_delete = window_tree_hosts_[display.id()];
   CHECK(host_to_delete) << display.ToString();
+
+  if (display::features::IsRoundedDisplayEnabled()) {
+    RemoveRoundedDisplayProvider(display);
+  }
 
   // When the primary root window's display is removed, move the primary
   // root to the other display.
@@ -677,6 +694,62 @@ void WindowTreeHostManager::OnDisplayMetricsChanged(
   ash_host->AsWindowTreeHost()->SetBoundsInPixels(
       display_info.bounds_in_native());
   SetDisplayPropertiesOnHost(ash_host, display);
+
+  if (display::features::IsRoundedDisplayEnabled()) {
+    // We need to update the surface on which rounded display mask textures are
+    // rendered when ever the display device scale factor or display rotation
+    // changes.
+    MaybeUpdateRoundedDisplaySurface(display);
+  }
+}
+
+void WindowTreeHostManager::EnableRoundedCorners(
+    const display::Display& display) {
+  // This method will create a provider for the display if one already does not
+  // exists.
+  AddRoundedDisplayProviderIfNeeded(display);
+  MaybeUpdateRoundedDisplaySurface(display);
+}
+
+void WindowTreeHostManager::MaybeUpdateRoundedDisplaySurface(
+    const display::Display& display) {
+  RoundedDisplayProvider* rounded_display_provider =
+      GetRoundedDisplayProvider(display.id());
+
+  if (rounded_display_provider) {
+    rounded_display_provider->UpdateRoundedDisplaySurface();
+  }
+}
+
+RoundedDisplayProvider* WindowTreeHostManager::GetRoundedDisplayProvider(
+    int64_t display_id) {
+  auto iter = rounded_display_providers_map_.find(display_id);
+  return (iter != rounded_display_providers_map_.end()) ? iter->second.get()
+                                                        : nullptr;
+}
+
+void WindowTreeHostManager::AddRoundedDisplayProviderIfNeeded(
+    const display::Display& display) {
+  const display::ManagedDisplayInfo& display_info =
+      GetDisplayManager()->GetDisplayInfo(display.id());
+
+  const gfx::RoundedCornersF panel_radii = display_info.rounded_corners_radii();
+
+  if (panel_radii.IsEmpty() || GetRoundedDisplayProvider(display.id())) {
+    return;
+  }
+
+  auto rounded_display_provider = RoundedDisplayProvider::Create(display.id());
+  rounded_display_provider->Init(panel_radii,
+                                 RoundedDisplayProvider::Strategy::kScanout);
+
+  rounded_display_providers_map_[display.id()] =
+      std::move(rounded_display_provider);
+}
+
+void WindowTreeHostManager::RemoveRoundedDisplayProvider(
+    const display::Display& display) {
+  rounded_display_providers_map_.erase(display.id());
 }
 
 void WindowTreeHostManager::OnHostResized(aura::WindowTreeHost* host) {
@@ -718,8 +791,9 @@ void WindowTreeHostManager::CloseMirroringDisplayIfNotNecessary() {
   mirror_window_controller_->CloseIfNotNecessary();
   // If cursor_compositing is enabled for large cursor, the cursor window is
   // always on the desktop display (the visible cursor on the non-desktop
-  // display is drawn through compositor mirroring). Therefore, it's unnecessary
-  // to handle the cursor_window at all. See: http://crbug.com/412910
+  // display is drawn through compositor mirroring). Therefore, it's
+  // unnecessary to handle the cursor_window at all. See:
+  // http://crbug.com/412910
   if (!cursor_window_controller_->is_cursor_compositing_enabled())
     cursor_window_controller_->UpdateContainer();
 }
@@ -789,8 +863,8 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
       old_primary_display.id();
 
   // Ensure that color spaces for the root windows reflect those of their new
-  // displays. If these go out of sync, we can lose the ability to composite HDR
-  // content.
+  // displays. If these go out of sync, we can lose the ability to composite
+  // HDR content.
   primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
       new_primary_display.color_spaces());
   non_primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
@@ -813,6 +887,7 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
         list, std::move(swapped_layout));
   }
 
+  // Update the global primary_display_id.
   primary_display_id = new_primary_display.id();
 
   UpdateWorkAreaOfDisplayNearestWindow(GetWindow(primary_host),
@@ -820,7 +895,23 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   UpdateWorkAreaOfDisplayNearestWindow(GetWindow(non_primary_host),
                                        new_primary_display.GetWorkAreaInsets());
 
-  // Update the dispay manager with new display info.
+  RoundedDisplayProvider* old_primary_rounded_display_provider =
+      GetRoundedDisplayProvider(old_primary_display.id());
+  RoundedDisplayProvider* new_primary_rounded_display_provider =
+      GetRoundedDisplayProvider(new_primary_display.id());
+
+  // We need to update the host window surfaces of the swapped display to ensure
+  // that host_windows are parented to correct root_windows, and therefore the
+  // display textures are rendered to correct display.
+  if (old_primary_rounded_display_provider) {
+    old_primary_rounded_display_provider->UpdateHostParent();
+  }
+
+  if (new_primary_rounded_display_provider) {
+    new_primary_rounded_display_provider->UpdateHostParent();
+  }
+
+  // Update the display manager with new display info.
   GetDisplayManager()->set_force_bounds_changed(true);
   GetDisplayManager()->UpdateDisplays();
   GetDisplayManager()->set_force_bounds_changed(false);
@@ -833,8 +924,8 @@ void WindowTreeHostManager::PostDisplayConfigurationChange() {
     observer.OnDisplayConfigurationChanged();
   UpdateMouseLocationAfterDisplayChange();
 
-  // Enable cursor compositing, so that cursor could be mirrored to destination
-  // displays along with other display content.
+  // Enable cursor compositing, so that cursor could be mirrored to
+  // destination displays along with other display content.
   Shell::Get()->UpdateCursorCompositingEnabled();
 }
 
@@ -923,8 +1014,8 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   host->window()->Show();
 
   window_tree_hosts_[display.id()] = ash_host;
-  SetDisplayPropertiesOnHost(ash_host, display);
 
+  SetDisplayPropertiesOnHost(ash_host, display);
   ash_host->ConfineCursorToRootWindow();
 
   return ash_host;
