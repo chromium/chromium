@@ -87,9 +87,9 @@ various important responsibilities:
   lists get a reply (by someone; not necessarily the marshal themselves). See
   [go/chrome-security-emails](https://goto.google.com/chrome-security-emails)
   for a dashboard.
-  * Note: external emails will always come in on security@chromium.org as
-    chrome-security@google.com is a Google-only list, but both need to be
-    triaged.
+  * Note: external emails will always come in on security@chromium.org or
+    security-dev@chromium.org, as chrome-security@google.com is a Google-only
+    list, but all need to be triaged.
   * When triaging an email to be handled off of the list, make sure to bcc: the
     list that it arrived on, so that other people including future marshals can
     see that it has been handled.
