@@ -215,7 +215,6 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
     if (route_it != routes_by_frame_.end()) {
       TerminateSession(route_it->second, base::DoNothing());
     }
-
     routes_by_frame_[frame_tree_node_id] = route_id;
   }
 
@@ -225,15 +224,18 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   for (ReceiverAppType type : cast_source.supported_app_types()) {
     type_str.push_back(cast_util::EnumToString(type).value().data());
   }
+  logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
+                   "Sent a Launch Session request.", sink.id(),
+                   cast_source.source_id(),
+                   MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+  MaybeShowIssueAtLaunch(MediaSource(cast_source.source_id()), sink.id());
+  // `params` gets moved here, and all the variables referencing it cannot be
+  // used after that.
   message_handler_->LaunchSession(
       sink.cast_data().cast_channel_id, app_id, launch_timeout, type_str,
       app_params,
       base::BindOnce(&CastActivityManager::HandleLaunchSessionResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(params)));
-  logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
-                   "Sent a Launch Session request.", sink.id(),
-                   cast_source.source_id(),
-                   MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
 }
 
 void CastActivityManager::SetPendingLaunch(DoLaunchSessionParams params) {
@@ -1095,6 +1097,24 @@ void CastActivityManager::TerminateAllLocalMirroringActivities() {
   for (const auto& id : route_ids) {
     TerminateSession(id, base::DoNothing());
   }
+}
+
+void CastActivityManager::MaybeShowIssueAtLaunch(
+    const MediaSource& media_source,
+    const MediaSink::Id& sink_id) {
+#if BUILDFLAG(IS_MAC)
+  // On macOS, the user cannot choose to share their desktop audio, so we notify
+  // the user as such. On other platforms the desktop picker allows the user to
+  // manually disable audio capture.
+  if (media_source.IsDesktopMirroringSource() &&
+      !media_source.IsDesktopSourceWithAudio()) {
+    IssueInfo issue_info(
+        l10n_util::GetStringUTF8(
+            IDS_MEDIA_ROUTER_ISSUE_DESKTOP_AUDIO_NOT_SUPPORTED),
+        IssueInfo::Severity::NOTIFICATION, sink_id);
+    media_router_->OnIssue(issue_info);
+  }
+#endif
 }
 
 CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(

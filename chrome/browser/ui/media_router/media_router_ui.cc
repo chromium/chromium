@@ -227,6 +227,9 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
 
   current_route_request_ = absl::make_optional(*params->request);
 
+  // Note that `route_result_callbacks` don't get called when MediaRoterUI is
+  // destroyed before the route is created, e.g. when the Cast dialog is closed
+  // when the desktop picker is shown.
   params->route_result_callbacks.push_back(
       base::BindOnce(&MaybeReportCastingSource, cast_mode));
 

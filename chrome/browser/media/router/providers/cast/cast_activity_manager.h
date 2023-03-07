@@ -302,6 +302,9 @@ class CastActivityManager : public CastActivityManagerBase,
 
   void TerminateAllLocalMirroringActivities();
 
+  void MaybeShowIssueAtLaunch(const MediaSource& media_source,
+                              const MediaSink::Id& sink_id);
+
   static CastActivityFactoryForTest* cast_activity_factory_for_test_;
 
   // This map contains all activities--both presentation activities and
