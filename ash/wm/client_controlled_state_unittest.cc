@@ -969,7 +969,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   EXPECT_NE(kShellWindowId_FloatContainer, window()->parent()->GetId());
 }
 
-TEST_P(ClientControlledStateTestClamshellAndTablet, DragOverviewWindowToSnap) {
+TEST_P(ClientControlledStateTestClamshellAndTablet,
+       DragOverviewWindowToSnapOneSide) {
   auto* const overview_controller = Shell::Get()->overview_controller();
   auto* const split_view_controller = SplitViewController::Get(window());
 
@@ -1011,6 +1012,71 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, DragOverviewWindowToSnap) {
             SplitViewController::State::kPrimarySnapped);
   EXPECT_EQ(split_view_controller->primary_window(), window());
   EXPECT_TRUE(overview_controller->InOverviewSession());
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet,
+       DragOverviewWindowToSnapBothSide) {
+  auto* const overview_controller = Shell::Get()->overview_controller();
+  auto* const split_view_controller = SplitViewController::Get(window());
+  auto* const event_generator = GetEventGenerator();
+
+  widget_delegate()->EnableSnap();
+
+  // Create a normal (non-client-controlled) window in addition to `window()`
+  // (client-controlled window) to fill the one side of the split view.
+  auto non_client_controlled_window = CreateAppWindow();
+
+  // Enter overview.
+  ToggleOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+
+  {
+    // Drag `non_client_controlled_window`'s overview item to snap to left.
+    auto* const overview_item =
+        GetOverviewItemForWindow(non_client_controlled_window.get());
+    event_generator->set_current_screen_location(
+        gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+    event_generator->DragMouseTo(0, 0);
+  }
+
+  {
+    // Click `window()`'s overview item to snap to right.
+    auto* const overview_item = GetOverviewItemForWindow(window());
+    event_generator->set_current_screen_location(
+        gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+    event_generator->ClickLeftButton();
+  }
+
+  // Ensures the window is in a transitional snapped state.
+  EXPECT_TRUE(split_view_controller->IsWindowInTransitionalState(window()));
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+  EXPECT_FALSE(window_state()->IsSnapped());
+
+  // Activating window just before accepting the request shouldn't end the
+  // overview.
+  widget()->Activate();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Accept the snap request.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_TRUE(window_state()->IsSnapped());
+
+  if (InTabletMode()) {
+    // In tablet mode, we should keep splitview while overview should end.
+    EXPECT_TRUE(split_view_controller->InSplitViewMode());
+    EXPECT_EQ(split_view_controller->state(),
+              SplitViewController::State::kBothSnapped);
+    EXPECT_EQ(split_view_controller->secondary_window(), window());
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+  } else {
+    // In clamshell mode, we should end both splitview and overview.
+    EXPECT_FALSE(split_view_controller->InSplitViewMode());
+    EXPECT_EQ(split_view_controller->state(),
+              SplitViewController::State::kNoSnap);
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+  }
 }
 
 }  // namespace ash

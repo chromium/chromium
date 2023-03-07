@@ -458,13 +458,21 @@ class SplitViewController::AutoSnapController
     }
 
     // We do not auto snap windows in clamshell splitview mode if a new window
-    // is activated when clamshell splitview mode is active. In this case we'll
-    // just end overview mode which will then end splitview mode.
+    // is activated when clamshell splitview mode is active.
     // TODO(xdai): Handle this logic in OverivewSession::OnWindowActivating().
     // TODO(michelefan): Considering to auto-snap the second window with one
     // window snapped when
     // `SnapGroupController::IsArm1AutomaticallyLockEnabled()`.
     if (split_view_controller_->InClamshellSplitViewMode()) {
+      if (split_view_controller_->IsWindowInTransitionalState(window)) {
+        // If `window` is the transitional state (i.e. it's going to be snapped
+        // very soon), no need to end overview mode here because
+        // `OverviewGrid::OnSplitViewStateChanged()` will handle it when the
+        // snapped state is applied.
+        return;
+      }
+      // If activated `window` is not going to be snapped, we just end overview
+      // mode which will then end splitview mode.
       Shell::Get()->overview_controller()->EndOverview(
           OverviewEndAction::kSplitView);
       return;
