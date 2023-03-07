@@ -114,7 +114,8 @@ const int kMaxNoteCharAmount = 1000;
 
 @interface PasswordDetailsTableViewController () <
     TableViewTextEditItemDelegate,
-    TableViewMultiLineTextEditItemDelegate> {
+    TableViewMultiLineTextEditItemDelegate,
+    UIGestureRecognizerDelegate> {
   // Index of the password the user wants to reveal.
   NSInteger _passwordIndexToReveal;
 
@@ -382,38 +383,29 @@ const int kMaxNoteCharAmount = 1000;
   return item;
 }
 
-- (TableViewTextButtonItem*)deleteButtonItemForPasswordDetails:
+- (TableViewTextItem*)deleteButtonItemForPasswordDetails:
     (PasswordDetails*)passwordDetails {
-  TableViewTextButtonItem* item = [[TableViewTextButtonItem alloc]
+  TableViewTextItem* item = [[TableViewTextItem alloc]
       initWithType:PasswordDetailsItemTypeDeleteButton];
-  item.buttonText = l10n_util::GetNSString(
-      self.isBlockedSite ? IDS_IOS_DELETE_ACTION_TITLE
-                         : IDS_IOS_CONFIRM_PASSWORD_DELETION);
-  item.buttonContentHorizontalAlignment =
-      UIControlContentHorizontalAlignmentLeft;
-  item.boldButtonText = NO;
-  item.disableButtonIntrinsicWidth = YES;
-  item.buttonTextColor = [UIColor colorNamed:kRedColor];
-  item.buttonBackgroundColor = [UIColor clearColor];
-  item.buttonAccessibilityIdentifier = [NSString
+  item.text = l10n_util::GetNSString(self.isBlockedSite
+                                         ? IDS_IOS_DELETE_ACTION_TITLE
+                                         : IDS_IOS_CONFIRM_PASSWORD_DELETION);
+  item.textColor = [UIColor colorNamed:kRedColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  item.accessibilityIdentifier = [NSString
       stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
                        passwordDetails.username, passwordDetails.password];
   return item;
 }
 
-- (TableViewTextButtonItem*)moveToAccountButtonItem {
-  TableViewTextButtonItem* item = [[TableViewTextButtonItem alloc]
+- (TableViewTextItem*)moveToAccountButtonItem {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
       initWithType:PasswordDetailsItemTypeMoveToAccountButton];
-  item.buttonText =
-      l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE);
-  item.buttonTextColor = self.tableView.editing
-                             ? [UIColor colorNamed:kTextSecondaryColor]
-                             : [UIColor colorNamed:kBlueColor];
-  item.buttonBackgroundColor = [UIColor clearColor];
-  item.disableButtonIntrinsicWidth = YES;
-  item.boldButtonText = NO;
-  item.buttonContentHorizontalAlignment =
-      UIControlContentHorizontalAlignmentLeft;
+  item.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE);
+  item.textColor = self.tableView.editing
+                       ? [UIColor colorNamed:kTextSecondaryColor]
+                       : [UIColor colorNamed:kBlueColor];
+  item.enabled = !self.tableView.editing;
   return item;
 }
 
@@ -599,28 +591,21 @@ const int kMaxNoteCharAmount = 1000;
       break;
     }
     case PasswordDetailsItemTypeDeleteButton: {
-      TableViewTextButtonCell* tableViewTextButtonCell =
-          base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
-      [tableViewTextButtonCell.button removeTarget:nil
-                                            action:nil
-                                  forControlEvents:UIControlEventAllEvents];
-      [tableViewTextButtonCell.button addTarget:self
-                                         action:@selector(didTapDeleteButton:)
-                               forControlEvents:UIControlEventTouchUpInside];
-      [tableViewTextButtonCell.button setTag:indexPath.section];
+      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(didTapDeleteButton:)];
+      tapRecognizer.delegate = self;
+      [cell addGestureRecognizer:tapRecognizer];
+      [cell setTag:indexPath.section];
       break;
     }
     case PasswordDetailsItemTypeMoveToAccountButton: {
-      TableViewTextButtonCell* tableViewTextButtonCell =
-          base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
-      [tableViewTextButtonCell.button setTag:indexPath.section];
-      tableViewTextButtonCell.button.enabled = !self.tableView.editing;
-      [tableViewTextButtonCell.button removeTarget:nil
-                                            action:nil
-                                  forControlEvents:UIControlEventAllEvents];
-      [tableViewTextButtonCell.button addTarget:self
-                                         action:@selector(didTapMoveButton:)
-                               forControlEvents:UIControlEventTouchUpInside];
+      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(didTapMoveButton:)];
+      tapRecognizer.delegate = self;
+      [cell addGestureRecognizer:tapRecognizer];
+      [cell setTag:indexPath.section];
       break;
     }
     case PasswordDetailsItemTypeNote:
@@ -1308,16 +1293,18 @@ const int kMaxNoteCharAmount = 1000;
   }
 }
 
-- (void)didTapDeleteButton:(UIButton*)buttonView {
-  int position = buttonView.tag;
+- (void)didTapDeleteButton:(UIGestureRecognizer*)gestureRecognizer {
+  UIView* view = gestureRecognizer.view;
+  int position = view.tag;
   DCHECK(position >= 0);
   DCHECK(self.handler);
   [self.handler
       showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
-                                       anchorView:buttonView];
+                                       anchorView:view];
 }
 
-- (void)didTapMoveButton:(UIButton*)buttonView {
+- (void)didTapMoveButton:(UIGestureRecognizer*)gestureRecognizer {
+  UIView* view = gestureRecognizer.view;
   if (![self.reauthModule canAttemptReauth]) {
     return;
   }
@@ -1332,7 +1319,7 @@ const int kMaxNoteCharAmount = 1000;
           return;
         }
         // Only one password at position 0 shows if no grouping applied.
-        int position = IsPasswordGroupingEnabled() ? buttonView.tag : 0;
+        int position = IsPasswordGroupingEnabled() ? view.tag : 0;
         DCHECK_GE(position, 0);
         DCHECK(self.handler);
         [self.handler moveCredentialToAccountStore:self.passwords[position]];

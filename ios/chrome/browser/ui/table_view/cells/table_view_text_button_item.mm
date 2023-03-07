@@ -32,9 +32,6 @@ const CGFloat kButtonTitleVerticalContentInset = 8.0;
 const CGFloat kButtonCornerRadius = 8;
 // Default Text alignment.
 const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
-// Default Text alignment.
-const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
-    UIControlContentHorizontalAlignmentCenter;
 }  // namespace
 
 @implementation TableViewTextButtonItem
@@ -49,7 +46,6 @@ const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
     self.cellClass = [TableViewTextButtonCell class];
     _enabled = YES;
     _textAlignment = kDefaultTextAlignment;
-    _buttonContentHorizontalAlignment = kDefaultContentHorizontalAlignment;
     _boldButtonText = YES;
     _dimBackgroundWhenDisabled = YES;
   }
@@ -95,14 +91,6 @@ const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
   } else {
     [cell.button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                       forState:UIControlStateNormal];
-  }
-  cell.button.contentHorizontalAlignment =
-      self.buttonContentHorizontalAlignment;
-  if (self.buttonContentHorizontalAlignment ==
-      UIControlContentHorizontalAlignmentLeft) {
-    cell.button.contentEdgeInsets = UIEdgeInsetsMake(
-        kButtonTitleVerticalContentInset, 0, kButtonTitleVerticalContentInset,
-        kButtonTitleHorizontalContentInset);
   }
   cell.button.accessibilityIdentifier = self.buttonAccessibilityIdentifier;
   // Decide cell.button.backgroundColor in order:
@@ -245,7 +233,6 @@ const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
   [super prepareForReuse];
   [self.button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                     forState:UIControlStateNormal];
-  self.button.contentHorizontalAlignment = kDefaultContentHorizontalAlignment;
   self.textLabel.textAlignment = kDefaultTextAlignment;
   [self disableButtonIntrinsicWidth:NO];
 }
