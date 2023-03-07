@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 
+#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
@@ -53,6 +54,7 @@ class PrerenderService;
 @protocol SnackbarCommands;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
+class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCommands;
@@ -89,6 +91,7 @@ typedef struct {
   BOOL isOffTheRecord;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
+  TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

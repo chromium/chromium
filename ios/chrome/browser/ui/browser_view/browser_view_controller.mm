@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
-#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
@@ -291,6 +290,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Used to notify observers of url loading state change.
   UrlLoadingNotifierBrowserAgent* _urlLoadingNotifierBrowserAgent;
 
+  // Used to report usage of a single Browser's tab.
+  TabUsageRecorderBrowserAgent* _tabUsageRecorderBrowserAgent;
+
   // For thumb strip, when YES, fullscreen disabler is reset only when web view
   // dragging stops, to avoid closing thumb strip and going fullscreen in
   // one single drag gesture.  When NO, full screen disabler is reset when
@@ -490,6 +492,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
     _urlLoadingNotifierBrowserAgent =
         dependencies.urlLoadingNotifierBrowserAgent;
+    _tabUsageRecorderBrowserAgent = dependencies.tabUsageRecorderBrowserAgent;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -738,10 +741,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - Public methods
 
 - (void)setPrimary:(BOOL)primary {
-  TabUsageRecorderBrowserAgent* tabUsageRecorder =
-      TabUsageRecorderBrowserAgent::FromBrowser(_browser);
-  if (tabUsageRecorder) {
-    tabUsageRecorder->RecordPrimaryBrowserChange(
+  if (_tabUsageRecorderBrowserAgent) {
+    _tabUsageRecorderBrowserAgent->RecordPrimaryBrowserChange(
         primary, _browser->GetWebStateList()->GetActiveWebState());
   }
   if (primary) {
@@ -2033,11 +2034,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   DCHECK(self.browser->GetWebStateList()->GetIndexOfWebState(webState) !=
          WebStateList::kInvalidIndex);
-  TabUsageRecorderBrowserAgent* tabUsageRecoder =
-      TabUsageRecorderBrowserAgent::FromBrowser(_browser);
   // TODO(crbug.com/904588): Move `RecordPageLoadStart` to TabUsageRecorder.
-  if (webState->IsEvicted() && tabUsageRecoder) {
-    tabUsageRecoder->RecordPageLoadStart(webState);
+  if (webState->IsEvicted() && _tabUsageRecorderBrowserAgent) {
+    _tabUsageRecorderBrowserAgent->RecordPageLoadStart(webState);
   }
   if (!webState->IsCrashed()) {
     // Load the page if it was evicted by browsing data clearing logic.

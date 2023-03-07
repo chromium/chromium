@@ -278,6 +278,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/lens",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/metrics:metrics_browser_agent",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/prerender:test_support",

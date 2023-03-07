@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
@@ -130,6 +131,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+    TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
@@ -246,6 +248,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     url_loading_notifier_browser_agent_ =
         UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
 
+    tab_usage_recorder_browser_agent_ =
+        TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
+
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
@@ -259,6 +264,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.fullscreenController = fullscreen_controller_;
     dependencies.urlLoadingNotifierBrowserAgent =
         url_loading_notifier_browser_agent_;
+    dependencies.tabUsageRecorderBrowserAgent =
+        tab_usage_recorder_browser_agent_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
@@ -351,6 +358,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   FullscreenController* fullscreen_controller_;
   TabEventsMediator* tab_events_mediator_;
   UrlLoadingNotifierBrowserAgent* url_loading_notifier_browser_agent_;
+  TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
