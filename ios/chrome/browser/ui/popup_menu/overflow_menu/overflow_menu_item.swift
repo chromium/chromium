@@ -34,6 +34,9 @@ import SwiftUI
   /// Whether the action is disabled by enterprise policy.
   @Published public var enterpriseDisabled: Bool
 
+  /// Whether the action should display the "N" IPH icon.
+  @Published public var displayNewLabelIcon: Bool
+
   /// Closure to execute when item is selected.
   @Published public var handler: () -> Void
 
@@ -48,6 +51,7 @@ import SwiftUI
     monochromeSymbol = false
     self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
+    displayNewLabelIcon = false
     self.handler = handler
   }
 
@@ -55,6 +59,7 @@ import SwiftUI
     name: String, symbolName: String, systemSymbol: Bool, monochromeSymbol: Bool,
     accessibilityIdentifier: String,
     enterpriseDisabled: Bool,
+    displayNewLabelIcon: Bool,
     handler: @escaping () -> Void
   ) {
     self.name = name
@@ -64,6 +69,7 @@ import SwiftUI
     self.monochromeSymbol = monochromeSymbol
     self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
+    self.displayNewLabelIcon = displayNewLabelIcon
     self.handler = handler
   }
 

@@ -21,4 +21,10 @@ bool IsPinnedTabsEnabled();
 // enabled.
 bool IsPinnedTabsOverflowEnabled();
 
+// Returns whether Pinned Tabs was used in the overflow menu.
+bool WasPinnedTabOverflowUsed();
+
+// Set that Pinned Tabs was used in the overflow menu.
+void SetPinnedTabOverflowUsed();
+
 #endif  // IOS_CHROME_BROWSER_TABS_FEATURES_H_

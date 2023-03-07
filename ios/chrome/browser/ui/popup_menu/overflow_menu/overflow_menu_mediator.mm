@@ -138,6 +138,7 @@ OverflowMenuAction* CreateOverflowMenuActionWithString(
                                  monochromeSymbol:monochromeSymbol
                           accessibilityIdentifier:accessibilityID
                                enterpriseDisabled:NO
+                              displayNewLabelIcon:NO
                                           handler:handler];
 }
 
@@ -729,14 +730,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.pinTabAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_PIN_TAB, kPinSymbol,
         /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuPinTabId, ^{
+          SetPinnedTabOverflowUsed();
           [weakSelf pinTab];
         });
 
     self.unpinTabAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_UNPIN_TAB, kPinSlashSymbol,
         /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuUnpinTabId, ^{
+          SetPinnedTabOverflowUsed();
           [weakSelf unpinTab];
         });
+
+    if (!WasPinnedTabOverflowUsed()) {
+      self.pinTabAction.displayNewLabelIcon = YES;
+      self.unpinTabAction.displayNewLabelIcon = YES;
+    }
 
     self.clearBrowsingDataAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA, kTrashSymbol,
@@ -1008,6 +1016,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                    monochromeSymbol:NO
                             accessibilityIdentifier:accessibilityID
                                  enterpriseDisabled:NO
+                                displayNewLabelIcon:NO
                                             handler:handlerWithMetrics];
 
   result.destination = static_cast<NSInteger>(destination);

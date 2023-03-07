@@ -22,6 +22,9 @@ BASE_FEATURE(kEnablePinnedTabsIpad,
 
 const char kEnablePinnedTabsOverflowParam[] = "overflow_param";
 
+NSString* const kPinnedTabsOverflowEntryKey =
+    @"userHasInteractedWithPinnedTabsOverflow";
+
 bool IsPinnedTabsEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (!base::FeatureList::IsEnabled(kEnablePinnedTabsIpad)) {
@@ -37,4 +40,18 @@ bool IsPinnedTabsOverflowEnabled() {
   }
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnablePinnedTabs, kEnablePinnedTabsOverflowParam, /*default=*/false);
+}
+
+bool WasPinnedTabOverflowUsed() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kPinnedTabsOverflowEntryKey];
+}
+
+void SetPinnedTabOverflowUsed() {
+  if (WasPinnedTabOverflowUsed()) {
+    return;
+  }
+
+  [[NSUserDefaults standardUserDefaults] setBool:YES
+                                          forKey:kPinnedTabsOverflowEntryKey];
 }
