@@ -1304,7 +1304,7 @@ config("compiler_codegen") {
     configs += [ "//build/config/nacl:compiler_codegen" ]
   }
 
-  if (current_cpu == "arm64" && !is_win) {
+  if (current_cpu == "arm64" && !is_win && is_clang) {
     # Disable outlining everywhere on arm64 except Win. For more information see
     # crbug.com/931297 for Android and crbug.com/1410297 for iOS.
     # TODO(crbug.com/1411363): Enable this on Windows if possible.
