@@ -266,6 +266,7 @@ constexpr int kPrivacyScreenToastSpacing = 16;
 
 // Constants used for media tray.
 constexpr int kMediaTrayPadding = 8;
+constexpr int kMediaNotificationListViewBottomPadding = 8;
 
 // There is no active user session during oobe, which means it doesn't support
 // dark mode. Sets the icon color to be constant.

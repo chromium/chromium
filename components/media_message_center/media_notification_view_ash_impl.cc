@@ -39,6 +39,7 @@ constexpr int kMediaInfoSeparator = 4;
 constexpr int kPlayPauseContainerSeperator = 8;
 constexpr int kPlayPauseIconSize = 26;
 constexpr int kControlsIconSize = 20;
+constexpr int kBackgroundCornerRadius = 12;
 constexpr int kArtworkCornerRadius = 10;
 constexpr int kSourceLineHeight = 18;
 constexpr int kTitleArtistLineHeight = 20;
@@ -125,6 +126,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   DCHECK(theme_.has_value());
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
+  SetBackground(views::CreateRoundedRectBackground(theme_->background_color,
+                                                   kBackgroundCornerRadius));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), kMainSeparator));

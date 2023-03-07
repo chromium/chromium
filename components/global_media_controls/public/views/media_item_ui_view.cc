@@ -52,6 +52,8 @@ constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
 constexpr int kCrOSDismissButtonIconSize = 12;
 constexpr gfx::Size kModernDismissButtonSize = gfx::Size(14, 14);
 constexpr int kModernDismissButtonIconSize = 10;
+constexpr gfx::Insets kSwipeableContainerInsets =
+    gfx::Insets::TLBR(0, 16, 8, 16);
 
 // The minimum number of enabled and visible user actions such that we should
 // force the MediaNotificationView to be expanded.
@@ -97,10 +99,21 @@ MediaItemUIView::MediaItemUIView(
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_BACK_TO_TAB));
 
+#if BUILDFLAG(IS_CHROMEOS)
+  bool use_cros_updated_ui =
+      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
+#else
+  bool use_cros_updated_ui = false;
+#endif
+
   auto swipeable_container = std::make_unique<views::View>();
   swipeable_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   swipeable_container->SetPaintToLayer();
   swipeable_container->layer()->SetFillsBoundsOpaquely(false);
+  if (use_cros_updated_ui) {
+    swipeable_container->SetBorder(
+        views::CreateEmptyBorder(kSwipeableContainerInsets));
+  }
   swipeable_container_ = AddChildView(std::move(swipeable_container));
 
   gfx::Size dismiss_button_size =
@@ -130,13 +143,6 @@ MediaItemUIView::MediaItemUIView(
   dismiss_button_ =
       dismiss_button_container_->AddChildView(std::move(dismiss_button));
   UpdateDismissButtonIcon();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool use_cros_updated_ui =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
-#else
-  bool use_cros_updated_ui = false;
-#endif
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_cros_updated_ui) {

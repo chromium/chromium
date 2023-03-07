@@ -62,9 +62,16 @@ void MediaItemUIListView::ShowItem(const std::string& id,
   DCHECK(!base::Contains(items_, id));
   DCHECK_NE(nullptr, item.get());
 
-  // If this isn't the first item, then create a top-sided separator
-  // border.
-  if (!items_.empty()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  bool use_cros_updated_ui =
+      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI);
+#else
+  bool use_cros_updated_ui = false;
+#endif
+
+  // If this isn't the first item, then create a top-sided separator border.
+  // No separator border should be drawn for the Chrome OS updated UI.
+  if (!items_.empty() && !use_cros_updated_ui) {
     if (separator_style_.has_value()) {
       item->SetBorder(CreateMediaListSeparatorBorder(
           separator_style_->separator_color,
