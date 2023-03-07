@@ -2743,7 +2743,6 @@ if (current_toolchain == default_toolchain) {
   # TODO(crbug.com/1238057): Set clear rules for what tests can be added here.
   chrome_test_apk_tmpl("chrome_public_unit_test_apk") {
     apk_name = "ChromePublicUnitTest"
-    shared_libraries = [ ":libchromefortest" ]
     deps = [
       ":chrome_unit_test_java",
       "//build/config/android/test/resource_overlay:unit_device_javatests",
@@ -2806,7 +2805,6 @@ if (current_toolchain == default_toolchain) {
     #enable_lint = true
 
     apk_name = "ChromePublicTest"
-    shared_libraries = [ ":libchromefortest" ]
     deps = [
       ":chrome_test_apk_template_resources",
       ":chrome_test_java",
@@ -2851,7 +2849,6 @@ if (current_toolchain == default_toolchain) {
   if (enable_vr) {
     chrome_test_apk_tmpl("chrome_public_test_vr_apk") {
       apk_name = "ChromePublicTestVr"
-      shared_libraries = [ ":libchromefortest" ]
       manifest_package = chrome_public_manifest_package
 
       deps = [

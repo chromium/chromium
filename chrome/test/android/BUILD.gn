@@ -54,7 +54,6 @@ android_library("chrome_java_test_pagecontroller") {
 
 chrome_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
   apk_name = "ChromePageControllerTests"
-  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/ExampleTest.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/FirstRunControllerTest.java",
@@ -74,7 +73,6 @@ chrome_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
 
 chrome_test_apk_tmpl("chrome_java_test_wpr_tests") {
   apk_name = "ChromeWPRTests"
-  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [ "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/network_fetch/FeedNewTabPageCardInstrumentationTest.java" ]
   data = [
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/wpr_tests",
@@ -110,7 +108,6 @@ chrome_test_apk_tmpl("chrome_java_test_wpr_tests") {
 
 chrome_test_apk_tmpl("chrome_java_test_feed_test") {
   apk_name = "ChromeFeedTests"
-  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [
     "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedSurfaceCoordinatorIntegrationTest.java",
     "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/feedmanagement/FeedManagementTest.java",
@@ -142,7 +139,6 @@ chrome_test_apk_tmpl("chrome_java_test_feed_test") {
 # WebAPK tests which require additional_apks should be in this test suite.
 chrome_test_apk_tmpl("chrome_webapk_integration_tests") {
   apk_name = "ChromeWebApkIntegrationTests"
-  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/webapk/MapsGoFirstRunTest.java" ]
   deps = [
     ":chrome_java_test_pagecontroller",
@@ -170,7 +166,6 @@ chrome_test_apk_tmpl("chrome_webapk_integration_tests") {
 
 chrome_test_apk_tmpl("chrome_java_test_pagecontroller_codelab") {
   apk_name = "ChromePageControllerCodelab"
-  shared_libraries = [ "//chrome/android:libchromefortest" ]
   sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/codelab/SettingsForCodelabTest.java" ]
   deps = [
     ":chrome_java_test_pagecontroller",
