@@ -16,10 +16,6 @@
 #include "net/cert/x509_util.h"
 
 #if BUILDFLAG(IS_MAC)
-#include <Security/Security.h>
-
-#include "base/strings/sys_string_conversions.h"
-#include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
@@ -73,38 +69,6 @@ void ExtractCertificatesFromData(const std::string& data_string,
   cert.source_file_path = file_path;
   certs->push_back(cert);
 }
-
-#if BUILDFLAG(IS_MAC)
-std::string SecErrorStr(OSStatus err) {
-  base::ScopedCFTypeRef<CFStringRef> cfstr(
-      SecCopyErrorMessageString(err, nullptr));
-  return base::StringPrintf("%d(%s)", err,
-                            base::SysCFStringRefToUTF8(cfstr).c_str());
-}
-
-std::string TrustResultStr(uint32_t trust_result) {
-  switch (trust_result) {
-    case kSecTrustResultInvalid:
-      return "kSecTrustResultInvalid";
-    case kSecTrustResultProceed:
-      return "kSecTrustResultProceed";
-    case 2:  // kSecTrustResultConfirm SEC_DEPRECATED_ATTRIBUTE = 2,
-      return "kSecTrustResultConfirm";
-    case kSecTrustResultDeny:
-      return "kSecTrustResultDeny";
-    case kSecTrustResultUnspecified:
-      return "kSecTrustResultUnspecified";
-    case kSecTrustResultRecoverableTrustFailure:
-      return "kSecTrustResultRecoverableTrustFailure";
-    case kSecTrustResultFatalTrustFailure:
-      return "kSecTrustResultFatalTrustFailure";
-    case kSecTrustResultOtherError:
-      return "kSecTrustResultOtherError";
-    default:
-      return "UNKNOWN";
-  }
-}
-#endif
 
 }  // namespace
 
@@ -161,30 +125,6 @@ void PrintCertError(const std::string& error, const CertInput& cert) {
 
 void PrintDebugData(const base::SupportsUserData* debug_data) {
 #if BUILDFLAG(IS_MAC)
-  auto* mac_platform_debug_info =
-      net::CertVerifyProcMac::ResultDebugData::Get(debug_data);
-  if (mac_platform_debug_info) {
-    std::cout << base::StringPrintf(
-        "CertVerifyProcMac::ResultDebugData: trust_result=%u(%s) "
-        "result_code=%s\n",
-        mac_platform_debug_info->trust_result(),
-        TrustResultStr(mac_platform_debug_info->trust_result()).c_str(),
-        SecErrorStr(mac_platform_debug_info->result_code()).c_str());
-    for (size_t i = 0; i < mac_platform_debug_info->status_chain().size();
-         ++i) {
-      const auto& cert_info = mac_platform_debug_info->status_chain()[i];
-      std::string status_codes_str;
-      for (const auto code : cert_info.status_codes) {
-        if (!status_codes_str.empty())
-          status_codes_str += ',';
-        status_codes_str += SecErrorStr(code);
-      }
-      std::cout << base::StringPrintf(
-          " cert %zu: status_bits=0x%x status_codes=%s\n", i,
-          cert_info.status_bits, status_codes_str.c_str());
-    }
-  }
-
   auto* mac_trust_debug_info =
       net::TrustStoreMac::ResultDebugData::Get(debug_data);
   if (mac_trust_debug_info) {

@@ -17,13 +17,15 @@ namespace net {
 bool TestRootCerts::AddImpl(X509Certificate* certificate) {
   base::ScopedCFTypeRef<SecCertificateRef> os_cert(
       x509_util::CreateSecCertificateFromX509Certificate(certificate));
-  if (!os_cert)
+  if (!os_cert) {
     return false;
+  }
 
   if (CFArrayContainsValue(temporary_roots_,
                            CFRangeMake(0, CFArrayGetCount(temporary_roots_)),
-                           os_cert.get()))
+                           os_cert.get())) {
     return true;
+  }
   CFArrayAppendValue(temporary_roots_, os_cert.get());
 
   return true;
@@ -34,12 +36,14 @@ void TestRootCerts::ClearImpl() {
 }
 
 OSStatus TestRootCerts::FixupSecTrustRef(SecTrustRef trust_ref) const {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return noErr;
+  }
 
   OSStatus status = SecTrustSetAnchorCertificates(trust_ref, temporary_roots_);
-  if (status)
+  if (status) {
     return status;
+  }
   // Trust system store in addition to trusting |temporary_roots_|.
   return SecTrustSetAnchorCertificatesOnly(trust_ref, false);
 }

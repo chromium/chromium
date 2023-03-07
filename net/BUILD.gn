@@ -1189,6 +1189,7 @@ component("net") {
     sources += [
       "cert/cert_verify_proc_ios.cc",
       "cert/cert_verify_proc_ios.h",
+      "cert/test_root_certs_ios.cc",
       "disk_cache/blockfile/file_ios.cc",
       "proxy_resolution/proxy_config_service_ios.cc",
       "proxy_resolution/proxy_config_service_ios.h",
@@ -1223,16 +1224,11 @@ component("net") {
       "base/network_notification_thread_mac.cc",
       "base/network_notification_thread_mac.h",
       "cert/cert_database_mac.cc",
-      "cert/cert_verify_proc_mac.cc",
-      "cert/cert_verify_proc_mac.h",
       "cert/internal/trust_store_mac.cc",
       "cert/internal/trust_store_mac.h",
-      "cert/known_roots_mac.cc",
-      "cert/known_roots_mac.h",
       "cert/test_keychain_search_list_mac.cc",
       "cert/test_keychain_search_list_mac.h",
-      "cert/x509_util_mac.cc",
-      "cert/x509_util_mac.h",
+      "cert/test_root_certs_builtin.cc",
       "proxy_resolution/proxy_config_service_mac.cc",
       "proxy_resolution/proxy_config_service_mac.h",
       "ssl/client_cert_identity_mac.cc",
@@ -1254,7 +1250,6 @@ component("net") {
       "base/network_config_watcher_mac.h",
       "base/platform_mime_util_mac.mm",
       "base/proxy_string_util_mac.cc",
-      "cert/test_root_certs_mac.cc",
       "cert/x509_util_apple.cc",
       "cert/x509_util_apple.h",
       "proxy_resolution/proxy_resolver_mac.cc",
@@ -2836,7 +2831,6 @@ test("net_unittests") {
 
   if (is_mac) {
     sources += [
-      "cert/cert_verify_proc_mac_unittest.cc",
       "cert/internal/trust_store_mac_unittest.cc",
       "ssl/client_cert_store_mac_unittest.cc",
       "ssl/ssl_platform_key_mac_unittest.cc",

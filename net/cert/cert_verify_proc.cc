@@ -51,7 +51,7 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "url/url_canon.h"
 
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_MAC) || \
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS) || \
     BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/cert_verify_proc_builtin.h"
 #endif
@@ -64,8 +64,6 @@
 #include "net/cert/cert_verify_proc_android.h"
 #elif BUILDFLAG(IS_IOS)
 #include "net/cert/cert_verify_proc_ios.h"
-#elif BUILDFLAG(IS_MAC)
-#include "net/cert/cert_verify_proc_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "net/cert/cert_verify_proc_win.h"
 #endif

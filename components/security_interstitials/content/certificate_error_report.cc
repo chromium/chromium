@@ -130,25 +130,6 @@ void AddMacTrustFlagsToReport(
 #undef COPY_TRUST_FLAGS
 }
 
-void AddMacPlatformDebugInfoToReport(
-    const cert_verifier::mojom::MacPlatformVerifierDebugInfoPtr&
-        mac_platform_debug_info,
-    chrome_browser_ssl::TrialVerificationInfo* trial_report) {
-  if (!mac_platform_debug_info)
-    return;
-  chrome_browser_ssl::MacPlatformDebugInfo* report_info =
-      trial_report->mutable_mac_platform_debug_info();
-  report_info->set_trust_result(mac_platform_debug_info->trust_result);
-  report_info->set_result_code(mac_platform_debug_info->result_code);
-  for (const auto& cert_info : mac_platform_debug_info->status_chain) {
-    chrome_browser_ssl::MacCertEvidenceInfo* report_cert_info =
-        report_info->add_status_chain();
-    report_cert_info->set_status_bits(cert_info->status_bits);
-    for (auto code : cert_info->status_codes)
-      report_cert_info->add_status_codes(code);
-  }
-}
-
 chrome_browser_ssl::TrialVerificationInfo::MacTrustImplType
 TrustImplTypeFromMojom(
     cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType input) {
@@ -302,8 +283,6 @@ CertificateErrorReport::CertificateErrorReport(
     trial_report->set_sct_list(sct_list);
 
 #if BUILDFLAG(IS_APPLE)
-  AddMacPlatformDebugInfoToReport(debug_info->mac_platform_debug_info,
-                                  trial_report);
   AddMacTrustFlagsToReport(
       debug_info->mac_combined_trust_debug_info,
       trial_report->mutable_mac_combined_trust_debug_info());

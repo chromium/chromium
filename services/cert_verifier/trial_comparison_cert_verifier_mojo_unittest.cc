@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 #if BUILDFLAG(IS_WIN)
@@ -116,25 +115,6 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   base::Time time = base::Time::Now();
 
 #if BUILDFLAG(IS_MAC)
-  constexpr uint32_t kExpectedTrustResult = 4;
-  constexpr int32_t kExpectedResultCode = -12345;
-  std::vector<net::CertVerifyProcMac::ResultDebugData::CertEvidenceInfo>
-      expected_status_chain;
-  net::CertVerifyProcMac::ResultDebugData::CertEvidenceInfo info;
-  info.status_bits = 23456;
-  expected_status_chain.push_back(info);
-  info.status_bits = 34567;
-  info.status_codes.push_back(-4567);
-  info.status_codes.push_back(-56789);
-  expected_status_chain.push_back(info);
-  info.status_bits = 45678;
-  info.status_codes.clear();
-  info.status_codes.push_back(-97261);
-  expected_status_chain.push_back(info);
-  net::CertVerifyProcMac::ResultDebugData::Create(
-      kExpectedTrustResult, kExpectedResultCode, expected_status_chain,
-      &primary_result);
-
   constexpr int kExpectedTrustDebugInfo = 0xABCD;
   auto* mac_trust_debug_info =
       net::TrustStoreMac::ResultDebugData::GetOrCreate(&trial_result);
@@ -202,22 +182,6 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
 
   ASSERT_TRUE(report.debug_info);
 #if BUILDFLAG(IS_MAC)
-  ASSERT_TRUE(report.debug_info->mac_platform_debug_info);
-  EXPECT_EQ(kExpectedTrustResult,
-            report.debug_info->mac_platform_debug_info->trust_result);
-  EXPECT_EQ(kExpectedResultCode,
-            report.debug_info->mac_platform_debug_info->result_code);
-  ASSERT_EQ(expected_status_chain.size(),
-            report.debug_info->mac_platform_debug_info->status_chain.size());
-  for (size_t i = 0; i < expected_status_chain.size(); ++i) {
-    EXPECT_EQ(expected_status_chain[i].status_bits,
-              report.debug_info->mac_platform_debug_info->status_chain[i]
-                  ->status_bits);
-    EXPECT_EQ(expected_status_chain[i].status_codes,
-              report.debug_info->mac_platform_debug_info->status_chain[i]
-                  ->status_codes);
-  }
-
   EXPECT_EQ(kExpectedTrustDebugInfo,
             report.debug_info->mac_combined_trust_debug_info);
   EXPECT_EQ(
