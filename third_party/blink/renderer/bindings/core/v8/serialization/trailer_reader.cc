@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_reader.h"
 
 #include "base/numerics/clamped_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -108,10 +109,9 @@ base::expected<void, TrailerReader::Error> TrailerReader::Read() {
       return base::unexpected(Error::kInvalidTrailer);
 
     required_exposed_interfaces_.Grow(num_exposed);
-    std::transform(exposed_raw.begin(), exposed_raw.end(),
-                   required_exposed_interfaces_.begin(), [](uint8_t raw) {
-                     return static_cast<SerializationTag>(raw);
-                   });
+    base::ranges::transform(
+        exposed_raw, required_exposed_interfaces_.begin(),
+        [](uint8_t raw) { return static_cast<SerializationTag>(raw); });
   }
   return {};
 }

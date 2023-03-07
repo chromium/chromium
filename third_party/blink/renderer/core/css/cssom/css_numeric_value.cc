@@ -507,8 +507,7 @@ CSSNumericValue* CSSNumericValue::sub(
     const HeapVector<Member<V8CSSNumberish>>& numberishes,
     ExceptionState& exception_state) {
   auto values = CSSNumberishesToNumericValues(numberishes);
-  std::transform(values.begin(), values.end(), values.begin(),
-                 [](CSSNumericValue* v) { return v->Negate(); });
+  base::ranges::transform(values, values.begin(), &CSSNumericValue::Negate);
   PrependValueForArithmetic<kSumType>(values, this);
 
   if (CSSUnitValue* unit_value =

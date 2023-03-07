@@ -35,6 +35,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -200,10 +201,9 @@ void SetCorsExemptHeaderList(
     const WebVector<WebString>& web_cors_exempt_header_list) {
   Vector<String> cors_exempt_header_list(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
-  std::transform(web_cors_exempt_header_list.begin(),
-                 web_cors_exempt_header_list.end(),
-                 cors_exempt_header_list.begin(),
-                 [](const WebString& h) { return WTF::String(h); });
+  base::ranges::transform(web_cors_exempt_header_list,
+                          cors_exempt_header_list.begin(),
+                          &WebString::operator WTF::String);
   LoaderFactoryForFrame::SetCorsExemptHeaderList(
       std::move(cors_exempt_header_list));
 }

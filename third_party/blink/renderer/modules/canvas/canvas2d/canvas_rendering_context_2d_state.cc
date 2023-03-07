@@ -206,8 +206,8 @@ void CanvasRenderingContext2DState::SetLineDash(const Vector<double>& dash) {
   if (dash.size() % 2)
     line_dash_.AppendVector(dash);
   // clamp the double values to float
-  std::transform(line_dash_.begin(), line_dash_.end(), line_dash_.begin(),
-                 [](double d) { return ClampTo<float>(d); });
+  base::ranges::transform(line_dash_, line_dash_.begin(),
+                          [](double d) { return ClampTo<float>(d); });
 
   line_dash_dirty_ = true;
 }

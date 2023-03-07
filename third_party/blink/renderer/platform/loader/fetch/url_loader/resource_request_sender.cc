@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -252,9 +253,9 @@ int ResourceRequestSender::SendAsync(
 
   std::vector<std::string> std_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
-                 std_cors_exempt_header_list.begin(),
-                 [](const WebString& h) { return h.Latin1(); });
+  base::ranges::transform(cors_exempt_header_list,
+                          std_cors_exempt_header_list.begin(),
+                          [](const WebString& h) { return h.Latin1(); });
   std::unique_ptr<ThrottlingURLLoader> url_loader =
       ThrottlingURLLoader::CreateLoaderAndStart(
           std::move(url_loader_factory), throttles.ReleaseVector(), request_id,
@@ -364,10 +365,8 @@ void ResourceRequestSender::FollowPendingRedirect(
     } else {
       std::vector<std::string> removed_headers(
           request_info_->removed_headers.size());
-      std::transform(request_info_->removed_headers.begin(),
-                     request_info_->removed_headers.end(),
-                     removed_headers.begin(),
-                     [](const WebString& h) { return h.Ascii(); });
+      base::ranges::transform(request_info_->removed_headers,
+                              removed_headers.begin(), &WebString::Ascii);
       request_info->url_loader->FollowRedirect(
           removed_headers, {} /* modified_headers */,
           {} /* modified_cors_exempt_headers */);
@@ -486,9 +485,8 @@ void ResourceRequestSender::OnReceivedRedirect(
     // TODO(yoav): If request_info doesn't change above, we could avoid this
     // copy.
     WebVector<WebString> vector(removed_headers.size());
-    std::transform(
-        removed_headers.begin(), removed_headers.end(), vector.begin(),
-        [](const std::string& h) { return WebString::FromASCII(h); });
+    base::ranges::transform(removed_headers, vector.begin(),
+                            &WebString::FromASCII);
     request_info_->removed_headers = vector;
     request_info_->response_url = KURL(redirect_info.new_url);
     request_info_->has_pending_redirect = true;

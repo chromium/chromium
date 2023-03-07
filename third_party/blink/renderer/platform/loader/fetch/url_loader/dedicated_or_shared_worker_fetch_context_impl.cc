@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -661,10 +662,9 @@ WebDedicatedOrSharedWorkerFetchContext::Create(
 
   Vector<String> cors_exempt_header_list(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
-  std::transform(web_cors_exempt_header_list.begin(),
-                 web_cors_exempt_header_list.end(),
-                 cors_exempt_header_list.begin(),
-                 [](const WebString& h) { return WTF::String(h); });
+  base::ranges::transform(web_cors_exempt_header_list,
+                          cors_exempt_header_list.begin(),
+                          &WebString::operator WTF::String);
 
   scoped_refptr<DedicatedOrSharedWorkerFetchContextImpl> worker_fetch_context =
       base::AdoptRef(new DedicatedOrSharedWorkerFetchContextImpl(

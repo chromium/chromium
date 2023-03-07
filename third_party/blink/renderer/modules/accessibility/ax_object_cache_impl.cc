@@ -28,11 +28,10 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
-#include <algorithm>
-
 #include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
@@ -3587,9 +3586,9 @@ void AXObjectCacheImpl::PostPlatformNotification(
   event.event_from_action = event_from_action;
   event.event_intents.resize(event_intents.size());
   // We need to filter out the counts from every intent.
-  std::transform(event_intents.begin(), event_intents.end(),
-                 event.event_intents.begin(),
-                 [](const auto& intent) { return intent.key.intent(); });
+  base::ranges::transform(
+      event_intents, event.event_intents.begin(),
+      [](const auto& intent) { return intent.key.intent(); });
   for (auto agent : agents_)
     agent->AXEventFired(obj, event_type);
 

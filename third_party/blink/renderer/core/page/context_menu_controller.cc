@@ -26,12 +26,12 @@
 
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -685,10 +685,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         Vector<String> suggestions;
         description.Split('\n', suggestions);
         WebVector<std::u16string> web_suggestions(suggestions.size());
-        std::transform(suggestions.begin(), suggestions.end(),
-                       web_suggestions.begin(), [](const String& s) {
-                         return WebString::FromUTF8(s.Utf8()).Utf16();
-                       });
+        base::ranges::transform(suggestions, web_suggestions.begin(),
+                                [](const String& s) {
+                                  return WebString::FromUTF8(s.Utf8()).Utf16();
+                                });
         data.dictionary_suggestions = web_suggestions.ReleaseVector();
       } else if (spell_checker.GetTextCheckerClient()) {
         // No suggestions cached for the misspelled word. Retrieve suggestions
@@ -701,9 +701,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
             WebString::FromUTF16(data.misspelled_word), misspelled_offset,
             misspelled_length, &web_suggestions);
         WebVector<std::u16string> suggestions(web_suggestions.size());
-        std::transform(web_suggestions.begin(), web_suggestions.end(),
-                       suggestions.begin(),
-                       [](const WebString& s) { return s.Utf16(); });
+        base::ranges::transform(web_suggestions, suggestions.begin(),
+                                &WebString::Utf16);
         data.dictionary_suggestions = suggestions.ReleaseVector();
       }
     }
