@@ -205,6 +205,8 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
 
     DCHECK(metadata);
     id_ = Id(metadata->stable_id);
+    // TODO(b/271203956) Remove this code once DriveFS automatically unpins
+    // deleted files and folders.
     VLOG(1) << "Unpinning " << id_ << " '" << drive_path_ << "'...";
     DCHECK(drive_);
     drive_->GetDriveFsInterface()->SetPinnedByStableId(

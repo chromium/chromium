@@ -974,6 +974,8 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
   const Path& path = event.path;
   const Id id = static_cast<Id>(event.stable_id);
 
+  // TODO(b/271203956) Remove this code once DriveFS automatically unpins
+  // deleted files and folders.
   drivefs_->SetPinnedByStableId(
       event.stable_id, /*pinned=*/false,
       base::BindOnce(
