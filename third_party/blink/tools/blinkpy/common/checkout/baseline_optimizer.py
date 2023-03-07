@@ -77,8 +77,13 @@ class BaselineLocation(NamedTuple):
         return ':'.join(parts)
 
 
+# Sentinel node to force removal of all-pass nonvirtual baselines without
+# implementing a special case.
+BaselineLocation.ALL_PASS = BaselineLocation(platform='<all-pass>')
 SearchPath = List[BaselineLocation]
 DigestMap = Dict[BaselineLocation, 'ResultDigest']
+# An adjacency list.
+PredecessorMap = Dict[BaselineLocation, Set[BaselineLocation]]
 
 
 class BaselineOptimizer:
@@ -87,14 +92,6 @@ class BaselineOptimizer:
     `run_web_tests.py` has a fallback mechanism to search different locations
     for a test's baseline (i.e., expected text/image dump). The optimizer tries
     to minimize checkout size by removing baselines that would be redundant.
-
-    At a high level, the algorithm works as follows:
-     1. Promote or delete (non)virtual roots.
-     2. Insert each port's search path into a graph data structure, removing
-        any locations where the baseline doesn't exist. This models dependencies
-        between locations, even if they are separated by empty locations (which
-        are effectively no-ops in the port's search).
-     3. For each baseline, remove it if it equals all successors.
 
     See also:
         Fallback visualization: https://docs.google.com/drawings/d/13l3IUlSE99RoKjDwEWuY1O77simAhhF6Wi0fZdkSaMA/
@@ -154,17 +151,14 @@ class BaselineOptimizer:
             for root, predecessors in predecessors_by_root.items():
                 self._maybe_promote_root(root, predecessors, digests,
                                          baseline_name)
-            graph = FallbackGraph.from_paths(paths, digests)
-            redundant_locations = graph.find_redundant_locations()
-            for location in redundant_locations:
+            for location in find_redundant_locations(paths, digests):
                 self._filesystem.remove(self._path(location, baseline_name))
-                _log.debug('Removed %s (redundant with %s)', location,
-                           ', '.join(map(str, graph.successors[location])))
+                _log.debug('Removed %s (redundant)', location)
 
-            _log.debug('Final digests:')
+            _log.debug('Digests:')
             with _indent_log():
                 for location in sorted(digests):
-                    if location != FallbackGraph.ALL_PASS:
+                    if location != BaselineLocation.ALL_PASS:
                         _log.debug('%s -> %s', location, digests[location])
         return True
 
@@ -391,7 +385,7 @@ class ResultDigest:
     _IMPLICIT_EXTRA_RESULT = '<EXTRA>'
 
     def __init__(self,
-                 sha: str,
+                 sha: str = _IMPLICIT_EXTRA_RESULT,
                  path: Optional[str] = None,
                  is_extra_result: bool = False):
         self.sha = sha
@@ -453,84 +447,143 @@ class ResultDigest:
                                            self.path)
 
 
-class FallbackGraph:
-    """A graph representing locations that baseline search can pass through."""
-    # Sentinel node to track starting locations of baseline searches.
-    _START = BaselineLocation(platform='<start>')
-    # Sentinel node to force removal of all-pass nonvirtual baselines without
-    # implementing a special case.
-    ALL_PASS = BaselineLocation(platform='<all-pass>')
-
-    def __init__(self, digests: DigestMap):
-        # Contains digests of baselines that exist on disk.
-        self._digests = digests
-        self._digests.setdefault(self.ALL_PASS,
-                                 ResultDigest.from_file(None, None))
-        # This is an adjacency list.
-        self.successors: Dict[BaselineLocation, Set[BaselineLocation]]
-        self.successors = collections.defaultdict(set)
-
-    @classmethod
-    def from_paths(cls, paths: List[SearchPath],
-                   digests: DigestMap) -> 'FallbackGraph':
-        graph = cls(digests)
-        for path in paths:
-            graph.add_search_path(path)
-        return graph
-
-    def _add_edge(self, predecessor: BaselineLocation,
-                  successor: BaselineLocation) -> None:
-        self.successors[predecessor].add(successor)
-
-    def add_search_path(self, path: SearchPath) -> None:
-        # Filter out locations that do not correspond to a file on disk. Such
-        # locations are irrelevant to baseline resolution, so the shortened path
-        # should be equivalent.
-        path = [location for location in path if location in self._digests]
-        if not path:
-            return
-        path = [self._START, *path, self.ALL_PASS]
-        if len(set(path)) < len(path):
-            raise ValueError('path will create a cycle')
-        for predecessor, successor in zip(path[:-1], path[1:]):
-            self._add_edge(predecessor, successor)
-
-    def find_redundant_locations(
-            self,
-            current: BaselineLocation = _START,
-            visited: Optional[Set[BaselineLocation]] = None,
-    ) -> Set[BaselineLocation]:
-        """Find baseline locations that are redundant with depth-first search.
-
-        A location is considered redundant when it has the same digest as all
-        possible successors. All predecessors that fall back to a redundant
-        location will still receive an equivalent baseline from one of the
-        redundant location's successors, so redundant locations are safe to
-        remove.
-        """
-        visited = visited or set()
-        if current in visited or current == self.ALL_PASS:
-            return frozenset()
-        visited.add(current)
-        redundant = set()
-        if current != self._START:
-            locations = [current, *self.successors[current]]
-            if _value_if_same(map(self._digests.get, locations)):
-                redundant.add(current)
-        for successor in self.successors[current]:
-            redundant.update(self.find_redundant_locations(successor, visited))
-        return redundant
+ResultDigest.ALL_PASS = ResultDigest(is_extra_result=True)
 
 
-def _predecessors_by_root(paths: List[SearchPath]
-                          ) -> Dict[BaselineLocation, Set[BaselineLocation]]:
-    """Map baseline roots (virtual or nonvirtual) to their predecessors."""
-    predecessors_by_root = collections.defaultdict(set)
+def find_redundant_locations(paths: List[SearchPath],
+                             digests: DigestMap) -> Set[BaselineLocation]:
+    """Find baseline locations that are redundant and can be safely removed.
+
+    At a high level, this is done by checking for baselines that, if deleted,
+    would not affect the resolution of any path (see Example 1). This procedure
+    repeats for as long as there were new baselines to delete because deleting a
+    baseline can enable further deletions (see Example 2).
+
+    Arguments:
+        paths: A list of paths to check against.
+        digests: Maps baseline locations that exist as files to their values.
+
+    Example 1:
+
+        (generic): a -:-> linux: a -> win: a -> (generic): a
+                 \    :  /           /
+        Virtual   +---:-+-----------+    Nonvirtual
+
+        * Virtual root has nonvirtual 'linux' and 'win' as successors. All have
+          value 'a', so the virtual root is removed. Virtual 'linux' and 'win'
+          still resolve to 'a'.
+        * Nonvirtual 'linux' and 'win' are removed similarly, leaving only the
+          nonvirtual root.
+
+    Example 2:
+
+        linux: a -> win: b -:-> linux: a -> win: b
+                       \    :              /
+        Virtual         +---:-------------+    Nonvirtual
+
+        * Virtual 'win' is removed because it only has nonvirtual 'win' as a
+          successor (virtual 'linux' provides its own baseline).
+        * Virtual 'linux' is removed on the next iteration because it now has
+          nonvirtual 'linux' as a successor.
+    """
+    redundant_locations, digests, converged = set(), dict(digests), False
+    removal_order = list(_visit_in_removal_order(_predecessors(paths)))
+    # Because `_find_new_redundant_location(...)` returns a member of `digests`,
+    # and that member is removed from `digests` to simulate file removal,
+    # `digests` can only shrink in each iteration. At some point, the map will
+    # stop shrinking, possibly becoming empty, which guarantees termination.
+    while not converged:
+        new_redundant_location = _find_new_redundant_location(
+            paths, digests, removal_order)
+        if new_redundant_location:
+            digests.pop(new_redundant_location)
+            redundant_locations.add(new_redundant_location)
+        else:
+            converged = True
+    return redundant_locations
+
+
+def _find_new_redundant_location(
+    paths: List[SearchPath],
+    digests: DigestMap,
+    removal_order: List[BaselineLocation],
+) -> Optional[BaselineLocation]:
+    """Find a baseline location to remove, if available.
+
+    Baselines are removed one at a time to avoid incompatible removals.
+    Consider:
+
+        linux: a -> win: a -:-> linux: b -> win: a
+                            :
+        Virtual             :   Nonvirtual
+
+    Either virtual baseline may be removed, but not both. As soon as one is
+    removed, the other one will no longer be considered redundant on the next
+    iteration.
+
+    When multiple baselines can be removed, as in this example, remove those
+    for older OSes before newer OSes and the generic baseline.
+    """
+    digests.setdefault(BaselineLocation.ALL_PASS, ResultDigest.ALL_PASS)
+    # Maps a location that exists as a file to successor files it can fall back
+    # to if that location were removed.
+    dependencies: Dict[BaselineLocation, Set[BaselineLocation]]
+    dependencies = collections.defaultdict(set)
     for path in paths:
-        for predecessor, maybe_root in zip(path[:-1], path[1:]):
-            if maybe_root.root:
-                predecessors_by_root[maybe_root].add(predecessor)
-    return predecessors_by_root
+        path = [*path, BaselineLocation.ALL_PASS]
+        assert len(set(path)) == len(path), ('duplicate location in path %s' %
+                                             path)
+        with contextlib.suppress(ValueError):
+            # Get the resolved location (i.e., `source`), and the file the
+            # path would fall back to next if `source` were deleted. When only
+            # one source is present, this path resolves to the implicit
+            # all-pass, in which case there is no file removal to contemplate.
+            source, next_source, *_ = filter(digests.get, path)
+            dependencies[source].add(next_source)
+
+    # A location is considered redundant when, for all paths that resolve to it,
+    # the next file in each search has the same digest. All predecessors that
+    # fall back to a redundant location will still receive an equivalent
+    # baseline from one of the redundant location's successors.
+    for location in removal_order:
+        successors = dependencies.get(location)
+        if successors and _value_if_same(
+                map(digests.get, [location, *successors])):
+            return location
+    return None
+
+
+def _visit_in_removal_order(
+    predecessors: PredecessorMap,
+    current: BaselineLocation = BaselineLocation.ALL_PASS,
+    visited: Optional[Set[BaselineLocation]] = None,
+) -> Iterator[BaselineLocation]:
+    visited = visited or set()
+    if current in visited:
+        return
+    visited.add(current)
+    for predecessor in predecessors[current]:
+        yield from _visit_in_removal_order(predecessors, predecessor, visited)
+    yield current
+
+
+def _predecessors(paths: List[SearchPath]) -> PredecessorMap:
+    """Map each location to its immediate predecessors."""
+    predecessors = collections.defaultdict(set)
+    for path in paths:
+        path = [*path, BaselineLocation.ALL_PASS]
+        for predecessor, successor in zip(path[:-1], path[1:]):
+            predecessors[successor].add(predecessor)
+    return predecessors
+
+
+def _predecessors_by_root(paths: List[SearchPath]) -> PredecessorMap:
+    """Map baseline roots (virtual or not) to their immediate predecessors."""
+    return {
+        maybe_root: predecessors
+        for maybe_root, predecessors in _predecessors(paths).items()
+        if maybe_root.root
+    }
 
 
 def _value_if_same(digests: Collection[Optional[ResultDigest]]

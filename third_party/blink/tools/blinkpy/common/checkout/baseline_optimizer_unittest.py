@@ -473,15 +473,15 @@ class BaselineOptimizerTest(unittest.TestCase):
     def test_virtual_platform_not_redundant_with_some_ancestors(self):
         self._assert_optimization(
             {
-                'platform/linux/virtual/gpu/fast/canvas': '1',
-                'platform/win/virtual/gpu/fast/canvas': '1',
-                'platform/linux/fast/canvas': '2',
-                'platform/win/fast/canvas': '1',
+                'platform/mac-mac12/virtual/gpu/fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': '1',
+                'platform/mac-mac12/fast/canvas': '2',
+                'platform/mac/fast/canvas': '1',
             }, {
-                'platform/linux/virtual/gpu/fast/canvas': None,
-                'platform/win/virtual/gpu/fast/canvas': '1',
-                'platform/linux/fast/canvas': '2',
-                'platform/win/fast/canvas': '1',
+                'platform/mac-mac12/virtual/gpu/fast/canvas': None,
+                'platform/mac/virtual/gpu/fast/canvas': '1',
+                'platform/mac-mac12/fast/canvas': '2',
+                'platform/mac/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
@@ -667,6 +667,22 @@ class BaselineOptimizerTest(unittest.TestCase):
             }, {
                 'virtual/gpu/fast/canvas': '',
                 'platform/linux/fast/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
+    def test_virtual_subtree_identical_to_nonvirtual_alternating(self):
+        self._assert_optimization(
+            {
+                'platform/mac-mac12/virtual/gpu/fast/canvas': '1',
+                'platform/mac/virtual/gpu/fast/canvas': '2',
+                'virtual/gpu/fast/canvas': '3',
+                'platform/mac-mac12/fast/canvas': '1',
+                'platform/mac/fast/canvas': '2',
+                'fast/canvas': '3',
+            }, {
+                'platform/mac-mac12/fast/canvas': '1',
+                'platform/mac/fast/canvas': '2',
+                'fast/canvas': '3',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS WebLocks are not partitioned when deprecation trial is enabled
-PASS WebLocks of a nested iframe with a cross-site ancestor are not partitioned when deprecation trial is enabled
-Harness: the test ran to completion.
-
