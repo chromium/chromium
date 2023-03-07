@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -32,6 +36,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
@@ -57,10 +63,12 @@ public class ChromeActionModeHandlerUnitTest {
     private ActionMode mActionMode;
     @Mock
     private Menu mMenu;
+    @Mock
+    private ShareDelegate mShareDelegate;
 
     private class TestChromeActionModeCallback extends ChromeActionModeHandler.ActionModeCallback {
         TestChromeActionModeCallback(Tab tab, ActionModeCallbackHelper helper) {
-            super(tab, null, urlParams -> {}, null);
+            super(tab, null, urlParams -> {}, () -> mShareDelegate);
         }
 
         @Override
@@ -184,6 +192,29 @@ public class ChromeActionModeHandlerUnitTest {
                         item.isVisible());
             }
         }
+    }
+
+    @Test
+    public void testShare() {
+        Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
+        MenuItem shareItem = Mockito.mock(MenuItem.class);
+        Mockito.when(shareItem.getItemId()).thenReturn(R.id.select_action_menu_share);
+        mActionModeCallback.onActionItemClicked(mActionMode, shareItem);
+
+        Mockito.verify(mShareDelegate).share(any(), any(), eq(ShareOrigin.MOBILE_ACTION_MODE));
+        Mockito.verify(mActionModeCallbackHelper, times(0)).onActionItemClicked(any(), any());
+    }
+
+    @Test
+    public void testShareWithoutShareDelegate() {
+        mShareDelegate = null;
+
+        Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
+        MenuItem shareItem = Mockito.mock(MenuItem.class);
+        Mockito.when(shareItem.getItemId()).thenReturn(R.id.select_action_menu_share);
+        mActionModeCallback.onActionItemClicked(mActionMode, shareItem);
+
+        Mockito.verify(mActionModeCallbackHelper).onActionItemClicked(any(), eq(shareItem));
     }
 
     private ResolveInfo createResolveInfo(String packageName) {
