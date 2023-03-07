@@ -4,31 +4,21 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
-#include <tuple>
 #include <utility>
 
-#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_environment_variable_override.h"
-#include "base/strings/strcat.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_switches.h"
 #include "ui/gfx/render_text.h"
-#include "ui/views/widget/widget.h"
 
 namespace autofill {
 
@@ -36,11 +26,9 @@ namespace {
 
 using ::testing::Bool;
 using ::testing::Combine;
-using ::testing::NiceMock;
 using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
-using TestParameterType = std::tuple<bool, bool>;
 
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
@@ -58,102 +46,29 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   return suggestions;
 }
 
-bool IsDarkModeOn(const TestParameterType& param) {
-  return std::get<0>(param);
-}
-
-bool IsBrowserLanguageRTL(const TestParameterType& param) {
-  return std::get<1>(param);
-}
-
-std::string GetTestSuffix(
-    const testing::TestParamInfo<TestParameterType> param_info) {
-  return base::StrCat(
-      {IsDarkModeOn(param_info.param) ? "Dark" : "Light",
-       IsBrowserLanguageRTL(param_info.param) ? "BrowserRTL" : "BrowserLTR"});
-}
-
 }  // namespace
 
-// The tuple of boolean test parameters has the following meaning:
-// 1) Is dark mode on.
-// 2) Is browser language RTL.
 class PopupViewViewsBrowsertest
-    : public UiBrowserTest,
-      public testing::WithParamInterface<TestParameterType> {
+    : public PopupPixelTest<PopupViewViews, MockAutofillPopupController> {
  public:
   PopupViewViewsBrowsertest() = default;
   ~PopupViewViewsBrowsertest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (IsDarkModeOn(GetParam())) {
-      command_line->AppendSwitch(switches::kForceDarkMode);
-    }
-  }
-
-  void SetUpOnMainThread() override {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    gfx::NativeView native_view = web_contents->GetNativeView();
-    EXPECT_CALL(controller_, container_view())
-        .WillRepeatedly(Return(native_view));
-    EXPECT_CALL(controller_, GetWebContents())
-        .WillRepeatedly(Return(web_contents));
-
-    base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(GetParam()));
-  }
-
   void PrepareSuggestions(std::vector<Suggestion> suggestions) {
-    controller_.set_suggestions(std::move(suggestions));
+    controller().set_suggestions(std::move(suggestions));
   }
 
   void PrepareSelectedCell(CellIndex cell) { selected_cell_ = cell; }
 
   void ShowUi(const std::string& name) override {
-    EXPECT_CALL(controller_, ViewDestroyed());
-    view_ = new PopupViewViews(controller_.GetWeakPtr(),
-                               views::Widget::GetWidgetForNativeWindow(
-                                   browser()->window()->GetNativeWindow()));
-    view_->Show(AutoselectFirstSuggestion(false));
+    PopupPixelTest::ShowUi(name);
+    view()->Show(AutoselectFirstSuggestion(false));
     if (selected_cell_) {
-      view_->SetSelectedCell(selected_cell_);
+      view()->SetSelectedCell(selected_cell_);
     }
   }
-
-  bool VerifyUi() override {
-    if (!view_) {
-      return false;
-    }
-
-    views::Widget* widget = view_->GetWidget();
-    if (!widget) {
-      return false;
-    }
-
-    // VerifyPixelUi works only for these platforms.
-    // TODO(crbug.com/958242): Revise this if supported platforms change.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-    auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
-    const std::string screenshot_name =
-        base::StrCat({test_info->test_case_name(), "_", test_info->name()});
-
-    return VerifyPixelUi(widget, "PopupViewViewsBrowsertest", screenshot_name);
-#else
-    return true;
-#endif
-  }
-
-  void WaitForUserDismissal() override {
-    ui_test_utils::WaitForBrowserToClose();
-  }
-
-  void TearDownOnMainThread() override { view_ = nullptr; }
 
  private:
-  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
-  NiceMock<autofill::MockAutofillPopupController> controller_;
-  raw_ptr<PopupViewViews> view_ = nullptr;
-
   // The index of the selected cell. No cell is selected by default.
   absl::optional<CellIndex> selected_cell_;
 };
@@ -232,6 +147,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsBrowsertest,
                          Combine(Bool(), Bool()),
-                         GetTestSuffix);
+                         PopupViewViewsBrowsertest::GetTestSuffix);
 
 }  // namespace autofill
