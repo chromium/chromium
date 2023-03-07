@@ -18,6 +18,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 
 import {getTemplate} from './edit_password_dialog.html.js';
@@ -31,6 +32,35 @@ export interface EditPasswordDialogElement {
     passwordInput: CrInputElement,
     showPasswordButton: CrIconButtonElement,
   };
+}
+
+/**
+ * Computes possible conflicting username by finding all credentials with
+ * matching signonRealms. Returns map where key is the username and value is
+ * human readable representation of signonRealm. Username is considered
+ * conflicting if shares any domain with |currentPassword|.
+ */
+function getConflictingUsernames(
+    currentPassword: chrome.passwordsPrivate.PasswordUiEntry,
+    passwords: chrome.passwordsPrivate.PasswordUiEntry[]): Map<string, string> {
+  assert(currentPassword.affiliatedDomains);
+  const currentSignonRealms =
+      currentPassword.affiliatedDomains.map(domain => domain.signonRealm);
+  return passwords.reduce(function(conflictingUsername, entry) {
+    assert(entry.affiliatedDomains);
+    const signonRealms =
+        entry.affiliatedDomains.map(domain => domain.signonRealm);
+
+    const signonRealm = signonRealms.filter(
+        signonRealm => currentSignonRealms.includes(signonRealm))[0];
+    if (signonRealm) {
+      conflictingUsername.set(
+          entry.username,
+          entry.affiliatedDomains
+              .find(domain => domain.signonRealm === signonRealm)!.name);
+    }
+    return conflictingUsername;
+  }, new Map());
 }
 
 const EditPasswordDialogElementBase =
@@ -47,20 +77,88 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
 
   static get properties() {
     return {
-      password: Object,
+      credential: Object,
+
+      username_: String,
+      password_: String,
+      note_: String,
+
+      conflictingUsernames_: {
+        type: Object,
+        values: () => new Map(),
+      },
+
+      usernameErrorMessage_: {
+        type: String,
+        computed: 'computeUsernameErrorMessage_(credential, username_, ' +
+            'conflictingUsernames_)',
+      },
     };
   }
 
-  password: chrome.passwordsPrivate.PasswordUiEntry;
+  credential: chrome.passwordsPrivate.PasswordUiEntry;
+  private username_: string;
+  private password_: string;
+  private note_: string;
+  private conflictingUsernames_: Map<string, string>;
+  private usernameErrorMessage_: string|null;
+  private setSavedPasswordsListener_: (
+      (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    assert(this.credential.password);
+
+    this.username_ = this.credential.username;
+    this.password_ = this.credential.password;
+    this.note_ = this.credential.note ?? '';
+    this.setSavedPasswordsListener_ = passwordList => {
+      this.conflictingUsernames_ =
+          getConflictingUsernames(this.credential, passwordList);
+    };
+
+    PasswordManagerImpl.getInstance().getSavedPasswordList().then(
+        this.setSavedPasswordsListener_);
+    PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
+        this.setSavedPasswordsListener_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.setSavedPasswordsListener_);
+    PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
+        this.setSavedPasswordsListener_);
+    this.setSavedPasswordsListener_ = null;
+  }
+
+  private computeUsernameErrorMessage_(): string|null {
+    if (!this.conflictingUsernames_) {
+      return null;
+    }
+    if (this.conflictingUsernames_.has(this.username_) &&
+        this.username_ !== this.credential.username) {
+      return this.i18n(
+          'usernameAlreadyUsed',
+          this.conflictingUsernames_.get(this.username_)!,
+      );
+    }
+    return null;
+  }
+
+  private doesUsernameExistAlready_(): boolean {
+    return !!this.usernameErrorMessage_;
+  }
+
 
   private onCancel_() {
     this.$.dialog.close();
   }
 
   private getFootnote_(): string {
-    assert(this.password.affiliatedDomains);
+    assert(this.credential.affiliatedDomains);
     return this.i18n(
-        'editPasswordFootnote', this.password.affiliatedDomains[0]?.name ?? '');
+        'editPasswordFootnote',
+        this.credential.affiliatedDomains[0]?.name ?? '');
   }
 }
 

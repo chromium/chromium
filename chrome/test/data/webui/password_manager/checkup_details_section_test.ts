@@ -623,6 +623,7 @@ suite('CheckupDetailsSectionTest', function() {
       id: 0,
       url: 'test.com',
       username: 'viking',
+      password: 'pass',
       types: [
         CompromiseType.LEAKED,
       ],
@@ -661,6 +662,7 @@ suite('CheckupDetailsSectionTest', function() {
       id: 0,
       url: 'test.com',
       username: 'viking',
+      password: 'pass',
       types: [
         CompromiseType.LEAKED,
       ],
@@ -695,6 +697,7 @@ suite('CheckupDetailsSectionTest', function() {
       id: 0,
       url: 'test.com',
       username: 'viking',
+      password: 'pass',
       types: [
         CompromiseType.LEAKED,
       ],
