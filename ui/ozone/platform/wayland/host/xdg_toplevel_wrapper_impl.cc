@@ -589,14 +589,15 @@ void XDGToplevelWrapperImpl::CommitSnap(
     return;
   }
 
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION) {
+  if (zaura_toplevel_get_version(aura_toplevel_.get()) >=
+          ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION &&
+      snap_direction == WaylandWindowSnapDirection::kNone) {
     zaura_toplevel_unset_snap(aura_toplevel_.get());
     return;
   }
 
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION) {
+  if (zaura_toplevel_get_version(aura_toplevel_.get()) >=
+      ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION) {
     uint32_t value = *reinterpret_cast<uint32_t*>(&snap_ratio);
     switch (snap_direction) {
       case WaylandWindowSnapDirection::kPrimary:
