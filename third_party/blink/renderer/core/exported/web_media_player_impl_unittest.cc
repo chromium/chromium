@@ -1857,6 +1857,20 @@ TEST_F(WebMediaPlayerImplTest, Waiting_NoDecryptionKey) {
   OnWaiting(media::WaitingReason::kNoDecryptionKey);
 }
 
+TEST_F(WebMediaPlayerImplTest, Waiting_SecureSurfaceLost) {
+  InitializeWebMediaPlayerImpl();
+
+  LoadAndWaitForReadyState(kVideoOnlyTestFile,
+                           WebMediaPlayer::kReadyStateHaveFutureData);
+  wmpi_->SetRate(1.0);
+  Play();
+
+  EXPECT_FALSE(IsSuspended());
+
+  OnWaiting(media::WaitingReason::kSecureSurfaceLost);
+  EXPECT_TRUE(IsSuspended());
+}
+
 ACTION(ReportHaveEnough) {
   arg0->OnBufferingStateChange(media::BUFFERING_HAVE_ENOUGH,
                                media::BUFFERING_CHANGE_REASON_UNKNOWN);

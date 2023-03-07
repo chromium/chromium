@@ -550,6 +550,20 @@ void MediaCodecVideoDecoder::OnSurfaceDestroyed(AndroidOverlay* overlay) {
   if (target_surface_bundle_ && target_surface_bundle_->overlay() == overlay)
     target_surface_bundle_ = texture_owner_bundle_;
 
+  if (requires_secure_codec_ &&
+      target_surface_bundle_ == texture_owner_bundle_) {
+    // Assume that the target bundle is a SurfaceTexture, or insecure image
+    // reader, and reset the codec.  We can't decode anything.  We might want
+    // to verify that this isn't a secure image reader, but there's no
+    // combination that would create one that would also get here.  Secure
+    // image readers are used with SurfaceControl only.
+    DVLOG(2) << "surface destroyed for secure codec, resetting MediaCodec.";
+    video_frame_factory_->SetSurfaceBundle(nullptr);
+    ReleaseCodec();
+    waiting_cb_.Run(WaitingReason::kSecureSurfaceLost);
+    return;
+  }
+
   // Transition the codec away from the overlay if necessary.  This must be
   // complete before this function returns.
   if (SurfaceTransitionPending())

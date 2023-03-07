@@ -1084,6 +1084,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   bool was_suspended_for_frame_closed_ = false;
 
+  // Request pipeline to suspend. It should not block other signals after
+  // suspended.
+  bool pending_oneshot_suspend_ = false;
+
   base::CancelableOnceClosure have_enough_after_lazy_load_cb_;
 
   media::RendererType renderer_type_ = media::RendererType::kRendererImpl;

@@ -1697,6 +1697,8 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
   // Add a log event so the player shows up as "SUSPENDED" in media-internals.
   media_log_->AddEvent<MediaLogEvent::kSuspended>();
 
+  pending_oneshot_suspend_ = false;
+
   if (attempting_suspended_start_) {
     DCHECK(pipeline_controller_->IsSuspended());
     did_lazy_load_ = !has_poster_ && HasVideo();
@@ -2280,6 +2282,16 @@ void WebMediaPlayerImpl::OnWaiting(media::WaitingReason reason) {
     // PipelineImpl.
     case media::WaitingReason::kDecoderStateLost:
       pipeline_controller_->OnDecoderStateLost();
+      return;
+
+    // On Android, it happens when the surface used by the decoder is destroyed,
+    // e.g. background. We want to suspend the pipeline and hope the surface
+    // will be available when resuming the pipeline by some other signals.
+    case media::WaitingReason::kSecureSurfaceLost:
+      if (!pipeline_controller_->IsSuspended() && !pending_oneshot_suspend_) {
+        pending_oneshot_suspend_ = true;
+        UpdatePlayState();
+      }
       return;
   }
 }
@@ -3044,7 +3056,8 @@ WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(
     bool is_in_picture_in_picture) {
   PlayState result;
 
-  bool must_suspend = was_suspended_for_frame_closed_;
+  bool must_suspend =
+      was_suspended_for_frame_closed_ || pending_oneshot_suspend_;
   bool is_stale = delegate_->IsStale(delegate_id_);
 
   if (stale_state_override_for_testing_.has_value() &&
