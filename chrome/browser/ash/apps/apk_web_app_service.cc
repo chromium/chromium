@@ -426,6 +426,7 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
 }
 
 void ApkWebAppService::OnPackageListInitialRefreshed() {
+  arc_initialized_ = true;
   SyncArcAndWebApps();
 }
 
@@ -549,7 +550,7 @@ void ApkWebAppService::SyncArcAndWebApps() {
   if (!app_registry_cache.IsAppTypeInitialized(apps::AppType::kWeb)) {
     return;
   }
-  if (!arc_app_list_prefs_->package_list_initial_refreshed()) {
+  if (!arc_initialized_) {
     return;
   }
 

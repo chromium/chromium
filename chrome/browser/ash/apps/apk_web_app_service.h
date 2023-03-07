@@ -188,6 +188,10 @@ class ApkWebAppService : public KeyedService,
   // And override delegate implementation for tests. See |GetDelegate()|.
   raw_ptr<Delegate> test_delegate_;
 
+  // True when ARC is fully initialized, after ArcAppLauncher has sent the
+  // initial package list.
+  bool arc_initialized_ = false;
+
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};

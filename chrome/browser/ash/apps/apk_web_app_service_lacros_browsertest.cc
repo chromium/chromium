@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -420,6 +421,34 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
   StartArc(GetWebAppPackage("a"));
   EXPECT_EQ(GetArcAppListPrefs().GetPackage("org.example.a"), nullptr);
   EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(ApkWebAppServiceLacrosBrowserTest,
+                       RemoveWebAppWhenArcDisabled) {
+  auto& service = GetApkWebAppService();
+
+  StartLacros();
+  StartArc(GetWebAppPackage("a"));
+
+  // App "a" is installed.
+  absl::optional<std::string> app_id_a =
+      service.GetWebAppIdForPackageName("org.example.a");
+  ASSERT_NE(app_id_a, absl::nullopt);
+  EXPECT_TRUE(IsWebAppInstalled("https://example.org/a?start"));
+
+  // Disable ARC through settings.
+  base::test::TestFuture<const std::string&, const web_app::AppId&>
+      uninstalled_future;
+  service.SetWebAppUninstalledCallbackForTesting(
+      uninstalled_future.GetCallback());
+  arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), false);
+  StopArc();
+
+  ASSERT_TRUE(uninstalled_future.Wait());
+
+  // Web app should be uninstalled.
+  EXPECT_EQ(service.GetWebAppIdForPackageName("org.example.a"), absl::nullopt);
+  EXPECT_FALSE(IsWebAppInstalled("https://example.org/a?start"));
 }
 
 }  // namespace ash
