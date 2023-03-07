@@ -26,8 +26,6 @@ using TestBase = exo::test::ExoTestBase;
 // Base class for tests that create an exo's wayland server.
 class WaylandServerTestBase : public TestBase {
  public:
-  static std::string GetUniqueSocketName();
-
   WaylandServerTestBase();
 
   // Constructs a WaylandServerTestBase with |traits| being forwarded to its

@@ -75,10 +75,6 @@ class Server : public display::DisplayObserver {
 
   void Finalize(StartCallback callback, bool success);
 
-  // This adds a Unix socket to the Wayland display server which can be used
-  // by clients to connect to the display server.
-  bool AddSocket(const std::string& name);
-
   // Returns the file descriptor associated with the server.
   int GetFileDescriptor() const;
 
@@ -115,6 +111,10 @@ class Server : public display::DisplayObserver {
 
  private:
   friend class ScopedEventDispatchDisabler;
+
+  // This adds a Unix socket to the Wayland display server which can be used
+  // by clients to connect to the display server.
+  bool AddSocket(const std::string& name);
 
   // This has the server's socket inside it, so it must be deleted last.
   base::ScopedTempDir socket_dir_;
