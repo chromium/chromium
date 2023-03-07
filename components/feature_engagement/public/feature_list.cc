@@ -37,7 +37,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHChromeReengagementNotification3Feature,
     &kIPHContextualPageActionsQuietVariantFeature,
     &kIPHContextualPageActionsActionChipFeature,
-    &kIPHCrowFeature,
     &kIPHDownloadSettingsFeature,
     &kIPHDownloadInfoBarDownloadContinuingFeature,
     &kIPHDownloadInfoBarDownloadsAreFasterFeature,

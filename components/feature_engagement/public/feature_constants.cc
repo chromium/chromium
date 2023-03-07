@@ -138,7 +138,6 @@ BASE_FEATURE(kIPHContextualPageActionsQuietVariantFeature,
 BASE_FEATURE(kIPHContextualPageActionsActionChipFeature,
              "IPH_ContextualPageActions_ActionChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHCrowFeature, "IPH_Crow", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDataSaverDetailFeature,
              "IPH_DataSaverDetail",
              base::FEATURE_ENABLED_BY_DEFAULT);

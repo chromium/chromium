@@ -69,7 +69,6 @@ BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageFeature);
 BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageOptInFeature);
 BASE_DECLARE_FEATURE(kIPHContextualPageActionsQuietVariantFeature);
 BASE_DECLARE_FEATURE(kIPHContextualPageActionsActionChipFeature);
-BASE_DECLARE_FEATURE(kIPHCrowFeature);
 BASE_DECLARE_FEATURE(kIPHDataSaverDetailFeature);
 BASE_DECLARE_FEATURE(kIPHDataSaverMilestonePromoFeature);
 BASE_DECLARE_FEATURE(kIPHDataSaverPreviewFeature);
