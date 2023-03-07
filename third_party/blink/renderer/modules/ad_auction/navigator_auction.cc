@@ -414,15 +414,15 @@ bool CopySellerCapabilitiesFromIdlToMojo(ExceptionState& exception_state,
        input.sellerCapabilities()) {
     auto seller_capabilities = mojom::blink::SellerCapabilities::New();
     for (const String& capability_str : capabilities_vector) {
-      if (capability_str == "interestGroupCounts") {
+      if (capability_str == "interest-group-counts" ||
+          capability_str == "interestGroupCounts") {
         seller_capabilities->allows_interest_group_counts = true;
-      } else if (capability_str == "latencyStats") {
+      } else if (capability_str == "latency-stats" ||
+                 capability_str == "latencyStats") {
         seller_capabilities->allows_latency_stats = true;
       } else {
-        exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-            input, "sellerCapabilities", capability_str,
-            "is not a supported seller capability."));
-        return false;
+        // For forward compatibility with new fields, don't throw.
+        continue;
       }
     }
     if (origin_string == "*") {
