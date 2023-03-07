@@ -7511,7 +7511,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Reading mode strings -->
-      <!-- TODO(crbug.com/1266555): Add final strings and make them translateable. -->
       <if expr="use_titlecase">
         <message name="IDS_READING_MODE_TITLE" desc="Title of the reading mode feature, which gives users an accessible reading experience.">
           Reading Mode
@@ -7522,6 +7521,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Reading mode
         </message>
       </if>
+      <message name="IDS_READING_MODE_EMPTY_STATE_HEADER" desc="Header for reading mode when the current webpage cannot be opened in reading mode.">
+        Highlight the text you want to show in reading mode
+      </message>
+      <message name="IDS_READING_MODE_EMPTY_STATE_SUBHEADER" desc="Subheader for reading mode when the current webpage cannot be opened in reading mode.">
+        Reading mode can't find the main content on this page
+      </message>
       <message name="IDS_READING_MODE_TOOLBAR_LABEL" desc="Accessibility label for the text formatting toolbar of the reading mode feature. Spoken by screen readers.">
         Text formatting
       </message>

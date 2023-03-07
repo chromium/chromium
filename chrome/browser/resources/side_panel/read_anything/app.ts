@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import '../strings.m.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -21,6 +22,8 @@ interface LinkColor {
 }
 const darkThemeBackgroundSkColor = rgbToSkColor(
     getComputedStyle(document.body).getPropertyValue('--google-grey-900-rgb'));
+const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
+const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
 const defaultLinkColors: LinkColor = {
   default: 'var(--google-blue-800)',
   visited: 'var(--google-purple-900)',
@@ -102,6 +105,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
   // AXNodeID can be used to access the other.
   private domNodeToAxNodeIdMap_: TwoWayMap = new TwoWayMap();
+
+  private hasContent_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -211,9 +216,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!rootId) {
       return;
     }
-    const node = this.buildSubtree_(rootId);
-    container.appendChild(node);
 
+    // If there is no content to show, the empty state container will be shown.
+    const node = this.buildSubtree_(rootId);
+    if (!node.textContent) {
+      this.hasContent_ = false;
+      return;
+    }
+
+    this.hasContent_ = true;
+    container.appendChild(node);
     this.updateSelection_();
   }
 
@@ -261,6 +273,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return isDark ? darkThemeLinkColors : defaultLinkColors;
   }
 
+  private getEmptyStateBodyColor_(backgroundSkColor: SkColor): string {
+    const isDark = backgroundSkColor.value === darkThemeBackgroundSkColor.value;
+    return isDark ? darkThemeEmptyStateBodyColor :
+                    defaultThemeEmptyStateBodyColor;
+  }
+
   updateTheme() {
     const foregroundColor:
         SkColor = {value: chrome.readAnything.foregroundColor};
@@ -275,6 +293,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       '--letter-spacing': chrome.readAnything.letterSpacing + 'em',
       '--line-height': chrome.readAnything.lineSpacing,
       '--link-color': linkColor.default,
+      '--sp-empty-state-heading-color': skColorToRgba(foregroundColor),
+      '--sp-empty-state-body-color':
+          this.getEmptyStateBodyColor_(backgroundColor),
       '--visited-link-color': linkColor.visited,
     });
     document.body.style.background = skColorToRgba(backgroundColor);

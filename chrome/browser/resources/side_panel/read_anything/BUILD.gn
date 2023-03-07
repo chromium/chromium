@@ -9,7 +9,10 @@ assert(!is_android)
 build_webui("build") {
   grd_prefix = "side_panel_read_anything"
 
-  static_files = [ "read_anything.html" ]
+  static_files = [
+    "read_anything.html",
+    "images/empty_state.svg",
+  ]
 
   web_component_files = [ "app.ts" ]
 
@@ -24,4 +27,9 @@ build_webui("build") {
     "read_anything.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
   ]
+  ts_path_mappings =
+      [ "chrome://read-anything-side-panel.top-chrome/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
+            target_gen_dir) ]
 }

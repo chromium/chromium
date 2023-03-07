@@ -513,7 +513,7 @@ suite('ReadAnythingAppTest', () => {
       ],
     };
     chrome.readAnything.setContentForTesting(axTree, [2]);
-    const expected = '<div></div>';
+    const expected = '';
     assertContainerInnerHTML(expected);
   });
 
@@ -1053,7 +1053,7 @@ suite('ReadAnythingAppTest', () => {
       ],
     };
     chrome.readAnything.setContentForTesting(axTree, []);
-    const expected = '<div></div>';
+    const expected = '';
     assertContainerInnerHTML(expected);
   });
 
