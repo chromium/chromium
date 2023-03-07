@@ -202,8 +202,8 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
         old_displays.erase(old_drm_display_it);
       }
 
-      displays_.emplace_back(std::make_unique<DrmDisplay>(drm));
-      displays_.back()->Update(display_info.get(), display_snapshots[i].get());
+      displays_.emplace_back(std::make_unique<DrmDisplay>(
+          drm, display_info.get(), *display_snapshots[i]));
     }
     all_display_snapshots.insert(
         all_display_snapshots.end(),

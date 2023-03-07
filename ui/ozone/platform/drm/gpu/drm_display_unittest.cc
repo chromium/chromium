@@ -156,8 +156,8 @@ class DrmDisplayTest : public testing::Test {
                         .SetCurrentMode(kNativeDisplaySize)
                         .SetColorSpace(gfx::ColorSpace::CreateSRGB())
                         .Build();
-    drm_display_ = std::make_unique<DrmDisplay>(mock_drm_device_);
-    drm_display_->Update(info.get(), snapshot.get());
+    drm_display_ =
+        std::make_unique<DrmDisplay>(mock_drm_device_, info.get(), *snapshot);
   }
 
   MockHardwareDisplayPlaneManager* AddMockHardwareDisplayPlaneManager() {
