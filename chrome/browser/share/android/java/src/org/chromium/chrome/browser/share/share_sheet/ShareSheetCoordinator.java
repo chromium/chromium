@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
@@ -186,8 +187,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = mBottomSheet.getLinkGenerationState();
 
-        mContentTypes =
-                ShareSheetPropertyModelBuilder.getContentTypes(mShareParams, mChromeShareExtras);
+        mContentTypes = ShareContentTypeHelper.getContentTypes(mShareParams, mChromeShareExtras);
         updateShareSheet(mChromeShareExtras.saveLastUsed(), this::finishShowShareSheet);
     }
 
@@ -210,8 +210,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheet.updateShareParams(mShareParams);
         mLinkGenerationStatusForMetrics = linkGenerationState;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
-        mContentTypes =
-                ShareSheetPropertyModelBuilder.getContentTypes(mShareParams, mChromeShareExtras);
+        mContentTypes = ShareContentTypeHelper.getContentTypes(mShareParams, mChromeShareExtras);
         updateShareSheet(mChromeShareExtras.saveLastUsed(), null);
     }
 

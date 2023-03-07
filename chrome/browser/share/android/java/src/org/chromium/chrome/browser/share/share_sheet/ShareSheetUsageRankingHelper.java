@@ -16,6 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareRankingBridge;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
@@ -172,7 +173,7 @@ public class ShareSheetUsageRankingHelper {
     private String contentTypesToTypeForRanking(Set<Integer> contentTypes) {
         // TODO(ellyjones): Once we have field data, check whether the split into image vs not image
         // is sufficient (i.e. is share ranking is performing well with a split this coarse).
-        if (contentTypes.contains(ShareSheetPropertyModelBuilder.ContentType.IMAGE)) {
+        if (contentTypes.contains(ShareContentTypeHelper.ContentType.IMAGE)) {
             return "image";
         } else {
             return "other";

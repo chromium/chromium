@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
@@ -101,8 +102,7 @@ public class ShareSheetUsageRankingHelperTest {
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(JUnitTestGURLs.getGURL(MOCK_URL));
-        when(mContentTypes.contains(ShareSheetPropertyModelBuilder.ContentType.IMAGE))
-                .thenReturn(true);
+        when(mContentTypes.contains(ShareContentTypeHelper.ContentType.IMAGE)).thenReturn(true);
 
         mParams = new ShareParams.Builder(mWindow, "title", MOCK_URL)
                           .setCallback(mTargetChosenCallback)

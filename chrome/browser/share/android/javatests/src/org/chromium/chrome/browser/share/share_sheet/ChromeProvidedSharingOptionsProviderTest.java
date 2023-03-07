@@ -49,12 +49,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
-import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -206,7 +207,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
                         DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
@@ -222,7 +223,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
                         DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
@@ -237,7 +238,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
                         DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
@@ -253,7 +254,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
                         DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/true);
 
@@ -269,7 +270,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST,
                         DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 

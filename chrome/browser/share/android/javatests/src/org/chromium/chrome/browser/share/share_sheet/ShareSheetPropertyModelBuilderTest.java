@@ -36,8 +36,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
-import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -119,11 +120,11 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         assertEquals("Should contain LINK_PAGE_NOT_VISIBLE.",
                 ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
         shareExtras = new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
         assertEquals("Should contain LINK_PAGE_VISIBLE.",
                 ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -133,10 +134,10 @@ public final class ShareSheetPropertyModelBuilderTest {
         ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();
 
         assertEquals("Should not contain LINK_PAGE_NOT_VISIBLE", ImmutableSet.of(),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
         shareExtras = new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
         assertEquals("Should not contain LINK_PAGE_VISIBLE.", ImmutableSet.of(),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -146,7 +147,7 @@ public final class ShareSheetPropertyModelBuilderTest {
         ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();
 
         assertEquals("Should contain TEXT.", ImmutableSet.of(ContentType.TEXT),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -156,7 +157,7 @@ public final class ShareSheetPropertyModelBuilderTest {
         ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();
 
         assertEquals("Should not contain TEXT.", ImmutableSet.of(),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -170,7 +171,7 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         assertEquals("Should contain HIGHLIGHTED_TEXT.",
                 ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -183,7 +184,7 @@ public final class ShareSheetPropertyModelBuilderTest {
         ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();
 
         assertEquals("Should contain IMAGE.", ImmutableSet.of(ContentType.IMAGE),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -194,7 +195,7 @@ public final class ShareSheetPropertyModelBuilderTest {
         ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();
 
         assertEquals("Should not contain IMAGE.", ImmutableSet.of(),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -209,7 +210,7 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         assertEquals("Should contain OTHER_FILE_TYPE.",
                 ImmutableSet.of(ContentType.OTHER_FILE_TYPE),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -224,7 +225,7 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         assertEquals("Should contain IMAGE_AND_LINK and LINK_PAGE_NOT_VISIBLE.",
                 ImmutableSet.of(ContentType.IMAGE_AND_LINK, ContentType.LINK_PAGE_NOT_VISIBLE),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -239,7 +240,7 @@ public final class ShareSheetPropertyModelBuilderTest {
                 new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
 
         assertEquals("Should contain IMAGE_AND_LINK.", ImmutableSet.of(ContentType.IMAGE_AND_LINK),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -250,7 +251,7 @@ public final class ShareSheetPropertyModelBuilderTest {
         ChromeShareExtras shareExtras = new ChromeShareExtras.Builder().build();
 
         assertEquals("Should not contain OTHER_FILE_TYPE.", ImmutableSet.of(),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test
@@ -267,7 +268,7 @@ public final class ShareSheetPropertyModelBuilderTest {
         assertEquals("Should contain correct content types.",
                 ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.OTHER_FILE_TYPE,
                         ContentType.TEXT, ContentType.LINK_AND_TEXT),
-                ShareSheetPropertyModelBuilder.getContentTypes(shareParams, shareExtras));
+                ShareContentTypeHelper.getContentTypes(shareParams, shareExtras));
     }
 
     @Test

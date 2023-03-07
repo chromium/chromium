@@ -22,11 +22,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -222,7 +222,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * @param isMultiWindow if in multi-window mode.
      * @return a list of {@link FirstPartyOption}s.
      */
-    protected List<FirstPartyOption> getFirstPartyOptions(Set<Integer> contentTypes,
+    protected List<FirstPartyOption> getFirstPartyOptions(@ContentType Set<Integer> contentTypes,
             @DetailedContentType int detailedContentType, boolean isMultiWindow) {
         List<FirstPartyOption> availableOptions = new ArrayList<>();
         for (FirstPartyOption firstPartyOption : mOrderedFirstPartyOptions) {
