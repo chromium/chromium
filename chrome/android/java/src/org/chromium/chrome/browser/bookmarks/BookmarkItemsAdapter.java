@@ -35,7 +35,6 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -370,10 +369,8 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
     public void search(@Nullable String query) {
         mSearchText = query == null ? "" : query.trim();
 
-        List<BookmarkId> bookmarks = TextUtils.isEmpty(query)
-                ? Collections.emptyList()
-                : mDelegate.getModel().searchBookmarks(
-                        mSearchText, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
+        List<BookmarkId> bookmarks =
+                mDelegate.getModel().searchBookmarks(mSearchText, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
         setBookmarks(bookmarks);
     }
 
