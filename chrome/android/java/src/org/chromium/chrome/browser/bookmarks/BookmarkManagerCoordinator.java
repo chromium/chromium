@@ -20,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
@@ -83,6 +84,7 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
 
         mMainView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.bookmark_main, null);
         mBookmarkModel = BookmarkModel.getForProfile(profile);
+        mBookmarkOpener = new BookmarkOpener(mBookmarkModel, context, openBookmarkComponentName);
         if (ShoppingFeatures.isShoppingListEligible()) {
             ShoppingServiceFactory.getForProfile(profile).scheduleSavedProductUpdate();
         }
@@ -105,24 +107,28 @@ public class BookmarkManagerCoordinator implements SearchDelegate, BackPressHand
         mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
         BookmarkItemsAdapter bookmarkItemsAdapter =
                 new BookmarkItemsAdapter(context, profile, this::createView, this::bindView);
+        mPromoHeaderManager = bookmarkItemsAdapter.getPromoHeaderManager();
+
         mRecyclerView = mSelectableListLayout.initializeRecyclerView(
                 (RecyclerView.Adapter<RecyclerView.ViewHolder>) bookmarkItemsAdapter);
 
+        // Using OneshotSupplier as an alternative to a 2-step initialization process.
+        OneshotSupplierImpl<BookmarkDelegate> bookmarkDelegateSupplier =
+                new OneshotSupplierImpl<>();
         mBookmarkToolbarCoordinator = new BookmarkToolbarCoordinator(mSelectableListLayout,
-                selectionDelegate, /*searchDelegate=*/this, bookmarkItemsAdapter, isDialogUi);
+                selectionDelegate, /*searchDelegate=*/this, bookmarkItemsAdapter, isDialogUi,
+                bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener);
         mSelectableListLayout.configureWideDisplayStyle();
 
         LargeIconBridge largeIconBridge = new LargeIconBridge(profile);
         largeIconBridge.createCache(computeCacheMaxSize());
 
         mUndoController = new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
-        mBookmarkOpener = new BookmarkOpener(mBookmarkModel, context, openBookmarkComponentName);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, selectionDelegate, mRecyclerView, bookmarkItemsAdapter,
                 largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier);
 
-        mPromoHeaderManager = bookmarkItemsAdapter.getPromoHeaderManager();
-        mBookmarkToolbarCoordinator.initialize(/*bookmarkDelegate=*/mMediator);
+        bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {

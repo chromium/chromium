@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -87,6 +88,12 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     SearchDelegate mSearchDelegate;
     @Mock
     BookmarkModel mBookmarkModel;
+    @Mock
+    BookmarkOpener mBookmarkOpener;
+    @Mock
+    Runnable mOpenSearchUiRunnable;
+    @Mock
+    Callback<BookmarkId> mOpenFolderCallback;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -148,14 +155,15 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     private void initializeNormal() {
         mBookmarkToolbar.initialize(mSelectionDelegate, 0, R.id.normal_menu_group,
                 R.id.selection_mode_menu_group, false);
-        mBookmarkToolbar.setBookmarkDelegate(mBookmarkDelegate);
         mBookmarkToolbar.initializeSearchView(
                 mSearchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
-    }
-
-    private void initializeAsDialog() {
-        when(mBookmarkDelegate.isDialogUi()).thenReturn(true);
-        initializeNormal();
+        mBookmarkToolbar.setBookmarkModel(mBookmarkModel);
+        mBookmarkToolbar.setBookmarkOpener(mBookmarkOpener);
+        mBookmarkToolbar.setSelectionDelegate(mSelectionDelegate);
+        mBookmarkToolbar.setBookmarkUiState(BookmarkUiState.STATE_FOLDER);
+        mBookmarkToolbar.setIsDialogUi(true);
+        mBookmarkToolbar.setOpenSearchUiRunnable(mOpenSearchUiRunnable);
+        mBookmarkToolbar.setOpenFolderCallback(mOpenFolderCallback);
     }
 
     private void mockBookmarkItem(
@@ -203,9 +211,9 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void onNavigationBack() {
         initializeNormal();
-        mBookmarkToolbar.onFolderStateSet(BOOKMARK_ID_FOLDER);
+        mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_FOLDER);
         mBookmarkToolbar.onNavigationBack();
-        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).openFolder(BOOKMARK_ID_ROOT);
+        Mockito.verify(mOpenFolderCallback).onResult(BOOKMARK_ID_ROOT);
     }
 
     @Test
@@ -213,7 +221,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @UiThreadTest
     public void onNavigationBack_searching() {
         initializeNormal();
-        mBookmarkToolbar.showSearchView(false);
+        mBookmarkToolbar.setBookmarkUiState(BookmarkUiState.STATE_SEARCHING);
         mBookmarkToolbar.onNavigationBack();
         Assert.assertFalse(mBookmarkToolbar.isSearching());
     }
@@ -226,7 +234,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
                 addBlockingActivityMonitor(BookmarkAddEditFolderActivity.class);
         initializeNormal();
 
-        mBookmarkToolbar.onFolderStateSet(BOOKMARK_ID_FOLDER);
+        mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_FOLDER);
         Assert.assertEquals(0, activityMonitor.getHits());
 
         Assert.assertTrue(mBookmarkToolbar.onMenuItemClick(
@@ -237,7 +245,7 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testOnMenuItemClick_closeMenu() {
-        initializeAsDialog();
+        initializeNormal();
 
         MenuItem menuItem = mBookmarkToolbar.getMenu().findItem(R.id.close_menu_id);
         Assert.assertNotNull(menuItem);
@@ -247,11 +255,22 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    public void testOnMenuItemClick_closeMenu_goneWhenNotDialogUi() {
+        initializeNormal();
+        mBookmarkToolbar.setIsDialogUi(false);
+
+        MenuItem menuItem = mBookmarkToolbar.getMenu().findItem(R.id.close_menu_id);
+        Assert.assertNull(menuItem);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testOnMenuItemClick_searchMenu() {
         initializeNormal();
         Assert.assertTrue(mBookmarkToolbar.onMenuItemClick(
                 mBookmarkToolbar.getMenu().findItem(R.id.search_menu_id)));
-        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).openSearchUi();
+        Mockito.verify(mOpenSearchUiRunnable).run();
     }
 
     @Test
@@ -304,48 +323,20 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
 
         Assert.assertTrue(mBookmarkToolbar.onMenuItemClick(
                 mBookmarkToolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id)));
-        verify(mBookmarkModel, Mockito.times(1)).deleteBookmarks(Mockito.any());
+        verify(mBookmarkModel).deleteBookmarks(Mockito.any());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    public void testOnBookmarkDelegateInitialized() {
-        mBookmarkToolbar.setBookmarkDelegate(mBookmarkDelegate);
-        Assert.assertNull(mBookmarkToolbar.getMenu().findItem(R.id.close_menu_id));
-    }
+    public void testOnSelectionStateChange_nullBookmarkModel() {
+        initializeNormal();
+        mBookmarkToolbar.setBookmarkModel(null);
+        setCurrentSelection(BOOKMARK_ID_ONE);
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnBookmarkDelegateInitialized_isDialog() {
-        when(mBookmarkDelegate.isDialogUi()).thenReturn(true);
-        mBookmarkToolbar.setBookmarkDelegate(mBookmarkDelegate);
-        Assert.assertNotNull(mBookmarkToolbar.getMenu().findItem(R.id.close_menu_id));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnDestroy() {
-        mBookmarkToolbar.setBookmarkDelegate(mBookmarkDelegate);
-        mBookmarkToolbar.onDestroy();
-        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).removeUiObserver(mBookmarkToolbar);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnDestroy_nullDelegate() {
-        mBookmarkToolbar.onDestroy();
-        Mockito.verify(mBookmarkDelegate, Mockito.never()).removeUiObserver(mBookmarkToolbar);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testOnSearchStateSet() {
-        mBookmarkToolbar.onSearchStateSet();
+        verifySelectionMenuVisibility(R.id.selection_mode_edit_menu_id,
+                R.id.selection_mode_move_menu_id, R.id.selection_mode_delete_menu_id,
+                R.id.selection_open_in_new_tab_id, R.id.selection_open_in_incognito_tab_id);
     }
 
     @Test
@@ -373,7 +364,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         verifySelectionMenuVisibility(R.id.selection_mode_edit_menu_id,
                 R.id.selection_mode_move_menu_id, R.id.selection_mode_delete_menu_id,
                 R.id.selection_open_in_new_tab_id, R.id.selection_open_in_incognito_tab_id);
-        Mockito.verify(mBookmarkDelegate, Mockito.times(1)).notifyStateChange(mBookmarkToolbar);
     }
 
     @Test
@@ -440,11 +430,11 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     public void testOnDragStateChange() {
         initializeNormal();
 
-        mBookmarkToolbar.onDragStateChange(true);
+        mBookmarkToolbar.setDragEnabled(true);
         Assert.assertFalse(
                 mBookmarkToolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isEnabled());
 
-        mBookmarkToolbar.onDragStateChange(false);
+        mBookmarkToolbar.setDragEnabled(false);
         Assert.assertTrue(
                 mBookmarkToolbar.getMenu().findItem(R.id.selection_mode_edit_menu_id).isEnabled());
     }

@@ -14,15 +14,20 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link BookmarkToolbarMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class BookmarkToolbarMediatorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -31,26 +36,43 @@ public class BookmarkToolbarMediatorTest {
     BookmarkDelegate mBookmarkDelegate;
     @Mock
     BookmarkItemsAdapter mBookmarkItemsAdapter;
+    @Mock
+    BookmarkModel mBookmarkModel;
+    @Mock
+    BookmarkOpener mBookmarkOpener;
+    @Mock
+    SelectionDelegate mSelectionDelegate;
+    @Mock
+    Runnable mOpenSearchUiRunnable;
+    @Mock
+    Callback mOpenFolderCallback;
 
     BookmarkToolbarMediator mMediator;
     PropertyModel mModel;
+    OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier = new OneshotSupplierImpl<>();
 
     @Before
     public void setUp() {
         mModel = new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS)
-                         .with(BookmarkToolbarProperties.DRAG_REORDERABLE_LIST_ADAPTER,
-                                 mBookmarkItemsAdapter)
+                         .with(BookmarkToolbarProperties.BOOKMARK_MODEL, mBookmarkModel)
+                         .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
+                         .with(BookmarkToolbarProperties.SELECTION_DELEGATE, mSelectionDelegate)
                          .with(BookmarkToolbarProperties.BOOKMARK_UI_STATE,
                                  BookmarkUiState.STATE_LOADING)
+                         .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)
+                         .with(BookmarkToolbarProperties.DRAG_ENABLED, false)
+                         .with(BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE,
+                                 mOpenSearchUiRunnable)
+                         .with(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mOpenFolderCallback)
                          .build();
 
-        mMediator = new BookmarkToolbarMediator(mModel);
+        mMediator = new BookmarkToolbarMediator(
+                mModel, mBookmarkItemsAdapter, mBookmarkDelegateSupplier);
     }
 
     @Test
-    public void initSetsUpObservation() {
-        mMediator.initialize(mBookmarkDelegate);
-
+    public void bookmarkDelegateAvailableSetsUpObserver() {
+        mBookmarkDelegateSupplier.set(mBookmarkDelegate);
         Mockito.verify(mBookmarkDelegate).addUiObserver(mMediator);
     }
 
@@ -58,20 +80,20 @@ public class BookmarkToolbarMediatorTest {
     public void onStateChangedUpdatesModel() {
         mMediator.onStateChanged(BookmarkUiState.STATE_LOADING);
         Assert.assertEquals(BookmarkUiState.STATE_LOADING,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
+                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
 
         mMediator.onStateChanged(BookmarkUiState.STATE_SEARCHING);
         Assert.assertEquals(BookmarkUiState.STATE_SEARCHING,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
+                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
 
         mMediator.onStateChanged(BookmarkUiState.STATE_FOLDER);
         Assert.assertEquals(BookmarkUiState.STATE_FOLDER,
-                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
+                mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE).intValue());
     }
 
     @Test
     public void destroyUnregistersObserver() {
-        mMediator.initialize(mBookmarkDelegate);
+        mBookmarkDelegateSupplier.set(mBookmarkDelegate);
         Mockito.verify(mBookmarkDelegate).addUiObserver(mMediator);
 
         mMediator.onDestroy();

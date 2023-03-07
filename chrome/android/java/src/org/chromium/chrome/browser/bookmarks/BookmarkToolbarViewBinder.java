@@ -14,15 +14,31 @@ class BookmarkToolbarViewBinder {
     /** Binds the given property to the given model for the given view. */
     public static void bind(PropertyModel model, View view, PropertyKey key) {
         BookmarkToolbar bookmarkToolbar = (BookmarkToolbar) view;
-        if (key == BookmarkToolbarProperties.BOOKMARK_DELEGATE) {
-            bookmarkToolbar.setBookmarkDelegate(
-                    model.get(BookmarkToolbarProperties.BOOKMARK_DELEGATE));
-        } else if (key == BookmarkToolbarProperties.DRAG_REORDERABLE_LIST_ADAPTER) {
-            bookmarkToolbar.setDragReorderableListAdapter(
-                    model.get(BookmarkToolbarProperties.DRAG_REORDERABLE_LIST_ADAPTER));
+        if (key == BookmarkToolbarProperties.BOOKMARK_MODEL) {
+            bookmarkToolbar.setBookmarkModel(model.get(BookmarkToolbarProperties.BOOKMARK_MODEL));
+        } else if (key == BookmarkToolbarProperties.BOOKMARK_OPENER) {
+            bookmarkToolbar.setBookmarkOpener(model.get(BookmarkToolbarProperties.BOOKMARK_OPENER));
+        } else if (key == BookmarkToolbarProperties.SELECTION_DELEGATE) {
+            bookmarkToolbar.setSelectionDelegate(
+                    model.get(BookmarkToolbarProperties.SELECTION_DELEGATE));
         } else if (key == BookmarkToolbarProperties.BOOKMARK_UI_STATE) {
             bookmarkToolbar.setBookmarkUiState(
                     model.get(BookmarkToolbarProperties.BOOKMARK_UI_STATE));
+        } else if (key == BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE) {
+            bookmarkToolbar.setSoftKeyboardVisible(Boolean.TRUE.equals(
+                    model.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE)));
+        } else if (key == BookmarkToolbarProperties.IS_DIALOG_UI) {
+            bookmarkToolbar.setIsDialogUi(model.get(BookmarkToolbarProperties.IS_DIALOG_UI));
+        } else if (key == BookmarkToolbarProperties.DRAG_ENABLED) {
+            bookmarkToolbar.setDragEnabled(model.get(BookmarkToolbarProperties.DRAG_ENABLED));
+        } else if (key == BookmarkToolbarProperties.CURRENT_FOLDER) {
+            bookmarkToolbar.setCurrentFolder(model.get(BookmarkToolbarProperties.CURRENT_FOLDER));
+        } else if (key == BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE) {
+            bookmarkToolbar.setOpenSearchUiRunnable(
+                    model.get(BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE));
+        } else if (key == BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK) {
+            bookmarkToolbar.setOpenFolderCallback(
+                    model.get(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK));
         }
     }
 }

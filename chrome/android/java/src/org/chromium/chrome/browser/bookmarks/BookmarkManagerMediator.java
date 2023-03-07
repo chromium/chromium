@@ -408,9 +408,6 @@ class BookmarkManagerMediator
                 observer.onFolderStateSet(mStateStack.peek().mFolder);
                 break;
             case BookmarkUiState.STATE_LOADING:
-                // In loading state, onBookmarkDelegateInitialized() is not called for all
-                // UiObservers, which means that there will be no observers at the time. Do nothing.
-                assert mUiObservers.isEmpty();
                 break;
             case BookmarkUiState.STATE_SEARCHING:
                 observer.onSearchStateSet();
@@ -452,6 +449,7 @@ class BookmarkManagerMediator
     @Override
     public void addUiObserver(BookmarkUiObserver observer) {
         mUiObservers.addObserver(observer);
+        notifyStateChange(observer);
     }
 
     @Override

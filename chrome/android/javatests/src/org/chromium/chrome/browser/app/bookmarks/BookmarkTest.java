@@ -435,12 +435,10 @@ public class BookmarkTest {
     public void testFolderNavigation_Phone() throws InterruptedException, ExecutionException {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
+        openMobileBookmarks();
+
         final BookmarkDelegate delegate = getBookmarkDelegate();
         final BookmarkToolbar toolbar = mBookmarkManagerCoordinator.getToolbarForTesting();
-
-        // Open the "Mobile bookmarks" folder.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> delegate.openFolder(mBookmarkModel.getMobileFolderId()));
 
         // Check that we are in the mobile bookmarks folder.
         Assert.assertEquals("Mobile bookmarks", toolbar.getTitle());
