@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace sandbox {

@@ -5,7 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_POLICY_H_
 #define SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_POLICY_H_
 
-#include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/sandbox_policy.h"
 
