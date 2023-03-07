@@ -1103,12 +1103,13 @@ String CSSSelector::SelectorText() const {
       return builder.ReleaseString() + result;
     }
 
-    // If we are combining with an implicit &, it is as if we used
+    // If we are combining with an implicit & or :scope, it is as if we used
     // a relative combinator.
     RelationType relation = compound->Relation();
     DCHECK_NE(relation, kSubSelector);
     if (compound->TagHistory()->Match() == kPseudoClass &&
-        compound->TagHistory()->GetPseudoType() == kPseudoParent &&
+        (compound->TagHistory()->GetPseudoType() == kPseudoParent ||
+         compound->TagHistory()->GetPseudoType() == kPseudoScope) &&
         compound->TagHistory()->is_implicitly_added_) {
       relation = ConvertRelationToRelative(relation);
     }

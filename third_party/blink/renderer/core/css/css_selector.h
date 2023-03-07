@@ -112,6 +112,7 @@ class CORE_EXPORT CSSSelector {
   CSSSelector(CSSSelector&&);
   explicit CSSSelector(const QualifiedName&, bool tag_is_implicit = false);
   explicit CSSSelector(const StyleRule* parent_rule, bool is_implicit);
+  explicit CSSSelector(const AtomicString& pseudo_name, bool is_implicit);
 
   ~CSSSelector();
 
@@ -606,6 +607,12 @@ class CORE_EXPORT CSSSelector {
     enum ConstructEmptyValueTag { kConstructEmptyValue };
     explicit DataUnion(ConstructEmptyValueTag) : value_() {}
 
+    // A string `value` is used by many different selectors to store the string
+    // part of the selector. For example the name of a pseudo class (without
+    // the colon), the class name of a class selector (without the dot),
+    // the attribute of an attribute selector (without the brackets), etc.
+    explicit DataUnion(const AtomicString& value) : value_(value) {}
+
     explicit DataUnion(const QualifiedName& tag_q_name)
         : tag_q_name_(tag_q_name) {}
 
@@ -701,6 +708,21 @@ inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
       is_implicitly_added_(is_implicit),
       is_covered_by_bucketing_(false),
       data_(parent_rule) {}
+
+inline CSSSelector::CSSSelector(const AtomicString& pseudo_name,
+                                bool is_implicit)
+    : relation_(kSubSelector),
+      match_(kPseudoClass),
+      pseudo_type_(NameToPseudoType(pseudo_name,
+                                    /* has_arguments */ false,
+                                    /* document */ nullptr)),
+      is_last_in_selector_list_(false),
+      is_last_in_tag_history_(false),
+      has_rare_data_(false),
+      is_for_page_(false),
+      is_implicitly_added_(is_implicit),
+      is_covered_by_bucketing_(false),
+      data_(pseudo_name) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)
     : relation_(o.relation_),
