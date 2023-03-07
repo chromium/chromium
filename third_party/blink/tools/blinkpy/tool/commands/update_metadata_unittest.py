@@ -165,8 +165,9 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'run_info': {
                 'os': 'mac',
                 'port': 'mac12',
-                'processor': 'arm',
                 'product': 'content_shell',
+                'flag_specific': '',
+                'debug': False,
             },
             'results': [{
                 'test':
@@ -237,7 +238,11 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         url = 'https://cr.dev/123/wptreport.json?token=abc'
         self.tool.web.urls[url] = json.dumps({
             'run_info': {
-                'os': 'mac'
+                'os': 'mac',
+                'port': 'mac12',
+                'product': 'content_shell',
+                'flag_specific': '',
+                'debug': False,
             },
             'results': [{
                 'test': '/variant.html?foo=bar/abc',
@@ -266,15 +271,12 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             "INFO: Updated 'variant.html'\n",
             'INFO: Staged 1 metadata file.\n',
         ])
+        lines = self.tool.filesystem.read_text_file(
+            self.finder.path_from_web_tests('external', 'wpt',
+                                            'variant.html.ini')).splitlines()
+        self.assertIn('[variant.html?foo=bar/abc]', lines)
         # The other variant is not updated.
-        self.assertEqual(
-            self.tool.filesystem.read_text_file(
-                self.finder.path_from_web_tests('external', 'wpt',
-                                                'variant.html.ini')),
-            textwrap.dedent("""\
-                [variant.html?foo=bar/abc]
-                  expected: FAIL
-                """))
+        self.assertNotIn('[variant.html?foo=baz]', lines)
 
     def test_execute_with_no_issue_number_aborts(self):
         self.command.git_cl = MockGitCL(self.tool, issue_number='None')
@@ -1091,6 +1093,65 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 expected:
                   if (product == "content_shell") and (os == "win"): TIMEOUT
                   FAIL
+            """)
+
+    def test_condition_initialization_without_starting_metadata(self):
+        self.update(
+            {
+                'run_info': {
+                    'product': 'content_shell'
+                },
+                'results': [{
+                    'test': '/variant.html?foo=baz',
+                    'status': 'FAIL',
+                    'expected': 'OK',
+                }],
+            }, {
+                'run_info': {
+                    'product': 'chrome'
+                },
+                'results': [],
+            })
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              expected:
+                if product == "content_shell": FAIL
+            """)
+
+    def test_condition_initialization_without_starting_subtest(self):
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'product': 'content_shell'
+                },
+                'results': [{
+                    'test':
+                    '/variant.html?foo=baz',
+                    'status':
+                    'OK',
+                    'subtests': [{
+                        'name': 'new subtest',
+                        'status': 'FAIL',
+                        'expected': 'PASS',
+                    }],
+                }],
+            }, {
+                'run_info': {
+                    'product': 'chrome'
+                },
+                'results': [],
+            })
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              [new subtest]
+                expected:
+                  if product == "content_shell": FAIL
             """)
 
     def test_condition_no_change(self):

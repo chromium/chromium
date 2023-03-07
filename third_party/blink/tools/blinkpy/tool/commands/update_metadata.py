@@ -640,10 +640,7 @@ class MetadataUpdater:
         Missing configs are only detected at the test level so that subtests can
         still be pruned.
         """
-        expectations = test_file.expected(
-            (self._primary_properties, self._dependent_properties),
-            update_intermittent=(not self._disable_intermittent),
-            remove_intermittent=(not self._keep_statuses))
+        expectations = self._make_initialized_expectations(test_file)
         for test in expectations.child_map.values():
             updated_configs = self._updated_configs(test_file, test.id)
             # Nothing to update. This commonly occurs when every port runs
@@ -680,6 +677,35 @@ class MetadataUpdater:
                     'known_intermittent':
                     known_intermittent,
                 })
+
+    def _make_initialized_expectations(
+        self,
+        test_file: metadata.TestFileData,
+    ) -> manifestupdate.ExpectedManifest:
+        """Make an expectation manifest with nodes for (sub)tests to update.
+
+        The existing metadata file may not contain a (sub)test section if the
+        (sub)test is new, or the test was formerly all-pass (i.e., the metadata
+        file doesn't exist). This method ensures such (sub)test sections exist
+        so that results for passing configurations can be filled in, which will
+        correctly generate the necessary conditions.
+
+        See also: crbug.com/1422011
+        """
+        expectations = test_file.expected(
+            (self._primary_properties, self._dependent_properties),
+            update_intermittent=(not self._disable_intermittent),
+            remove_intermittent=(not self._keep_statuses))
+        for test_id in test_file.data:
+            test = expectations.get_test(test_id)
+            if not test:
+                test = manifestupdate.TestNode.create(test_id)
+                expectations.append(test)
+            for subtest in test_file.data.get(test_id, []):
+                if subtest != None:
+                    # This creates the subtest node if it doesn't exist.
+                    test.get_subtest(subtest)
+        return expectations
 
     def _eval_statuses(
             self,
