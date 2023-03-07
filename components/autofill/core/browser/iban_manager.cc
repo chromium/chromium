@@ -35,8 +35,7 @@ bool IBANManager::OnGetSingleFieldSuggestions(
     return false;
   }
 
-  bool iban_suggestions_blocked_on_url_origin = false;
-  iban_suggestions_blocked_on_url_origin =
+  bool iban_suggestions_blocked_on_url_origin =
       client.GetAutofillOptimizationGuide()->ShouldBlockSingleFieldSuggestions(
           client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
           focused_field);
