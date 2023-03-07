@@ -381,7 +381,7 @@ general rules of thumb can be helpful in navigating how to structure changes:
 
   When you are adding support for a new OS, a new architecture, a new port or
   a new top-level directory, please send an email to
-  chrome-eng-review@google.com and get approval. For long-term maintenance
+  chrome-atls@google.com and get approval. For long-term maintenance
   reasons, we will accept only things that are used by the Chromium project
   (including Chromium-supported projects like V8 and Skia) and things whose
   benefit to Chromium outweighs any cost increase in maintaining Chromium's
