@@ -329,9 +329,8 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
   left_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
 
   // The same resource is used for both left and right fade, so the
-  // resource must be rotated for the left fade.
-  gfx::Transform fade_transform;
-  fade_transform.RotateAboutYAxis(180.0);
+  // resource must be mirrored for the left fade.
+  gfx::Transform fade_transform = gfx::Transform::MakeScale(-1.0f, 1.0f);
   left_fade_->SetTransform(fade_transform);
 
   // Set opacity.
