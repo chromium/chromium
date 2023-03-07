@@ -5360,7 +5360,15 @@ void AXObject::SetNeedsToUpdateChildren() const {
   ClearChildren();
 }
 
+// static
+bool AXObject::CanSafelyUseFlatTreeTraversalNow(Document& document) {
+  return !document.IsFlatTreeTraversalForbidden() &&
+         !document.GetSlotAssignmentEngine().HasPendingSlotAssignmentRecalc();
+}
+
 void AXObject::ClearChildren() const {
+  DCHECK(!IsDetached());
+
   // No need for additional work here when clearing the entire cache at once.
   if (AXObjectCache().HasBeenDisposed()) {
     children_.clear();
@@ -5392,6 +5400,7 @@ void AXObject::ClearChildren() const {
       << ToString(true, true);
 #endif
 
+  // Detach included children from their parent (this).
   for (const auto& child : children_) {
     // AXInlineTextBoxes depend on their parent's static text as well is the
     // parent's ignored state. Therefore, if something changed in a parent
@@ -5420,10 +5429,7 @@ void AXObject::ClearChildren() const {
   if (!node)
     return;
 
-  if (GetDocument()->IsFlatTreeTraversalForbidden() ||
-      node->GetDocument()
-          .GetSlotAssignmentEngine()
-          .HasPendingSlotAssignmentRecalc()) {
+  if (!CanSafelyUseFlatTreeTraversalNow(*GetDocument())) {
     // Cannot use layout tree builder traversal now, will have to rely on
     // RepairParent() at a later point.
     return;
@@ -5450,12 +5456,13 @@ void AXObject::ClearChildren() const {
   if (slot)
     return;
 
+  // TODO(accessibility) Is this needed? Aren't image children already included?
   if (Node* map = GetMapForImage(node))
     node = map;
 
-  // Detach children that were not cleared from first loop.
-  // These must have been an unincluded node who's parent is this,
-  // although it may now be included since the children were last updated.
+  // Detach unincluded children from their parent (this).
+  // These are children that were not cleared from first loop, as well as
+  // children that will be included once the parent next updates its children.
   for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
@@ -5527,6 +5534,15 @@ void AXObject::ChildrenChangedWithCleanLayout() {
         ax_parent->ChildrenChangedWithCleanLayout();
       }
     }
+  }
+
+  // When pseudo element layout changes, we need to make sure we clear up all
+  // descendant objects, because we may not receive ChildrenChanged() calls for
+  // all of them, and we don't want to leave any parentless objects around. This
+  // will force re-creation of any AXObjects for this subtree.
+  if (GetNode() && GetNode()->IsPseudoElement()) {
+    AXObjectCache().RemoveSubtreeWithFlatTraversal(this,
+                                                   /* notify_parent */ false);
   }
 }
 
@@ -7074,9 +7090,11 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       if (GetNode()->GetShadowRoot()) {
         string_builder = string_builder + " hasShadowRoot";
       }
-      if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-              *GetNode(), DisplayLockActivationReason::kAccessibility)) {
-        string_builder = string_builder + " isDisplayLocked";
+      if (!GetDocument()->IsFlatTreeTraversalForbidden()) {
+        if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+                *GetNode(), DisplayLockActivationReason::kAccessibility)) {
+          string_builder = string_builder + " isDisplayLocked";
+        }
       }
     }
     if (cached_values_only) {

@@ -72,7 +72,11 @@ void AXMenuList::Detach() {
     // removal of objects.
     if (!AXObjectCache().HasBeenDisposed()) {
       auto& cache = AXObjectCache();
-      cache.RemoveSubtree(children_[0], /* notify parent */ true);
+      for (auto* const option_grandchild :
+           To<HTMLSelectElement>(GetNode())->GetOptionList()) {
+        cache.Remove(option_grandchild, /* notify_parent */ false);
+      }
+      cache.Remove(children_[0], /* notify_parent */ false);
     }
     children_.clear();
   }

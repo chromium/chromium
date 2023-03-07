@@ -166,8 +166,14 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Remove an AXObject or its subtree, and if |notify_parent| is true,
   // recompute the parent's children and reserialize the parent.
   void Remove(AXObject*, bool notify_parent);
-  void RemoveSubtree(AXObject*, bool notify_parent);
-  void RemoveSubtree(Node*, bool notify_parent);
+  void Remove(Node*, bool notify_parent);
+  // This will remove all AXObjects in the subtree, whether they or not they are
+  // marked as included for serialization. They can only be called while flat
+  // tree traversal is safe and there are no slot assignments pending.
+  // To remove only included nodes, use RemoveIncludedSubtree(), which can be
+  // called at any time.
+  void RemoveSubtreeWithFlatTraversal(Node* node);
+  void RemoveSubtreeWithFlatTraversal(AXObject*, bool notify_parent);
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.
@@ -575,8 +581,12 @@ class MODULES_EXPORT AXObjectCacheImpl
   // |notify_parent| is passed in as false.
   void Remove(AccessibleNode*, bool notify_parent);
   void Remove(LayoutObject*, bool notify_parent);
-  void Remove(Node*, bool notify_parent);
   void Remove(AbstractInlineTextBox*, bool notify_parent);
+
+  // Remove the cached subtree of included AXObjects. If |remove_root| is false,
+  // then only descendants will be removed. To remove unincluded AXObjects as
+  // well, call RemoveSubtreeWithFlatTraversal().
+  void RemoveIncludedSubtree(AXObject* object, bool remove_root);
 
   // Helper to remove the object from the cache.
   // Most callers should be using Remove(AXObject) instead.
