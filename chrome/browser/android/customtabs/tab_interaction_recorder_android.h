@@ -38,8 +38,6 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
   void OnSelectControlDidChange(autofill::AutofillManager&) override;
   void OnTextFieldDidChange(autofill::AutofillManager&) override;
   void OnTextFieldDidScroll(autofill::AutofillManager&) override;
-  void OnAfterFormsSeen(autofill::AutofillManager&,
-                        base::span<const autofill::FormGlobalId>) override;
 
  private:
   void OnFormInteraction();

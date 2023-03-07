@@ -10231,11 +10231,6 @@ others/histograms.xml -->
   <int value="59" label="Page contains FencedFrames"/>
 </enum>
 
-<enum name="BackForwardCachePageWithFormStorable">
-  <int value="0" label="PageSeen"/>
-  <int value="1" label="PageStored"/>
-</enum>
-
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">
   <int value="0" label="NotServedFromBackForwardCache"/>
   <int value="1" label="ServedFromBackForwardCache"/>

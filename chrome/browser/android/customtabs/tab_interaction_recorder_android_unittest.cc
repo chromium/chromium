@@ -6,9 +6,7 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
-#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -23,11 +21,8 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -75,17 +70,6 @@ void OnTextFieldDidChangeForAutofillManager(AutofillManager* autofill_manager) {
 
   autofill_manager->OnTextFieldDidChange(
       form, field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
-}
-
-void OnFormsSeenForAutofillManager(AutofillManager* autofill_manager,
-                                   content::RenderFrameHost* rfh) {
-  autofill::FormData form;
-  autofill::test::CreateTestAddressFormData(&form);
-  if (rfh) {
-    form.host_frame = autofill::LocalFrameToken(rfh->GetFrameToken().value());
-  }
-  autofill_manager->OnFormsSeen(std::vector<autofill::FormData>{form},
-                                std::vector<autofill::FormGlobalId>());
 }
 }  // namespace
 
@@ -310,27 +294,5 @@ TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
   EXPECT_FALSE(helper->DidGetUserInteraction(env));
   EXPECT_FALSE(helper->HadNavigationInteraction(env));
   EXPECT_FALSE(helper->HadFormInteractionInActivePage(env));
-}
-
-TEST_F(TabInteractionRecorderAndroidTest, TestFormSeen) {
-  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
-  OnFormsSeenForAutofillManager(autofill_manager(),
-                                contents->GetPrimaryMainFrame());
-
-  EXPECT_NE(FormInteractionData::GetForCurrentDocument(
-                contents->GetPrimaryMainFrame()),
-            nullptr);
-  EXPECT_FALSE(FormInteractionData::GetForCurrentDocument(
-                   contents->GetPrimaryMainFrame())
-                   ->GetHasFormInteractionData());
-}
-
-TEST_F(TabInteractionRecorderAndroidTest, TestFormSeenInDifferentFrame) {
-  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
-  OnFormsSeenForAutofillManager(autofill_manager(), nullptr);
-
-  EXPECT_EQ(FormInteractionData::GetForCurrentDocument(
-                contents->GetPrimaryMainFrame()),
-            nullptr);
 }
 }  // namespace customtabs

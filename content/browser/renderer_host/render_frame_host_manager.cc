@@ -31,7 +31,6 @@
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
-#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -92,9 +91,6 @@ using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace {
-
-const char kBackForwardCachePageWithFormStorableHistogramName[] =
-    "BackForwardCache.PageWithForm.Storable";
 
 bool IsDataOrAbout(const GURL& url) {
   return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
@@ -694,23 +690,6 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     if (!frame_tree_node_->frame_tree().IsHidden())
       render_frame_host_->GetView()->Show();
   }
-
-  // If we are navigating away from a Page that has a form data associated with
-  // it, record the metrics indicating that the Page was navigated away but
-  // wasn't eligible for BFCache. Note that the metrics recording for the
-  // cross-RFH case happens in RenderFrameHostManager::UnloadOldFrame().
-  // We only care about main frame cross-document navigation since those are
-  // the ones that can trigger BFCache.
-  if (!render_frame_host->GetParentOrOuterDocument() &&
-      !is_same_document_navigation) {
-    BackForwardCacheMetrics* metrics =
-        render_frame_host->GetBackForwardCacheMetrics();
-    if (metrics && metrics->had_form_data_associated()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          kBackForwardCachePageWithFormStorableHistogramName,
-          BackForwardCacheMetrics::PageWithFormStorable::kPageSeen);
-    }
-  }
 }
 
 void RenderFrameHostManager::DidChangeOpener(
@@ -909,7 +888,7 @@ void RenderFrameHostManager::UnloadOldFrame(
   NavigationEntryImpl* last_committed_entry =
       GetNavigationController().GetLastCommittedEntry();
   BackForwardCacheMetrics* old_page_back_forward_cache_metrics =
-      !old_render_frame_host->GetParentOrOuterDocument()
+      (!old_render_frame_host->GetParent() && last_committed_entry)
           ? last_committed_entry->back_forward_cache_metrics()
           : nullptr;
 
@@ -933,7 +912,7 @@ void RenderFrameHostManager::UnloadOldFrame(
   // If the old RenderFrameHost can be stored in the BackForwardCache, return
   // early without unloading and running unload handlers, as the document may
   // be restored later.
-  if (!old_render_frame_host->GetParentOrOuterDocument()) {
+  {
     BackForwardCacheImpl& back_forward_cache =
         GetNavigationController().GetBackForwardCache();
 
@@ -943,23 +922,11 @@ void RenderFrameHostManager::UnloadOldFrame(
     BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
         back_forward_cache.GetCurrentBackForwardCacheEligibility(
             old_render_frame_host.get());
-    bool can_store = bfcache_eligibility.CanStore();
-    if (old_page_back_forward_cache_metrics &&
-        old_page_back_forward_cache_metrics->had_form_data_associated()) {
-      UMA_HISTOGRAM_ENUMERATION(
-          kBackForwardCachePageWithFormStorableHistogramName,
-          BackForwardCacheMetrics::PageWithFormStorable::kPageSeen);
-      if (can_store) {
-        UMA_HISTOGRAM_ENUMERATION(
-            kBackForwardCachePageWithFormStorableHistogramName,
-            BackForwardCacheMetrics::PageWithFormStorable::kPageStored);
-      }
-    }
     TRACE_EVENT("navigation", "BackForwardCache_MaybeStorePage",
                 "old_render_frame_host", old_render_frame_host,
                 "bfcache_eligibility",
                 bfcache_eligibility.flattened_reasons.ToString());
-    if (can_store) {
+    if (bfcache_eligibility.CanStore()) {
       auto stored_page = CollectPage(std::move(old_render_frame_host));
       auto entry =
           std::make_unique<BackForwardCacheImpl::Entry>(std::move(stored_page));
