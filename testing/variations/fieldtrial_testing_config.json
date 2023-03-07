@@ -3975,9 +3975,11 @@
     "DesktopOmniboxShortcutBoost": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "fuchsia",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
