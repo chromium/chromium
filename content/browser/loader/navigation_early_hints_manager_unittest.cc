@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -174,8 +173,6 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
 };
 
 TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
-  base::HistogramTester histograms;
-
   // Set up a response which simulates coming from network.
   network::mojom::URLResponseHeadPtr head = CreatePreloadResponseHead();
   network::URLLoaderCompletionStatus status;
@@ -202,10 +199,6 @@ TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
   ASSERT_TRUE(it->second.error_code.has_value());
   EXPECT_EQ(it->second.error_code.value(), net::OK);
   EXPECT_FALSE(it->second.was_canceled);
-
-  histograms.ExpectUniqueSample(
-      kEarlyHintsPreloadRequestDestinationHistogramName,
-      network::mojom::RequestDestination::kScript, 1);
 }
 
 TEST_F(NavigationEarlyHintsManagerTest, EmptyBody) {
@@ -229,8 +222,6 @@ TEST_F(NavigationEarlyHintsManagerTest, EmptyBody) {
 }
 
 TEST_F(NavigationEarlyHintsManagerTest, ResponseExistsInDiskCache) {
-  base::HistogramTester histograms;
-
   // Set up a response which simulates coming from disk cache.
   network::mojom::URLResponseHeadPtr head = CreatePreloadResponseHead();
   head->was_fetched_via_cache = true;
@@ -248,11 +239,6 @@ TEST_F(NavigationEarlyHintsManagerTest, ResponseExistsInDiskCache) {
   auto it = preloads.find(GURL(kPreloadPath));
   ASSERT_TRUE(it != preloads.end());
   EXPECT_TRUE(it->second.was_canceled);
-
-  // The request destination histogram for a preload should not be recorded when
-  // the preload is canceled.
-  histograms.ExpectTotalCount(kEarlyHintsPreloadRequestDestinationHistogramName,
-                              0);
 }
 
 TEST_F(NavigationEarlyHintsManagerTest, PreloadSchemeIsUnsupported) {

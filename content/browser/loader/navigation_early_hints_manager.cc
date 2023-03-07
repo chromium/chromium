@@ -285,9 +285,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
  public:
   PreloadURLLoaderClient(NavigationEarlyHintsManager& owner,
                          const network::ResourceRequest& request)
-      : owner_(owner),
-        url_(request.url),
-        request_destination_(request.destination) {}
+      : owner_(owner), url_(request.url) {}
 
   ~PreloadURLLoaderClient() override = default;
 
@@ -360,12 +358,6 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
   void MaybeCompletePreload() {
     if (CanCompletePreload()) {
-      if (!result_.was_canceled) {
-        base::UmaHistogramEnumeration(
-            kEarlyHintsPreloadRequestDestinationHistogramName,
-            request_destination_);
-      }
-
       // Delete `this`.
       owner_->OnPreloadComplete(url_, result_);
     }
@@ -373,7 +365,6 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
   const raw_ref<NavigationEarlyHintsManager> owner_;
   const GURL url_;
-  const network::mojom::RequestDestination request_destination_;
 
   PreloadedResource result_;
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;

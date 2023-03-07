@@ -61,9 +61,6 @@ struct CONTENT_EXPORT NavigationEarlyHintsManagerParams {
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
 };
 
-constexpr char kEarlyHintsPreloadRequestDestinationHistogramName[] =
-    "Network.EarlyHints.Preload.RequestDestination";
-
 // Handles 103 Early Hints responses for navigation. Responsible for resource
 // hints in Early Hints responses. Created when the first 103 response is
 // received and owned by NavigationURLLoaderImpl until the final response to the
