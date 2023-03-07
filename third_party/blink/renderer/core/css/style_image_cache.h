@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_origin_clean.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -41,6 +42,10 @@ class CORE_EXPORT StyleImageCache {
   // removed when no style declarations nor computed styles have a reference to
   // the image.
   HeapHashMap<String, WeakMember<StyleFetchedImage>> fetched_image_map_;
+
+  // Keep strong pointer on cached `StyleFetchedImage`s to prevent divergence.
+  // see https://linear.app/replay/issue/RUN-1065#comment-7e345cbc
+  HeapHashSet<Member<StyleFetchedImage>> fetched_image_map_strong_;
 
   friend class StyleImageCacheTest;
 };

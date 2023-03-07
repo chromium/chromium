@@ -22,12 +22,17 @@ StyleFetchedImage* StyleImageCache::CacheStyleImage(Document& document,
         params.GetImageRequestBehavior() ==
             FetchParameters::ImageRequestBehavior::kDeferImageLoad,
         origin_clean == OriginClean::kTrue, is_ad_related, params.Url());
+
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
+      fetched_image_map_strong_.insert(result.stored_value->value);
+    }
   }
   return result.stored_value->value;
 }
 
 void StyleImageCache::Trace(Visitor* visitor) const {
   visitor->Trace(fetched_image_map_);
+  visitor->Trace(fetched_image_map_strong_);
 }
 
 }  // namespace blink
