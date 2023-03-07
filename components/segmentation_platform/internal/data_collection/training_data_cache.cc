@@ -16,7 +16,7 @@ TrainingDataCache::TrainingDataCache() = default;
 TrainingDataCache::~TrainingDataCache() = default;
 
 void TrainingDataCache::StoreInputs(SegmentId segment_id,
-                                    RequestId request_id,
+                                    TrainingRequestId request_id,
                                     base::Time prediction_time,
                                     const ModelProvider::Request& inputs) {
   TrainingData training_data;
@@ -31,11 +31,11 @@ void TrainingDataCache::StoreInputs(SegmentId segment_id,
 
 absl::optional<TrainingData> TrainingDataCache::GetInputsAndDelete(
     SegmentId segment_id,
-    RequestId request_id) {
+    TrainingRequestId request_id) {
   absl::optional<TrainingData> result;
   if (cache.find(segment_id) != cache.end() &&
       cache[segment_id].find(request_id) != cache[segment_id].end()) {
-    // Delete the requestID from cache.
+    // Delete the TrainingRequestId from cache.
     auto it = cache[segment_id].find(request_id);
     result = std::move(it->second);
     cache[segment_id].erase(it);
@@ -43,11 +43,11 @@ absl::optional<TrainingData> TrainingDataCache::GetInputsAndDelete(
   return result;
 }
 
-absl::optional<TrainingDataCache::RequestId> TrainingDataCache::GetRequestId(
+absl::optional<TrainingRequestId> TrainingDataCache::GetRequestId(
     proto::SegmentId segment_id) {
   // TODO(haileywang): Add a metric to record how many request at a given time
   // every time this function is triggered.
-  absl::optional<RequestId> request_id;
+  absl::optional<TrainingRequestId> request_id;
   auto it = cache.find(segment_id);
   if (it == cache.end() or it->second.size() == 0) {
     return request_id;
@@ -55,7 +55,7 @@ absl::optional<TrainingDataCache::RequestId> TrainingDataCache::GetRequestId(
   return it->second.begin()->first;
 }
 
-TrainingDataCache::RequestId TrainingDataCache::GenerateNextId() {
+TrainingRequestId TrainingDataCache::GenerateNextId() {
   return request_id_generator.GenerateNextId();
 }
 

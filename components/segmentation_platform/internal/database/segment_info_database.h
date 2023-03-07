@@ -11,13 +11,11 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "components/leveldb_proto/public/proto_database.h"
-// TODO(haileywang): Remove this include when moving RequestId out of
-// TrainingDataCache.
-#include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 #include "components/segmentation_platform/internal/database/segment_info_cache.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -68,7 +66,7 @@ class SegmentInfoDatabase {
   // delete_from_db is set to true, it will delete the corresponding entry in
   // the cache and in the database.
   virtual void GetTrainingData(SegmentId segment_id,
-                               TrainingDataCache::RequestId request_id,
+                               TrainingRequestId request_id,
                                bool delete_from_db,
                                TrainingDataCallback callback);
 

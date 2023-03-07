@@ -227,7 +227,7 @@ void TrainingDataCollectorImpl::OnHistogramUpdatedReportForSegmentInfo(
     const absl::optional<ImmediaCollectionParam>& param,
     absl::optional<proto::SegmentInfo> segment) {
   if (segment.has_value()) {
-    absl::optional<TrainingDataCache::RequestId> request_id =
+    absl::optional<TrainingRequestId> request_id =
         training_cache_->GetRequestId(segment.value().segment_id());
     if (request_id.has_value()) {
       OnObservationTrigger(param, request_id.value(), segment.value());
@@ -375,8 +375,7 @@ void TrainingDataCollectorImpl::OnDecisionTime(
     return;
   }
 
-  const TrainingDataCache::RequestId request_id =
-      training_cache_->GenerateNextId();
+  const TrainingRequestId request_id = training_cache_->GenerateNextId();
 
   default_model_manager_->GetAllSegmentInfoFromBothModels(
       {id}, segment_info_database_,
@@ -387,7 +386,7 @@ void TrainingDataCollectorImpl::OnDecisionTime(
 
 void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
     proto::SegmentId segment_id,
-    TrainingDataCache::RequestId request_id,
+    TrainingRequestId request_id,
     DecisionType type,
     scoped_refptr<InputContext> input_context,
     DefaultModelManager::SegmentInfoList segment_list) {
@@ -421,7 +420,7 @@ void TrainingDataCollectorImpl::OnGetSegmentInfoAtDecisionTime(
 }
 
 void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
-    TrainingDataCache::RequestId request_id,
+    TrainingRequestId request_id,
     const TrainingTimings& training_request,
     const proto::SegmentInfo& segment_info,
     bool has_error,
@@ -447,7 +446,7 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
 
 void TrainingDataCollectorImpl::OnObservationTrigger(
     const absl::optional<ImmediaCollectionParam>& param,
-    TrainingDataCache::RequestId request_id,
+    TrainingRequestId request_id,
     const proto::SegmentInfo& segment_info) {
   if (!CanReportTrainingData(segment_info, /*include_outputs*/ true))
     return;
@@ -481,7 +480,7 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
 
 void TrainingDataCollectorImpl::OnGetOutputsOnObservationTrigger(
     const absl::optional<ImmediaCollectionParam>& param,
-    TrainingDataCache::RequestId request_id,
+    TrainingRequestId request_id,
     const proto::SegmentInfo& segment_info,
     const ModelProvider::Request& cached_input_tensors,
     bool has_error,

@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -339,7 +340,7 @@ TEST_F(SegmentInfoDatabaseTest, WriteTrainingData) {
 
   // Remove the last training data and verify.
   segment_db_->GetTrainingData(kSegmentId,
-                               (TrainingDataCache::RequestId)request_id,
+                               TrainingRequestId::FromUnsafeValue(request_id),
                                /*delete_from_db=*/true, base::DoNothing());
   expected_training_inputs.pop_back();
   VerifyResult(kSegmentId, absl::nullopt, expected_training_inputs);

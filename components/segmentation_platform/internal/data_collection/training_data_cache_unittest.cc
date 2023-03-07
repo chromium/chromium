@@ -15,8 +15,7 @@ namespace {
 const proto::SegmentId kSegmentId =
     proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
 
-const TrainingDataCache::RequestId kRequestId =
-    TrainingDataCache::RequestId::FromUnsafeValue(1);
+const TrainingRequestId kRequestId = TrainingRequestId::FromUnsafeValue(1);
 
 }  // namespace
 

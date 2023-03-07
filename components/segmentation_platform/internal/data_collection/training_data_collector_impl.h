@@ -49,7 +49,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                       DecisionType type) override;
 
   void OnObservationTrigger(const absl::optional<ImmediaCollectionParam>& param,
-                            TrainingDataCache::RequestId request_id,
+                            TrainingRequestId request_id,
                             const proto::SegmentInfo& segment_info) override;
 
   // HistogramSignalHandler::Observer implementation.
@@ -71,13 +71,13 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
 
   void OnGetSegmentInfoAtDecisionTime(
       proto::SegmentId segment_id,
-      TrainingDataCache::RequestId request_id,
+      TrainingRequestId request_id,
       DecisionType type,
       scoped_refptr<InputContext> input_context,
       DefaultModelManager::SegmentInfoList segment_list);
 
   void OnGetTrainingTensorsAtDecisionTime(
-      TrainingDataCache::RequestId request_id,
+      TrainingRequestId request_id,
       const TrainingTimings& training_request,
       const proto::SegmentInfo& segment_info,
       bool has_error,
@@ -86,7 +86,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
 
   void OnGetOutputsOnObservationTrigger(
       const absl::optional<ImmediaCollectionParam>& param,
-      TrainingDataCache::RequestId request_id,
+      TrainingRequestId request_id,
       const proto::SegmentInfo& segment_info,
       const ModelProvider::Request& cached_input_tensors,
       bool has_error,

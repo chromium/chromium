@@ -7,7 +7,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 
 namespace segmentation_platform {
 
@@ -48,11 +47,10 @@ void SegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
   std::move(callback).Run(cache_->GetSegmentInfo(segment_id));
 }
 
-void SegmentInfoDatabase::GetTrainingData(
-    SegmentId segment_id,
-    TrainingDataCache::RequestId request_id,
-    bool delete_from_db,
-    TrainingDataCallback callback) {
+void SegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
+                                          TrainingRequestId request_id,
+                                          bool delete_from_db,
+                                          TrainingDataCallback callback) {
   absl::optional<SegmentInfo> segment_info = cache_->GetSegmentInfo(segment_id);
   absl::optional<proto::TrainingData> result;
 

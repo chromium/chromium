@@ -36,10 +36,6 @@ struct Config {
   // The name used for the segmentation key in UMA filters.
   std::string segmentation_uma_name;
 
-  // The trigger event type that triggers segment selection. If trigger is
-  // non-none, |on_demand_execution| must be true.
-  TriggerType trigger = TriggerType::kNone;
-
   // Time to live for a segment selection. Segment selection can't be changed
   // before this duration.
   base::TimeDelta segment_selection_ttl;
