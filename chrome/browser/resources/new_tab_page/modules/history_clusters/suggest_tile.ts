@@ -27,10 +27,19 @@ export class SuggestTileModuleElement extends I18nMixin
       relatedSearches: {
         type: Object,
       },
+
+      searchUrl_: {
+        type: Object,
+        computed: `computeSearchUrl_(query)`,
+      },
     };
   }
 
   relatedSearches: SearchQuery[];
+
+  private computeSearchUrl_(query: string) {
+    return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+  }
 
   private filterRelatedSearches_(item: SearchQuery, index: number): boolean {
     return item && index < 3;

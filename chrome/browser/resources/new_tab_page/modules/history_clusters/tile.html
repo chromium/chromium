@@ -117,7 +117,8 @@
     line-height: 16px;
   }
 </style>
-<div id="content">
+<a id="content" href="[[visit.normalizedUrl.url]]" on-click="onClick_"
+    on-auxclick="onClick_">
   <div id="image"></div>
   <div id="text-container">
     <div id="title" class="truncate">[[visit.pageTitle]]</div>
@@ -127,4 +128,4 @@
       <div id="date">[[visit.relativeDate]]</div>
     </div>
   </div>
-</div>
+</a>

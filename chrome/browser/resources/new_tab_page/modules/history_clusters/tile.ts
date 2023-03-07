@@ -40,6 +40,10 @@ export class TileModuleElement extends I18nMixin
 
   visit: URLVisit;
 
+  private onClick_(e: Event) {
+    e.stopPropagation();
+  }
+
   private computeLabel_(): string {
     return this.visit.urlForDisplay;
   }
