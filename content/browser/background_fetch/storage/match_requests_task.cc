@@ -151,14 +151,9 @@ void MatchRequestsTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
   if (HasStorageError())
     error = blink::mojom::BackgroundFetchError::STORAGE_ERROR;
-  ReportStorageError();
 
   std::move(callback_).Run(error, std::move(settled_fetches_));
   Finished();  // Destroys |this|.
-}
-
-std::string MatchRequestsTask::HistogramName() const {
-  return "MatchRequestsTask";
 }
 
 }  // namespace background_fetch

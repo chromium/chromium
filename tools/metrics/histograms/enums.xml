@@ -10342,13 +10342,6 @@ others/histograms.xml -->
   <int value="3" label="Cannot dispatch the event"/>
 </enum>
 
-<enum name="BackgroundFetchStorageError">
-  <int value="0" label="None"/>
-  <int value="1" label="Service Worker Storage Error"/>
-  <int value="2" label="Cache Storage Error"/>
-  <int value="3" label="Storage Error"/>
-</enum>
-
 <enum name="BackgroundFetchTrigger">
   <int value="0" label="Wake-up of the persistent scheduler"/>
   <int value="1" label="Suggestions surface opened"/>

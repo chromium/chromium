@@ -78,13 +78,8 @@ void GetDeveloperIdsTask::DidGetUniqueIds(
 
 void GetDeveloperIdsTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
-  ReportStorageError();
   std::move(callback_).Run(error, std::move(developer_ids_));
   Finished();  // Destroys |this|.
-}
-
-std::string GetDeveloperIdsTask::HistogramName() const {
-  return "GetDeveloperIdsTask";
 }
 
 }  // namespace background_fetch

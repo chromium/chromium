@@ -146,15 +146,10 @@ void MarkRegistrationForDeletionTask::DidGetCompletedRequests(
 
 void MarkRegistrationForDeletionTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
-  ReportStorageError();
   if (HasStorageError())
     AbandonFetches(registration_id_.service_worker_registration_id());
   std::move(callback_).Run(error, failure_reason_);
   Finished();  // Destroys |this|.
-}
-
-std::string MarkRegistrationForDeletionTask::HistogramName() const {
-  return "MarkRegistrationForDeletionTask";
 }
 
 }  // namespace background_fetch

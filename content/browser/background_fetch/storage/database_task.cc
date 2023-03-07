@@ -153,21 +153,8 @@ void DatabaseTask::SetStorageErrorAndFinish(BackgroundFetchStorageError error) {
   FinishWithError(blink::mojom::BackgroundFetchError::STORAGE_ERROR);
 }
 
-void DatabaseTask::ReportStorageError() {
-  if (host_ != data_manager())
-    return;  // This is a SubTask.
-
-  base::UmaHistogramEnumeration("BackgroundFetch.Storage." + HistogramName(),
-                                storage_error_);
-}
-
 bool DatabaseTask::HasStorageError() {
   return storage_error_ != BackgroundFetchStorageError::kNone;
-}
-
-std::string DatabaseTask::HistogramName() const {
-  NOTREACHED() << "HistogramName needs to be provided.";
-  return "GeneralDatabaseTask";
 }
 
 ServiceWorkerContextWrapper* DatabaseTask::service_worker_context() {

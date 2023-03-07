@@ -52,8 +52,6 @@ class StartNextPendingRequestTask : public DatabaseTask {
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 
-  std::string HistogramName() const override;
-
   BackgroundFetchRegistrationId registration_id_;
   NextRequestCallback callback_;
 

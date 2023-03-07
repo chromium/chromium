@@ -90,12 +90,7 @@ void CleanupTask::DidGetActiveUniqueIds(
 }
 
 void CleanupTask::FinishWithError(blink::mojom::BackgroundFetchError error) {
-  ReportStorageError();
   Finished();  // Destroys |this|.
-}
-
-std::string CleanupTask::HistogramName() const {
-  return "CleanupTask";
 }
 
 }  // namespace background_fetch

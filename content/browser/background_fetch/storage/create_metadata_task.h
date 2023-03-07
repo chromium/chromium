@@ -67,8 +67,6 @@ class CreateMetadataTask : public DatabaseTask {
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 
-  std::string HistogramName() const override;
-
   BackgroundFetchRegistrationId registration_id_;
   std::vector<blink::mojom::FetchAPIRequestPtr> requests_;
   blink::mojom::BackgroundFetchOptionsPtr options_;

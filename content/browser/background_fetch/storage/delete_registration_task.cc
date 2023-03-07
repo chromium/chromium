@@ -149,13 +149,8 @@ void DeleteRegistrationTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
   if (HasStorageError())
     error = blink::mojom::BackgroundFetchError::STORAGE_ERROR;
-  ReportStorageError();
   std::move(callback_).Run(error);
   Finished();  // Destroys |this|.
-}
-
-std::string DeleteRegistrationTask::HistogramName() const {
-  return "DeleteRegistrationTask";
 }
 
 }  // namespace background_fetch

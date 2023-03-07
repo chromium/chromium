@@ -128,40 +128,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="BackgroundFetch.Storage{BackgroundFetchDatabaseStorageErrors}"
-    enum="BackgroundFetchStorageError" expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the storage error when running a database task.
-    {BackgroundFetchDatabaseStorageErrors}
-  </summary>
-  <token key="BackgroundFetchDatabaseStorageErrors">
-    <variant name=".CleanupTask" summary="CleanupTask"/>
-    <variant name=".CreateMetadataTask" summary="CreateMetadata DatabaseTask"/>
-    <variant name=".DeleteRegistrationTask"
-        summary="DeleteRegistration DatabaseTask"/>
-    <variant name=".GetDeveloperIdsTask"
-        summary="GetDeveloperIds DatabaseTask"/>
-    <variant name=".GetInitializationDataTask"
-        summary="GetInitializationData DatabaseTask"/>
-    <variant name=".GetRegistrationTask"
-        summary="GetRegistration DatabaseTask"/>
-    <variant name=".GetRequestBlobTask" summary="GetRequestBlob DatabaseTask"/>
-    <variant name=".GetSettledFetchesTask"
-        summary="GetSettledFetches DatabaseTask"/>
-    <variant name=".MarkRegistrationForDeletionTask"
-        summary="MarkRegistrationForDeletion DatabaseTask"/>
-    <variant name=".MarkRequestCompleteTask"
-        summary="MarkRequestComplete DatabaseTask"/>
-    <variant name=".MatchRequestsTask" summary="MatchRequests DatabaseTask"/>
-    <variant name=".StartNextPendingRequestTask"
-        summary="StartNextPendingRequest DatabaseTask"/>
-    <variant name=".UpdateRegistrationUITask"
-        summary="UpdateRegistrationUI DatabaseTask"/>
-  </token>
-</histogram>
-
 <histogram name="BackgroundMode.BackgroundApplicationsCount" units="units"
     expires_after="2021-09-12">
   <obsolete>

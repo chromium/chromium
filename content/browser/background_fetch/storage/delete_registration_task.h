@@ -46,8 +46,6 @@ class DeleteRegistrationTask : public background_fetch::DatabaseTask {
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 
-  std::string HistogramName() const override;
-
   int64_t service_worker_registration_id_;
   blink::StorageKey storage_key_;
   std::string unique_id_;
