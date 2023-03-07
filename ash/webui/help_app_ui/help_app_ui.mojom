@@ -4,6 +4,20 @@
 
 module ash.help_app.mojom;
 
+// Device info obtained via the DeviceInfoManager.
+struct DeviceInfo {
+  // The board family of the device. e.g. "brya".
+  string board;
+
+  // The model of the device. e.g. "taniks".
+  string model;
+
+  // The user type of the profile currently running. e.g. "unmanaged".
+  // The possible values for this can be found at
+  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/apps/user_type_filter.cc;l=27;drc=0d0b76e40dfff0f4ad58d0640cdf2c4df72030d3.
+  string user_type;
+};
+
 // Browser interface for chrome://help-app to bootstrap a connection.
 interface PageHandlerFactory {
   // Create a page handler which exposes interfaces implemented in the browser
@@ -35,4 +49,7 @@ interface PageHandler {
   // notification for the Help App has not yet been shown in the current
   // milestone.
   MaybeShowReleaseNotesNotification();
+
+  // Returns device info obtained via the DeviceInfoManager.
+  GetDeviceInfo() => (DeviceInfo device_info);
 };

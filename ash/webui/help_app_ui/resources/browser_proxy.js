@@ -289,6 +289,10 @@ guestMessagePipe.registerHandler(
       help_app.handler.maybeShowReleaseNotesNotification();
     });
 
+guestMessagePipe.registerHandler(Message.GET_DEVICE_INFO, async () => {
+  return (await help_app.handler.getDeviceInfo()).deviceInfo;
+});
+
 /**
  * Compare two positions by their start index. Use for sorting.
  *

@@ -7,8 +7,11 @@
 #include <string>
 
 #include "ash/webui/help_app_ui/url_constants.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -18,8 +21,23 @@
 
 namespace ash {
 
+namespace {
+void DeviceInfoCallback(
+    ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback,
+    apps::DeviceInfo device_info) {
+  std::move(callback).Run(help_app::mojom::DeviceInfo::New(
+      /*board=*/device_info.board,
+      /*model=*/device_info.model,
+      /*user_type=*/device_info.user_type));
+}
+}  // namespace
+
 ChromeHelpAppUIDelegate::ChromeHelpAppUIDelegate(content::WebUI* web_ui)
-    : web_ui_(web_ui) {}
+    : web_ui_(web_ui),
+      device_info_manager_(std::make_unique<apps::DeviceInfoManager>(
+          Profile::FromWebUI(web_ui))) {}
+
+ChromeHelpAppUIDelegate::~ChromeHelpAppUIDelegate() = default;
 
 absl::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
   Profile* profile = Profile::FromWebUI(web_ui_);
@@ -56,6 +74,12 @@ void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   UserSessionManager::GetInstance()->MaybeShowHelpAppReleaseNotesNotification(
       profile);
+}
+
+void ChromeHelpAppUIDelegate::GetDeviceInfo(
+    ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback) {
+  device_info_manager_->GetDeviceInfo(
+      base::BindOnce(&DeviceInfoCallback, std::move(callback)));
 }
 
 }  // namespace ash

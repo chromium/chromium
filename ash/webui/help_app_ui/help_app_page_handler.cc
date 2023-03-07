@@ -53,4 +53,8 @@ void HelpAppPageHandler::MaybeShowReleaseNotesNotification() {
   help_app_ui_->delegate()->MaybeShowReleaseNotesNotification();
 }
 
+void HelpAppPageHandler::GetDeviceInfo(GetDeviceInfoCallback callback) {
+  help_app_ui_->delegate()->GetDeviceInfo(std::move(callback));
+}
+
 }  // namespace ash

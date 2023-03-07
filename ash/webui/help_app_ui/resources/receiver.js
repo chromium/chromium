@@ -69,6 +69,10 @@ const DELEGATE = {
     await parentMessagePipe.sendMessage(
         Message.MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION);
   },
+  getDeviceInfo() {
+    return /** @type {!Promise<!helpApp.DeviceInfo>} */ (
+        parentMessagePipe.sendMessage(Message.GET_DEVICE_INFO));
+  },
 };
 
 window.customLaunchData = {

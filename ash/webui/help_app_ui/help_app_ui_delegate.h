@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
@@ -39,6 +40,10 @@ class HelpAppUIDelegate {
   // notification if a notification for the help app has not yet been shown in
   // the current milestone.
   virtual void MaybeShowReleaseNotesNotification() = 0;
+
+  // Gets device info obtained asynchronously via the DeviceInfoManager.
+  virtual void GetDeviceInfo(
+      ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback) = 0;
 };
 
 }  // namespace ash

@@ -247,3 +247,18 @@ GUEST_TEST('GuestCanClearSearchIndex', async () => {
   const res = await delegate.findInSearchIndex('Chrome');
   assertDeepEquals(res, {results: null});
 });
+
+// Test that the guest frame can get device info.
+GUEST_TEST('GuestCanGetDeviceInfo', async () => {
+  const delegate = window.customLaunchData.delegate;
+
+  const deviceInfo = await delegate.getDeviceInfo();
+  chai.expect(deviceInfo.board).to.be.a('string');
+  chai.expect(deviceInfo.board).not.to.equal('');
+
+  chai.expect(deviceInfo.model).to.be.a('string');
+  chai.expect(deviceInfo.model).not.to.equal('');
+
+  chai.expect(deviceInfo.userType).to.be.a('string');
+  chai.expect(deviceInfo.userType).not.to.equal('');
+});

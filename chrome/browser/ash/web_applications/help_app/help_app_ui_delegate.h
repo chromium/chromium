@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_HELP_APP_HELP_APP_UI_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUI;
 }  // namespace content
+
+namespace apps {
+class DeviceInfoManager;
+}  // namespace apps
 
 namespace ash {
 
@@ -24,6 +30,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
 
   ChromeHelpAppUIDelegate(const ChromeHelpAppUIDelegate&) = delete;
   ChromeHelpAppUIDelegate& operator=(const ChromeHelpAppUIDelegate&) = delete;
+  ~ChromeHelpAppUIDelegate() override;
 
   // HelpAppUIDelegate:
   absl::optional<std::string> OpenFeedbackDialog() override;
@@ -31,9 +38,12 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   PrefService* GetLocalState() override;
   void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
+  void GetDeviceInfo(ash::help_app::mojom::PageHandler::GetDeviceInfoCallback
+                         callback) override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.
+  std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
 };
 
 }  // namespace ash

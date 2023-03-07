@@ -33,6 +33,7 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
       IsLauncherSearchEnabledCallback callback) override;
   void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
+  void GetDeviceInfo(GetDeviceInfoCallback callback) override;
 
  private:
   mojo::Receiver<help_app::mojom::PageHandler> receiver_;
