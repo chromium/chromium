@@ -12,9 +12,14 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_error_event_init.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event.h"
@@ -422,10 +427,19 @@ void MediaRecorder::WriteData(const void* data,
                   timecode);
 }
 
-void MediaRecorder::OnError(const String& message) {
+void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   DLOG(ERROR) << message.Ascii();
   StopRecording();
-  ScheduleDispatchEvent(Event::Create(event_type_names::kError));
+
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(DomWindow()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  ScriptValue error_value = ScriptValue::From(
+      script_state, MakeGarbageCollected<DOMException>(code, message));
+  ErrorEventInit* event_init = ErrorEventInit::Create();
+  event_init->setError(error_value);
+  ScheduleDispatchEvent(
+      ErrorEvent::Create(script_state, event_type_names::kError, event_init));
 }
 
 void MediaRecorder::OnAllTracksEnded() {

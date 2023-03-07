@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL MediaRecorder will stop recording when any of track is added and error event will be fired MediaRecorderErrorEvent is not defined
-FAIL MediaRecorder will stop recording when any of track is removed and error event will be fired MediaRecorderErrorEvent is not defined
-PASS MediaRecorder cannot start recording when MediaRecorder' state is not inactive and an InvalidStateError should be thrown
-Harness: the test ran to completion.
-

@@ -19,6 +19,7 @@ namespace blink {
 
 class Blob;
 class BlobData;
+enum class DOMExceptionCode;
 class ExceptionState;
 
 class MODULES_EXPORT MediaRecorder
@@ -81,7 +82,7 @@ class MODULES_EXPORT MediaRecorder
                          size_t length,
                          bool last_in_slice,
                          double timecode);
-  virtual void OnError(const String& message);
+  virtual void OnError(DOMExceptionCode code, const String& message);
 
   // Causes recording to be stopped, remaining data to be written, and onstop to
   // be sent, unless recording isn't active in which case nothing happens.

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -39,7 +40,7 @@ using ::testing::AtLeast;
 using ::testing::Ge;
 using ::testing::Gt;
 using ::testing::InSequence;
-using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 using ::testing::Lt;
 using ::testing::Mock;
 using ::testing::Return;
@@ -114,7 +115,7 @@ class MockMediaRecorder : public MediaRecorder {
   ~MockMediaRecorder() override = default;
 
   MOCK_METHOD4(WriteData, void(const void*, size_t, bool, double));
-  MOCK_METHOD1(OnError, void(const String& message));
+  MOCK_METHOD2(OnError, void(DOMExceptionCode code, const String& message));
 };
 
 class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
@@ -515,7 +516,7 @@ TEST_P(MediaRecorderHandlerTest, WebmMuxerErrorWhileEncoding) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*recorder, WriteData).Times(0);
-    EXPECT_CALL(*recorder, OnError(_))
+    EXPECT_CALL(*recorder, OnError)
         .Times(1)
         .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
 
@@ -862,7 +863,7 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
   // The expectation here works around this issue.
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
 
-  EXPECT_CALL(*recorder, OnError).WillOnce(Invoke([&](const String&) {
+  EXPECT_CALL(*recorder, OnError).WillOnce(InvokeWithoutArgs([&]() {
     // Simulate MediaRecorder behavior which is to Stop() the handler on error.
     media_recorder_handler_->Stop();
   }));
