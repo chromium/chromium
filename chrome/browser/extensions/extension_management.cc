@@ -621,8 +621,8 @@ void ExtensionManagement::Refresh() {
     if (defer_load_settings) {
       auto* extension_prefs = ExtensionPrefs::Get(profile_);
       auto extensions_info = extension_prefs->GetInstalledExtensionsInfo();
-      for (auto& extension_info : extensions_info) {
-        installed_extensions.insert(extension_info->extension_id);
+      for (const auto& extension_info : extensions_info) {
+        installed_extensions.insert(extension_info.extension_id);
       }
     }
 

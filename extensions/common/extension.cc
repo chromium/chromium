@@ -821,6 +821,8 @@ ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
 
 ExtensionInfo::ExtensionInfo(ExtensionInfo&&) noexcept = default;
 
+ExtensionInfo& ExtensionInfo::operator=(ExtensionInfo&&) = default;
+
 ExtensionInfo::~ExtensionInfo() = default;
 
 }   // namespace extensions

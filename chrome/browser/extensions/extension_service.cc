@@ -113,6 +113,7 @@
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -236,7 +237,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
 
       // Fetch the installation info from the prefs, and reload the extension
       // with a modified install location.
-      std::unique_ptr<ExtensionInfo> installed_extension(
+      absl::optional<ExtensionInfo> installed_extension(
           extension_prefs_->GetInstalledExtensionInfo(info.extension_id));
       installed_extension->extension_location = info.download_location;
 
@@ -547,13 +548,13 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
       extension_prefs_->GetAllDelayedInstallInfo();
   for (const auto& info : delayed_info) {
     scoped_refptr<const Extension> extension;
-    if (info->extension_manifest) {
+    if (info.extension_manifest) {
       std::string error;
       extension = Extension::Create(
-          info->extension_path, info->extension_location,
-          *info->extension_manifest,
-          extension_prefs_->GetDelayedInstallCreationFlags(info->extension_id),
-          info->extension_id, &error);
+          info.extension_path, info.extension_location,
+          *info.extension_manifest,
+          extension_prefs_->GetDelayedInstallCreationFlags(info.extension_id),
+          info.extension_id, &error);
       if (extension.get()) {
         delayed_installs_.Insert(extension);
       }
@@ -712,10 +713,9 @@ void ExtensionService::LoadExtensionForReload(
 
   // Check the installed extensions to see if what we're reloading was already
   // installed.
-  std::unique_ptr<ExtensionInfo> installed_extension(
+  absl::optional<ExtensionInfo> installed_extension(
       extension_prefs_->GetInstalledExtensionInfo(extension_id));
-  if (installed_extension.get() &&
-      installed_extension->extension_manifest.get()) {
+  if (installed_extension && installed_extension->extension_manifest.get()) {
     InstalledLoader(this).Load(*installed_extension, false);
   } else {
     // Otherwise, the extension is unpacked (location LOAD). We must load it
@@ -1371,8 +1371,8 @@ void ExtensionService::OnAllExternalProvidersReady() {
   ExtensionPrefs::ExtensionsInfo extensions_info =
       extension_prefs_->GetInstalledExtensionsInfo();
   for (const auto& info : extensions_info) {
-    if (Manifest::IsExternalLocation(info->extension_location)) {
-      CheckExternalUninstall(info->extension_id);
+    if (Manifest::IsExternalLocation(info.extension_location)) {
+      CheckExternalUninstall(info.extension_id);
     }
   }
 
@@ -1828,7 +1828,7 @@ bool ExtensionService::FinishDelayedInstallationIfReady(
       delayed_installs_.Remove(extension_id);
       // Make sure no version of the extension is actually installed, (i.e.,
       // that this delayed install was not an update).
-      CHECK(!extension_prefs_->GetInstalledExtensionInfo(extension_id).get());
+      CHECK(!extension_prefs_->GetInstalledExtensionInfo(extension_id));
       extension_prefs_->DeleteExtensionPrefs(extension_id);
       return false;
   }

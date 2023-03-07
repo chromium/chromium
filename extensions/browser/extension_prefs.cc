@@ -1442,13 +1442,14 @@ void ExtensionPrefs::SetInstallLocation(const std::string& extension_id,
                       base::Value(static_cast<int>(location)));
 }
 
-std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
+absl::optional<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
     const std::string& extension_id,
     const base::Value::Dict& extension,
     bool include_component_extensions) const {
   absl::optional<int> location_value = extension.FindInt(kPrefLocation);
-  if (!location_value)
-    return nullptr;
+  if (!location_value) {
+    return absl::nullopt;
+  }
 
   ManifestLocation location = static_cast<ManifestLocation>(*location_value);
   if (location == ManifestLocation::kComponent &&
@@ -1458,7 +1459,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
     // (by ComponentLoader) and shouldn't be populated into the result of
     // GetInstalledExtensionsInfo, otherwise InstalledLoader would also want to
     // load them.
-    return nullptr;
+    return absl::nullopt;
   }
 
   // Only the following extension types have data saved in the preferences.
@@ -1467,7 +1468,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
       !Manifest::IsUnpackedLocation(location) &&
       !Manifest::IsExternalLocation(location)) {
     NOTREACHED();
-    return nullptr;
+    return absl::nullopt;
   }
 
   const base::Value* manifest = extension.Find(kPrefManifest);
@@ -1478,33 +1479,36 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
   }
 
   const std::string* path = extension.FindString(kPrefPath);
-  if (!path)
-    return nullptr;
+  if (!path) {
+    return absl::nullopt;
+  }
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(*path);
 
   // Make path absolute. Most (but not all) extension types have relative paths.
-  if (!file_path.IsAbsolute())
+  if (!file_path.IsAbsolute()) {
     file_path = install_directory_.Append(file_path);
+  }
   const base::Value::Dict* manifest_dict =
-      (manifest && manifest->is_dict()) ? &manifest->GetDict() : nullptr;
-  return std::make_unique<ExtensionInfo>(manifest_dict, extension_id, file_path,
-                                         location);
+      manifest && manifest->is_dict() ? &manifest->GetDict() : nullptr;
+  return ExtensionInfo(manifest_dict, extension_id, file_path, location);
 }
 
-std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledExtensionInfo(
+absl::optional<ExtensionInfo> ExtensionPrefs::GetInstalledExtensionInfo(
     const std::string& extension_id,
     bool include_component_extensions) const {
   const base::Value::Dict& extensions =
       prefs_->GetDict(pref_names::kExtensions);
   const base::Value::Dict* ext = extensions.FindDict(extension_id);
-  if (!ext)
-    return nullptr;
+  if (!ext) {
+    return absl::nullopt;
+  }
 
   absl::optional<int> state_value = ext->FindInt(kPrefState);
   // TODO(devlin): Remove this once all clients are updated with
   // MigrateToNewExternalUninstallPref().
-  if (state_value == Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED)
-    return nullptr;
+  if (state_value == Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED) {
+    return absl::nullopt;
+  }
 
   return GetInstalledInfoHelper(extension_id, *ext,
                                 include_component_extensions);
@@ -1521,10 +1525,10 @@ ExtensionPrefs::ExtensionsInfo ExtensionPrefs::GetInstalledExtensionsInfo(
       continue;
     }
 
-    std::unique_ptr<ExtensionInfo> info =
+    absl::optional<ExtensionInfo> info =
         GetInstalledExtensionInfo(extension_id, include_component_extensions);
     if (info) {
-      extensions_info.push_back(std::move(info));
+      extensions_info.push_back(*std::move(info));
     }
   }
 
@@ -1611,15 +1615,17 @@ bool ExtensionPrefs::FinishDelayedInstallInfo(const std::string& extension_id) {
   return true;
 }
 
-std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetDelayedInstallInfo(
+absl::optional<ExtensionInfo> ExtensionPrefs::GetDelayedInstallInfo(
     const std::string& extension_id) const {
   const base::Value::Dict* extension_prefs = GetExtensionPref(extension_id);
-  if (!extension_prefs)
-    return nullptr;
+  if (!extension_prefs) {
+    return absl::nullopt;
+  }
 
   const base::Value::Dict* ext = extension_prefs->FindDict(kDelayedInstallInfo);
-  if (!ext)
-    return nullptr;
+  if (!ext) {
+    return absl::nullopt;
+  }
 
   return GetInstalledInfoHelper(extension_id, *ext,
                                 /*include_component_extensions = */ false);
@@ -1652,9 +1658,9 @@ ExtensionPrefs::ExtensionsInfo ExtensionPrefs::GetAllDelayedInstallInfo()
     if (!crx_file::id_util::IdIsValid(extension_id))
       continue;
 
-    std::unique_ptr<ExtensionInfo> info = GetDelayedInstallInfo(extension_id);
+    absl::optional<ExtensionInfo> info = GetDelayedInstallInfo(extension_id);
     if (info) {
-      extensions_info.push_back(std::move(info));
+      extensions_info.push_back(*std::move(info));
     }
   }
 
@@ -1868,7 +1874,7 @@ ExtensionIdList ExtensionPrefs::GetExtensions() const {
   const ExtensionsInfo infos = GetInstalledExtensionsInfo();
   result.reserve(infos.size());
   base::ranges::transform(infos, std::back_inserter(result),
-                          [](const auto& info) { return info->extension_id; });
+                          [](const auto& info) { return info.extension_id; });
 
   return result;
 }
@@ -1909,12 +1915,12 @@ void ExtensionPrefs::InitPrefStore() {
       // extension is more finalized, but this also needs to happen sufficiently
       // before other subsystems are notified about the extension being loaded.
       Manifest::Type type =
-          info->extension_manifest
-              ? Manifest::GetTypeFromManifestValue(*info->extension_manifest)
+          info.extension_manifest
+              ? Manifest::GetTypeFromManifestValue(*info.extension_manifest)
               : Manifest::TYPE_UNKNOWN;
       bool is_theme = type == Manifest::TYPE_THEME;
       // Erase the entry if the extension won't be loaded.
-      return !Manifest::ShouldAlwaysLoadExtension(info->extension_location,
+      return !Manifest::ShouldAlwaysLoadExtension(info.extension_location,
                                                   is_theme);
     };
     base::EraseIf(extensions_info, predicate);
@@ -2370,7 +2376,7 @@ void ExtensionPrefs::InitExtensionControlledPrefs(
                "ExtensionPrefs::InitExtensionControlledPrefs");
 
   for (const auto& info : extensions_info) {
-    const ExtensionId& extension_id = info->extension_id;
+    const ExtensionId& extension_id = info.extension_id;
 
     base::Time install_time = GetLastUpdateTime(extension_id);
     bool is_enabled = !IsExtensionDisabled(extension_id);
@@ -2482,7 +2488,7 @@ void ExtensionPrefs::BackfillAndMigrateInstallTimePrefs() {
       GetInstalledExtensionsInfo(/*include_component_extensions=*/true);
 
   for (const auto& info : extensions_info) {
-    ScopedExtensionPrefUpdate update(prefs_, info->extension_id);
+    ScopedExtensionPrefUpdate update(prefs_, info.extension_id);
     auto ext_dict = update.Get();
     if (ext_dict->HasKey(kPrefDeprecatedInstallTime)) {
       std::string install_time_string;
@@ -2501,7 +2507,7 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
   const ExtensionsInfo extensions_info = GetInstalledExtensionsInfo();
 
   for (const auto& info : extensions_info) {
-    const ExtensionId& extension_id = info->extension_id;
+    const ExtensionId& extension_id = info.extension_id;
     int disable_reasons = GetDisableReasons(extension_id);
     if ((disable_reasons &
          disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC) == 0)
@@ -2546,11 +2552,12 @@ void ExtensionPrefs::MigrateToNewWithholdingPref() {
   const ExtensionsInfo extensions_info = GetInstalledExtensionsInfo();
 
   for (const auto& info : extensions_info) {
-    const ExtensionId& extension_id = info->extension_id;
+    const ExtensionId& extension_id = info.extension_id;
     // The manifest may be null in some cases, such as unpacked extensions
     // retrieved from the Preference file.
-    if (!info->extension_manifest)
+    if (!info.extension_manifest) {
       continue;
+    }
 
     // If the new key is present in the prefs already, we don't need to check
     // further.
@@ -2562,8 +2569,8 @@ void ExtensionPrefs::MigrateToNewWithholdingPref() {
     // We only want to migrate extensions we can actually withhold permissions
     // from.
     Manifest::Type type =
-        Manifest::GetTypeFromManifestValue(*info->extension_manifest);
-    ManifestLocation location = info->extension_location;
+        Manifest::GetTypeFromManifestValue(*info.extension_manifest);
+    ManifestLocation location = info.extension_location;
     if (!util::CanWithholdPermissionsFromExtension(extension_id, type,
                                                    location))
       continue;

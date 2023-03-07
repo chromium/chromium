@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -411,8 +412,8 @@ class ExtensionPrefsAcknowledgment : public ExtensionPrefsTest {
       std::string name = "test" + base::NumberToString(i);
       extensions_.push_back(prefs_.AddExtension(name));
     }
-    EXPECT_EQ(nullptr,
-              prefs()->GetInstalledExtensionInfo(not_installed_id_).get());
+    EXPECT_EQ(absl::nullopt,
+              prefs()->GetInstalledExtensionInfo(not_installed_id_));
 
     ExtensionList::const_iterator iter;
     for (iter = extensions_.begin(); iter != extensions_.end(); ++iter) {
@@ -490,7 +491,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
   // Verifies that we get back expected idle install information previously
   // set by SetIdleInfo.
   void VerifyIdleInfo(const std::string& id, int num) {
-    std::unique_ptr<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
+    absl::optional<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
     ASSERT_TRUE(info);
     const std::string* version =
         info->extension_manifest->FindString("version");
@@ -500,13 +501,12 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
               info->extension_path.BaseName().MaybeAsASCII());
   }
 
-  bool HasInfoForId(ExtensionPrefs::ExtensionsInfo* info,
+  bool HasInfoForId(const ExtensionPrefs::ExtensionsInfo& info,
                     const std::string& id) {
-    for (size_t i = 0; i < info->size(); ++i) {
-      if (info->at(i)->extension_id == id)
-        return true;
-    }
-    return false;
+    return base::ranges::find_if(info.begin(), info.end(),
+                                 [&id](const ExtensionInfo& info) {
+                                   return info.extension_id == id;
+                                 }) != info.end();
   }
 
   void Initialize() override {
@@ -524,8 +524,8 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     VerifyIdleInfo(id2_, 2);
     ExtensionPrefs::ExtensionsInfo info = prefs()->GetAllDelayedInstallInfo();
     EXPECT_EQ(2u, info.size());
-    EXPECT_TRUE(HasInfoForId(&info, id1_));
-    EXPECT_TRUE(HasInfoForId(&info, id2_));
+    EXPECT_TRUE(HasInfoForId(info, id1_));
+    EXPECT_TRUE(HasInfoForId(info, id2_));
     prefs()->RemoveDelayedInstallInfo(id1_);
     prefs()->RemoveDelayedInstallInfo(id2_);
     info = prefs()->GetAllDelayedInstallInfo();
@@ -555,9 +555,9 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     // Make sure the info for the 3 extensions we expect is present.
     ExtensionPrefs::ExtensionsInfo info = prefs()->GetAllDelayedInstallInfo();
     EXPECT_EQ(3u, info.size());
-    EXPECT_TRUE(HasInfoForId(&info, id1_));
-    EXPECT_TRUE(HasInfoForId(&info, id2_));
-    EXPECT_TRUE(HasInfoForId(&info, id4_));
+    EXPECT_TRUE(HasInfoForId(info, id1_));
+    EXPECT_TRUE(HasInfoForId(info, id2_));
+    EXPECT_TRUE(HasInfoForId(info, id4_));
     VerifyIdleInfo(id1_, 1);
     VerifyIdleInfo(id2_, 2);
     VerifyIdleInfo(id4_, 4);

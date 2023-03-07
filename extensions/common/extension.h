@@ -468,6 +468,7 @@ struct ExtensionInfo {
   ExtensionInfo(ExtensionInfo&&) noexcept;
   ExtensionInfo(const ExtensionInfo&) = delete;
   ExtensionInfo& operator=(const ExtensionInfo&) = delete;
+  ExtensionInfo& operator=(ExtensionInfo&&);
   ~ExtensionInfo();
 
   // Note: This may be null (e.g. for unpacked extensions retrieved from the

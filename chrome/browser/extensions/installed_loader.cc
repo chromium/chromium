@@ -376,18 +376,19 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       profile_util::ProfileCanUseNonComponentExtensions(profile);
   const base::TimeTicks load_start_time = base::TimeTicks::Now();
 
-  const ExtensionPrefs::ExtensionsInfo extensions_info =
+  ExtensionPrefs::ExtensionsInfo extensions_info =
       extension_prefs_->GetInstalledExtensionsInfo();
 
   bool should_write_prefs = false;
 
-  for (const auto& info : extensions_info) {
+  for (auto& info : extensions_info) {
     // Skip extensions that were loaded from the command-line because we don't
     // want those to persist across browser restart.
-    if (info->extension_location == mojom::ManifestLocation::kCommandLine)
+    if (info.extension_location == mojom::ManifestLocation::kCommandLine) {
       continue;
+    }
 
-    if (ShouldReloadExtensionManifest(*info) != NOT_NEEDED) {
+    if (ShouldReloadExtensionManifest(info) != NOT_NEEDED) {
       // Reloading an extension reads files from disk.  We do this on the
       // UI thread because reloads should be very rare, and the complexity
       // added by delaying the time when the extensions service knows about
@@ -397,27 +398,27 @@ void InstalledLoader::LoadAllExtensions(Profile* profile) {
       base::ScopedAllowBlocking allow_blocking;
 
       std::string error;
-      scoped_refptr<const Extension> extension(file_util::LoadExtension(
-          info->extension_path, info->extension_location,
-          GetCreationFlags(info.get()), &error));
+      scoped_refptr<const Extension> extension(
+          file_util::LoadExtension(info.extension_path, info.extension_location,
+                                   GetCreationFlags(&info), &error));
 
-      if (!extension.get() || extension->id() != info->extension_id) {
-        invalid_extensions_.insert(info->extension_path);
-        LoadErrorReporter::GetInstance()->ReportLoadError(info->extension_path,
+      if (!extension.get() || extension->id() != info.extension_id) {
+        invalid_extensions_.insert(info.extension_path);
+        LoadErrorReporter::GetInstance()->ReportLoadError(info.extension_path,
                                                           error, profile,
                                                           false);  // Be quiet.
         continue;
       }
 
-      info->extension_manifest = std::make_unique<base::Value::Dict>(
+      info.extension_manifest = std::make_unique<base::Value::Dict>(
           extension->manifest()->value()->Clone());
       should_write_prefs = true;
     }
   }
 
   for (const auto& info : extensions_info) {
-    if (info->extension_location != mojom::ManifestLocation::kCommandLine) {
-      Load(*info, should_write_prefs);
+    if (info.extension_location != mojom::ManifestLocation::kCommandLine) {
+      Load(info, should_write_prefs);
     }
   }
 

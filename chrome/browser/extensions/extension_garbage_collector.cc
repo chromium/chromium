@@ -191,13 +191,13 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
   std::multimap<std::string, base::FilePath> extension_paths;
   for (const auto& info : extensions_info) {
     extension_paths.insert(
-        std::make_pair(info->extension_id, info->extension_path));
+        std::make_pair(info.extension_id, info.extension_path));
   }
 
   extensions_info = extension_prefs->GetAllDelayedInstallInfo();
   for (const auto& info : extensions_info) {
     extension_paths.insert(
-        std::make_pair(info->extension_id, info->extension_path));
+        std::make_pair(info.extension_id, info.extension_path));
   }
 
   ExtensionService* service =
