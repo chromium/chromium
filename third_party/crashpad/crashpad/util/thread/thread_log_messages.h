@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 
 namespace crashpad {
 
@@ -34,7 +35,7 @@ class ThreadLogMessages {
   ThreadLogMessages(const ThreadLogMessages&) = delete;
   ThreadLogMessages& operator=(const ThreadLogMessages&) = delete;
 
-  ~ThreadLogMessages();
+  ~ThreadLogMessages() = default;
 
   //! \return The log messages collected on the thread that this object was
   //!     created on since the time it was created.
@@ -42,6 +43,8 @@ class ThreadLogMessages {
 
  private:
   std::vector<std::string> log_messages_;
+  const base::AutoReset<std::vector<std::string>*>
+      reset_thread_local_log_messages_;
 };
 
 }  // namespace crashpad
