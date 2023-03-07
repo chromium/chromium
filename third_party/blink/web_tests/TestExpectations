@@ -1621,7 +1621,6 @@ crbug.com/1314629 [ Debug Mac12 ] external/wpt/css/css-pseudo/selection-link-001
 crbug.com/1035708 [ Debug Mac12 ] wpt_internal/css/css-pseudo/spelling-error-color-003.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-dynamic-001.html [ Failure ]
 crbug.com/1035708 [ Debug Mac12 ] wpt_internal/css/css-pseudo/spelling-error-color-dynamic-002.html [ Failure ]
-crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-dynamic-003.html [ Failure ]
 crbug.com/1035708 [ Debug Mac13-arm64 ] wpt_internal/css/css-pseudo/spelling-error-color-dynamic-004.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-003.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-001.html [ Failure ]
@@ -3922,9 +3921,11 @@ crbug.com/862589 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Pa
 
 # fast/events/middleClickAutoscroll-* are failing on Mac
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-drag.html [ Crash Failure Pass Timeout ]
-crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-event-fired.html [ Crash Failure Pass Timeout ]
+crbug.com/874162 [ Debug Mac13-arm64 ] fast/events/middleClickAutoscroll-event-fired.html [ Crash Failure Pass Timeout ]
+crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-event-fired.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-latching.html [ Crash Failure Pass Timeout ]
-crbug.com/874162 [ Mac ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
+crbug.com/874162 [ Debug Mac13-arm64 ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
+crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Crash Failure Pass Timeout ]
 
 # Passes in threaded mode, fails without it. This is a real bug.
 crbug.com/1112183 fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
@@ -4894,7 +4895,6 @@ crbug.com/1048761 [ Win ] external/wpt/websockets/Close-1005.any.worker.html?wpt
 crbug.com/1048761 external/wpt/websockets/Close-2999-reason.any.worker.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/Close-3000-reason.any.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Linux ] external/wpt/websockets/Close-3000-reason.any.worker.html?wpt_flags=h2 [ Failure ]
-crbug.com/1048761 [ Mac10.15 ] external/wpt/websockets/Close-3000-reason.any.worker.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Win ] external/wpt/websockets/Close-3000-reason.any.worker.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/Close-3000-verify-code.any.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Linux ] external/wpt/websockets/Close-3000-verify-code.any.worker.html?wpt_flags=h2 [ Failure ]
@@ -5025,7 +5025,7 @@ crbug.com/1201406 [ Mac12 ] http/tests/credentialmanagement/credentialscontainer
 crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origin-with-ancestors.html [ Crash Pass Timeout ]
 
 # Sheriff 2021-06-14
-crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Pass Timeout ]
+crbug.com/1219499 [ Release Win ] external/wpt/websockets/Create-blocked-port.any.html?wpt_flags=h2 [ Failure Pass Timeout ]
 
 # Sheriff 2021-06-15
 crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Failure Pass Timeout ]
@@ -5572,7 +5572,15 @@ crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/open-clos
 crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-width-height.html [ Crash Failure Pass Timeout ]
 crbug.com/1275967 [ Debug Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/1276207 virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
-crbug.com/1276290 [ Mac ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Debug Mac13-arm64 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac10.13 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac10.14 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac10.15 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac11 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac11-arm64 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac12 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac12-arm64 Release ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
+crbug.com/1276290 [ Mac13 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2021-12-13
 crbug.com/1279586 [ Mac ] external/wpt/IndexedDB/idbobjectstore-rename-abort.html [ Failure ]
