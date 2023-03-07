@@ -23,11 +23,9 @@ namespace base {
 class ScopedTempDir;
 }  // namespace base
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 class EmbeddedTestServer;
-}
-}  // namespace net
+}  // namespace net::test_server
 
 namespace views {
 class View;
@@ -50,10 +48,6 @@ class WebAppFrameToolbarTestHelper {
       const GURL& start_url);
 
   GURL LoadWindowControlsOverlayTestPageWithDataAndGetURL(
-      net::test_server::EmbeddedTestServer* embedded_test_server,
-      base::ScopedTempDir* temp_dir);
-
-  GURL LoadBorderlessTestPageWithDataAndGetURL(
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir);
 

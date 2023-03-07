@@ -1,0 +1,36 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  background: blue;
+}
+
+@media (display-mode: borderless) {
+  body {
+    background: red;
+  }
+}
+
+#draggable {
+  app-region: drag;
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  height: 10px;
+  width: 10px;
+}
+
+#non-draggable {
+  app-region: no-drag;
+  position: relative;
+  top: 5px;
+  left: 5px;
+  height: 2px;
+  width: 2px;
+}
+
+#target {
+  width: 100%;
+  height: 33px;
+}

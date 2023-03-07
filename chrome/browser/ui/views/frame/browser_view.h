@@ -416,8 +416,6 @@ class BrowserView : public BrowserWindow,
     return window_management_permission_granted_;
   }
 
-  void set_isolated_web_app_true_for_testing() { is_isolated_web_app_ = true; }
-
   // Update the side panel's horizontal alignment when
   // prefs::kSidePanelHorizontalAlignment is changed from the appearance
   // settings page.

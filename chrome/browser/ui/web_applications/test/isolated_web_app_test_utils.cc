@@ -152,7 +152,8 @@ content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
       GenerateApplicationNameFromAppId(app->app_id()),
       /*trusted_source=*/true, gfx::Rect(), profile(),
       /*user_gesture=*/true));
-  return NavigateToURLInNewTab(app_window, app->start_url());
+  return NavigateToURLInNewTab(app_window, app->start_url(),
+                               WindowOpenDisposition::NEW_WINDOW);
 }
 
 content::RenderFrameHost*
