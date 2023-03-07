@@ -55,18 +55,6 @@ class CORE_EXPORT Fence final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
-  // Returns one of the following:
-  // - The current frame if it is a fenced frame.
-  // - The current iframe (not fenced frame) if we're treating the iframe as a
-  //   fenced frame via support for URNs, and the iframe is not in a fenced
-  //   frame tree.
-  // - The main frame (which is a fenced frame), if the current frame is a
-  //   same-origin iframe underneath the fenced frame that we're communicating
-  //   with.
-  // This function expects that the frame associated with this fence object is
-  // attached to the DOMWindow.
-  LocalFrame* GetAssociatedFencedFrameForReporting();
-
   // Sends a beacon with the data in `event` to the registered reporting URL.
   void reportEvent(ScriptState* script_state,
                    const FenceEvent* event,
