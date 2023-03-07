@@ -131,8 +131,8 @@
   E_CPONLY(kColorSysOutline) \
   E_CPONLY(kColorSysSurfaceVariant) \
   /* Inverse. */ \
-  E_CPONLY(kColorSysInverseOnSurface) \
   E_CPONLY(kColorSysInversePrimary) \
+  E_CPONLY(kColorSysInverseOnSurface) \
   /* Surfaces. */ \
   E_CPONLY(kColorSysSurface) \
   E_CPONLY(kColorSysSurface1) \
@@ -141,38 +141,52 @@
   E_CPONLY(kColorSysSurface4) \
   E_CPONLY(kColorSysSurface5) \
   /* General. */ \
-  E_CPONLY(kColorSysOnSurfacePrimary) \
   E_CPONLY(kColorSysOnSurfaceSecondary) \
   E_CPONLY(kColorSysOnSurfaceSubtle) \
+  E_CPONLY(kColorSysOnSurfacePrimary) \
+  E_CPONLY(kColorSysOnSurfacePrimaryInactive) \
+  E_CPONLY(kColorSysTonalContainer) \
+  E_CPONLY(kColorSysOnTonalContainer) \
+  E_CPONLY(kColorSysTonalOutline) \
+  E_CPONLY(kColorSysNeutralOutline) \
+  E_CPONLY(kColorSysNeutralContainer) \
   /* Chrome surfaces. */ \
   E_CPONLY(kColorSysBase) \
-  E_CPONLY(kColorSysHeader) \
-  E_CPONLY(kColorSysHeaderInactive) \
+  E_CPONLY(kColorSysBaseContainer) \
+  E_CPONLY(kColorSysBaseContainerElevated) \
   E_CPONLY(kColorSysOnBase) \
   E_CPONLY(kColorSysOnBaseSecondary) \
   E_CPONLY(kColorSysOnBaseDivider) \
-  E_CPONLY(kColorSysOnBaseBorder) \
-  E_CPONLY(kColorSysOnHeaderContainer) \
-  E_CPONLY(kColorSysOnHeaderContainerInactive) \
+  E_CPONLY(kColorSysHeader) \
+  E_CPONLY(kColorSysHeaderInactive) \
+  E_CPONLY(kColorSysHeaderContainer) \
+  E_CPONLY(kColorSysHeaderContainerInactive) \
   E_CPONLY(kColorSysOnHeaderDivider) \
   E_CPONLY(kColorSysOnHeaderDividerInactive) \
   E_CPONLY(kColorSysOnHeaderPrimary) \
   E_CPONLY(kColorSysOnHeaderPrimaryInactive) \
-  E_CPONLY(kColorSysOnHeaderSecondary) \
-  E_CPONLY(kColorSysOnHeaderSecondaryInactive) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
   /* States. */ \
+  E_CPONLY(kColorSysStateHoverOnProminent) \
+  E_CPONLY(kColorSysStateHoverOnSubtle) \
+  E_CPONLY(kColorSysStateRipplePrimary) \
+  E_CPONLY(kColorSysStateRippleNeutralOnProminent) \
+  E_CPONLY(kColorSysStateRippleNeutralOnSubtle) \
+  E_CPONLY(kColorSysStateFocusRing) \
+  E_CPONLY(kColorSysStateDisabled) \
+  E_CPONLY(kColorSysStateDisabledContainer) \
+  E_CPONLY(kColorSysStateFocusHighlight) \
+  E_CPONLY(kColorSysStateHoverCutout) \
+  E_CPONLY(kColorSysStateHoverInverseCutout) \
+  E_CPONLY(kColorSysStateOnHeaderHover) \
+  E_CPONLY(kColorSysStateHeaderHover) \
+  /* Deprecated */ \
+  E_CPONLY(kColorSysOnBaseBorder) \
   E_CPONLY(kColorSysStateHover) \
   E_CPONLY(kColorSysStateFocus) \
   E_CPONLY(kColorSysStatePressed) \
   E_CPONLY(kColorSysStateDrag) \
-  E_CPONLY(kColorSysStateFocusRing) \
-  E_CPONLY(kColorSysStateDisabled) \
-  E_CPONLY(kColorSysStateDisabledContainer) \
-  /* Containers. */ \
-  E_CPONLY(kColorSysOnTonalContainer) \
-  E_CPONLY(kColorSysTonalContainer) \
   /* Core color concepts */ \
   /* kColorAccent is used in color_provider_css_colors_test.ts. */ \
   /* If changing the variable name, the variable name in the test needs to */ \
