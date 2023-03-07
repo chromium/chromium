@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -87,6 +88,10 @@ void RestoreAllInactiveTabs(Browser* inactive_browser,
   DCHECK(!IsInactiveTabsEnabled());
   WebStateList* active_web_state_list = active_browser->GetWebStateList();
   WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
+  // Record the number of tabs restored from the inactive browser after Inactive
+  // Tabs has been disabled.
+  base::UmaHistogramCounts100("Tabs.RestoredFromInactiveCount",
+                              inactive_web_state_list->count());
   for (int index = inactive_web_state_list->count() - 1; index >= 0; index--) {
     MoveTab(inactive_web_state_list, index, active_web_state_list,
             active_web_state_list->GetIndexOfFirstNonPinnedWebState());
