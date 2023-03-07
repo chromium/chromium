@@ -101,10 +101,9 @@ interface CanvasRenderingContext2D {
 
     // path API (see also CanvasPath)
     [NoAllocDirectCall] void beginPath();
-    [NoAllocDirectCall] void fill();
-    void fill(CanvasFillRule winding);
+    void fill(optional CanvasFillRule winding);
     void fill(Path2D path, optional CanvasFillRule winding);
-    [NoAllocDirectCall] void stroke();
+    void stroke();
     void stroke(Path2D path);
     // Focus rings
     void drawFocusIfNeeded(Element element);
