@@ -95,11 +95,9 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
   }
 
   private getScreenSaverPreviewAriaLabel_(): string {
-    if (!this.screenSaverPreviewActive_) {
-      return `${this.i18n('screensaverLabel')} ${
-          this.i18n('screenSaverPreviewButton')}`;
-    }
-    return this.i18n('screenSaverPreviewDownloading');
+    return this.screenSaverPreviewActive_ ?
+        this.i18n('screenSaverPreviewDownloadingAriaLabel') :
+        this.i18n('screenSaverPreviewButtonAriaLabel');
   }
 }
 
