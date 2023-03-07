@@ -48,7 +48,7 @@ BluetoothRemoteGattCharacteristicFloss::
 }
 
 std::string BluetoothRemoteGattCharacteristicFloss::GetIdentifier() const {
-  return base::StringPrintf("%s/%d", service_->GetIdentifier().c_str(),
+  return base::StringPrintf("%s/%04x", service_->GetIdentifier().c_str(),
                             characteristic_->instance_id);
 }
 

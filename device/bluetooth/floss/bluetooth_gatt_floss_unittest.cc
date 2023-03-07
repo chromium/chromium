@@ -376,7 +376,8 @@ TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
       static_cast<BluetoothAdapterFloss*>(adapter_.get()),
       static_cast<BluetoothDeviceFloss*>(device), underlying_service, true);
   EXPECT_EQ(service->GetIdentifier(),
-            base::StringPrintf("%s/%d", device->GetAddress().c_str(), 16));
+            base::StringPrintf("%s-%s/%04x", device->GetAddress().c_str(),
+                               service->GetUUID().value().c_str(), 16));
 
   GattCharacteristic underlying_characteristic;
   underlying_characteristic.uuid = device::BluetoothUUID(kFakeUuidShort);
@@ -384,9 +385,9 @@ TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
 
   auto characteristic = BluetoothRemoteGattCharacteristicFloss::Create(
       service.get(), &underlying_characteristic);
-  EXPECT_EQ(
-      characteristic->GetIdentifier(),
-      base::StringPrintf("%s/%d/%d", device->GetAddress().c_str(), 16, 47));
+  EXPECT_EQ(characteristic->GetIdentifier(),
+            base::StringPrintf("%s-%s/%04x/%04x", device->GetAddress().c_str(),
+                               service->GetUUID().value().c_str(), 16, 47));
 
   GattDescriptor underlying_descriptor;
   underlying_descriptor.uuid = device::BluetoothUUID(kFakeUuidShort);
@@ -394,9 +395,10 @@ TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
 
   auto descriptor = BluetoothRemoteGattDescriptorFloss::Create(
       service.get(), characteristic.get(), &underlying_descriptor);
-  EXPECT_EQ(descriptor->GetIdentifier(),
-            base::StringPrintf("%s/%d/%d/%d", device->GetAddress().c_str(), 16,
-                               47, 72));
+  EXPECT_EQ(
+      descriptor->GetIdentifier(),
+      base::StringPrintf("%s-%s/%04x/%04x/%04x", device->GetAddress().c_str(),
+                         service->GetUUID().value().c_str(), 16, 47, 72));
 }
 
 }  // namespace floss

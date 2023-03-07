@@ -46,7 +46,8 @@ BluetoothRemoteGattServiceFloss::~BluetoothRemoteGattServiceFloss() {
 }
 
 std::string BluetoothRemoteGattServiceFloss::GetIdentifier() const {
-  return base::StringPrintf("%s/%d", device_->GetAddress().c_str(),
+  return base::StringPrintf("%s-%s/%04x", device_->GetAddress().c_str(),
+                            GetUUID().value().c_str(),
                             remote_service_.instance_id);
 }
 
