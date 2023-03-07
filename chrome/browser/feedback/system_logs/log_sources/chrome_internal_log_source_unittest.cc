@@ -10,8 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
-#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +19,11 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #endif
 
 namespace system_logs {
@@ -87,7 +90,8 @@ TEST_F(ChromeInternalLogSourceTest, FreeAndTotalDiskSpacePresent) {
   ash::FakeSpacedClient::Get()->set_free_disk_space(1000);
   ash::FakeSpacedClient::Get()->set_total_disk_space(100000);
 
-  auto response = GetChromeInternalLogs();
+  std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
+  ASSERT_TRUE(response);
   auto free_disk_space = response->at("FREE_DISK_SPACE");
   auto total_disk_space = response->at("TOTAL_DISK_SPACE");
 
