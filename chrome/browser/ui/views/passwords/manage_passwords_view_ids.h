@@ -15,6 +15,8 @@ enum class ManagePasswordsViewIDs {
   kCopyPasswordButton,
   kEditUsernameButton,
   kEditNoteButton,
+  kRevealPasswordButton,
+  kPasswordLabel,
 };
 
 }  // namespace password_manager

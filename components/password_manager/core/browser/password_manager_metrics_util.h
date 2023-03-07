@@ -641,7 +641,8 @@ enum class PasswordManagementBubbleInteractions {
   kCredentialRowClicked = 2,
   kUsernameCopyButtonClicked = 3,
   kPasswordCopyButtonClicked = 4,
-  kMaxValue = kPasswordCopyButtonClicked,
+  kPasswordShowButtonClicked = 5,
+  kMaxValue = kPasswordShowButtonClicked,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(

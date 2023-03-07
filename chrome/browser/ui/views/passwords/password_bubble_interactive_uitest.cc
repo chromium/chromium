@@ -555,3 +555,39 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
                                          kPasswordCopyButtonClicked,
                                  1)));
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+                       RevealPasswordOnEyeIconClicks) {
+  base::HistogramTester histogram_tester;
+
+  SetupManagingPasswords();
+  EXPECT_FALSE(IsBubbleShowing());
+  ExecuteManagePasswordsCommand();
+  ASSERT_TRUE(IsBubbleShowing());
+
+  static_cast<ManagePasswordsView*>(
+      PasswordBubbleViewBase::manage_password_bubble())
+      ->DisplayDetailsOfPasswordForTesting(*test_form());
+
+  views::Label* password_label = static_cast<views::Label*>(
+      PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+          static_cast<int>(
+              password_manager::ManagePasswordsViewIDs::kPasswordLabel)));
+  ASSERT_TRUE(password_label->GetObscured());
+
+  ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+      static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::kRevealPasswordButton)));
+  EXPECT_FALSE(password_label->GetObscured());
+
+  ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+      static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::kRevealPasswordButton)));
+  EXPECT_TRUE(password_label->GetObscured());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordManagementBubble.UserAction",
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kPasswordShowButtonClicked,
+      1);
+}
