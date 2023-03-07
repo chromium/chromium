@@ -90,6 +90,7 @@ public class AccountSelectionIntegrationTest {
 
     private static final String EXAMPLE_ETLD_PLUS_ONE = "example.com";
     private static final String TEST_ETLD_PLUS_ONE_1 = "one.com";
+    private static final String TEST_ETLD_PLUS_ONE_2 = "two.com";
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
 
@@ -138,7 +139,8 @@ public class AccountSelectionIntegrationTest {
     public void testBackDismissesAndCallsCallback() {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata, false);
+                    TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
+                    false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -151,7 +153,8 @@ public class AccountSelectionIntegrationTest {
     private void testClickOnConsentLink(int linkIndex, String expectedUrl) {
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    Arrays.asList(BOB), IDP_METADATA, mClientIdMetadata, false);
+                    TEST_ETLD_PLUS_ONE_2, Arrays.asList(BOB), IDP_METADATA, mClientIdMetadata,
+                    false);
         });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
@@ -208,7 +211,8 @@ public class AccountSelectionIntegrationTest {
 
         runOnUiThreadBlocking(() -> {
             mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata, false);
+                    TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
+                    false);
         });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
