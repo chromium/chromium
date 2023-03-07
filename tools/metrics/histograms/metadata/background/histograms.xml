@@ -102,17 +102,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundFetch.IncompleteFetchesOnStartup" units="units"
-    expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the number of Background Fetch registrations found on browser
-    start-up. This is called after the initialization database task runs
-    successfully.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundFetch.Manager{BackgroundFetchManagerAPIsDuration}"
     units="ms" expires_after="M99">
   <owner>rayankans@chromium.org</owner>

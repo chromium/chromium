@@ -82,8 +82,6 @@ void BackgroundFetchContext::DidGetInitializationData(
   if (error != blink::mojom::BackgroundFetchError::NONE)
     return;
 
-  background_fetch::RecordRegistrationsOnStartup(initialization_data.size());
-
   for (auto& data : initialization_data) {
     for (auto& observer : data_manager_->observers()) {
       observer.OnRegistrationLoadedAtStartup(

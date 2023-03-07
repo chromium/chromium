@@ -19,11 +19,6 @@ namespace background_fetch {
 // Exponential bucket spacing for UKM event data.
 const double kUkmEventDataBucketSpacing = 2.0;
 
-void RecordRegistrationsOnStartup(int num_registrations) {
-  UMA_HISTOGRAM_COUNTS_100("BackgroundFetch.IncompleteFetchesOnStartup",
-                           num_registrations);
-}
-
 void RecordBackgroundFetchUkmEvent(
     const blink::StorageKey& storage_key,
     int requests_size,
