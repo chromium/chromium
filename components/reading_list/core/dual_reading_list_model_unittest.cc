@@ -398,6 +398,63 @@ TEST_F(DualReadingListModelTest, GetEntryByURL) {
             ReadingListEntry::DISTILLATION_ERROR);
 }
 
+TEST_F(DualReadingListModelTest, DeleteAllEntries) {
+  const GURL local_url("http://local_url.com/");
+  const GURL account_url("http://account_url.com/");
+  const GURL common_url("http://common_url.com/");
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(local_url, clock_.Now()),
+       TestEntryBuilder(common_url, clock_.Now())},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(account_url, clock_.Now()),
+          TestEntryBuilder(common_url, clock_.Now())}));
+
+  ASSERT_TRUE(dual_model_->loaded());
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(local_url),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(account_url),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(common_url),
+            StorageStateForTesting::kExistsInBothModels);
+
+  {
+    testing::InSequence seq1;
+    EXPECT_CALL(observer_,
+                ReadingListWillRemoveEntry(dual_model_.get(), local_url));
+    EXPECT_CALL(observer_,
+                ReadingListDidRemoveEntry(dual_model_.get(), local_url));
+    EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()))
+        .RetiresOnSaturation();
+  }
+
+  {
+    testing::InSequence seq2;
+    EXPECT_CALL(observer_,
+                ReadingListWillRemoveEntry(dual_model_.get(), account_url));
+    EXPECT_CALL(observer_,
+                ReadingListDidRemoveEntry(dual_model_.get(), account_url));
+    EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()))
+        .RetiresOnSaturation();
+  }
+
+  {
+    testing::InSequence seq3;
+    EXPECT_CALL(observer_,
+                ReadingListWillRemoveEntry(dual_model_.get(), common_url));
+    EXPECT_CALL(observer_,
+                ReadingListDidRemoveEntry(dual_model_.get(), common_url));
+    EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()))
+        .RetiresOnSaturation();
+  }
+
+  EXPECT_TRUE(dual_model_->DeleteAllEntries());
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(local_url), IsNull());
+  EXPECT_THAT(dual_model_->GetEntryByURL(account_url), IsNull());
+  EXPECT_THAT(dual_model_->GetEntryByURL(common_url), IsNull());
+}
+
 TEST_F(DualReadingListModelTest, NeedsExplicitUploadToSyncServerWhenSignedOut) {
   ASSERT_TRUE(ResetStorageAndMimicSignedOut(/*initial_local_entries_builders=*/{
       TestEntryBuilder(kUrl, clock_.Now())}));

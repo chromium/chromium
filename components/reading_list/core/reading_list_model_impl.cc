@@ -183,7 +183,9 @@ bool ReadingListModelImpl::DeleteAllEntries() {
   for (const auto& url : GetKeys()) {
     RemoveEntryByURL(url);
   }
-  return entries_.empty();
+
+  DCHECK(entries_.empty());
+  return true;
 }
 
 void ReadingListModelImpl::UpdateEntryStateCountersOnEntryRemoval(

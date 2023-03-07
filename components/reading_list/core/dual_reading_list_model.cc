@@ -131,9 +131,23 @@ void DualReadingListModel::MarkAllSeen() {
 
 bool DualReadingListModel::DeleteAllEntries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
-  return false;
+
+  if (!loaded()) {
+    return false;
+  }
+  // Invoking DeleteAllEntries() for the two underlying instances would be the
+  // most straightforward implementation, but it will complicate the observer
+  // notifications. The simplest implementation would be leaning on
+  // DualReadingListModel::RemoveEntryByURL to remove the entries.
+  std::unique_ptr<DualReadingListModel::ScopedReadingListBatchUpdate>
+      scoped_model_batch_updates = BeginBatchUpdates();
+  for (const auto& url : GetKeys()) {
+    RemoveEntryByURL(url);
+  }
+
+  DCHECK_EQ(0u, local_or_syncable_model_->size());
+  DCHECK_EQ(0u, account_model_->size());
+  return true;
 }
 
 scoped_refptr<const ReadingListEntry> DualReadingListModel::GetEntryByURL(
