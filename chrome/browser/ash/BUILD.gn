@@ -1019,6 +1019,8 @@ source_set("ash") {
     "enhanced_network_tts/enhanced_network_tts_impl.h",
     "enhanced_network_tts/enhanced_network_tts_utils.cc",
     "enhanced_network_tts/enhanced_network_tts_utils.h",
+    "eol_incentive_util.cc",
+    "eol_incentive_util.h",
     "eol_notification.cc",
     "eol_notification.h",
     "events/event_rewriter_delegate_impl.cc",

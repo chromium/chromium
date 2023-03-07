@@ -180,7 +180,8 @@ enum class NotificationCatalogName {
   kIPHGoogleOneOffer = 165,
   kLockScreen = 166,
   kWebAppSettings = 167,
-  kMaxValue = kWebAppSettings
+  kEOLIncentive = 168,
+  kMaxValue = kEOLIncentive
 };
 
 // A living catalog that registers system nudges.

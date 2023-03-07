@@ -503,6 +503,13 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kFirstEolWarningDismissed, false);
   registry->RegisterBooleanPref(::prefs::kSecondEolWarningDismissed, false);
 
+  registry->RegisterBooleanPref(
+      ::prefs::kEolApproachingIncentiveNotificationDismissed, false);
+  registry->RegisterBooleanPref(::prefs::kEolPassedFinalIncentiveDismissed,
+                                false);
+  registry->RegisterBooleanPref(::prefs::kEolIncentiveNotificationSilenced,
+                                false);
+
   registry->RegisterBooleanPref(::prefs::kCastReceiverEnabled, false);
   registry->RegisterBooleanPref(::prefs::kShowArcSettingsOnSessionStart, false);
   registry->RegisterBooleanPref(::prefs::kShowSyncSettingsOnSessionStart,

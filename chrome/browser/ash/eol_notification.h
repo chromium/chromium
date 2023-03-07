@@ -64,6 +64,14 @@ class EolNotification final : public message_center::NotificationObserver {
   // - EolInfo eol_info: the End of Life info.
   void OnEolInfo(UpdateEngineClient::EolInfo eol_info);
 
+  // Shows the EOL incentive notification when the correct criteria are met. If
+  // the final EOL incentive date has passed and the final incenteve was not
+  // shown, then a normal EOL notification is shown.
+  void MaybeShowEolIncentiveNotification(base::Time eol_date);
+
+  // Creates the EOL incentive notification.
+  void ShowIncentiveNotification();
+
   // Overridden for testing pending EOL notifications.
   base::Clock* clock_;
 

@@ -840,6 +840,13 @@ const char kSecondEolWarningDismissed[] = "second_eol_warning_dismissed";
 // dismissed by the user.
 const char kEolNotificationDismissed[] = "eol_notification_dismissed";
 
+const char kEolApproachingIncentiveNotificationDismissed[] =
+    "approaching_eol_incentive_dismissed";
+const char kEolPassedFinalIncentiveDismissed[] =
+    "passed_eol_incentive_dismissed";
+const char kEolIncentiveNotificationSilenced[] =
+    "eol_incentive_dont_show_notification";
+
 // A boolean pref that controls whether the PIN autosubmit feature is enabled.
 // This feature, when enabled, exposes the user's PIN length by showing how many
 // digits are necessary to unlock the device. Can be recommended.

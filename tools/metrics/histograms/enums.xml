@@ -74028,6 +74028,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="165" label="Google One offer"/>
   <int value="166" label="Lock Screen"/>
   <int value="167" label="WebAppSettings App Launch"/>
+  <int value="168" label="EOL Incentive"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">

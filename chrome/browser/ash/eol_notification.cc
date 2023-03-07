@@ -4,19 +4,22 @@
 
 #include "chrome/browser/ash/eol_notification.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/eol_incentive_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,6 +41,14 @@ const char kEolNotificationId[] = "chrome://product_eol";
 
 constexpr int kFirstWarningDaysInAdvance = 180;
 constexpr int kSecondWarningDaysInAdvance = 90;
+
+// The first and second incentive notification button indices.
+constexpr int kButtonClaim = 0;
+constexpr int kButtonSilence = 1;
+
+// The number of days past the EOL within which the last incentive notification
+// is shown.
+constexpr int kLastIncentiveEndDaysPastEol = -5;
 
 base::Time FirstWarningDate(base::Time eol_date) {
   return eol_date - base::Days(kFirstWarningDaysInAdvance);
@@ -90,6 +101,17 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
     profile_->GetPrefs()->SetBoolean(prefs::kFirstEolWarningDismissed, false);
     profile_->GetPrefs()->SetBoolean(prefs::kSecondEolWarningDismissed, false);
     profile_->GetPrefs()->SetBoolean(prefs::kEolNotificationDismissed, false);
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kEolApproachingIncentiveNotificationDismissed, false);
+    profile_->GetPrefs()->SetBoolean(prefs::kEolPassedFinalIncentiveDismissed,
+                                     false);
+    profile_->GetPrefs()->SetBoolean(prefs::kEolIncentiveNotificationSilenced,
+                                     false);
+  }
+
+  if (features::IsEOLIncentiveEnabled()) {
+    MaybeShowEolIncentiveNotification(eol_date);
+    return;
   }
 
   if (eol_date <= now) {
@@ -169,33 +191,115 @@ void EolNotification::Close(bool by_user) {
 
 void EolNotification::Click(const absl::optional<int>& button_index,
                             const absl::optional<std::u16string>& reply) {
-  if (!button_index)
+  if (!button_index) {
     return;
-
-  switch (*button_index) {
-    case BUTTON_MORE_INFO: {
-      const GURL url = dismiss_pref_ == prefs::kEolNotificationDismissed
-                           ? GURL(chrome::kEolNotificationURL)
-                           : GURL(chrome::kAutoUpdatePolicyURL);
-      // show eol link
-      NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
-      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      params.window_action = NavigateParams::SHOW_WINDOW;
-      Navigate(&params);
-      break;
-    }
-    case BUTTON_DISMISS:
-      CHECK(dismiss_pref_);
-      // set dismiss pref.
-      profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
-      break;
   }
 
-  if (dismiss_pref_ && (*dismiss_pref_ != prefs::kEolNotificationDismissed))
+  if (dismiss_pref_ == prefs::kEolApproachingIncentiveNotificationDismissed ||
+      dismiss_pref_ == prefs::kEolPassedFinalIncentiveDismissed) {
+    switch (*button_index) {
+      case kButtonClaim:
+        // TODO (b/271150076): Fetch and open link on button click.
+        break;
+      case kButtonSilence:
+        // Close and do not show any eol notification again.
+        profile_->GetPrefs()->SetBoolean(
+            prefs::kEolIncentiveNotificationSilenced, true);
+        profile_->GetPrefs()->SetBoolean(prefs::kEolNotificationDismissed,
+                                         true);
+        break;
+    }
+  } else {
+    switch (*button_index) {
+      case BUTTON_MORE_INFO: {
+        const GURL url = dismiss_pref_ == prefs::kEolNotificationDismissed
+                             ? GURL(chrome::kEolNotificationURL)
+                             : GURL(chrome::kAutoUpdatePolicyURL);
+        // Show eol link.
+        NewWindowDelegate::GetPrimary()->OpenUrl(
+            url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+            NewWindowDelegate::Disposition::kNewForegroundTab);
+        break;
+      }
+      case BUTTON_DISMISS:
+        CHECK(dismiss_pref_);
+        // Set dismiss pref.
+        profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
+        break;
+    }
+  }
+
+  if (dismiss_pref_ && (*dismiss_pref_ != prefs::kEolNotificationDismissed)) {
     profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
+  }
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kEolNotificationId);
+}
+
+void EolNotification::MaybeShowEolIncentiveNotification(base::Time eol_date) {
+  const base::Time now = clock_->Now();
+  const base::TimeDelta time_to_eol = eol_date - now;
+  const int days_to_eol = time_to_eol.InDays();
+
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kEolIncentiveNotificationSilenced)) {
+    return;
+  }
+
+  switch (eol_incentive_util::ShouldShowEolIncentive(profile_, eol_date, now)) {
+    case eol_incentive_util::kNone:
+      if (days_to_eol < kLastIncentiveEndDaysPastEol &&
+          !profile_->GetPrefs()->GetBoolean(
+              prefs::kEolPassedFinalIncentiveDismissed) &&
+          !profile_->GetPrefs()->GetBoolean(prefs::kEolNotificationDismissed)) {
+        // Once the timeframe for showing the final incentive notification has
+        // passed, if the final incentive notification was not dismissed, and
+        // the final EOL notification has not been dismissed, then show the
+        // final EOL notification.
+        dismiss_pref_ = prefs::kEolNotificationDismissed;
+        CreateNotification(eol_date, now);
+      }
+      return;
+    case eol_incentive_util::kEolApproaching:
+      dismiss_pref_ = prefs::kEolApproachingIncentiveNotificationDismissed;
+      break;
+    case eol_incentive_util::kEolPassed:
+      dismiss_pref_ = prefs::kEolPassedFinalIncentiveDismissed;
+      break;
+  }
+
+  if (!dismiss_pref_ || profile_->GetPrefs()->GetBoolean(*dismiss_pref_)) {
+    return;
+  }
+
+  ShowIncentiveNotification();
+}
+
+void EolNotification::ShowIncentiveNotification() {
+  message_center::RichNotificationData data;
+  ash::SystemNotificationBuilder notification_builder;
+
+  // TODO (b/271150076): Add localized string IDS once strings get finalized.
+  data.buttons.emplace_back(u"Claim Offer");
+  data.buttons.emplace_back(u"Don't Show This Again");
+  notification_builder.SetTitle(u"Don't miss out on new features")
+      .SetMessage(
+          u"This device will no longer get automatic software and security "
+          u"updates after Month Year. Update to a newer model to get future "
+          u"updates and get [offer].")
+      .SetCatalogName(NotificationCatalogName::kEOLIncentive);
+
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
+      NotificationHandler::Type::TRANSIENT,
+      notification_builder.SetId(kEolNotificationId)
+          .SetOriginUrl(GURL(kEolNotificationId))
+          .SetOptionalFields(data)
+          .SetDelegate(
+              base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+                  weak_ptr_factory_.GetWeakPtr()))
+          .Build(),
+      /*metadata=*/nullptr);
 }
 
 }  // namespace ash
