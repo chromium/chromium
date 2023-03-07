@@ -62,7 +62,15 @@ bool CachedResultWriter::IsPrefUpdateRequiredForClient(
 
 void CachedResultWriter::UpdateNewClientResultToPrefs(
     Config* config,
-    proto::ClientResult client_result) {
+    const proto::ClientResult& client_result) {
+  auto prev_client_result =
+      result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
+  absl::optional<proto::PredictionResult> prev_prediction_result =
+      prev_client_result.has_value()
+          ? absl::make_optional(prev_client_result->client_result())
+          : absl::nullopt;
+  stats::RecordSegmentSelectionUpdated(*config, prev_prediction_result,
+                                       client_result.client_result());
   result_prefs_->SaveClientResultToPrefs(config->segmentation_key,
                                          client_result);
 }

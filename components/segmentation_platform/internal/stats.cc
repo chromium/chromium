@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -242,6 +243,50 @@ void RecordSegmentSelectionComputed(
   }
   // Do not record switched histogram for all keys by default, the client needs
   // to write custom logic for other kinds of segments.
+}
+
+void RecordSegmentSelectionUpdated(
+    const Config& config,
+    const absl::optional<proto::PredictionResult>& old_result,
+    const proto::PredictionResult& new_result) {
+  PostProcessor post_processor;
+  int new_result_top_label = post_processor.GetIndexOfTopLabel(new_result);
+  std::string computed_hist =
+      base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
+                    ".PostProcessing.TopLabel.Computed"});
+  base::UmaHistogramSparse(computed_hist, new_result_top_label);
+  if (config.on_demand_execution) {
+    return;
+  }
+
+  int old_result_top_label =
+      old_result.has_value()
+          ? post_processor.GetIndexOfTopLabel(old_result.value())
+          : -2;
+  if (old_result_top_label == new_result_top_label) {
+    return;
+  }
+
+  std::string switched_hist =
+      base::StrCat({"SegmentationPlatform.", config.segmentation_uma_name,
+                    ".PostProcessing.TopLabel.Switched"});
+  // There is no easy way to record this metric for label switch. So we encode
+  // it as follows: Multiply the index value of the old value by 100 and add the
+  // new index value. Note, there might be negative integers, but regardless
+  // this will generate a unique value for each type of label switch.
+  // For example, for a 3-label case, any transition will look like
+  // none -> label 0 : -200
+  // none -> label 1 : -199
+  // none -> label 2 : -198
+  // label 0 -> label 1 : 1
+  // label 0 -> label 2 : 2
+  // label 1 -> label 0 : 100
+  // label 1 -> label 2 : 102
+  // label 2 -> label 0 : 200
+  // label 2 -> label 1 : 201
+
+  int switch_value = old_result_top_label * 100 + new_result_top_label;
+  base::UmaHistogramSparse(switched_hist, switch_value);
 }
 
 void RecordMaintenanceCleanupSignalSuccessCount(size_t count) {

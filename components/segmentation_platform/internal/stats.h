@@ -59,6 +59,13 @@ void RecordSegmentSelectionComputed(
     SegmentId new_selection,
     absl::optional<SegmentId> previous_selection);
 
+// Records the post processed result whenever written to prefs. Also records
+// from which old value to which new value the topmost label is changing to.
+void RecordSegmentSelectionUpdated(
+    const Config& config,
+    const absl::optional<proto::PredictionResult>& old_result,
+    const proto::PredictionResult& new_result);
+
 // Database Maintenance metrics.
 // Records the number of unique signal identifiers that were successfully
 // cleaned up.

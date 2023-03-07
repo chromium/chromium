@@ -43,6 +43,14 @@ class PostProcessor {
   base::TimeDelta GetTTLForPredictedResult(
       const proto::PredictionResult& prediction_result);
 
+  // Used for metrics collection. Returns the index of the winning label in the
+  // list of labels as defined in the metadata. For binary classifier: 0 for
+  // false, 1 for true. For binned classifier: -1 for underflow label, otherwise
+  // index of the bin that it falls into. For multiclass classifier: -1 when no
+  // winning label, otherwise the index of the label in the labels list.
+  // Returns -2 for all kinds of invalid cases.
+  int GetIndexOfTopLabel(const proto::PredictionResult& prediction_result);
+
  private:
   std::vector<std::string> GetBinaryClassifierResults(
       const std::vector<float>& model_scores,

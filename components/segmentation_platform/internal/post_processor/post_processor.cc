@@ -12,6 +12,12 @@
 namespace segmentation_platform {
 
 namespace {
+
+// UMA constants for various types of classifier outputs.
+constexpr int kInvalidResult = -2;
+constexpr int kNoWinningLabel = -1;
+constexpr int kUnderflowBinIndex = -1;
+
 bool IsValidResult(proto::PredictionResult prediction_result) {
   return (prediction_result.result_size() > 0 &&
           prediction_result.has_output_config());
@@ -110,6 +116,57 @@ ClassificationResult PostProcessor::GetPostProcessedClassificationResult(
   ClassificationResult classification_result = ClassificationResult(status);
   classification_result.ordered_labels = ordered_labels;
   return classification_result;
+}
+
+int PostProcessor::GetIndexOfTopLabel(
+    const proto::PredictionResult& prediction_result) {
+  if (!IsValidResult(prediction_result)) {
+    return kInvalidResult;
+  }
+
+  std::vector<std::string> result_labels =
+      GetClassifierResults(prediction_result);
+  if (result_labels.empty()) {
+    return kNoWinningLabel;
+  }
+
+  std::string top_label = result_labels[0];
+  auto predictor = prediction_result.output_config().predictor();
+
+  switch (predictor.PredictorType_case()) {
+    case proto::Predictor::kBinaryClassifier: {
+      bool bool_result =
+          (top_label == predictor.binary_classifier().positive_label());
+      return static_cast<int>(bool_result);
+    }
+    case proto::Predictor::kMultiClassClassifier: {
+      auto multi_class_classifier = predictor.multi_class_classifier();
+      for (int i = 0; i < multi_class_classifier.class_labels_size(); i++) {
+        if (top_label == multi_class_classifier.class_labels(i)) {
+          return i;
+        }
+      }
+      NOTREACHED();
+      return kInvalidResult;
+    }
+    case proto::Predictor::kBinnedClassifier: {
+      auto binned_classifier = predictor.binned_classifier();
+      if (top_label == binned_classifier.underflow_label()) {
+        return kUnderflowBinIndex;
+      }
+
+      for (int i = 0; i < binned_classifier.bins_size(); i++) {
+        if (top_label == binned_classifier.bins(i).label()) {
+          return i;
+        }
+      }
+      NOTREACHED();
+      return kInvalidResult;
+    }
+    default:
+      NOTREACHED();
+      return kInvalidResult;
+  }
 }
 
 base::TimeDelta PostProcessor::GetTTLForPredictedResult(

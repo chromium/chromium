@@ -715,6 +715,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="SegmentationPlatform.{SegmentationKey}.PostProcessing.TopLabel.Computed"
+    units="index" expires_after="2023-10-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the post processed result for multi-output models. The value
+    recorded is the index of the top label as defined in the list of labels in
+    metadata. Recorded whenever a new result is written into the prefs.
+  </summary>
+  <token key="SegmentationKey" variants="SegmentationKey"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.{SegmentationKey}.PostProcessing.TopLabel.Switched"
+    units="index" expires_after="2023-10-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records change in the the post processed result from an old label to a new
+    label after a model evaluation completes. Recorded only if the selected
+    segment switches to a new value. Recorded only for the top label in the
+    result.
+  </summary>
+  <token key="SegmentationKey" variants="SegmentationKey"/>
+</histogram>
+
+<histogram
     name="SegmentationPlatform.{SegmentationKey}.SegmentSelection.Computed2"
     enum="SegmentationPlatformSegmentationModel" expires_after="2023-10-01">
   <owner>shaktisahu@chromium.org</owner>

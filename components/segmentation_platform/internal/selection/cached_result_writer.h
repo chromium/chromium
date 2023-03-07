@@ -47,7 +47,7 @@ class CachedResultWriter {
 
   // Updates the supplied `client_result` as new result for the client in prefs.
   void UpdateNewClientResultToPrefs(Config* config,
-                                    proto::ClientResult client_result);
+                                    const proto::ClientResult& client_result);
 
   // Helper class to read/write results to the prefs.
   std::unique_ptr<ClientResultPrefs> result_prefs_;

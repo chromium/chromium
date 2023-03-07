@@ -10,6 +10,7 @@
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
@@ -120,6 +121,8 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
   if (result) {
     status = ResultStateToPredictionStatus(result->state);
     pred_result = result->result;
+    stats::RecordSegmentSelectionUpdated(*config_, absl::nullopt, pred_result);
+
     // Collect training data. The execution service and training data collector
     // might be null in testing.
     if (execution_service_ && execution_service_->training_data_collector()) {
