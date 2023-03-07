@@ -271,7 +271,7 @@ void ClipboardMac::ReadHTML(ClipboardBuffer buffer,
   if (bestType) {
     NSString* contents;
     if ([bestType isEqualToString:NSPasteboardTypeRTF]) {
-      contents = ClipboardUtil::GetHTMLFromRTFOnPasteboard(pb);
+      contents = clipboard_util::GetHTMLFromRTFOnPasteboard(pb);
     } else {
       contents = [pb stringForType:bestType];
     }
@@ -344,7 +344,7 @@ void ClipboardMac::ReadFilenames(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kFilenames);
 
   std::vector<ui::FileInfo> files =
-      ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+      clipboard_util::FilesFromPasteboard(GetPasteboard());
   base::ranges::move(files, std::back_inserter(*result));
 }
 
@@ -438,7 +438,7 @@ void ClipboardMac::WriteRTF(const char* rtf_data, size_t data_len) {
 }
 
 void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
-  ClipboardUtil::WriteFilesToPasteboard(GetPasteboard(), filenames);
+  clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
 void ClipboardMac::WriteBookmark(const char* title_data,
@@ -451,8 +451,8 @@ void ClipboardMac::WriteBookmark(const char* title_data,
   NSString* url = base::SysUTF8ToNSString(url_str);
 
   NSArray<NSPasteboardItem*>* items =
-      ClipboardUtil::PasteboardItemsFromUrls(@[ url ], @[ title ]);
-  ClipboardUtil::AddDataToPasteboard(GetPasteboard(), items.firstObject);
+      clipboard_util::PasteboardItemsFromUrls(@[ url ], @[ title ]);
+  clipboard_util::AddDataToPasteboard(GetPasteboard(), items.firstObject);
 }
 
 void ClipboardMac::WriteBitmap(const SkBitmap& bitmap) {

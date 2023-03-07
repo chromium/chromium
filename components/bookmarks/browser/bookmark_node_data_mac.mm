@@ -29,18 +29,18 @@ const ui::ClipboardFormatType& BookmarkNodeData::GetBookmarkFormatType() {
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
   NSPasteboard* pb =
-      ui::ClipboardUtil::PasteboardFromBuffer(ui::ClipboardBuffer::kCopyPaste);
+      ui::clipboard_util::PasteboardFromBuffer(ui::ClipboardBuffer::kCopyPaste);
   return PasteboardContainsBookmarks(pb);
 }
 
 void BookmarkNodeData::WriteToClipboard() {
   NSPasteboard* pb =
-      ui::ClipboardUtil::PasteboardFromBuffer(ui::ClipboardBuffer::kCopyPaste);
+      ui::clipboard_util::PasteboardFromBuffer(ui::ClipboardBuffer::kCopyPaste);
   WriteBookmarksToPasteboard(pb, elements, profile_path_);
 }
 
 bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
-  NSPasteboard* pb = ui::ClipboardUtil::PasteboardFromBuffer(buffer);
+  NSPasteboard* pb = ui::clipboard_util::PasteboardFromBuffer(buffer);
   base::FilePath file_path;
   if (ReadBookmarksFromPasteboard(pb, &elements, &file_path)) {
     profile_path_ = file_path;

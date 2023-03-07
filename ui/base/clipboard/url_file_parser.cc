@@ -11,7 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace ui::ClipboardUtil::internal {
+namespace ui::clipboard_util::internal {
 
 std::string ExtractURLFromURLFileContents(
     const base::StringPiece& file_contents) {
@@ -76,4 +76,4 @@ std::string ExtractURLFromURLFileContents(
   return {};
 }
 
-}  // namespace ui::ClipboardUtil::internal
+}  // namespace ui::clipboard_util::internal

@@ -100,7 +100,7 @@ ClipboardFormatType ClipboardFormatType::GetType(
       ::RegisterClipboardFormat(base::ASCIIToWide(format_string).c_str()));
 }
 
-// The following formats can be referenced by ClipboardUtilWin::GetPlainText.
+// The following formats can be referenced by clipboard_util::GetPlainText.
 // Clipboard formats are initialized in a thread-safe manner, using static
 // initialization. COM requires this thread-safe initialization.
 // TODO(dcheng): We probably need to make static initialization of "known"

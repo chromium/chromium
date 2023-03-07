@@ -166,7 +166,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   NSPasteboard* pboard = [nsInfo draggingPasteboard];
   NSArray<NSString*>* urls;
   NSArray<NSString*>* titles;
-  if (ui::ClipboardUtil::URLsAndTitlesFromPasteboard(
+  if (ui::clipboard_util::URLsAndTitlesFromPasteboard(
           pboard, /*include_files=*/true, &urls, &titles)) {
     info->url = GURL(base::SysNSStringToUTF8(urls.firstObject));
   }

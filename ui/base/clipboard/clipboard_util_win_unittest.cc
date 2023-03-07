@@ -12,7 +12,7 @@ namespace {
 using ClipboardUtilWinTest = PlatformTest;
 
 TEST_F(ClipboardUtilWinTest, EmptyHtmlToCFHtml) {
-  const std::string result_cfhtml = ClipboardUtil::HtmlToCFHtml(
+  const std::string result_cfhtml = clipboard_util::HtmlToCFHtml(
       std::string(), "www.example.com", ClipboardContentType::kSanitized);
   EXPECT_TRUE(result_cfhtml.empty());
   EXPECT_TRUE(result_cfhtml.empty());
@@ -44,7 +44,7 @@ TEST_F(ClipboardUtilWinTest, ConversionFromSanitizedHtmlToCFHtml) {
       "<!--EndFragment-->\r\n"
       "</body>\r\n"
       "</html>";
-  const std::string actual_cfhtml = ClipboardUtil::HtmlToCFHtml(
+  const std::string actual_cfhtml = clipboard_util::HtmlToCFHtml(
       sanitized_html, url, ClipboardContentType::kSanitized);
   EXPECT_EQ(expected_cfhtml, actual_cfhtml);
 }
@@ -65,7 +65,7 @@ TEST_F(ClipboardUtilWinTest, ConversionFromUnsanitizedCompleteHtmlToCFHtml) {
       "\r\n"
       "<!--StartFragment-->" +
       unsanitized_html + "<!--EndFragment-->";
-  const std::string actual_cfhtml = ClipboardUtil::HtmlToCFHtml(
+  const std::string actual_cfhtml = clipboard_util::HtmlToCFHtml(
       unsanitized_html, url, ClipboardContentType::kUnsanitized);
   EXPECT_EQ(expected_cfhtml, actual_cfhtml);
 }
@@ -85,7 +85,7 @@ TEST_F(ClipboardUtilWinTest, ConversionFromUnsanitizedIncompleteHtmlToCFHtml) {
       "\r\n"
       "<!--StartFragment-->" +
       unsanitized_html + "<!--EndFragment-->";
-  const std::string actual_cfhtml = ClipboardUtil::HtmlToCFHtml(
+  const std::string actual_cfhtml = clipboard_util::HtmlToCFHtml(
       unsanitized_html, url, ClipboardContentType::kUnsanitized);
   EXPECT_EQ(expected_cfhtml, actual_cfhtml);
 }
@@ -107,7 +107,7 @@ TEST_F(ClipboardUtilWinTest,
       "\r\n"
       "<!--StartFragment-->" +
       unsanitized_html + "<!--EndFragment-->";
-  const std::string actual_cfhtml = ClipboardUtil::HtmlToCFHtml(
+  const std::string actual_cfhtml = clipboard_util::HtmlToCFHtml(
       unsanitized_html, url, ClipboardContentType::kUnsanitized);
   EXPECT_EQ(expected_cfhtml, actual_cfhtml);
 }
