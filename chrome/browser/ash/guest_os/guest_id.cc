@@ -20,14 +20,6 @@
 namespace guest_os {
 namespace {
 
-bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
-  const std::string* vm_name = dict.FindStringKey(prefs::kVmNameKey);
-  const std::string* container_name =
-      dict.FindStringKey(prefs::kContainerNameKey);
-  return (vm_name && *vm_name == container_id.vm_name) &&
-         (container_name && *container_name == container_id.container_name);
-}
-
 static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
     prefs::kContainerCreateOptions,
     prefs::kContainerOsVersionKey,
@@ -98,6 +90,14 @@ std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id) {
                  << vm_tools::apps::VmType_Name(container_id.vm_type)
                  << " vm:\"" << container_id.vm_name << "\" container:\""
                  << container_id.container_name << "\")";
+}
+
+bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
+  const std::string* vm_name = dict.FindStringKey(prefs::kVmNameKey);
+  const std::string* container_name =
+      dict.FindStringKey(prefs::kContainerNameKey);
+  return (vm_name && *vm_name == container_id.vm_name) &&
+         (container_name && *container_name == container_id.container_name);
 }
 
 std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type) {
