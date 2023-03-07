@@ -10,4 +10,4 @@ REM elapsed run time.
 SETLOCAL
 SET starttime=%time%
 CALL %*
-CALL python %~dp0subtract_time.py %time% %starttime%
+CALL python3 %~dp0subtract_time.py %time% %starttime%
