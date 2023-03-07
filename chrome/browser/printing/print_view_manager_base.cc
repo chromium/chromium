@@ -599,7 +599,6 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::UpdatePrintSettings(
-    int32_t cookie,
     base::Value::Dict job_settings,
     UpdatePrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -628,11 +627,8 @@ void PrintViewManagerBase::UpdatePrintSettings(
   auto callback_wrapper =
       base::BindOnce(&PrintViewManagerBase::UpdatePrintSettingsReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  std::unique_ptr<PrinterQuery> printer_query = queue_->PopPrinterQuery(cookie);
-  if (!printer_query) {
-    printer_query =
-        queue_->CreatePrinterQuery(content::GlobalRenderFrameHostId());
-  }
+  std::unique_ptr<PrinterQuery> printer_query =
+      queue_->CreatePrinterQuery(content::GlobalRenderFrameHostId());
   auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->SetSettings(
       std::move(job_settings),

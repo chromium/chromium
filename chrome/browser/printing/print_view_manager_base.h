@@ -120,8 +120,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(int32_t cookie,
-                           base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
 #endif
   void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;

@@ -2499,14 +2499,10 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
     job_settings = &modified_job_settings;
   }
 
-  // Send the cookie so that UpdatePrintSettings can reuse PrinterQuery when
-  // possible.
-  int cookie =
-      print_pages_params_ ? print_pages_params_->params->document_cookie : 0;
   mojom::PrintPagesParamsPtr settings;
   bool canceled = false;
-  GetPrintManagerHost()->UpdatePrintSettings(cookie, job_settings->Clone(),
-                                             &settings, &canceled);
+  GetPrintManagerHost()->UpdatePrintSettings(job_settings->Clone(), &settings,
+                                             &canceled);
 
   // If mojom::PrintManagerHost is disconnected in the browser after calling
   // UpdatePrintSettings(), |settings| could be null.

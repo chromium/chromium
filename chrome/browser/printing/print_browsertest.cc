@@ -694,16 +694,11 @@ class TestPrintViewManager : public PrintViewManager {
   }
 
   // printing::mojom::PrintManagerHost:
-  void UpdatePrintSettings(int32_t cookie,
-                           base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     std::unique_ptr<PrinterQuery> printer_query =
-        queue_->PopPrinterQuery(cookie);
-    if (!printer_query) {
-      printer_query =
-          queue_->CreatePrinterQuery(content::GlobalRenderFrameHostId());
-    }
+        queue_->CreatePrinterQuery(content::GlobalRenderFrameHostId());
     auto* printer_query_ptr = printer_query.get();
     printer_query_ptr->SetSettings(
         std::move(job_settings),
