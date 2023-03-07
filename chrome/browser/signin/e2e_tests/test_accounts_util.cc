@@ -19,17 +19,17 @@ namespace signin {
 namespace test {
 
 #if BUILDFLAG(IS_WIN)
-std::string kPlatform = "win";
+const char kPlatform[] = "win";
 #elif BUILDFLAG(IS_MAC)
-std::string kPlatform = "mac";
+const char kPlatform[] = "mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-std::string kPlatform = "chromeos";
+const char kPlatform[] = "chromeos";
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string kPlatform = "linux";
+const char kPlatform[] = "linux";
 #elif BUILDFLAG(IS_ANDROID)
-std::string kPlatform = "android";
+const char kPlatform[] = "android";
 #else
-std::string kPlatform = "all_platform";
+const char kPlatform[] = "all_platform";
 #endif
 
 TestAccountsUtil::TestAccountsUtil() = default;
@@ -47,18 +47,18 @@ bool TestAccountsUtil::Init(const base::FilePath& config_path) {
 
   // Only store platform specific users. If an account does not have
   // platform specific user, try to use all_platform user.
-  for (auto account : content_json->DictItems()) {
-    const Value* platform_account = account.second.FindDictKey(kPlatform);
-    if (platform_account == nullptr) {
-      platform_account = account.second.FindDictKey("all_platform");
-      if (platform_account == nullptr) {
+  for (auto [account_name, content] : content_json->GetDict()) {
+    const Value::Dict& content_dict = content.GetDict();
+    const Value::Dict* platform_account = content_dict.FindDict(kPlatform);
+    if (!platform_account) {
+      platform_account = content_dict.FindDict("all_platform");
+      if (!platform_account) {
         continue;
       }
     }
-    TestAccount ta(*(platform_account->FindStringKey("user")),
-                   *(platform_account->FindStringKey("password")));
-    all_accounts_.insert(
-        std::pair<std::string, TestAccount>(account.first, ta));
+    TestAccount ta(*(platform_account->FindString("user")),
+                   *(platform_account->FindString("password")));
+    all_accounts_.insert(std::pair<std::string, TestAccount>(account_name, ta));
   }
   return true;
 }
