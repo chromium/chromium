@@ -27,37 +27,32 @@ template("chrome_bundle") {
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
 
-  _enable_chrome_module = _is_monochrome || _is_trichrome
+  # Put //chrome Java code and resources into a dedicated split to isolate
+  # renderer processes from needing to load it.
+  _base_target_gen_dir =
+      get_label_info(invoker.base_module_target, "target_gen_dir")
+  _base_name = get_label_info(invoker.base_module_target, "name")
+  _split_android_manifest =
+      "${_base_target_gen_dir}/manifest/${_base_name}/AndroidManifest_split.xml"
 
-  # If enable_chrome_module is true, //chrome Java code and resources will be
-  # split out into a chrome DFM in Monochrome and Trichrome bundles. This will
-  # additionally move all //chrome-specific manifest definitions (e.g.
-  # activities, services) to the chrome DFM AndroidManifest.xml.
-  if (_enable_chrome_module) {
-    _base_target_gen_dir =
-        get_label_info(invoker.base_module_target, "target_gen_dir")
-    _base_name = get_label_info(invoker.base_module_target, "name")
-    _split_android_manifest = "${_base_target_gen_dir}/manifest/${_base_name}/AndroidManifest_split.xml"
-
-    chrome_module_desc = {
-      name = "chrome"
-      android_manifest = _split_android_manifest
-      android_manifest_dep =
-          "${invoker.base_module_target}__android_manifest__split"
-      java_deps = [ "//chrome/android:chrome_all_java" ]
-      if (enable_arcore) {
-        java_deps += [
-          "//components/webxr/android:ar_java",
-          "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-          "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
-        ]
-      }
-      if (defined(invoker.chrome_deps)) {
-        java_deps += invoker.chrome_deps
-      }
+  _chrome_module_desc = {
+    name = "chrome"
+    android_manifest = _split_android_manifest
+    android_manifest_dep =
+        "${invoker.base_module_target}__android_manifest__split"
+    java_deps = [ "//chrome/android:chrome_all_java" ]
+    if (enable_arcore) {
+      java_deps += [
+        "//components/webxr/android:ar_java",
+        "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+        "//third_party/arcore-android-sdk-client:com_google_ar_core_java__ignored_manifest",
+      ]
     }
-    _module_descs += [ chrome_module_desc ]
+    if (defined(invoker.chrome_deps)) {
+      java_deps += invoker.chrome_deps
+    }
   }
+  _module_descs += [ _chrome_module_desc ]
 
   # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
   # access. For now, move all resources to the base module.
@@ -111,21 +106,8 @@ template("chrome_bundle") {
     }
   }
 
-  foreach(_tmp_module_desc, _module_descs) {
+  foreach(_module_desc, _module_descs) {
     assert(_package_id > 2, "Too many modules, ran out of package IDs!")
-
-    # Need to reset _module_desc on each loop iteration, otherwise the
-    # "Replacing nonempty scope" error is thrown.
-    _module_desc = {
-    }
-    if (_enable_chrome_module) {
-      _module_desc = _tmp_module_desc
-    } else {
-      # Remove uses_split if child modules are not enabled.
-      _module_desc = {
-        forward_variables_from(_tmp_module_desc, "*", [ "uses_split" ])
-      }
-    }
 
     # Assert that |load_native_on_get_impl| is defined iff native libraries or
     # resources are defined.
@@ -220,7 +202,7 @@ template("chrome_bundle") {
     extra_modules = _extra_modules
     system_image_locale_allowlist = platform_pak_locales - extended_locales
     is_multi_abi = _is_multi_abi
-    validate_services = _enable_chrome_module
+    validate_services = true
     if (enable_silent_java_assert_reporting) {
       custom_assertion_handler = crash_reporting_assertion_handler
     }
