@@ -13,12 +13,8 @@
 #[macro_export]
 macro_rules! impl_encodable_for_pointer {
     () => {
-        fn mojom_alignment() -> usize {
-            8 // All mojom pointers are 8 bytes in length, and thus are 8-byte aligned
-        }
-        fn mojom_type() -> $crate::bindings::mojom::MojomType {
-            $crate::bindings::mojom::MojomType::Pointer
-        }
+        const MOJOM_TYPE: $crate::bindings::mojom::MojomType =
+            $crate::bindings::mojom::MojomType::Pointer;
         fn embed_size(
             _context: &$crate::bindings::encoding::Context,
         ) -> $crate::bindings::encoding::Bits {
@@ -63,12 +59,8 @@ macro_rules! impl_encodable_for_pointer {
 #[macro_export]
 macro_rules! impl_encodable_for_union {
     () => {
-        fn mojom_alignment() -> usize {
-            8
-        }
-        fn mojom_type() -> $crate::bindings::mojom::MojomType {
-            $crate::bindings::mojom::MojomType::Union
-        }
+        const MOJOM_TYPE: $crate::bindings::mojom::MojomType =
+            $crate::bindings::mojom::MojomType::Union;
         fn embed_size(
             context: &$crate::bindings::encoding::Context,
         ) -> $crate::bindings::encoding::Bits {
@@ -119,12 +111,8 @@ macro_rules! impl_encodable_for_union {
 #[macro_export]
 macro_rules! impl_encodable_for_interface {
     () => {
-        fn mojom_alignment() -> usize {
-            4
-        }
-        fn mojom_type() -> $crate::bindings::mojom::MojomType {
-            $crate::bindings::mojom::MojomType::Interface
-        }
+        const MOJOM_TYPE: $crate::bindings::mojom::MojomType =
+            $crate::bindings::mojom::MojomType::Interface;
         fn embed_size(
             _context: &$crate::bindings::encoding::Context,
         ) -> $crate::bindings::encoding::Bits {

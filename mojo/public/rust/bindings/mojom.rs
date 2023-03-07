@@ -47,11 +47,7 @@ pub enum MojomType {
 
 /// Whatever implements this trait can be serialized in the Mojom format.
 pub trait MojomEncodable: Sized {
-    /// Get the Mojom type.
-    fn mojom_type() -> MojomType;
-
-    /// Get this type's Mojom alignment.
-    fn mojom_alignment() -> usize;
+    const MOJOM_TYPE: MojomType;
 
     /// The amount of space in bits the type takes up when inlined
     /// into another type at serialization time.
@@ -378,12 +374,7 @@ macro_rules! impl_encodable_for_prim {
     ($($prim_type:ty),*) => {
         $(
         impl MojomEncodable for $prim_type {
-            fn mojom_type() -> MojomType {
-                MojomType::Simple
-            }
-            fn mojom_alignment() -> usize {
-                mem::size_of::<$prim_type>()
-            }
+            const MOJOM_TYPE: MojomType = MojomType::Simple;
             fn embed_size(_context: &Context) -> Bits {
                 Bits(8 * mem::size_of::<$prim_type>())
             }
@@ -405,12 +396,7 @@ macro_rules! impl_encodable_for_prim {
 impl_encodable_for_prim!(i8, i16, i32, i64, u8, u16, u32, u64, f32, f64);
 
 impl MojomEncodable for bool {
-    fn mojom_alignment() -> usize {
-        panic!("Should never check_decode mojom_alignment of bools (they're bit-aligned)!");
-    }
-    fn mojom_type() -> MojomType {
-        MojomType::Simple
-    }
+    const MOJOM_TYPE: MojomType = MojomType::Simple;
     fn embed_size(_context: &Context) -> Bits {
         Bits(1)
     }
@@ -428,14 +414,8 @@ impl MojomEncodable for bool {
 
 // Options should be considered to represent nullability the Mojom IDL.
 // Any type wrapped in an Option type is nullable.
-
 impl<T: MojomEncodable> MojomEncodable for Option<T> {
-    fn mojom_alignment() -> usize {
-        T::mojom_alignment()
-    }
-    fn mojom_type() -> MojomType {
-        T::mojom_type()
-    }
+    const MOJOM_TYPE: MojomType = T::MOJOM_TYPE;
     fn embed_size(context: &Context) -> Bits {
         T::embed_size(context)
     }
@@ -448,7 +428,7 @@ impl<T: MojomEncodable> MojomEncodable for Option<T> {
     fn encode(self, encoder: &mut Encoder, state: &mut EncodingState, context: Context) {
         match self {
             Some(value) => value.encode(encoder, state, context),
-            None => match T::mojom_type() {
+            None => match T::MOJOM_TYPE {
                 MojomType::Pointer => state.encode_null_pointer(),
                 MojomType::Union => state.encode_null_union(),
                 MojomType::Handle => state.encode_null_handle(),
@@ -463,7 +443,7 @@ impl<T: MojomEncodable> MojomEncodable for Option<T> {
     fn decode(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let skipped = {
             let state = decoder.get_mut(&context);
-            match T::mojom_type() {
+            match T::MOJOM_TYPE {
                 MojomType::Pointer => state.skip_if_null_pointer(),
                 MojomType::Union => state.skip_if_null_union(),
                 MojomType::Handle => state.skip_if_null_handle(),
@@ -793,12 +773,7 @@ impl<T: MojomEncodable + CastHandle + Handle> MojomHandle for T {}
 
 macro_rules! impl_encodable_for_handle {
     ($handle_type:path) => {
-        fn mojom_alignment() -> usize {
-            4
-        }
-        fn mojom_type() -> MojomType {
-            MojomType::Handle
-        }
+        const MOJOM_TYPE: MojomType = MojomType::Handle;
         fn embed_size(_context: &Context) -> Bits {
             Bits(8 * mem::size_of::<u32>())
         }
