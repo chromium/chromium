@@ -1709,8 +1709,6 @@ crbug.com/1377648 external/wpt/css/selectors/media/media-loading-state.html [ Sk
 crbug.com/1377648 external/wpt/css/selectors/media/media-playback-state.html [ Timeout ]
 crbug.com/1383480 external/wpt/css/selectors/invalidation/media-pseudo-classes-in-has.html [ Timeout ]
 crbug.com/1383480 external/wpt/css/selectors/invalidation/media-loading-pseudo-classes-in-has.html [ Skip Timeout ]
-crbug.com/1408679 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has-xhtml.xhtml [ Failure ]
-crbug.com/1408679 external/wpt/css/selectors/invalidation/lang-pseudo-class-in-has.html [ Failure ]
 
 # ====== Style team owned tests to here ======
 

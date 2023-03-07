@@ -425,8 +425,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::ReparseAttribute},
       {html_names::kTabindexAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::ReparseAttribute},
-      {xml_names::kLangAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::ReparseAttribute},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -749,8 +747,12 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
   DEFINE_STATIC_LOCAL(AttributeToTriggerIndexMap,
                       attribute_to_trigger_index_map, ());
   if (!attribute_to_trigger_index_map.size()) {
-    for (uint32_t i = 0; i < std::size(attribute_triggers); ++i)
+    for (uint32_t i = 0; i < std::size(attribute_triggers); ++i) {
+      DCHECK(attribute_triggers[i].attribute.NamespaceURI().IsNull())
+          << "Lookup table does not work for namespaced attributes because "
+             "they would not match for different prefixes";
       attribute_to_trigger_index_map.insert(attribute_triggers[i].attribute, i);
+    }
   }
 
   auto iter = attribute_to_trigger_index_map.find(attr_name);
@@ -825,8 +827,14 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
 
 void HTMLElement::ParseAttribute(const AttributeModificationParams& params) {
   AttributeTriggers* triggers = TriggersForAttributeName(params.name);
-  if (!triggers)
+  if (!triggers) {
+    if (!params.name.NamespaceURI().IsNull()) {
+      // AttributeTriggers lookup table does not support namespaced attributes.
+      // Fall back to Element implementation for attributes like xml:lang.
+      Element::ParseAttribute(params);
+    }
     return;
+  }
 
   if (triggers->event != g_null_atom) {
     SetAttributeEventListener(
@@ -3025,7 +3033,7 @@ void HTMLElement::OnFormAttrChanged(const AttributeModificationParams& params) {
 }
 
 void HTMLElement::OnLangAttrChanged(const AttributeModificationParams& params) {
-  PseudoStateChanged(CSSSelector::kPseudoLang);
+  LangAttributeChanged();
 }
 
 void HTMLElement::OnNonceAttrChanged(

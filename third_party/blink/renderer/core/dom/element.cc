@@ -4789,6 +4789,13 @@ Attr* Element::removeAttributeNode(Attr* attr,
   return attr;
 }
 
+void Element::LangAttributeChanged() {
+  SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
+  PseudoStateChanged(CSSSelector::kPseudoLang);
+}
+
 void Element::ParseAttribute(const AttributeModificationParams& params) {
   if (params.name == html_names::kTabindexAttr) {
     int tabindex = 0;
@@ -4807,8 +4814,8 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
     if (parentNode()) {
       UpdateFocusgroup(params.new_value);
     }
-  } else if (params.name == xml_names::kLangAttr) {
-    PseudoStateChanged(CSSSelector::kPseudoLang);
+  } else if (params.name.Matches(xml_names::kLangAttr)) {
+    LangAttributeChanged();
   }
 }
 
