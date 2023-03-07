@@ -317,6 +317,8 @@ extern const char kWaitForInitialPolicyFetchForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWebUiDataSourcePathForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGetAccessTokenForTest[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCameraEffectsSupportedByHardware[];
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -416,6 +418,9 @@ bool IsSkipRecorderNudgeShowThresholdDurationEnabled();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsStabilizeTimeDependentViewForTestsEnabled();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsCameraEffectsSupportedByHardware();
 
 }  // namespace ash::switches
 

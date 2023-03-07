@@ -9,9 +9,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #endif
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -88,6 +90,13 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
       const VideoConferenceManagerClientTest&) = delete;
 
   ~VideoConferenceManagerClientTest() override = default;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::ash::switches::kCameraEffectsSupportedByHardware);
+  }
+#endif
 
   // Creates and returns a new `WebContents` at the given tab `index`.
   content::WebContents* CreateWebContentsAt(int index) {

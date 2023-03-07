@@ -6,10 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 
@@ -22,6 +24,8 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kVideoConference, features::kVcBackgroundReplace}, {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
@@ -93,48 +97,25 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CameraEffectsControllerTest,
-       IsCameraEffectsSupportedShouldBeConsistentWithFlags) {
+TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures({}, {features::kVideoConference});
-    EXPECT_FALSE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
-    EXPECT_FALSE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kPortraitRelight));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
+    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
+        cros::mojom::CameraEffect::kBackgroundReplace));
   }
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures({features::kVideoConference}, {});
-    EXPECT_TRUE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
-    EXPECT_TRUE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kPortraitRelight));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({}, {features::kVcBackgroundReplace});
-    EXPECT_FALSE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundReplace));
-    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
-        cros::mojom::CameraEffect::kBackgroundReplace));
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({features::kVcBackgroundReplace}, {});
-    EXPECT_TRUE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundReplace));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }

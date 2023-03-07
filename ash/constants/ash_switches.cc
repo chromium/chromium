@@ -975,6 +975,10 @@ const char kWebUiDataSourcePathForTesting[] =
 // the internal OAuth client ID.
 const char kGetAccessTokenForTest[] = "get-access-token-for-test";
 
+// Indicates whether camera effects use flag is set in ChromeOS.
+const char kCameraEffectsSupportedByHardware[] =
+    "camera-effects-supported-by-hardware";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);
@@ -1116,6 +1120,11 @@ bool IsSkipRecorderNudgeShowThresholdDurationEnabled() {
 bool IsStabilizeTimeDependentViewForTestsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kStabilizeTimeDependentViewForTests);
+}
+
+bool IsCameraEffectsSupportedByHardware() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kCameraEffectsSupportedByHardware);
 }
 
 }  // namespace switches

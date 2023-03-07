@@ -50,13 +50,6 @@ class ASH_EXPORT CameraEffectsController : public media::CameraEffectObserver,
 
   ~CameraEffectsController() override;
 
-  // Returns whether a certain / any camera effects is supported.
-  // IsCameraEffectsSupported(cros::mojom::CameraEffect::kBackgroundBlur)
-  // returns whether background blur is supported. IsCameraEffectsSupported()
-  // returns if any camera effects is supported.
-  static bool IsCameraEffectsSupported(
-      cros::mojom::CameraEffect effect = cros::mojom::CameraEffect::kNone);
-
   // Returns 'true' if UI controls for `effect` are available to the user,
   // 'false' otherwise.
   bool IsEffectControlAvailable(

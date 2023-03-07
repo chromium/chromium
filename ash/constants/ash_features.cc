@@ -3220,7 +3220,8 @@ bool IsUseStorkSmdsServerAddressEnabled() {
 }
 
 bool IsVideoConferenceEnabled() {
-  return base::FeatureList::IsEnabled(kVideoConference);
+  return base::FeatureList::IsEnabled(kVideoConference) &&
+         switches::IsCameraEffectsSupportedByHardware();
 }
 
 bool IsVcBackgroundReplaceEnabled() {

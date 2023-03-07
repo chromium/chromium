@@ -8,9 +8,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #endif
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -96,6 +98,13 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
       const VideoConferenceMediaListenerBrowserTest&) = delete;
 
   ~VideoConferenceMediaListenerBrowserTest() override = default;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::ash::switches::kCameraEffectsSupportedByHardware);
+  }
+#endif
 
   // Adds a fake media device with the specified `MediaStreamType` and starts
   // the capturing.

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
@@ -15,6 +16,7 @@
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -252,7 +254,8 @@ TEST_F(PrivacyIndicatorsControllerTest,
        DoNotShowNotificationWithVideoConferenceEnabled) {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kVideoConference};
-
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kCameraEffectsSupportedByHardware);
   // Try to show a notification.
   std::string app_id = "test_app_id";
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);

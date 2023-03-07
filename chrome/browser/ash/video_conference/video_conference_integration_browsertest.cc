@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/video_conference/video_conference_tray.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -111,11 +113,14 @@ class VideoConferenceIntegrationTest : public WebRtcTestBase {
     EXPECT_TRUE(content::ExecJs(web_contents, "stopScreenSharing();"));
   }
 
-  void SetUpOnMainThread() override {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::ash::switches::kCameraEffectsSupportedByHardware);
     // Used for bypassing tab capturing selection.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kThisTabCaptureAutoAccept);
+    command_line->AppendSwitch(::switches::kThisTabCaptureAutoAccept);
+  }
 
+  void SetUpOnMainThread() override {
     WebRtcTestBase::SetUpOnMainThread();
 
     ASSERT_TRUE(embedded_test_server()->Start());

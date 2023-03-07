@@ -1299,11 +1299,8 @@ void Shell::Init(
 
   calendar_controller_ = std::make_unique<CalendarController>();
 
-  if (CameraEffectsController::IsCameraEffectsSupported()) {
-    camera_effects_controller_ = std::make_unique<CameraEffectsController>();
-  }
-
   if (features::IsVideoConferenceEnabled()) {
+    camera_effects_controller_ = std::make_unique<CameraEffectsController>();
     audio_effects_controller_ = std::make_unique<AudioEffectsController>();
   }
 

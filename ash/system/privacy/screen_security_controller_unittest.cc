@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
@@ -15,6 +16,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
@@ -54,6 +56,8 @@ class ScreenSecurityControllerTest : public AshTestBase,
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
     scoped_feature_list_.InitWithFeatureState(
         features::kPrivacyIndicators, IsPrivacyIndicatorsFeatureEnabled());
     AshTestBase::SetUp();
