@@ -102,7 +102,11 @@ class SigninClient : public KeyedService {
   virtual void RemoveContentSettingsObserver(
       content_settings::Observer* observer) = 0;
 
-  // Execute |callback| if and when there is a network connection.
+  // Returns `true` if network calls will be delayed by `DelayNetworkCall()`.
+  virtual bool AreNetworkCallsDelayed() = 0;
+
+  // Execute `callback` if and when there is a network connection. Also see
+  // `AreNetworkCallsDelayed()`.
   virtual void DelayNetworkCall(base::OnceClosure callback) = 0;
 
   // Creates a new platform-specific GaiaAuthFetcher.

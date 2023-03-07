@@ -68,6 +68,10 @@ void IOSWebViewSigninClient::PreSignOut(
   std::move(on_signout_decision_reached).Run(SignoutDecision::ALLOW);
 }
 
+bool IOSWebViewSigninClient::AreNetworkCallsDelayed() {
+  return network_callback_helper_->AreNetworkCallsDelayed();
+}
+
 void IOSWebViewSigninClient::DelayNetworkCall(base::OnceClosure callback) {
   network_callback_helper_->HandleCallback(std::move(callback));
 }

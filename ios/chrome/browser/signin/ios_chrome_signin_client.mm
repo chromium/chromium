@@ -70,6 +70,10 @@ void IOSChromeSigninClient::RemoveContentSettingsObserver(
   host_content_settings_map_->RemoveObserver(observer);
 }
 
+bool IOSChromeSigninClient::AreNetworkCallsDelayed() {
+  return network_callback_helper_->AreNetworkCallsDelayed();
+}
+
 void IOSChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
   network_callback_helper_->HandleCallback(std::move(callback));
 }
