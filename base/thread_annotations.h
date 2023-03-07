@@ -247,7 +247,7 @@ inline T& ts_unchecked_read(T& v) NO_THREAD_SAFETY_ANALYSIS {
 // synonyms are added for Chromium concepts (SequenceChecker/ThreadChecker).
 #if DCHECK_IS_ON()
 
-// Equivalent to GUARDED_BY for SequenceChecker/ThreadChecker. Currently,
+// Equivalent to GUARDED_BY for SequenceChecker/ThreadChecker.
 #define GUARDED_BY_CONTEXT(name) GUARDED_BY(name)
 
 // Equivalent to EXCLUSIVE_LOCKS_REQUIRED for SequenceChecker/ThreadChecker.
