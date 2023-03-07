@@ -549,10 +549,6 @@
     "label": "//ios/chrome/test/wpt:wpt_tests_ios",
     "type": "generated_script",
   },
-  "ios_cwt_chromedriver_tests_module": {
-    "label": "//ios/chrome/test/wpt:ios_cwt_chromedriver_tests_module",
-    "type": "generated_script",
-  },
   "chrome/browser/media/router": {
     "label": "//chrome/browser/media/router:router",
     "type": "additional_compile_target",
