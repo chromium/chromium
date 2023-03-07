@@ -85,9 +85,13 @@ BlinkGCPluginConsumer::BlinkGCPluginConsumer(
       options_(options),
       cache_(instance),
       json_(0) {
-  // Only check structures in the blink and WebKit namespaces.
+  // Only check structures in the blink, cppgc and pdfium.
   options_.checked_namespaces.insert("blink");
   options_.checked_namespaces.insert("cppgc");
+
+  if (options_.enable_checks_for_pdfium_directory) {
+    options_.checked_directories.push_back("pdfium/");
+  }
 
   // Ignore GC implementation files.
   options_.ignored_directories.push_back(
@@ -621,10 +625,8 @@ std::string BlinkGCPluginConsumer::GetLocString(SourceLocation loc) {
 }
 
 bool BlinkGCPluginConsumer::IsIgnored(RecordInfo* record) {
-  return (!record ||
-          !InCheckedNamespace(record) ||
-          IsIgnoredClass(record) ||
-          InIgnoredDirectory(record));
+  return (!record || !InCheckedNamespaceOrDirectory(record) ||
+          IsIgnoredClass(record) || InIgnoredDirectory(record));
 }
 
 bool BlinkGCPluginConsumer::IsIgnoredClass(RecordInfo* info) {
@@ -655,7 +657,7 @@ bool BlinkGCPluginConsumer::InIgnoredDirectory(RecordInfo* info) {
   return false;
 }
 
-bool BlinkGCPluginConsumer::InCheckedNamespace(RecordInfo* info) {
+bool BlinkGCPluginConsumer::InCheckedNamespaceOrDirectory(RecordInfo* info) {
   if (!info)
     return false;
   for (DeclContext* context = info->record()->getDeclContext();
@@ -668,6 +670,18 @@ bool BlinkGCPluginConsumer::InCheckedNamespace(RecordInfo* info) {
           options_.checked_namespaces.end()) {
         return true;
       }
+    }
+  }
+  std::string filename;
+  if (!GetFilename(info->record()->getBeginLoc(), &filename)) {
+    return false;
+  }
+#if defined(_WIN32)
+  std::replace(filename.begin(), filename.end(), '\\', '/');
+#endif
+  for (const auto& checked_dir : options_.checked_directories) {
+    if (filename.find(checked_dir) != std::string::npos) {
+      return true;
     }
   }
   return false;

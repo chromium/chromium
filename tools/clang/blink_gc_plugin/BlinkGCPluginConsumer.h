@@ -75,7 +75,7 @@ class BlinkGCPluginConsumer : public clang::ASTConsumer {
 
   bool InIgnoredDirectory(RecordInfo* info);
 
-  bool InCheckedNamespace(RecordInfo* info);
+  bool InCheckedNamespaceOrDirectory(RecordInfo* info);
 
   bool GetFilename(clang::SourceLocation loc, std::string* filename);
 
