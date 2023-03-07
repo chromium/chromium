@@ -181,7 +181,7 @@ using base::UmaHistogramEnumeration;
   }
   web::WebFrame* activeWebFrame = web::GetWebFrameWithId(
       activeWebState, self.lastFocusedElementFrameIdentifier);
-  if (!activeWebFrame || !activeWebFrame->CanCallJavaScriptFunction()) {
+  if (!activeWebFrame) {
     return;
   }
 

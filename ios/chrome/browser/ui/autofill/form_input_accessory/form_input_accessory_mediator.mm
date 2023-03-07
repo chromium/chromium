@@ -283,7 +283,7 @@ using base::UmaHistogramEnumeration;
   }
 
   // Return early and reset if frame is missing or can't call JS.
-  if (!frame || !frame->CanCallJavaScriptFunction()) {
+  if (!frame) {
     [self reset];
     return;
   }

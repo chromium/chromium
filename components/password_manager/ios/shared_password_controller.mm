@@ -268,9 +268,6 @@ BOOL canProcessCrossOriginIframes() {
     frameDidBecomeAvailable:(web::WebFrame*)web_frame {
   DCHECK_EQ(_webState, webState);
   DCHECK(web_frame);
-  if (!web_frame->CanCallJavaScriptFunction()) {
-    return;
-  }
   UniqueIDDataTabHelper* uniqueIDDataTabHelper =
       UniqueIDDataTabHelper::FromWebState(_webState);
   uint32_t nextAvailableRendererID =
@@ -298,7 +295,7 @@ BOOL canProcessCrossOriginIframes() {
   if (webState->IsBeingDestroyed()) {
     return;
   }
-  if (web_frame->IsMainFrame() || !web_frame->CanCallJavaScriptFunction()) {
+  if (web_frame->IsMainFrame()) {
     return;
   }
 
@@ -892,7 +889,7 @@ BOOL canProcessCrossOriginIframes() {
 
   GURL pageURL;
   if (!GetPageURLAndCheckTrustLevel(webState, &pageURL) || !frame ||
-      !frame->CanCallJavaScriptFunction() || params.input_missing ||
+      params.input_missing ||
       (IsCrossOriginIframe(_webState, frame->IsMainFrame(),
                            frame->GetSecurityOrigin()) &&
        !canProcessCrossOriginIframes())) {

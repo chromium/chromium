@@ -236,14 +236,6 @@ TEST_F(LinkToTextMediatorTest, ShouldNotOfferLinkToTextNotHTML) {
   EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
 }
 
-// Tests that the mediator should not offer link to text when, for some reason,
-// the main frame cannot call JavaScript functions.
-TEST_F(LinkToTextMediatorTest,
-       ShouldNotOfferLinkToTextCannotExecuteJavaScript) {
-  main_frame_->set_can_call_function(false);
-  EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
-}
-
 // Tests that the shareHighlight command is triggered with the right parameters
 // when the view is not zoomed in.
 TEST_F(LinkToTextMediatorTest, HandleLinkToTextSelectionTriggersCommandNoZoom) {

@@ -68,7 +68,7 @@ bool WebSelectionJavaScriptFeature::GetSelectedText(web::WebState* web_state) {
   web::WebFrame* frame =
       web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
 
-  if (!frame || !frame->CanCallJavaScriptFunction()) {
+  if (!frame) {
     return false;
   }
   return CallJavaScriptFunction(frame, kWebSelectionFunctionName,

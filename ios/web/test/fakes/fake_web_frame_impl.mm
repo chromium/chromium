@@ -71,9 +71,6 @@ bool FakeWebFrameImpl::IsMainFrame() const {
 GURL FakeWebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
 }
-bool FakeWebFrameImpl::CanCallJavaScriptFunction() const {
-  return can_call_function_;
-}
 
 BrowserState* FakeWebFrameImpl::GetBrowserState() {
   return browser_state_;
@@ -87,10 +84,6 @@ void FakeWebFrameImpl::set_call_java_script_function_callback(
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters) {
-  if (!can_call_function_) {
-    return false;
-  }
-
   if (call_java_script_function_callback_) {
     call_java_script_function_callback_.Run();
   }
@@ -109,7 +102,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
   }
   javascript_call += u");";
   java_script_calls_.push_back(javascript_call);
-  return can_call_function_;
+  return true;
 }
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
@@ -224,10 +217,6 @@ void FakeWebFrameImpl::set_browser_state(BrowserState* browser_state) {
 
 void FakeWebFrameImpl::set_force_timeout(bool force_timeout) {
   force_timeout_ = force_timeout;
-}
-
-void FakeWebFrameImpl::set_can_call_function(bool can_call_function) {
-  can_call_function_ = can_call_function;
 }
 
 }  // namespace web

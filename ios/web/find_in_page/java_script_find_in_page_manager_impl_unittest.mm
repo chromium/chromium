@@ -287,23 +287,6 @@ TEST_F(JavaScriptFindInPageManagerImplTest, DelegateNotSet) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Tests that Find In Page returns no matches if can't call JavaScript function.
-TEST_F(JavaScriptFindInPageManagerImplTest, FrameCannotCallJavaScriptFunction) {
-  auto one = std::make_unique<base::Value>(1.0);
-  auto frame_cannot_call_func =
-      CreateMainWebFrameWithJsResultForFind(one.get());
-  frame_cannot_call_func->set_can_call_function(false);
-  AddWebFrame(std::move(frame_cannot_call_func));
-
-  GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
-
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return fake_delegate_.state();
-  }));
-  EXPECT_EQ(0, fake_delegate_.state()->match_count);
-}
-
 // Tests that  Find In Page responds with a total match count of zero when there
 // are no known webpage frames.
 TEST_F(JavaScriptFindInPageManagerImplTest, NoFrames) {

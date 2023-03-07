@@ -48,7 +48,6 @@ class WebFrameImpl : public WebFrame,
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   GURL GetSecurityOrigin() const override;
-  bool CanCallJavaScriptFunction() const override;
   BrowserState* GetBrowserState() override;
 
   bool CallJavaScriptFunction(
