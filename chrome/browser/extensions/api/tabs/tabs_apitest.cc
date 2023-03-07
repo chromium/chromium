@@ -212,8 +212,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Connect) {
   ASSERT_TRUE(RunExtensionTest("tabs/connect")) << message_;
 }
 
-// TODO(crbug.com/1222122): Flaky
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, DISABLED_TabOnRemoved) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
 
