@@ -123,7 +123,7 @@ TEST(CSSSelectorParserTest, ValidANPlusB) {
     SCOPED_TRACE(test_case.input);
 
     std::pair<int, int> ab;
-    CSSTokenizer tokenizer(test_case.input);
+    CSSTokenizer tokenizer(StringView(test_case.input));
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     bool passed = CSSSelectorParser::ConsumeANPlusB(range, ab);
@@ -142,7 +142,7 @@ TEST(CSSSelectorParserTest, InvalidANPlusB) {
       "12n- +34", "23n-+43", "10n 5", "10n + +5", "10n + -5",
   };
 
-  for (auto* test_case : test_cases) {
+  for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
 
     std::pair<int, int> ab;
@@ -165,7 +165,7 @@ TEST(CSSSelectorParserTest, PseudoElementsInCompoundLists) {
                               ":-webkit-any(::content, span)"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (StringView test_case : test_cases) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -188,7 +188,7 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
                               "::slotted(div)::after"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (StringView test_case : test_cases) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -223,7 +223,7 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
       "::slotted([attr])::-webkit-scrollbar"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (StringView test_case : test_cases) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -270,7 +270,7 @@ TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
   HeapVector<CSSSelector> arena;
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.selector);
-    CSSTokenizer tokenizer(test_case.selector);
+    CSSTokenizer tokenizer(StringView(test_case.selector));
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -303,7 +303,7 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
       "input[type=\"range\" i]::-webkit-media-slider-container > div"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (StringView test_case : test_cases) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -322,7 +322,7 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
                               "::selection *"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (StringView test_case : test_cases) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -343,7 +343,7 @@ TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (StringView test_case : test_cases) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -361,7 +361,7 @@ TEST(CSSSelectorParserTest, UnexpectedPipe) {
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (StringView test_case : test_cases) {
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
@@ -392,7 +392,7 @@ TEST(CSSSelectorParserTest, SerializedUniversal) {
   HeapVector<CSSSelector> arena;
   for (auto** test_case : test_cases) {
     SCOPED_TRACE(test_case[0]);
-    CSSTokenizer tokenizer(test_case[0]);
+    CSSTokenizer tokenizer(StringView{test_case[0]});
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -411,7 +411,7 @@ TEST(CSSSelectorParserTest, AttributeSelectorUniversalInvalid) {
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
@@ -435,7 +435,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
                               ":-internal-video-persistent-ancestor"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
@@ -635,7 +635,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLStrict) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSTokenizer tokenizer(test_case.input);
+    CSSTokenizer tokenizer(StringView(test_case.input));
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -663,7 +663,7 @@ TEST(CSSSelectorParserTest, ASCIILowerHTMLQuirks) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSTokenizer tokenizer(test_case.input);
+    CSSTokenizer tokenizer(StringView(test_case.input));
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -682,7 +682,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
                               "host::part(ident):hover"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
@@ -693,7 +693,7 @@ TEST(CSSSelectorParserTest, ShadowPartPseudoElementValid) {
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
     CSSSelectorList* list = CSSSelectorList::AdoptSelectorVector(vector);
-    EXPECT_EQ(test_case, list->SelectorsText().Utf8());
+    EXPECT_EQ(test_case, list->SelectorsText());
   }
 }
 
@@ -704,7 +704,7 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
       "::part(ident)::first-letter", "::part(ident)::selection"};
 
   HeapVector<CSSSelector> arena;
-  for (auto* test_case : test_cases) {
+  for (String test_case : test_cases) {
     SCOPED_TRACE(test_case);
     CSSTokenizer tokenizer(test_case);
     const auto tokens = tokenizer.TokenizeToEOF();
@@ -734,7 +734,7 @@ static bool IsCounted(const char* selector,
 
   DCHECK(!doc->IsUseCounted(feature));
 
-  CSSTokenizer tokenizer(selector);
+  CSSTokenizer tokenizer(StringView{selector});
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
@@ -939,7 +939,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
   HeapVector<CSSSelector> arena;
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.input);
-    CSSTokenizer tokenizer(test_case.input);
+    CSSTokenizer tokenizer(StringView(test_case.input));
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -973,7 +973,7 @@ TEST(CSSSelectorParserTest, WebKitScrollbarPseudoParsing) {
   bool enabled_states[] = {false, true};
   for (auto state : enabled_states) {
     ScopedWebKitScrollbarStylingForTest scoped_feature(state);
-    for (auto* test_case : test_cases) {
+    for (StringView test_case : test_cases) {
       CSSTokenizer tokenizer(test_case);
       const auto tokens = tokenizer.TokenizeToEOF();
       CSSParserTokenRange range(tokens);

@@ -23,7 +23,11 @@ class CORE_EXPORT CSSTokenizer {
   DISALLOW_NEW();
 
  public:
+  // The overload with const String& holds on to a reference to the string.
+  // (Most places, we probably don't need to do that, but fixing that would
+  // require manual inspection.)
   explicit CSSTokenizer(const String&, wtf_size_t offset = 0);
+  explicit CSSTokenizer(StringView, wtf_size_t offset = 0);
   CSSTokenizer(const CSSTokenizer&) = delete;
   CSSTokenizer& operator=(const CSSTokenizer&) = delete;
 

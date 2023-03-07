@@ -409,7 +409,7 @@ void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
     } else {
       query_set = MediaQueryParser::ParseMediaQuerySetInMode(
           CSSParserTokenRange(
-              CSSTokenizer(test_cases[i].input).TokenizeToEOF()),
+              CSSTokenizer(StringView(test_cases[i].input)).TokenizeToEOF()),
           mode, nullptr);
     }
     EXPECT_EQ(test_cases[i].output, media_query_evaluator.Eval(*query_set))

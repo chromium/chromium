@@ -36,6 +36,11 @@ CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
   input_.Advance(offset);
 }
 
+CSSTokenizer::CSSTokenizer(StringView string, wtf_size_t offset)
+    : input_(string) {
+  input_.Advance(offset);
+}
+
 Vector<CSSParserToken, 32> CSSTokenizer::TokenizeToEOF() {
   Vector<CSSParserToken, 32> tokens;
   tokens.ReserveInitialCapacity((input_.length() - Offset()) /

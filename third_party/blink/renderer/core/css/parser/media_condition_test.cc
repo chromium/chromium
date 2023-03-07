@@ -49,7 +49,7 @@ TEST(MediaConditionParserTest, Basic) {
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SCOPED_TRACE(test_cases[i].input);
-    CSSTokenizer tokenizer(test_cases[i].input);
+    CSSTokenizer tokenizer(StringView(test_cases[i].input));
     const auto tokens = tokenizer.TokenizeToEOF();
     MediaQuerySet* media_condition_query_set =
         MediaQueryParser::ParseMediaCondition(CSSParserTokenRange(tokens),
