@@ -1114,8 +1114,8 @@ bool QuotaDatabase::ResetStorage() {
   DCHECK(!db_ || !db_->transaction_nesting());
   VLOG(1) << "Deleting existing quota data and starting over.";
 
-  db_.reset();
   meta_table_.reset();
+  db_.reset();
 
   sql::Database::Delete(legacy_db_file_path_);
   sql::Database::Delete(db_file_path_);
