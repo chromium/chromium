@@ -239,6 +239,28 @@ class TestTrackerDisplayLockController : public DisplayLockController {
   std::unique_ptr<DisplayLockHandle> next_display_lock_handle_;
 };
 
+class TestTrackerEventExporter
+    : public TrackerEventExporter,
+      public base::SupportsWeakPtr<TestTrackerEventExporter> {
+ public:
+  TestTrackerEventExporter() = default;
+
+  ~TestTrackerEventExporter() override = default;
+
+  void ExportEvents(ExportEventsCallback callback) override {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), events_to_export_));
+  }
+
+  void SetEventsToExport(std::vector<EventData> events) {
+    events_to_export_ = events;
+  }
+
+ private:
+  // The events to export
+  std::vector<EventData> events_to_export_;
+};
+
 class TrackerImplTest : public ::testing::Test {
  public:
   TrackerImplTest() = default;
@@ -291,10 +313,13 @@ class TrackerImplTest : public ::testing::Test {
     auto time_provider = std::make_unique<TestTimeProvider>();
     time_provider_ = time_provider.get();
 
+    event_exporter_ = std::make_unique<TestTrackerEventExporter>();
+
     tracker_ = std::make_unique<TrackerImpl>(
         std::move(event_model), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
-        std::move(condition_validator), std::move(time_provider));
+        std::move(condition_validator), std::move(time_provider),
+        event_exporter_->AsWeakPtr());
   }
 
   void VerifyEventTrigger(std::string event_name, uint32_t count) {
@@ -503,6 +528,7 @@ class TrackerImplTest : public ::testing::Test {
   raw_ptr<TestTrackerAvailabilityModel> availability_model_;
   raw_ptr<TestTrackerDisplayLockController> display_lock_controller_;
   raw_ptr<Configuration> configuration_;
+  std::unique_ptr<TestTrackerEventExporter> event_exporter_;
   base::HistogramTester histogram_tester_;
   raw_ptr<OnceConditionValidator> condition_validator_;
   raw_ptr<TestTimeProvider> time_provider_;
@@ -684,6 +710,112 @@ TEST_F(FailingAvailabilityModelInitTrackerImplTest, AvailabilityModelNotReady) {
   EXPECT_FALSE(tracker_->IsInitialized());
   EXPECT_TRUE(callback.invoked());
   EXPECT_FALSE(callback.success());
+}
+
+TEST_F(TrackerImplTest, TestMigrateEvents) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+  TestTrackerEventExporter::EventData event1("test", 1);
+  event_exporter_->SetEventsToExport({event1});
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+
+  // Check that event made it into the store.
+  Event stored_event1 = event_store_->GetEvent("test");
+  EXPECT_EQ("test", stored_event1.name());
+  ASSERT_EQ(1, stored_event1.events_size());
+  EXPECT_EQ(1u, stored_event1.events(0).day());
+  EXPECT_EQ(1u, stored_event1.events(0).count());
+}
+
+TEST_F(TrackerImplTest, TestMigrateMultipleEvents) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+  TestTrackerEventExporter::EventData event1("test", 1);
+  TestTrackerEventExporter::EventData event2("test2", 1);
+  event_exporter_->SetEventsToExport({event1, event2});
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+
+  // Check that events made it into the store.
+  Event stored_event1 = event_store_->GetEvent("test");
+  EXPECT_EQ("test", stored_event1.name());
+  ASSERT_EQ(1, stored_event1.events_size());
+  EXPECT_EQ(1u, stored_event1.events(0).day());
+  EXPECT_EQ(1u, stored_event1.events(0).count());
+
+  Event stored_event2 = event_store_->GetEvent("test2");
+  EXPECT_EQ("test2", stored_event2.name());
+  ASSERT_EQ(1, stored_event2.events_size());
+  EXPECT_EQ(1u, stored_event2.events(0).day());
+  EXPECT_EQ(1u, stored_event2.events(0).count());
+}
+
+TEST_F(TrackerImplTest, TestMigrateSameEventMultipleTimes) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+  TestTrackerEventExporter::EventData event1("test", 1);
+  TestTrackerEventExporter::EventData event2("test", 1);
+  TestTrackerEventExporter::EventData event3("test", 2);
+  event_exporter_->SetEventsToExport({event1, event2, event3});
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+
+  // Check that events made it into the store.
+  Event stored_event = event_store_->GetEvent("test");
+  EXPECT_EQ("test", stored_event.name());
+  ASSERT_EQ(2, stored_event.events_size());
+  EXPECT_EQ(1u, stored_event.events(0).day());
+  EXPECT_EQ(2u, stored_event.events(0).count());
+
+  EXPECT_EQ(2u, stored_event.events(1).day());
+  EXPECT_EQ(1u, stored_event.events(1).count());
+}
+
+TEST_F(TrackerImplTest, TestNoMigration) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+
+  // Reset the event provider to simulate not providing one.
+  event_exporter_.reset();
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished and no crash or NPE happens.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
 }
 
 TEST_F(TrackerImplTest, TestSetPriorityNotificationBeforeRegistration) {

@@ -87,7 +87,7 @@ std::unique_ptr<Tracker> CreateDemoModeTracker() {
       std::make_unique<NeverAvailabilityModel>(), std::move(configuration),
       std::make_unique<NoopDisplayLockController>(),
       std::make_unique<OnceConditionValidator>(),
-      std::make_unique<SystemTimeProvider>());
+      std::make_unique<SystemTimeProvider>(), nullptr);
 }
 
 }  // namespace
@@ -99,7 +99,8 @@ std::unique_ptr<Tracker> CreateDemoModeTracker() {
 Tracker* Tracker::Create(
     const base::FilePath& storage_dir,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
-    leveldb_proto::ProtoDatabaseProvider* db_provider) {
+    leveldb_proto::ProtoDatabaseProvider* db_provider,
+    base::WeakPtr<TrackerEventExporter> event_exporter) {
   DVLOG(2) << "Creating Tracker";
   if (base::FeatureList::IsEnabled(kIPHDemoMode))
     return CreateDemoModeTracker().release();
@@ -144,7 +145,7 @@ Tracker* Tracker::Create(
   return new TrackerImpl(
       std::move(event_model), std::move(availability_model),
       std::move(configuration), std::make_unique<DisplayLockControllerImpl>(),
-      std::move(condition_validator), std::move(time_provider));
+      std::move(condition_validator), std::move(time_provider), event_exporter);
 }
 
 TrackerImpl::TrackerImpl(
@@ -153,13 +154,15 @@ TrackerImpl::TrackerImpl(
     std::unique_ptr<Configuration> configuration,
     std::unique_ptr<DisplayLockController> display_lock_controller,
     std::unique_ptr<ConditionValidator> condition_validator,
-    std::unique_ptr<TimeProvider> time_provider)
+    std::unique_ptr<TimeProvider> time_provider,
+    base::WeakPtr<TrackerEventExporter> event_exporter)
     : event_model_(std::move(event_model)),
       availability_model_(std::move(availability_model)),
       configuration_(std::move(configuration)),
       display_lock_controller_(std::move(display_lock_controller)),
       condition_validator_(std::move(condition_validator)),
       time_provider_(std::move(time_provider)),
+      event_exporter_(event_exporter),
       event_model_initialization_finished_(false),
       availability_model_initialization_finished_(false) {
   event_model_->Initialize(
@@ -387,7 +390,12 @@ void TrackerImpl::OnEventModelInitializationFinished(bool success) {
 
   DVLOG(2) << "Event model initialization result = " << success;
 
-  MaybePostInitializedCallbacks();
+  if (event_exporter_) {
+    event_exporter_->ExportEvents(base::BindOnce(
+        &TrackerImpl::OnReceiveExportedEvents, weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    MaybePostInitializedCallbacks();
+  }
 }
 
 void TrackerImpl::OnAvailabilityModelInitializationFinished(bool success) {
@@ -400,8 +408,11 @@ void TrackerImpl::OnAvailabilityModelInitializationFinished(bool success) {
 }
 
 bool TrackerImpl::IsInitializationFinished() const {
+  bool event_migration_finished =
+      event_exporter_ == nullptr || event_migration_finished_;
   return event_model_initialization_finished_ &&
-         availability_model_initialization_finished_;
+         availability_model_initialization_finished_ &&
+         event_migration_finished;
 }
 
 void TrackerImpl::MaybePostInitializedCallbacks() {
@@ -427,6 +438,16 @@ void TrackerImpl::RecordShownTime(const base::Feature& feature) {
   UmaHistogramTimes("InProductHelp.ShownTime." + feature_name,
                     time_provider_->Now() - iter->second);
   start_times_.erase(feature_name);
+}
+
+void TrackerImpl::OnReceiveExportedEvents(
+    std::vector<TrackerEventExporter::EventData> events) {
+  for (auto& event : events) {
+    event_model_->IncrementEvent(event.event_name, event.day);
+  }
+
+  event_migration_finished_ = true;
+  MaybePostInitializedCallbacks();
 }
 
 // static
