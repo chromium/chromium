@@ -24,8 +24,9 @@ class ReadingListEntry;
 @property(nonatomic, weak) id<ReadingListListItemFactoryDelegate> delegate;
 
 // Factory method that provides a ListItem for the reading list.
-- (ListItem<ReadingListListItem>*)cellItemForReadingListEntry:
-    (const ReadingListEntry*)entry;
+- (ListItem<ReadingListListItem>*)
+    cellItemForReadingListEntry:(const ReadingListEntry*)entry
+            needsExplicitUpload:(BOOL)needsExplicitUpload;
 
 @end
 

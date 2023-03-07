@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/features/reading_list_switches.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
@@ -143,13 +144,21 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
   std::sort(unreadEntries.begin(), unreadEntries.end(), EntrySorter);
 
   for (scoped_refptr<const ReadingListEntry> entry : readEntries) {
-    [readArray
-        addObject:[self.itemFactory cellItemForReadingListEntry:entry.get()]];
+    bool needsExplicitUpload =
+        self.model->NeedsExplicitUploadToSyncServer(entry->URL());
+    ListItem<ReadingListListItem>* item =
+        [self.itemFactory cellItemForReadingListEntry:entry.get()
+                                  needsExplicitUpload:needsExplicitUpload];
+    [readArray addObject:item];
   }
 
   for (scoped_refptr<const ReadingListEntry> entry : unreadEntries) {
-    [unreadArray
-        addObject:[self.itemFactory cellItemForReadingListEntry:entry.get()]];
+    bool needsExplicitUpload =
+        self.model->NeedsExplicitUploadToSyncServer(entry->URL());
+    ListItem<ReadingListListItem>* item =
+        [self.itemFactory cellItemForReadingListEntry:entry.get()
+                                  needsExplicitUpload:needsExplicitUpload];
+    [unreadArray addObject:item];
   }
 
   DCHECK(self.model->GetKeys().size() ==
@@ -274,6 +283,7 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
         oldItem.entryURL = newItem.entryURL;
         oldItem.distillationState = newItem.distillationState;
         oldItem.distillationDateText = newItem.distillationDateText;
+        oldItem.showCloudSlashIcon = newItem.showCloudSlashIcon;
       }
       if (oldItem.faviconPageURL != newItem.faviconPageURL) {
         oldItem.faviconPageURL = newItem.faviconPageURL;

@@ -30,6 +30,7 @@ source_set("reading_list") {
     "//components/favicon/core",
     "//components/feature_engagement",
     "//components/reading_list/core",
+    "//components/reading_list/features:flags",
     "//components/reading_list/ios",
     "//components/url_formatter",
     "//ios/chrome/app/strings",

@@ -28,6 +28,8 @@ class GURL;
 @property(nonatomic, copy) NSString* estimatedReadTimeText;
 // The string that displays the distillation date.
 @property(nonatomic, copy) NSString* distillationDateText;
+// Whether the cloud slash icon should be shown.
+@property(nonatomic, assign) BOOL showCloudSlashIcon;
 // The custom action factory.
 @property(nonatomic, weak)
     ReadingListListItemCustomActionFactory* customActionFactory;

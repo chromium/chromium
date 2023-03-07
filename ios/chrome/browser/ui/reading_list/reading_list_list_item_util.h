@@ -16,7 +16,8 @@
 NSString* GetReadingListCellAccessibilityLabel(
     NSString* title,
     NSString* subtitle,
-    ReadingListUIDistillationStatus distillation_status);
+    ReadingListUIDistillationStatus distillation_status,
+    BOOL showCloudSlashIcon);
 
 // Returns the string to use to display the distillation date in reading list
 // cells.  The date is in microseconds since Jan 1st 1970.

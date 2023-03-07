@@ -32,13 +32,6 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
 @implementation TableViewURLItem
 
-@synthesize title = _title;
-@synthesize URL = _URL;
-@synthesize supplementalURLText = _supplementalURLText;
-@synthesize supplementalURLTextDelimiter = _supplementalURLTextDelimiter;
-@synthesize badgeImage = _badgeImage;
-@synthesize metadata = _metadata;
-
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
@@ -58,6 +51,8 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   cell.thirdRowLabel.text = self.thirdRowText;
   cell.faviconBadgeView.image = self.badgeImage;
   cell.metadataLabel.text = self.metadata;
+  cell.metadataImage.image = self.metadataImage;
+  cell.metadataImage.tintColor = self.metadataImageColor;
   cell.cellUniqueIdentifier = self.uniqueIdentifier;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
 
@@ -134,8 +129,6 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 // `-accessibilityLabel` will return a lazily created label based on the
 // text values of the UILabel subviews.
 @property(nonatomic, assign) BOOL shouldGenerateAccessibilityLabel;
-// Horizontal StackView that holds url, title, and metadata labels.
-@property(nonatomic, strong) UIStackView* horizontalStack;
 // Container View for the faviconView.
 @property(nonatomic, strong) FaviconContainerView* faviconContainerView;
 // Activity indicator (spinner) used for indicating an in-flight request related
@@ -143,7 +136,14 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 @end
 
-@implementation TableViewURLCell
+@implementation TableViewURLCell {
+  // Constraint defining the distance between the title vertical stack view and
+  // the metadata image.
+  NSLayoutConstraint* _titleMetadataImageSpacingConstraint;
+  // Constraint defining the distance between the metadata label and the
+  // metadata image views.
+  NSLayoutConstraint* _metadataViewsSpacingConstraint;
+}
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -156,6 +156,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _titleLabel = [[UILabel alloc] init];
     _URLLabel = [[UILabel alloc] init];
     _thirdRowLabel = [[UILabel alloc] init];
+    _metadataImage = [[UIImageView alloc] init];
     _metadataLabel = [[UILabel alloc] init];
 
     // Set font sizes using dynamic type.
@@ -175,6 +176,7 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     _metadataLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _metadataLabel.adjustsFontForContentSizeCategory = YES;
     _metadataLabel.hidden = YES;
+    _metadataImage.contentMode = UIViewContentModeCenter;
 
     // Use stack views to layout the subviews except for the favicon.
     UIStackView* verticalStack = [[UIStackView alloc]
@@ -186,22 +188,29 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    [_metadataImage setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    [_metadataImage
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
 
-    // Horizontal stack view holds vertical stack view and metadata label.
-    self.horizontalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ verticalStack, _metadataLabel ]];
-    self.horizontalStack.axis = UILayoutConstraintAxisHorizontal;
-    self.horizontalStack.spacing = kTableViewSubViewHorizontalSpacing;
-    self.horizontalStack.distribution = UIStackViewDistributionFill;
-    self.horizontalStack.alignment = UIStackViewAlignmentFill;
+    // Horizontal view holds vertical stack view and metadata views.
+    UIView* horizontalView = [[UIView alloc] init];
+    [horizontalView addSubview:verticalStack];
+    [horizontalView addSubview:_metadataImage];
+    [horizontalView addSubview:_metadataLabel];
 
     UIView* contentView = self.contentView;
     _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     _faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
+    horizontalView.translatesAutoresizingMaskIntoConstraints = NO;
+    verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+    _metadataImage.translatesAutoresizingMaskIntoConstraints = NO;
+    _metadataLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_faviconContainerView];
     [contentView addSubview:_faviconBadgeView];
-    [contentView addSubview:self.horizontalStack];
+    [contentView addSubview:horizontalView];
 
     NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight];
@@ -209,15 +218,12 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     // height.
     heightConstraint.priority = UILayoutPriorityRequired - 1;
 
-    NSLayoutConstraint* topConstraint = [self.horizontalStack.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
-                                    constant:
-                                        kTableViewTwoLabelsCellVerticalSpacing];
-    NSLayoutConstraint* bottomConstraint = [self.horizontalStack.bottomAnchor
-        constraintGreaterThanOrEqualToAnchor:self.contentView.bottomAnchor
-                                    constant:
-                                        -
-                                        kTableViewTwoLabelsCellVerticalSpacing];
+    _titleMetadataImageSpacingConstraint = [_metadataImage.leadingAnchor
+        constraintEqualToAnchor:verticalStack.trailingAnchor
+                       constant:0];
+    _metadataViewsSpacingConstraint = [_metadataLabel.leadingAnchor
+        constraintEqualToAnchor:_metadataImage.trailingAnchor
+                       constant:0];
 
     [NSLayoutConstraint activateConstraints:@[
       [_faviconContainerView.leadingAnchor
@@ -235,15 +241,40 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
       // The stack view fills the remaining space, has an intrinsic height, and
       // is centered vertically.
-      [self.horizontalStack.leadingAnchor
+      [horizontalView.leadingAnchor
           constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                          constant:kTableViewSubViewHorizontalSpacing],
-      [self.horizontalStack.trailingAnchor
+      [horizontalView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
-      [self.horizontalStack.centerYAnchor
+      [horizontalView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
-      topConstraint, bottomConstraint, heightConstraint
+      [verticalStack.topAnchor
+          constraintEqualToAnchor:horizontalView.topAnchor],
+      [verticalStack.bottomAnchor
+          constraintEqualToAnchor:horizontalView.bottomAnchor],
+      [verticalStack.leadingAnchor
+          constraintEqualToAnchor:horizontalView.leadingAnchor],
+      [_metadataImage.centerYAnchor
+          constraintEqualToAnchor:horizontalView.centerYAnchor],
+      [_metadataImage.heightAnchor
+          constraintLessThanOrEqualToAnchor:horizontalView.heightAnchor],
+      [_metadataLabel.firstBaselineAnchor
+          constraintEqualToAnchor:verticalStack.firstBaselineAnchor],
+      [_metadataLabel.trailingAnchor
+          constraintEqualToAnchor:horizontalView.trailingAnchor],
+      [_metadataLabel.heightAnchor
+          constraintLessThanOrEqualToAnchor:horizontalView.heightAnchor],
+      [horizontalView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
+                                      constant:
+                                        kTableViewTwoLabelsCellVerticalSpacing],
+      [horizontalView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor
+                                   constant:
+                                       -kTableViewTwoLabelsCellVerticalSpacing],
+      _titleMetadataImageSpacingConstraint, _metadataViewsSpacingConstraint,
+      heightConstraint
     ]];
   }
   return self;
@@ -259,11 +290,19 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 - (void)configureUILayout {
   if ([self.metadataLabel.text length]) {
     self.metadataLabel.hidden = NO;
-    // Align metadataLabel to first line of content in vertical stack.
-    self.horizontalStack.alignment = UIStackViewAlignmentFirstBaseline;
+    _metadataViewsSpacingConstraint.constant =
+        kTableViewTwoLabelsCellVerticalSpacing;
   } else {
     self.metadataLabel.hidden = YES;
-    self.horizontalStack.alignment = UIStackViewAlignmentFill;
+    _metadataViewsSpacingConstraint.constant = 0;
+  }
+  if ([self.metadataImage image]) {
+    self.metadataImage.hidden = NO;
+    _titleMetadataImageSpacingConstraint.constant =
+        kTableViewTwoLabelsCellVerticalSpacing;
+  } else {
+    self.metadataImage.hidden = YES;
+    _titleMetadataImageSpacingConstraint.constant = 0;
   }
   if ([self.URLLabel.text length]) {
     self.URLLabel.hidden = NO;
@@ -282,8 +321,8 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
   [super prepareForReuse];
   [self.faviconView configureWithAttributes:nil];
   self.faviconBadgeView.image = nil;
-  self.horizontalStack.alignment = UIStackViewAlignmentFill;
   self.metadataLabel.hidden = YES;
+  self.metadataImage.image = nil;
   self.URLLabel.hidden = YES;
   self.thirdRowLabel.hidden = YES;
 }

@@ -21,17 +21,21 @@
 NSString* GetReadingListCellAccessibilityLabel(
     NSString* title,
     NSString* subtitle,
-    ReadingListUIDistillationStatus distillation_status) {
+    ReadingListUIDistillationStatus distillation_status,
+    BOOL showCloudSlashIcon) {
   int state_string_id =
       distillation_status == ReadingListUIDistillationStatusSuccess
           ? IDS_IOS_READING_LIST_ACCESSIBILITY_STATE_DOWNLOADED
           : IDS_IOS_READING_LIST_ACCESSIBILITY_STATE_NOT_DOWNLOADED;
   NSString* a11y_state = l10n_util::GetNSString(state_string_id);
+  int base_string_id =
+      showCloudSlashIcon
+          ? IDS_IOS_READING_LIST_ENTRY_WITH_UPLOAD_STATE_ACCESSIBILITY_LABEL
+          : IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL;
 
-  return l10n_util::GetNSStringF(IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL,
-                                 base::SysNSStringToUTF16(title),
-                                 base::SysNSStringToUTF16(a11y_state),
-                                 base::SysNSStringToUTF16(subtitle));
+  return l10n_util::GetNSStringF(
+      base_string_id, base::SysNSStringToUTF16(title),
+      base::SysNSStringToUTF16(a11y_state), base::SysNSStringToUTF16(subtitle));
 }
 
 NSString* GetReadingListCellDistillationDateText(int64_t distillation_date) {
@@ -56,9 +60,10 @@ BOOL AreReadingListListItemsEqual(id<ReadingListListItem> first,
     return YES;
   if (!first || !second || ![second isKindOfClass:[first class]])
     return NO;
-  return
-      [first.title isEqualToString:second.title] &&
-      first.entryURL.host() == second.entryURL.host() &&
-      first.distillationState == second.distillationState &&
-      [first.distillationDateText isEqualToString:second.distillationDateText];
+  return [first.title isEqualToString:second.title] &&
+         first.entryURL.host() == second.entryURL.host() &&
+         first.distillationState == second.distillationState &&
+         [first.distillationDateText
+             isEqualToString:second.distillationDateText] &&
+         first.showCloudSlashIcon == second.showCloudSlashIcon;
 }

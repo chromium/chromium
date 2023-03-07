@@ -60,8 +60,9 @@
 
 #pragma mark Public
 
-- (ListItem<ReadingListListItem>*)cellItemForReadingListEntry:
-    (const ReadingListEntry*)entry {
+- (ListItem<ReadingListListItem>*)
+    cellItemForReadingListEntry:(const ReadingListEntry*)entry
+            needsExplicitUpload:(BOOL)needsExplicitUpload {
   ListItem<ReadingListListItem>* item =
       [[ReadingListTableViewItem alloc] initWithType:0];
   item.title = base::SysUTF8ToNSString(entry->Title());
@@ -78,6 +79,7 @@
       hasDistillationDetails ? entry->DistillationTime() : 0;
   item.distillationDateText =
       GetReadingListCellDistillationDateText(distillationDate);
+  item.showCloudSlashIcon = needsExplicitUpload;
   item.customActionFactory = self.customActionFactory;
   return item;
 }

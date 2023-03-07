@@ -74,6 +74,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeURLWithSize,
   ItemTypeURLWithSupplementalText,
   ItemTypeURLWithThirdRowText,
+  ItemTypeURLWithMetadata,
+  ItemTypeURLWithMetadataImage,
   ItemTypeURLWithBadgeImage,
   ItemTypeTextSettingsDetail,
   ItemTypeTableViewWithBlueDot,
@@ -666,6 +668,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   item.thirdRowText = @"Unavailable";
   item.thirdRowTextColor = UIColor.redColor;
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadata];
+  item.title = @"Web Channel with metadata image and label";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  item.metadata = @"176 KB";
+  item.metadataImage = CustomSymbolTemplateWithPointSize(kCloudSlashSymbol, 18);
+  item.metadataImageColor = [UIColor colorNamed:kTextSecondaryColor];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadataImage];
+  item.title = @"Web Channel with metadata image";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  item.metadataImage = CustomSymbolTemplateWithPointSize(kCloudSlashSymbol, 18);
+  item.metadataImageColor = [UIColor colorNamed:kTextSecondaryColor];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 }
 

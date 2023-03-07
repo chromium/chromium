@@ -35,6 +35,11 @@
 @property(nonatomic, strong) NSString* detailText;
 // Metadata text displayed at the trailing edge of the cell.
 @property(nonatomic, readwrite, copy) NSString* metadata;
+// Metadata image displayed at the trailing edge of the cell, before the
+// metadata text if there's any.
+@property(nonatomic, readwrite, copy) UIImage* metadataImage;
+// Tint color for metadata image.
+@property(nonatomic, readwrite, copy) UIColor* metadataImageColor;
 // The image for the badge view added over the favicon.
 @property(nonatomic, readwrite, strong) UIImage* badgeImage;
 // Identifier to match a URLItem with its URLCell.
@@ -64,6 +69,9 @@
 
 // Optional metadata that is displayed at the trailing edge of the cell.
 @property(nonatomic, readonly, strong) UILabel* metadataLabel;
+
+// Optional metadata image that is displayed at the trailing edge of the cell.
+@property(nonatomic, readonly, strong) UIImageView* metadataImage;
 
 // Optional third row label. This is never used in place of the second row of
 // text.

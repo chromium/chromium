@@ -2265,8 +2265,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_READING_LIST_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to the user to inform that the selected page has been added to the reading list. [Length: 35em]" meaning="The selected page has been added to your reading list. [Length: 35em]">
         Added to Reading List
       </message>
-      <message name="IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL" desc="Accessibility label for a reading list entry. Summarizes fields in the reading list entry (title, status and url). Read by Text To Speech.">
+      <message name="IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL" desc="Accessibility label for a reading list entry. Summarizes fields in the reading list entry (title, status and url). Read by Text To Speech. Similar to IDS_IOS_READING_LIST_ENTRY_WITH_UPLOAD_STATE_ACCESSIBILITY_LABEL">
         <ph name="TITLE"><ex>Chromium - The Chromium Projects</ex>$1</ph>, <ph name="STATE"><ex>Available offline</ex>$2</ph>, <ph name="URL"><ex>http://www.chromium.org/Home</ex>$3</ph>
+      </message>
+      <message name="IDS_IOS_READING_LIST_ENTRY_WITH_UPLOAD_STATE_ACCESSIBILITY_LABEL" desc="Accessibility label for a reading list entry. Summarizes fields in the reading list entry (title, status, upload state and url). Read by Text To Speech. Similar to IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL">
+        <ph name="TITLE"><ex>Chromium - The Chromium Projects</ex>$1</ph>, <ph name="STATE"><ex>Available offline</ex>$2</ph>, Only on this device, <ph name="URL"><ex>http://www.chromium.org/Home</ex>$3</ph>
       </message>
       <message name="IDS_IOS_READING_LIST_ACCESSIBILITY_STATE_DOWNLOADED" desc="Accessibility label for the offline status of the reading list entry. Read by Text To Speech.">
         Available offline
