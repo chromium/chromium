@@ -2969,7 +2969,7 @@ TEST_F(InputHandlerProxyEventQueueTest, OriginalEventsTracing) {
   EXPECT_CALL(mock_input_handler_, PinchGestureUpdate(_, _));
   EXPECT_CALL(mock_input_handler_, PinchGestureEnd(_));
 
-  trace_analyzer::Start("*");
+  trace_analyzer::Start("input");
   // Simulate scroll.
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -20);
