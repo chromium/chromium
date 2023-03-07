@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 
 class AccountId;
+class PrefRegistrySimple;
 class PrefService;
 
 namespace ash {
@@ -46,6 +47,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   SessionControllerImpl& operator=(const SessionControllerImpl&) = delete;
 
   ~SessionControllerImpl() override;
+
+  // Registers syncable user profile prefs with the specified `registry`.
+  static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
 
   base::TimeDelta session_length_limit() const { return session_length_limit_; }
   base::Time session_start_time() const { return session_start_time_; }

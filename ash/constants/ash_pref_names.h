@@ -671,6 +671,10 @@ extern const char kPrimaryPointingStickButtonRight[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPointingStickAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kTimeOfLastSessionActivation[];
+
 }  // namespace prefs
 }  // namespace ash
 
