@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -810,6 +811,12 @@ const char kEasyUnlockLocalStateTpmKeys[] = "easy_unlock.public_tpm_keys";
 const char kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime[] =
     "browser.last_google_search_domain_mixing_metrics_time";
 
+// Deprecated 03/2023
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kGlanceablesSignoutScreenshotDuration[] =
+    "ash.signout_screenshot.duration";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -895,6 +902,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Deprecated 02/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kEasyUnlockLocalStateTpmKeys);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 03/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterTimeDeltaPref(kGlanceablesSignoutScreenshotDuration,
+                                  base::TimeDelta());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1860,6 +1873,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 // Added 02/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kEasyUnlockLocalStateTpmKeys);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 03/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kGlanceablesSignoutScreenshotDuration);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

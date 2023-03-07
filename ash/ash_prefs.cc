@@ -163,7 +163,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
     QuickSettingsFooter::RegisterLocalStatePrefs(registry);
   else
     TopShortcutsView::RegisterLocalStatePrefs(registry);
-  glanceables_util::RegisterLocalStatePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
 }
 

@@ -58,12 +58,6 @@ TEST_F(SignoutScreenshotHandlerTest, TakeScreenshotWithWindowOpen) {
   int64_t file_size = 0;
   ASSERT_TRUE(base::GetFileSize(screenshot_path_, &file_size));
   EXPECT_GT(file_size, 0);
-
-  // Screenshot duration was recorded.
-  base::TimeDelta duration =
-      glanceables_util::GetSignoutScreenshotDurationForTest(
-          Shell::Get()->local_state());
-  EXPECT_FALSE(duration.is_zero());
 }
 
 // Tests that no screenshot is taken when no windows are open and the existing
