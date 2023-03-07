@@ -52,7 +52,8 @@ class ExtensionAssetsManagerChromeOS : public ExtensionAssetsManager {
   void UninstallExtension(const std::string& id,
                           const std::string& profile_user_name,
                           const base::FilePath& local_install_dir,
-                          const base::FilePath& extension_root) override;
+                          const base::FilePath& extension_root,
+                          const base::FilePath& profile_dir) override;
 
   // Return shared install dir.
   static base::FilePath GetSharedInstallDir();

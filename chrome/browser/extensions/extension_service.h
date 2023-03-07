@@ -629,7 +629,8 @@ class ExtensionService : public ExtensionServiceInterface,
       const std::string& id,
       const std::string& profile_user_name,
       const base::FilePath& install_dir,
-      const base::FilePath& extension_path);
+      const base::FilePath& extension_path,
+      const base::FilePath& profile_dir);
 
   // Called when the initial extensions load has completed.
   void OnInstalledExtensionsLoaded();

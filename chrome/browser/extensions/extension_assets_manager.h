@@ -44,7 +44,8 @@ class ExtensionAssetsManager {
   virtual void UninstallExtension(const std::string& id,
                                   const std::string& profile_user_name,
                                   const base::FilePath& local_install_dir,
-                                  const base::FilePath& extension_root) = 0;
+                                  const base::FilePath& extension_root,
+                                  const base::FilePath& profile_dir) = 0;
 
  protected:
   virtual ~ExtensionAssetsManager() {}

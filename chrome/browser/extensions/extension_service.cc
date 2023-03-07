@@ -821,7 +821,8 @@ bool ExtensionService::UninstallExtension(
             FROM_HERE,
             base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
                            extension->id(), profile_->GetProfileUserName(),
-                           install_directory_, extension->path()),
+                           install_directory_, extension->path(),
+                           profile_->GetPath()),
             subtask_done_callback)) {
       NOTREACHED();
     }
@@ -847,11 +848,12 @@ void ExtensionService::UninstallExtensionOnFileThread(
     const std::string& id,
     const std::string& profile_user_name,
     const base::FilePath& install_dir,
-    const base::FilePath& extension_path) {
+    const base::FilePath& extension_path,
+    const base::FilePath& profile_dir) {
   ExtensionAssetsManager* assets_manager =
       ExtensionAssetsManager::GetInstance();
   assets_manager->UninstallExtension(id, profile_user_name, install_dir,
-                                     extension_path);
+                                     extension_path, profile_dir);
 }
 
 bool ExtensionService::IsExtensionEnabled(

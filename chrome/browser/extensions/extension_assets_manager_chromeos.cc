@@ -175,9 +175,10 @@ void ExtensionAssetsManagerChromeOS::UninstallExtension(
     const std::string& id,
     const std::string& profile_user_name,
     const base::FilePath& local_install_dir,
-    const base::FilePath& extension_root) {
+    const base::FilePath& extension_root,
+    const base::FilePath& profile_dir) {
   if (local_install_dir.IsParent(extension_root)) {
-    file_util::UninstallExtension(local_install_dir, id);
+    file_util::UninstallExtension(profile_dir, local_install_dir, id);
     return;
   }
 
