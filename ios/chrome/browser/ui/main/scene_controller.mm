@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
+#import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
@@ -3319,6 +3320,8 @@ void InjectNTP(Browser* browser) {
   ChromeBrowserState* mainBrowserState =
       self.sceneState.appState.mainBrowserState;
   DCHECK(mainBrowserState->HasOffTheRecordChromeBrowserState());
+  ChromeBrowserState* otrBrowserState =
+      mainBrowserState->GetOffTheRecordChromeBrowserState();
 
   NSMutableArray<SceneController*>* sceneControllers =
       [[NSMutableArray alloc] init];
@@ -3336,14 +3339,19 @@ void InjectNTP(Browser* browser) {
     [sceneController willDestroyIncognitoBrowserState];
   }
 
-  // Record off-the-record metrics before detroying the BrowserState.
-  if (mainBrowserState->HasOffTheRecordChromeBrowserState()) {
-    ChromeBrowserState* otrBrowserState =
-        mainBrowserState->GetOffTheRecordChromeBrowserState();
+  // Delete all the remaining sessions. This is asynchronous, but will happen
+  // after all pending saves, if any, have completed. There is a risk of a
+  // race-condition with loading them, but as -incognitoBrowserStateCreated
+  // does not load the session, the only risk is if the application were to
+  // crash before the deletion could complete (in which case the user may
+  // see the previous state of the app before closing the last incognito tab).
+  [[SessionServiceIOS sharedService]
+      deleteAllSessionFilesInDirectory:otrBrowserState->GetStatePath()
+                            completion:base::DoNothing()];
 
-    SessionMetrics::FromBrowserState(otrBrowserState)
-        ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
-  }
+  // Record off-the-record metrics before detroying the BrowserState.
+  SessionMetrics::FromBrowserState(otrBrowserState)
+      ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
 
   // Destroy and recreate the off-the-record BrowserState.
   mainBrowserState->DestroyOffTheRecordChromeBrowserState();
