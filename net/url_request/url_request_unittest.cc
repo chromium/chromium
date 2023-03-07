@@ -10526,13 +10526,12 @@ class HTTPSOCSPTest : public HTTPSCertNetFetchingTest {
 };
 
 static bool UsingBuiltinCertVerifier() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(CHROME_ROOT_STORE_ONLY)
   return true;
+#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  return base::FeatureList::IsEnabled(features::kChromeRootStoreUsed);
 #else
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed))
-    return true;
-#endif
   return false;
 #endif
 }
@@ -10545,13 +10544,7 @@ static bool UsingBuiltinCertVerifier() {
 // If it does not, then tests which rely on 'hard fail' behaviour should be
 // skipped.
 static bool SystemSupportsHardFailRevocationChecking() {
-  if (UsingBuiltinCertVerifier())
-    return true;
-#if BUILDFLAG(IS_WIN)
-  return true;
-#else
-  return false;
-#endif
+  return UsingBuiltinCertVerifier();
 }
 
 // SystemUsesChromiumEVMetadata returns true iff the current operating system
@@ -10721,6 +10714,7 @@ TEST_F(HTTPSOCSPTest, IntermediateResponseOldButStillValid) {
     EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
   } else {
 #if BUILDFLAG(IS_WIN)
+    // TODO(https://crbug.com/1380536): cleanup the IS_WIN blocks in this file.
     // TODO(mattm): Seems to be flaky on Windows. Either returns
     // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
     // soft-fail), or CERT_STATUS_REVOKED.

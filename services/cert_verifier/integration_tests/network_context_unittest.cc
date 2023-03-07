@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
 #include "net/log/test_net_log.h"
+#include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -104,7 +105,7 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
       cert_verifier_service_factory_;
 };
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 namespace {
 
 network::mojom::NetworkContextParamsPtr CreateContextParams() {
@@ -232,6 +233,6 @@ INSTANTIATE_TEST_SUITE_P(
                ? (*std::get<1>(info.param) ? "ParamTrue" : "ParamFalse")
                : "ParamNotSet"});
     });
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 }  // namespace cert_verifier

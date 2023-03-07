@@ -86,6 +86,8 @@ buildflag_header("buildflags") {
     "USE_KERBEROS=$use_kerberos",
     "USE_EXTERNAL_GSSAPI=$use_external_gssapi",
     "TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED=$trial_comparison_cert_verifier_supported",
+    "CHROME_ROOT_STORE_OPTIONAL=$chrome_root_store_optional",
+    "CHROME_ROOT_STORE_ONLY=$chrome_root_store_only",
     "CHROME_ROOT_STORE_SUPPORTED=$chrome_root_store_supported",
   ]
 }

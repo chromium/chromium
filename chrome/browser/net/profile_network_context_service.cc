@@ -67,6 +67,7 @@
 #include "net/base/features.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
+#include "net/net_buildflags.h"
 #include "net/ssl/client_cert_store.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -944,7 +945,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       cert_verifier_configuration =
           GetChromeCertVerifierServiceParams(/*local_state=*/nullptr);
   DCHECK(cert_verifier_configuration);
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   is_trial_comparison_supported &=
       !cert_verifier_configuration->use_chrome_root_store;
 #endif

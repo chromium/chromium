@@ -296,7 +296,7 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        NotOfficialBuildTrialEnabled) {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
     // If ChromeRootStoreUsed feature is enabled by default,
     // TrialComparisonCertVerifier will not be allowed. It is not safe to
@@ -345,7 +345,7 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 }
 
 TEST_P(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
     // If ChromeRootStoreUsed feature is enabled by default,
     // TrialComparisonCertVerifier will not be allowed. It is not safe to
@@ -438,7 +438,7 @@ TEST_P(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        OfficialBuildTrialEnabledTwoClients) {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
     // If ChromeRootStoreUsed feature is enabled by default,
     // TrialComparisonCertVerifier will not be allowed. It is not safe to
@@ -561,7 +561,7 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        OfficialBuildTrialEnabledUmaOnly) {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
     // If ChromeRootStoreUsed feature is enabled by default,
     // TrialComparisonCertVerifier will not be allowed. It is not safe to
@@ -609,7 +609,7 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        IncognitoOfficialBuildTrialEnabled) {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
     // If ChromeRootStoreUsed feature is enabled by default,
     // TrialComparisonCertVerifier will not be allowed. It is not safe to

@@ -136,25 +136,18 @@ void SecurityStateWebContentsObserver::DidChangeVisibleSecurityState() {
 }
 
 bool UsingBuiltinCertVerifier() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(CHROME_ROOT_STORE_ONLY)
   return true;
+#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
 #else
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed))
-    return true;
-#endif
   return false;
 #endif
 }
 
 bool SystemSupportsHardFailRevocationChecking() {
-  if (UsingBuiltinCertVerifier())
-    return true;
-#if BUILDFLAG(IS_WIN)
-  return true;
-#else
-  return false;
-#endif
+  return UsingBuiltinCertVerifier();
 }
 
 bool SystemUsesChromiumEVMetadata() {
@@ -172,10 +165,6 @@ bool SystemSupportsOCSPStapling() {
     return true;
 #if BUILDFLAG(IS_ANDROID)
   return false;
-#elif BUILDFLAG(IS_MAC)
-  // The SecTrustSetOCSPResponse function exists since macOS 10.9+, but does
-  // not actually do anything until 10.12.
-  return true;
 #else
   return true;
 #endif

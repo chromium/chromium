@@ -476,8 +476,12 @@ void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   should_install |= GetChromeCertVerifierServiceParams(/*local_state=*/nullptr)
                         ->use_chrome_root_store;
+#else
+  should_install = true;
+#endif
 
 // Even if we aren't using Chrome Root Store for cert verification, we may be
 // trialing it. Check if the trial is enabled.

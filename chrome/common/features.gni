@@ -35,7 +35,7 @@ declare_args() {
   # Platforms where the ChromeRootStoreEnabled enterprise policy is
   # supported. This must must match the supported_on/future_on list of the
   # policy in policy_templates.json and be a subset of the
-  # chrome_root_store_supported platforms.
+  # chrome_root_store_optional platforms.
   # See https://crbug.com/1228958. This can be removed when the Chrome Root
   # Store is unconditionally enabled on all platforms.
   chrome_root_store_policy_supported = is_linux || is_chromeos

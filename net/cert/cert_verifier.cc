@@ -5,6 +5,7 @@
 #include "net/cert/cert_verifier.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -79,7 +80,7 @@ bool CertVerifier::RequestParams::operator<(
 std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
   scoped_refptr<CertVerifyProc> verify_proc;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (!verify_proc &&
       base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
     verify_proc = CertVerifyProc::CreateBuiltinWithChromeRootStore(
@@ -87,7 +88,10 @@ std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
   }
 #endif
   if (!verify_proc) {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+    verify_proc = CertVerifyProc::CreateBuiltinWithChromeRootStore(
+        std::move(cert_net_fetcher));
+#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     verify_proc =
         CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
 #else

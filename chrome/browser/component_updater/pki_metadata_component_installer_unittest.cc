@@ -532,17 +532,6 @@ TEST_F(PKIMetadataComponentInstallerTest, ReconfigureWhenNotInstalled) {
 class PKIMetadataComponentInstallerDisabledTest
     : public PKIMetadataComponentInstallerTest {
   void SetUp() override {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-      // If ChromeRootStoreUsed feature is enabled by default, PKI metadata
-      // component will always be registered. It is not safe to change the
-      // kChromeRootStoreUsed flag in unit_tests since multiple tests run in
-      // the same process, and GetChromeCertVerifierServiceParams will
-      // globally enforce a single configuration for the lifetime of the
-      // process. Therefore just skip this test if CRS is enabled.
-      GTEST_SKIP();
-    }
-#endif
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features = */ {},
         /* disabled_features = */ {certificate_transparency::features::
@@ -554,8 +543,32 @@ class PKIMetadataComponentInstallerDisabledTest
 // Tests that the PKI Metadata component does not get registered if both the CT
 // component updater and KP component updater features are disabled.
 TEST_F(PKIMetadataComponentInstallerDisabledTest,
-       DoNotRegisterIfFeatureDisabled) {
+       MaybeDoNotRegisterIfFeatureDisabled) {
+#if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+  // Chrome Root Store is unconditionally used on this build config, so PKI
+  // metadata component will always be registered even if the other feature
+  // flags are disabled.
+  EXPECT_CALL(mock_component_update_, RegisterComponent)
+      .Times(1)
+      .WillOnce(testing::Return(true));
+#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
+    // If ChromeRootStoreUsed feature is enabled by default, PKI metadata
+    // component will always be registered. It is not safe to change the
+    // kChromeRootStoreUsed flag in unit_tests since multiple tests run in
+    // the same process, and GetChromeCertVerifierServiceParams will
+    // globally enforce a single configuration for the lifetime of the
+    // process. Therefore test that the component is registered if CRS is
+    // enabled.
+    EXPECT_CALL(mock_component_update_, RegisterComponent)
+        .Times(1)
+        .WillOnce(testing::Return(true));
+  } else {
+    EXPECT_CALL(mock_component_update_, RegisterComponent).Times(0);
+  }
+#else
   EXPECT_CALL(mock_component_update_, RegisterComponent).Times(0);
+#endif
   component_updater::MaybeRegisterPKIMetadataComponent(&mock_component_update_);
   task_environment_.RunUntilIdle();
 }

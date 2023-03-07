@@ -55,7 +55,7 @@ class TrialComparisonCertVerifierFeatureEnabledTest
         // the TrialComparisonCertVerifier is not used when that feature is
         // enabled.
         /*disabled_features=*/{
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
           net::features::kChromeRootStoreUsed,
 #endif
         });
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(TrialComparisonCertVerifierFeatureEnabledTest,
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
 }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 class TrialComparisonCertVerifierFeatureOverridenByChromeRootStoreTest
     : public TrialComparisonCertVerifierTest {
  public:
@@ -137,4 +137,4 @@ IN_PROC_BROWSER_TEST_F(
   // feature are enabled, the dual cert verifier trial should not be used.
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 0);
 }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)

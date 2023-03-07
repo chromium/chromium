@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 class CertVerifierServiceChromeRootStoreFeaturePolicyTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<
@@ -119,7 +119,7 @@ INSTANTIATE_TEST_SUITE_P(
                ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
                : "PolicyNotSet"});
     });
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 class CertVerifierServiceEnforceLocalAnchorConstraintsFeaturePolicyTest
     : public policy::PolicyTest,

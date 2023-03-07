@@ -20,6 +20,9 @@ mojom("mojom") {
     sources += [ "trial_comparison_cert_verifier.mojom" ]
   }
 
+  if (chrome_root_store_optional) {
+    enabled_features += [ "is_chrome_root_store_optional" ]
+  }
   if (chrome_root_store_supported) {
     enabled_features += [ "is_chrome_root_store_supported" ]
   }

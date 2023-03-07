@@ -64,6 +64,7 @@ crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
 // CertVerifyProcFactory that returns a CertVerifyProc that supports the old
 // configuration for platforms where we are transitioning from one cert
 // configuration to another. If the platform only supports one configuration,
@@ -106,6 +107,7 @@ class OldDefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
   crypto::ScopedPK11Slot user_slot_restriction_;
 #endif
 };
+#endif  // !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 // CertVerifyProcFactory that returns a CertVerifyProc that uses the
@@ -195,12 +197,12 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
       primary_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
                                                  root_store_data);
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   auto trial_proc_factory =
       base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>(
           creation_params);
 #else
-#error "CHROME_ROOT_STORE_SUPPORTED must be true"
+#error "CHROME_ROOT_STORE_OPTIONAL must be true"
 #endif
 
   scoped_refptr<net::CertVerifyProc> trial_proc =
@@ -240,7 +242,11 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  if (!cert_verifier && impl_params->use_chrome_root_store) {
+  if (!cert_verifier
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+      && impl_params->use_chrome_root_store
+#endif
+  ) {
     scoped_refptr<NewCertVerifyProcChromeRootStoreFactory> proc_factory =
         base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>(
             creation_params);
@@ -257,6 +263,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
   }
 #endif
 
+#if !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
   if (!cert_verifier) {
     scoped_refptr<OldDefaultCertVerifyProcFactory> proc_factory =
         base::MakeRefCounted<OldDefaultCertVerifyProcFactory>(creation_params);
@@ -264,6 +271,8 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
         proc_factory->CreateCertVerifyProc(cert_net_fetcher, root_store_data),
         proc_factory);
   }
+#endif
+
   return cert_verifier;
 }
 
