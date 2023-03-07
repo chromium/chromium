@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -22,6 +23,12 @@ CSSCustomIdentValue::CSSCustomIdentValue(const AtomicString& str)
 CSSCustomIdentValue::CSSCustomIdentValue(CSSPropertyID id)
     : CSSValue(kCustomIdentClass), string_(), property_id_(id) {
   DCHECK(IsKnownPropertyID());
+}
+
+CSSCustomIdentValue::CSSCustomIdentValue(const ScopedCSSName& name)
+    : CSSCustomIdentValue(name.GetName()) {
+  tree_scope_ = name.GetTreeScope();
+  needs_tree_scope_population_ = false;
 }
 
 String CSSCustomIdentValue::CustomCSSText() const {

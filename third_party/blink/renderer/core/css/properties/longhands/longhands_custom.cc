@@ -164,8 +164,7 @@ const CSSValue* AnchorDefault::CSSValueFromComputedStyleInternal(
   if (!style.AnchorDefault()) {
     return CSSIdentifierValue::Create(CSSValueID::kImplicit);
   }
-  return MakeGarbageCollected<CSSCustomIdentValue>(
-      style.AnchorDefault()->GetName());
+  return MakeGarbageCollected<CSSCustomIdentValue>(*style.AnchorDefault());
 }
 
 const CSSValue* AnchorName::ParseSingleValue(
@@ -185,8 +184,7 @@ const CSSValue* AnchorName::CSSValueFromComputedStyleInternal(
   if (!style.AnchorName()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  return MakeGarbageCollected<CSSCustomIdentValue>(
-      style.AnchorName()->GetName());
+  return MakeGarbageCollected<CSSCustomIdentValue>(*style.AnchorName());
 }
 
 const CSSValue* AnchorScroll::ParseSingleValue(
@@ -214,7 +212,7 @@ const CSSValue* AnchorScroll::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kImplicit);
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(
-      style.AnchorScroll()->GetName().GetName());
+      style.AnchorScroll()->GetName());
 }
 
 const CSSValue* AnimationComposition::ParseSingleValue(
@@ -6262,8 +6260,7 @@ const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
   if (!style.PositionFallback()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  return MakeGarbageCollected<CSSCustomIdentValue>(
-      style.PositionFallback()->GetName());
+  return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionFallback());
 }
 
 const CSSValue* Quotes::ParseSingleValue(CSSParserTokenRange& range,
