@@ -5802,8 +5802,10 @@ test("unit_tests") {
   }
 
   if (is_chromeos_ash) {
-    sources +=
-        [ "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc" ]
+    sources += [
+      "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc",
+      "../browser/ui/ash/arc_vm_data_migration_confirmation_dialog_unittest.cc",
+    ]
   }
 
   if (enable_downgrade_processing) {

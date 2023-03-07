@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_SESSION_ARC_VM_DATA_MIGRATION_CONFIRMATION_DIALOG_H_
-#define ASH_COMPONENTS_ARC_SESSION_ARC_VM_DATA_MIGRATION_CONFIRMATION_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_ASH_ARC_VM_DATA_MIGRATION_CONFIRMATION_DIALOG_H_
+#define CHROME_BROWSER_UI_ASH_ARC_VM_DATA_MIGRATION_CONFIRMATION_DIALOG_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -43,4 +43,4 @@ void ShowArcVmDataMigrationConfirmationDialog(
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_SESSION_ARC_VM_DATA_MIGRATION_CONFIRMATION_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_ASH_ARC_VM_DATA_MIGRATION_CONFIRMATION_DIALOG_H_
