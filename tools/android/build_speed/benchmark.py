@@ -41,15 +41,19 @@ from typing import Dict, Callable, Iterator, List, Tuple, Optional
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
 _SRC_ROOT = pathlib.Path(__file__).resolve().parents[3]
-sys.path.append(str(_SRC_ROOT / 'build' / 'android'))
+sys.path.append(str(_SRC_ROOT / 'build/android'))
 from pylib import constants
 import devil_chromium
 
-sys.path.append(str(_SRC_ROOT / 'third_party' / 'catapult' / 'devil'))
+sys.path.append(str(_SRC_ROOT / 'third_party/catapult/devil'))
 from devil.android.sdk import adb_wrapper
 from devil.android import device_utils
 
-_EMULATOR_AVD_DIR = _SRC_ROOT / 'tools' / 'android' / 'avd'
+_AUTONINJA_PATH = _SRC_ROOT / 'third_party/depot_tools/autoninja'
+_NINJA_PATH = _SRC_ROOT / 'third_party/ninja/ninja'
+_GN_PATH = _SRC_ROOT / 'third_party/depot_tools/gn'
+
+_EMULATOR_AVD_DIR = _SRC_ROOT / 'tools/android/avd'
 _AVD_SCRIPT = _EMULATOR_AVD_DIR / 'avd.py'
 _AVD_CONFIG_DIR = _EMULATOR_AVD_DIR / 'proto'
 _SECONDS_TO_POLL_FOR_EMULATOR = 30
@@ -216,7 +220,7 @@ def _backup_file(file_path: pathlib.Path):
 
 @contextlib.contextmanager
 def _server():
-    cmd = [_SRC_ROOT / 'build' / 'android' / 'fast_local_dev_server.py']
+    cmd = [_SRC_ROOT / 'build/android/fast_local_dev_server.py']
     # Avoid the build server's output polluting benchmark results, but allow
     # stderr to get through in case the build server fails with an error.
     # TODO(wnwen): Switch to using subprocess.run and check=True to quit if the
@@ -323,15 +327,19 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
 
 
 def _run_gn_gen(out_dir: pathlib.Path) -> float:
-    return _run_and_time_cmd(['gn', 'gen', '-C', str(out_dir)])
+    return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
 
 
 def _run_autoninja(out_dir: pathlib.Path, target: str) -> float:
-    return _run_and_time_cmd(['autoninja', '-C', str(out_dir), target])
+    return _run_and_time_cmd(
+        [str(_AUTONINJA_PATH), '-C',
+         str(out_dir), target])
 
 
 def _run_ninja(out_dir: pathlib.Path, target: str, j: str) -> float:
-    return _run_and_time_cmd(['ninja', '-j', j, '-C', str(out_dir), target])
+    return _run_and_time_cmd(
+        [str(_NINJA_PATH), '-j', j, '-C',
+         str(out_dir), target])
 
 
 def _run_install(out_dir: pathlib.Path, target: str,
