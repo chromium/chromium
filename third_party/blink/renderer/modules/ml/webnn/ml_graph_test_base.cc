@@ -18,21 +18,43 @@ MLGraph* ToMLGraph(V8TestingScope* scope, ScriptValue value) {
       scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
 }
 
-std::string ExecutionModeParamToString(
-    const ::testing::TestParamInfo<ExecutionMode>& execution_mode) {
-  switch (execution_mode.param) {
-    case ExecutionMode::kAsync:
-      return "Async";
-    case ExecutionMode::kSync:
-      return "Sync";
+std::string TestVarietyToString(
+    const ::testing::TestParamInfo<TestVariety>& info) {
+  BackendType backend_type = std::get<0>(info.param);
+  ExecutionMode execution_mode = std::get<1>(info.param);
+  std::string name;
+
+  switch (backend_type) {
+    case BackendType::kFake:
+      // The name of Fake backend from test parameter doesn't output avoid
+      // duplicating with the fixture name |FakeMLGraphTest|.
+      name += "";
+      break;
+    case BackendType::kXnnpack:
+      name += "Xnnpack_";
+      break;
   }
+
+  switch (execution_mode) {
+    case ExecutionMode::kAsync:
+      name += "Async";
+      break;
+    case ExecutionMode::kSync:
+      name += "Sync";
+      break;
+  }
+  return name;
+}
+
+ExecutionMode MLGraphTestBase::GetExecutionMode() {
+  return std::get<1>(GetParam());
 }
 
 MLGraphTestBase::BuildResult MLGraphTestBase::BuildGraph(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
     const MLNamedOperands& named_operands) {
-  switch (GetParam()) {
+  switch (GetExecutionMode()) {
     case ExecutionMode::kAsync: {
       ScriptPromiseTester tester(
           scope.GetScriptState(),
@@ -76,7 +98,7 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
                                             MLGraph* graph,
                                             MLNamedArrayBufferViews& inputs,
                                             MLNamedArrayBufferViews& outputs) {
-  switch (GetParam()) {
+  switch (GetExecutionMode()) {
     case ExecutionMode::kAsync: {
       auto* resolver =
           MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
@@ -110,197 +132,6 @@ DOMException* MLGraphTestBase::ComputeGraph(V8TestingScope& scope,
     }
     default:
       NOTREACHED();
-  }
-}
-
-template <typename T>
-struct ElementWiseBinaryTester {
-  MLGraphTestBase* helper;
-  ElementWiseBinaryKind kind;
-  OperandInfo<T> lhs;
-  OperandInfo<T> rhs;
-  Vector<T> expected;
-
-  void Test(V8TestingScope& scope) {
-    // Build the graph.
-    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
-    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
-                                   scope.GetExceptionState());
-    auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions, rhs.type,
-                                   scope.GetExceptionState());
-    auto* output_operand =
-        BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
-    auto [graph, build_exception] =
-        helper->BuildGraph(scope, builder, {{"output", output_operand}});
-    EXPECT_NE(graph, nullptr);
-
-    // Compute the graph.
-    MLNamedArrayBufferViews inputs(
-        {{"lhs", CreateArrayBufferViewForOperand(lhs_operand, lhs.values)},
-         {"rhs", CreateArrayBufferViewForOperand(rhs_operand, rhs.values)}});
-    MLNamedArrayBufferViews outputs(
-        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
-    auto* compute_exception =
-        helper->ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_EQ(compute_exception, nullptr);
-    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
-    EXPECT_EQ(results, expected);
-  }
-};
-
-void MLGraphTestBase::TestElementWiseBinary(V8TestingScope& scope) {
-  {
-    // Test element-wise add operator for two 1-D tensors.
-    // The expected results should be the sum of the values of the two input
-    // tensors, element-wise.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {2},
-                .values = {1.0, 2.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {2},
-                .values = {3.0, 4.0}},
-        .expected = {4.0, 6.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise add operator for two 2-D tensors.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {2, 2},
-                .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {2, 2},
-                .values = {5.0, 6.0, 7.0, 8.0}},
-        .expected = {6.0, 8.0, 10.0, 12.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise add operator for 1-D tensor broadcasting to 2-D
-    // tensor.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {2, 2},
-                .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {2},
-                .values = {5.0, 6.0}},
-        .expected = {6.0, 8.0, 8.0, 10.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise add operator for 3-D tensor broadcasting to 3-D
-    // tensor.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2},
-                .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {2, 1, 2},
-                .values = {5.0, 6.0, 7.0, 8.0}},
-        .expected = {6.0, 8.0, 8.0, 10.0, 8.0, 10.0, 10.0, 12.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise add operator for two 4-D tensors
-    ElementWiseBinaryTester<float>{
-        .kind = ElementWiseBinaryKind::kAdd,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {5.0, 6.0, 7.0, 8.0}},
-        .expected = {6.0, 8.0, 10.0, 12.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise sub operator for two 4-D tensors.
-    // The expected results should be the difference of the values of the two
-    // input tensors, element-wise.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kSub,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {5.0, 6.0, 7.0, 8.0}},
-        .expected = {-4.0, -4.0, -4.0, -4.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise mul operator for two 4-D tensors.
-    // The expected results should be the prdocut of the values of the two input
-    // tensors, element-wise.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kMul,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {1.0, 2.0, 3.0, 4.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {5.0, 6.0, 7.0, 8.0}},
-        .expected = {5.0, 12.0, 21.0, 32.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise div operator for two 4-D tensors.
-    // The expected results should be the quotient of the values of the two
-    // input tensors, element-wise.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kDiv,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {3.0, 4.0, 6.0, 8.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {1.0, 2.0, 2.0, 2.0}},
-        .expected = {3.0, 2.0, 3.0, 4.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise min operator for two 4-D tensors.
-    // The expected results should be the lesser values of the two input
-    // tensors, element-wise.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kMin,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {1.0, 4.0, 5.0, 8.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {2.0, 3.0, 6.0, 7.0}},
-        .expected = {1.0, 3.0, 5.0, 7.0}}
-        .Test(scope);
-  }
-  {
-    // Test element-wise max operator for two 4-D tensors.
-    // The expected results should be the greater values of the two input
-    // tensors, element-wise.
-    ElementWiseBinaryTester<float>{
-        .helper = this,
-        .kind = ElementWiseBinaryKind::kMax,
-        .lhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {1.0, 4.0, 5.0, 8.0}},
-        .rhs = {.type = V8MLOperandType::Enum::kFloat32,
-                .dimensions = {1, 2, 2, 1},
-                .values = {2.0, 3.0, 6.0, 7.0}},
-        .expected = {2.0, 4.0, 6.0, 8.0}}
-        .Test(scope);
   }
 }
 

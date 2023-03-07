@@ -21,12 +21,16 @@ class V8TestingScope;
 
 // The utility methods for graph test.
 enum ExecutionMode { kAsync, kSync };
+// The backends share the unit tests in the MLGraphTest.
+enum BackendType { kFake, kXnnpack };
 
-std::string ExecutionModeParamToString(
-    const ::testing::TestParamInfo<ExecutionMode>& execution_mode);
+using TestVariety = std::tuple<BackendType, ExecutionMode>;
+
+std::string TestVarietyToString(
+    const ::testing::TestParamInfo<TestVariety>& info);
 
 class MLGraphTestBase : public ::testing::Test,
-                        public ::testing::WithParamInterface<ExecutionMode> {
+                        public ::testing::WithParamInterface<TestVariety> {
  public:
   // BuildResult is returned by Build() method. Only one member of BuildResult
   // is valid. If the graph building is successful, graph points to the MLGraph
@@ -53,10 +57,9 @@ class MLGraphTestBase : public ::testing::Test,
                              MLNamedArrayBufferViews& inputs,
                              MLNamedArrayBufferViews& outputs);
 
-  // Test operations with different parameters such as tensor dimensions, data
-  // layout. Each test case will builds a graph and computes it with input data
-  // to check the expected value.
-  void TestElementWiseBinary(V8TestingScope& scope);
+ private:
+  // The execution mode for testing build and compute graph (e.g. async, sync.).
+  ExecutionMode GetExecutionMode();
 };
 
 template <typename T>
