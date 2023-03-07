@@ -52,8 +52,8 @@ namespace ash {
 static NetworkHandler* g_network_handler = NULL;
 
 NetworkHandler::NetworkHandler()
-    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  network_state_handler_.reset(new NetworkStateHandler());
+    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      network_state_handler_(new NetworkStateHandler()) {
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
   cellular_inhibitor_.reset(new CellularInhibitor());
   cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
@@ -167,8 +167,9 @@ void NetworkHandler::Init() {
                                         network_connection_handler_.get());
   hidden_network_metrics_helper_->Init(network_configuration_handler_.get());
   vpn_network_metrics_helper_->Init(network_configuration_handler_.get());
-  if (network_cert_migrator_)
+  if (network_cert_migrator_) {
     network_cert_migrator_->Init(network_state_handler_.get());
+  }
   if (client_cert_resolver_) {
     client_cert_resolver_->Init(network_state_handler_.get(),
                                 managed_network_configuration_handler_.get());
@@ -239,8 +240,9 @@ void NetworkHandler::ShutdownPrefServices() {
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
-  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration))
+  if (base::FeatureList::IsEnabled(ash::features::kHiddenNetworkMigration)) {
     hidden_network_handler_->SetNetworkMetadataStore(nullptr);
+  }
   network_metadata_store_.reset();
 }
 
