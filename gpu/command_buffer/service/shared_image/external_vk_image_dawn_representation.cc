@@ -45,7 +45,7 @@ WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
     WGPUTextureUsage usage) {
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(false, &begin_access_semaphores_,
-                                   false /* is_gl */)) {
+                                   /*is_gl=*/false)) {
     return nullptr;
   }
 
@@ -136,7 +136,7 @@ void ExternalVkImageDawnImageRepresentation::EndAccess() {
     auto semaphore = ExternalSemaphore::CreateFromHandle(
         backing_impl()->context_provider(), std::move(handle));
 
-    backing_impl()->EndAccess(false, std::move(semaphore), false /* is_gl */);
+    backing_impl()->EndAccess(false, std::move(semaphore), /*is_gl=*/false);
   }
 
   // Destroy the texture, signaling the semaphore in dawn

@@ -105,7 +105,7 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
       base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
   context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), surface, context,
-      false /* use_virtualized_gl_contexts */, base::DoNothing());
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
   context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
   context_state->InitializeGL(GpuPreferences(), feature_info);
 }
@@ -126,7 +126,7 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
             std::make_unique<SharedImageManager>(is_thread_safe)) {}
   ~GLTextureImageBackingFactoryTestBase() override {
     // |context_state_| must be destroyed on its own context.
-    context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
+    context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
   }
 
   void SetUpBase(const GpuDriverBugWorkarounds& workarounds,
@@ -286,7 +286,7 @@ TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   size_t backing_estimated_size = backing->GetEstimatedSize();
@@ -397,7 +397,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   // Check clearing.

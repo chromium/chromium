@@ -90,7 +90,7 @@ class OverlayImage final : public base::RefCounted<OverlayImage> {
         : ScopedHardwareBufferFenceSync(std::move(handle),
                                         base::ScopedFD(),
                                         std::move(available_fence_fd),
-                                        false /* is_video */),
+                                        /*is_video=*/false),
           image_(std::move(image)) {}
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 

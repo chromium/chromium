@@ -271,7 +271,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   EXPECT_EQ(S_OK, back_image->swap_chain()->GetBuffer(
-                      0 /* buffer_index */, IID_PPV_ARGS(&d3d11_texture)));
+                      /*buffer_index=*/0, IID_PPV_ARGS(&d3d11_texture)));
   EXPECT_TRUE(d3d11_texture);
   EXPECT_EQ(d3d11_texture, back_image->texture());
   d3d11_texture.Reset();
@@ -279,7 +279,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   ASSERT_TRUE(front_image);
 
   EXPECT_EQ(S_OK, front_image->swap_chain()->GetBuffer(
-                      1 /* buffer_index */, IID_PPV_ARGS(&d3d11_texture)));
+                      /*buffer_index=*/1, IID_PPV_ARGS(&d3d11_texture)));
   EXPECT_TRUE(d3d11_texture);
   EXPECT_EQ(d3d11_texture, front_image->texture());
   d3d11_texture.Reset();
@@ -293,7 +293,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   api->glBindRenderbufferEXTFn(GL_RENDERBUFFER, renderbuffer);
   ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
-  api->glRenderbufferStorageMultisampleFn(GL_RENDERBUFFER, 4 /* sample_count */,
+  api->glRenderbufferStorageMultisampleFn(GL_RENDERBUFFER, /*sample_count=*/4,
                                           GL_RGBA8_OES, 1, 1);
   api->glFramebufferRenderbufferEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                       GL_RENDERBUFFER, renderbuffer);
@@ -552,7 +552,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   GLenum expected_target = GL_TEXTURE_2D;
@@ -635,7 +635,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -830,7 +830,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -915,7 +915,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   GLenum expected_target = GL_TEXTURE_2D;
@@ -1039,7 +1039,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -1133,7 +1133,7 @@ TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -1305,7 +1305,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -1433,7 +1433,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =

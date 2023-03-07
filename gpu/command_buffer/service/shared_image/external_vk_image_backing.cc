@@ -280,7 +280,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
                                       alpha_type,
                                       usage,
                                       image->device_size(),
-                                      false /* is_thread_safe */),
+                                      /*is_thread_safe=*/false),
       context_state_(std::move(context_state)),
       image_(std::move(image)),
       backend_texture_(size.width(),

@@ -90,8 +90,9 @@ bool ExternalVkImageGLRepresentationShared::BeginAccess(GLenum mode) {
 
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(readonly, &begin_access_semaphores_,
-                                   true /* is_gl */))
+                                   /*is_gl=*/true)) {
     return false;
+  }
 
   for (auto& external_semaphore : begin_access_semaphores_) {
     GrVkImageInfo info;
@@ -141,7 +142,7 @@ void ExternalVkImageGLRepresentationShared::EndAccess() {
     }
   }
   backing_impl()->EndAccess(readonly, std::move(external_semaphore),
-                            true /* is_gl */);
+                            /*is_gl=*/true);
 
   // We have done with |begin_access_semaphores_|. They should have been waited.
   // So add them to pending semaphores for reusing or relaeasing.

@@ -242,7 +242,7 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
     bool use_sk_surface) {
   return BeginScopedWriteAccess(
       /*final_msaa_count=*/1,
-      SkSurfaceProps(0 /* flags */, kUnknown_SkPixelGeometry), begin_semaphores,
+      SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry), begin_semaphores,
       end_semaphores, allow_uncleared, use_sk_surface);
 }
 

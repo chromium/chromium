@@ -37,7 +37,7 @@ PbufferImageBacking::PbufferImageBacking(
                                       alpha_type,
                                       usage,
                                       format.EstimatedSizeInBytes(size),
-                                      false /* is_thread_safe */),
+                                      /*is_thread_safe=*/false),
       on_destruction_closure_runner_(std::move(on_destruction_closure)),
       passthrough_texture_(std::move(passthrough_texture)) {
   DCHECK(!!passthrough_texture_);

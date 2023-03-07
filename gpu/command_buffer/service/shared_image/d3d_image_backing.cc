@@ -395,7 +395,7 @@ D3DImageBacking::D3DImageBacking(
                                       alpha_type,
                                       usage,
                                       format.EstimatedSizeInBytes(size),
-                                      false /* is_thread_safe */),
+                                      /*is_thread_safe=*/false),
       d3d11_texture_(std::move(d3d11_texture)),
       gl_textures_(std::move(gl_textures)),
       dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
@@ -999,7 +999,7 @@ bool D3DImageBacking::PresentSwapChain() {
 
   UINT flags = DXGI_PRESENT_ALLOW_TEARING;
 
-  HRESULT hr = swap_chain_->Present1(0 /* interval */, flags, &params);
+  HRESULT hr = swap_chain_->Present1(/*interval=*/0, flags, &params);
   if (FAILED(hr)) {
     LOG(ERROR) << "Present1 failed with error " << std::hex << hr;
     return false;

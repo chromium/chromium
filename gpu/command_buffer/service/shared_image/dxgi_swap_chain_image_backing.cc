@@ -144,7 +144,7 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
           alpha_type,
           usage,
           gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
-          false /* is_thread_safe */),
+          /*is_thread_safe=*/false),
       d3d11_device_(std::move(d3d11_device)),
       dxgi_swap_chain_(std::move(dxgi_swap_chain)) {
   const bool has_scanout = !!(usage & SHARED_IMAGE_USAGE_SCANOUT);

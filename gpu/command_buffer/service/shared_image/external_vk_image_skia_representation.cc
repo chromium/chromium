@@ -51,7 +51,7 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
   }
 
   auto promise_texture =
-      BeginAccess(false /* readonly */, begin_semaphores, end_semaphores);
+      BeginAccess(/*readonly=*/false, begin_semaphores, end_semaphores);
   if (!promise_texture) {
     LOG(ERROR) << "BeginAccess failed";
     return {};
@@ -65,7 +65,7 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
   if (!surface || surface_props != surface->props() ||
       final_msaa_count != surface_msaa_count_) {
     SkColorType sk_color_type =
-        viz::ToClosestSkColorType(true /* gpu_compositing */, format());
+        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format());
     surface = SkSurface::MakeFromBackendTexture(
         gr_context, promise_texture->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type,
@@ -109,7 +109,7 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
   }
 
   auto promise_texture =
-      BeginAccess(false /* readonly */, begin_semaphores, end_semaphores);
+      BeginAccess(/*readonly=*/false, begin_semaphores, end_semaphores);
   if (!promise_texture) {
     LOG(ERROR) << "BeginAccess failed";
     return {};
@@ -139,7 +139,7 @@ void ExternalVkImageSkiaImageRepresentation::EndWriteAccess() {
     DCHECK(backing_impl()->context_state()->CachedSkSurfaceIsUnique(
         backing_impl()->promise_texture().get()));
   }
-  EndAccess(false /* readonly */);
+  EndAccess(/*readonly=*/false);
   access_mode_ = kNone;
 }
 
@@ -154,7 +154,7 @@ ExternalVkImageSkiaImageRepresentation::BeginReadAccess(
   }
 
   auto promise_texture =
-      BeginAccess(true /* readonly */, begin_semaphores, end_semaphores);
+      BeginAccess(/*readonly=*/true, begin_semaphores, end_semaphores);
   if (!promise_texture) {
     LOG(ERROR) << "BeginAccess failed";
     return {};
@@ -178,7 +178,7 @@ void ExternalVkImageSkiaImageRepresentation::EndReadAccess() {
     return;
   }
 
-  EndAccess(true /* readonly */);
+  EndAccess(/*readonly=*/true);
   access_mode_ = kNone;
 }
 
@@ -192,7 +192,7 @@ ExternalVkImageSkiaImageRepresentation::BeginAccess(
 
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(readonly, &begin_access_semaphores_,
-                                   false /* is_gl */)) {
+                                   /*is_gl=*/false)) {
     return nullptr;
   }
 
@@ -235,7 +235,7 @@ void ExternalVkImageSkiaImageRepresentation::EndAccess(bool readonly) {
 #endif
 
   backing_impl()->EndAccess(readonly, std::move(end_access_semaphore_),
-                            false /* is_gl */);
+                            /*is_gl=*/false);
 
   // All pending semaphores have been waited on directly or indirectly. They can
   // be reused when the next submitted GPU work is done by GPU.

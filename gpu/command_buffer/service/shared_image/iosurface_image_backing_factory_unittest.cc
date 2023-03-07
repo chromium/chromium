@@ -75,7 +75,7 @@ class IOSurfaceImageBackingFactoryTest : public testing::Test {
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), surface_, context_,
-        false /* use_virtualized_gl_contexts */, base::DoNothing());
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing());
     context_state_->InitializeGrContext(preferences, workarounds, nullptr);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
@@ -165,7 +165,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
   backing->SetCleared();
 
@@ -246,7 +246,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -313,7 +313,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
                          SHARED_IMAGE_USAGE_WEBGPU;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   GLenum expected_target = GL_TEXTURE_RECTANGLE;
@@ -439,7 +439,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -533,7 +533,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -571,7 +571,7 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
       base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
   context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), surface, context,
-      false /* use_virtualized_gl_contexts */, base::DoNothing());
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
   context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
   context_state->InitializeGL(GpuPreferences(), feature_info);
 }
@@ -593,7 +593,7 @@ class IOSurfaceImageBackingFactoryWithFormatTestBase
             std::make_unique<SharedImageManager>(/*thread_safe=*/false)) {}
   ~IOSurfaceImageBackingFactoryWithFormatTestBase() override {
     // |context_state_| must be destroyed on its own context.
-    context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
+    context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
   }
 
   void SetUp() override {
@@ -673,7 +673,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
 
   if (!should_succeed) {
     EXPECT_FALSE(backing);
@@ -870,7 +870,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidFormat) {
   uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -885,13 +885,13 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 
   size = gfx::Size(INT_MAX, INT_MAX);
   backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -910,7 +910,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, EstimatedSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
 
   if (!should_succeed) {
     EXPECT_FALSE(backing);

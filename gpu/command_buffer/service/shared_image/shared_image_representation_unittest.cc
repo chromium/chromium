@@ -31,7 +31,7 @@ class SharedImageRepresentationTest : public ::testing::Test {
 
     auto backing = std::make_unique<TestImageBacking>(
         mailbox_, format, size, color_space, surface_origin, alpha_type, usage,
-        0 /* estimated_size */);
+        /*estimated_size=*/0);
     factory_ref_ = manager_.Register(std::move(backing), tracker_.get());
   }
 
@@ -71,7 +71,7 @@ TEST_F(SharedImageRepresentationTest, GLTextureClearing) {
         SharedImageRepresentation::AllowUnclearedAccess::kYes);
     ASSERT_TRUE(scoped_access);
     representation->GetTexture()->SetLevelCleared(GL_TEXTURE_2D, 0,
-                                                  true /* cleared */);
+                                                  /*cleared=*/true);
   }
   EXPECT_TRUE(representation->IsCleared());
 
@@ -186,7 +186,7 @@ TEST_F(SharedImageRepresentationTest, SkiaClearing) {
 
 TEST_F(SharedImageRepresentationTest, DawnClearing) {
   auto representation = manager_.ProduceDawn(
-      mailbox_, tracker_.get(), nullptr /* device */, WGPUBackendType_Null, {});
+      mailbox_, tracker_.get(), /*device=*/nullptr, WGPUBackendType_Null, {});
   EXPECT_FALSE(representation->IsCleared());
 
   // We should not be able to begin access with |allow_uncleared| == false.

@@ -127,7 +127,7 @@ bool GLCommonImageBackingFactory::CanCreateTexture(
     if (format_info.is_compressed) {
       const char* error_message = "unspecified";
       if (!gles2::ValidateCompressedTexDimensions(
-              target, 0 /* level */, size.width(), size.height(), 1 /* depth */,
+              target, /*level=*/0, size.width(), size.height(), /*depth=*/1,
               format_info.image_internal_format, &error_message)) {
         DVLOG(2) << "CreateSharedImage: "
                     "ValidateCompressedTexDimensionsFailed with error: "
@@ -137,9 +137,9 @@ bool GLCommonImageBackingFactory::CanCreateTexture(
 
       GLsizei bytes_required = 0;
       if (!gles2::GetCompressedTexSizeInBytes(
-              nullptr /* function_name */, size.width(), size.height(),
-              1 /* depth */, format_info.image_internal_format, &bytes_required,
-              nullptr /* error_state */)) {
+              /*function_name=*/nullptr, size.width(), size.height(),
+              /*depth=*/1, format_info.image_internal_format, &bytes_required,
+              /*error_state=*/nullptr)) {
         DVLOG(2) << "CreateSharedImage: Unable to compute required size for "
                     "initial texture upload.";
         return false;
@@ -156,8 +156,8 @@ bool GLCommonImageBackingFactory::CanCreateTexture(
       uint32_t unpadded_row_size = 0u;
       uint32_t padded_row_size = 0u;
       if (!gles2::GLES2Util::ComputeImageDataSizes(
-              size.width(), size.height(), 1 /* depth */, format_info.gl_format,
-              format_info.gl_type, 4 /* alignment */, &bytes_required,
+              size.width(), size.height(), /*depth=*/1, format_info.gl_format,
+              format_info.gl_type, /*alignment=*/4, &bytes_required,
               &unpadded_row_size, &padded_row_size)) {
         LOG(ERROR) << "CreateSharedImage: Unable to compute required size for "
                       "initial texture upload.";

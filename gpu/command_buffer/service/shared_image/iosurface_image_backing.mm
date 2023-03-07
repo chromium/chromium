@@ -297,7 +297,7 @@ void SkiaIOSurfaceRepresentation::EndWriteAccess() {
   write_surfaces_.clear();
 
   if (egl_state_)
-    egl_state_->EndAccess(false /* readonly */);
+    egl_state_->EndAccess(/*readonly=*/false);
 }
 
 std::vector<sk_sp<SkPromiseImageTexture>>
@@ -320,7 +320,7 @@ SkiaIOSurfaceRepresentation::BeginReadAccess(
 
 void SkiaIOSurfaceRepresentation::EndReadAccess() {
   if (egl_state_)
-    egl_state_->EndAccess(true /* readonly */);
+    egl_state_->EndAccess(/*readonly=*/true);
 }
 
 bool SkiaIOSurfaceRepresentation::SupportsMultipleConcurrentReadAccess() {
@@ -573,7 +573,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          alpha_type,
                          usage,
                          format.EstimatedSizeInBytes(size),
-                         false /* is_thread_safe */),
+                         /*is_thread_safe=*/false),
       io_surface_(std::move(io_surface)),
       io_surface_plane_(io_surface_plane),
       io_surface_id_(io_surface_id),

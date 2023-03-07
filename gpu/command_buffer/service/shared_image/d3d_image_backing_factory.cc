@@ -302,7 +302,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   DXGI_PRESENT_PARAMETERS params = {};
   params.DirtyRectsCount = 0;
   params.pDirtyRects = nullptr;
-  hr = swap_chain->Present1(0 /* interval */, 0 /* flags */, &params);
+  hr = swap_chain->Present1(/*interval=*/0, /*flags=*/0, &params);
   if (FAILED(hr)) {
     LOG(ERROR) << "Present1 failed with error " << std::hex << hr;
     return {nullptr, nullptr};
