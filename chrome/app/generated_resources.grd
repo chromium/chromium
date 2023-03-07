@@ -13507,13 +13507,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION_SHORT" desc="Second line of text in an item letting the user know that they can use their phone as a security key. The user needs to check their phone and respond to a notification that will ask them to press a button on the phone's screen to confirm that they're logging in.">
         Unlock your phone and confirm it's you
       </message>
-      <message name="IDS_WEBAUTHN_CABLE_V2_ACTIVATE_TITLE" desc="Title of the dialog shown when the user tries to sign-in using a phone as a security key.">
-        Use your Android phone as a security key
-      </message>
-      <message name="IDS_WEBAUTHN_CABLE_V2_ACTIVATE_DESCRIPTION_SHORT" desc="Second line of text in an item letting the user know how they can use Chrome on their Android phone as a security key. The substring 'Use phone as a security key' refers to the string IDS_PHONE_AS_SECURITY_KEY_TEXT in Chrome on Android.">
-        Open Chrome on your Android phone, and go to "Settings > Passwords > Use phone as a security key", and follow the instructions there.
-      </message>
-
       <!-- WebAuthn authenticator PIN entry/setup -->
       <message name="IDS_WEBAUTHN_PIN_ENTRY_TITLE" desc="Title of the dialog shown when instructing the user to enter the PIN code to use a security key (an external physical device for user authentication) with their computer.">
         PIN required
