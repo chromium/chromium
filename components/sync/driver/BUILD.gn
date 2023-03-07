@@ -40,8 +40,6 @@ static_library("driver") {
     "sync_api_component_factory.h",
     "sync_auth_manager.cc",
     "sync_auth_manager.h",
-    "sync_auth_util.cc",
-    "sync_auth_util.h",
     "sync_client.h",
     "sync_internals_util.cc",
     "sync_internals_util.h",
