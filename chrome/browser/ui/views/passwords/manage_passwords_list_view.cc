@@ -13,12 +13,15 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+
+using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
 // static
 std::unique_ptr<views::View> ManagePasswordsListView::CreateTitleView(
@@ -68,6 +71,10 @@ ManagePasswordsListView::ManagePasswordsListView(
                    on_row_clicked_callback,
                const password_manager::PasswordForm& password_form) {
               on_row_clicked_callback.Run(password_form);
+              password_manager::metrics_util::
+                  LogUserInteractionsInPasswordManagementBubble(
+                      PasswordManagementBubbleInteractions::
+                          kCredentialRowClicked);
             },
             on_row_clicked_callback, *password_form),
         /*main_image_icon=*/favicon,
@@ -103,7 +110,7 @@ ManagePasswordsListView::ManagePasswordsListView(
               GetLayoutConstant(PAGE_INFO_ICON_SIZE)),
           /*state_icon=*/absl::nullopt));
   manage_passwords_button->SetID(static_cast<int>(
-      password_manager::ManagePasswordsViewIDs::MANAGE_PASSWORDS_BUTTON));
+      password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
 }
 
 ManagePasswordsListView::~ManagePasswordsListView() = default;

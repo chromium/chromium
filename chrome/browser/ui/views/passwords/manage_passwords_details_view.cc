@@ -9,9 +9,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -29,6 +31,9 @@
 #include "ui/views/vector_icons.h"
 
 namespace {
+
+using password_manager::ManagePasswordsViewIDs;
+using password_manager::metrics_util::PasswordManagementBubbleInteractions;
 
 constexpr int kIconSize = 16;
 // TODO(crbug.com/1408790): Row height should be computed from line/icon heights
@@ -84,7 +89,8 @@ std::unique_ptr<views::View> CreateDetailsRow(
     std::unique_ptr<views::View> detail_view,
     const gfx::VectorIcon& action_icon,
     const std::u16string& action_button_tooltip_text,
-    views::Button::PressedCallback action_button_callback) {
+    views::Button::PressedCallback action_button_callback,
+    ManagePasswordsViewIDs action_button_id) {
   auto row = std::make_unique<views::FlexLayoutView>();
   row->SetCollapseMargins(true);
   row->SetDefault(
@@ -106,6 +112,7 @@ std::unique_ptr<views::View> CreateDetailsRow(
       CreateVectorImageButtonWithNativeTheme(std::move(action_button_callback),
                                              action_icon, kIconSize);
   action_button->SetTooltipText(action_button_tooltip_text);
+  action_button->SetID(static_cast<int>(action_button_id));
   row->AddChildView(CreateWrappedView(std::move(action_button)));
   return row;
 }
@@ -276,11 +283,19 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
           std::move(switched_to_edit_mode_callback)) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   if (!password_form.username_value.empty()) {
+    auto copy_username_button_callback =
+        base::BindRepeating(&WriteToClipboard, password_form.username_value)
+            .Then(base::BindRepeating(
+                &password_manager::metrics_util::
+                    LogUserInteractionsInPasswordManagementBubble,
+                PasswordManagementBubbleInteractions::
+                    kUsernameCopyButtonClicked));
     AddChildView(CreateDetailsRow(
         kAccountCircleIcon, CreateUsernameLabel(password_form),
         vector_icons::kContentCopyIcon,
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
-        base::BindRepeating(&WriteToClipboard, password_form.username_value)));
+        std::move(copy_username_button_callback),
+        ManagePasswordsViewIDs::kCopyUsernameButton));
   } else {
     // TODO(crbug.com/1408790): use internationalized string for the username
     // action
@@ -290,7 +305,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
         vector_icons::kEditIcon, u"Edit Username",
         base::BindRepeating(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
-            base::Unretained(this))));
+            base::Unretained(this)),
+        ManagePasswordsViewIDs::kEditUsernameButton));
     edit_username_row_ = AddChildView(
         CreateEditUsernameRow(password_form, &username_textfield_));
     edit_username_row_->SetVisible(false);
@@ -298,6 +314,13 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
 
   std::unique_ptr<views::Label> password_label =
       CreatePasswordLabel(password_form);
+  auto copy_password_button_callback =
+      base::BindRepeating(&WriteToClipboard, password_form.password_value)
+          .Then(base::BindRepeating(
+              &password_manager::metrics_util::
+                  LogUserInteractionsInPasswordManagementBubble,
+              PasswordManagementBubbleInteractions::
+                  kPasswordCopyButtonClicked));
   AddChildView(CreateDetailsRow(
       kKeyIcon,
       password_form.federation_origin.opaque()
@@ -305,7 +328,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
           : std::move(password_label),
       vector_icons::kContentCopyIcon,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
-      base::BindRepeating(&WriteToClipboard, password_form.password_value)));
+      std::move(copy_password_button_callback),
+      ManagePasswordsViewIDs::kCopyPasswordButton));
 
   // TODO(crbug.com/1408790): use internationalized string for the note action
   // button tooltip text.
@@ -316,7 +340,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       kNotesIcon, CreateNoteLabel(password_form), vector_icons::kEditIcon,
       u"Edit Note",
       base::BindRepeating(&ManagePasswordsDetailsView::SwitchToEditNoteMode,
-                          base::Unretained(this))));
+                          base::Unretained(this)),
+      ManagePasswordsViewIDs::kEditNoteButton));
   edit_note_row_ =
       AddChildView(CreateEditNoteRow(password_form, &note_textarea_));
   edit_note_row_->SetVisible(false);

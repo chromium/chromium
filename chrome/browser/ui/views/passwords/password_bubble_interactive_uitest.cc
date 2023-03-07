@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
+#include "chrome/browser/ui/views/passwords/manage_passwords_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
@@ -33,15 +35,18 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/focus/focus_manager.h"
 
+using base::Bucket;
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using testing::_;
+using testing::ElementsAre;
 using testing::Eq;
 using testing::Field;
 
@@ -477,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
 
   ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
       static_cast<int>(
-          password_manager::ManagePasswordsViewIDs::MANAGE_PASSWORDS_BUTTON)));
+          password_manager::ManagePasswordsViewIDs::kManagePasswordsButton)));
   EXPECT_FALSE(IsBubbleShowing());
 
   histogram_tester.ExpectUniqueSample(
@@ -508,4 +513,45 @@ IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
       password_manager::metrics_util::PasswordManagementBubbleInteractions::
           kGooglePasswordManagerLinkClicked,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagementRevampedBubbleInteractiveUiTest,
+                       CopiesPasswordDetailsToClipboardOnCopyButtonClicks) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string clipboard_text;
+  base::HistogramTester histogram_tester;
+
+  SetupManagingPasswords();
+  EXPECT_FALSE(IsBubbleShowing());
+  ExecuteManagePasswordsCommand();
+  ASSERT_TRUE(IsBubbleShowing());
+
+  static_cast<ManagePasswordsView*>(
+      PasswordBubbleViewBase::manage_password_bubble())
+      ->DisplayDetailsOfPasswordForTesting(*test_form());
+
+  ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+      static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::kCopyUsernameButton)));
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"test_username");
+
+  ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+      static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::kCopyPasswordButton)));
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                      &clipboard_text);
+  EXPECT_EQ(clipboard_text, u"test_password");
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "PasswordManager.PasswordManagementBubble.UserAction"),
+              ElementsAre(Bucket(password_manager::metrics_util::
+                                     PasswordManagementBubbleInteractions::
+                                         kUsernameCopyButtonClicked,
+                                 1),
+                          Bucket(password_manager::metrics_util::
+                                     PasswordManagementBubbleInteractions::
+                                         kPasswordCopyButtonClicked,
+                                 1)));
 }

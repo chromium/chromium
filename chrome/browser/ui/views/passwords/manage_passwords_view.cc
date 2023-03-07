@@ -67,6 +67,12 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
 
 ManagePasswordsView::~ManagePasswordsView() = default;
 
+void ManagePasswordsView::DisplayDetailsOfPasswordForTesting(
+    password_manager::PasswordForm password_form) {
+  controller_.set_currently_selected_password(std::move(password_form));
+  RecreateLayout();
+}
+
 PasswordBubbleControllerBase* ManagePasswordsView::GetController() {
   return &controller_;
 }

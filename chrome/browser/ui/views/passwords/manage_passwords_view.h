@@ -27,6 +27,11 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
 
   ~ManagePasswordsView() override;
 
+  // Changes the contents of the page to display the details of `password_form`.
+  // Used for testing only to bypass mocking authentication flow.
+  void DisplayDetailsOfPasswordForTesting(
+      password_manager::PasswordForm password_form);
+
  private:
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
