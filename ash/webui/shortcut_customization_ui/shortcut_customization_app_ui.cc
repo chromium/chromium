@@ -14,6 +14,8 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
+#include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
+#include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -196,7 +198,6 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
   AddFeatureFlags(source);
 
   provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>();
-  search_handler_ = std::make_unique<shortcut_ui::SearchHandler>();
 }
 
 ShortcutCustomizationAppUI::~ShortcutCustomizationAppUI() = default;
@@ -211,7 +212,18 @@ void ShortcutCustomizationAppUI::BindInterface(
 void ShortcutCustomizationAppUI::BindInterface(
     mojo::PendingReceiver<shortcut_customization::mojom::SearchHandler>
         receiver) {
-  search_handler_->BindInterface(std::move(receiver));
+  // BindInterface should not be called unless the search flag is enabled.
+  DCHECK(features::IsSearchInShortcutsAppEnabled());
+
+  shortcut_ui::SearchHandler* search_handler =
+      shortcut_ui::ShortcutsAppManagerFactory::GetForBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext())
+          ->search_handler();
+
+  // SearchHandler should not be a nullptr.
+  DCHECK(search_handler);
+
+  search_handler->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShortcutCustomizationAppUI)

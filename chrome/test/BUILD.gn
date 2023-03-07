@@ -4324,6 +4324,8 @@ if (!is_android) {
         "//ash/webui/scanning",
         "//ash/webui/shimless_rma",
         "//ash/webui/shortcut_customization_ui",
+        "//ash/webui/shortcut_customization_ui/backend",
+        "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
         "//ash/webui/web_applications/test:test_support",
         "//chrome/browser/apps/app_preload_service",
         "//chrome/browser/apps/app_preload_service/proto",

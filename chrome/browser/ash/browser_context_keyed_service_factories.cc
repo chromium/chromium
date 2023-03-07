@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
 
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
+#include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
@@ -139,6 +140,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ash::TokenHandleFetcher::EnsureFactoryBuilt();
   ash::app_restore::AppRestoreArcTaskHandlerFactory::GetInstance();
   ash::help_app::HelpAppManagerFactory::GetInstance();
+  ash::shortcut_ui::ShortcutsAppManagerFactory::GetInstance();
   ash::multidevice_setup::AuthTokenValidatorFactory::GetInstance();
   ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetInstance();
   ash::multidevice_setup::OobeCompletionTrackerFactory::GetInstance();

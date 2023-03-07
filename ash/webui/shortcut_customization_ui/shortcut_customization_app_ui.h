@@ -52,7 +52,6 @@ class ShortcutCustomizationAppUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<shortcut_ui::AcceleratorConfigurationProvider> provider_;
-  std::unique_ptr<shortcut_ui::SearchHandler> search_handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

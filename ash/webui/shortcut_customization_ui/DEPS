@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
   "+ui/resources",
   "+ui/webui",
 ]
