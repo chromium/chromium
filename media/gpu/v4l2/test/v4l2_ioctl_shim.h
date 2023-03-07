@@ -83,9 +83,9 @@ class V4L2Queue {
   V4L2Queue& operator=(const V4L2Queue&) = delete;
   ~V4L2Queue();
 
-  // Retrieves a mmaped buffer for the given |index|, which is a decoded
+  // Retrieves a mmaped buffer for the given |buffer_id|, which is a decoded
   // surface, from MmapedBuffers.
-  scoped_refptr<MmapedBuffer> GetBuffer(const size_t index) const;
+  scoped_refptr<MmapedBuffer> GetBuffer(const size_t buffer_id) const;
 
   enum v4l2_buf_type type() const { return type_; }
   uint32_t fourcc() const { return fourcc_; }
@@ -124,8 +124,9 @@ class V4L2Queue {
     queued_buffer_ids_.insert(last_queued_buffer_id);
   }
 
-  // TODO(b/271016209): replace buffer |index| with buffer |id| if relevant
-  void DequeueBufferId(uint32_t index) { queued_buffer_ids_.erase(index); }
+  void DequeueBufferId(uint32_t buffer_id) {
+    queued_buffer_ids_.erase(buffer_id);
+  }
 
   void DequeueAllBufferIds() { queued_buffer_ids_.clear(); }
 
@@ -193,12 +194,12 @@ class V4L2IoctlShim {
   // Enqueues an empty (capturing) or filled (output) buffer
   // in the driver's incoming |queue|.
   [[nodiscard]] bool QBuf(const std::unique_ptr<V4L2Queue>& queue,
-                          const uint32_t index) const;
+                          const uint32_t buffer_id) const;
 
   // Dequeues a filled (capturing) or decoded (output) buffer
   // from the driver’s outgoing |queue|.
   [[nodiscard]] bool DQBuf(const std::unique_ptr<V4L2Queue>& queue,
-                           uint32_t* index) const;
+                           uint32_t* buffer_id) const;
 
   // Starts streaming |queue| (via VIDIOC_STREAMON).
   [[nodiscard]] bool StreamOn(const enum v4l2_buf_type type) const;

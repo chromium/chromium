@@ -594,16 +594,17 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   VLOG_IF(2, !frame_hdr.show_frame) << "Not displaying frame";
   last_decoded_frame_visible_ = frame_hdr.show_frame;
 
-  uint32_t OUTPUT_index = 0;
+  uint32_t buffer_id = 0;
   // Copies the frame data into the V4L2 buffer of OUTPUT |queue|.
   scoped_refptr<MmapedBuffer> OUTPUT_queue_buffer =
-      OUTPUT_queue_->GetBuffer(OUTPUT_index);
+      OUTPUT_queue_->GetBuffer(buffer_id);
   OUTPUT_queue_buffer->mmaped_planes()[0].CopyIn(frame_hdr.data,
                                                  frame_hdr.frame_size);
   OUTPUT_queue_buffer->set_frame_number(frame_number);
 
-  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, OUTPUT_index))
+  if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, buffer_id)) {
     LOG(FATAL) << "VIDIOC_QBUF failed for OUTPUT queue.";
+  }
 
   struct v4l2_ctrl_vp8_frame v4l2_frame_headers = SetupFrameHeaders(frame_hdr);
 
@@ -620,14 +621,13 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
 
-  uint32_t CAPTURE_index;
-
-  if (v4l2_ioctl_->DQBuf(CAPTURE_queue_, &CAPTURE_index))
-    CAPTURE_queue_->DequeueBufferId(CAPTURE_index);
-  else
+  if (v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id)) {
+    CAPTURE_queue_->DequeueBufferId(buffer_id);
+  } else {
     LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
+  }
 
-  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(CAPTURE_index);
+  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
   if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
     CHECK_EQ(buffer->mmaped_planes().size(), 1u)
@@ -649,7 +649,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   }
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
-      frame_hdr, CAPTURE_queue_->GetBuffer(CAPTURE_index).get(),
+      frame_hdr, CAPTURE_queue_->GetBuffer(buffer_id).get(),
       CAPTURE_queue_->queued_buffer_ids());
 
   for (const auto reusable_buffer_slot : reusable_buffer_slots) {
@@ -665,11 +665,12 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     }
   }
 
-  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &OUTPUT_index))
+  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id)) {
     LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
+  }
 
-  CHECK_EQ(OUTPUT_index, uint32_t(0))
-      << "Index for OUTPUT queue greater than size";
+  CHECK_EQ(buffer_id, uint32_t(0))
+      << "Buffer ID of the buffer in OUTPUT queue is greater than size";
 
   if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_REINIT failed.";

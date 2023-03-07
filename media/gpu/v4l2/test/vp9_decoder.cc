@@ -517,12 +517,13 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
 
-  uint32_t index;
+  uint32_t buffer_id;
 
-  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &index))
+  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id)) {
     LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
+  }
 
-  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(index);
+  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
   if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
     CHECK_EQ(buffer->mmaped_planes().size(), 1u)
@@ -544,7 +545,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   }
 
   const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
-      frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(index),
+      frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(buffer_id),
       CAPTURE_queue_->last_queued_buffer_id());
 
   for (const auto reusable_buffer_slot : reusable_buffer_slots) {
@@ -565,8 +566,9 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
       CAPTURE_queue_->set_last_queued_buffer_id(reusable_buffer_slot);
   }
 
-  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
+  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id)) {
     LOG(FATAL) << "VIDIOC_DQBUF failed for OUTPUT queue.";
+  }
 
   // TODO(stevecho): With current VP9 API, VIDIOC_G_EXT_CTRLS ioctl call is
   // needed when forward probabilities update is used. With new VP9 API landing
