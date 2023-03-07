@@ -11,7 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -95,10 +97,9 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
-  std::string title = "Move completed";
-  std::string message = "1 item moved to " + cloud_provider_name_ +
-                        ". Opening in " + target_app_name_;
-  return ash::CreateSystemNotificationPtr(
+  std::string title = file_name_ + " moved to " + cloud_provider_name_;
+  std::string message = "Your file will open momentarily";
+  auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
@@ -108,11 +109,21 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              &CloudUploadNotificationManager::CloseNotification,
+              &CloudUploadNotificationManager::HandleNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/gfx::VectorIcon(),
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::NORMAL);
+
+  DCHECK(!destination_path_.empty());
+  if (!destination_path_.empty()) {
+    //  Add "Show in folder" button.
+    std::string button_title = "Show in folder";
+    std::vector<message_center::ButtonInfo> notification_buttons = {
+        message_center::ButtonInfo(base::UTF8ToUTF16(button_title))};
+    notification->set_buttons(notification_buttons);
+  }
+  return notification;
 }
 
 std::unique_ptr<message_center::Notification>
@@ -165,7 +176,8 @@ void CloudUploadNotificationManager::ShowCompleteNotification() {
                                            *notification,
                                            /*metadata=*/nullptr);
 
-  // Start the timer to automatically dismiss the "Complete" notification.
+  // Start the timer to automatically dismiss the "Complete" notification if
+  // "Show in folder" button not clicked.
   complete_notification_timer_.Start(
       FROM_HERE, kCompleteNotificationTime,
       base::BindOnce(&CloudUploadNotificationManager::CloseNotification,
@@ -212,6 +224,19 @@ void CloudUploadNotificationManager::CloseNotification() {
   if (callback_) {
     std::move(callback_).Run();
   }
+}
+
+void CloudUploadNotificationManager::HandleNotificationClick(
+    absl::optional<int> button_index) {
+  if (callback_for_testing_) {
+    std::move(callback_for_testing_).Run(destination_path_);
+  } else if (button_index) {
+    // Show In Folder if button was pressed, rather than a click to somewhere
+    // else in the notification.
+    platform_util::ShowItemInFolder(profile_, destination_path_);
+  }
+
+  CloseNotification();
 }
 
 void CloudUploadNotificationManager::CloseForTest() {
