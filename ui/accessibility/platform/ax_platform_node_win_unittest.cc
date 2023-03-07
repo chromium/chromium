@@ -6517,9 +6517,9 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                         UIA_TablePatternId, UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(grid_without_header_id));
 
-  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_GridItemPatternId, UIA_TableItemPatternId,
-                        UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
+                        UIA_TableItemPatternId, UIA_TextChildPatternId,
+                        UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_without_header_cell_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
@@ -6527,14 +6527,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                         UIA_TablePatternId, UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(grid_with_header_id));
 
-  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_GridItemPatternId, UIA_TableItemPatternId,
-                        UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
+                        UIA_TableItemPatternId, UIA_TextChildPatternId,
+                        UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_with_header_column_header_id));
 
-  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_GridItemPatternId, UIA_TableItemPatternId,
-                        UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
+                        UIA_TableItemPatternId, UIA_TextChildPatternId,
+                        UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_with_header_cell_id));
 
   EXPECT_EQ(PatternSet({UIA_ValuePatternId, UIA_ScrollItemPatternId,
@@ -6739,6 +6739,78 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
   EXPECT_HRESULT_SUCCEEDED(raw_element_provider_simple->GetPatternProvider(
       UIA_InvokePatternId, &invoke_provider));
   EXPECT_EQ(nullptr, invoke_provider.Get());
+}
+
+TEST_F(AXPlatformNodeWinTest, GetPatternProviderGridCellValuePattern) {
+  // ++1 kRootWebArea
+  // ++++2 kGrid
+  // ++++++3 kRow
+  // ++++++++4 kCell
+  // +++++++++++5 kStaticText
+  // ++++++++6 kCell
+  // +++++++++++7 kStaticText
+  // ++++++++8 kCell
+  // +++++++++++9 kStaticText
+
+  AXNodeData root_1;
+  AXNodeData table_2;
+  AXNodeData row_3;
+  AXNodeData cell_4;
+  AXNodeData st_5;
+  AXNodeData cell_6;
+  AXNodeData st_7;
+  AXNodeData cell_8;
+  AXNodeData st_9;
+
+  root_1.id = 1;
+  table_2.id = 2;
+  row_3.id = 3;
+  cell_4.id = 4;
+  st_5.id = 5;
+  cell_6.id = 6;
+  st_7.id = 7;
+  cell_8.id = 8;
+  st_9.id = 9;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {table_2.id};
+
+  table_2.role = ax::mojom::Role::kGrid;
+  table_2.child_ids = {row_3.id};
+
+  row_3.role = ax::mojom::Role::kRow;
+  row_3.child_ids = {cell_4.id, cell_6.id, cell_8.id};
+
+  cell_4.role = ax::mojom::Role::kCell;
+  cell_4.AddState(ax::mojom::State::kEditable);
+  cell_4.child_ids = {st_5.id};
+
+  cell_6.role = ax::mojom::Role::kCell;
+  cell_6.AddState(ax::mojom::State::kEditable);
+  cell_6.AddState(ax::mojom::State::kRichlyEditable);
+  cell_6.AddIntAttribute(ax::mojom::IntAttribute::kRestriction,
+                         static_cast<int>(ax::mojom::Restriction::kReadOnly));
+  cell_6.child_ids = {st_7.id};
+
+  cell_8.role = ax::mojom::Role::kCell;
+  cell_8.child_ids = {st_9.id};
+
+  Init(root_1, table_2, row_3, cell_4, st_5, cell_6, st_7, cell_8, st_9);
+
+  AXPlatformNodeWinTest::PatternSet cell_4_patterns =
+      GetSupportedPatternsFromNodeId(cell_4.id);
+  AXPlatformNodeWinTest::PatternSet cell_6_patterns =
+      GetSupportedPatternsFromNodeId(cell_6.id);
+  AXPlatformNodeWinTest::PatternSet cell_8_patterns =
+      GetSupportedPatternsFromNodeId(cell_8.id);
+
+  // Since the first two gridcell nodes are editable, we should find the
+  // ValuePattern exposed in those cells.
+  EXPECT_NE(cell_4_patterns.find(UIA_ValuePatternId), cell_4_patterns.end());
+  EXPECT_NE(cell_6_patterns.find(UIA_ValuePatternId), cell_6_patterns.end());
+  // Since the last gridcell node is not editable, we should not find
+  // ValuePattern exposed for it.
+  EXPECT_EQ(cell_8_patterns.find(UIA_ValuePatternId), cell_8_patterns.end());
 }
 
 TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
