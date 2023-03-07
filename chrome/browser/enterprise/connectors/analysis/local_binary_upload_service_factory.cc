@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
+#include "chrome/browser/enterprise/signals/system_signals_service_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace enterprise_connectors {
@@ -26,11 +27,14 @@ LocalBinaryUploadServiceFactory::GetInstance() {
 LocalBinaryUploadServiceFactory::LocalBinaryUploadServiceFactory()
     : ProfileKeyedServiceFactory(
           "LocalBinaryUploadService",
-          ProfileSelections::BuildForRegularAndIncognito()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {
+  DependsOn(enterprise_signals::SystemSignalsServiceHostFactory::GetInstance());
+}
 
 KeyedService* LocalBinaryUploadServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new LocalBinaryUploadService();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return new LocalBinaryUploadService(profile);
 }
 
 }  // namespace enterprise_connectors
