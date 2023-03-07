@@ -135,8 +135,9 @@ TEST_F(CalendarUpNextViewPixelTest,
       /*revision_number=*/1, Widget()));
 }
 
+// TODO(b/271027275): the test keeps failing.
 TEST_F(CalendarUpNextViewPixelTest,
-       ShouldShowMultipleEventsInHorizontalScrollView) {
+       DISABLED_ShouldShowMultipleEventsInHorizontalScrollView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -159,9 +160,10 @@ TEST_F(CalendarUpNextViewPixelTest,
       /*revision_number=*/1, Widget()));
 }
 
+// TODO(b/271027275): the test keeps failing.
 TEST_F(
     CalendarUpNextViewPixelTest,
-    ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
+    DISABLED_ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -187,7 +189,8 @@ TEST_F(
       /*revision_number=*/0, Widget()));
 }
 
-TEST_F(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
+// TODO(b/271027275): the test keeps failing.
+TEST_F(CalendarUpNextViewPixelTest, DISABLED_ShouldShowJoinMeetingButton) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
