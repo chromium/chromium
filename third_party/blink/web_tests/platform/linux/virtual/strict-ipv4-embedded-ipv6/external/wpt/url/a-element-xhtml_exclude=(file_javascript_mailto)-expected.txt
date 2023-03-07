@@ -75,7 +75,7 @@ FAIL Parsing: <http://2001::1]> against <http://example.org/foo/bar> assert_equa
 FAIL Parsing: <http://2001::1]:80> against <http://example.org/foo/bar> assert_equals: failure should set href to input expected "http://2001::1]:80" but got "http://2001::1]/"
 PASS Parsing: <http://[2001::1]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[::127.0.0.1]> against <http://example.org/foo/bar>
-FAIL Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> assert_equals: failure should set href to input expected "http://[::127.0.0.1.]" but got "http://[::127.0.0.1.]/"
 PASS Parsing: <http://[0:0:0:0:0:0:13.1.68.3]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[2001::1]:80> against <http://example.org/foo/bar>
 PASS Parsing: <http:/example.com/> against <http://example.org/foo/bar>
