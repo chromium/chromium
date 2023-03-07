@@ -45,26 +45,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
     public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog10";
 
     /**
-     * Shows the new flow with separate sign-in and sync pages. Uses the new initialization logic
-     * that doesn't require native initialization to be finished for showing continue/dismiss
-     * buttons on the welcome screen.
-     */
-    @VisibleForTesting
-    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew10";
-    /**
-     * Shows the new flow with separate sign-in and sync pages. Uses the old initialization logic
-     * in which continue/dismiss buttons on the welcome screen are shown after native is
-     * initialized. This group is used to check the effect of the delay introduced by the native
-     * initialization.
-     */
-    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld10";
-    /**
-     * Shows the flow without the sign-in page but with UMA controls in a dialog.
-     * This group is used as control for {@link #INITIALIZATION_FLOW_NEW_GROUP} and
-     * {@link #INITIALIZATION_FLOW_OLD_GROUP}.
-     */
-    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl10";
-    /**
      * Used as a seed while selecting the group for the trial.
      */
     private static final int STUDY_RANDOMIZATION_SALT = 0xf2689bf8;
@@ -138,16 +118,7 @@ public class FREMobileIdentityConsistencyFieldTrial {
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
             return false;
         }
-        return OLD_FRE_WITH_UMA_DIALOG_GROUP.equals(getFirstRunTrialGroup())
-                || INITIALIZATION_FLOW_CONTROL_GROUP.equals(getFirstRunTrialGroup());
-    }
-
-    @MainThread
-    public static boolean shouldUseNewInitializationFlow() {
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
-            return false;
-        }
-        return getFirstRunTrialGroup().equals(INITIALIZATION_FLOW_NEW_GROUP);
+        return OLD_FRE_WITH_UMA_DIALOG_GROUP.equals(getFirstRunTrialGroup());
     }
 
     @CalledByNative
@@ -181,12 +152,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
                     return 3354003;
                 case OLD_FRE_WITH_UMA_DIALOG_GROUP:
                     return 3354004;
-                case INITIALIZATION_FLOW_CONTROL_GROUP:
-                    return 3356513;
-                case INITIALIZATION_FLOW_NEW_GROUP:
-                    return 3356514;
-                case INITIALIZATION_FLOW_OLD_GROUP:
-                    return 3356515;
                 default:
                     break;
             }
@@ -198,12 +163,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
                     return 3356553;
                 case OLD_FRE_WITH_UMA_DIALOG_GROUP:
                     return 3356554;
-                case INITIALIZATION_FLOW_CONTROL_GROUP:
-                    return 3356555;
-                case INITIALIZATION_FLOW_NEW_GROUP:
-                    return 3356556;
-                case INITIALIZATION_FLOW_OLD_GROUP:
-                    return 3356557;
                 default:
                     break;
             }
@@ -300,9 +259,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
         int enabledPercent = 0;
         int disabledPercent = 0;
         int oldFreWithUmaDialogPercent = 0;
-        int initializationFlowNewPercent = 0;
-        int initializationFlowOldPercent = 0;
-        int initializationFlowControlPercent = 0;
         switch (VersionConstants.CHANNEL) {
             case Channel.DEFAULT:
             case Channel.CANARY:
@@ -312,14 +268,8 @@ public class FREMobileIdentityConsistencyFieldTrial {
                 enabledPercent = 100;
                 disabledPercent = 0;
                 oldFreWithUmaDialogPercent = 0;
-                initializationFlowNewPercent = 0;
-                initializationFlowOldPercent = 0;
-                initializationFlowControlPercent = 0;
         }
-        assert enabledPercent + disabledPercent + oldFreWithUmaDialogPercent
-                        + initializationFlowNewPercent + initializationFlowOldPercent
-                        + initializationFlowControlPercent
-                <= 100;
+        assert enabledPercent + disabledPercent + oldFreWithUmaDialogPercent <= 100;
 
         NormalizedMurmurHashEntropyProvider entropyProvider =
                 new NormalizedMurmurHashEntropyProvider(lowEntropyValue, lowEntropySize);
@@ -335,15 +285,6 @@ public class FREMobileIdentityConsistencyFieldTrial {
         if (randomBucket < oldFreWithUmaDialogPercent) return OLD_FRE_WITH_UMA_DIALOG_GROUP;
         randomBucket -= oldFreWithUmaDialogPercent;
 
-        if (randomBucket < initializationFlowNewPercent) return INITIALIZATION_FLOW_NEW_GROUP;
-        randomBucket -= initializationFlowNewPercent;
-
-        if (randomBucket < initializationFlowOldPercent) return INITIALIZATION_FLOW_OLD_GROUP;
-        randomBucket -= initializationFlowOldPercent;
-
-        if (randomBucket < initializationFlowControlPercent) {
-            return INITIALIZATION_FLOW_CONTROL_GROUP;
-        }
         return DEFAULT_GROUP;
     }
 
