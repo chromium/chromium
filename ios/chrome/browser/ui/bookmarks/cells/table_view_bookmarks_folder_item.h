@@ -38,6 +38,8 @@ typedef NS_ENUM(NSInteger, TableViewBookmarksFolderAccessoryType) {
 @property(nonatomic, assign, getter=isCurrentFolder) BOOL currentFolder;
 // The item's left indentation level.
 @property(nonatomic, assign) NSInteger indentationLevel;
+// Whether a slashed cloud should be displayed.
+@property(nonatomic, assign) BOOL shouldDisplayCloudSlashIcon;
 
 @end
 
@@ -57,6 +59,8 @@ typedef NS_ENUM(NSInteger, TableViewBookmarksFolderAccessoryType) {
 // Accessory Type.
 @property(nonatomic, assign)
     TableViewBookmarksFolderAccessoryType bookmarksAccessoryType;
+// A view containing a slashed cloud icon; at the end of the subview stack.
+@property(nonatomic, strong) UIView* cloudSlashedView;
 
 @end
 

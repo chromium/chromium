@@ -27,19 +27,6 @@ const NSUInteger kMaxDownloadFaviconCount = 50;
   std::set<const bookmarks::BookmarkNode*> _editNodes;
 }
 
-@synthesize addingNewFolder = _addingNewFolder;
-@synthesize bookmarkModel = _bookmarkModel;
-@synthesize currentlyInEditMode = _currentlyInEditMode;
-@synthesize currentlyShowingSearchResults = _currentlyShowingSearchResults;
-@synthesize editingFolderCell = _editingFolderCell;
-@synthesize editingFolderNode = _editingFolderNode;
-@synthesize faviconDownloadCount = _faviconDownloadCount;
-@synthesize observer = _observer;
-@synthesize promoVisible = _promoVisible;
-@synthesize tableView = _tableView;
-@synthesize tableViewDisplayedRootNode = _tableViewDisplayedRootNode;
-@synthesize tableViewModel = _tableViewModel;
-
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                     displayedRootNode:
                         (const bookmarks::BookmarkNode*)displayedRootNode {

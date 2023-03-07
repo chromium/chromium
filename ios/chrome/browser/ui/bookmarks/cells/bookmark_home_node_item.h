@@ -19,6 +19,9 @@ class BookmarkNode;
 @property(nonatomic, readwrite, assign)
     const bookmarks::BookmarkNode* bookmarkNode;
 
+// Whether a slashed cloud should be displayed.
+@property(nonatomic, assign) BOOL shouldDisplayCloudSlashIcon;
+
 - (instancetype)initWithType:(NSInteger)type
                 bookmarkNode:(const bookmarks::BookmarkNode*)node
     NS_DESIGNATED_INITIALIZER;

@@ -534,7 +534,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
               url_formatter::
                   FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                       GetFirstUrl()))];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(label),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Invoke Edit through context menu.
@@ -712,7 +714,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
               url_formatter::
                   FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                       GetFirstUrl()))];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(label),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Invoke Edit through context menu.

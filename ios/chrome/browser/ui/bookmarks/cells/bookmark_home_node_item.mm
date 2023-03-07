@@ -47,6 +47,7 @@
     bookmarkCell.accessibilityIdentifier =
         bookmark_utils_ios::TitleForBookmarkNode(_bookmarkNode);
     bookmarkCell.accessibilityTraits |= UIAccessibilityTraitButton;
+    bookmarkCell.cloudSlashedView.hidden = !self.shouldDisplayCloudSlashIcon;
   } else {
     TableViewURLCell* urlCell =
         base::mac::ObjCCastStrict<TableViewURLCell>(cell);
@@ -57,6 +58,8 @@
             FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                 _bookmarkNode->url()));
     urlCell.accessibilityTraits |= UIAccessibilityTraitButton;
+    // TODO(crbug.com/1420242) Set the cloud icon when crrev.com/c/4291170 is
+    // landed.
     [urlCell configureUILayout];
   }
 }

@@ -20,12 +20,16 @@
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_promo_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_shared_state.h"
@@ -66,6 +70,8 @@ const int kMaxBookmarksSearchResults = 50;
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
   // The browser for this mediator.
   Browser* _browser;
+  // The sync setup service for this mediator.
+  SyncSetupService* _syncSetupService;
 }
 
 // Shared state between Bookmark home classes.
@@ -118,6 +124,7 @@ const int kMaxBookmarksSearchResults = 50;
       bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
 
   _syncService = SyncServiceFactory::GetForBrowserState(browserState);
+  _syncSetupService = SyncSetupServiceFactory::GetForBrowserState(browserState);
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
@@ -128,6 +135,7 @@ const int kMaxBookmarksSearchResults = 50;
   _bookmarkPromoController = nil;
 
   _modelBridge = nullptr;
+  _syncSetupService = nullptr;
   _syncedBookmarksObserver = nullptr;
   _browser = nullptr;
   self.consumer = nil;
@@ -173,6 +181,8 @@ const int kMaxBookmarksSearchResults = 50;
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:child.get()];
+    nodeItem.shouldDisplayCloudSlashIcon =
+        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
     [self.sharedState.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -193,6 +203,8 @@ const int kMaxBookmarksSearchResults = 50;
   BookmarksHomeNodeItem* mobileItem =
       [[BookmarksHomeNodeItem alloc] initWithType:BookmarksHomeItemTypeBookmark
                                      bookmarkNode:mobileNode];
+  mobileItem.shouldDisplayCloudSlashIcon =
+      bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
   [self.sharedState.tableViewModel
                       addItem:mobileItem
       toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -204,6 +216,8 @@ const int kMaxBookmarksSearchResults = 50;
     BookmarksHomeNodeItem* barItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:bookmarkBar];
+    barItem.shouldDisplayCloudSlashIcon =
+        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
     [self.sharedState.tableViewModel
                         addItem:barItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -215,6 +229,8 @@ const int kMaxBookmarksSearchResults = 50;
     BookmarksHomeNodeItem* otherItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:otherBookmarks];
+    otherItem.shouldDisplayCloudSlashIcon =
+        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
     [self.sharedState.tableViewModel
                         addItem:otherItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -229,6 +245,8 @@ const int kMaxBookmarksSearchResults = 50;
     BookmarksHomeNodeItem* managedItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:managedNode];
+    managedItem.shouldDisplayCloudSlashIcon =
+        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
     [self.sharedState.tableViewModel
                         addItem:managedItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -254,6 +272,8 @@ const int kMaxBookmarksSearchResults = 50;
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:node];
+    nodeItem.shouldDisplayCloudSlashIcon =
+        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
     [self.sharedState.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -500,15 +520,16 @@ const int kMaxBookmarksSearchResults = 50;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  // Permanent nodes ("Bookmarks Bar", "Other Bookmarks") at the root node might
-  // be added after syncing.  So we need to refresh here.
-  if (self.sharedState.tableViewDisplayedRootNode ==
-          self.sharedState.bookmarkModel->root_node() ||
-      self.isSyncDisabledByAdministrator) {
-    [self.consumer refreshContents];
-    return;
+  // If user starts or stops syncing bookmarks, we may have to remove or add the
+  // slashed cloud icon. Also, permanent nodes ("Bookmarks Bar", "Other
+  // Bookmarks") at the root node might be added after syncing.  So we need to
+  // refresh here.
+  [self.consumer refreshContents];
+  if (self.sharedState.tableViewDisplayedRootNode !=
+          self.sharedState.bookmarkModel->root_node() &&
+      !self.isSyncDisabledByAdministrator) {
+    [self updateTableViewBackground];
   }
-  [self updateTableViewBackground];
 }
 
 #pragma mark - PrefObserverDelegate

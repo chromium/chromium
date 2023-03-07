@@ -6,6 +6,7 @@
 
 #import "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
@@ -80,6 +81,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
       break;
     }
   }
+  folderCell.cloudSlashedView.hidden = !self.shouldDisplayCloudSlashIcon;
 }
 
 @end
@@ -128,10 +130,14 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
         setContentHuggingPriority:UILayoutPriorityDefaultLow
                           forAxis:UILayoutConstraintAxisHorizontal];
 
+    // Slashed cloud view.
+    self.cloudSlashedView = bookmark_utils_ios::CloudSlashIcon();
+    self.cloudSlashedView.hidden = YES;
+
     // Container StackView.
     UIStackView* horizontalStack =
         [[UIStackView alloc] initWithArrangedSubviews:@[
-          self.folderImageView, self.folderTitleTextField
+          self.folderImageView, self.folderTitleTextField, self.cloudSlashedView
         ]];
     horizontalStack.axis = UILayoutConstraintAxisHorizontal;
     horizontalStack.spacing = kBookmarkCellViewSpacing;
@@ -194,6 +200,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
   self.folderTitleTextField.accessibilityIdentifier = nil;
   self.accessoryType = UITableViewCellAccessoryNone;
   self.isAccessibilityElement = YES;
+  self.cloudSlashedView.hidden = YES;
 }
 
 #pragma mark BookmarkTableCellTitleEditing
@@ -246,6 +253,11 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
 #pragma mark Accessibility
 
 - (NSString*)accessibilityLabel {
+  if (!self.cloudSlashedView.hidden) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
+        base::SysNSStringToUTF16(self.folderTitleTextField.text));
+  }
   return self.folderTitleTextField.text;
 }
 
