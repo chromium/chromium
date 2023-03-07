@@ -202,6 +202,8 @@ extern const char kAccessibilityAutoclickMovementThreshold[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityAutoclickMenuPosition[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityColorFiltering[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityGreyscaleAmount[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilitySaturationAmount[];
@@ -209,6 +211,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilitySepiaAmount[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityHueRotationAmount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityColorVisionCorrectionAmount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityColorVisionDeficiencyType[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityCaretHighlightEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

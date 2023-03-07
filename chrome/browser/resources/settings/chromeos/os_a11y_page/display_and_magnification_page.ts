@@ -91,6 +91,21 @@ class SettingsDisplayAndMagnificationElement extends
         },
       },
 
+      colorVisionDeficiencyTypeOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          // These values correspond to ColorVisionDeficiencyType enums in
+          // ash/color_enhancement/color_enhancement_controller.cc.
+          // CVD types are ordered here by how common they are.
+          return [
+            {value: 1, name: loadTimeData.getString('deuteranomalyFilter')},
+            {value: 0, name: loadTimeData.getString('protanomalyFilter')},
+            {value: 2, name: loadTimeData.getString('tritanomalyFilter')},
+          ];
+        },
+      },
+
       experimentalColorEnhancementSettingsEnabled_: {
         type: Boolean,
         value() {
