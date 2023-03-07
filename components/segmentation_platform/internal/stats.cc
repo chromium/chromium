@@ -4,10 +4,12 @@
 
 #include "components/segmentation_platform/internal/stats.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -386,6 +388,36 @@ void RecordModelExecutionResult(
   base::UmaHistogramPercentage("SegmentationPlatform.ModelExecution.Result." +
                                    SegmentIdToHistogramVariant(segment_id),
                                result * 100);
+}
+
+void RecordModelExecutionResult(SegmentId segment_id,
+                                const ModelProvider::Response& result,
+                                proto::OutputConfig output_config) {
+  // Only for binary and multi-class classifier, we treat the score as a
+  // probability score and multiply by 100. For others, it's kept as is.
+  bool is_probability_score = false;
+  switch (output_config.predictor().PredictorType_case()) {
+    case proto::Predictor::kBinaryClassifier:
+      [[fallthrough]];
+    case proto::Predictor::kMultiClassClassifier:
+      is_probability_score = true;
+      break;
+    case proto::Predictor::kBinnedClassifier:
+      [[fallthrough]];
+    case proto::Predictor::kRegressor:
+      is_probability_score = false;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  for (size_t i = 0; i < result.size(); i++) {
+    std::string histogram_name = "SegmentationPlatform.ModelExecution.Result" +
+                                 base::NumberToString(i) + "." +
+                                 SegmentIdToHistogramVariant(segment_id);
+    int scaled_model_score = is_probability_score ? result[i] * 100 : result[i];
+    base::UmaHistogramPercentage(histogram_name, scaled_model_score);
+  }
 }
 
 void RecordModelExecutionSaveResult(SegmentId segment_id, bool success) {

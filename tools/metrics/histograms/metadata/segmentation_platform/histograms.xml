@@ -37,6 +37,19 @@ chromium-metrics-reviews@google.com.
   <variant name="ShoppingUser"/>
 </variants>
 
+<variants name="Index">
+  <variant name="0" summary="index 0"/>
+  <variant name="1" summary="index 1"/>
+  <variant name="2" summary="index 2"/>
+  <variant name="3" summary="index 3"/>
+  <variant name="4" summary="index 4"/>
+  <variant name="5" summary="index 5"/>
+  <variant name="6" summary="index 6"/>
+  <variant name="7" summary="index 7"/>
+  <variant name="8" summary="index 8"/>
+  <variant name="9" summary="index 9"/>
+</variants>
+
 <variants name="ModelExecutionStatus">
   <variant name="ExecutionError"/>
   <variant name="Success"/>
@@ -454,6 +467,22 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ModelExecutionStatus" variants="ModelExecutionStatus"/>
   <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}"
+    units="score" expires_after="2023-10-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the value at index {Index} of the output tensor when executing the
+    {SegmentationModel} segmentation model.
+
+    Recorded every time a {SegmentationModel} segmentation model is successfully
+    executed.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+  <token key="Index" variants="Index"/>
 </histogram>
 
 <histogram

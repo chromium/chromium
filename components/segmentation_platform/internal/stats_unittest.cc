@@ -5,6 +5,9 @@
 #include "components/segmentation_platform/internal/stats.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -196,6 +199,42 @@ TEST(StatsTest, RecordModelExecutionResult) {
       proto::SegmentationModelMetadata::RETURN_TYPE_INTEGER);
   EXPECT_EQ(1, tester.GetBucketCount(
                    "SegmentationPlatform.ModelExecution.Result.Share", 75));
+}
+
+TEST(StatsTest, RecordModelExecutionResultForMultiOutput) {
+  base::HistogramTester tester;
+  auto output_config = test_utils::GetTestOutputConfigForMultiClassClassifier(
+      /*top_k-outputs=*/2,
+      /*threshold=*/0.8);
+
+  // Multi-class classifier should be recorded with results multiplied by 100.
+  stats::RecordModelExecutionResult(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR,
+      {0.4, 0.9, 0.15}, output_config);
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result0.AdaptiveToolbar", 40));
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result1.AdaptiveToolbar", 90));
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result2.AdaptiveToolbar", 15));
+
+  // Binned classifier is recorded as is.
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForBinnedClassifier({{0.2, "low"}, {0.3, "high"}},
+                                            "none");
+  stats::RecordModelExecutionResult(SegmentId::POWER_USER_SEGMENT, {5},
+                                    model_metadata.output_config());
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result0.PowerUserSegment", 5));
 }
 
 }  // namespace stats

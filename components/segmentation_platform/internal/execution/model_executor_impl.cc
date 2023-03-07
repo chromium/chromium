@@ -191,9 +191,16 @@ void ModelExecutorImpl::OnModelExecutionComplete(
             << proto::SegmentId_Name(state->segment_info.segment_id());
     const proto::SegmentationModelMetadata& model_metadata =
         state->segment_info.model_metadata();
-    stats::RecordModelExecutionResult(state->segment_info.segment_id(),
-                                      result.value().at(0),
-                                      model_metadata.return_type());
+    if (model_metadata.has_output_config()) {
+      stats::RecordModelExecutionResult(state->segment_info.segment_id(),
+                                        result.value(),
+                                        model_metadata.output_config());
+    } else {
+      stats::RecordModelExecutionResult(state->segment_info.segment_id(),
+                                        result.value().at(0),
+                                        model_metadata.return_type());
+    }
+
     base::TimeDelta signal_storage_length =
         model_metadata.signal_storage_length() *
         metadata_utils::GetTimeUnit(model_metadata);
