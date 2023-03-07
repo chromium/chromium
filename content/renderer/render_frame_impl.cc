@@ -3283,10 +3283,10 @@ RenderFrameImpl::CreateWorkerFetchContext() {
       RenderThreadImpl::current()->cors_exempt_header_list();
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
-                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
-                   return blink::WebString::FromLatin1(h);
-                 });
+  base::ranges::transform(cors_exempt_header_list,
+                          web_cors_exempt_header_list.begin(),
+                          static_cast<blink::WebString (*)(const std::string&)>(
+                              &blink::WebString::FromLatin1));
 
   // |pending_subresource_loader_updater| and
   // |pending_resource_load_info_notifier| are not used for

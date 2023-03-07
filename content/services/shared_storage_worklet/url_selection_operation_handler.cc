@@ -4,6 +4,7 @@
 
 #include "content/services/shared_storage_worklet/url_selection_operation_handler.h"
 
+#include "base/ranges/algorithm.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
@@ -92,8 +93,7 @@ void UrlSelectionOperationHandler::RunOperation(
   v8::Local<v8::Function> run_function = it->second.Get(isolate);
 
   std::vector<std::string> string_urls;
-  std::transform(urls.cbegin(), urls.cend(), std::back_inserter(string_urls),
-                 [](const GURL& url) { return url.spec(); });
+  base::ranges::transform(urls, std::back_inserter(string_urls), &GURL::spec);
 
   v8::Local<v8::Array> js_urls =
       gin::Converter<std::vector<std::string>>::ToV8(isolate, string_urls)

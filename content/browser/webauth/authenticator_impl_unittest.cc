@@ -7065,8 +7065,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
               });
 
     std::vector<std::string> string_reps;
-    std::transform(
-        responses.begin(), responses.end(), std::back_inserter(string_reps),
+    base::ranges::transform(
+        responses, std::back_inserter(string_reps),
         [](const device::AuthenticatorGetAssertionResponse& response) {
           const device::PublicKeyCredentialUserEntity& user =
               response.user_entity.value();
