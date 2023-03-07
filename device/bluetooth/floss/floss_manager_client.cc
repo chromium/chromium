@@ -300,6 +300,11 @@ void FlossManagerClient::HandleGetDefaultAdapter(DBusResult<int32_t> response) {
 
 void FlossManagerClient::HandleGetAvailableAdapters(
     DBusResult<std::vector<AdapterWithEnabled>> adapters) {
+  if (!adapters.has_value()) {
+    LOG(WARNING) << "GetAvailableAdapters return error " << adapters.error();
+    return;
+  }
+
   auto previous_adapters = std::move(adapter_to_powered_);
 
   // Clear existing adapters.
