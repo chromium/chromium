@@ -68,7 +68,6 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/recent_tabs:synced_sessions",
     "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/snackbar",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",

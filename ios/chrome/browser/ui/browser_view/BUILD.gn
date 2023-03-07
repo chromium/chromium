@@ -172,7 +172,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/settings/password/password_settings",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/ui/snackbar",
     "//ios/chrome/browser/ui/spotlight_debugger",
@@ -243,6 +242,7 @@ source_set("browser_view") {
 
     # Fake dependencies to break cycles
     "//ios/chrome/browser/ui/settings",
+    "//ios/chrome/browser/ui/sharing:sharing_internal",
   ]
   frameworks = [
     "MessageUI.framework",
@@ -309,7 +309,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/ntp:coordinator",
     "//ios/chrome/browser/ui/popup_menu",
     "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip",
     "//ios/chrome/browser/ui/tabs:coordinator",

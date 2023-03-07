@@ -37,7 +37,6 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/menu:tab_context_menu_delegate",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",

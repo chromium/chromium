@@ -129,7 +129,6 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/reading_list",
     "//ios/chrome/browser/ui/settings/utils:utils",
     "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",

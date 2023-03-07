@@ -2,32 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("public") {
+source_set("sharing") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "sharing_coordinator.h",
     "sharing_params.h",
     "sharing_params.mm",
     "sharing_positioner.h",
     "sharing_scenario.h",
   ]
   deps = [
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/util:url_with_title",
     "//url",
   ]
 }
 
-source_set("sharing") {
+source_set("sharing_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "share_download_overlay_coordinator.h",
     "share_download_overlay_coordinator.mm",
     "share_download_overlay_view_controller.h",
     "share_download_overlay_view_controller.mm",
-    "sharing_coordinator.h",
     "sharing_coordinator.mm",
   ]
   deps = [
-    ":public",
+    ":sharing",
     "//base",
     "//components/bookmarks/browser",
     "//ios/chrome/app/strings",
@@ -57,7 +58,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "sharing_coordinator_unittest.mm" ]
   deps = [
-    ":public",
     ":sharing",
     "//base",
     "//base/test:test_support",

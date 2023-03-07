@@ -101,7 +101,6 @@ source_set("popup") {
     "//ios/chrome/browser/ui/omnibox/resources:pedal_safety_check",
     "//ios/chrome/browser/ui/omnibox/resources:pedal_settings",
     "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/sharing:public",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
