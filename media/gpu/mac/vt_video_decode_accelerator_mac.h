@@ -33,10 +33,10 @@
 #include "media/video/h265_parser.h"
 #include "media/video/h265_poc.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/gpu/mac/gl_image_io_surface.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_io_surface.h"
 
 // This must be included after gl_bindings.h, or the various GL headers on the
 // system and in the source tree will conflict with each other.
@@ -175,7 +175,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     const bool uses_shared_images;
 
     // Information about the currently bound image, for OnMemoryDump().
-    std::vector<scoped_refptr<gl::GLImageIOSurface>> gl_images;
+    std::vector<scoped_refptr<GLImageIOSurface>> gl_images;
     int32_t bitstream_id = 0;
 
     // Texture IDs for the image buffer.

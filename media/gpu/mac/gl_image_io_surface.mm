@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/gl_image_io_surface.h"
+#include "media/gpu/mac/gl_image_io_surface.h"
 
 #include "base/mac/foundation_util.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -15,13 +15,13 @@
 
 using gfx::BufferFormat;
 
-namespace gl {
+namespace media {
 
 // static
 GLImageIOSurface* GLImageIOSurface::Create(const gfx::Size& size) {
-  switch (GetGLImplementation()) {
-    case kGLImplementationEGLGLES2:
-    case kGLImplementationEGLANGLE:
+  switch (gl::GetGLImplementation()) {
+    case gl::kGLImplementationEGLGLES2:
+    case gl::kGLImplementationEGLANGLE:
       return new GLImageIOSurface(size);
     default:
       break;
@@ -87,8 +87,9 @@ bool GLImageIOSurface::InitializeWithCVPixelBuffer(
     return false;
   }
 
-  if (!Initialize(io_surface, io_surface_plane, io_surface_id, format))
+  if (!Initialize(io_surface, io_surface_plane, io_surface_id, format)) {
     return false;
+  }
 
   cv_pixel_buffer_.reset(cv_pixel_buffer, base::scoped_policy::RETAIN);
   return true;
@@ -147,4 +148,4 @@ void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
   }
 }
 
-}  // namespace gl
+}  // namespace media

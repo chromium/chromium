@@ -371,8 +371,6 @@ component("gl") {
       "gl_display_egl.mm",
       "gl_fence_apple.cc",
       "gl_fence_apple.h",
-      "gl_image_io_surface.h",
-      "gl_image_io_surface.mm",
       "scoped_cgl.cc",
       "scoped_cgl.h",
     ]
@@ -410,8 +408,6 @@ component("gl") {
       "gl_display_egl.mm",
       "gl_fence_apple.cc",
       "gl_fence_apple.h",
-      "gl_image_io_surface.h",
-      "gl_image_io_surface.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",

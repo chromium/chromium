@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_GL_IMAGE_IO_SURFACE_H_
-#define UI_GL_GL_IMAGE_IO_SURFACE_H_
+#ifndef MEDIA_GPU_MAC_GL_IMAGE_IO_SURFACE_H_
+#define MEDIA_GPU_MAC_GL_IMAGE_IO_SURFACE_H_
 
 #include <CoreVideo/CVPixelBuffer.h>
 #include <EGL/egl.h>
@@ -13,14 +13,15 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/threading/thread_checker.h"
+#include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
-namespace gl {
+namespace media {
 
-class GL_EXPORT GLImageIOSurface : public GLImage {
+class MEDIA_GPU_EXPORT GLImageIOSurface : public gl::GLImage {
  public:
   static GLImageIOSurface* Create(const gfx::Size& size);
 
@@ -73,6 +74,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   base::ThreadChecker thread_checker_;
 };
 
-}  // namespace gl
+}  // namespace media
 
-#endif  // UI_GL_GL_IMAGE_IO_SURFACE_H_
+#endif  // MEDIA_GPU_MAC_GL_IMAGE_IO_SURFACE_H_

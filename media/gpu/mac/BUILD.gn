@@ -17,6 +17,8 @@ source_set("mac") {
   visibility = [ "//media/gpu" ]
 
   sources = [
+    "gl_image_io_surface.h",
+    "gl_image_io_surface.mm",
     "vp9_super_frame_bitstream_filter.cc",
     "vp9_super_frame_bitstream_filter.h",
     "vt_config_util.h",

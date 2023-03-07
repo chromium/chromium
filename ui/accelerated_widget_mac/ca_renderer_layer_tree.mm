@@ -26,7 +26,6 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/hdr_metadata_mac.h"
 #include "ui/gl/ca_renderer_layer_params.h"
-#include "ui/gl/gl_image_io_surface.h"
 
 namespace ui {
 
