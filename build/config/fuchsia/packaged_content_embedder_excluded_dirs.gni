@@ -4,6 +4,8 @@
 
 import("//build/config/devtools.gni")
 
+assert(is_fuchsia)
+
 # List of transitively included directories that should be stripped from
 # released packages for size reasons. For use with the |excluded_dirs| variable
 # of fuchsia_package().

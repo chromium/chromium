@@ -8,7 +8,7 @@ import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//third_party/fuchsia-sdk/sdk/build/config/config.gni")
 
 assert(is_fuchsia)
-assert(!is_posix)
+assert(!is_posix, "Fuchsia is not POSIX.")
 
 config("compiler") {
   configs = [ "//third_party/fuchsia-sdk/sdk/build/config:compiler" ]
