@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audible.CloseNewestToExitConcurrentPlayback"
-    enum="ExitConcurrentPlaybackContents" expires_after="2023-04-15">
+    enum="ExitConcurrentPlaybackContents" expires_after="2023-09-15">
   <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audible.ConcurrentTabsTime" units="ms"
-    expires_after="2023-04-15">
+    expires_after="2023-09-15">
   <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audible.ConcurrentTabsWhenStarting" units="units"
-    expires_after="2023-04-15">
+    expires_after="2023-09-15">
   <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audible.MaxConcurrentTabsInSession" units="units"
-    expires_after="2023-04-15">
+    expires_after="2023-09-15">
   <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
-    expires_after="2023-04-30">
+    expires_after="2023-09-15">
   <owner>dalecurtis@chromium.org</owner>
   <owner>evliu@google.com</owner>
   <owner>media-dev@chromium.org</owner>
