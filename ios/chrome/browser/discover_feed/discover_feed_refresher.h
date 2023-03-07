@@ -12,7 +12,7 @@ class DiscoverFeedRefresher {
  public:
   // Refreshes the Discover Feed, indicating whether the feed is visible at the
   // time of the request.
-  virtual void RefreshFeed(bool feed_visible) = 0;
+  virtual void RefreshFeed(bool feed_visible) {}
 
   // Refreshes the Discover Feed if needed. The implementer decides if a refresh
   // is needed or not. This should only be called when the feed is visible to
@@ -21,7 +21,7 @@ class DiscoverFeedRefresher {
 
   // Refreshes the Discover Feed. `trigger` describes the context of the
   // refresh.
-  virtual void RefreshFeed(FeedRefreshTrigger trigger) {}
+  virtual void RefreshFeed(FeedRefreshTrigger trigger) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_REFRESHER_H_

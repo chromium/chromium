@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
@@ -457,7 +458,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   // before callbacks in repsonse to a feed refresh are called, ensuring the NTP
   // returns to a state at the top of the surface upon refresh.
   [self.NTPViewController resetStateUponReload];
-  self.discoverFeedService->RefreshFeed(/*feed_visible=*/true);
+  self.discoverFeedService->RefreshFeed(
+      FeedRefreshTrigger::kForegroundUserTriggered);
   [self reloadContentSuggestions];
 }
 

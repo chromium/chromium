@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 
@@ -1210,7 +1211,8 @@ using feed::FeedUserActionType;
   [self.sessionEndTimer invalidate];
   self.sessionEndTimer = nil;
   if (self.engagedSimpleReportedDiscover) {
-    self.feedRefresher->RefreshFeed(/*feed_visible=*/false);
+    self.feedRefresher->RefreshFeed(
+        FeedRefreshTrigger::kForegroundFeedNotVisible);
   }
 }
 

@@ -32,7 +32,6 @@ class ChromiumDiscoverFeedService final : public DiscoverFeedService {
   void RemoveFeedViewController(UIViewController* feed_view_controller) final {}
   void UpdateTheme() final {}
   void RefreshFeedIfNeeded() final {}
-  void RefreshFeed(bool feed_visible) final {}
   void RefreshFeed(FeedRefreshTrigger trigger) final {}
 
   void PerformBackgroundRefreshes(void (^completion)(BOOL)) final {}
