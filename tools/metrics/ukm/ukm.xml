@@ -13817,6 +13817,47 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="NavigationPredictorPreloadOnHover">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>domenic@chromium.org</owner>
+  <owner>isaboori@google.com</owner>
+  <summary>
+    This event records required data to assess and fine-tune the preloading
+    on-hover and on pointer down heuristics, and is submitted once per mouse
+    over, mouse out, mouse down and mouse up events for randomly selected anchor
+    elements.
+  </summary>
+  <metric name="HoverNotTakenMs">
+    <summary>
+      Duration that the user was hovering over the anchor element and it did not
+      result in a navigation to that link. Exponentially bucketed using
+      GetExponentialBucketMin with a spacing of 1.3.
+    </summary>
+  </metric>
+  <metric name="HoverTakenMs">
+    <summary>
+      Duration that the user was hovering over the anchor element and it
+      resulted in a navigation to that link. Exponentially bucketed using
+      GetExponentialBucketMin with a spacing of 1.3.
+    </summary>
+  </metric>
+  <metric name="MouseDownNotTakenMs">
+    <summary>
+      Time since the user pressed the left/middle mouse button over the anchor
+      element and that did not result in a navigation to that link.
+      Exponentially bucketed using GetExponentialBucketMin with a spacing of
+      1.3.
+    </summary>
+  </metric>
+  <metric name="MouseDownTakenMs">
+    <summary>
+      Time since the user presses the left/middle mouse button over the anchor
+      element and that resulted in a navigation to that link. Exponentially
+      bucketed using GetExponentialBucketMin with a spacing of 1.3.
+    </summary>
+  </metric>
+</event>
+
 <event name="NavigationPredictorRendererWarmup">
   <obsolete>
     Removed in M91.
