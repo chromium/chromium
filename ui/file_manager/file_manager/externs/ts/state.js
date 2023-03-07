@@ -36,6 +36,10 @@ export const EntryType = {
  * * `icon` can be either a string or a IconSet which is an object including
  * both high/low DPI icon data.
  *
+ * TODO(b/271485133): `children` here only store sub directories for now, it
+ * should store all children including files, it's up to the container to do
+ * filter and sorting if needed.
+ *
  * @typedef {{
  *   entry: (Entry|FilesAppEntry),
  *   icon: (!string|!chrome.fileManagerPrivate.IconSet),

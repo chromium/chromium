@@ -310,6 +310,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsProducer) {
   RunTestURL("lib/actions_producer_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ActionsProducerAllEntries) {
+  RunTestURL("state/actions_producers/all_entries_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BaseStore) {
   RunTestURL("lib/base_store_unittest.js");
 }
@@ -318,12 +322,32 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerAllEntries) {
   RunTestURL("state/reducers/all_entries_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerAndroidApps) {
+  RunTestURL("state/reducers/android_apps_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerFolderShortcuts) {
+  RunTestURL("state/reducers/folder_shortcuts_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerCurrentDirectory) {
   RunTestURL("state/reducers/current_directory_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerNavigation) {
+  RunTestURL("state/reducers/navigation_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerSearch) {
   RunTestURL("state/reducers/search_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerUiEntries) {
+  RunTestURL("state/reducers/ui_entries_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerVolumes) {
+  RunTestURL("state/reducers/volumes_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {
