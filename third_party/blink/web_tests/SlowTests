@@ -1449,7 +1449,5 @@ crbug.com/1376679 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/
 
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-storage-key-track-untrack.js [ Slow ]
 
-crbug.com/1410608 http/tests/inspector-protocol/storage/dom-storage-get-items-by-origin.js [ Slow ]
-
 crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Slow ]
 crbug.com/1404951 external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
