@@ -31,7 +31,8 @@ enum class UserRemovalReason : int32_t {
   REMOTE_ADMIN_INITIATED = 2,
   LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE = 3,
   DEVICE_EPHEMERAL_USERS_ENABLED = 4,
-  GAIA_REMOVED = 5
+  GAIA_REMOVED = 5,
+  MISCONFIGURED_USER = 6,
 };
 
 // Interface for UserManagerBase - that provides base implementation for

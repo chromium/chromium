@@ -259,6 +259,13 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(
           base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
                          weak_factory_.GetWeakPtr()));
+      // We need to store a user information as it would be used by
+      // CryptohomeKeyDelegateServiceProvider and MisconfiguredUserCleaner
+      // If the user creation process is interrupted, the known user record
+      // will be cleared on reboot in
+      // `UserDirectoryIntegrityManager::RemoveUser` via `UserManager`.
+      steps.push_back(base::BindOnce(&AuthSessionAuthenticator::SaveKnownUser,
+                                     weak_factory_.GetWeakPtr()));
       steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                      mount_performer_->AsWeakPtr()));
       steps.push_back(base::BindOnce(
@@ -269,13 +276,6 @@ void AuthSessionAuthenticator::DoCompleteLogin(
     }
     // In both cases, add a key
     if (challenge_response_auth) {
-      // We need to store a user information as it would be used by
-      // CryptohomeKeyDelegateServiceProvider.
-      // If the user creation process is interrupted, the known user record
-      // will be cleared on reboot in
-      // `MisconfiguredUserCleaner::OnCleanMisconfiguredUser`.
-      steps.push_back(base::BindOnce(&AuthSessionAuthenticator::SaveKnownUser,
-                                     weak_factory_.GetWeakPtr()));
       steps.push_back(
           base::BindOnce(&AuthFactorEditor::AddContextChallengeResponseKey,
                          auth_factor_editor_->AsWeakPtr()));

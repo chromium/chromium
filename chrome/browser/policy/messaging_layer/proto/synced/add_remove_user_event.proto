@@ -19,6 +19,7 @@ enum UserRemovalReason {
   LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE = 3;
   DEVICE_EPHEMERAL_USERS_ENABLED = 4;
   GAIA_REMOVED = 5;
+  MISCONFIGURED_USER = 6;
 }
 
 // To be reported when a user is added.

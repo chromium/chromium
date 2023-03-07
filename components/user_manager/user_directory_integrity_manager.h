@@ -35,7 +35,7 @@ class USER_MANAGER_EXPORT UserDirectoryIntegrityManager {
   void RecordCreatingNewUser(const AccountId&);
 
   // Clears known user prefs after removal of an incomplete user.
-  void ClearKnownUserPrefs();
+  void RemoveUser(const AccountId& account_id);
 
   // Remove the mark previously placed in local state, meaning an auth factor
   // has been added, or an unusable user has been successfully cleaned up.
@@ -44,9 +44,13 @@ class USER_MANAGER_EXPORT UserDirectoryIntegrityManager {
 
   // Check if a user has been incompletely created by looking for the
   // presence of a mark associated with the user's email.
-  absl::optional<AccountId> GetMisconfiguredUser();
+  absl::optional<AccountId> GetMisconfiguredUserAccountId();
+
+  bool IsUserMisconfigured(const AccountId& account_id);
 
  private:
+  absl::optional<std::string> GetMisconfiguredUserEmail();
+
   PrefService* const local_state_;
 };
 

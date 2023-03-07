@@ -85,6 +85,7 @@ class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
 class MemoryMetrics;
+class MisconfiguredUserCleaner;
 class PowerMetricsReporter;
 class RendererFreezer;
 class SessionTerminationManager;
@@ -307,6 +308,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>
       video_conference_manager_client_;
+
+  std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -292,6 +293,8 @@ class ChromeUserManagerImpl
   bool user_added_removed_reporter_intialized_ = false;
 
   base::RepeatingClosure remove_non_cryptohome_data_barrier_;
+
+  std::unique_ptr<MountPerformer> mount_performer_;
 
   base::WeakPtrFactory<ChromeUserManagerImpl> weak_factory_{this};
 };

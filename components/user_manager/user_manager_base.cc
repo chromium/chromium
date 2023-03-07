@@ -350,8 +350,13 @@ void UserManagerBase::RemoveUser(const AccountId& account_id,
                                  RemoveUserDelegate* delegate) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
-  if (!CanUserBeRemoved(FindUser(account_id)))
+  UserDirectoryIntegrityManager integrity_manager(GetLocalState());
+  // Misconfigured user would not be included in GetUsers(),
+  // account for them separately.
+  if (!CanUserBeRemoved(FindUser(account_id)) &&
+      !integrity_manager.IsUserMisconfigured(account_id)) {
     return;
+  }
 
   RemoveUserInternal(account_id, reason, delegate);
 }
@@ -408,7 +413,13 @@ void UserManagerBase::RemoveUserFromListImpl(const AccountId& account_id,
 }
 
 bool UserManagerBase::IsKnownUser(const AccountId& account_id) const {
-  return FindUser(account_id) != nullptr;
+  // We check for the presence of a misconfigured user as well. This is because
+  // `WallpaperControllerClientImpl::RemoveUserWallpaper` would not remove
+  // the wallpaper prefs if we return false here, thus leaving behind
+  // orphan prefs for the misconfigured users.
+  UserDirectoryIntegrityManager integrity_manager(GetLocalState());
+  return FindUser(account_id) != nullptr ||
+         integrity_manager.IsUserMisconfigured(account_id);
 }
 
 const User* UserManagerBase::FindUser(const AccountId& account_id) const {
@@ -955,10 +966,7 @@ void UserManagerBase::EnsureUsersLoaded() {
     }
 
     UserDirectoryIntegrityManager integrity_manager(GetLocalState());
-    absl::optional<AccountId> incomplete_user =
-        integrity_manager.GetMisconfiguredUser();
-    if (incomplete_user.has_value() &&
-        incomplete_user->GetUserEmail() == it->GetUserEmail()) {
+    if (integrity_manager.IsUserMisconfigured(*it)) {
       // Skip misconfigured user.
       VLOG(1) << "Encountered misconfigured user while loading list of "
                  "users, skipping";
