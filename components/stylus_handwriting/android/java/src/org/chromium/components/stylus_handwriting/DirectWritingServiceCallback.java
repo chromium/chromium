@@ -176,7 +176,8 @@ class DirectWritingServiceCallback
         gestureData.startRect = mojoRectClampedToEditableBounds(startPoint);
         gestureData.textAlternative = javaStringToMojoString(textAlternative);
 
-        mStylusWritingImeCallback.handleStylusWritingGestureAction(gestureData);
+        // Pass an ID of -1 as we don't care about the result of a gesture.
+        mStylusWritingImeCallback.handleStylusWritingGestureAction(-1, gestureData);
     }
 
     private org.chromium.gfx.mojom.Rect mojoRectClampedToEditableBounds(float[] gesturePoint) {

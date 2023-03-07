@@ -6,6 +6,7 @@ package org.chromium.content.browser.input;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -29,6 +30,7 @@ import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.gfx.mojom.Rect;
 
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +54,7 @@ public class StylusGestureHandlerTest {
 
     private static final String TARGET_PACKAGE = "android.view.inputmethod.";
     private static final String FALLBACK_TEXT = "this gesture failed";
-    private static final String HISTOGRAM_NAME = "InputMethod.StylusHandwriting.Gesture";
+    private static final String GESTURE_TYPE_HISTOGRAM = "InputMethod.StylusHandwriting.Gesture";
 
     private InputConnection mWrappedInputConnection;
     private StylusWritingGestureData mLastGestureData;
@@ -67,8 +69,9 @@ public class StylusGestureHandlerTest {
     public void setUp() throws Exception {
         Assume.assumeTrue("Skipping U+ test on older OS version", BuildCompat.isAtLeastU());
         mRule.setUpForUrl(ImeActivityTestRule.INPUT_FORM_HTML);
-        mWrappedInputConnection = StylusGestureHandler.maybeProxyInputConnection(
-                mRule.getInputConnection(), (gestureData) -> mLastGestureData = gestureData);
+        mWrappedInputConnection =
+                StylusGestureHandler.maybeProxyInputConnection(mRule.getInputConnection(),
+                        (gesture) -> mLastGestureData = gesture.getGestureData());
     }
 
     @Test
@@ -91,9 +94,16 @@ public class StylusGestureHandlerTest {
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
-        Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
-                                                   .get("performHandwritingGesture");
-        performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
         CriteriaHelper.pollUiThread(
                 () -> mLastGestureData != null, "Gesture creation was unsuccessful");
 
@@ -106,7 +116,7 @@ public class StylusGestureHandlerTest {
         assertNull(mLastGestureData.textToInsert);
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount(
-                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.SELECT));
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureHandler.UmaGestureType.SELECT));
     }
 
     @Test
@@ -122,9 +132,16 @@ public class StylusGestureHandlerTest {
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
-        Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
-                                                   .get("performHandwritingGesture");
-        performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
         CriteriaHelper.pollUiThread(
                 () -> mLastGestureData != null, "Gesture creation was unsuccessful");
 
@@ -137,7 +154,7 @@ public class StylusGestureHandlerTest {
         assertEquals("Foo", toJavaString(mLastGestureData.textToInsert));
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount(
-                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.INSERT));
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureHandler.UmaGestureType.INSERT));
     }
 
     @Test
@@ -153,9 +170,16 @@ public class StylusGestureHandlerTest {
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
-        Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
-                                                   .get("performHandwritingGesture");
-        performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
         CriteriaHelper.pollUiThread(
                 () -> mLastGestureData != null, "Gesture creation was unsuccessful");
 
@@ -168,7 +192,7 @@ public class StylusGestureHandlerTest {
         assertNull(mLastGestureData.textToInsert);
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount(
-                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.DELETE));
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureHandler.UmaGestureType.DELETE));
     }
 
     @Test
@@ -184,9 +208,16 @@ public class StylusGestureHandlerTest {
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
-        Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
-                                                   .get("performHandwritingGesture");
-        performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
         CriteriaHelper.pollUiThread(
                 () -> mLastGestureData != null, "Gesture creation was unsuccessful");
 
@@ -199,7 +230,7 @@ public class StylusGestureHandlerTest {
         assertNull(mLastGestureData.textToInsert);
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount(
-                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.REMOVE_SPACE));
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureHandler.UmaGestureType.REMOVE_SPACE));
     }
 
     @Test
@@ -215,9 +246,16 @@ public class StylusGestureHandlerTest {
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
-        Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
-                                                   .get("performHandwritingGesture");
-        performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
         CriteriaHelper.pollUiThread(
                 () -> mLastGestureData != null, "Gesture creation was unsuccessful");
 
@@ -230,7 +268,7 @@ public class StylusGestureHandlerTest {
         assertNull(mLastGestureData.textToInsert);
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount(
-                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.JOIN_OR_SPLIT));
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureHandler.UmaGestureType.JOIN_OR_SPLIT));
     }
 
     @Test
@@ -248,9 +286,16 @@ public class StylusGestureHandlerTest {
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
-        Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
-                                                   .get("performHandwritingGesture");
-        performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
         CriteriaHelper.pollUiThread(
                 () -> mLastGestureData != null, "Gesture creation was unsuccessful");
 
@@ -263,7 +308,7 @@ public class StylusGestureHandlerTest {
         assertNull(mLastGestureData.textToInsert);
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount(
-                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.SELECT_RANGE));
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureHandler.UmaGestureType.SELECT_RANGE));
     }
 
     @Test
@@ -282,9 +327,16 @@ public class StylusGestureHandlerTest {
         builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
-        Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
-                                                   .get("performHandwritingGesture");
-        performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Method performHandwritingGesture =
+                    getMethodsForClass(mWrappedInputConnection.getClass())
+                            .get("performHandwritingGesture");
+            try {
+                performHandwritingGesture.invoke(mWrappedInputConnection, gesture, null, null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                fail("Failed to call performHandwritingGesture");
+            }
+        });
         CriteriaHelper.pollUiThread(
                 () -> mLastGestureData != null, "Gesture creation was unsuccessful");
 
@@ -297,7 +349,7 @@ public class StylusGestureHandlerTest {
         assertNull(mLastGestureData.textToInsert);
         assertEquals(1,
                 mHistogramTester.getHistogramValueCount(
-                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.DELETE_RANGE));
+                        GESTURE_TYPE_HISTOGRAM, StylusGestureHandler.UmaGestureType.DELETE_RANGE));
     }
 
     private static Map<String, Method> getMethodsForClass(Class<?> className) {

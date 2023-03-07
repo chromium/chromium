@@ -1250,7 +1250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.Gesture"
-    enum="StylusHandwritingGesture" expires_after="2023-03-01">
+    enum="StylusHandwritingGesture" expires_after="2024-03-01">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1260,8 +1260,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.StylusHandwriting.GestureResult"
+    enum="StylusHandwritingGestureResult" expires_after="2024-03-01">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>embedded-experience@google.com</owner>
+  <summary>
+    Records the result of a gesture which is sent back to Android.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.StylusHandwriting.GestureTime" units="ms"
+    expires_after="2024-03-01">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>embedded-experience@google.com</owner>
+  <summary>
+    The time taken to process and complete a gesture. More specifically, the
+    time between being sent a gesture from Android and getting the gesture
+    result from Blink. This is recorded once per gesture.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.StylusHandwriting.Triggered"
-    enum="StylusHandwritingApi" expires_after="2023-08-13">
+    enum="StylusHandwritingApi" expires_after="2024-03-01">
   <owner>peconn@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>

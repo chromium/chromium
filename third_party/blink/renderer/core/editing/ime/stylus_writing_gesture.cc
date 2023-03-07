@@ -238,14 +238,14 @@ absl::optional<PlainTextRange> GetTextRangeForSpaces(
 }  // namespace
 
 // static
-void StylusWritingGesture::ApplyGesture(
+mojom::blink::HandwritingGestureResult StylusWritingGesture::ApplyGesture(
     LocalFrame* local_frame,
     mojom::blink::StylusWritingGestureDataPtr gesture_data) {
   if (!local_frame->GetEditor().CanEdit())
-    return;
+    return mojom::blink::HandwritingGestureResult::kFailed;
 
   if (!local_frame->Selection().RootEditableElementOrDocumentElement())
-    return;
+    return mojom::blink::HandwritingGestureResult::kFailed;
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. See http://crbug.com/590369 for more details.
@@ -263,13 +263,18 @@ void StylusWritingGesture::ApplyGesture(
   // Create gesture corresponding to gesture data action.
   std::unique_ptr<StylusWritingGesture> gesture =
       CreateGesture(std::move(gesture_data));
-  if (gesture == nullptr || !gesture->MaybeApplyGesture(local_frame)) {
+  if (gesture == nullptr) {
+    return mojom::blink::HandwritingGestureResult::kUnsupported;
+  }
+  if (!gesture->MaybeApplyGesture(local_frame)) {
     // If the Stylus writing gesture could not be applied due the gesture
     // coordinates not being over a valid text position in the current focused
     // input, then insert the alternative text recognized.
     local_frame->GetEditor().InsertText(gesture->text_alternative_,
                                         /* triggering_event = */ nullptr);
+    return mojom::blink::HandwritingGestureResult::kFallback;
   }
+  return mojom::blink::HandwritingGestureResult::kSuccess;
 }
 
 StylusWritingGesture::StylusWritingGesture(const gfx::Rect& start_rect,
