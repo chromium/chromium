@@ -148,14 +148,11 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
   } else {
     DCHECK(attributes.initiator_origin.has_value());
     DCHECK(attributes.initiator_frame_token.has_value());
-    // TODO(https://crbug.com/1325211): Add back the following DCHECKs after
-    // fixing prerendering activation for embedder-triggered prerendering in
-    // unittests.
-    // DCHECK_NE(attributes.initiator_process_id,
-    // ChildProcessHost::kInvalidUniqueID);
-    // DCHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
-    // DCHECK_NE(attributes.initiator_frame_tree_node_id,
-    //           RenderFrameHost::kNoFrameTreeNodeId);
+    DCHECK_NE(attributes.initiator_process_id,
+              ChildProcessHost::kInvalidUniqueID);
+    DCHECK_NE(attributes.initiator_ukm_id, ukm::kInvalidSourceId);
+    DCHECK_NE(attributes.initiator_frame_tree_node_id,
+              RenderFrameHost::kNoFrameTreeNodeId);
   }
 
   // When `kPrerender2SequentialPrerendering` feature is enabled, the prerender

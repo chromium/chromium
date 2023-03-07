@@ -1293,6 +1293,14 @@ bool NavigationSimulatorImpl::SimulateBrowserInitiatedStart() {
     return false;
   }
 
+  // Prerendered page activation can be deferred by CommitDeferringConditions in
+  // BeginNavigation(), and `request_` may not have been set by
+  // DidStartNavigation() yet. In that case, we set the `request_` here.
+  if (request->is_potentially_prerendered_page_activation_for_testing()) {
+    DCHECK(!request_);
+    request_ = request;
+  }
+
   CHECK_EQ(request_, request);
   return true;
 }

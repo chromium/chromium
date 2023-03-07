@@ -164,6 +164,9 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   std::unique_ptr<NavigationSimulator> AddPrerenderAndStartNavigation(
       const GURL& url) override;
   void ActivatePrerenderedPage(const GURL& url) override;
+  // This is equivalent to ActivatePrerenderedPage() except that this activates
+  // a prerendered page by navigation initiated by the address bar.
+  void ActivatePrerenderedPageFromAddressBar(const GURL& url);
 
   base::TimeTicks GetTabSwitchStartTime() final;
 

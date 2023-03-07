@@ -193,27 +193,28 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
       PrerenderTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       RenderFrameHostImpl* rfh) {
-    if (trigger_type == PrerenderTriggerType::kSpeculationRule) {
-      return PrerenderAttributes(
-          url, trigger_type, embedder_histogram_suffix, Referrer(),
-          rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
-          contents()->GetWeakPtr(), rfh->GetFrameToken(),
-          rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
-          ui::PAGE_TRANSITION_LINK,
-          /*url_match_predicate=*/absl::nullopt);
-    } else {
-      // TODO(https://crbug.com/1325211): remove initiator_origin and
-      // initiator_frame_token after fixing prerendering activation for
-      // embedder-triggered prerendering in unittests.
-      return PrerenderAttributes(
-          url, trigger_type, embedder_histogram_suffix, Referrer(),
-          /*initiator_origin=*/rfh->GetLastCommittedOrigin(),
-          /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
-          contents()->GetWeakPtr(),
-          /*initiator_frame_token=*/rfh->GetFrameToken(),
-          /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-          /*initiator_ukm_id=*/ukm::kInvalidSourceId, ui::PAGE_TRANSITION_LINK,
-          /*url_match_predicate=*/absl::nullopt);
+    switch (trigger_type) {
+      case PrerenderTriggerType::kSpeculationRule:
+        return PrerenderAttributes(
+            url, trigger_type, embedder_histogram_suffix, Referrer(),
+            rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
+            contents()->GetWeakPtr(), rfh->GetFrameToken(),
+            rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
+            ui::PAGE_TRANSITION_LINK,
+            /*url_match_predicate=*/absl::nullopt);
+      case PrerenderTriggerType::kEmbedder:
+        return PrerenderAttributes(
+            url, trigger_type, embedder_histogram_suffix, Referrer(),
+            /*initiator_origin=*/absl::nullopt,
+            /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
+            contents()->GetWeakPtr(),
+            /*initiator_frame_token=*/absl::nullopt,
+            /*initiator_frame_tree_node_id=*/
+            RenderFrameHost::kNoFrameTreeNodeId,
+            /*initiator_ukm_id=*/ukm::kInvalidSourceId,
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            /*url_match_predicate=*/absl::nullopt);
     }
   }
 
@@ -289,7 +290,7 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost_Embedder_DirectURLInput) {
       registry().FindHostByUrlForTesting(kPrerenderingUrl);
   CommitPrerenderNavigation(*prerender_host);
 
-  contents()->ActivatePrerenderedPage(kPrerenderingUrl);
+  contents()->ActivatePrerenderedPageFromAddressBar(kPrerenderingUrl);
 
   // "Navigation.TimeToActivatePrerender.Embedder_DirectURLInput" histogram
   // should be recorded on every prerender activation.
