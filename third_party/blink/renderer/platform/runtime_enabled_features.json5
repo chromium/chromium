@@ -1822,6 +1822,16 @@
       status: "experimental",
     },
     {
+      name: "HTMLSearchElement",
+      status: "experimental",
+      //origin_trial_feature_name: "HTMLSearchElement",
+    },
+    {
+      name: "HTMLSearchElementIsForm",
+      status: "experimental",
+      //origin_trial_feature_name: "HTMLSearchElementIsForm",
+    },
+    {
       name: "HTMLSelectMenuElement",
       status: "experimental",
       base_feature: "none",

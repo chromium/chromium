@@ -631,7 +631,13 @@ void AdjustForeignAttributes(AtomicHTMLToken* token) {
 
 void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
-  switch (token->GetHTMLTag()) {
+  const HTMLTag tag0 = token->GetHTMLTag();
+  // If <search> element is a form then trigger form logic.
+  const HTMLTag tag = (tag0 == HTMLTag::kSearch &&
+    RuntimeEnabledFeatures::HTMLSearchElementIsFormEnabled(
+      tree_.OwnerDocumentForCurrentNode().GetExecutionContext()))
+    ? HTMLTag::kForm : tag0;
+  switch (tag) {
     case HTMLTag::kHTML:
       ProcessHtmlStartTagForInBody(token);
       break;
@@ -1145,7 +1151,13 @@ void HTMLTreeBuilder::CloseTheCell() {
 
 void HTMLTreeBuilder::ProcessStartTagForInTable(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
-  switch (token->GetHTMLTag()) {
+  const HTMLTag tag0 = token->GetHTMLTag();
+  // If <search> element is a form then trigger form logic.
+  const HTMLTag tag = (tag0 == HTMLTag::kSearch &&
+    RuntimeEnabledFeatures::HTMLSearchElementIsFormEnabled(
+      tree_.OwnerDocumentForCurrentNode().GetExecutionContext()))
+    ? HTMLTag::kForm : tag0;
+  switch (tag) {
     case HTMLTag::kCaption:
       tree_.OpenElements()->PopUntilTableScopeMarker();
       tree_.ActiveFormattingElements()->AppendMarker();
@@ -1954,7 +1966,12 @@ void HTMLTreeBuilder::ProcessEndTagForInCell(AtomicHTMLToken* token) {
 
 void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kEndTag);
-  const HTMLTag tag = token->GetHTMLTag();
+  const HTMLTag tag0 = token->GetHTMLTag();
+  // If <search> element is a form then trigger form logic.
+  const HTMLTag tag = (tag0 == HTMLTag::kSearch &&
+    RuntimeEnabledFeatures::HTMLSearchElementIsFormEnabled(
+      tree_.OwnerDocumentForCurrentNode().GetExecutionContext()))
+    ? HTMLTag::kForm : tag0;
   switch (tag) {
     case HTMLTag::kBody:
       ProcessBodyEndTagForInBody(token);

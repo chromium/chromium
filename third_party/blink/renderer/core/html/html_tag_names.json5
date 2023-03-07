@@ -187,6 +187,8 @@
     {
       name: "form",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
+      // Custom RTTI (type helpers):  DowncastTraits<HTMLFormElement>::AllowFrom(), IsElementOfType<const HTMLFormElement>()
+      noTypeHelpers: true,
     },
     "frame",
     {
@@ -414,6 +416,18 @@
     {
       name: "script",
       constructorNeedsCreateElementFlags: true,
+    },
+    {
+      name: "search",
+      runtimeEnabled: "HTMLSearchElement",
+      interfaceName: "HTMLElement",
+      // Custom RTTI (type helpers):  DowncastTraits<HTMLFormElement>::AllowFrom(), IsElementOfType<const HTMLFormElement>()
+      noTypeHelpers: true,
+      //interfaceName: "HTMLFormElement",
+      //interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
+      // The <search> element requires custom constructor as the interfaceName
+      // is "HTMLFormElement" if RuntimeEnabledFeatures::HTMLSearchElementIsFormEnabled()
+      //noConstructor: true,
     },
     {
       name: "section",

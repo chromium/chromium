@@ -1041,7 +1041,18 @@ Element* Document::CreateRawElement(const QualifiedName& qname,
   Element* element = nullptr;
   if (qname.NamespaceURI() == html_names::xhtmlNamespaceURI) {
     // https://html.spec.whatwg.org/C/#elements-in-the-dom:element-interface
-    element = HTMLElementFactory::Create(qname.LocalName(), *this, flags);
+    if (qname.LocalName() == html_names::kSearchTag) {
+      // Special case constructor for <search> element
+      if (RuntimeEnabledFeatures::HTMLSearchElementIsFormEnabled(GetExecutionContext())) {
+        // ... as a form element.
+        element = MakeGarbageCollected<HTMLFormElement>(qname, *this);
+      } else {
+        // ... as a basic element.
+        element = MakeGarbageCollected<HTMLElement>(qname, *this);
+      }
+    } else {
+      element = HTMLElementFactory::Create(qname.LocalName(), *this, flags);
+    }
     if (!element) {
       // 6. If name is a valid custom element name, then return
       // HTMLElement.

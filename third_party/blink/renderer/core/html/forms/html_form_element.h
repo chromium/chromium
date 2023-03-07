@@ -54,8 +54,12 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     kOpener = 1 << 2,
   };
 
-  explicit HTMLFormElement(Document&);
+  explicit HTMLFormElement(const QualifiedName& tag_name, Document&);
+  explicit HTMLFormElement(Document& document)
+      : HTMLFormElement(html_names::kFormTag, document) {}
+
   ~HTMLFormElement() override;
+  bool IsHTMLFormElement() const final { return true; }
   void Trace(Visitor*) const override;
 
   HTMLFormControlsCollection* elements();
@@ -195,6 +199,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool in_user_js_submit_event_ = false;
   bool is_constructing_entry_list_ = false;
 
+  bool is_search_form_ : 1;
   bool listed_elements_are_dirty_ : 1;
   bool listed_elements_including_shadow_trees_are_dirty_ : 1;
   bool image_elements_are_dirty_ : 1;
@@ -206,6 +211,25 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   Member<RelList> rel_list_;
   unsigned rel_attribute_ = 0;
 };
+
+template <>
+struct DowncastTraits<HTMLFormElement> {
+  static bool AllowFrom(const Node& node) {
+    return node.IsHTMLElement() && To<HTMLElement>(node).IsHTMLFormElement();
+  }
+  static bool AllowFrom(const HTMLElement& element) {
+    return element.IsHTMLFormElement();
+  }
+};
+
+template <>
+inline bool IsElementOfType<const HTMLFormElement>(const Node& node) {
+  return IsA<HTMLFormElement>(node);
+}
+template <>
+inline bool IsElementOfType<const HTMLFormElement>(const HTMLElement& element) {
+  return element.IsHTMLFormElement();
+}
 
 }  // namespace blink
 

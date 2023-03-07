@@ -155,6 +155,7 @@ class CORE_EXPORT HTMLElement : public Element {
   // TODO(crbug.com/1123606): Remove this virtual method once the fenced frame
   // origin trial is over.
   virtual bool IsHTMLFencedFrameElement() const { return false; }
+  virtual bool IsHTMLFormElement() const { return false; }
   virtual bool IsHTMLFrameSetElement() const { return false; }
   virtual bool IsHTMLPortalElement() const { return false; }
   virtual bool IsHTMLUnknownElement() const { return false; }
