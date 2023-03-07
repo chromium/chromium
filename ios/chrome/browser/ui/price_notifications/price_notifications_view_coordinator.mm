@@ -6,10 +6,12 @@
 
 #import "base/check.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -53,6 +55,12 @@
 - (void)start {
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  self.tableViewController.hasPreviouslyViewed =
+      prefService->GetBoolean(prefs::kPriceNotificationsHasBeenShown);
+  if (!self.tableViewController.hasPreviouslyViewed) {
+    prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
+  }
 
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(

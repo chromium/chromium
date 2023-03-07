@@ -79,6 +79,7 @@ extern const char kHttpsOnlyModeEnabled[];
 extern const char kMixedContentAutoupgradeEnabled[];
 
 extern const char kAutofillBrandingIconAnimationRemainingCountPrefName[];
+extern const char kPriceNotificationsHasBeenShown[];
 
 }  // namespace prefs
 

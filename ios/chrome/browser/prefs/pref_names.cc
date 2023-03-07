@@ -263,4 +263,8 @@ const char kMixedContentAutoupgradeEnabled[] =
 const char kAutofillBrandingIconAnimationRemainingCountPrefName[] =
     "ios.autofill.branding.animation.remaining_count";
 
+// A boolean used to determine if the Price Tracking UI has been shown.
+const char kPriceNotificationsHasBeenShown[] =
+    "ios.price_notifications.has_been_shown";
+
 }  // namespace prefs
