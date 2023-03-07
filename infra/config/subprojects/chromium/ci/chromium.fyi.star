@@ -1655,6 +1655,7 @@ ci.builder(
     reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
+        "RBE_compression_threshold": "4000000",
     },
 )
 
@@ -1684,6 +1685,9 @@ ci.builder(
         short_name = "re",
     ),
     reclient_jobs = None,
+    reclient_rewrapper_env = {
+        "RBE_compression_threshold": "4000000",
+    },
 )
 
 ci.builder(
@@ -1710,7 +1714,10 @@ ci.builder(
     ),
     reclient_ensure_verified = True,
     reclient_jobs = None,
-    reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_rewrapper_env = {
+        "RBE_compare": "true",
+        "RBE_compression_threshold": "4000000",
+    },
 )
 
 fyi_mac_builder(
@@ -1739,6 +1746,9 @@ fyi_mac_builder(
         short_name = "re",
     ),
     reclient_jobs = None,
+    reclient_rewrapper_env = {
+        "RBE_compression_threshold": "4000000",
+    },
 )
 
 fyi_mac_builder(
@@ -1769,7 +1779,10 @@ fyi_mac_builder(
     execution_timeout = 14 * time.hour,
     reclient_ensure_verified = True,
     reclient_jobs = None,
-    reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_rewrapper_env = {
+        "RBE_compare": "true",
+        "RBE_compression_threshold": "4000000",
+    },
 )
 
 fyi_mac_builder(
