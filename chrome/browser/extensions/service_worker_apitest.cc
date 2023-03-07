@@ -2389,7 +2389,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // The registration should not have been stored, so we shouldn't cache the
   // extension version.
   base::Version stored_version =
-      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersion(
+      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersionForTest(
           extension->id());
   EXPECT_FALSE(stored_version.IsValid());
 }
@@ -2843,19 +2843,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/activate_ensures_register"));
   ASSERT_TRUE(extension);
+  EXPECT_TRUE(WaitForMessage());
 
-  // Check the stored state for the extension service worker. We didn't wait for
-  // the registration to be stored, so there shouldn't be a valid version.
-  ServiceWorkerTaskQueue* service_worker_task_queue =
-      ServiceWorkerTaskQueue::Get(browser()->profile());
-  base::Version stored_version =
-      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersion(
-          extension->id());
-  EXPECT_FALSE(stored_version.IsValid());
-
-  // Unregister the extension service worker. We kick this off immediately,
-  // because if we wait until the registration is stored the extension system
-  // will (properly) disallow unregistration.
+  // Unregister the extension service worker.
   {
     base::RunLoop run_loop;
     content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
@@ -2868,16 +2858,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
             [&run_loop](bool success) { run_loop.Quit(); }));
     run_loop.Run();
   }
-
-  // Tricky bit: by now, we *also* expect the extension system to think the
-  // service worker is registered. This is because the storage happens before
-  // the unregistration is complete (but after we check that the unregistration
-  // happens). This is a finicky flow, but *should* be deterministic.
-  // TODO(devlin): Would it make sense to have this be more robust?
-  stored_version =
-      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersion(
-          extension->id());
-  EXPECT_TRUE(stored_version.IsValid());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,

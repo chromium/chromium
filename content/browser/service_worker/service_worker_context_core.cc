@@ -565,15 +565,6 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
     bool is_immediate,
     UnregistrationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  BrowserContext* browser_context = wrapper_->browser_context();
-  DCHECK(browser_context);
-  if (!GetContentClient()->browser()->MayDeleteServiceWorkerRegistration(
-          scope, browser_context)) {
-    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorDisallowed);
-    return;
-  }
-
   job_coordinator_->Unregister(
       scope, key, is_immediate,
       base::BindOnce(&ServiceWorkerContextCore::UnregistrationComplete,
@@ -622,19 +613,7 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
     return;
   }
 
-  // Ignore any registrations we are not permitted to delete.
-  std::vector<scoped_refptr<ServiceWorkerRegistration>> filtered_registrations;
-  ContentBrowserClient* browser_client = GetContentClient()->browser();
-  BrowserContext* browser_context = wrapper_->browser_context();
-  DCHECK(browser_context);
-  for (auto registration : registrations) {
-    if (browser_client->MayDeleteServiceWorkerRegistration(
-            registration->scope(), browser_context)) {
-      filtered_registrations.push_back(std::move(registration));
-    }
-  }
-
-  int* expected_calls = new int(2 * filtered_registrations.size());
+  int* expected_calls = new int(2 * registrations.size());
   auto* listeners =
       new std::vector<std::unique_ptr<RegistrationDeletionListener>>();
 
@@ -645,7 +624,7 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
       base::BindRepeating(SuccessReportingCallback, base::Owned(expected_calls),
                           base::Owned(listeners),
                           base::OwnedRef(std::move(callback)));
-  for (const auto& registration : filtered_registrations) {
+  for (const auto& registration : registrations) {
     DCHECK(registration);
     if (*expected_calls != -1) {
       if (!registration->is_deleted()) {
