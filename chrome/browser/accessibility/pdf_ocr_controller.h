@@ -29,6 +29,11 @@ class PdfOcrController : public KeyedService {
   PdfOcrController& operator=(const PdfOcrController&) = delete;
   ~PdfOcrController() override;
 
+  // Return all PDF-related WebContentses associated with the PDF Viewer
+  // Mimehandlers in a given Profile for testing.
+  static std::vector<content::WebContents*> GetAllPdfWebContentsesForTesting(
+      Profile* profile);
+
   // Return true if the PDF OCR pref is true; false otherwise.
   bool IsEnabled() const;
   // Run PDF OCR only once regardless of the PDF OCR pref value. This function

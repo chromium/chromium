@@ -59,6 +59,7 @@ std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
   }
   return result;
 }
+
 }  // namespace
 
 namespace screen_ai {
@@ -75,6 +76,12 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
 }
 
 PdfOcrController::~PdfOcrController() = default;
+
+// static
+std::vector<content::WebContents*>
+PdfOcrController::GetAllPdfWebContentsesForTesting(Profile* profile) {
+  return GetPdfHtmlWebContentses(profile);
+}
 
 void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
   // TODO(crbug.com/1393069): Need to wait for the Screen AI library to be
