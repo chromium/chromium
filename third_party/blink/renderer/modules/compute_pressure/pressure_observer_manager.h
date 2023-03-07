@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -21,6 +20,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 // This class implements the "device::mojom::blink::PressureClient"
 // interface to receive "device::mojom::blink::PressureUpdate" from
 // "device::PressureManagerImpl" and broadcasts the information to active
@@ -28,14 +29,14 @@ namespace blink {
 class MODULES_EXPORT PressureObserverManager final
     : public GarbageCollected<PressureObserverManager>,
       public ExecutionContextLifecycleStateObserver,
-      public Supplement<LocalDOMWindow>,
+      public Supplement<ExecutionContext>,
       public device::mojom::blink::PressureClient {
  public:
   static const char kSupplementName[];
 
-  static PressureObserverManager* From(LocalDOMWindow&);
+  static PressureObserverManager* From(ExecutionContext*);
 
-  explicit PressureObserverManager(LocalDOMWindow&);
+  explicit PressureObserverManager(ExecutionContext*);
   ~PressureObserverManager() override;
 
   PressureObserverManager(const PressureObserverManager&) = delete;

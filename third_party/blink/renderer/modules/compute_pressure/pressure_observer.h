@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -31,6 +30,7 @@ constexpr wtf_size_t kMaxQueuedRecords = 10;
 
 }  // namespace
 
+class ExecutionContext;
 class ExceptionState;
 class PressureObserverManager;
 class PressureObserverOptions;

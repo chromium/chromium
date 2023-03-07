@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
@@ -60,21 +59,22 @@ const char PressureObserverManager::kSupplementName[] =
     "PressureObserverManager";
 
 // static
-PressureObserverManager* PressureObserverManager::From(LocalDOMWindow& window) {
+PressureObserverManager* PressureObserverManager::From(
+    ExecutionContext* context) {
   PressureObserverManager* manager =
-      Supplement<LocalDOMWindow>::From<PressureObserverManager>(window);
+      Supplement<ExecutionContext>::From<PressureObserverManager>(context);
   if (!manager) {
-    manager = MakeGarbageCollected<PressureObserverManager>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, manager);
+    manager = MakeGarbageCollected<PressureObserverManager>(context);
+    Supplement<ExecutionContext>::ProvideTo(*context, manager);
   }
   return manager;
 }
 
-PressureObserverManager::PressureObserverManager(LocalDOMWindow& window)
-    : ExecutionContextLifecycleStateObserver(&window),
-      Supplement<LocalDOMWindow>(window),
-      pressure_manager_(GetSupplementable()->GetExecutionContext()),
-      receiver_(this, GetSupplementable()->GetExecutionContext()) {
+PressureObserverManager::PressureObserverManager(ExecutionContext* context)
+    : ExecutionContextLifecycleStateObserver(context),
+      Supplement<ExecutionContext>(*context),
+      pressure_manager_(context),
+      receiver_(this, context) {
   UpdateStateIfNeeded();
 }
 
@@ -169,7 +169,7 @@ void PressureObserverManager::Trace(blink::Visitor* visitor) const {
   visitor->Trace(pressure_manager_);
   visitor->Trace(receiver_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 void PressureObserverManager::EnsureServiceConnection() {
@@ -190,7 +190,11 @@ void PressureObserverManager::EnsureServiceConnection() {
 
 // https://wicg.github.io/compute-pressure/#dfn-passes-privacy-test
 bool PressureObserverManager::PassesPrivacyTest() const {
-  LocalFrame* this_frame = GetSupplementable()->GetFrame();
+  if (!DomWindow()) {
+    return false;
+  }
+
+  LocalFrame* this_frame = DomWindow()->GetFrame();
   // 2. If associated document is not fully active, return false.
   if (GetSupplementable()->IsContextDestroyed() || !this_frame) {
     return false;

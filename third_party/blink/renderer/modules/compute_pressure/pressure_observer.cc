@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_record.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -88,8 +87,7 @@ ScriptPromise PressureObserver::observe(ScriptState* script_state,
   pending_resolvers_[ToSourceIndex(source.AsEnum())].insert(resolver);
 
   if (!manager_) {
-    LocalDOMWindow* window = To<LocalDOMWindow>(execution_context);
-    manager_ = PressureObserverManager::From(*window);
+    manager_ = PressureObserverManager::From(execution_context);
   }
   manager_->AddObserver(source.AsEnum(), this);
 
