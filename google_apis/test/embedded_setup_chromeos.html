@@ -82,6 +82,15 @@ gaia.chromeOSLogin.confirmToken = function() {
       }, '/');
 };
 
+gaia.chromeOSLogin.identifierEntered = function(identifier) {
+  var msg = {
+    'method': 'identifierEntered',
+    'accountIdentifier': identifier
+  };
+  gaia.chromeOSLogin.parent_webview_.postMessage(msg,
+      gaia.chromeOSLogin.parent_webview_url_);
+};
+
 gaia.chromeOSLogin.sendUserInfo = function(services) {
   msg = {
     'method': 'userInfo',
@@ -132,6 +141,7 @@ function goNext() {
     var email = document.getElementById("identifier").value;
     request.send('identifier=' + encodeURIComponent(email));
 
+    gaia.chromeOSLogin.identifierEntered(email);
     gaia.chromeOSLogin.attemptLogin(email, "");
     gaia.chromeOSLogin.backButton(true);
     sendSetPrimaryActionLabel('Next');

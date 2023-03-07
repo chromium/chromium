@@ -3839,6 +3839,7 @@ if (!is_android) {
         "../browser/ash/login/enrollment/hands_off_enrollment_browsertest.cc",
         "../browser/ash/login/enrollment/mock_auto_enrollment_check_screen.cc",
         "../browser/ash/login/enrollment/mock_auto_enrollment_check_screen.h",
+        "../browser/ash/login/enrollment_nudge_browsertest.cc",
         "../browser/ash/login/enterprise_enrollment_browsertest.cc",
         "../browser/ash/login/error_screen_browsertest.cc",
         "../browser/ash/login/existing_user_controller_browsertest.cc",
