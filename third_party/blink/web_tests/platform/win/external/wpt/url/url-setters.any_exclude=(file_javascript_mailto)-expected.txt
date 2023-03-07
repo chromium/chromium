@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 208 tests; 119 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 216 tests; 125 PASS, 91 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL URL: Setting <a://example.net>.protocol = 'b' assert_equals: expected "b://example.net" but got "file:///B:///A://example.net"
@@ -98,6 +98,10 @@ FAIL URL: Setting <sc://test@test/>.host = '' assert_equals: expected "test" but
 FAIL URL: Setting <sc://test:12/>.host = '' assert_equals: expected "test:12" but got ""
 PASS URL: Setting <http://example.com/>.host = '///bad.com' Leading / is not stripped
 FAIL URL: Setting <sc://example.com/>.host = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
+PASS URL: Setting <https://example.com/>.host = 'a%C2%ADb'
+PASS URL: Setting <https://example.com/>.host = '­'
+PASS URL: Setting <https://example.com/>.host = '%C2%AD'
+FAIL URL: Setting <https://example.com/>.host = 'xn--' assert_equals: expected "https://example.com/" but got "https://xn--/"
 FAIL URL: Setting <sc://x/>.hostname = '\0' Non-special scheme assert_equals: expected "x" but got ""
 FAIL URL: Setting <sc://x/>.hostname = '	' assert_equals: expected "sc:///" but got "sc://x/"
 FAIL URL: Setting <sc://x/>.hostname = '
@@ -133,6 +137,10 @@ FAIL URL: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equal
 FAIL URL: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
 PASS URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 FAIL URL: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
+PASS URL: Setting <https://example.com/>.hostname = 'a%C2%ADb'
+PASS URL: Setting <https://example.com/>.hostname = '­'
+PASS URL: Setting <https://example.com/>.hostname = '%C2%AD'
+FAIL URL: Setting <https://example.com/>.hostname = 'xn--' assert_equals: expected "https://example.com/" but got "https://xn--/"
 PASS URL: Setting <http://example.net>.port = '8080'
 PASS URL: Setting <http://example.net:8080>.port = '' Port number is removed if empty is the new value
 PASS URL: Setting <http://example.net:8080>.port = '80' Default port number is removed

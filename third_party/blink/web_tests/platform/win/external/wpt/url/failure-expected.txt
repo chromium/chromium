@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1061 tests; 845 PASS, 216 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1079 tests; 857 PASS, 222 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL's constructor's base argument: file://example:1/ should throw
 PASS URL's href: file://example:1/ should throw
@@ -1061,5 +1061,23 @@ FAIL XHR:  should throw assert_throws_dom: function "() => client.open("GET", te
 FAIL sendBeacon():  should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
 FAIL Location's href:  should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
 FAIL window.open():  should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: https://­/ should throw
+PASS URL's href: https://­/ should throw
+PASS XHR: https://­/ should throw
+PASS sendBeacon(): https://­/ should throw
+PASS Location's href: https://­/ should throw
+PASS window.open(): https://­/ should throw
+PASS URL's constructor's base argument: https://%C2%AD/ should throw
+PASS URL's href: https://%C2%AD/ should throw
+PASS XHR: https://%C2%AD/ should throw
+PASS sendBeacon(): https://%C2%AD/ should throw
+PASS Location's href: https://%C2%AD/ should throw
+PASS window.open(): https://%C2%AD/ should throw
+FAIL URL's constructor's base argument: https://xn--/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: https://xn--/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: https://xn--/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): https://xn--/ should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: https://xn--/ should throw assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
+FAIL window.open(): https://xn--/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
 Harness: the test ran to completion.
 

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 626 tests; 340 PASS, 286 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 630 tests; 342 PASS, 288 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -637,5 +637,9 @@ FAIL Parsing: <non-special:x/?￿y> against <about:blank> assert_equals: href ex
 FAIL Parsing: <non-special:x/?#￿y> against <about:blank> assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#%EF%BF%BDy"
 PASS Parsing: <> against <about:blank>
 PASS Parsing: <https://example.com/"quoted"> against <about:blank>
+PASS Parsing: <https://a%C2%ADb/> against <about:blank>
+FAIL Parsing: <https://­/> against <about:blank> assert_equals: failure should set href to input expected "https://­/" but got "https://%C2%AD/"
+PASS Parsing: <https://%C2%AD/> against <about:blank>
+FAIL Parsing: <https://xn--/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 Harness: the test ran to completion.
 

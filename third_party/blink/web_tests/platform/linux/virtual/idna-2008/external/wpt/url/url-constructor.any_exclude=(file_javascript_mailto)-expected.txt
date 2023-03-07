@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 628 tests; 478 PASS, 150 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 632 tests; 481 PASS, 151 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -731,5 +731,11 @@ FAIL Parsing: <non-special:x/?￿y> against <about:blank> assert_equals: href ex
 FAIL Parsing: <non-special:x/?#￿y> against <about:blank> assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#%EF%BF%BDy"
 PASS Parsing: <> against <about:blank>
 PASS Parsing: <https://example.com/"quoted"> against <about:blank>
+PASS Parsing: <https://a%C2%ADb/> against <about:blank>
+PASS Parsing: <https://­/> against <about:blank>
+PASS Parsing: <https://%C2%AD/> against <about:blank>
+FAIL Parsing: <https://xn--/> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
 Harness: the test ran to completion.
 
