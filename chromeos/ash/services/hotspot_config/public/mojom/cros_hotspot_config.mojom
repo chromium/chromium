@@ -113,6 +113,8 @@ enum DisableReason {
   kProhibitedByPolicy,
   // Disabled because there is no Mobile Data.
   kUpstreamNetworkNotAvailable,
+  // Disabled because the device has been suspended.
+  kSuspended,
 };
 
 // Information about Hotspot feature including current state, active client

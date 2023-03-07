@@ -93,6 +93,34 @@ hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
   return HotspotState::kDisabled;
 }
 
+hotspot_config::mojom::DisableReason ShillTetheringIdleReasonToMojomState(
+    const std::string& idle_reason) {
+  using hotspot_config::mojom::DisableReason;
+
+  if (idle_reason == shill::kTetheringIdleReasonInactive) {
+    return DisableReason::kAutoDisabled;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonUpstreamDisconnect) {
+    return DisableReason::kUpstreamNetworkNotAvailable;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonError) {
+    return DisableReason::kInternalError;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonSuspend) {
+    return DisableReason::kSuspended;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonUserExit ||
+      idle_reason == shill::kTetheringIdleReasonClientStop) {
+    return DisableReason::kUserInitiated;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected idle reason: " << idle_reason;
+}
+
 hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
     const std::string& shill_security) {
   using hotspot_config::mojom::WiFiSecurityMode;
