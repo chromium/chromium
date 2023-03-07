@@ -144,7 +144,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       DISABLED_SwitchTabAndHideAutofillPopup) {
+                       SwitchTabAndHideAutofillPopup) {
   EXPECT_CALL(autofill_client(),
               HideAutofillPopup(PopupHidingReason::kTabGone));
 
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       DISABLED_SameDocumentNavigationHideAutofillPopup) {
+                       SameDocumentNavigationHideAutofillPopup) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       DISABLED_PrerenderNavigationDoesntHideAutofillPopup) {
+                       PrerenderNavigationDoesntHideAutofillPopup) {
   GURL initial_url =
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
   GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       DISABLED_SubframeNavigationDoesntHideAutofillPopup) {
+                       SubframeNavigationDoesntHideAutofillPopup) {
   // Main frame is on a.com, iframe is on b.com.
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/cross_origin_iframe.html");
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       DISABLED_TestPageNavigationHidingAutofillPopup) {
+                       TestPageNavigationHidingAutofillPopup) {
   // HideAutofillPopup is called once for each navigation.
   EXPECT_CALL(autofill_client(),
               HideAutofillPopup(PopupHidingReason::kNavigation))
@@ -259,7 +259,7 @@ class ContentAutofillDriverPrerenderBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
-                       DISABLED_PrerenderingDoesNotSubmitForm) {
+                       PrerenderingDoesNotSubmitForm) {
   GURL initial_url =
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
