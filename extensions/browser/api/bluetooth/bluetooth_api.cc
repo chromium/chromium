@@ -138,8 +138,8 @@ BluetoothGetDevicesFunction::BluetoothGetDevicesFunction() = default;
 BluetoothGetDevicesFunction::~BluetoothGetDevicesFunction() = default;
 
 bool BluetoothGetDevicesFunction::CreateParams() {
-  params_ = GetDevices::Params::CreateDeprecated(args());
-  return params_ != nullptr;
+  params_ = GetDevices::Params::Create(args());
+  return params_.has_value();
 }
 
 void BluetoothGetDevicesFunction::DoWork(
@@ -178,7 +178,7 @@ void BluetoothGetDevicesFunction::DoWork(
     device_list.Append(extension_device.ToValue());
   }
 
-  Respond(OneArgument(base::Value(std::move(device_list))));
+  Respond(WithArguments(std::move(device_list)));
 }
 
 BluetoothGetDeviceFunction::BluetoothGetDeviceFunction() = default;
@@ -186,8 +186,8 @@ BluetoothGetDeviceFunction::BluetoothGetDeviceFunction() = default;
 BluetoothGetDeviceFunction::~BluetoothGetDeviceFunction() = default;
 
 bool BluetoothGetDeviceFunction::CreateParams() {
-  params_ = GetDevice::Params::CreateDeprecated(args());
-  return params_ != nullptr;
+  params_ = GetDevice::Params::Create(args());
+  return params_.has_value();
 }
 
 void BluetoothGetDeviceFunction::DoWork(
@@ -198,7 +198,7 @@ void BluetoothGetDeviceFunction::DoWork(
   if (device) {
     bluetooth_api::Device extension_device;
     bluetooth_api::BluetoothDeviceToApiDevice(*device, &extension_device);
-    Respond(OneArgument(base::Value(extension_device.ToValue())));
+    Respond(WithArguments(extension_device.ToValue()));
   } else {
     Respond(Error(kInvalidDevice));
   }
