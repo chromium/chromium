@@ -1319,6 +1319,11 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   if (!ExtensionTabUtil::IsTabStripEditable())
     return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
 
+  if (!chrome::CanDuplicateTabAt(browser, tab_index)) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        tabs_constants::kCannotDuplicateTab, base::NumberToString(tab_id))));
+  }
+
   WebContents* new_contents = chrome::DuplicateTabAt(browser, tab_index);
   if (!has_callback())
     return RespondNow(NoArguments());

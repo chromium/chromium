@@ -908,8 +908,7 @@ void DuplicateTab(Browser* browser) {
 }
 
 bool CanDuplicateTab(const Browser* browser) {
-  return !browser->is_type_picture_in_picture() &&
-         CanDuplicateTabAt(browser, browser->tab_strip_model()->active_index());
+  return CanDuplicateTabAt(browser, browser->tab_strip_model()->active_index());
 }
 
 bool CanDuplicateKeyboardFocusedTab(const Browser* browser) {
@@ -1042,6 +1041,9 @@ WebContents* DuplicateTabAt(Browser* browser, int index) {
 }
 
 bool CanDuplicateTabAt(const Browser* browser, int index) {
+  if (browser->is_type_picture_in_picture()) {
+    return false;
+  }
   WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(index);
   return contents;
 }

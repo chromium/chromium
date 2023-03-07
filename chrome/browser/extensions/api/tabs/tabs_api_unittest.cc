@@ -1258,4 +1258,37 @@ TEST_F(TabsApiUnitTest, ScreenshotDisabledInProfilePreferences) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+TEST_F(TabsApiUnitTest, CannotDuplicatePictureInPictureWindows) {
+  // Create picture-in-picture browser.
+  auto pip_window = std::make_unique<TestBrowserWindow>();
+  Browser::CreateParams params(profile(), true);
+  params.type = Browser::TYPE_PICTURE_IN_PICTURE;
+  params.window = pip_window.get();
+  std::unique_ptr<Browser> pip_browser;
+  pip_browser.reset(Browser::Create(params));
+  std::unique_ptr<content::WebContents> contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  CreateSessionServiceTabHelper(contents.get());
+  int pip_tab_id = sessions::SessionTabHelper::IdForTab(contents.get()).id();
+  pip_browser->tab_strip_model()->AppendWebContents(std::move(contents),
+                                                    /*foreground=*/true);
+
+  // Attempt to duplicate the picture-in-picture tab. This should fail as
+  // picture-in-picture tabs are not allowed to be duplicated.
+  auto function = base::MakeRefCounted<TabsDuplicateFunction>();
+  auto extension = CreateTabsExtension();
+  function->set_extension(extension);
+  std::string args = base::StringPrintf("[%d]", pip_tab_id);
+  std::string error = extension_function_test_utils::RunFunctionAndReturnError(
+      function.get(), args, pip_browser.get(), api_test_utils::NONE);
+  EXPECT_EQ(ErrorUtils::FormatErrorMessage(tabs_constants::kCannotDuplicateTab,
+                                           base::NumberToString(pip_tab_id)),
+            error);
+
+  // Tear down picture-in-picture browser.
+  pip_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+  pip_browser.reset();
+  pip_window.reset();
+}
+
 }  // namespace extensions

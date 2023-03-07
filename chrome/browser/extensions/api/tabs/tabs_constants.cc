@@ -89,6 +89,7 @@ const char kTabIndexNotFoundError[] = "No tab at index: *.";
 const char kNotFoundNextPageError[] = "Cannot find a next page in history.";
 const char kTabNotFoundError[] = "No tab with id: *.";
 const char kCannotDiscardTab[] = "Cannot discard tab with id: *.";
+const char kCannotDuplicateTab[] = "Cannot duplicate tab with id: *.";
 const char kCannotFindTabToDiscard[] = "Cannot find a tab to discard.";
 const char kTabStripNotEditableError[] =
     "Tabs cannot be edited right now (user may be dragging a tab).";
