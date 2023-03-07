@@ -51,7 +51,8 @@
 
 - (void)setPasswordCheckupHomepageState:(PasswordCheckupHomepageState)state
                  insecurePasswordCounts:
-                     (InsecurePasswordCounts)insecurePasswordCounts {
+                     (password_manager::InsecurePasswordCounts)
+                         insecurePasswordCounts {
   // TODO(crbug.com/1406540): Add method's body.
 }
 

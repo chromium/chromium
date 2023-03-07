@@ -5,9 +5,6 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
-#import "base/time/time.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -32,22 +29,22 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "ui/base/l10n/time_format.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using password_manager::WarningType;
+
 namespace {
-// Amount of time after which timestamp is shown instead of "just now".
-constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 // Returns true if the Password Checkup feature flag is enabled.
 bool IsPasswordCheckupEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordCheckup);
 }
+
 }  // namespace
 
 @interface PasswordsMediator () <IdentityManagerObserverBridgeDelegate,
@@ -170,33 +167,10 @@ bool IsPasswordCheckupEnabled() {
   _passwordCheckManager->StartPasswordCheck();
 }
 
-- (NSString*)formatElapsedTimeSinceLastCheck {
+- (NSString*)formattedElapsedTimeSinceLastCheck {
   base::Time lastCompletedCheck =
       _passwordCheckManager->GetLastPasswordCheckTime();
-
-  // lastCompletedCheck is 0.0 in case the check never completely ran before.
-  if (lastCompletedCheck == base::Time())
-    return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
-
-  base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
-
-  NSString* timestamp;
-  // If check finished in less than `kJustCheckedTimeThresholdInMinutes` show
-  // "just now" instead of timestamp.
-  if (elapsedTime < kJustCheckedTimeThresholdInMinutes)
-    timestamp = l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  else
-    timestamp = base::SysUTF8ToNSString(
-        base::UTF16ToUTF8(ui::TimeFormat::SimpleWithMonthAndYear(
-            ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-            elapsedTime, true)));
-
-  return IsPasswordCheckupEnabled()
-             ? l10n_util::GetNSStringF(
-                   IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK,
-                   base::SysNSStringToUTF16(timestamp))
-             : l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK,
-                                       base::SysNSStringToUTF16(timestamp));
+  return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {

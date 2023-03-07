@@ -5,11 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_UTILS_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_UTILS_H_
 
-#include "base/observer_list.h"
+#import <Foundation/Foundation.h>
+
+#import "base/observer_list.h"
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace password_manager {
+
 struct CredentialUIEntry;
-}
 
 // Enum which represents possible warnings of Password Checkup on UI.
 enum class WarningType {
@@ -52,5 +58,13 @@ int GetPasswordCountForWarningType(
     WarningType warningType,
     const std::vector<password_manager::CredentialUIEntry>&
         insecure_credentials);
+
+// Returns string containing the timestamp of the `last_completed_check`. If the
+// check finished less than 1 minute ago string will look "Last check just
+// now.", otherwise "Last check X minutes/hours... ago.". If check never run
+// string will be "Check never run.".
+NSString* FormatElapsedTimeSinceLastCheck(base::Time last_completed_check);
+
+}  // namespace password_manager
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_UTILS_H_

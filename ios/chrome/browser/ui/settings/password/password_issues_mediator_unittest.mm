@@ -57,9 +57,10 @@ GURL GetLocalizedURL(const GURL& original) {
       original, GetApplicationContext()->GetApplicationLocale());
 }
 
-using password_manager::PasswordForm;
 using password_manager::InsecureCredential;
+using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
+using password_manager::WarningType;
 
 }  // namespace
 

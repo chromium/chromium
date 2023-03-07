@@ -26,6 +26,7 @@
 
 namespace {
 
+using password_manager::InsecurePasswordCounts;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;

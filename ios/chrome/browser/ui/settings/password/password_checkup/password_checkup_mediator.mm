@@ -14,6 +14,8 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::InsecurePasswordCounts;
+
 @interface PasswordCheckupMediator () <PasswordCheckObserver> {
   // The service responsible for password check feature.
   scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
@@ -56,6 +58,18 @@
   _passwordCheckManager.reset();
 }
 
+#pragma mark - PasswordCheckupViewControllerDelegate
+
+- (void)startPasswordCheck {
+  _passwordCheckManager->StartPasswordCheck();
+}
+
+- (NSString*)formattedElapsedTimeSinceLastCheck {
+  base::Time lastCompletedCheck =
+      _passwordCheckManager->GetLastPasswordCheckTime();
+  return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
+}
+
 #pragma mark - PasswordCheckObserver
 
 - (void)passwordCheckStateDidChange:(PasswordCheckState)state {
@@ -91,8 +105,9 @@
 
   std::vector<password_manager::CredentialUIEntry> insecureCredentials =
       _passwordCheckManager->GetInsecureCredentials();
-  InsecurePasswordCounts insecurePasswordCounts =
-      CountInsecurePasswordsPerInsecureType(insecureCredentials);
+  password_manager::InsecurePasswordCounts insecurePasswordCounts =
+      password_manager::CountInsecurePasswordsPerInsecureType(
+          insecureCredentials);
 
   PasswordCheckupHomepageState passwordCheckupHomepageState =
       [self computePasswordCheckupHomepageState];

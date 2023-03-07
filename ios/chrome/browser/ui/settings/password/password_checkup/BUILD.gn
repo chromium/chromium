@@ -13,7 +13,7 @@ source_set("password_checkup") {
   deps = [
     ":password_checkup_ui",
     ":password_checkup_utils",
-    "//components/password_manager/core/browser",
+    "//base",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -28,6 +28,7 @@ source_set("password_checkup_ui") {
     "password_checkup_consumer.h",
     "password_checkup_view_controller.h",
     "password_checkup_view_controller.mm",
+    "password_checkup_view_controller_delegate.h",
   ]
   deps = [
     ":password_checkup_utils",
@@ -45,6 +46,8 @@ source_set("password_checkup_utils") {
   deps = [
     "//base",
     "//components/password_manager/core/browser",
+    "//ios/chrome/app/strings",
+    "//ui/base",
   ]
 }
 
@@ -73,7 +76,9 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
+    "//components/prefs:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:store_factory",

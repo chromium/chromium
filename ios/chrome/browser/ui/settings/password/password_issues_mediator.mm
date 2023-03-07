@@ -35,6 +35,8 @@
 
 namespace {
 
+using password_manager::WarningType;
+
 // Returns true if the Password Checkup feature flag is enabled.
 bool IsPasswordCheckupEnabled() {
   return base::FeatureList::IsEnabled(

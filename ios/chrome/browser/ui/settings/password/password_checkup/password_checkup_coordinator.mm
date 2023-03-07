@@ -51,6 +51,7 @@
                                        GetForBrowserState(
                                            self.browser->GetBrowserState())];
   self.mediator.consumer = self.viewController;
+  self.viewController.delegate = self.mediator;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }

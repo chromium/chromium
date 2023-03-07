@@ -1019,7 +1019,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc]
           initWithType:ItemTypeLastCheckTimestampFooter];
-  footerItem.text = [self.delegate formatElapsedTimeSinceLastCheck];
+  footerItem.text = [self.delegate formattedElapsedTimeSinceLastCheck];
   return footerItem;
 }
 
@@ -1938,7 +1938,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
     case PasswordCheckStateSafe: {
       _passwordProblemsItem.detailText =
           IsPasswordCheckupEnabled()
-              ? [self.delegate formatElapsedTimeSinceLastCheck]
+              ? [self.delegate formattedElapsedTimeSinceLastCheck]
               : base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
                     IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0));
       break;

@@ -1079,7 +1079,7 @@ TEST_F(PasswordManagerViewControllerTest,
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP),
               [checkPassword text]);
   EXPECT_NSEQ([GetPasswordManagerViewController()
-                      .delegate formatElapsedTimeSinceLastCheck],
+                      .delegate formattedElapsedTimeSinceLastCheck],
               [checkPassword detailText]);
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);

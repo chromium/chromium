@@ -43,6 +43,8 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::WarningType;
+
 @interface SafetyCheckCoordinator () <
     PasswordIssuesCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,

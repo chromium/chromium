@@ -11,11 +11,14 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,9 +41,11 @@ constexpr char16_t kUsername116[] = u"alice";
 constexpr char16_t kPassword116[] = u"s3cre3t";
 
 using password_manager::CredentialUIEntry;
+using password_manager::FormatElapsedTimeSinceLastCheck;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
+using password_manager::WarningType;
 
 PasswordForm MakeSavedPassword(
     base::StringPiece signon_realm,
@@ -238,4 +243,28 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   // The number of compromised passwords should be returned.
   EXPECT_EQ(GetPasswordCountForWarningType(warning_type, insecure_credentials),
             4);
+}
+
+// Tests that the correct string is returned with the right timestamp.
+TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
+  EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
+                                       manager().GetLastPasswordCheckTime()));
+
+  base::Time expected1 = base::Time::Now() - base::Seconds(10);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected1.ToDoubleT());
+
+  EXPECT_NSEQ(
+      @"Last checked just now.",
+      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
+
+  base::Time expected2 = base::Time::Now() - base::Minutes(5);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected2.ToDoubleT());
+
+  EXPECT_NSEQ(
+      @"Last checked 5 minutes ago.",
+      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
 }

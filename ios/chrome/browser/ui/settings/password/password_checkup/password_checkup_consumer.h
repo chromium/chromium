@@ -7,7 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+namespace password_manager {
 struct InsecurePasswordCounts;
+}
 
 // Enum with all possible states for the Password Checkup homepage.
 typedef NS_ENUM(NSInteger, PasswordCheckupHomepageState) {
@@ -28,7 +30,8 @@ typedef NS_ENUM(NSInteger, PasswordCheckupHomepageState) {
 // counts.
 - (void)setPasswordCheckupHomepageState:(PasswordCheckupHomepageState)state
                  insecurePasswordCounts:
-                     (InsecurePasswordCounts)insecurePasswordCounts;
+                     (password_manager::InsecurePasswordCounts)
+                         insecurePasswordCounts;
 
 // Sets the number of affiliated groups for which the user has saved passwords.
 - (void)setAffiliatedGroupCount:(NSInteger)affiliatedGroupCount;
