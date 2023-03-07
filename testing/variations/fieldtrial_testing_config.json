@@ -2004,6 +2004,21 @@
             ]
         }
     ],
+    "BrowserIOThreadADPF": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "kADPFForBrowserIOThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserPeriodicYieldingToNative": [
         {
             "platforms": [
@@ -7063,6 +7078,21 @@
                     },
                     "enable_features": [
                         "JourneysOmniboxHistoryClusterProvider"
+                    ]
+                }
+            ]
+        }
+    ],
+    "KeepToolbarTexture": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "KeepToolbarTexture"
                     ]
                 }
             ]
