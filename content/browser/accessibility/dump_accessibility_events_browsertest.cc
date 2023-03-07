@@ -751,6 +751,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("input-type-text-value-changed.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsLangChanged) {
+  RunEventTest(FILE_PATH_LITERAL("lang-changed.html"));
+}
+
 // Flaky on Windows: https://crbug.com/1078490.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsListboxFocus \

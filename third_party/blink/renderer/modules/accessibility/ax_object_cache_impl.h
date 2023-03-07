@@ -512,6 +512,13 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void UpdateAXForAllDocuments() override;
 
+#if DCHECK_IS_ON()
+  // This is called after a node's included status changes, to update the
+  // included_node_count_ which is used to debug tree mismatches between the the
+  // AXObjectCache and AXTreeSerializer.
+  void UpdateIncludedNodeCount(const AXObject* obj);
+#endif
+
  protected:
   void PostPlatformNotification(
       AXObject* obj,
@@ -673,6 +680,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // in which case there is nothing to be serialized.
   AXObject* GetSerializationTarget(AXObject* obj);
 
+#if DCHECK_IS_ON()
+  // Check that the number of nodes known by the serializer is the same as the
+  // current number of included objects.
+  void CheckTreeConsistency();
+  size_t RecursiveIncludedNodeCount(AXObject*);
+#endif
+
   // Helper that clears children up to the first included ancestor and returns
   // the ancestor if a children changed notification should be fired on it.
   AXObject* InvalidateChildren(AXObject* obj);
@@ -688,7 +702,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
   HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HashMap<AbstractInlineTextBox*, AXID> inline_text_box_object_mapping_;
-  int modification_count_;
+  int modification_count_ = 0;
+#if DCHECK_IS_ON()
+  size_t included_node_count_ = 0;
+#endif
 
   // Used for a mock AXObject representing the message displayed in the
   // validation message bubble.

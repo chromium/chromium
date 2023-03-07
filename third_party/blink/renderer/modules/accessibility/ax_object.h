@@ -1462,16 +1462,20 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   mutable int last_modification_count_;
 
-  // The following cached attribute values (the ones starting with m_cached*)
+  // The following cached attribute values (the ones starting with cached_**)
   // are only valid if last_modification_count_ matches
   // AXObjectCacheImpl::ModificationCount().
-  mutable bool cached_is_ignored_ : 1;
-  mutable bool cached_is_ignored_but_included_in_tree_ : 1;
-  mutable bool cached_is_inert_ : 1;
-  mutable bool cached_is_aria_hidden_ : 1;
-  mutable bool cached_is_hidden_via_style_ : 1;
-  mutable bool cached_is_descendant_of_disabled_node_ : 1;
-  mutable bool cached_can_set_focus_attribute_ : 1;
+  // Objects are marked ignored at construction time (and thus by default they
+  // not included in the tree), so that if object becomes included in Init()
+  // or in a future page update, the included node count will be incremented via
+  // AXObjectCacheImpl::UpdateIncludedNodeCount().
+  mutable bool cached_is_ignored_ : 1 = true;
+  mutable bool cached_is_ignored_but_included_in_tree_ : 1 = false;
+  mutable bool cached_is_inert_ : 1 = false;
+  mutable bool cached_is_aria_hidden_ : 1 = false;
+  mutable bool cached_is_hidden_via_style_ : 1 = false;
+  mutable bool cached_is_descendant_of_disabled_node_ : 1 = false;
+  mutable bool cached_can_set_focus_attribute_ : 1 = false;
 
   // Focusability can change in response to a new style (e.g. content-visibility
   // added/removed), new dom (e.g. tabindex set/unset), or new AXCache
