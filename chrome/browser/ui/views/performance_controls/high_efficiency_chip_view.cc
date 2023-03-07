@@ -118,6 +118,8 @@ void HighEfficiencyChipView::UpdateImpl() {
                                  times_rendered + 1);
       }
     } else if (tab_helper->HasChipBeenHidden()) {
+      UnpauseAnimation();
+      AnimateOut();
       ResetSlideAnimation(false);
     }
 

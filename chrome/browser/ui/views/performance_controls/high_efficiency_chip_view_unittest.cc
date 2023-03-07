@@ -329,6 +329,27 @@ TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
+TEST_F(HighEfficiencyChipViewTest,
+       ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
+  SetHighEfficiencyModeEnabled(true);
+  AddNewTab(kMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+
+  SetTabDiscardState(0, true);
+  SetTabDiscardState(1, true);
+
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+  tab_strip_model->SelectNextTab();
+
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+  ClickPageActionChip();
+
+  tab_strip_model->SelectPreviousTab();
+  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+}
+
 TEST_F(HighEfficiencyChipViewTest, ShowChipWithSavingsInGuestMode) {
   TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
