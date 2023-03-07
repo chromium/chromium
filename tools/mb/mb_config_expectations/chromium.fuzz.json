@@ -303,24 +303,6 @@
       "use_remoteexec": true
     }
   },
-  "Libfuzzer Upload Linux32 ASan Debug": {
-    "gn_args": {
-      "archive_seed_corpus": false,
-      "enable_nacl": false,
-      "ffmpeg_branding": "ChromeOS",
-      "host_cpu": "x86",
-      "is_asan": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "optimize_for_fuzzing": true,
-      "pdf_enable_xfa": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_libfuzzer": true,
-      "use_remoteexec": true
-    }
-  },
   "Libfuzzer Upload Linux32 V8-ARM ASan": {
     "gn_args": {
       "archive_seed_corpus": false,

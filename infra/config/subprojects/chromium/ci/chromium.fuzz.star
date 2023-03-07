@@ -694,20 +694,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Libfuzzer Upload Linux32 ASan Debug",
-    executable = "recipe:chromium_libfuzzer",
-    triggering_policy = scheduler.greedy_batching(
-        max_concurrent_invocations = 3,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "libfuzz",
-        short_name = "linux32-dbg",
-    ),
-    execution_timeout = 4 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "Libfuzzer Upload Linux32 V8-ARM ASan",
     executable = "recipe:chromium_libfuzzer",
     triggering_policy = scheduler.greedy_batching(

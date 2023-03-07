@@ -21,7 +21,6 @@ ci/Libfuzzer Upload Linux UBSan
 ci/Libfuzzer Upload Linux V8-ARM64 ASan
 ci/Libfuzzer Upload Linux V8-ARM64 ASan Debug
 ci/Libfuzzer Upload Linux32 ASan
-ci/Libfuzzer Upload Linux32 ASan Debug
 ci/Libfuzzer Upload Linux32 V8-ARM ASan
 ci/Libfuzzer Upload Linux32 V8-ARM ASan Debug
 ci/Libfuzzer Upload Mac ASan
