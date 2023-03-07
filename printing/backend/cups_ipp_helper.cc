@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -304,10 +305,18 @@ size_t AddAttributes(const CupsOptionProvider& printer,
 
   int num_options = ippGetCount(attr);
   static const base::NoDestructor<HandlerMap> handlers(GenerateHandlers());
+  // The names of attributes that we know are not supported (b/266573545).
+  static constexpr auto kOptionsToIgnore =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"finishings-col", "ipp-attribute-fidelity", "job-name",
+           "number-up-layout"});
   std::vector<std::string> unknown_options;
   size_t attr_count = 0;
   for (int i = 0; i < num_options; i++) {
     const char* option_name = ippGetString(attr, i, nullptr);
+    if (base::Contains(kOptionsToIgnore, option_name)) {
+      continue;
+    }
     auto it = handlers->find(option_name);
     if (it == handlers->end()) {
       unknown_options.emplace_back(option_name);
