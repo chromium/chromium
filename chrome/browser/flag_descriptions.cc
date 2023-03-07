@@ -6146,6 +6146,11 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
+const char kSmdsDbusMigrationName[] = "SM-DS DBus Migration";
+const char kSmdsDbusMigrationDescription[] =
+    "Feature to enable the usage of DBus APIs that improve the stability"
+    "around performing SM-DS scans.";
+
 const char kOobeJellyName[] = "Jelly design for OOBE";
 const char kOobeJellyDescription[] =
     "Feature to enable the Jelly design in out of box experience.";

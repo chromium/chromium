@@ -6556,6 +6556,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "smds-dbus-migration",
+    "owners": ["chadduffin", "cros-connectivity@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "smooth-scrolling",
     "owners": [ "bokan", "input-dev" ],
     // This flag is needed for debugging scrolling issues. However, it can be
