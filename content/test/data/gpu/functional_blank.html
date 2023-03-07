@@ -2,14 +2,21 @@
 <script>
 let useAlternateContent = false;
 
+let sz = 2;
+let color = 255;
+
 function tick() {
-  let destination = document.getElementById('content');
-  let content = '';
+  let canvas = document.getElementById('canvas');
+  let c = canvas.getContext('2d');
   if (useAlternateContent) {
-    content = '.';
+    let fillStyle = 'rgba(' + color + ',0,0,1.0)';
+    c.fillStyle = fillStyle;
+    --color;
+  } else {
+    c.fillStyle = 'rgba(255,255,255,1.0)';
   }
   useAlternateContent = !useAlternateContent;
-  destination.innerText = content;
+  c.fillRect(0, 0, sz, sz);
   setTimeout(tick, 1000);
 }
 
@@ -17,6 +24,10 @@ function main() {
   if (window.domAutomationController) {
     domAutomationController.send("FINISHED");
   }
+
+  let canvas = document.getElementById('canvas');
+  canvas.width = sz;
+  canvas.height = sz;
 
   // This page is used in the main tab in a couple of dual-GPU tests
   // on macOS. When running on the passthrough command decoder and
@@ -28,5 +39,5 @@ function main() {
 </script>
 </head>
 <body onload="main()">
-<div id="content"></div>
+<canvas id="canvas"></canvas>
 </body>
