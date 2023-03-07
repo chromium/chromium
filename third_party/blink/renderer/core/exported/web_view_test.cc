@@ -5459,7 +5459,6 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
 }
 
 TEST_F(WebViewTest, ResizeWithFixedPosCrash) {
-  ScopedLayoutNGPrintingForTest ng_printing_enabled(true);
   WebViewImpl* web_view = web_view_helper_.Initialize();
   WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
   frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
