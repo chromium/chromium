@@ -686,9 +686,14 @@ bool AddCSSPaintArgument(
     return false;
   }
   if (!token_range.AtEnd()) {
-    // TODO(crbug.com/661854): Pass through the original string when we have it.
+    // CSSParserTokenRange doesn't store precise location information about
+    // where each token started or ended, so we don't have the actual original
+    // string. However, for CSS paint arguments, it's not a huge issue
+    // if we get normalized whitespace etc., so we work around it by creating
+    // a fake “original text” by serializing the tokens back.
+    String text = token_range.Serialize();
     scoped_refptr<CSSVariableData> unparsed_css_variable_data =
-        CSSVariableData::Create({token_range, StringView()}, false, false);
+        CSSVariableData::Create({token_range, text}, false, false);
     if (unparsed_css_variable_data.get()) {
       variable_data->push_back(std::move(unparsed_css_variable_data));
       return true;
@@ -2193,8 +2198,8 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
 
   absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
 
-  result = Color::FromColorSpace(colorspace, params[0], params[1], params[2],
-                                    alpha);
+  result =
+      Color::FromColorSpace(colorspace, params[0], params[1], params[2], alpha);
   return args.AtEnd();
 }
 

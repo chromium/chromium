@@ -352,7 +352,13 @@ absl::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
   if (CSSVariableParser::IsValidVariableName(media_feature)) {
-    CSSTokenizedValue tokenized_value{range};
+    // CSSParserTokenRange doesn't store precise location information about
+    // where each token started or ended, so we don't have the actual original
+    // string. However, for media queries, it's not a huge issue if we get
+    // normalized whitespace etc., so we work around it by creating
+    // a fake “original text” by serializing the tokens back.
+    String serialized = range.Serialize();
+    CSSTokenizedValue tokenized_value{range, serialized};
     CSSParserImpl::RemoveImportantAnnotationIfPresent(tokenized_value);
     if (const CSSValue* value =
             CSSVariableParser::ParseDeclarationIncludingCSSWide(
