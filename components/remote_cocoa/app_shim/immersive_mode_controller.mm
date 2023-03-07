@@ -355,6 +355,13 @@ ImmersiveModeController::ImmersiveModeController(NSWindow* browser_window,
       [[[BridgedContentView alloc] initWithBridge:overlay_content_view.bridge
                                            bounds:gfx::Rect()] autorelease];
 
+  // The overlay window will become a child of NSToolbarFullScreenWindow and sit
+  // above it in the z-order. Allow mouse events that are not handled by the
+  // BridgedContentView to passthrough the overlay window to the
+  // NSToolbarFullScreenWindow. This will allow the NSToolbarFullScreenWindow to
+  // become key when interacting with "top chrome".
+  overlay_window_.ignoresMouseEvents = YES;
+
   // Add the overlay view to the accessory view controller getting ready to
   // hand everything over to AppKit.
   [immersive_mode_titlebar_view_controller_.get().view
