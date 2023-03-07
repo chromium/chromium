@@ -192,9 +192,9 @@ void PolicyLoaderLacros::SetComponentPolicy(
     std::string error;
     // The component policy received from Ash is the JSON data corresponding to
     // the policy for the namespace.
-    ParseComponentPolicy(policy_pair.second.Clone(), POLICY_SCOPE_USER,
-                         POLICY_SOURCE_CLOUD_FROM_ASH, &component_policy_map,
-                         &error);
+    ParseComponentPolicy(policy_pair.second.GetDict().Clone(),
+                         POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD_FROM_ASH,
+                         &component_policy_map, &error);
     DCHECK(error.empty());
 
     // The data is also good; expose the policies.

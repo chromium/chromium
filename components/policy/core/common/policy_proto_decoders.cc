@@ -227,9 +227,7 @@ void DecodeProtoFields(
   }
 }
 
-// TODO(crbug/1187001): This function should accept base::Value::Dict for
-// |json|.
-bool ParseComponentPolicy(base::Value json,
+bool ParseComponentPolicy(base::Value::Dict json_dict,
                           PolicyScope scope,
                           PolicySource source,
                           PolicyMap* policy,
@@ -239,7 +237,7 @@ bool ParseComponentPolicy(base::Value json,
   // Each description is an object that contains the policy value under the
   // "Value" key. The optional "Level" key is either "Mandatory" (default) or
   // "Recommended".
-  for (auto [policy_name, description] : json.GetDict()) {
+  for (auto [policy_name, description] : json_dict) {
     if (!description.is_dict()) {
       *error = "The JSON blob dictionary value is not a dictionary.";
       return false;
