@@ -1093,6 +1093,7 @@ void AppListFolderView::ReparentItem(
 
   // Ensures the icon updates to reflect that the icon has been removed during
   // the drag
+  folder_item_view_->UpdateDraggedItem(original_drag_view->item());
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
   folder_controller_->ReparentFolderItemTransit(folder_item_);
 }
@@ -1120,6 +1121,7 @@ void AppListFolderView::DispatchEndDragEventForReparent(
     bool cancel_drag,
     std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
   if (folder_item_) {
+    folder_item_view_->UpdateDraggedItem(nullptr);
     folder_item_->NotifyOfDraggedItem(nullptr);
   }
   folder_controller_->ReparentDragEnded();

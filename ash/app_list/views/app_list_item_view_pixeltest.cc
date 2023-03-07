@@ -166,14 +166,28 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
     return;
   }
 
-  // Set the maximum number of the items in a folder that we want to test to 4.
-  const int max_items_in_folder = 4;
+  // Reset any configs set by previous tests so that
+  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
+  // initialized. Can be removed if folder icon refresh is set as default.
+  AppListConfigProvider::Get().ResetForTesting();
+
+  // To test the item counter on folder icons, set the maximum number of the
+  // items in a folder to 5. For legacy folder icons, set the max items to 4 to
+  // reduce the revisions.
+  const int max_items_in_folder = use_folder_icon_refresh() ? 5 : 4;
   CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
   ShowAppList();
 
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
-      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
+  if (use_folder_icon_refresh()) {
+    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
+        GetItemViewAt(4)));
+  } else {
+    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+        GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
+  }
 }
 
 // Verifies the folder icon is extended when an app is dragged upon it.
@@ -185,8 +199,15 @@ TEST_P(AppListItemViewPixelTest, DISABLED_AppListFolderIconExtendedState) {
     return;
   }
 
-  // Set the maximum number of the items in a folder that we want to test to 4.
-  const int max_items_in_folder = 4;
+  // Reset any configs set by previous tests so that
+  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
+  // initialized. Can be removed if folder icon refresh is set as default.
+  AppListConfigProvider::Get().ResetForTesting();
+
+  // To test the item counter on folder icons, set the maximum number of the
+  // items in a folder to 5. For legacy folder icons, set the max items to 4 to
+  // reduce the revisions.
+  const int max_items_in_folder = use_folder_icon_refresh() ? 5 : 4;
   CreateFoldersContainingDifferentNumOfItems(max_items_in_folder);
   CreateAppListItem("App");
   ShowAppList();
@@ -203,9 +224,16 @@ TEST_P(AppListItemViewPixelTest, DISABLED_AppListFolderIconExtendedState) {
     GetItemViewAt(i)->OnDraggedViewEnter();
   }
 
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
-      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
+  if (use_folder_icon_refresh()) {
+    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+        GenerateScreenshotName(), /*revision_number=*/1, GetItemViewAt(0),
+        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3),
+        GetItemViewAt(4)));
+  } else {
+    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+        GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+        GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
+  }
 
   // Reset the states.
   for (int i = 0; i < max_items_in_folder; ++i) {
@@ -217,13 +245,19 @@ TEST_P(AppListItemViewPixelTest, DISABLED_AppListFolderIconExtendedState) {
 }
 
 // Vefifies the dragged folder icon proxy is correctly created.
-// TODO(b/267205611): the test is flaky.
+// TODO(b/262003933): Correct this pixeltest after the refreshed dragged folder
+// icon is implemented.
 TEST_P(AppListItemViewPixelTest, DISABLED_DraggedAppListFolderIcon) {
   // Skip the case where the apps are newly installed or have notifications as
   // they don't change the folder icons.
   if (is_new_install() || has_notification()) {
     return;
   }
+
+  // Reset any configs set by previous tests so that
+  // ItemIconInFolderIconMargin() in app_list_config.cc is correctly
+  // initialized. Can be removed if folder icon refresh is set as default.
+  AppListConfigProvider::Get().ResetForTesting();
 
   // Set the maximum number of the items in a folder that we want to test to 4.
   const int max_items_in_folder = 4;
@@ -261,10 +295,12 @@ TEST_P(AppListItemViewPixelTest, DISABLED_DraggedAppListFolderIcon) {
       event_generator->MoveMouseTo(grid_center);
     }
 
+    const int revision_number = use_folder_icon_refresh() ? 2 : 1;
+
     std::string filename = base::NumberToString(i + 1) + "_items_folder";
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
         base::JoinString({GenerateScreenshotName(), filename}, "."),
-        /*revision_number=*/1,
+        revision_number,
         apps_grid_view->app_drag_icon_proxy_for_test()->GetWidgetForTesting()));
 
     // Release the drag.

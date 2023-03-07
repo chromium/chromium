@@ -22,6 +22,7 @@
 
 namespace ash {
 enum class AppListConfigType;
+class AppListFolderItem;
 class AppListItemList;
 class AppListItemListTest;
 class AppListItemObserver;
@@ -85,6 +86,10 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   void AddObserver(AppListItemObserver* observer);
   void RemoveObserver(AppListItemObserver* observer);
+
+  // Overrides this function in the child AppListFolderItem class to return
+  // `this`.
+  virtual AppListFolderItem* AsFolderItem();
 
   // Returns a static const char* identifier for the subclass (defaults to "").
   // Pointers can be compared for quick type checking.
