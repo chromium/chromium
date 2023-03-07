@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -713,6 +714,12 @@ void InterfaceEndpointClient::NotifyError(
   if (encountered_error_)
     return;
   encountered_error_ = true;
+
+  // TODO(dcheng): interface_name_ *should* never be null, but for the purposes
+  // of not introducing a new crash in code intended to help debug crashes, do a
+  // null check for safety.
+  DEBUG_ALIAS_FOR_CSTR(interface_name, interface_name_ ? interface_name_ : "",
+                       256);
 
   // Response callbacks may hold on to resource, and there's no need to keep
   // them alive any longer. Note that it's allowed that a pending response
