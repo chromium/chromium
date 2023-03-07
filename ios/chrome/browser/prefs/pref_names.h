@@ -22,6 +22,7 @@ extern const char kEnableDoNotTrack[];
 extern const char kFeaturePushNotificationPermissions[];
 extern const char kFirstFollowUIShownCount[];
 extern const char kHttpServerProperties[];
+extern const char kInactiveTabsTimeThreshold[];
 extern const char kIncognitoModeAvailability[];
 extern const char kIncognitoInterstitialEnabled[];
 extern const char kIosCredentialProviderPromoPolicyEnabled[];

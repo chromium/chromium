@@ -34,12 +34,12 @@ bool IsInactiveTabsEnabled();
 //     The tab should not immediately be considered inactive at 10:06am today.
 //
 // The padding is here to encompass a flexbility of a day.
-const base::TimeDelta TabInactivityThreshold();
+const base::TimeDelta InactiveTabsTimeThreshold();
 
 // Convenience method for getting a displayable representation of the thrsshold.
 // This is the number of days as a string.
 // The default is "14".
-std::u16string TabInactivityThresholdDisplayString();
+std::u16string InactiveTabsTimeThresholdDisplayString();
 
 // Feature flag to enable the display of the count of Inactive Tabs in Tab Grid.
 BASE_DECLARE_FEATURE(kShowInactiveTabsCount);

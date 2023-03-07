@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/root_view_controller_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -114,6 +115,7 @@ class GridViewControllerTest : public RootViewControllerTest {
   }
 
  protected:
+  IOSChromeScopedTestingLocalState local_state_;
   GridViewController* view_controller_;
   FakeGridViewControllerDelegate* delegate_;
 };

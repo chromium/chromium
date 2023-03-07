@@ -50,7 +50,7 @@ const NSUInteger kMaxCount = 99;
     UILabel* subtitleLabel = [[UILabel alloc] init];
     subtitleLabel.text =
         l10n_util::GetNSStringF(IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE,
-                                TabInactivityThresholdDisplayString());
+                                InactiveTabsTimeThresholdDisplayString());
     subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:subtitleLabel];
 

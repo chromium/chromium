@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -102,6 +103,7 @@ class BrowserViewWranglerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   id fake_scene_;
   SceneState* scene_state_;

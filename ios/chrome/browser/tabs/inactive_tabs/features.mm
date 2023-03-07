@@ -5,7 +5,11 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -25,37 +29,47 @@ const char kTabInactivityThresholdThreeWeeksParam[] =
     "tab-inactivity-threshold-three-weeks";
 
 bool IsInactiveTabsEnabled() {
-  bool isIPhoneIdiom =
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
-  return isIPhoneIdiom && base::FeatureList::IsEnabled(kTabInactivityThreshold);
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(kTabInactivityThreshold)) {
+    return false;
+  }
+
+  static const int kDisabledByUser = -1;
+  return GetApplicationContext()->GetLocalState()->GetInteger(
+             prefs::kInactiveTabsTimeThreshold) != kDisabledByUser;
 }
 
-const base::TimeDelta TabInactivityThreshold() {
+const base::TimeDelta InactiveTabsTimeThreshold() {
   DCHECK(IsInactiveTabsEnabled());
-  std::string featureParam = base::GetFieldTrialParamValueByFeature(
+
+  // Preference.
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  int user_preference_threshold =
+      local_state->GetInteger(prefs::kInactiveTabsTimeThreshold);
+  if (user_preference_threshold > 0) {
+    return base::Days(user_preference_threshold);
+  }
+
+  // Feature flag.
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kTabInactivityThreshold, kTabInactivityThresholdParameterName);
-  if (featureParam == kTabInactivityThresholdOneWeekParam) {
+  if (feature_param == kTabInactivityThresholdOneWeekParam) {
     return base::Days(8);
-  } else if (featureParam == kTabInactivityThresholdTwoWeeksParam) {
+  } else if (feature_param == kTabInactivityThresholdTwoWeeksParam) {
     return base::Days(15);
-  } else if (featureParam == kTabInactivityThresholdThreeWeeksParam) {
+  } else if (feature_param == kTabInactivityThresholdThreeWeeksParam) {
     return base::Days(22);
   }
   return base::Days(15);
 }
 
-std::u16string TabInactivityThresholdDisplayString() {
+std::u16string InactiveTabsTimeThresholdDisplayString() {
   DCHECK(IsInactiveTabsEnabled());
-  std::string featureParam = base::GetFieldTrialParamValueByFeature(
-      kTabInactivityThreshold, kTabInactivityThresholdParameterName);
-  if (featureParam == kTabInactivityThresholdOneWeekParam) {
-    return u"7";
-  } else if (featureParam == kTabInactivityThresholdTwoWeeksParam) {
-    return u"14";
-  } else if (featureParam == kTabInactivityThresholdThreeWeeksParam) {
-    return u"21";
-  }
-  return u"14";
+  // Remove one day to the threshold to get the user-friendly value.
+  return base::NumberToString16(InactiveTabsTimeThreshold().InDays() - 1);
 }
 
 BASE_FEATURE(kShowInactiveTabsCount,

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -32,6 +33,7 @@ class InactiveTabsUtilsTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_active_;
   std::unique_ptr<TestBrowser> browser_inactive_;

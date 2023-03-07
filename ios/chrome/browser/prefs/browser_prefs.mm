@@ -274,6 +274,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoPolicyEnabled,
                                 true);
+  // Preferences related to tab grid.
+  // Default to 0 which is the unassigned value.
+  registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

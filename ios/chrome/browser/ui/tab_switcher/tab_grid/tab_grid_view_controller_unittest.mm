@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -72,6 +73,7 @@ class TabGridViewControllerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   base::UserActionTester user_action_tester_;
   TabGridViewController* view_controller_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
