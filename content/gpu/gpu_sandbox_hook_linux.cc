@@ -663,7 +663,6 @@ sandbox::syscall_broker::BrokerCommandSet CommandSetForGPU(
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
   if (IsChromeOS() &&
       (options.use_amd_specific_policies ||
-       options.use_nvidia_specific_policies ||
        options.use_intel_specific_policies ||
        options.use_nvidia_specific_policies ||
        options.use_virtio_specific_policies || IsArchitectureArm())) {
