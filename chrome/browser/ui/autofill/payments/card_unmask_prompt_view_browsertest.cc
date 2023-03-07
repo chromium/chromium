@@ -166,6 +166,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
 
   void TearDownOnMainThread() override {
     contents_ = nullptr;
+    controller_.reset();
     DialogBrowserTest::TearDownOnMainThread();
   }
 
