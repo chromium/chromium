@@ -182,6 +182,7 @@ source_set("scene") {
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/sessions:session_saving",
+    "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:system_identity_manager",
