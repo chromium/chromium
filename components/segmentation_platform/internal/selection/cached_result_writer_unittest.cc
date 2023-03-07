@@ -41,15 +41,12 @@ class CachedResultWriterTest : public testing::Test {
 
   proto::ClientResult CreateClientResult(std::vector<float> model_scores,
                                          base::Time result_timestamp) {
-    proto::ClientResult client_result;
     proto::PredictionResult pred_result =
         metadata_utils::CreatePredictionResult(
             model_scores, test_utils::GetTestOutputConfigForBinaryClassifier(),
             /*timestamp=*/base::Time::Now());
-    client_result.mutable_client_result()->CopyFrom(pred_result);
-    client_result.set_timestamp_us(
-        result_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    return client_result;
+    return metadata_utils::CreateClientResultFromPredResult(pred_result,
+                                                            result_timestamp);
   }
 
  protected:

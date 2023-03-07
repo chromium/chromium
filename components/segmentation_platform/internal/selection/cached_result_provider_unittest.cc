@@ -69,14 +69,6 @@ class CachedResultProviderTest : public testing::Test {
     configs_.push_back(CreateTestConfig());
   }
 
-  proto::ClientResult CreateClientResult(proto::PredictionResult pred_result) {
-    proto::ClientResult client_result;
-    client_result.mutable_client_result()->CopyFrom(pred_result);
-    client_result.set_timestamp_us(
-        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    return client_result;
-  }
-
  protected:
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<ClientResultPrefs> result_prefs_;
@@ -87,9 +79,11 @@ class CachedResultProviderTest : public testing::Test {
 TEST_F(CachedResultProviderTest, CachedResultProviderWithNonEmptyPredResult) {
   result_prefs_->SaveClientResultToPrefs(
       kClientKey,
-      CreateClientResult(metadata_utils::CreatePredictionResult(
-          /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
-          /*timestamp=*/base::Time::Now())));
+      metadata_utils::CreateClientResultFromPredResult(
+          metadata_utils::CreatePredictionResult(
+              /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
+              /*timestamp=*/base::Time::Now()),
+          /*timestamp=*/base::Time::Now()));
   cached_result_provider_ = std::make_unique<CachedResultProvider>(
       std::move(result_prefs_), configs_);
   ClassificationResult classification_result =
@@ -101,8 +95,9 @@ TEST_F(CachedResultProviderTest, CachedResultProviderWithNonEmptyPredResult) {
 
 TEST_F(CachedResultProviderTest, CachedResultProviderWithEmptyPredResult) {
   proto::PredictionResult pred_result;
-  result_prefs_->SaveClientResultToPrefs(kClientKey,
-                                         CreateClientResult(pred_result));
+  result_prefs_->SaveClientResultToPrefs(
+      kClientKey, metadata_utils::CreateClientResultFromPredResult(
+                      pred_result, /*timestamp=*/base::Time::Now()));
   cached_result_provider_ = std::make_unique<CachedResultProvider>(
       std::move(result_prefs_), configs_);
   ClassificationResult classification_result =

@@ -77,15 +77,6 @@ class ResultRefreshManagerTest : public testing::Test {
                                                 &clock_);
   }
 
-  proto::ClientResult CreateClientResult(proto::PredictionResult pred_result,
-                                         base::Time timestamp) {
-    proto::ClientResult client_result;
-    client_result.mutable_client_result()->CopyFrom(pred_result);
-    client_result.set_timestamp_us(
-        timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    return client_result;
-  }
-
   void ExpectResultFromDatabase(
       MockResultProvider* segment_result_provider,
       const proto::PredictionResult& result,
