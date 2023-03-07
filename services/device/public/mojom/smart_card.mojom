@@ -6,10 +6,6 @@ module device.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
-// TODO(crbug.com/1386175): Add interfaces for exposing the platform's PC/SC
-// (winscard.h) service:
-//  * SmartCardConnection
-
 // The result of a SmartCard request.
 // Either a success or an error.
 union SmartCardResult {
@@ -59,6 +55,30 @@ enum SmartCardError {
   kUnknown
 };
 
+// Share mode of a connection.
+enum SmartCardShareMode {
+  // SCARD_SHARE_SHARED
+  kShared,
+  // SCARD_SHARE_EXCLUSIVE
+  kExclusive,
+  // SCARD_SHARE_DIRECT
+  kDirect
+};
+
+// Communication protocol for a connection to a smart card.
+enum SmartCardProtocol {
+  // SCARD_PROTOCOL_UNDEFINED
+  kUndefined,
+  // SCARD_PROTOCOL_T0
+  // T=0 protocol
+  kT0,
+  // SCARD_PROTOCOL_T1
+  // T=1 protocol
+  kT1,
+  // SCARD_PROTOCOL_RAW
+  kRaw
+};
+
 // Flags for describing the state of a smart card reader.
 // Maps to the corresponding SCARD_STATE_* flags in winscard.h
 struct SmartCardReaderStateFlags {
@@ -90,6 +110,16 @@ struct SmartCardReaderStateOut {
   array<uint8> answer_to_reset;
 };
 
+// Preferred protocols.
+struct SmartCardProtocols {
+  // SCARD_PROTOCOL_T0
+  bool t0;
+  // SCARD_PROTOCOL_T1
+  bool t1;
+  // SCARD_PROTOCOL_RAW
+  bool raw;
+};
+
 // The result of a SmartCardContext.GetStatusChange request.
 union SmartCardStatusChangeResult {
   array<SmartCardReaderStateOut> reader_states;
@@ -108,6 +138,33 @@ union SmartCardCreateContextResult {
   SmartCardError error;
 };
 
+// The result of a SmartCardContext.Connect request in
+// case of success.
+struct SmartCardConnectSuccess {
+  pending_remote<SmartCardConnection> connection;
+  SmartCardProtocol active_protocol;
+};
+
+// The result of a SmartCardContext.Connect request.
+union SmartCardConnectResult {
+  SmartCardConnectSuccess success;
+  SmartCardError error;
+};
+
+// An interface to a valid connection (SCARDHANDLE) within a context
+// in a PC/SC (winscard.h) provider.
+interface SmartCardConnection {
+  // TODO(crbug.com/1386175): Add methods:
+  // * Disconnect()
+  // * BeginTransaction()
+  // * EndTransaction()
+  // * Status()
+  // * Control()
+  // * Transmit()
+  // * GetAttrib()
+  // * SetAttrib()
+};
+
 // An interface to a valid context in a PC/SC (winscard.h) provider.
 //
 // Dropping a remote of this interface equates to calling SCardReleaseContext()
@@ -122,7 +179,10 @@ interface SmartCardContext {
                   array<SmartCardReaderStateIn> reader_states)
     => (SmartCardStatusChangeResult result);
 
-  // TODO(crbug.com/1386175): Add Connect method.
+  // Establishes a connection to the specified reader.
+  Connect(string reader, SmartCardShareMode share_mode,
+          SmartCardProtocols preferred_protocols) =>
+    (SmartCardConnectResult result);
 };
 
 // An interface to establish contexts with a PC/SC (winscard.h) provider.

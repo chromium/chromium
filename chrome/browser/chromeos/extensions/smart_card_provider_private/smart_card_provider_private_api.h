@@ -26,13 +26,17 @@ class EventRouter;
 class SmartCardProviderPrivateAPI
     : public BrowserContextKeyedAPI,
       public device::mojom::SmartCardContextFactory,
-      public device::mojom::SmartCardContext {
+      public device::mojom::SmartCardContext,
+      public device::mojom::SmartCardConnection {
  public:
   // Uniquely identifies a request sent by this class to the PC/SC provider
   // extension.
   using RequestId = base::IdType32<class SmartCardRequestIdClass>;
   // A smart card context id, as given by the PC/SC provider extension.
   using ContextId = base::IdType32<class SmartCardContextIdClass>;
+  // A smart card handle. Identifies a connection in the PC/SC provider
+  // extension.
+  using Handle = base::IdType32<class SmartCardHandleClass>;
 
   static BrowserContextKeyedAPIFactory<SmartCardProviderPrivateAPI>*
   GetFactoryInstance();
@@ -54,6 +58,10 @@ class SmartCardProviderPrivateAPI
       base::TimeDelta timeout,
       std::vector<device::mojom::SmartCardReaderStateInPtr> reader_states,
       GetStatusChangeCallback callback) override;
+  void Connect(const std::string& reader,
+               device::mojom::SmartCardShareMode share_mode,
+               device::mojom::SmartCardProtocolsPtr preferred_protocols,
+               ConnectCallback callback) override;
 
   // Called by extension functions:
   void ReportEstablishContextResult(RequestId request_id,
@@ -68,6 +76,10 @@ class SmartCardProviderPrivateAPI
       RequestId request_id,
       std::vector<device::mojom::SmartCardReaderStateOutPtr> reader_states,
       device::mojom::SmartCardResultPtr result);
+  void ReportConnectResult(RequestId request_id,
+                           Handle scard_handle,
+                           device::mojom::SmartCardProtocol active_protocol,
+                           device::mojom::SmartCardResultPtr result);
 
   void SetResponseTimeLimitForTesting(base::TimeDelta);
 
@@ -94,6 +106,8 @@ class SmartCardProviderPrivateAPI
                             RequestId request_id);
   void OnGetStatusChangeTimeout(const std::string& provider_extension_id,
                                 RequestId request_id);
+  void OnConnectTimeout(const std::string& provider_extension_id,
+                        RequestId request_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -115,12 +129,18 @@ class SmartCardProviderPrivateAPI
   std::map<RequestId, std::unique_ptr<PendingGetStatusChange>>
       pending_get_status_change_;
 
+  struct PendingConnect;
+  std::map<RequestId, std::unique_ptr<PendingConnect>> pending_connect_;
+
   RequestId::Generator request_id_generator_;
   const raw_ref<content::BrowserContext> browser_context_;
   const raw_ref<EventRouter> event_router_;
 
   mojo::ReceiverSet<device::mojom::SmartCardContext, ContextId>
       context_receivers_;
+
+  mojo::ReceiverSet<device::mojom::SmartCardConnection, Handle>
+      connection_receivers_;
 
   base::WeakPtrFactory<SmartCardProviderPrivateAPI> weak_ptr_factory_{this};
 };
@@ -170,6 +190,17 @@ class SmartCardProviderPrivateReportGetStatusChangeResultFunction
   DECLARE_EXTENSION_FUNCTION(
       "smartCardProviderPrivate.reportGetStatusChangeResult",
       SMARTCARDPROVIDERPRIVATE_REPORTGETSTATUSCHANGERESULT)
+};
+
+class SmartCardProviderPrivateReportConnectResultFunction
+    : public ExtensionFunction {
+ private:
+  // ExtensionFunction:
+  ~SmartCardProviderPrivateReportConnectResultFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("smartCardProviderPrivate.reportConnectResult",
+                             SMARTCARDPROVIDERPRIVATE_REPORTCONNECTRESULT)
 };
 
 }  // namespace extensions

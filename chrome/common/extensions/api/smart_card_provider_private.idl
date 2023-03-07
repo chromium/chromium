@@ -53,6 +53,13 @@ namespace smartCardProviderPrivate {
     UNKNOWN
   };
 
+  // Maps to the SCARD_SHARE_* values defined in the winscard.h API.
+  enum ShareMode {
+    SHARED,
+    EXCLUSIVE,
+    DIRECT
+  };
+
   // Maps to the SCARD_STATE_* flags defined in the winscard.h API.
   dictionary ReaderStateFlags {
     boolean? unaware;
@@ -66,6 +73,21 @@ namespace smartCardProviderPrivate {
     boolean? inuse;
     boolean? mute;
     boolean? unpowered;
+  };
+
+  // Maps to the SCARD_PROTOCOL_* flags defined in the winscard.h API.
+  dictionary Protocols {
+    boolean? t0;
+    boolean? t1;
+    boolean? raw;
+  };
+
+  // Maps to the SCARD_PROTOCOL_* values defined in the winscard.h API.
+  enum Protocol {
+    UNDEFINED,
+    T0,
+    T1,
+    RAW
   };
 
   dictionary ReaderStateIn {
@@ -109,6 +131,15 @@ namespace smartCardProviderPrivate {
         long scardContext,
         Timeout timeout,
         ReaderStateIn[] readerStates);
+
+    // Browser requested a SCardConnect call.
+    // Extension must report the result to the browser by calling
+    // reportConnectResult.
+    [maxListeners=1] static void onConnectRequested(long requestId,
+        long scardContext,
+        DOMString reader,
+        ShareMode shareMode,
+        Protocols preferredProtocols);
   };
 
   interface Functions {
@@ -127,5 +158,9 @@ namespace smartCardProviderPrivate {
       // Reports the result of a SCardGetStatusChange call.
       static void reportGetStatusChangeResult(long requestId,
           ReaderStateOut[] readerStates, ResultCode resultCode);
+
+      // Reports the result of a SCardConnect call.
+      static void reportConnectResult(long requestId, long scardHandle,
+          Protocol activeProtocol, ResultCode resultCode);
   };
 };

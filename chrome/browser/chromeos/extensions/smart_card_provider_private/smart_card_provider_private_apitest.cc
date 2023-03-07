@@ -454,4 +454,114 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Connect) {
+  std::string background_js(kEstablishContextJs);
+  background_js.append(
+      R"(
+      chrome.smartCardProviderPrivate.onConnectRequested.addListener(
+          connect);
+
+      function connect(requestId, scardContext, reader,
+          shareMode, preferredProtocols) {
+        if (scardContext != 123
+            || reader !== "foo-reader"
+            || shareMode !== "SHARED"
+            || preferredProtocols.t0 !== false
+            || preferredProtocols.t1 !== true
+            || preferredProtocols.raw !== false) {
+          chrome.smartCardProviderPrivate.reportGetStatusChangeResult(requestId,
+              readerStates, "INVALID_PARAMETER");
+          return;
+        }
+
+        chrome.smartCardProviderPrivate.reportConnectResult(requestId, 987,
+            "T1", "SUCCESS");
+      }
+    )");
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr>
+      result_future;
+
+  auto preferred_protocols = device::mojom::SmartCardProtocols::New();
+  preferred_protocols->t0 = false;
+  preferred_protocols->t1 = true;
+  preferred_protocols->raw = false;
+
+  context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
+                   std::move(preferred_protocols), result_future.GetCallback());
+
+  device::mojom::SmartCardConnectResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_success());
+
+  device::mojom::SmartCardConnectSuccessPtr success =
+      std::move(result->get_success());
+  EXPECT_EQ(success->active_protocol, device::mojom::SmartCardProtocol::kT1);
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection(
+      std::move(success->connection));
+  EXPECT_TRUE(connection.is_connected());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ConnectNoProvider) {
+  LoadFakeProviderExtension(kEstablishContextJs);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr>
+      result_future;
+
+  auto preferred_protocols = device::mojom::SmartCardProtocols::New();
+  preferred_protocols->t1 = true;
+
+  context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
+                   std::move(preferred_protocols), result_future.GetCallback());
+
+  device::mojom::SmartCardConnectResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       ConnectResponseTimeout) {
+  SmartCardProviderPrivateAPI& scard_provider_api =
+      SmartCardProviderPrivateAPI::Get(*profile());
+  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  std::string background_js(kEstablishContextJs);
+  background_js.append(
+      R"(
+      chrome.smartCardProviderPrivate.onConnectRequested.addListener(
+          function (requestId, scardContext, reader, shareMode,
+              preferredProtocols) {});
+      )");
+  LoadFakeProviderExtension(background_js);
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr>
+      result_future;
+
+  auto preferred_protocols = device::mojom::SmartCardProtocols::New();
+  preferred_protocols->t1 = true;
+
+  context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
+                   std::move(preferred_protocols), result_future.GetCallback());
+
+  device::mojom::SmartCardConnectResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
 }  // namespace extensions
