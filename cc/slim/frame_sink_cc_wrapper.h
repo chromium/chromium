@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/slim/frame_sink.h"
 #include "components/viz/common/gpu/context_provider.h"

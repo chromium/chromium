@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "cc/resources/ui_resource_client.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/slim/frame_sink_impl_client.h"
 #include "cc/slim/layer_tree.h"
@@ -28,7 +29,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gfx/presentation_feedback.h"
 
 namespace cc {
 class UIResourceManager;

@@ -10,7 +10,9 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/slim/frame_data.h"
 #include "cc/slim/frame_sink_impl.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree_client.h"

@@ -23,7 +23,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"

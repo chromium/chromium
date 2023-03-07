@@ -11,9 +11,7 @@
 #include "cc/slim/features.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
-#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc::slim {
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "components/viz/common/gpu/context_provider.h"
