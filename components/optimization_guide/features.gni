@@ -11,9 +11,8 @@ declare_args() {
   # This enables build with TFLite library.
   # TODO(b/269198471): Make sure the internal archive files for opt guide get
   #   updated when win arm64 gets added as a supported platform for TFLite.
-  build_with_tflite_lib =
-      is_android || (is_win && target_cpu != "arm64") || is_linux || is_mac ||
-      is_chromeos || is_fuchsia || is_ios
+  build_with_tflite_lib = is_android || is_win || is_linux || is_mac ||
+                          is_chromeos || is_fuchsia || is_ios
 }
 
 declare_args() {
