@@ -96,6 +96,7 @@ build_webui("build") {
   css_files = [
     "signin_shared.css",
     "signin_vars.css",
+    "tangible_sync_style_shared.css",
   ]
 
   ts_composite = true

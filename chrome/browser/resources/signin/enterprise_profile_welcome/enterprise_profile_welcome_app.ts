@@ -10,11 +10,12 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './strings.m.js';
 import './signin_shared.css.js';
 import './signin_vars.css.js';
+import './tangible_sync_style_shared.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './enterprise_profile_welcome_app.html.js';
@@ -108,6 +109,13 @@ export class EnterpriseProfileWelcomeAppElement extends
         value: false,
         observer: 'linkDataChanged_',
       },
+
+      isTangibleSyncStyleEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isTangibleSyncStyleEnabled');
+        },
+      },
     };
   }
 
@@ -122,6 +130,7 @@ export class EnterpriseProfileWelcomeAppElement extends
   private linkData_: boolean;
   private showCancelButton_: boolean;
   private defaultProceedLabel_: string;
+  private isTangibleSyncStyleEnabled_: boolean;
   private enterpriseProfileWelcomeBrowserProxy_:
       EnterpriseProfileWelcomeBrowserProxy =
           EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
@@ -154,7 +163,9 @@ export class EnterpriseProfileWelcomeAppElement extends
 
   private setProfileInfo_(info: EnterpriseProfileInfo) {
     // <if expr="not chromeos_lacros">
-    this.style.setProperty('--header-background-color', info.backgroundColor);
+    if (this.isModalDialog_ || !this.isTangibleSyncStyleEnabled_) {
+      this.style.setProperty('--header-background-color', info.backgroundColor);
+    }
     // </if>
     this.pictureUrl_ = info.pictureUrl;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
@@ -165,6 +176,13 @@ export class EnterpriseProfileWelcomeAppElement extends
     this.proceedLabel_ = this.defaultProceedLabel_;
     this.showCancelButton_ = info.showCancelButton;
     this.linkData_ = info.checkLinkDataCheckboxByDefault;
+  }
+
+  // TODO: Enable tangible sync style for dialog view.
+  private getTangibleSyncStyleClass_() {
+    return this.isTangibleSyncStyleEnabled_ && !this.isModalDialog_ ?
+        'tangible-sync-style' :
+        '';
   }
 }
 

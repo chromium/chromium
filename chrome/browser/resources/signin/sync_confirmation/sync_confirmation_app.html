@@ -1,13 +1,12 @@
-<style include="signin-shared">
+<style include="signin-shared tangible-sync-style-shared">
   :host {
     --banner-size: auto;
     --footer-margin: 24px;
     --tangible-sync-dialog-illustration-url:
         url(./images/tangible_sync_dialog_illustration.svg);
-    --tangible-sync-window-illustration-width: 17vw;
-    --tangible-sync-window-left-illustration-url:
+    --tangible-sync-style-left-banner-url:
         url(./images/tangible_sync_window_left_illustration.svg);
-    --tangible-sync-window-right-illustration-url:
+    --tangible-sync-style-right-banner-url:
         url(./images/tangible_sync_window_right_illustration.svg);
     --sync-benefits-list-color: var(--google-grey-50);
     --sync-benefit-icon-color: var(--google-blue-600);
@@ -17,7 +16,7 @@
 
   @keyframes left-illustration-slide-animation {
     0% {
-      transform: translateX(calc(-1 * var(--tangible-sync-window-illustration-width)));
+      transform: translateX(calc(-1 * var(--tangible-sync-style-banner-width)));
     }
     100% {
       transform: translateX(0);
@@ -26,7 +25,7 @@
 
   @keyframes right-illustration-slide-animation {
     0% {
-      transform: translateX(var(--tangible-sync-window-illustration-width));
+      transform: translateX(var(--tangible-sync-style-banner-width));
     }
     100% {
       transform: translateX(0);
@@ -252,16 +251,6 @@
     font-weight: normal;
   }
 
-  #tangible-sync-button-container cr-button {
-    font-family: 'Google Sans', arial, sans-serif;
-    font-size: 0.75rem;
-    min-width: 111px;
-  }
-
-  .window-button-container {
-    --cr-button-height: 36px;
-  }
-
   #headerContainer.signin-intercept-design {
     background: center 36px no-repeat
         url(./images/sync_confirmation_signin_intercept_illustration.svg);
@@ -276,7 +265,7 @@
   }
 
   .signin-intercept-design #avatar,
-  .tangible-sync #avatar {
+  .tangible-sync-style #avatar {
     /** The user avatar may be transparent, add a background */
     background-color: var(--md-background-color);
     left: calc(-1 * var(--avatar-border-width));
@@ -284,8 +273,7 @@
     top: calc(-1 * var(--avatar-border-width));
   }
 
-  .signin-intercept-design .work-badge,
-  .tangible-sync .work-badge {
+  .signin-intercept-design .work-badge {
     --badge-width: 26px;
     --badge-offset: -4px;
     background-color: var(--signin-work-badge-background-color);
@@ -294,24 +282,22 @@
     inset-inline-end: var(--badge-offset);
   }
 
-  .signin-intercept-design .work-badge > iron-icon,
-  .tangible-sync .work-badge > iron-icon {
+  .tangible-sync-style .work-badge {
+    bottom: 0;
+  }
+
+  .signin-intercept-design .work-badge > iron-icon {
     --work-icon-size: 16px;
     background-color: var(--signin-work-badge-background-color);
     margin: auto;
   }
 
-  #tangible-sync-button-container.action-container,
   .signin-intercept-design .action-container {
     --action-container-padding: 24px;
     column-gap: 12px;
   }
 
-  .tangible-sync {
-    --action-container-padding: 24px;
-  }
-
-  .tangible-sync #contentContainer {
+  .tangible-sync-style #contentContainer {
     align-items: stretch;
     display: flex;
     flex-direction: column;
@@ -327,7 +313,8 @@
     width: 100vw;
   }
 
-  .dialog-main-container.tangible-sync #contentContainer {
+  .dialog-main-container.tangible-sync-style #contentContainer {
+    --cr-button-height: 32px;
     --sync-info-desc-bottom-margin: 48px;
     --container-bottom-padding: calc(var(--sync-info-desc-bottom-margin) +
         var(--cr-button-height) + var(--action-container-padding));
@@ -337,41 +324,27 @@
     padding: 32px 0 var(--container-bottom-padding);
   }
 
-  .tangible-sync #avatarContainer {
-    --avatar-size: 64px;
+  .tangible-sync-style #avatarContainer {
+    --avatar-size: var(--tangible-sync-style-avatar-size);
     bottom: unset;
     position: relative;
   }
 
-  .tangible-sync .work-badge {
+  .tangible-sync-style .work-badge {
     --badge-width: 22px;
   }
 
-  .tangible-sync .work-badge > iron-icon {
+  .tangible-sync-style .work-badge > iron-icon {
     --work-icon-size: 14px;
   }
 
-  .tangible-sync #syncConfirmationHeading {
-    font-family: 'Google Sans', arial, sans-serif;
-    font-size: 2.25rem;
-    font-weight: 500;
-    line-height: 43px;
-    margin: 24px 0 16px;
-  }
-
-  .dialog-main-container.tangible-sync #syncConfirmationHeading {
+  .dialog-main-container.tangible-sync-style #title {
     font-size: 1.25rem;
     line-height: 24px;
     margin: 16px 0 12px
   }
 
-  #syncInfoTitle {
-    color: var(--cr-secondary-text-color);
-    font-size: 1.25rem;
-    line-height: 24px;
-  }
-
-  .dialog-main-container.tangible-sync #syncInfoTitle {
+  .dialog-main-container.tangible-sync-style #subtitle {
     font-size: 0.94rem;
   }
 
@@ -388,7 +361,7 @@
     row-gap: 16px;
   }
 
-  .dialog-main-container.tangible-sync #syncBenefitsList {
+  .dialog-main-container.tangible-sync-style #syncBenefitsList {
     margin: 16px 38px;
     padding: 20px 24px;
   }
@@ -412,7 +385,7 @@
     line-height: 20px;
   }
 
-  .dialog-main-container.tangible-sync #syncInfoDesc {
+  .dialog-main-container.tangible-sync-style #syncInfoDesc {
     margin: 0 38px;
   }
 
@@ -426,41 +399,36 @@
     width: 328px;
   }
 
-  #tangible-sync-window-left-illustration {
+  #tangible-sync-style-left-banner {
     animation-duration: 500ms;
     animation-name: left-illustration-slide-animation, fade-in-animation;
-    content: var(--tangible-sync-window-left-illustration-url);
-    left: 0;
+    content: var(--tangible-sync-style-left-banner-url);
     transition-timing-function: ease-in-out;
   }
 
-  #tangible-sync-window-right-illustration {
+  #tangible-sync-style-right-banner {
     animation-duration: 500ms;
     animation-name: right-illustration-slide-animation, fade-in-animation;
-    content: var(--tangible-sync-window-right-illustration-url);
-    right: 0;
+    content: var(--tangible-sync-style-right-banner-url);
     transition-timing-function: ease-in-out;
-  }
-
-  #tangible-sync-window-left-illustration,
-  #tangible-sync-window-right-illustration {
-    max-width: 320px;
-    position: absolute;
-    top: 0;
-    width: var(--tangible-sync-window-illustration-width)
   }
 
   .fade-in {
     animation: 500ms ease-in-out fade-in-animation;
   }
 
+  .tangible-sync-style.dialog-button-container cr-button {
+    --cr-button-height: 32px;
+    min-width: 111px;
+  }
+
   @media (prefers-color-scheme: dark) {
     :host {
       --tangible-sync-dialog-illustration-url:
           url(./images/tangible_sync_dialog_illustration_dark.svg);
-      --tangible-sync-window-left-illustration-url:
+      --tangible-sync-style-left-banner-url:
           url(./images/tangible_sync_window_left_illustration_dark.svg);
-      --tangible-sync-window-right-illustration-url:
+      --tangible-sync-style-right-banner-url:
           url(./images/tangible_sync_window_right_illustration_dark.svg);
       --sync-benefits-list-color: var(--google-grey-800);
       --sync-benefit-icon-color: var(--google-blue-300);
@@ -493,12 +461,12 @@
   }
 
   @media screen and ((max-width: 780px) or (max-height: 600px)) {
-    .window-main-container.tangible-sync #syncConfirmationHeading {
+    .window-main-container.tangible-sync-style #title {
       font-size: 1.5rem;
       line-height: 32px;
     }
 
-    .window-main-container.tangible-sync #syncInfoTitle {
+    .window-main-container.tangible-sync-style #subtitle {
       font-size: 0.94rem;
       line-height: 22px;
     }
@@ -631,21 +599,21 @@
 </template>
 
 <template is="dom-if" if="[[isTangibleSync_]]">
-  <div class$="tangible-sync [[getMainContainerClass_()]]">
+  <div class$="tangible-sync-style [[getMainContainerClass_()]]">
     <img id="tangible-sync-dialog-illustration" hidden="[[!isModalDialog_]]">
-    <img id="tangible-sync-window-left-illustration" hidden="[[isModalDialog_]]">
-    <img id="tangible-sync-window-right-illustration" hidden="[[isModalDialog_]]">
+    <img id="tangible-sync-style-left-banner" hidden="[[isModalDialog_]]">
+    <img id="tangible-sync-style-right-banner" hidden="[[isModalDialog_]]">
     <div id="contentContainer" class$="[[getAnimationClass_()]]">
       <div id="avatarContainer">
         <img id="avatar" alt="" src="[[accountImageSrc_]]">
-        <div class="work-badge" id="badge" hidden="[[!showEnterpriseBadge_]]">
+        <div id="badge" class="work-badge" hidden="[[!showEnterpriseBadge_]]">
           <iron-icon icon="cr:domain"></iron-icon>
         </div>
       </div>
-      <h1 id="syncConfirmationHeading" consent-description>
+      <h1 id="title" consent-description>
         $i18n{syncConfirmationTitle}
       </h1>
-      <div id="syncInfoTitle" consent-description>
+      <div id="subtitle" consent-description>
         $i18n{syncConfirmationSyncInfoTitle}
       </div>
       <div id="syncBenefitsList">
@@ -664,10 +632,9 @@
       </div>
     </div>
   </div>
-  <div class$="action-row tangible-sync [[getAnimationClass_()]]">
+  <div class$="action-row [[getAnimationClass_()]]">
     <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
-    <div id="tangible-sync-button-container"
-        class$="action-container [[getButtonContainerClass_()]]">
+    <div class$="action-container tangible-sync-style [[getButtonContainerClass_()]]">
       <cr-button id="confirmButton" class="action-button" on-click="onConfirm_"
           disabled="[[anyButtonClicked_]]" consent-confirmation
           autofocus="[[isModalDialog_]]">
