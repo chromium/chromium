@@ -4,10 +4,10 @@
 
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -295,12 +295,11 @@ class CompositorFrameReportingControllerTest : public testing::Test {
       const EventMetrics::List& events_metrics) {
     std::vector<base::TimeTicks> event_times;
     event_times.reserve(events_metrics.size());
-    std::transform(events_metrics.cbegin(), events_metrics.cend(),
-                   std::back_inserter(event_times),
-                   [](const auto& event_metrics) {
-                     return event_metrics->GetDispatchStageTimestamp(
-                         EventMetrics::DispatchStage::kGenerated);
-                   });
+    base::ranges::transform(events_metrics, std::back_inserter(event_times),
+                            [](const auto& event_metrics) {
+                              return event_metrics->GetDispatchStageTimestamp(
+                                  EventMetrics::DispatchStage::kGenerated);
+                            });
     return event_times;
   }
 
