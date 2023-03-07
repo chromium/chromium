@@ -6,24 +6,29 @@
 
 namespace blink {
 
-StringView CSSParserTokenStream::StringRangeAt(wtf_size_t start,
-                                               wtf_size_t length) const {
+template <bool Raw>
+StringView CSSParserTokenStreamImpl<Raw>::StringRangeAt(
+    wtf_size_t start,
+    wtf_size_t length) const {
   return tokenizer_.StringRangeAt(start, length);
 }
 
-void CSSParserTokenStream::ConsumeWhitespace() {
+template <bool Raw>
+void CSSParserTokenStreamImpl<Raw>::ConsumeWhitespace() {
   while (Peek().GetType() == kWhitespaceToken) {
     UncheckedConsume();
   }
 }
 
-CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespace() {
+template <bool Raw>
+CSSParserToken CSSParserTokenStreamImpl<Raw>::ConsumeIncludingWhitespace() {
   CSSParserToken result = Consume();
   ConsumeWhitespace();
   return result;
 }
 
-bool CSSParserTokenStream::ConsumeCommentOrNothing() {
+template <bool Raw>
+bool CSSParserTokenStreamImpl<Raw>::ConsumeCommentOrNothing() {
   DCHECK(!HasLookAhead());
   const auto token = tokenizer_.TokenizeSingleWithComments();
   if (token.GetType() != kCommentToken) {
@@ -37,7 +42,8 @@ bool CSSParserTokenStream::ConsumeCommentOrNothing() {
   return true;
 }
 
-void CSSParserTokenStream::UncheckedConsumeComponentValue() {
+template <bool Raw>
+void CSSParserTokenStreamImpl<Raw>::UncheckedConsumeComponentValue() {
   DCHECK(HasLookAhead());
 
   // Have to use internal consume/peek in here because they can read past
@@ -53,7 +59,8 @@ void CSSParserTokenStream::UncheckedConsumeComponentValue() {
   } while (!PeekInternal().IsEOF() && nesting_level);
 }
 
-void CSSParserTokenStream::UncheckedSkipToEndOfBlock() {
+template <bool Raw>
+void CSSParserTokenStreamImpl<Raw>::UncheckedSkipToEndOfBlock() {
   DCHECK(HasLookAhead());
 
   // Process and consume the lookahead token.
@@ -67,7 +74,7 @@ void CSSParserTokenStream::UncheckedSkipToEndOfBlock() {
 
   // Skip tokens until we see EOF or the closing brace.
   while (nesting_level != 0) {
-    CSSParserToken token = tokenizer_.TokenizeSingle();
+    CSSParserToken token = TokenizeSingle();
     if (token.IsEOF()) {
       break;
     } else if (token.GetBlockType() == CSSParserToken::kBlockStart) {
@@ -78,5 +85,8 @@ void CSSParserTokenStream::UncheckedSkipToEndOfBlock() {
   }
   offset_ = tokenizer_.Offset();
 }
+
+template class CORE_EXPORT CSSParserTokenStreamImpl<false>;
+template class CORE_EXPORT CSSParserTokenStreamImpl<true>;
 
 }  // namespace blink
