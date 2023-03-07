@@ -687,13 +687,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
 }
 
-#if BUILDFLAG(IS_LINUX)
-// Flaky on linux-rel builder. See https://crbug.com/1412331.
-#define MAYBE_PopupSize DISABLED_PopupSize
-#else
-#define MAYBE_PopupSize PopupSize
-#endif
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, MAYBE_PopupSize) {
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
