@@ -1525,7 +1525,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2344032937402519675">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook.</translation>
 <translation id="234559068082989648">Las versiones antiguas de las aplicaciones de Chrome no se abrirán después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o para que la quite.</translation>
 <translation id="2345723121311404059">1 página a <ph name="PRINTER_NAME" /></translation>
-<translation id="23463457491630512">Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Después, si visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
+<translation id="23463457491630512">Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Si más tarde visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
 <translation id="2348176352564285430">Aplicación: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" />: permiso solicitado, pulsa Ctrl + Adelante para responder</translation>
 <translation id="234889437187286781">Error al cargar los datos</translation>
@@ -2420,7 +2420,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3160928651883997588">Preferencias de VPN</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
 <translation id="3162853326462195145">Cuenta de centro educativo</translation>
-<translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar tu experiencia de navegación, por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra</translation>
+<translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar tu experiencia de navegación, por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.</translation>
 <translation id="3163201441334626963">Producto <ph name="PRODUCT_ID" /> del proveedor <ph name="VENDOR_ID" /> desconocido</translation>
 <translation id="3163511056918491211">Restaura tus datos o cambia de dispositivo fácilmente cuando quieras. Tus copias de seguridad se suben a Google y se cifran con la contraseña de tu cuenta de Google.</translation>
 <translation id="3164329792803560526">Compartiendo esta pestaña con <ph name="APP_NAME" /></translation>
@@ -7329,7 +7329,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7767554953520855281">Los detalles se ocultan mientras compartes tu pantalla</translation>
 <translation id="7767972280546034736">Crea una clave de acceso para <ph name="APP_NAME" /></translation>
-<translation id="7768507955883790804">Los sitios usan esta opción cuando los visitas.</translation>
+<translation id="7768507955883790804">Los sitios usan esta opción automáticamente cuando los visitas.</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> podrá ver los archivos de <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Cambiar</translation>
 <translation id="7768784765476638775">Enunciar selección</translation>
