@@ -186,9 +186,6 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kPermissionPolicyDisabled:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           PermissionPolicyDisabled;
-    case AttributionReportingIssueType::kPermissionPolicyNotDelegated:
-      return protocol::Audits::AttributionReportingIssueTypeEnum::
-          PermissionPolicyNotDelegated;
     case AttributionReportingIssueType::kUntrustworthyReportingOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           UntrustworthyReportingOrigin;
