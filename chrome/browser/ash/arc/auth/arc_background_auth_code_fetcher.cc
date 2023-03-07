@@ -292,7 +292,6 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     return;
   }
 
-  UpdateAuthCodeFetcherProxyBypassUMA(bypass_proxy_, profile_);
   ReportResult(*auth_code, OptInSilentAuthCode::SUCCESS);
 }
 

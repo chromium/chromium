@@ -26,7 +26,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_data_removal_dialog.h"
@@ -618,7 +617,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForPublicAccounts) {
 // Tests that when ARC requests account info for a non-managed account,
 // Chrome supplies the info configured in SetAccountAndProfile() method.
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
-  base::HistogramTester histogram_tester;
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   test_url_loader_factory()->AddResponse(arc::kTokenBootstrapEndPoint,
                                          GetFakeAuthTokenResponse());
@@ -627,9 +625,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
   auth_instance().RequestPrimaryAccountInfo(run_loop.QuitClosure());
   run_loop.Run();
 
-  histogram_tester.ExpectUniqueSample(
-      "Arc.Auth.CodeFetcher.ProxyBypass.Unmanaged", /*proxy_bypass=*/false,
-      /*count=*/1);
   ASSERT_TRUE(auth_instance().account_info());
   EXPECT_EQ(kFakeUserName,
             auth_instance().account_info()->account_name.value());
@@ -644,7 +639,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
 // which fetches the auth code to be used for Google Play Store sign-in if the
 // request has failed because of a unreachable mandatory PAC script.
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundProxyBypass) {
-  base::HistogramTester histogram_tester;
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   int requests_count = 0;
   test_url_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
@@ -676,9 +670,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundProxyBypass) {
   // because the mandatory PAC script is unreachable and the second request
   // which bypassed the proxy and succeeded.
   EXPECT_EQ(2, requests_count);
-  histogram_tester.ExpectUniqueSample(
-      "Arc.Auth.CodeFetcher.ProxyBypass.Unmanaged", /*proxy_bypass*/ true,
-      /*count*/ 1);
 
   ASSERT_TRUE(auth_instance().account_info());
   EXPECT_EQ(kFakeUserName,
