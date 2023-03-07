@@ -70,6 +70,9 @@ class ScreenAIInstallState {
   // Sets the component state and informs the observers.
   void SetState(State state);
 
+  // Triggers component download if it's not done.
+  void DownloadComponent();
+
   // Called by component downloaders to set download progress.
   void SetDownloadProgress(double progress);
 

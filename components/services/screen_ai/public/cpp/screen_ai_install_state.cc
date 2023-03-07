@@ -97,6 +97,11 @@ void ScreenAIInstallState::AddObserver(
     ScreenAIInstallState::Observer* observer) {
   observers_.push_back(observer);
   observer->StateChanged(state_);
+
+  // Adding an observer indicates that we need the component.
+  if (state_ == State::kNotDownloaded) {
+    DownloadComponent();
+  }
 }
 
 void ScreenAIInstallState::RemoveObserver(
@@ -123,10 +128,23 @@ void ScreenAIInstallState::SetComponentFolder(
 }
 
 void ScreenAIInstallState::SetState(State state) {
-  DCHECK_NE(state_, state);
+  if (state == state_) {
+    // Failed and ready state can be repeated as they come from different
+    // profiles. The other state changes are controlled by singluar objects.
+    // TODO(crbug.com/1278249): While the case is highly unexpected, add more
+    // control logic if state is changed from failed to ready or vice versa.
+    DCHECK(state == State::kReady || state == State::kFailed);
+    return;
+  }
+
   state_ = state;
   for (ScreenAIInstallState::Observer* observer : observers_)
     observer->StateChanged(state_);
+}
+
+void ScreenAIInstallState::DownloadComponent() {
+  // TODO(crbug.com/1278249): Actually trigger download. Download is now
+  // triggered on browser start based on enabled flags.
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
@@ -136,7 +154,7 @@ void ScreenAIInstallState::SetDownloadProgress(double progress) {
 }
 
 bool ScreenAIInstallState::IsComponentAvailable() {
-  return state_ == State::kDownloaded || state_ == State::kReady;
+  return !get_component_binary_path().empty();
 }
 
 void ScreenAIInstallState::SetComponentReadyForTesting() {

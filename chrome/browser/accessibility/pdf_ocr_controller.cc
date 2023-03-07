@@ -5,10 +5,13 @@
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 
 #include "base/check_op.h"
+#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pdf_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -73,6 +76,19 @@ PdfOcrController::PdfOcrController(Profile* profile) : profile_(profile) {
       prefs::kAccessibilityPdfOcrAlwaysActive,
       base::BindRepeating(&PdfOcrController::OnPdfOcrAlwaysActiveChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  // Annotator function of ScreenAI service requires AXScreenAIAnnotator to be
+  // ready to receive OCR accessibility tree data.
+  screen_ai::AXScreenAIAnnotatorFactory::EnsureExistsForBrowserContext(
+      profile_);
+
+  component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
+
+  // Trigger if the preference is already set.
+  if (profile_->GetPrefs()->GetBoolean(
+          prefs::kAccessibilityPdfOcrAlwaysActive)) {
+    OnPdfOcrAlwaysActiveChanged();
+  }
 }
 
 PdfOcrController::~PdfOcrController() = default;
@@ -102,13 +118,33 @@ bool PdfOcrController::IsEnabled() const {
 }
 
 void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
-  // TODO(crbug.com/1393069): Need to wait for the Screen AI library to be
-  // installed if not ready yet. Then, set the AXMode for PDF OCR only when the
-  // Screen AI library is downloaded and ready.
   bool is_always_active =
       profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
   VLOG(2) << "PDF OCR Always Active changed: " << is_always_active;
 
+  if (is_always_active) {
+    // If Screen AI service is not ready and user is requesting OCR, keep the
+    // request until service is up.
+    if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() !=
+        ScreenAIInstallState::State::kReady) {
+      // TODO(crbug.com/1393069): Consider letting user know that OCR will run
+      // when service is ready.
+      send_always_active_state_when_service_is_ready_ = true;
+      return;
+    }
+  } else {
+    // If user has previously requested Always Active and the service was not
+    // ready then, and now user has untoggeled it, ignore both requests.
+    if (send_always_active_state_when_service_is_ready_) {
+      send_always_active_state_when_service_is_ready_ = false;
+      return;
+    }
+  }
+
+  SendPdfOcrAlwaysActiveToAll(is_always_active);
+}
+
+void PdfOcrController::SendPdfOcrAlwaysActiveToAll(bool is_always_active) {
   std::vector<content::WebContents*> html_web_contents_vector =
       GetPdfHtmlWebContentses(profile_);
   // Iterate over all WebContentses associated with PDF Viewer Mimehandlers and
@@ -117,6 +153,31 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
     ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
     ax_mode.set_mode(ui::AXMode::kPDFOcr, is_always_active);
     web_contents->SetAccessibilityMode(ax_mode);
+  }
+}
+
+void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
+  switch (state) {
+    case ScreenAIInstallState::State::kNotDownloaded:
+      break;
+
+    case ScreenAIInstallState::State::kDownloading:
+      break;
+
+    case ScreenAIInstallState::State::kFailed:
+      // TODO(crbug.com/1393069): Disable menu items.
+      break;
+
+    case ScreenAIInstallState::State::kDownloaded:
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->LaunchIfNotRunning();
+      break;
+
+    case ScreenAIInstallState::State::kReady:
+      if (send_always_active_state_when_service_is_ready_) {
+        send_always_active_state_when_service_is_ready_ = false;
+        SendPdfOcrAlwaysActiveToAll(true);
+      }
   }
 }
 
