@@ -67,7 +67,7 @@ blink::InterestGroup MakeInterestGroup(url::Origin owner, std::string name) {
   group.owner = owner;
   group.name = name;
   group.bidding_url = GURL(kBiddingURL);
-  group.daily_update_url = GURL(kUpdateURL);
+  group.update_url = GURL(kUpdateURL);
   group.ads.emplace();
   group.ads->push_back(blink::InterestGroup::Ad(GURL(kAdURL), /*metadata=*/""));
   EXPECT_TRUE(group.IsValid());

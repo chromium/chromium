@@ -102,7 +102,7 @@ InterestGroup::InterestGroup(
     blink::mojom::InterestGroup::ExecutionMode execution_mode,
     absl::optional<GURL> bidding_url,
     absl::optional<GURL> bidding_wasm_helper_url,
-    absl::optional<GURL> daily_update_url,
+    absl::optional<GURL> update_url,
     absl::optional<GURL> trusted_bidding_signals_url,
     absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
     absl::optional<std::string> user_bidding_signals,
@@ -124,7 +124,7 @@ InterestGroup::InterestGroup(
       execution_mode(execution_mode),
       bidding_url(std::move(bidding_url)),
       bidding_wasm_helper_url(std::move(bidding_wasm_helper_url)),
-      daily_update_url(std::move(daily_update_url)),
+      update_url(std::move(update_url)),
       trusted_bidding_signals_url(std::move(trusted_bidding_signals_url)),
       trusted_bidding_signals_keys(std::move(trusted_bidding_signals_keys)),
       user_bidding_signals(std::move(user_bidding_signals)),
@@ -167,8 +167,9 @@ bool InterestGroup::IsValid() const {
     return false;
   }
 
-  if (daily_update_url && !IsUrlAllowed(*daily_update_url, *this))
+  if (update_url && !IsUrlAllowed(*update_url, *this)) {
     return false;
+  }
 
   if (trusted_bidding_signals_url) {
     if (!IsUrlAllowed(*trusted_bidding_signals_url, *this))
@@ -249,8 +250,9 @@ size_t InterestGroup::EstimateSize() const {
     size += bidding_url->spec().length();
   if (bidding_wasm_helper_url)
     size += bidding_wasm_helper_url->spec().length();
-  if (daily_update_url)
-    size += daily_update_url->spec().length();
+  if (update_url) {
+    size += update_url->spec().length();
+  }
   if (trusted_bidding_signals_url)
     size += trusted_bidding_signals_url->spec().length();
   if (trusted_bidding_signals_keys) {
@@ -292,7 +294,7 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
                   enable_bidding_signals_prioritization, priority_vector,
                   priority_signals_overrides, seller_capabilities,
                   all_sellers_capabilities, execution_mode, bidding_url,
-                  bidding_wasm_helper_url, daily_update_url,
+                  bidding_wasm_helper_url, update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
                   user_bidding_signals, ads, ad_components, ad_sizes,
                   size_groups) ==
@@ -301,8 +303,8 @@ bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
              other.enable_bidding_signals_prioritization, other.priority_vector,
              other.priority_signals_overrides, other.seller_capabilities,
              other.all_sellers_capabilities, other.execution_mode,
-             other.bidding_url, other.bidding_wasm_helper_url,
-             other.daily_update_url, other.trusted_bidding_signals_url,
+             other.bidding_url, other.bidding_wasm_helper_url, other.update_url,
+             other.trusted_bidding_signals_url,
              other.trusted_bidding_signals_keys, other.user_bidding_signals,
              other.ads, other.ad_components, other.ad_sizes, other.size_groups);
 }

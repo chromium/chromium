@@ -36,7 +36,10 @@ dictionary AuctionAdInterestGroup {
   WorkletExecutionMode executionMode;
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;
-  USVString dailyUpdateUrl;
+  USVString updateUrl;
+  // TODO(https://crbug.com/1420080): Remove this deprecated field, in favor of
+  // `updateUrl` above.
+  [DeprecateAs=InterestGroupDailyUpdateUrl] USVString dailyUpdateUrl;
   USVString trustedBiddingSignalsUrl;
   sequence<USVString> trustedBiddingSignalsKeys;
   any userBiddingSignals;

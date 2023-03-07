@@ -100,7 +100,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     const KURL kAllowedUrl =
         KURL(String::FromUTF8("https://origin.test/foo?bar"));
     blink_interest_group->bidding_url = kAllowedUrl;
-    blink_interest_group->daily_update_url = kAllowedUrl;
+    blink_interest_group->update_url = kAllowedUrl;
     blink_interest_group->bidding_wasm_helper_url = kAllowedUrl;
 
     // `trusted_bidding_signals_url` doesn't allow query strings, unlike the
@@ -239,7 +239,7 @@ TEST_F(ValidateBlinkInterestGroupTest,
       /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
 }
 
-// Check that `bidding_url`, `bidding_wasm_helper_url`, `daily_update_url`, and
+// Check that `bidding_url`, `bidding_wasm_helper_url`, `update_url`, and
 // `trusted_bidding_signals_url` must be same-origin and HTTPS.
 //
 // Ad URLs do not have to be same origin, so they're checked in a different
@@ -318,9 +318,9 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         rejected_url.GetString().Utf8() /* expected_error_field_value */,
         kBadBiddingWasmHelperUrlError /* expected_error */);
 
-    // Test `daily_update_url`.
+    // Test `update_url`.
     blink_interest_group = CreateMinimalInterestGroup();
-    blink_interest_group->daily_update_url = rejected_url;
+    blink_interest_group->update_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group, "updateUrl" /* expected_error_field_name */,
         rejected_url.GetString().Utf8() /* expected_error_field_value */,

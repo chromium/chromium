@@ -484,8 +484,6 @@ bool CopyBiddingLogicUrlFromIdlToMojo(const ExecutionContext& context,
         "cannot be resolved to a valid URL."));
     return false;
   }
-  // TODO(https://crbug.com/1271540): Validate against interest group owner
-  // origin.
   output.bidding_url = bidding_url;
   return true;
 }
@@ -508,22 +506,38 @@ bool CopyWasmHelperUrlFromIdlToMojo(const ExecutionContext& context,
   return true;
 }
 
-bool CopyDailyUpdateUrlFromIdlToMojo(const ExecutionContext& context,
-                                     ExceptionState& exception_state,
-                                     const AuctionAdInterestGroup& input,
-                                     mojom::blink::InterestGroup& output) {
-  if (!input.hasDailyUpdateUrl())
+bool CopyUpdateUrlFromIdlToMojo(const ExecutionContext& context,
+                                ExceptionState& exception_state,
+                                const AuctionAdInterestGroup& input,
+                                mojom::blink::InterestGroup& output) {
+  if (input.hasUpdateUrl()) {
+    if (input.hasDailyUpdateUrl() &&
+        input.updateUrl() != input.dailyUpdateUrl()) {
+      exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+          input, "updateUrl", input.updateUrl(),
+          "must match dailyUpdateUrl, when both are present."));
+      return false;
+    }
+    KURL update_url = context.CompleteURL(input.updateUrl());
+    if (!update_url.IsValid()) {
+      exception_state.ThrowTypeError(
+          ErrorInvalidInterestGroup(input, "updateUrl", input.updateUrl(),
+                                    "cannot be resolved to a valid URL."));
+      return false;
+    }
+    output.update_url = update_url;
     return true;
-  KURL daily_update_url = context.CompleteURL(input.dailyUpdateUrl());
-  if (!daily_update_url.IsValid()) {
-    exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-        input, "dailyUpdateUrl", input.dailyUpdateUrl(),
-        "cannot be resolved to a valid URL."));
-    return false;
   }
-  // TODO(https://crbug.com/1271540): Validate against interest group owner
-  // origin.
-  output.daily_update_url = daily_update_url;
+  if (input.hasDailyUpdateUrl()) {
+    KURL daily_update_url = context.CompleteURL(input.dailyUpdateUrl());
+    if (!daily_update_url.IsValid()) {
+      exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+          input, "dailyUpdateUrl", input.dailyUpdateUrl(),
+          "cannot be resolved to a valid URL."));
+      return false;
+    }
+    output.update_url = daily_update_url;
+  }
   return true;
 }
 
@@ -542,8 +556,6 @@ bool CopyTrustedBiddingSignalsUrlFromIdlToMojo(
         "cannot be resolved to a valid URL."));
     return false;
   }
-  // TODO(https://crbug.com/1271540): Validate against interest group owner
-  // origin.
   output.trusted_bidding_signals_url = trusted_bidding_signals_url;
   return true;
 }
@@ -2087,8 +2099,8 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
                                       *mojo_group)) {
     return ScriptPromise();
   }
-  if (!CopyDailyUpdateUrlFromIdlToMojo(*context, exception_state, *group,
-                                       *mojo_group)) {
+  if (!CopyUpdateUrlFromIdlToMojo(*context, exception_state, *group,
+                                  *mojo_group)) {
     return ScriptPromise();
   }
   if (!CopyTrustedBiddingSignalsUrlFromIdlToMojo(*context, exception_state,

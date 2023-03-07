@@ -51,8 +51,7 @@ class TestInterestGroupBuilder {
   TestInterestGroupBuilder& SetBiddingUrl(absl::optional<GURL> bidding_url);
   TestInterestGroupBuilder& SetBiddingWasmHelperUrl(
       absl::optional<GURL> bidding_wasm_helper_url);
-  TestInterestGroupBuilder& SetDailyUpdateUrl(
-      absl::optional<GURL> daily_update_url);
+  TestInterestGroupBuilder& SetUpdateUrl(absl::optional<GURL> update_url);
   TestInterestGroupBuilder& SetTrustedBiddingSignalsUrl(
       absl::optional<GURL> trusted_bidding_signals_url);
   TestInterestGroupBuilder& SetTrustedBiddingSignalsKeys(

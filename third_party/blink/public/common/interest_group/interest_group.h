@@ -75,7 +75,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       ExecutionMode execution_mode,
       absl::optional<GURL> bidding_url,
       absl::optional<GURL> bidding_wasm_helper_url,
-      absl::optional<GURL> daily_update_url,
+      absl::optional<GURL> update_url,
       absl::optional<GURL> trusted_bidding_signals_url,
       absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
       absl::optional<std::string> user_bidding_signals,
@@ -113,7 +113,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   ExecutionMode execution_mode = ExecutionMode::kCompatibilityMode;
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;
-  absl::optional<GURL> daily_update_url;
+  absl::optional<GURL> update_url;
   absl::optional<GURL> trusted_bidding_signals_url;
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   absl::optional<std::string> user_bidding_signals;

@@ -37,7 +37,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 11) {
+  if (Object.keys(interestGroup).length !== 12) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -65,9 +65,15 @@ function validateInterestGroup(interestGroup) {
     throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
   }
 
+  if (!interestGroup.updateUrl.startsWith('https://a.test') ||
+      !interestGroup.updateUrl.endsWith('/not_found_update_url.json')) {
+    throw 'Incorrect updateUrl ' + interestGroup.updateUrl;
+  }
+
+  // TODO(https://crbug.com/1420080): Remove this block and decrease number of
+  // expected keys above when removing support for dailyUpdateUrl.
   if (!interestGroup.dailyUpdateUrl.startsWith('https://a.test') ||
-      !interestGroup.dailyUpdateUrl.endsWith(
-          '/not_found_daily_update_url.json')) {
+      !interestGroup.dailyUpdateUrl.endsWith('/not_found_update_url.json')) {
     throw 'Incorrect dailyUpdateUrl ' + interestGroup.dailyUpdateUrl;
   }
 

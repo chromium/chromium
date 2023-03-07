@@ -298,7 +298,7 @@ class BidderWorkletTest : public testing::Test {
     kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
     provide_direct_from_seller_signals_late_ = false;
 
-    daily_update_url_.reset();
+    update_url_.reset();
 
     interest_group_trusted_bidding_signals_url_.reset();
     interest_group_trusted_bidding_signals_keys_.reset();
@@ -545,7 +545,7 @@ class BidderWorkletTest : public testing::Test {
     return mojom::BidderWorkletNonSharedParams::New(
         interest_group_name_,
         interest_group_enable_bidding_signals_prioritization_,
-        interest_group_priority_vector_, execution_mode_, daily_update_url_,
+        interest_group_priority_vector_, execution_mode_, update_url_,
         interest_group_trusted_bidding_signals_keys_,
         interest_group_user_bidding_signals_, interest_group_ads_,
         interest_group_ad_components_, std::move(kanon_keys));
@@ -787,7 +787,7 @@ class BidderWorkletTest : public testing::Test {
   base::flat_map<auction_worklet::mojom::KAnonKeyPtr, bool> kanon_keys_;
   auction_worklet::mojom::KAnonymityBidMode kanon_mode_ =
       auction_worklet::mojom::KAnonymityBidMode::kNone;
-  absl::optional<GURL> daily_update_url_;
+  absl::optional<GURL> update_url_;
   absl::optional<GURL> interest_group_trusted_bidding_signals_url_;
   absl::optional<std::vector<std::string>>
       interest_group_trusted_bidding_signals_keys_;
@@ -1792,10 +1792,18 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
           /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 }
 
-TEST_F(BidderWorkletTest, GenerateBidInterestGroupDailyUpdateUrl) {
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupUpdateUrl) {
   const std::string kGenerateBidBody =
+      R"({ad: "updateUrl" in interestGroup ?
+            interestGroup.updateUrl : "missing",
+        bid:1,
+        render:"https://response.test/"})";
+  // TODO(https://crbug.com/1420080): Remove this and tests that use it when
+  // removing support for the deprecated `dailyUpdateUrl` field, in favor of
+  // `updateUrl`.
+  const std::string kGenerateBidBodyUsingDeprecatedDailyUpdateUrl =
       R"({ad: "dailyUpdateUrl" in interestGroup ?
-            interestGroup.dailyUpdateUrl : "missing",
+            interestGroup.updateUrl : "missing",
         bid:1,
         render:"https://response.test/"})";
 
@@ -1805,10 +1813,22 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupDailyUpdateUrl) {
           R"("missing")", 1,
           blink::AdDescriptor(GURL("https://response.test/")),
           /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBodyUsingDeprecatedDailyUpdateUrl,
+      mojom::BidderWorkletBid::New(
+          R"("missing")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
 
-  daily_update_url_ = GURL("https://url.test/daily_update");
+  update_url_ = GURL("https://url.test/daily_update");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("https://url.test/daily_update")", 1,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()));
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBodyUsingDeprecatedDailyUpdateUrl,
       mojom::BidderWorkletBid::New(
           R"("https://url.test/daily_update")", 1,
           blink::AdDescriptor(GURL("https://response.test/")),

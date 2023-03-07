@@ -854,10 +854,14 @@ BidderWorklet::V8State::GenerateSingleBid(
       (wasm_helper_url_ &&
        !interest_group_dict.Set("biddingWasmHelperUrl",
                                 wasm_helper_url_->spec())) ||
-      (bidder_worklet_non_shared_params.daily_update_url &&
-       !interest_group_dict.Set(
-           "dailyUpdateUrl",
-           bidder_worklet_non_shared_params.daily_update_url->spec())) ||
+      (bidder_worklet_non_shared_params.update_url &&
+       (!interest_group_dict.Set(
+            "updateUrl", bidder_worklet_non_shared_params.update_url->spec()) ||
+        // TODO(https://crbug.com/1420080) Remove deprecated `dailyUpdateUrl`
+        // alias.
+        !interest_group_dict.Set(
+            "dailyUpdateUrl",
+            bidder_worklet_non_shared_params.update_url->spec()))) ||
       (trusted_bidding_signals_url_ &&
        !interest_group_dict.Set("trustedBiddingSignalsUrl",
                                 trusted_bidding_signals_url_->spec()))) {

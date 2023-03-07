@@ -45,7 +45,7 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
       !data.ReadAllSellersCapabilities(&out->all_sellers_capabilities) ||
       !data.ReadBiddingUrl(&out->bidding_url) ||
       !data.ReadBiddingWasmHelperUrl(&out->bidding_wasm_helper_url) ||
-      !data.ReadDailyUpdateUrl(&out->daily_update_url) ||
+      !data.ReadUpdateUrl(&out->update_url) ||
       !data.ReadTrustedBiddingSignalsUrl(&out->trusted_bidding_signals_url) ||
       !data.ReadTrustedBiddingSignalsKeys(&out->trusted_bidding_signals_keys) ||
       !data.ReadUserBiddingSignals(&out->user_bidding_signals) ||

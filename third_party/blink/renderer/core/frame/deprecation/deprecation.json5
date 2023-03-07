@@ -238,6 +238,14 @@
       milestone: 92,
     },
     {
+      name: "InterestGroupDailyUpdateUrl",
+      message: "The `dailyUpdateUrl` field of `InterestGroups` passed to `joinAdInterestGroup()` has been renamed to `updateUrl`, to more accurately reflect its behavior.",
+      translation_note: "This is a deprecated warning to developers that a field in a structure has been renamed.",
+      web_features: [
+        "kDeprecatedInterestGroupDailyUpdateUrl",
+      ],
+    },
+    {
       name: "LocalCSSFileExtensionRejected",
       message: "CSS cannot be loaded from `file:` URLs unless they end in a `.css` file extension.",
       translation_note: "This warning occurs when a stylesheet loaded from a local file directive does not end in the file type `.css`.",

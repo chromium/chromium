@@ -231,10 +231,10 @@ std::string MakeBidScript(const url::Origin& seller,
       // The actual priority should be hidden from the worklet.
       if (interestGroup.priority !== undefined)
         throw new Error("wrong priority: " + interestGroup.priority);
-      // None of these tests set a dailyUpdateUrl. Non-empty values are tested
-      // by browser tests.
-      if ("dailyUpdateUrl" in interestGroup)
-        throw new Error("Unexpected dailyUpdateUrl");
+      // None of these tests set a updateUrl. Non-empty values are tested by
+      // browser tests.
+      if ("updateUrl" in interestGroup)
+        throw new Error("Unexpected updateUrl");
       if (interestGroup.ads.length != 1)
         throw new Error("wrong interestGroup.ads length");
       if (interestGroup.ads[0].renderUrl != renderUrl)

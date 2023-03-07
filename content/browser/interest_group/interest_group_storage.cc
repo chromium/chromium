@@ -1152,7 +1152,7 @@ bool DoLoadInterestGroup(sql::Database& db,
       static_cast<blink::InterestGroup::ExecutionMode>(load.ColumnInt(10));
   group.bidding_url = DeserializeURL(load.ColumnString(11));
   group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(12));
-  group.daily_update_url = DeserializeURL(load.ColumnString(13));
+  group.update_url = DeserializeURL(load.ColumnString(13));
   group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(14));
   group.trusted_bidding_signals_keys =
       DeserializeStringVector(load.ColumnString(15));
@@ -1292,7 +1292,7 @@ bool DoJoinInterestGroup(sql::Database& db,
   join_group.BindString(14, Serialize(joining_url));
   join_group.BindString(15, Serialize(data.bidding_url));
   join_group.BindString(16, Serialize(data.bidding_wasm_helper_url));
-  join_group.BindString(17, Serialize(data.daily_update_url));
+  join_group.BindString(17, Serialize(data.update_url));
   join_group.BindString(18, Serialize(data.trusted_bidding_signals_url));
   join_group.BindString(19, Serialize(data.trusted_bidding_signals_keys));
   if (data.user_bidding_signals) {
@@ -1358,7 +1358,7 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindInt(8, static_cast<int>(group.execution_mode));
   store_group.BindString(9, Serialize(group.bidding_url));
   store_group.BindString(10, Serialize(group.bidding_wasm_helper_url));
-  store_group.BindString(11, Serialize(group.daily_update_url));
+  store_group.BindString(11, Serialize(group.update_url));
   store_group.BindString(12, Serialize(group.trusted_bidding_signals_url));
   store_group.BindString(13, Serialize(group.trusted_bidding_signals_keys));
   store_group.BindString(14, Serialize(group.ads));

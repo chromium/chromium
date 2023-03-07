@@ -904,7 +904,7 @@ class InterestGroupAuction::BuyerHelper
             interest_group.name,
             interest_group.enable_bidding_signals_prioritization,
             interest_group.priority_vector, interest_group.execution_mode,
-            interest_group.daily_update_url,
+            interest_group.update_url,
             interest_group.trusted_bidding_signals_keys,
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components,
@@ -2338,7 +2338,7 @@ void InterestGroupAuction::OnInterestGroupRead(
       interest_groups[0].interest_group.owner);
   for (const auto& bidder : interest_groups) {
     // Report freshness metrics.
-    if (bidder.interest_group.daily_update_url.has_value()) {
+    if (bidder.interest_group.update_url.has_value()) {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
           (base::Time::Now() - bidder.last_updated).InMinutes(),

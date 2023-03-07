@@ -106,7 +106,7 @@ class InterestGroupStorageTest : public testing::Test {
         /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
         /*bidding_url=*/GURL("https://full.example.com/bid"),
         /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
-        /*daily_update_url=*/GURL("https://full.example.com/update"),
+        /*update_url=*/GURL("https://full.example.com/update"),
         /*trusted_bidding_signals_url=*/
         GURL("https://full.example.com/signals"),
         /*trusted_bidding_signals_keys=*/
@@ -627,8 +627,8 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 }
 
 TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
-  GURL daily_update_url("https://owner.example.com/groupUpdate");
-  url::Origin test_origin = url::Origin::Create(daily_update_url);
+  GURL update_url("https://owner.example.com/groupUpdate");
+  url::Origin test_origin = url::Origin::Create(update_url);
   const std::string name = "name";
   const std::string key = test_origin.GetURL().spec() + '\n' + name;
   // We make the ad urls equal to the name key and update urls to verify the
@@ -642,7 +642,7 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   g.ad_components.emplace();
   g.ad_components->push_back(
       blink::InterestGroup::Ad(ad2_url, "component_metadata2"));
-  g.daily_update_url = daily_update_url;
+  g.update_url = update_url;
   g.expiry = base::Time::Now() + base::Days(1);
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
@@ -1115,7 +1115,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
                         &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
-                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                  Field("update_url", &InterestGroup::update_url,
                         GURL("https://owner.example.com/update")),
                   Field("trusted_bidding_signals_url",
                         &InterestGroup::trusted_bidding_signals_url,
@@ -1209,7 +1209,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
                         &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
-                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                  Field("update_url", &InterestGroup::update_url,
                         GURL("https://owner.example.com/update")),
                   Field("trusted_bidding_signals_url",
                         &InterestGroup::trusted_bidding_signals_url,
@@ -1303,7 +1303,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
                         &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
-                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                  Field("update_url", &InterestGroup::update_url,
                         GURL("https://owner.example.com/update")),
                   Field("trusted_bidding_signals_url",
                         &InterestGroup::trusted_bidding_signals_url,
