@@ -22,8 +22,7 @@ const int kGCControllerPlayerIndexCount = 4;
 
 // Returns true if |controller| should be enumerated by this data fetcher.
 bool IsSupported(GCController* controller) {
-  // We only support the extendedGamepad profile, the basic gamepad profile
-  // appears to only be for iOS devices.
+  // We only support the extendedGamepad profile.
   if (![controller extendedGamepad])
     return false;
 

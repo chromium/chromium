@@ -176,6 +176,7 @@ group("gn_all") {
     deps += [
       "//components/viz:viz_unittests",
       "//content/shell:content_shell",
+      "//device:device_unittests",
       "//gpu:gpu_unittests",
       "//mojo:mojo_unittests",
       "//storage:storage_unittests",
@@ -193,7 +194,6 @@ group("gn_all") {
       "//components/viz:viz_perftests",
       "//content/test:content_browsertests",
       "//content/test:content_unittests",
-      "//device:device_unittests",
       "//gpu:gpu_benchmark",
       "//ipc:ipc_tests",
       "//media:media_unittests",

@@ -124,7 +124,7 @@ component("gamepad") {
     deps += [ ":jni_headers" ]
   }
 
-  if (!is_android && !is_fuchsia) {
+  if (!is_android && !is_fuchsia && !is_ios) {
     sources += [
       "nintendo_controller.cc",
       "nintendo_controller.h",
@@ -133,29 +133,34 @@ component("gamepad") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "game_controller_data_fetcher_mac.h",
       "game_controller_data_fetcher_mac.mm",
-      "gamepad_device_mac.h",
-      "gamepad_device_mac.mm",
-      "gamepad_platform_data_fetcher_mac.h",
-      "gamepad_platform_data_fetcher_mac.mm",
       "gamepad_standard_mappings_mac.mm",
-      "hid_writer_mac.cc",
-      "hid_writer_mac.h",
-      "xbox_controller_mac.h",
-      "xbox_controller_mac.mm",
-      "xbox_data_fetcher_mac.cc",
-      "xbox_data_fetcher_mac.h",
     ]
     frameworks = [
       "CoreFoundation.framework",
       "Foundation.framework",
-      "ForceFeedback.framework",
       "GameController.framework",
       "IOKit.framework",
     ]
+
+    if (is_mac) {
+      sources += [
+        "gamepad_device_mac.h",
+        "gamepad_device_mac.mm",
+        "gamepad_platform_data_fetcher_mac.h",
+        "gamepad_platform_data_fetcher_mac.mm",
+        "hid_writer_mac.cc",
+        "hid_writer_mac.h",
+        "xbox_controller_mac.h",
+        "xbox_controller_mac.mm",
+        "xbox_data_fetcher_mac.cc",
+        "xbox_data_fetcher_mac.h",
+      ]
+      frameworks += [ "ForceFeedback.framework" ]
+    }
   }
 
   if (is_chromeos) {
