@@ -154,20 +154,6 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
 }
 
 // static
-bool StructTraits<attribution_reporting::mojom::FiltersDataView,
-                  attribution_reporting::Filters>::
-    Read(attribution_reporting::mojom::FiltersDataView data,
-         attribution_reporting::Filters* out) {
-  attribution_reporting::Filters::Disjunction disjunction;
-  if (!data.ReadDisjunction(&disjunction)) {
-    return false;
-  }
-
-  *out = attribution_reporting::Filters(std::move(disjunction));
-  return true;
-}
-
-// static
 bool StructTraits<attribution_reporting::mojom::FilterPairDataView,
                   attribution_reporting::FilterPair>::
     Read(attribution_reporting::mojom::FilterPairDataView data,

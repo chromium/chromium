@@ -75,7 +75,7 @@ using ::attribution_reporting::mojom::SourceType;
 
 using ::blink::mojom::AttributionNavigationType;
 
-using AttributionFilters = ::attribution_reporting::Filters;
+using AttributionFilters = ::attribution_reporting::FiltersDisjunction;
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -274,9 +274,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
       *SuitableOrigin::Deserialize("https://reporter.example");
 
   auto filters = AttributionFilters({{{"a", {"b"}}}});
-  FilterPair event_trigger_data_filters{
-      .positive = AttributionFilters({{{"c", {"d"}}}}),
-      .negative = AttributionFilters({{{"e", {"f"}}}})};
+  FilterPair event_trigger_data_filters(
+      /*positive=*/{{{"c", {"d"}}}},
+      /*negative=*/{{{"e", {"f"}}}});
 
   std::vector<attribution_reporting::AggregatableDedupKey>
       aggregatable_dedup_keys = {attribution_reporting::AggregatableDedupKey(
@@ -288,7 +288,8 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
           AttributionTriggerMatches(AttributionTriggerMatcherConfig(
               reporting_origin,
               TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-                  FilterPair{.positive = filters}, Optional(789),
+                  FilterPair(/*positive=*/filters, /*negative=*/{}),
+                  Optional(789),
                   ElementsAre(
                       EventTriggerDataMatches(EventTriggerDataMatcherConfig(
                           1, 2, Optional(3), event_trigger_data_filters)),

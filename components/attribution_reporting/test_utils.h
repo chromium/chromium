@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 
 namespace attribution_reporting {
@@ -15,17 +16,14 @@ class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
 class DestinationSet;
-class FilterData;
-class Filters;
 class SuitableOrigin;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
-struct FilterPair;
 struct SourceRegistration;
 struct TriggerRegistration;
 
-Filters FiltersForSourceType(mojom::SourceType);
+FiltersDisjunction FiltersForSourceType(mojom::SourceType);
 
 bool operator==(const AggregationKeys&, const AggregationKeys&);
 
@@ -38,10 +36,6 @@ std::ostream& operator<<(std::ostream&, const FilterData&);
 bool operator==(const FilterPair&, const FilterPair&);
 
 std::ostream& operator<<(std::ostream&, const FilterPair&);
-
-bool operator==(const Filters&, const Filters&);
-
-std::ostream& operator<<(std::ostream&, const Filters&);
 
 bool operator==(const DestinationSet&, const DestinationSet&);
 

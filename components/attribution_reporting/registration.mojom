@@ -32,20 +32,14 @@ struct FilterData {
 // Filters for selectively matching attribution sources and triggers.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
-struct Filters {
-  // Disjunction of maps of filter name to a possibly empty set of values. May
-  // contain a `source_type` key.
-  array<map<string, array<string>>> disjunction;
-};
-
 struct FilterPair {
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data matches.
-  Filters positive;
+  array<map<string, array<string>>> positive;
 
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data does *NOT* match.
-  Filters negative;
+  array<map<string, array<string>>> negative;
 };
 
 // See https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#attribution-source-registration

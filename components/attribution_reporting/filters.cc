@@ -224,9 +224,9 @@ base::Value::Dict FilterData::ToJson() const {
 }
 
 bool FilterData::Matches(mojom::SourceType source_type,
-                         const Filters& filters,
+                         const FiltersDisjunction& filters,
                          bool negated) const {
-  if (filters.disjunction().empty()) {
+  if (filters.empty()) {
     return true;
   }
 
@@ -238,7 +238,7 @@ bool FilterData::Matches(mojom::SourceType source_type,
   // key does not match between the two (negating the function result is not
   // sufficient by the API definition).
   return base::ranges::any_of(
-      filters.disjunction(), [&](const auto& trigger_filter_values) {
+      filters, [&](const auto& trigger_filter_values) {
         return base::ranges::all_of(
             trigger_filter_values, [&](const auto& trigger_filter) {
               if (trigger_filter.first == kSourceTypeFilterKey) {
@@ -276,7 +276,7 @@ bool FilterData::Matches(mojom::SourceType source_type,
 }
 
 bool FilterData::MatchesForTesting(mojom::SourceType source_type,
-                                   const Filters& filters,
+                                   const FiltersDisjunction& filters,
                                    bool negated) const {
   return Matches(source_type, filters, negated);
 }
@@ -287,14 +287,15 @@ bool FilterData::Matches(mojom::SourceType source_type,
          Matches(source_type, filters.negative, /*negated=*/true);
 }
 
-// static
-base::expected<Filters, TriggerRegistrationError> Filters::FromJSON(
+namespace {
+
+base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
     base::Value* input_value) {
   if (!input_value) {
-    return Filters();
+    return FiltersDisjunction();
   }
 
-  Disjunction disjunction;
+  FiltersDisjunction disjunction;
   const auto append_if_valid =
       [&disjunction](
           base::Value& value) -> absl::optional<TriggerRegistrationError> {
@@ -333,63 +334,73 @@ base::expected<Filters, TriggerRegistrationError> Filters::FromJSON(
         return base::unexpected(*error);
       }
     }
-    return Filters(std::move(disjunction));
+    return disjunction;
   }
 
   if (auto error = append_if_valid(*input_value)) {
     return base::unexpected(*error);
   }
-  return Filters(std::move(disjunction));
+  return disjunction;
 }
 
-Filters::Filters() = default;
-
-Filters::Filters(Filters::Disjunction disjunction)
-    : disjunction_(std::move(disjunction)) {}
-
-Filters::~Filters() = default;
-
-Filters::Filters(const Filters&) = default;
-
-Filters::Filters(Filters&&) = default;
-
-Filters& Filters::operator=(const Filters&) = default;
-
-Filters& Filters::operator=(Filters&&) = default;
-
-base::Value::List Filters::ToJson() const {
+base::Value::List ToJson(const FiltersDisjunction& filters) {
   base::Value::List list;
-  for (const auto& filter_values : disjunction_) {
+  for (const auto& filter_values : filters) {
     list.Append(FilterValuesToJson(filter_values));
   }
   return list;
 }
 
+}  // namespace
+
 // static
 base::expected<FilterPair, mojom::TriggerRegistrationError>
 FilterPair::FromJSON(base::Value::Dict& dict) {
-  auto positive = Filters::FromJSON(dict.Find(kFilters));
+  auto positive = FiltersFromJSON(dict.Find(kFilters));
   if (!positive.has_value()) {
     return base::unexpected(positive.error());
   }
 
-  auto negative = Filters::FromJSON(dict.Find(kNotFilters));
+  auto negative = FiltersFromJSON(dict.Find(kNotFilters));
   if (!negative.has_value()) {
     return base::unexpected(negative.error());
   }
 
-  return FilterPair{.positive = std::move(*positive),
-                    .negative = std::move(*negative)};
+  return FilterPair(std::move(*positive), std::move(*negative));
 }
 
+FilterPair::FilterPair() = default;
+
+FilterPair::FilterPair(FiltersDisjunction positive, FiltersDisjunction negative)
+    : positive(std::move(positive)), negative(std::move(negative)) {}
+
+FilterPair::~FilterPair() = default;
+
+FilterPair::FilterPair(const FilterPair&) = default;
+
+FilterPair::FilterPair(FilterPair&&) = default;
+
+FilterPair& FilterPair::operator=(const FilterPair&) = default;
+
+FilterPair& FilterPair::operator=(FilterPair&&) = default;
+
 void FilterPair::SerializeIfNotEmpty(base::Value::Dict& dict) const {
-  if (!positive.disjunction().empty()) {
-    dict.Set(kFilters, positive.ToJson());
+  if (!positive.empty()) {
+    dict.Set(kFilters, ToJson(positive));
   }
 
-  if (!negative.disjunction().empty()) {
-    dict.Set(kNotFilters, negative.ToJson());
+  if (!negative.empty()) {
+    dict.Set(kNotFilters, ToJson(negative));
   }
+}
+
+base::expected<FiltersDisjunction, TriggerRegistrationError>
+FiltersFromJSONForTesting(base::Value* input_value) {
+  return FiltersFromJSON(input_value);
+}
+
+base::Value::List ToJsonForTesting(const FiltersDisjunction& filters) {
+  return ToJson(filters);
 }
 
 }  // namespace attribution_reporting

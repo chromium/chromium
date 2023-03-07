@@ -63,7 +63,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.positive = Filters({{{"a", {"b"}}}});
+            r.filters.positive = FiltersDisjunction({{{"a", {"b"}}}});
           }),
       },
       {
@@ -75,7 +75,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.negative = Filters({{{"a", {"b"}}}});
+            r.filters.negative = FiltersDisjunction({{{"a", {"b"}}}});
           }),
       },
       {
@@ -268,8 +268,8 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.debug_key = 3;
             r.debug_reporting = true;
             r.event_triggers = {EventTriggerData()};
-            r.filters.positive = Filters({{{"b", {}}}});
-            r.filters.negative = Filters({{{"c", {}}}});
+            r.filters.positive = FiltersDisjunction({{{"b", {}}}});
+            r.filters.negative = FiltersDisjunction({{{"c", {}}}});
           }),
           R"json({
             "aggregation_coordinator_identifier": "aws-cloud",

@@ -174,27 +174,14 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::FiltersDataView,
-                 attribution_reporting::Filters> {
-  static const attribution_reporting::Filters::Disjunction& disjunction(
-      const attribution_reporting::Filters& filters) {
-    return filters.disjunction();
-  }
-
-  static bool Read(attribution_reporting::mojom::FiltersDataView data,
-                   attribution_reporting::Filters* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::FilterPairDataView,
                  attribution_reporting::FilterPair> {
-  static const attribution_reporting::Filters& positive(
+  static const attribution_reporting::FiltersDisjunction& positive(
       const attribution_reporting::FilterPair& filters) {
     return filters.positive;
   }
 
-  static const attribution_reporting::Filters& negative(
+  static const attribution_reporting::FiltersDisjunction& negative(
       const attribution_reporting::FilterPair& filters) {
     return filters.negative;
   }

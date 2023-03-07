@@ -230,12 +230,6 @@ mojom("registration_mojom") {
           move_only = true
         },
         {
-          mojom = "attribution_reporting.mojom.Filters"
-          cpp = "::attribution_reporting::Filters"
-          forward_declaration =
-              "namespace attribution_reporting { class Filters; }"
-        },
-        {
           mojom = "attribution_reporting.mojom.FilterPair"
           cpp = "::attribution_reporting::FilterPair"
           forward_declaration =

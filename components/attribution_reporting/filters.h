@@ -19,11 +19,11 @@
 
 namespace attribution_reporting {
 
-class Filters;
-
 struct FilterPair;
 
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
+
+using FiltersDisjunction = std::vector<FilterValues>;
 
 // Set on sources.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
@@ -52,50 +52,33 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 
   bool Matches(mojom::SourceType, const FilterPair&) const;
 
-  bool MatchesForTesting(mojom::SourceType, const Filters&, bool negated) const;
+  bool MatchesForTesting(mojom::SourceType,
+                         const FiltersDisjunction&,
+                         bool negated) const;
 
  private:
   explicit FilterData(FilterValues);
 
-  bool Matches(mojom::SourceType, const Filters&, bool negated) const;
+  bool Matches(mojom::SourceType,
+               const FiltersDisjunction&,
+               bool negated) const;
 
   FilterValues filter_values_;
 };
 
-// Set on triggers.
-// TODO(apaseltiner): Consider removing this class and using
-// `Filters::Disjunction` within `FilterPair`, since this type is a thin wrapper
-// around the former.
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
- public:
-  using Disjunction = std::vector<FilterValues>;
-
-  static base::expected<Filters, mojom::TriggerRegistrationError> FromJSON(
-      base::Value*);
-
-  Filters();
-
-  explicit Filters(Disjunction);
-
-  ~Filters();
-
-  Filters(const Filters&);
-  Filters(Filters&&);
-
-  Filters& operator=(const Filters&);
-  Filters& operator=(Filters&&);
-
-  const Disjunction& disjunction() const { return disjunction_; }
-
-  base::Value::List ToJson() const;
-
- private:
-  Disjunction disjunction_;
-};
-
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
-  Filters positive;
-  Filters negative;
+  FilterPair();
+  FilterPair(FiltersDisjunction positive, FiltersDisjunction negative);
+  ~FilterPair();
+
+  FilterPair(const FilterPair&);
+  FilterPair(FilterPair&&);
+
+  FilterPair& operator=(const FilterPair&);
+  FilterPair& operator=(FilterPair&&);
+
+  FiltersDisjunction positive;
+  FiltersDisjunction negative;
 
   // Destructively parses the `filters` and `not_filters` fields from the given
   // dict, if present.
@@ -104,6 +87,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
 
   void SerializeIfNotEmpty(base::Value::Dict&) const;
 };
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<FiltersDisjunction, mojom::TriggerRegistrationError>
+FiltersFromJSONForTesting(base::Value* input_value);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value::List ToJsonForTesting(const FiltersDisjunction& filters);
 
 }  // namespace attribution_reporting
 

@@ -355,14 +355,16 @@ AttributionTrigger TriggerBuilder::Build(
   if (generate_event_trigger_data) {
     event_triggers.emplace_back(
         trigger_data_, priority_, dedup_key_,
-        FilterPair{.positive = attribution_reporting::FiltersForSourceType(
-                       SourceType::kNavigation)});
+        FilterPair(/*positive=*/attribution_reporting::FiltersForSourceType(
+                       SourceType::kNavigation),
+                   /*negative=*/{}));
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
-        attribution_reporting::FilterPair{
-            .positive = attribution_reporting::FiltersForSourceType(
-                SourceType::kEvent)});
+        attribution_reporting::FilterPair(
+            /*positive=*/attribution_reporting::FiltersForSourceType(
+                SourceType::kEvent),
+            /*negative=*/{}));
   }
 
   return AttributionTrigger(

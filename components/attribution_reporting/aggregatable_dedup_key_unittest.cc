@@ -56,7 +56,7 @@ TEST(AggregatableDedupKeyTest, FromJSON) {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
           AggregatableDedupKeyWith([](AggregatableDedupKey& key) {
-            key.filters.positive = Filters({{{"a", {"b"}}}});
+            key.filters.positive = FiltersDisjunction({{{"a", {"b"}}}});
           }),
       },
       {
@@ -68,7 +68,7 @@ TEST(AggregatableDedupKeyTest, FromJSON) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           AggregatableDedupKeyWith([](AggregatableDedupKey& key) {
-            key.filters.negative = Filters({{{"a", {"b"}}}});
+            key.filters.negative = FiltersDisjunction({{{"a", {"b"}}}});
           }),
       },
       {
@@ -96,8 +96,8 @@ TEST(AggregatableDedupKeyTest, ToJson) {
       },
       {
           AggregatableDedupKey(
-              /*dedup_key=*/3, FilterPair{.positive = Filters({{{"a", {}}}}),
-                                          .negative = Filters({{{"b", {}}}})}),
+              /*dedup_key=*/3, FilterPair(/*positive=*/{{{"a", {}}}},
+                                          /*negative=*/{{{"b", {}}}})),
           R"json({
             "deduplication_key": "3",
             "filters": [{"a": []}],

@@ -27,8 +27,8 @@
 
 namespace attribution_reporting {
 
-Filters FiltersForSourceType(mojom::SourceType source_type) {
-  return Filters{{
+FiltersDisjunction FiltersForSourceType(mojom::SourceType source_type) {
+  return {{
       {
           {FilterData::kSourceTypeFilterKey, {SourceTypeName(source_type)}},
       },
@@ -60,14 +60,6 @@ std::ostream& operator<<(std::ostream& out, const FilterPair& filters) {
   base::Value::Dict dict;
   filters.SerializeIfNotEmpty(dict);
   return out << dict;
-}
-
-bool operator==(const Filters& a, const Filters& b) {
-  return a.disjunction() == b.disjunction();
-}
-
-std::ostream& operator<<(std::ostream& out, const Filters& filters) {
-  return out << filters.ToJson();
 }
 
 bool operator==(const DestinationSet& a, const DestinationSet& b) {
