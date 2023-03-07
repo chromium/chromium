@@ -22,8 +22,6 @@ ArImageTransport::ArImageTransport(
 ArImageTransport::~ArImageTransport() = default;
 
 void ArImageTransport::DoRuntimeInitialization() {
-  glDisable(GL_DEPTH_TEST);
-  glDepthMask(GL_FALSE);
   ar_renderer_ = std::make_unique<ArRenderer>();
   glGenTextures(1, &camera_texture_id_arcore_);
 
@@ -140,6 +138,8 @@ void ArImageTransport::CopyTextureToFramebuffer(
   // but that would only be safe if ARCore and ArRenderer were guaranteed to
   // not modify these states. For now, keep the redundant operations to avoid
   // potential hard-to-find bugs.
+  glDisable(GL_DEPTH_TEST);
+  glDepthMask(GL_FALSE);
   glDisable(GL_CULL_FACE);
   glDisable(GL_SCISSOR_TEST);
   glDisable(GL_POLYGON_OFFSET_FILL);
