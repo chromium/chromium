@@ -30357,6 +30357,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AddAccountToDevice_DismissedWithNewAccount">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the add account view is dismissed with adding a new account.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_AddAccountToDevice_DismissedWithoutNewAccount">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the add account view is dismissed without adding a new
+    account. Recorded for iOS only.
+  </description>
+</action>
+
 <action name="Signin_Android_GmsUserRecoverableDialogAccepted">
   <owner>bsazonov@chromium.org</owner>
   <description>
