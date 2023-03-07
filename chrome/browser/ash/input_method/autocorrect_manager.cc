@@ -379,6 +379,14 @@ bool IsAutocorrectSuggestionInSurroundingText(
                                  autocorrect_range.length()) == suggested_text;
 }
 
+bool UserInAutocorrectByDefaultBucket(const PrefService& prefs,
+                                      const std::string& engine_id) {
+  return base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+         IsUsEnglishId(engine_id) && !IsVkAutocorrect() &&
+         GetPhysicalKeyboardAutocorrectPref(prefs, engine_id) ==
+             AutocorrectPreference::kEnabledByDefault;
+}
+
 }  // namespace
 
 AutocorrectManager::AutocorrectManager(
@@ -1204,27 +1212,20 @@ bool AutocorrectManager::DisabledByRule() {
   return disabled_by_rule_;
 }
 
-bool AutocorrectManager::DisabledByInvalidSuggestionProvider() {
-  if (!base::FeatureList::IsEnabled(features::kAutocorrectByDefault) ||
-      !active_engine_id_ || IsVkAutocorrect()) {
+bool AutocorrectManager::DisabledByInvalidExperimentContext() {
+  if (!active_engine_id_ || !UserInAutocorrectByDefaultBucket(
+                                *(profile_->GetPrefs()), *active_engine_id_)) {
     return false;
   }
 
-  // If the user has explicitly set their autocorrect preference to on/off in
-  // the settings page, then we should honor that preference regardless of the
-  // suggestion provider currently enabled.
-  if (GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()),
-                                         *active_engine_id_) !=
-      AutocorrectPreference::kEnabledByDefault) {
-    return false;
-  }
-
-  // If the user is in the default bucket, and a suggestion provider has not
-  // been returned, or the suggestion provider returned doesn't match the
-  // expected UsEnglish840 then disable autocorrect.
-  return !(suggestion_provider_ &&
-           suggestion_provider_ ==
-               ime::AutocorrectSuggestionProvider::kUsEnglish840);
+  // If the user is in the autocorrect by default bucket, and the en840 model is
+  // not available or the updated parameter list is not enabled, then disable
+  // autocorrect.
+  return !(
+      suggestion_provider_ &&
+      suggestion_provider_ ==
+          ime::AutocorrectSuggestionProvider::kUsEnglish840 &&
+      base::FeatureList::IsEnabled(ash::features::kImeFstDecoderParamsUpdate));
 }
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(

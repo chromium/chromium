@@ -828,8 +828,9 @@ TEST_P(AutocorrectByDefaultDisabledByInputMethodMetadata,
        DisablesAutocorrectInInputFieldSettingsWhenInvalidModelActivated) {
   const InputMethodMetadataCase& test_case = GetParam();
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
-                                 DisabledFeatures());
+  feature_list_.InitWithFeatures(
+      {features::kAutocorrectByDefault, features::kImeFstDecoderParamsUpdate},
+      DisabledFeatures());
   TestingProfile testing_profile;
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(testing_profile.GetPrefs(),
                                                    kEngineIdUs);

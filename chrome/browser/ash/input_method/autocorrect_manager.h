@@ -81,10 +81,10 @@ class AutocorrectManager {
   // Whether autocorrect is disabled by some rule.
   bool DisabledByRule();
 
-  // Whether autocorrect is disabled by an "invalid" suggestion provider. An
-  // example of an invalid suggestion provider could be a provider that is not
-  // allowed in the current experimental context.
-  bool DisabledByInvalidSuggestionProvider();
+  // Whether autocorrect is disabled by an "invalid" experiment context. An
+  // example of an invalid experiment context could be a provider or decoder
+  // parameter set that is not allowed with the currently enabled experiments.
+  bool DisabledByInvalidExperimentContext();
 
  private:
   void LogAssistiveAutocorrectAction(AutocorrectActions action);

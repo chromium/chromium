@@ -502,6 +502,12 @@ std::vector<base::test::FeatureRef> DisabledFeatures() {
   return {ash::features::kImeRuleConfig};
 }
 
+std::vector<base::test::FeatureRef> RequiredForAutocorrectByDefault() {
+  return {ash::features::kAutocorrectByDefault,
+          ash::features::kImeFstDecoderParamsUpdate,
+          ash::features::kImeUsEnglishModelUpdate};
+}
+
 class AutocorrectManagerTest : public testing::Test {
  protected:
   AutocorrectManagerTest()
@@ -2814,46 +2820,46 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_F(AutocorrectManagerTest,
        IsNotDisabledWhenNoSuggestionProviderAndUserExplicitlyEnablesPref) {
   EnableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_F(AutocorrectManagerTest,
        IsNotDisabledWhenNoSuggestionProviderAndUserExplicitlyDisablesPref) {
   DisableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_F(AutocorrectManagerTest,
        IsNotDisabledWhenNoSuggestionProviderAndVkIsVisible) {
   keyboard_client_->set_keyboard_enabled_for_test(true);
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 class NotDisabledByInvalidSuggestionProvider
@@ -2881,67 +2887,67 @@ TEST_P(NotDisabledByInvalidSuggestionProvider,
   manager_.OnFocus(kContextId);
   manager_.OnConnectedToSuggestionProvider(provider);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyEnablesPref) {
   const AutocorrectSuggestionProvider& provider = GetParam();
   EnableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
   manager_.OnConnectedToSuggestionProvider(provider);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_P(NotDisabledByInvalidSuggestionProvider, WhenUserExplicitlyDisablesPref) {
   const AutocorrectSuggestionProvider& provider = GetParam();
   DisableAutocorrect(/*profile=*/*profile_, /*engine_id=*/kUsEnglishEngineId);
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
   manager_.OnConnectedToSuggestionProvider(provider);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_P(NotDisabledByInvalidSuggestionProvider, WhenVkIsVisible) {
   const AutocorrectSuggestionProvider& provider = GetParam();
   keyboard_client_->set_keyboard_enabled_for_test(true);
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
   manager_.OnConnectedToSuggestionProvider(provider);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_F(AutocorrectManagerTest,
        IsDisabledWhenNoSuggestionProviderAndUserInDefaultBucket) {
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
 
-  EXPECT_TRUE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_TRUE(manager_.DisabledByInvalidExperimentContext());
 }
 
 TEST_F(AutocorrectManagerTest,
-       IsNotDisabledWithEn840SuggestionProviderAndUserInDefaultBucket) {
+       IsDisabledWhenMissingNewModelParametersButEn840Enabled) {
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures({ash::features::kAutocorrectByDefault},
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
@@ -2949,7 +2955,21 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnConnectedToSuggestionProvider(
       AutocorrectSuggestionProvider::kUsEnglish840);
 
-  EXPECT_FALSE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_TRUE(manager_.DisabledByInvalidExperimentContext());
+}
+
+TEST_F(AutocorrectManagerTest,
+       IsNotDisabledWhenUserInDefaultBucketAndAllRequiredConstraintsMet) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
+                                 DisabledFeatures());
+
+  manager_.OnActivate(kUsEnglishEngineId);
+  manager_.OnFocus(kContextId);
+  manager_.OnConnectedToSuggestionProvider(
+      AutocorrectSuggestionProvider::kUsEnglish840);
+
+  EXPECT_FALSE(manager_.DisabledByInvalidExperimentContext());
 }
 
 class DisabledByInvalidSuggestionProvider
@@ -2971,14 +2991,14 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DisabledByInvalidSuggestionProvider, WhenUserInDefaultExperiment) {
   const AutocorrectSuggestionProvider& provider = GetParam();
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({features::kAutocorrectByDefault},
+  feature_list_.InitWithFeatures(RequiredForAutocorrectByDefault(),
                                  DisabledFeatures());
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
   manager_.OnConnectedToSuggestionProvider(provider);
 
-  EXPECT_TRUE(manager_.DisabledByInvalidSuggestionProvider());
+  EXPECT_TRUE(manager_.DisabledByInvalidExperimentContext());
 }
 
 struct RejectCase {
