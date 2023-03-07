@@ -53,22 +53,28 @@ absl::optional<DefaultPrinterRules> GetDefaultPrinterRules(
 
   absl::optional<base::Value> default_destination_selection_rules_value =
       base::JSONReader::Read(default_destination_selection_rules);
-  if (!default_destination_selection_rules_value)
+  base::Value::Dict* default_destination_selection_rules_dict =
+      default_destination_selection_rules_value.has_value()
+          ? default_destination_selection_rules_value->GetIfDict()
+          : nullptr;
+  if (!default_destination_selection_rules_dict) {
     return absl::nullopt;
+  }
 
   DefaultPrinterRules default_printer_rules;
-  const std::string* kind =
-      default_destination_selection_rules_value->FindStringKey(kKind);
-  if (kind)
+  if (const std::string* kind =
+          default_destination_selection_rules_dict->FindString(kKind)) {
     default_printer_rules.kind = *kind;
-  const std::string* id_pattern =
-      default_destination_selection_rules_value->FindStringKey(kIdPattern);
-  if (id_pattern)
+  }
+  if (const std::string* id_pattern =
+          default_destination_selection_rules_dict->FindString(kIdPattern)) {
     default_printer_rules.id_pattern = *id_pattern;
-  const std::string* name_pattern =
-      default_destination_selection_rules_value->FindStringKey(kNamePattern);
-  if (name_pattern)
+  }
+  if (const std::string* name_pattern =
+          default_destination_selection_rules_dict->FindString(kNamePattern)) {
     default_printer_rules.name_pattern = *name_pattern;
+  }
+
   return default_printer_rules;
 }
 
