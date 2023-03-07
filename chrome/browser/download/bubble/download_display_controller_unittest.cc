@@ -115,9 +115,29 @@ class FakeDownloadBubbleUIController : public DownloadBubbleUIController {
   void UpdateOfflineItem(int index, OfflineItemState state) {
     offline_items_[index].state = state;
   }
+  std::vector<DownloadUIModelPtr> GetInProgressItems() override {
+    std::vector<DownloadUIModelPtr> in_progress_models;
+    for (auto* item : in_progress_download_items_) {
+      in_progress_models.push_back(DownloadItemModel::Wrap(item));
+    }
+    for (const auto& item : offline_items_) {
+      if (item.state == OfflineItemState::IN_PROGRESS) {
+        in_progress_models.push_back(
+            OfflineItemModel::Wrap(offline_manager_for_testing(), item));
+      }
+    }
+    return in_progress_models;
+  }
+  void AddInProgressItemForTesting(download::DownloadItem* item) {
+    in_progress_download_items_.insert(item);
+  }
+  void RemoveInProgressItemForTesting(download::DownloadItem* item) {
+    in_progress_download_items_.erase(item);
+  }
 
  protected:
   OfflineItemList offline_items_;
+  std::set<download::DownloadItem*> in_progress_download_items_;
 };
 
 class MockDownloadCoreService : public DownloadCoreService {
@@ -253,6 +273,10 @@ class DownloadDisplayControllerTest : public testing::Test {
     // will generally set this to false in OnNewItem().
     DownloadItemModel(&item(index)).SetActionedOn(false);
 
+    if (state == download::DownloadItem::IN_PROGRESS) {
+      bubble_controller().AddInProgressItemForTesting(&(item(index)));
+    }
+
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < items_.size(); ++i) {
       items.push_back(&item(i));
@@ -301,8 +325,10 @@ class DownloadDisplayControllerTest : public testing::Test {
           .WillRepeatedly(Return(in_progress_count_));
       DownloadPrefs::FromDownloadManager(&manager())
           ->SetLastCompleteTime(base::Time::Now());
+      bubble_controller().RemoveInProgressItemForTesting(&(item(item_index)));
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
+      bubble_controller().AddInProgressItemForTesting(&(item(item_index)));
     }
     controller().OnUpdatedItem(
         state == DownloadState::COMPLETE,

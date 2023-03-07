@@ -91,7 +91,8 @@ struct StartTimeComparator {
 using SortedDownloadUIModelSet =
     std::multiset<DownloadUIModelPtrList::iterator, StartTimeComparator>;
 
-void MaybeAddModel(DownloadUIModelPtr model,
+// Returns whether model was added.
+bool MaybeAddModel(DownloadUIModelPtr model,
                    base::Time cutoff_time,
                    DownloadUIModelPtrList& models_aggregate,
                    SortedDownloadUIModelSet& sorted_ui_model_iters) {
@@ -99,7 +100,30 @@ void MaybeAddModel(DownloadUIModelPtr model,
       DownloadUIModelIsRecent(model.get(), cutoff_time)) {
     models_aggregate.push_front(std::move(model));
     sorted_ui_model_iters.insert(models_aggregate.begin());
+    return true;
   }
+  return false;
+}
+
+std::vector<DownloadUIModelPtr> GetSortedModelPtrVector(
+    DownloadUIModelPtrList models_list,
+    SortedDownloadUIModelSet sorted_iters) {
+  std::vector<DownloadUIModelPtr> items;
+  if (models_list.empty()) {
+    return items;
+  }
+  DCHECK(!sorted_iters.empty());
+  SortedDownloadUIModelSet::const_iterator sorted_it = sorted_iters.begin();
+  for (size_t i = 0; i < kMaxDownloadsToShow; ++i) {
+    DownloadUIModelPtrList::iterator model_it = *sorted_it;
+    DCHECK(model_it != models_list.end());
+    items.push_back(std::move(*model_it));
+    ++sorted_it;
+    if (sorted_it == sorted_iters.end()) {
+      break;
+    }
+  }
+  return items;
 }
 
 }  // namespace
@@ -235,6 +259,7 @@ void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
 void DownloadBubbleUIController::DoOnNewItem(download::DownloadItem* item,
                                              bool may_show_animation) {
   DownloadItemModel model(item);
+  UpdateInProgressDownloadItems(model);
   if (model.ShouldNotifyUI()) {
     model.SetActionedOn(false);
   }
@@ -253,6 +278,16 @@ void DownloadBubbleUIController::OnDelayedNewItemByGuid(
   }
   size_t erased = delayed_crx_guids_.erase(guid);
   DCHECK_EQ(erased, 1u);
+}
+
+void DownloadBubbleUIController::UpdateInProgressDownloadItems(
+    const DownloadUIModel& model) {
+  const std::string& guid = model.GetDownloadItem()->GetGuid();
+  if (IsModelInProgress(&model)) {
+    in_progress_download_item_guids_.insert(guid);
+  } else {
+    in_progress_download_item_guids_.erase(guid);
+  }
 }
 
 bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
@@ -277,6 +312,7 @@ void DownloadBubbleUIController::OnItemRemoved(const ContentId& id) {
 void DownloadBubbleUIController::OnDownloadRemoved(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
+  in_progress_download_item_guids_.erase(item->GetGuid());
   std::make_unique<DownloadItemModel>(item)->SetActionedOn(true);
   const ContentId& id = OfflineItemUtils::GetContentIdForDownload(item);
   display_controller_->OnRemovedItem(id);
@@ -308,9 +344,10 @@ void DownloadBubbleUIController::OnDownloadUpdated(
   if (delayed_crx_guids_.contains(item->GetGuid())) {
     return;
   }
+  DownloadItemModel model(item);
+  UpdateInProgressDownloadItems(model);
   // manager can be different from download_notifier_ when the current profile
   // is off the record.
-  DownloadItemModel model(item);
   if (manager != download_notifier_.GetManager()) {
     display_controller_->OnUpdatedItem(item->IsDone(),
                                        IsPendingDeepScanning(&model),
@@ -368,24 +405,50 @@ DownloadBubbleUIController::GetAllItemsToDisplay() {
                   sorted_ui_model_iters);
   }
 
-  std::vector<DownloadUIModelPtr> items_to_display;
-  if (models_aggregate.empty()) {
-    return items_to_display;
-  }
+  return GetSortedModelPtrVector(std::move(models_aggregate),
+                                 std::move(sorted_ui_model_iters));
+}
 
-  DCHECK(!sorted_ui_model_iters.empty());
-  SortedDownloadUIModelSet::const_iterator sorted_it =
-      sorted_ui_model_iters.begin();
-  for (size_t i = 0; i < kMaxDownloadsToShow; ++i) {
-    DownloadUIModelPtrList::iterator model_it = *sorted_it;
-    DCHECK(model_it != models_aggregate.end());
-    items_to_display.push_back(std::move(*model_it));
-    ++sorted_it;
-    if (sorted_it == sorted_ui_model_iters.end()) {
-      break;
+std::vector<DownloadUIModelPtr>
+DownloadBubbleUIController::GetInProgressItems() {
+  base::Time cutoff_time =
+      base::Time::Now() - base::Days(kShowDownloadsInBubbleForNumDays);
+
+  std::set<std::string> download_item_guids_to_remove;
+
+  // This sorts the models. See comments above in GetAllItemsToDisplay.
+  DownloadUIModelPtrList models;
+  SortedDownloadUIModelSet sorted_ui_model_iters;
+  for (const OfflineItem& item : GetOfflineItems()) {
+    DownloadUIModelPtr model = OfflineItemModel::Wrap(
+        offline_manager_, item,
+        std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+    if (IsModelInProgress(model.get())) {
+      MaybeAddModel(std::move(model), cutoff_time, models,
+                    sorted_ui_model_iters);
     }
   }
-  return items_to_display;
+  for (const std::string& guid : in_progress_download_item_guids_) {
+    download::DownloadItem* item = download_manager_->GetDownloadByGuid(guid);
+    if (!item) {
+      download_item_guids_to_remove.insert(guid);
+      continue;
+    }
+    DownloadUIModelPtr model = DownloadItemModel::Wrap(
+        item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+    if (!IsModelInProgress(model.get()) ||
+        !MaybeAddModel(std::move(model), cutoff_time, models,
+                       sorted_ui_model_iters)) {
+      download_item_guids_to_remove.insert(guid);
+    }
+  }
+
+  for (const std::string& guid_to_remove : download_item_guids_to_remove) {
+    in_progress_download_item_guids_.erase(guid_to_remove);
+  }
+
+  return GetSortedModelPtrVector(std::move(models),
+                                 std::move(sorted_ui_model_iters));
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(

@@ -54,6 +54,11 @@ class DownloadBubbleUIController
   // offline items.
   std::vector<DownloadUIModelPtr> GetAllItemsToDisplay();
 
+  // Gets all entries that are in-progress (as determined by IsModelInProgress).
+  // Includes downloads and offline items. Also prunes invalid guids from
+  // |in_progress_download_item_guids_|. Virtual for testing.
+  virtual std::vector<DownloadUIModelPtr> GetInProgressItems();
+
   // The list is needed to populate GetAllItemsToDisplay.
   virtual const OfflineItemList& GetOfflineItems();
 
@@ -112,6 +117,10 @@ class DownloadBubbleUIController
     download_manager_ = manager;
   }
 
+  OfflineItemModelManager* offline_manager_for_testing() {
+    return offline_manager_;
+  }
+
  private:
   friend class DownloadBubbleUIControllerTest;
   friend class DownloadBubbleUIControllerIncognitoTest;
@@ -158,6 +167,8 @@ class DownloadBubbleUIController
   void OnDelayedNewItemByGuid(const std::string& guid,
                               bool will_show_animation);
 
+  void UpdateInProgressDownloadItems(const DownloadUIModel& model);
+
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<content::DownloadManager, DanglingUntriaged> download_manager_;
@@ -183,6 +194,9 @@ class DownloadBubbleUIController
   // the UI. GUIDs are added here when the download begins, and are removed
   // when the 2 second delay is up.
   std::set<std::string> delayed_crx_guids_;
+
+  // Currently in-progress downloads.
+  std::set<std::string> in_progress_download_item_guids_;
 
   base::WeakPtrFactory<DownloadBubbleUIController> weak_factory_{this};
 };

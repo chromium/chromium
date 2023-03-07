@@ -178,7 +178,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     items_.push_back(std::make_unique<StrictMockDownloadItem>());
     EXPECT_CALL(item(index), GetId())
         .WillRepeatedly(Return(static_cast<uint32_t>(items_.size() + 1)));
-    EXPECT_CALL(item(index), GetGuid()).WillRepeatedly(ReturnRef(id));
+    EXPECT_CALL(item(index), GetGuid()).WillRepeatedly(ReturnRefOfCopy(id));
     EXPECT_CALL(item(index), GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item(index), GetStartTime()).WillRepeatedly(Return(start_time));
     EXPECT_CALL(item(index), GetTargetFilePath())
@@ -217,6 +217,8 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     }
     EXPECT_CALL(*manager_, GetAllDownloads(_))
         .WillRepeatedly(SetArgPointee<0>(items));
+    EXPECT_CALL(*manager_, GetDownloadByGuid(id))
+        .WillRepeatedly(Return(&(item(index))));
     item(index).AddObserver(&controller().get_download_notifier_for_testing());
     content::DownloadItemUtils::AttachInfoForTesting(&(item(index)), profile_,
                                                      nullptr);
@@ -435,6 +437,13 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsSorted) {
   }
   InitOfflineItem(OfflineItemState::IN_PROGRESS, offline_item);
 
+  std::vector<DownloadUIModelPtr> in_progress_models =
+      controller().GetInProgressItems();
+  EXPECT_EQ(in_progress_models.size(), 4u);
+  for (unsigned long i = 0; i < 4u; i++) {
+    EXPECT_EQ(in_progress_models[i]->GetContentId().id, sorted_ids[i]);
+  }
+
   std::vector<DownloadUIModelPtr> models = controller().GetMainView();
   EXPECT_EQ(models.size(), sorted_ids.size());
   for (unsigned long i = 0; i < models.size(); i++) {
@@ -460,6 +469,14 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsRecent) {
                    download::DownloadItem::IN_PROGRESS, ids[2],
                    /*is_transient=*/false, now - start_time_offsets[2]);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[3]);
+
+  std::vector<DownloadUIModelPtr> in_progress_models =
+      controller().GetInProgressItems();
+  EXPECT_EQ(in_progress_models.size(), sorted_ids.size());
+  for (unsigned long i = 0; i < in_progress_models.size(); i++) {
+    EXPECT_EQ(in_progress_models[i]->GetContentId().id, sorted_ids[i]);
+  }
+
   std::vector<DownloadUIModelPtr> models = controller().GetMainView();
   EXPECT_EQ(models.size(), sorted_ids.size());
   for (unsigned long i = 0; i < models.size(); i++) {
@@ -484,6 +501,15 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsCappedAndMostRecent) {
                      download::DownloadItem::IN_PROGRESS, id,
                      /*is_transient=*/false,
                      kFirstStartTime + base::Seconds(i));
+  }
+
+  std::vector<DownloadUIModelPtr> in_progress_models =
+      controller().GetInProgressItems();
+  EXPECT_EQ(in_progress_models.size(), kMaxDownloadsToShow);
+  for (const DownloadUIModelPtr& model : in_progress_models) {
+    // Expect the oldest download, which started at kFirstStartTime, to be the 1
+    // excluded, due to the sorting in GetInProgressItems.
+    EXPECT_GT(model->GetStartTime(), kFirstStartTime);
   }
 
   std::vector<DownloadUIModelPtr> partial_view_models =

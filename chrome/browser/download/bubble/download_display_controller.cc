@@ -364,21 +364,19 @@ bool DownloadDisplayController::IsDisplayShowingDetails() {
 DownloadDisplayController::ProgressInfo
 DownloadDisplayController::GetProgress() {
   ProgressInfo progress_info;
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
+  std::vector<std::unique_ptr<DownloadUIModel>> in_progress_models =
+      bubble_controller_->GetInProgressItems();
+  progress_info.download_count = in_progress_models.size();
   int64_t received_bytes = 0;
   int64_t total_bytes = 0;
 
-  for (const auto& model : all_models) {
-    if (IsModelInProgress(model.get())) {
-      ++progress_info.download_count;
-      if (model->GetTotalBytes() <= 0) {
-        // There may or may not be more data coming down this pipe.
-        progress_info.progress_certain = false;
-      } else {
-        received_bytes += model->GetCompletedBytes();
-        total_bytes += model->GetTotalBytes();
-      }
+  for (const auto& model : in_progress_models) {
+    if (model->GetTotalBytes() <= 0) {
+      // There may or may not be more data coming down this pipe.
+      progress_info.progress_certain = false;
+    } else {
+      received_bytes += model->GetCompletedBytes();
+      total_bytes += model->GetTotalBytes();
     }
   }
 
