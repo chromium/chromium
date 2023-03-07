@@ -50,10 +50,11 @@ NSString* const kMultitaskingEarlGreyTestTargetName =
 // Contains a list of test names that run in multitasking test suite.
 NSArray* multitaskingTests = @[
   // Integration tests
-  @"testContextMenuOpenInNewTab",        // ContextMenuTestCase
-  @"testContextMenuOpenInNewWindow",     // ContextMenuTestCase
-  @"testSwitchToMain",                   // CookiesTestCase
-  @"testSwitchToIncognito",              // CookiesTestCase
+  @"testContextMenuOpenInNewTab",     // ContextMenuTestCase
+  @"testContextMenuOpenInNewWindow",  // ContextMenuTestCase
+  @"testSwitchToMain",                // CookiesTestCase
+  // TODO(crbug.com/1422238) Re-enable this flaky test on multitasking.
+  // @"testSwitchToIncognito",              // CookiesTestCase
   @"testFindDefaultFormAssistControls",  // FormInputTestCase
   @"testTabDeletion",                    // TabUsageRecorderTestCase
   @"testAutoTranslate",                  // TranslateTestCase
