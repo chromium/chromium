@@ -327,7 +327,7 @@ void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {
                                              ? surface_layer_->surface_id()
                                              : surface_id;
   if (window_android_ && window_android_->GetCompositor() &&
-      old_surface_id != surface_id) {
+      old_surface_id.frame_sink_id() != surface_id.frame_sink_id()) {
     // On Android, the new frame sink needs to be added before
     // removing the previous surface sink.
     window_android_->GetCompositor()->AddChildFrameSink(
