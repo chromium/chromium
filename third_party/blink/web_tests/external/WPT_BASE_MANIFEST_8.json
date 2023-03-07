@@ -265599,16 +265599,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "3b37e694d0df923d8db8523bc9ab9d3b65e00501",
-     []
-    ],
-    "mtime.json": [
-     "0ab66a0f8dec09fc41336d29725c162cb61eba8d",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -374026,6 +374016,18 @@
      "7040cf0a9d000d25367033a9ec5a5ebbb4690398",
      []
     ],
+    "getPorts": {
+     "reject_opaque_origin.https.html.headers": [
+      "1efcf8c226fac074c98d0a5a747856f532e5d84e",
+      []
+     ]
+    },
+    "requestPort": {
+     "reject_opaque_origin.https.html.headers": [
+      "1efcf8c226fac074c98d0a5a747856f532e5d84e",
+      []
+     ]
+    },
     "resources": {
      "automation.js": [
       "e88fdb1a9d23dfd601d5e9e6e11b560be07d577e",
@@ -374037,6 +374039,10 @@
      ],
      "manual.js": [
       "ac19136b35acc43e7290131fd082657c58f1387b",
+      []
+     ],
+     "open-in-iframe.html": [
+      "9bf8beb66aa1c2514b591db508014572d1ec6b7e",
       []
      ],
      "serial-allowed-by-permissions-policy-worker.js": [
@@ -386041,7 +386047,7 @@
      []
     ],
     "concat.https.any-expected.txt": [
-     "3ff9feebe561f6d9199f459d7e94f5c4dde29a94",
+     "96e27551bdc164482ea8d84967f958e0204e2af8",
      []
     ],
     "concat.https.any.js.ini": [
@@ -386049,7 +386055,7 @@
      []
     ],
     "concat.https.any.worker-expected.txt": [
-     "28b5d976f21af0794d3f06e2a8fbd26942928d10",
+     "bbec09cb21dc0137575c7cd79adf618aedd2a38f",
      []
     ],
     "conv2d.https.any-expected.txt": [
@@ -386117,7 +386123,7 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "ea2adb5c2c51e45c195a137015afe20eee119aba",
+     "832b44088d1c1c5197deb8495a736e50b9aee342",
      []
     ],
     "idlharness.https.any.js.ini": [
@@ -386125,7 +386131,7 @@
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "a28a7f0ad6269715b8b7319b5c29c8d706c8519f",
+     "744eeaf41e183b828fd77a7a76c4cbca9b3af89d",
      []
     ],
     "leaky_relu.https.any-expected.txt": [
@@ -542069,7 +542075,7 @@
        ]
       ],
       "popover-top-layer-interactions.html": [
-       "6ef6938810b8532b78f7fbfc905b8f84c1300df9",
+       "6e707cb45be77d957d2a85b38e6883284307c2fc",
        [
         null,
         {
@@ -588102,6 +588108,22 @@
     ]
    },
    "serial": {
+    "getPorts": {
+     "reject_opaque_origin.https.html": [
+      "b2f630a3197deb0e80f01c28dafe3e8fd72971c9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "sandboxed_iframe.https.window.js": [
+      "8fae11ccfe53acc00a6a1cc1afd21439b7d1c968",
+      [
+       "serial/getPorts/sandboxed_iframe.https.window.html",
+       {}
+      ]
+     ]
+    },
     "idlharness.https.any.js": [
      "b240da933ade1595d3b1965c3ca6613c91c8318f",
      [
@@ -588135,6 +588157,22 @@
       }
      ]
     ],
+    "requestPort": {
+     "reject_opaque_origin.https.html": [
+      "ade8ae7392eccd9782f3b12f79ae71396de08913",
+      [
+       null,
+       {}
+      ]
+     ],
+     "sandboxed_iframe.https.window.js": [
+      "6e169510a0bd0ad0123aa2a78c8646c99b8b186f",
+      [
+       "serial/requestPort/sandboxed_iframe.https.window.html",
+       {}
+      ]
+     ]
+    },
     "serial-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
      "ac278ff0cf0f92dd2547851771e5cda7cc15ea4b",
      [
