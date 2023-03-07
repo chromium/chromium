@@ -127,14 +127,10 @@ ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingController::OnUIReady() {
-  // Return early if this has already been called. Prevents the scoped
-  // observation from observing twice.
-  if (ui_ready_) {
-    return;
-  }
   ui_ready_ = true;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsReadAnythingWithScreen2xEnabled()) {
+  if (features::IsReadAnythingWithScreen2xEnabled() &&
+      !component_ready_observer_.IsObserving()) {
     component_ready_observer_.Observe(
         screen_ai::ScreenAIInstallState::GetInstance());
   }
