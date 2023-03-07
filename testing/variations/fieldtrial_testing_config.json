@@ -6045,6 +6045,42 @@
             ]
         }
     ],
+    "IOSCredentialProviderExtensionPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledOnPasswordSaved",
+                    "params": {
+                        "enable_promo_on_password_saved": "true"
+                    },
+                    "enable_features": [
+                        "CredentialProviderExtensionPromo"
+                    ]
+                },
+                {
+                    "name": "EnabledOnPasswordCopied",
+                    "params": {
+                        "enable_promo_on_password_copied": "true"
+                    },
+                    "enable_features": [
+                        "CredentialProviderExtensionPromo"
+                    ]
+                },
+                {
+                    "name": "EnabledOnLoginWithAutofill",
+                    "params": {
+                        "enable_promo_on_login_with_autofill": "true"
+                    },
+                    "enable_features": [
+                        "CredentialProviderExtensionPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDefaultBrowserFullscreenPromoExperiment": [
         {
             "platforms": [
