@@ -267,6 +267,68 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
   }
 }
 
+void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
+    DeviceId id,
+    mojom::TouchpadSettingsPtr settings) {
+  DCHECK(base::Contains(touchpads_, id));
+  DCHECK(active_pref_service_);
+  auto& found_touchpad = *touchpads_.at(id);
+  found_touchpad.settings = settings.Clone();
+  touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
+                                                 found_touchpad);
+  DispatchTouchpadSettingsChanged(id);
+  // Check the list of touchpads to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, touchpad] : touchpads_) {
+    if (device_id != found_touchpad.id &&
+        touchpad->device_key == found_touchpad.device_key) {
+      touchpad->settings = settings->Clone();
+      DispatchTouchpadSettingsChanged(device_id);
+    }
+  }
+}
+
+void InputDeviceSettingsControllerImpl::SetMouseSettings(
+    DeviceId id,
+    mojom::MouseSettingsPtr settings) {
+  DCHECK(base::Contains(mice_, id));
+  DCHECK(active_pref_service_);
+  auto& found_mouse = *mice_.at(id);
+  found_mouse.settings = settings.Clone();
+  mouse_pref_handler_->UpdateMouseSettings(active_pref_service_, found_mouse);
+  DispatchMouseSettingsChanged(id);
+  // Check the list of mice to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, mouse] : mice_) {
+    if (device_id != found_mouse.id &&
+        mouse->device_key == found_mouse.device_key) {
+      mouse->settings = settings->Clone();
+      DispatchMouseSettingsChanged(device_id);
+    }
+  }
+}
+
+void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
+    DeviceId id,
+    mojom::PointingStickSettingsPtr settings) {
+  DCHECK(base::Contains(pointing_sticks_, id));
+  DCHECK(active_pref_service_);
+  auto& found_pointing_stick = *pointing_sticks_.at(id);
+  found_pointing_stick.settings = settings.Clone();
+  pointing_stick_pref_handler_->UpdatePointingStickSettings(
+      active_pref_service_, found_pointing_stick);
+  DispatchPointingStickSettingsChanged(id);
+  // Check the list of pointing sticks to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, pointing_stick] : pointing_sticks_) {
+    if (device_id != found_pointing_stick.id &&
+        pointing_stick->device_key == found_pointing_stick.device_key) {
+      pointing_stick->settings = settings->Clone();
+      DispatchPointingStickSettingsChanged(device_id);
+    }
+  }
+}
+
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

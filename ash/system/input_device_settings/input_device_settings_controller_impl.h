@@ -56,6 +56,12 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       DeviceId id) override;
   void SetKeyboardSettings(DeviceId id,
                            mojom::KeyboardSettingsPtr settings) override;
+  void SetTouchpadSettings(DeviceId id,
+                           mojom::TouchpadSettingsPtr settings) override;
+  void SetMouseSettings(DeviceId id, mojom::MouseSettingsPtr settings) override;
+  void SetPointingStickSettings(
+      DeviceId id,
+      mojom::PointingStickSettingsPtr settings) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 

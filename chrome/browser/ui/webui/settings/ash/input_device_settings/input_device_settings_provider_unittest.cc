@@ -181,6 +181,14 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
       ::ash::mojom::KeyboardSettingsPtr settings) override {}
   void AddObserver(Observer* observer) override { observer_ = observer; }
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
+  void SetTouchpadSettings(
+      DeviceId id,
+      ::ash::mojom::TouchpadSettingsPtr settings) override {}
+  void SetMouseSettings(DeviceId id,
+                        ::ash::mojom::MouseSettingsPtr settings) override {}
+  void SetPointingStickSettings(
+      DeviceId id,
+      ::ash::mojom::PointingStickSettingsPtr settings) override {}
 
   void AddKeyboard(::ash::mojom::KeyboardPtr keyboard) {
     keyboards_.push_back(std::move(keyboard));

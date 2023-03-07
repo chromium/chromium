@@ -66,9 +66,20 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   virtual const mojom::PointingStickSettings* GetPointingStickSettings(
       DeviceId id) = 0;
 
-  // Configure the settings for keyboard of |id| with the provided |settings|.
+  // Configure the settings for keyboard of `id` with the provided `settings`.
   virtual void SetKeyboardSettings(DeviceId id,
                                    mojom::KeyboardSettingsPtr settings) = 0;
+  // Configure the settings for touchpad of `id` with the provided `settings`.
+  virtual void SetTouchpadSettings(DeviceId id,
+                                   mojom::TouchpadSettingsPtr settings) = 0;
+  // Configure the settings for mouse of `id` with the provided `settings`.
+  virtual void SetMouseSettings(DeviceId id,
+                                mojom::MouseSettingsPtr settings) = 0;
+  // Configure the settings for pointing stick of `id` with the provided
+  // `settings`.
+  virtual void SetPointingStickSettings(
+      DeviceId id,
+      mojom::PointingStickSettingsPtr settings) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

@@ -56,6 +56,18 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               SetKeyboardSettings,
               (DeviceId id, mojom::KeyboardSettingsPtr settings),
               (override));
+  MOCK_METHOD(void,
+              SetTouchpadSettings,
+              (DeviceId id, mojom::TouchpadSettingsPtr settings),
+              (override));
+  MOCK_METHOD(void,
+              SetMouseSettings,
+              (DeviceId id, mojom::MouseSettingsPtr settings),
+              (override));
+  MOCK_METHOD(void,
+              SetPointingStickSettings,
+              (DeviceId id, mojom::PointingStickSettingsPtr settings),
+              (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };
