@@ -52,6 +52,7 @@ component("linux_ui_factory") {
   deps = [
     "//base",
     "//ui/base:buildflags",
+    "//ui/base/ime/linux:linux",
     "//ui/events:dom_keyboard_layout",
     "//ui/gfx",
     "//ui/native_theme",

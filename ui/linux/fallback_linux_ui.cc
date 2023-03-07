@@ -5,11 +5,13 @@
 #include "ui/linux/fallback_linux_ui.h"
 
 #include "base/time/time.h"
+#include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/platform_font.h"
+#include "ui/linux/nav_button_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/textfield/textfield.h"
