@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -72,6 +73,8 @@ class PageSpecificContentSettingsDelegate
   void UpdateLocationBar() override;
   PrefService* GetPrefs() override;
   HostContentSettingsMap* GetSettingsMap() override;
+  std::unique_ptr<BrowsingDataModel::Delegate> CreateBrowsingDataModelDelegate()
+      override;
   void SetDefaultRendererContentSettingRules(
       content::RenderFrameHost* rfh,
       RendererContentSettingRules* rules) override;

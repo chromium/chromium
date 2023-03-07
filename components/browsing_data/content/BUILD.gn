@@ -99,6 +99,8 @@ source_set("test_support") {
     "mock_service_worker_helper.h",
     "mock_shared_worker_helper.cc",
     "mock_shared_worker_helper.h",
+    "test_browsing_data_model_delegate.cc",
+    "test_browsing_data_model_delegate.h",
   ]
   deps = [
     ":content",

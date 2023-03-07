@@ -8,6 +8,7 @@
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -92,6 +93,12 @@ PrefService* PageSpecificContentSettingsDelegate::GetPrefs() {
 
 HostContentSettingsMap* PageSpecificContentSettingsDelegate::GetSettingsMap() {
   return HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+}
+
+std::unique_ptr<BrowsingDataModel::Delegate>
+PageSpecificContentSettingsDelegate::CreateBrowsingDataModelDelegate() {
+  return ChromeBrowsingDataModelDelegate::CreateForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 

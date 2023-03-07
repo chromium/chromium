@@ -32,8 +32,8 @@ class BrowsingDataModel {
   // incomplete implementations, and are marked as such.
   // TODO(crbug.com/1271155): Complete implementations for all browsing data.
   enum class StorageType {
-    kTrustTokens,  // Only issuance information considered.
-    kSharedStorage,
+    kTrustTokens = 1,  // Only issuance information considered.
+    kSharedStorage = 2,
     kInterestGroup,
     kAttributionReporting,
     kPartitionedQuotaStorage,    // Not fetched from disk or deleted.
@@ -41,9 +41,13 @@ class BrowsingDataModel {
 
     kFirstType = kTrustTokens,
     kLastType = kUnpartitionedQuotaStorage,
+    kExtendedDelegateRange =
+        64,  // This is needed to include delegate values when adding delegate
+             // browsing data to the model.
   };
-  using StorageTypeSet = base::
-      EnumSet<StorageType, StorageType::kFirstType, StorageType::kLastType>;
+  using StorageTypeSet = base::EnumSet<StorageType,
+                                       StorageType::kFirstType,
+                                       StorageType::kExtendedDelegateRange>;
 
   // The information which uniquely identifies this browsing data. The set of
   // data an entry represents can be pulled from the relevant storage backends
@@ -97,6 +101,31 @@ class BrowsingDataModel {
                           const DataDetails& data_details);
   };
 
+  // A delegate to handle non components/ data type retrieval and deletion.
+  class Delegate {
+   public:
+    //
+    struct DelegateEntry {
+      DelegateEntry(DataKey data_key,
+                    StorageType storage_type,
+                    uint64_t storage_size);
+      DelegateEntry(const DelegateEntry& other);
+      ~DelegateEntry();
+      DataKey data_key;
+      StorageType storage_type;
+      uint64_t storage_size;
+    };
+
+    // Retrieves all possible data keys with its associated storage size.
+    virtual void GetAllDataKeys(
+        base::OnceCallback<void(std::vector<DelegateEntry>)> callback) = 0;
+    // Removes all data that matches the data key.
+    virtual void RemoveDataKey(DataKey data_key,
+                               StorageTypeSet storage_types,
+                               base::OnceClosure callback) = 0;
+    virtual ~Delegate() = default;
+  };
+
   // The model provides a single interface for retrieving browsing data, in the
   // form of an Input iterator (read-only, increment only, no random access)
   // over BrowsingDataEntryViews.
@@ -143,12 +172,14 @@ class BrowsingDataModel {
   // on the current state of `storage_partition`.
   static void BuildFromDisk(
       content::StoragePartition* storage_partition,
+      std::unique_ptr<Delegate> delegate,
       base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
           complete_callback);
 
   // Creates and returns an empty model, for population via AddBrowsingData().
   static std::unique_ptr<BrowsingDataModel> BuildEmpty(
-      content::StoragePartition* storage_partition);
+      content::StoragePartition* storage_partition,
+      std::unique_ptr<Delegate> delegate);
 
   // Directly add browsing data to the Model. The appropriate BrowsingDataEntry
   // will be created or modified. Typically this should only be used when the
@@ -176,7 +207,8 @@ class BrowsingDataModel {
 
   // Private as one of the static BuildX functions should be used instead.
   explicit BrowsingDataModel(
-      content::StoragePartition* storage_partition
+      content::StoragePartition* storage_partition,
+      std::unique_ptr<Delegate> delegate
       // TODO(crbug.com/1271155): Inject other dependencies.
   );
 
@@ -196,6 +228,10 @@ class BrowsingDataModel {
   // TODO(crbug.com/1271155): More backends to come, they should all be broken
   // out from the browser context at the appropriate level.
   raw_ptr<content::StoragePartition> storage_partition_;
+
+  // Owning pointer to the delegate responsible for non components/ data
+  // retrieval and removal.
+  std::unique_ptr<Delegate> delegate_;
 };
 
 #endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_MODEL_H_

@@ -429,9 +429,11 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
           delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       allowed_browsing_data_model_(BrowsingDataModel::BuildEmpty(
-          GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition())),
+          GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
+          delegate_->CreateBrowsingDataModelDelegate())),
       blocked_browsing_data_model_(BrowsingDataModel::BuildEmpty(
-          GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition())),
+          GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
+          delegate_->CreateBrowsingDataModelDelegate())),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
   observation_.Observe(map_.get());
   if (page.GetMainDocument().GetLifecycleState() ==

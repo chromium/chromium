@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
+#include "components/browsing_data/content/test_browsing_data_model_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -50,7 +51,9 @@ class BrowsingDataModelTest : public testing::Test {
         network_context_remote.InitWithNewPipeAndPassReceiver());
     storage_partition()->SetNetworkContextForTesting(
         std::move(network_context_remote));
-    model_ = base::WrapUnique(new BrowsingDataModel(storage_partition()));
+    model_ = BrowsingDataModel::BuildEmpty(
+        storage_partition(),
+        std::make_unique<browsing_data::TestBrowsingDataModelDelegate>());
   }
   ~BrowsingDataModelTest() override = default;
 
@@ -84,6 +87,9 @@ class BrowsingDataModelTest : public testing::Test {
   const url::Origin kAnotherSiteOrigin =
       url::Origin::Create(GURL("https://another-example.com"));
   const std::string kAnotherSiteOriginHost = "another-example.com";
+
+  const url::Origin kTestOrigin = url::Origin::Create(GURL("https://a.test"));
+  const std::string kTestOriginHost = "a.test";
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -181,7 +187,13 @@ TEST_F(BrowsingDataModelTest, ConcurrentDeletions) {
        {BrowsingDataModel::StorageType::kTrustTokens, 100, 0}},
       {kAnotherSiteOriginHost,
        kAnotherSiteOrigin,
-       {BrowsingDataModel::StorageType::kTrustTokens, 100, 0}}};
+       {BrowsingDataModel::StorageType::kTrustTokens, 100, 0}},
+      {kTestOriginHost,
+       kTestOrigin,
+       {static_cast<BrowsingDataModel::StorageType>(
+            browsing_data::TestBrowsingDataModelDelegate::StorageType::
+                kTestDelegateType),
+        0, 0}}};
 
   browsing_data_model_test_util::ValidateBrowsingDataEntries(model(),
                                                              expected_entries);
@@ -261,4 +273,35 @@ TEST_F(BrowsingDataModelTest, ConcurrentDeletions) {
   // The test not timing out is sufficient coverage, but this is easier to grok.
   EXPECT_TRUE(delete_callback_1_runloop.AnyQuitCalled());
   EXPECT_TRUE(delete_callback_2_runloop.AnyQuitCalled());
+}
+
+TEST_F(BrowsingDataModelTest, DelegateDataDeleted) {
+  // Needed to when building model from disk, returning an empty list as it's
+  // not needed for this test.
+  EXPECT_CALL(*mock_network_context(), GetStoredTrustTokenCounts(testing::_))
+      .WillOnce(
+          [&](network::TestNetworkContext::GetStoredTrustTokenCountsCallback
+                  callback) { std::move(callback).Run({}); });
+
+  base::RunLoop run_loop;
+  BuildModel(run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  auto expected_entries = std::vector<BrowsingDataEntry>{
+      {kTestOriginHost,
+       kTestOrigin,
+       {static_cast<BrowsingDataModel::StorageType>(
+            browsing_data::TestBrowsingDataModelDelegate::StorageType::
+                kTestDelegateType),
+        0, 0}}};
+
+  browsing_data_model_test_util::ValidateBrowsingDataEntries(model(),
+                                                             expected_entries);
+  expected_entries.erase(expected_entries.begin());
+  EXPECT_TRUE(expected_entries.empty());
+  model()->RemoveBrowsingData(kTestOriginHost, base::DoNothing());
+
+  // Model should be empty after deleting delegated data.
+  browsing_data_model_test_util::ValidateBrowsingDataEntries(model(),
+                                                             expected_entries);
 }

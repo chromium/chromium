@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -141,6 +142,7 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
         browsing_data_model;
     BrowsingDataModel::BuildFromDisk(
         browser()->profile()->GetDefaultStoragePartition(),
+        ChromeBrowsingDataModelDelegate::CreateForProfile(browser()->profile()),
         browsing_data_model.GetCallback());
     return browsing_data_model.Take();
   }

@@ -22,6 +22,8 @@ class TestPageSpecificContentSettingsDelegate
   void UpdateLocationBar() override;
   PrefService* GetPrefs() override;
   HostContentSettingsMap* GetSettingsMap() override;
+  std::unique_ptr<BrowsingDataModel::Delegate> CreateBrowsingDataModelDelegate()
+      override;
   void SetDefaultRendererContentSettingRules(
       content::RenderFrameHost* rfh,
       RendererContentSettingRules* rules) override;
