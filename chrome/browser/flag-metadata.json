@@ -2688,12 +2688,10 @@
   {
     "name": "enable-local-web-approvals",
     "owners": [
-      "agawronska@chromium.org",
-      "courtneywong@chromium.org",
-      "danan@chromium.org",
+      "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "enable-lock-screen-notification",
@@ -3361,12 +3359,10 @@
   {
     "name": "enable-web-filter-interstitial-refresh",
     "owners": [
-      "agawronska@chromium.org",
-      "courtneywong@chromium.org",
-      "danan@chromium.org",
+      "ljjlee@google.com",
       "chrome-kids-eng@google.com"
     ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "enable-web-hid-on-extension-service-worker",
