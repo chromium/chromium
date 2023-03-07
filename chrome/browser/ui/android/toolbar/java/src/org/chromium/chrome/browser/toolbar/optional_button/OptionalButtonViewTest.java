@@ -703,4 +703,29 @@ public class OptionalButtonViewTest {
         assertEquals(View.VISIBLE, mInnerButton.getVisibility());
         assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
     }
+
+    @Test
+    public void testUpdateButton_shouldHideActionChipLabelWhenUpdatingWithoutAnimations() {
+        ButtonDataImpl actionChipButtonData = getDataForPriceTrackingActionChip();
+        ButtonDataImpl regularButtonData = getDataForStaticNewTabIconButton();
+
+        // Allow animations
+        when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
+
+        // Show action chip.
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Block animations.
+        when(mMockAnimationChecker.getAsBoolean()).thenReturn(false);
+
+        // Switch to regular button
+        mOptionalButtonView.updateButtonWithAnimation(regularButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Action chip shouldn't be visible
+        assertEquals(View.GONE, mActionChipLabel.getVisibility());
+    }
 }

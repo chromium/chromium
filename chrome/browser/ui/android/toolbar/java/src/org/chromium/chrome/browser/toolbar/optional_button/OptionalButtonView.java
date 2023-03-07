@@ -649,6 +649,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mButton.setVisibility(GONE);
         mBackground.setVisibility(GONE);
+        mActionChipLabel.setVisibility(GONE);
         setWidth(0);
 
         if (mOnBeforeHideTransitionCallback != null) {
@@ -686,6 +687,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setVisibility(GONE);
         mBackground.setVisibility(GONE);
         mAnimationImage.setVisibility(GONE);
+        mActionChipLabel.setVisibility(GONE);
 
         mButton.setImageDrawable(mIconDrawable);
 
