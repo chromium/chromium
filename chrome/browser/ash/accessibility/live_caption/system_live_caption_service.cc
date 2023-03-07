@@ -164,7 +164,7 @@ void SystemLiveCaptionService::CreateClient() {
       media::AudioDeviceDescription::kLoopbackWithoutChromeId,
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/false,
+          /*enable_formatting=*/true,
           prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
           /*is_server_based=*/false,
           media::mojom::RecognizerClientType::kLiveCaption));
