@@ -43,6 +43,8 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
       const std::vector<uint8_t>& data);
   mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
       const std::vector<uint8_t>& data);
+  absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
+      const std::vector<uint8_t>& data);
   mojo::Receiver<mojom::QuickStartDecoder> receiver_;
 };
 

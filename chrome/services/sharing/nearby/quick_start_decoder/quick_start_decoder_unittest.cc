@@ -4,6 +4,7 @@
 
 #include "quick_start_decoder.h"
 
+#include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -23,11 +24,17 @@ constexpr char kBootstrapConfigurationsKey[] = "bootstrapConfigurations";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
 constexpr char kCryptauthDeviceIdKey[] = "cryptauthDeviceId";
 constexpr char kExampleCryptauthDeviceId[] = "helloworld";
+constexpr char kFidoMessageKey[] = "fidoMessage";
+constexpr char kSecondDeviceAuthPayloadKey[] = "secondDeviceAuthPayload";
 constexpr uint8_t kSuccess = 0x00;
 constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
 constexpr int kCborDecoderErrorInvalidUtf8 = 6;
 constexpr int kCborDecoderNoError = 0;
 constexpr int kCborDecoderUnknownError = 14;
+
+const std::vector<uint8_t> kValidCredentialId = {0x01, 0x02, 0x03};
+const std::vector<uint8_t> kValidAuthData = {0x02, 0x03, 0x04};
+const std::vector<uint8_t> kValidSignature = {0x03, 0x04, 0x05};
 
 using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
 
@@ -75,12 +82,35 @@ class QuickStartDecoderTest : public testing::Test {
     return decoder_->DoDecodeBootstrapConfigurations(data);
   }
 
+  absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
+      const std::vector<uint8_t>& data) {
+    return decoder_->ExtractFidoDataFromJsonResponse(data);
+  }
+
   QuickStartDecoder* decoder() const { return decoder_.get(); }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::Remote<mojom::QuickStartDecoder> remote_;
   std::unique_ptr<QuickStartDecoder> decoder_;
+
+  std::vector<uint8_t> BuildSecondDeviceAuthPayload(std::vector<uint8_t> data) {
+    // Package FIDO GetAssertion command bytes into MessagePayload.
+    base::Value::Dict second_device_auth_payload;
+    second_device_auth_payload.Set(kFidoMessageKey, base::Base64Encode(data));
+    base::Value::Dict message_payload;
+    message_payload.Set(kSecondDeviceAuthPayloadKey,
+                        std::move(second_device_auth_payload));
+
+    // Encode MessagePayload to JSON serialized bytes.
+    std::string json_serialized_payload;
+    EXPECT_TRUE(
+        base::JSONWriter::Write(message_payload, &json_serialized_payload));
+    std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
+                                        json_serialized_payload.end());
+
+    return response_bytes;
+  }
 };
 
 TEST_F(QuickStartDecoderTest, ConvertCtapDeviceResponseCodeTest_InRange) {
@@ -100,14 +130,13 @@ TEST_F(QuickStartDecoderTest, ConvertCtapDeviceResponseCodeTest_InRange) {
 }
 
 TEST_F(QuickStartDecoderTest, ConvertCtapDeviceRespnoseCodeTest_OutOfRange) {
-  std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03};
   std::vector<uint8_t> auth_data = {};
   std::vector<uint8_t> signature = {};
   std::vector<uint8_t> user_id = {};
   // Unmapped error byte
   uint8_t status_code = 0x07;
   std::vector<uint8_t> data = BuildEncodedResponseData(
-      credential_id, auth_data, signature, user_id, status_code);
+      kValidCredentialId, auth_data, signature, user_id, status_code);
   mojom::GetAssertionResponsePtr response =
       DoDecodeGetAssertionResponse(std::move(data));
   EXPECT_EQ(response->ctap_device_response_code, status_code);
@@ -156,17 +185,14 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_OnlyStatusCode) {
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
-  std::vector<uint8_t> credential_id = {0x01, 0x02, 0x03};
-  std::string expected_credential_id(credential_id.begin(),
-                                     credential_id.end());
-  std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
-  std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
+  std::string expected_credential_id(kValidCredentialId.begin(),
+                                     kValidCredentialId.end());
   std::string email = "testcase@google.com";
   std::vector<uint8_t> user_id(email.begin(), email.end());
   // kSuccess
   uint8_t status = kSuccess;
   std::vector<uint8_t> data = BuildEncodedResponseData(
-      credential_id, auth_data, signature, user_id, status);
+      kValidCredentialId, kValidAuthData, kValidSignature, user_id, status);
   mojom::GetAssertionResponsePtr response =
       DoDecodeGetAssertionResponse(std::move(data));
   EXPECT_EQ(response->ctap_device_response_code, kSuccess);
@@ -174,22 +200,20 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
   EXPECT_EQ(response->status, GetAssertionStatus::kSuccess);
   EXPECT_EQ(response->credential_id, expected_credential_id);
   EXPECT_EQ(response->email, email);
-  EXPECT_EQ(response->auth_data, auth_data);
-  EXPECT_EQ(response->signature, signature);
+  EXPECT_EQ(response->auth_data, kValidAuthData);
+  EXPECT_EQ(response->signature, kValidSignature);
 }
 
 TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
   std::vector<uint8_t> credential_id = {};
   std::string expected_credential_id(credential_id.begin(),
                                      credential_id.end());
-  std::vector<uint8_t> auth_data = {0x02, 0x03, 0x04};
-  std::vector<uint8_t> signature = {0x03, 0x04, 0x05};
   std::string email = "";
   std::vector<uint8_t> user_id(email.begin(), email.end());
   // kSuccess
   uint8_t status = kSuccess;
   std::vector<uint8_t> data = BuildEncodedResponseData(
-      credential_id, auth_data, signature, user_id, status);
+      credential_id, kValidAuthData, kValidSignature, user_id, status);
   mojom::GetAssertionResponsePtr response =
       DoDecodeGetAssertionResponse(std::move(data));
   EXPECT_EQ(response->ctap_device_response_code, kSuccess);
@@ -197,8 +221,8 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
   EXPECT_EQ(response->status, GetAssertionStatus::kSuccess);
   EXPECT_EQ(response->credential_id, expected_credential_id);
   EXPECT_EQ(response->email, email);
-  EXPECT_EQ(response->auth_data, auth_data);
-  EXPECT_EQ(response->signature, signature);
+  EXPECT_EQ(response->auth_data, kValidAuthData);
+  EXPECT_EQ(response->signature, kValidSignature);
 }
 
 TEST_F(QuickStartDecoderTest,
@@ -296,6 +320,80 @@ TEST_F(QuickStartDecoderTest,
       DoDecodeBootstrapConfigurations(std::move(payload));
   EXPECT_TRUE(response);
   EXPECT_EQ(response->cryptauth_device_id, kExampleCryptauthDeviceId);
+}
+
+TEST_F(QuickStartDecoderTest, ExtractFidoDataFromValidJsonResponse) {
+  // Build a FIDO Message
+  std::string expected_credential_id(kValidCredentialId.begin(),
+                                     kValidCredentialId.end());
+  std::string email = "testcase@google.com";
+  std::vector<uint8_t> user_id(email.begin(), email.end());
+  // kSuccess
+  uint8_t status = kSuccess;
+  std::vector<uint8_t> data = BuildEncodedResponseData(
+      kValidCredentialId, kValidAuthData, kValidSignature, user_id, status);
+
+  std::vector<uint8_t> payload = BuildSecondDeviceAuthPayload(data);
+
+  absl::optional<std::vector<uint8_t>> result =
+      ExtractFidoDataFromJsonResponse(payload);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), data);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractFidoDataFromJsonResponseFailsIfFidoDataMissingFromPayload) {
+  base::Value::Dict second_device_auth_payload;
+  base::Value::Dict message_payload;
+  message_payload.Set(kSecondDeviceAuthPayloadKey,
+                      std::move(second_device_auth_payload));
+
+  std::string json_serialized_payload;
+  base::JSONWriter::Write(message_payload, &json_serialized_payload);
+  std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
+                                      json_serialized_payload.end());
+
+  absl::optional<std::vector<uint8_t>> result =
+      ExtractFidoDataFromJsonResponse(response_bytes);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractFidoDataFromJsonResponseFailsIfSecondDeviceAuthPayloadMissing) {
+  base::Value::Dict message_payload;
+
+  std::string json_serialized_payload;
+  base::JSONWriter::Write(message_payload, &json_serialized_payload);
+  std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
+                                      json_serialized_payload.end());
+
+  absl::optional<std::vector<uint8_t>> result =
+      ExtractFidoDataFromJsonResponse(response_bytes);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractFidoDataFromJsonResponseFailsIfPayloadIsNotJsonDictionary) {
+  std::string message_payload = "This is a JSON string";
+
+  std::string json_serialized_payload;
+  base::JSONWriter::Write(message_payload, &json_serialized_payload);
+  std::vector<uint8_t> response_bytes(json_serialized_payload.begin(),
+                                      json_serialized_payload.end());
+
+  absl::optional<std::vector<uint8_t>> result =
+      ExtractFidoDataFromJsonResponse(response_bytes);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractFidoDataFromJsonResponseFailsIfResponseIsNotJson) {
+  // This is just a random payload that is not a valid JSON.
+  std::vector<uint8_t> random_payload = {0x01, 0x02, 0x03};
+
+  absl::optional<std::vector<uint8_t>> result =
+      ExtractFidoDataFromJsonResponse(random_payload);
+  EXPECT_FALSE(result.has_value());
 }
 
 }  // namespace ash::quick_start
