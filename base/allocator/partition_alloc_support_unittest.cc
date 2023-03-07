@@ -75,8 +75,9 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
       brp_expectation = "Unavailable";
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
       brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn"
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||                  \
+    (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX)) || \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG)
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
                                        : "EnabledPrevSlot_NonRenderer";
 #else
