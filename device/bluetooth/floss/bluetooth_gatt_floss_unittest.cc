@@ -332,7 +332,7 @@ TEST_F(BluetoothGattFlossTest, TranslateReadWriteAuthentication) {
 
   auto service = BluetoothRemoteGattServiceFloss::Create(
       static_cast<BluetoothAdapterFloss*>(adapter_.get()),
-      static_cast<BluetoothDeviceFloss*>(device), underlying_service, true);
+      static_cast<BluetoothDeviceFloss*>(device), underlying_service);
 
   for (const auto& [pair, auth] : property_to_auth_read_map) {
     const auto& [props, perms] = pair;
@@ -374,7 +374,7 @@ TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
 
   auto service = BluetoothRemoteGattServiceFloss::Create(
       static_cast<BluetoothAdapterFloss*>(adapter_.get()),
-      static_cast<BluetoothDeviceFloss*>(device), underlying_service, true);
+      static_cast<BluetoothDeviceFloss*>(device), underlying_service);
   EXPECT_EQ(service->GetIdentifier(),
             base::StringPrintf("%s-%s/%04x", device->GetAddress().c_str(),
                                service->GetUUID().value().c_str(), 16));

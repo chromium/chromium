@@ -760,8 +760,7 @@ void BluetoothDeviceFloss::GattSearchComplete(
                          << address_;
 
     std::unique_ptr<BluetoothRemoteGattServiceFloss> remote_service =
-        BluetoothRemoteGattServiceFloss::Create(adapter(), this, service,
-                                                /*primary=*/true);
+        BluetoothRemoteGattServiceFloss::Create(adapter(), this, service);
 
     BluetoothRemoteGattServiceFloss* remote_service_ptr = remote_service.get();
 

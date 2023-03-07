@@ -138,6 +138,10 @@ struct DEVICE_BLUETOOTH_EXPORT GattCharacteristic {
 };
 
 struct DEVICE_BLUETOOTH_EXPORT GattService {
+  enum ServiceType {
+    GATT_SERVICE_TYPE_PRIMARY = 0,
+    GATT_SERVICE_TYPE_SECONDARY = 1,
+  };
   device::BluetoothUUID uuid;
   int32_t instance_id;
   int32_t service_type;

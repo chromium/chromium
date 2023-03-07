@@ -27,8 +27,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceFloss
   static std::unique_ptr<BluetoothRemoteGattServiceFloss> Create(
       BluetoothAdapterFloss* adapter,
       BluetoothDeviceFloss* device,
-      GattService remote_service,
-      bool primary);
+      GattService remote_service);
 
   BluetoothRemoteGattServiceFloss(const BluetoothRemoteGattServiceFloss&) =
       delete;
@@ -48,17 +47,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceFloss
  protected:
   BluetoothRemoteGattServiceFloss(BluetoothAdapterFloss* adapter,
                                   BluetoothDeviceFloss* device,
-                                  GattService remote_service,
-                                  bool primary);
+                                  GattService remote_service);
 
  private:
-  // Is this a primary service?
-  bool primary_;
-
   // Data about the remote gatt service represented by this class.
   GattService remote_service_;
 
-  // Services that are included in a primary service.
+  // Services that are included with this service.
   std::vector<std::unique_ptr<BluetoothRemoteGattServiceFloss>>
       included_services_;
 

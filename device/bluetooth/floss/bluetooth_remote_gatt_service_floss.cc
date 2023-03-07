@@ -14,29 +14,24 @@ namespace floss {
 std::unique_ptr<BluetoothRemoteGattServiceFloss>
 BluetoothRemoteGattServiceFloss::Create(BluetoothAdapterFloss* adapter,
                                         BluetoothDeviceFloss* device,
-                                        GattService remote_service,
-                                        bool primary) {
-  return base::WrapUnique(new BluetoothRemoteGattServiceFloss(
-      adapter, device, remote_service, primary));
+                                        GattService remote_service) {
+  return base::WrapUnique(
+      new BluetoothRemoteGattServiceFloss(adapter, device, remote_service));
 }
 
 BluetoothRemoteGattServiceFloss::BluetoothRemoteGattServiceFloss(
     BluetoothAdapterFloss* adapter,
     BluetoothDeviceFloss* device,
-    GattService remote_service,
-    bool primary)
+    GattService remote_service)
     : BluetoothGattServiceFloss(adapter),
-      primary_(primary),
       remote_service_(remote_service),
       device_(device) {
   for (GattCharacteristic& c : remote_service_.characteristics) {
     AddCharacteristic(BluetoothRemoteGattCharacteristicFloss::Create(this, &c));
   }
 
-  if (primary_) {
-    for (GattService& s : remote_service_.included_services) {
-      included_services_.push_back(Create(adapter, device, s, false));
-    }
+  for (GattService& s : remote_service_.included_services) {
+    included_services_.push_back(Create(adapter, device, s));
   }
 }
 
@@ -60,7 +55,7 @@ device::BluetoothDevice* BluetoothRemoteGattServiceFloss::GetDevice() const {
 }
 
 bool BluetoothRemoteGattServiceFloss::IsPrimary() const {
-  return primary_;
+  return remote_service_.service_type == GattService::GATT_SERVICE_TYPE_PRIMARY;
 }
 
 std::vector<device::BluetoothRemoteGattService*>
