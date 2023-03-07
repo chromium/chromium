@@ -38,12 +38,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/css/css_keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition.h"
+#include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
@@ -87,6 +89,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -1772,13 +1775,18 @@ bool CSSAnimations::CanCalculateTransitionUpdateForProperty(
 void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     TransitionUpdateState& state,
     const PropertyHandle& property,
-    size_t transition_index) {
+    size_t transition_index,
+    bool animate_all) {
   if (state.listed_properties) {
     state.listed_properties->insert(property);
   }
 
   if (!CanCalculateTransitionUpdateForProperty(state, property))
     return;
+
+  if (IsAnimationAffectingProperty(property.GetCSSProperty())) {
+    return;
+  }
 
   const RunningTransition* interrupted_transition = nullptr;
   if (state.active_transitions) {
@@ -1852,9 +1860,11 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   const InterpolationType* transition_type = nullptr;
   InterpolationValue start = nullptr;
   InterpolationValue end = nullptr;
+  bool discrete_interpolation = true;
 
   for (const auto& interpolation_type : map.Get(property)) {
     start = interpolation_type->MaybeConvertUnderlyingValue(old_environment);
+    transition_type = interpolation_type.get();
     if (!start) {
       continue;
     }
@@ -1864,17 +1874,38 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     }
     // Merge will only succeed if the two values are considered interpolable.
     if (interpolation_type->MaybeMergeSingles(start.Clone(), end.Clone())) {
-      transition_type = interpolation_type.get();
+      discrete_interpolation = false;
       break;
     }
   }
 
-  // No smooth interpolation exists between these values so don't start a
-  // transition.
-  if (!transition_type) {
+  // If no smooth interpolation exists between the old and new values and
+  // discrete transitions are not enabled, don't start a transition.
+  // transition:all is not supposed to transition discrete properties.
+  if (discrete_interpolation &&
+      (!RuntimeEnabledFeatures::CSSTransitionDiscreteEnabled() ||
+       animate_all)) {
     return;
   }
 
+  if (!start || !end) {
+    DCHECK(RuntimeEnabledFeatures::CSSTransitionDiscreteEnabled());
+    const Document& document = state.animating_element.GetDocument();
+    const CSSValue* start_css_value =
+        AnimationUtils::KeyframeValueFromComputedStyle(
+            property, state.old_style, document,
+            state.animating_element.GetLayoutObject());
+    start = InterpolationValue(
+        std::make_unique<InterpolableList>(0),
+        CSSDefaultNonInterpolableValue::Create(start_css_value));
+    const CSSValue* end_css_value =
+        AnimationUtils::KeyframeValueFromComputedStyle(
+            property, state.base_style, document,
+            state.animating_element.GetLayoutObject());
+    end = InterpolationValue(
+        std::make_unique<InterpolableList>(0),
+        CSSDefaultNonInterpolableValue::Create(end_css_value));
+  }
   // If we have multiple transitions on the same property, we will use the
   // last one since we iterate over them in order.
 
@@ -1982,9 +2013,14 @@ void CSSAnimations::CalculateTransitionUpdateForCustomProperty(
           transition_property.property_string)) {
     return;
   }
+
+  CSSPropertyID resolved_id =
+      ResolveCSSPropertyID(transition_property.unresolved_property);
+  bool animate_all = resolved_id == CSSPropertyID::kAll;
+
   CalculateTransitionUpdateForPropertyHandle(
       state, PropertyHandle(transition_property.property_string),
-      transition_index);
+      transition_index, animate_all);
 }
 
 void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
@@ -2014,12 +2050,13 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
                                            writing_direction.GetWritingMode());
     PropertyHandle property_handle = PropertyHandle(property);
 
-    if (!animate_all && !property.IsInterpolable()) {
+    if (!RuntimeEnabledFeatures::CSSTransitionDiscreteEnabled() &&
+        !animate_all && !property.IsInterpolable()) {
       continue;
     }
 
     CalculateTransitionUpdateForPropertyHandle(state, property_handle,
-                                               transition_index);
+                                               transition_index, animate_all);
   }
 }
 
@@ -2058,8 +2095,9 @@ void CSSAnimations::CalculateTransitionUpdate(
          "style";
 #endif
 
-  if (!animation_style_recalc && style_builder.Display() != EDisplay::kNone &&
-      old_style) {
+  if (!animation_style_recalc && old_style) {
+    // TODO: Don't run transitions if style.Display() == EDisplay::kNone
+    // and display is not transitioned. I.e. display is actually none.
     // Don't bother updating listed_properties unless we need it below.
     HashSet<PropertyHandle>* listed_properties_maybe =
         active_transitions ? &listed_properties : nullptr;
