@@ -277,6 +277,8 @@ bool AppBrowserController::IsIsolatedWebApp() const {
   return false;
 }
 
+void AppBrowserController::SetIsolatedWebAppTrueForTesting() {}
+
 bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }

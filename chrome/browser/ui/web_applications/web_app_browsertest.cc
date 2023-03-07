@@ -2108,6 +2108,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Borderless,
   EXPECT_EQ(DisplayMode::kBorderless, app_display_mode_override[0]);
 
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  app_browser->app_controller()->SetIsolatedWebAppTrueForTesting();
+
   EXPECT_TRUE(app_browser->app_controller()->AppUsesBorderlessMode());
 }
 

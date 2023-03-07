@@ -952,9 +952,6 @@ class BrowserView : public BrowserWindow,
   void SetWindowManagementPermissionSubscriptionForBorderlessMode(
       content::WebContents* web_contents);
 
-  // Updates whether the web app is an isolated web app.
-  void UpdateIsIsolatedWebApp();
-
   WebAppFrameToolbarView* web_app_frame_toolbar();
   const WebAppFrameToolbarView* web_app_frame_toolbar() const;
 
@@ -1232,7 +1229,6 @@ class BrowserView : public BrowserWindow,
   bool should_show_window_controls_overlay_toggle_ = false;
   bool borderless_mode_enabled_ = false;
   bool window_management_permission_granted_ = false;
-  bool is_isolated_web_app_ = false;
   absl::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
 

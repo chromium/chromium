@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -186,7 +187,8 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
 }
 
 bool WebAppBrowserController::AppUsesBorderlessMode() const {
-  return effective_display_mode_ == DisplayMode::kBorderless;
+  return IsIsolatedWebApp() &&
+         effective_display_mode_ == DisplayMode::kBorderless;
 }
 
 bool WebAppBrowserController::AppUsesTabbed() const {
@@ -197,7 +199,11 @@ bool WebAppBrowserController::AppUsesTabbed() const {
 }
 
 bool WebAppBrowserController::IsIsolatedWebApp() const {
-  return registrar().IsIsolated(app_id());
+  return is_isolated_web_app_for_testing_ || registrar().IsIsolated(app_id());
+}
+
+void WebAppBrowserController::SetIsolatedWebAppTrueForTesting() {
+  is_isolated_web_app_for_testing_ = true;
 }
 
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {

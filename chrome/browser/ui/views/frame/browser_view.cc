@@ -205,7 +205,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/command.h"
@@ -1742,7 +1741,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // one subscriber per web contents.
   if (AppUsesBorderlessMode() && !old_contents) {
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
-    UpdateIsIsolatedWebApp();
   }
 }
 
@@ -2282,7 +2280,6 @@ void BrowserView::UpdateBorderlessModeEnabled() {
     // null. These get overridden when the app is launched and its web contents
     // are ready.
     window_management_permission_granted_ = borderless_mode_enabled;
-    is_isolated_web_app_ = borderless_mode_enabled;
   }
 
   if (borderless_mode_enabled == borderless_mode_enabled_)
@@ -2331,11 +2328,6 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
                               base::Unretained(this)));
 }
 
-void BrowserView::UpdateIsIsolatedWebApp() {
-  is_isolated_web_app_ = browser()->app_controller() &&
-                         browser()->app_controller()->IsIsolatedWebApp();
-}
-
 void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled(
       base::BindOnce(&BrowserView::UpdateWindowControlsOverlayEnabled,
@@ -2344,8 +2336,7 @@ void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
 }
 
 bool BrowserView::IsBorderlessModeEnabled() const {
-  return borderless_mode_enabled_ && window_management_permission_granted_ &&
-         is_isolated_web_app_;
+  return borderless_mode_enabled_ && window_management_permission_granted_;
 }
 
 bool BrowserView::AppUsesBorderlessMode() const {
