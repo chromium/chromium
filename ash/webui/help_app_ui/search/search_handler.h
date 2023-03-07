@@ -5,9 +5,11 @@
 #ifndef ASH_WEBUI_HELP_APP_UI_SEARCH_SEARCH_HANDLER_H_
 #define ASH_WEBUI_HELP_APP_UI_SEARCH_SEARCH_HANDLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "ash/webui/help_app_ui/search/search.mojom.h"
+#include "ash/webui/help_app_ui/search/search_concept.h"
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -19,15 +21,21 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace help_app {
+namespace ash::help_app {
+
+// This enum class is defined in the `search_handler.cc` with explanations.
+namespace {
+enum class CacheStatus;
+}
 
 // Handles search queries for the help app. Search() is expected to be invoked
 // by the Launcher search UI. Search results are obtained by matching the
 // provided query against search tags indexed in the LocalSearchService and
 // cross-referencing results with SearchTagRegistry.
 //
-// Searches that do not provide any matches result in an empty results array.
+// Either `Update()` or `OnProfileDirAvailable()` needs to be called before
+// `Search()` will work. Searches that do not work or do not provide any matches
+// result in an empty results array.
 class SearchHandler : public mojom::SearchHandler,
                       public SearchTagRegistry::Observer {
  public:
@@ -51,6 +59,8 @@ class SearchHandler : public mojom::SearchHandler,
   void Observe(
       mojo::PendingRemote<mojom::SearchResultsObserver> observer) override;
 
+  void OnProfileDirAvailable(const base::FilePath& profile_dir);
+
  private:
   // SearchTagRegistry::Observer:
   void OnRegistryUpdated() override;
@@ -67,6 +77,8 @@ class SearchHandler : public mojom::SearchHandler,
       const absl::optional<std::vector<local_search_service::Result>>&
           local_search_service_results);
 
+  void OnPersistenceReadComplete(std::vector<mojom::SearchConceptPtr> concepts);
+
   // Converts an LSS search result to the format used by this search handler.
   mojom::SearchResultPtr ResultToSearchResult(
       const local_search_service::Result& result) const;
@@ -74,18 +86,17 @@ class SearchHandler : public mojom::SearchHandler,
   SearchTagRegistry* search_tag_registry_;
   mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
-  // Whether or not the first Update has finished yet, which means the Search
-  // Handler is ready to search.
-  bool is_ready_;
+  CacheStatus cache_status_;
 
   // Note: Expected to have multiple clients, so ReceiverSet/RemoteSet are used.
   mojo::ReceiverSet<mojom::SearchHandler> receivers_;
   mojo::RemoteSet<mojom::SearchResultsObserver> observers_;
 
+  std::unique_ptr<SearchConcept> persistence_;
+
   base::WeakPtrFactory<SearchHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace help_app
-}  // namespace ash
+}  // namespace ash::help_app
 
 #endif  // ASH_WEBUI_HELP_APP_UI_SEARCH_SEARCH_HANDLER_H_

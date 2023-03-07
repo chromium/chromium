@@ -111,6 +111,7 @@ HelpAppProvider::HelpAppProvider(Profile* profile,
   if (!search_handler_) {
     return;
   }
+  search_handler_->OnProfileDirAvailable(profile->GetPath());
   search_handler_->Observe(
       search_results_observer_receiver_.BindNewPipeAndPassRemote());
 }

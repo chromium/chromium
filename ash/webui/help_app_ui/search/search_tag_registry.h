@@ -18,8 +18,7 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
-namespace help_app {
+namespace ash::help_app {
 
 // Processes all registered search tags by adding them to the LocalSearchService
 // index and providing the additional metadata needed for search results via
@@ -51,6 +50,11 @@ class SearchTagRegistry {
   void Update(const std::vector<mojom::SearchConceptPtr>& search_tags,
               base::OnceCallback<void()> callback);
 
+  // Clear the cached search concepts first. Then adds search concepts to the
+  // index. Callbacks when the LSS index is done updating.
+  void ClearAndUpdate(std::vector<mojom::SearchConceptPtr> search_tags,
+                      base::OnceCallback<void()> callback);
+
   // Returned by GetTagMetadata if the id was not found.
   static const SearchMetadata not_found_;
 
@@ -70,7 +74,6 @@ class SearchTagRegistry {
   base::WeakPtrFactory<SearchTagRegistry> weak_ptr_factory_{this};
 };
 
-}  // namespace help_app
-}  // namespace ash
+}  // namespace ash::help_app
 
 #endif  // ASH_WEBUI_HELP_APP_UI_SEARCH_SEARCH_TAG_REGISTRY_H_
