@@ -104,8 +104,8 @@ type PositionInfos = Array<{
 }>;
 
 export enum IndicatorType {
-  DOC_SCAN_AVAILABLE = 'doc_scan_available',
   DOC_MODE_MULTI_PAGE_AVAILABLE = 'doc_mode_multi_scan_available',
+  DOC_SCAN_AVAILABLE = 'doc_scan_available',
   DOWNLOAD_DOCUMENT_SCANNER = 'download_document_scanner',
 }
 
