@@ -194,6 +194,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // Get updated product info (including price) for the provided list of
   // bookmark IDs. The information for each bookmark will be provided via a
   // repeating callback that provides the bookmark's ID, URL, and product info.
+  // Currently this API should only be used in the BookmarkUpdateManager.
   virtual void GetUpdatedProductInfoForBookmarks(
       const std::vector<int64_t>& bookmark_ids,
       BookmarkProductInfoUpdatedCallback info_updated_callback);
