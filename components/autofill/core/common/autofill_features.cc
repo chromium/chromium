@@ -516,7 +516,7 @@ BASE_FEATURE(kAutofillSkipComparingInferredLabels,
 // TODO(crbug.com/1396374): Remove when launched.
 BASE_FEATURE(kAutofillSupportPoorMansPlaceholder,
              "AutofillSupportPoorMansPlaceholder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Autofill should search prefixes of all words/tokens when
 // filtering profiles, or only on prefixes of the whole string.
