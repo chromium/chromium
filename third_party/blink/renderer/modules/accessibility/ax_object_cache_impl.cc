@@ -1050,9 +1050,11 @@ AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
   // parent, which should be a native image.
   Node* child = LayoutTreeBuilderTraversal::FirstChild(map);
   while (child) {
-    if (AXObject* ax_child = Get(child)) {
+    if (AXObject* ax_child = SafeGet(child)) {
       if (AXObject* ax_image = ax_child->CachedParentObject()) {
-        DCHECK(!ax_image->IsDetached());
+        if (ax_image->IsDetached()) {
+          return nullptr;
+        }
         DCHECK(IsA<HTMLImageElement>(ax_image->GetNode()))
             << "Expected image AX parent of <map>'s DOM child, got: "
             << ax_image->GetNode() << "\n* Map's DOM child was: " << child
