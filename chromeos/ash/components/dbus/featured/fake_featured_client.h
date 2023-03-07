@@ -7,8 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "chromeos/ash/components/dbus/featured/featured_client.h"
+#include "components/variations/proto/cros_safe_seed.pb.h"
 
 namespace ash::featured {
 
@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DBUS_FEATURED) FakeFeaturedClient
   // |callback| is run with true by default. Call |SetCallbackSuccess|
   // to change the callback parameter.
   void HandleSeedFetched(
-      const ::featured::SeedDetails& safe_seed,
+      const variations::SeedDetails& safe_seed,
       base::OnceCallback<void(bool success)> callback) override;
 
  private:

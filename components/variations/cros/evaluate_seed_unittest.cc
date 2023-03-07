@@ -8,7 +8,7 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/branding_buildflags.h"
 #include "components/variations/client_filterable_state.h"
-#include "components/variations/cros/featured.pb.h"
+#include "components/variations/proto/cros_safe_seed.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -99,7 +99,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Should ignore data if flag is off.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
-  featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
   safe_seed.set_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
@@ -108,7 +108,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
 
   base::CommandLine command_line({"evaluate_seed"});
   auto data = GetSafeSeedData(&command_line, stream);
-  featured::SeedDetails empty_seed;
+  variations::SeedDetails empty_seed;
   ASSERT_TRUE(data.has_value());
   EXPECT_FALSE(data.value().use_safe_seed);
   EXPECT_THAT(data.value().seed_data, EqualsProto(empty_seed));
@@ -116,7 +116,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off) {
 
 // Should return specified data via stream if flag is on.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
-  featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
   safe_seed.set_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
@@ -132,7 +132,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On) {
 
 // Should not attempt to read stream if flag is not on.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
-  featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
   safe_seed.set_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
@@ -141,7 +141,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
 
   base::CommandLine command_line({"evaluate_seed"});
   auto data = GetSafeSeedData(&command_line, stream);
-  featured::SeedDetails empty_seed;
+  variations::SeedDetails empty_seed;
   ASSERT_TRUE(data.has_value());
   EXPECT_FALSE(data.value().use_safe_seed);
   EXPECT_THAT(data.value().seed_data, EqualsProto(empty_seed));
@@ -149,7 +149,7 @@ TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_Off_FailRead) {
 
 // If flag is on and reading fails, should return nullopt.
 TEST(VariationsCrosEvaluateSeed, GetSafeSeedData_On_FailRead) {
-  featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
   safe_seed.set_compressed_data("some text");
   std::string text;
   safe_seed.SerializeToString(&text);
