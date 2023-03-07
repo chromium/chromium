@@ -63,7 +63,7 @@ interface TtsLanguage {
   voices: TtsHandlerVoice[];
 }
 
-interface SettingsTtsSubpageElement {
+export interface SettingsTtsSubpageElement {
   $: {
     previewVoiceOptions: DomRepeat,
     previewVoice: HTMLSelectElement,
@@ -73,7 +73,7 @@ interface SettingsTtsSubpageElement {
 const SettingsTtsSubpageElementBase = DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
+export class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
   static get is() {
     return 'settings-tts-subpage';
   }

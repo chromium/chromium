@@ -340,10 +340,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'app_management/supported_links_item_test.js',
  ],
  ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
- [
-   'AudioAndCaptionsPage',
-   'audio_and_captions_page_tests.js',
- ],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.js'],
@@ -449,6 +445,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NetworkSummary', 'network_summary_test.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.js'],
  ['OncMojoTest', 'onc_mojo_test.js'],
+ [
+   'OsA11yPageAudioAndCaptionsPage',
+   'os_a11y_page/audio_and_captions_page_tests.js',
+ ],
+ ['OsA11yPageTtsSubpage', 'os_a11y_page/tts_subpage_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.js'],
  ['OsBluetoothPairingDialog', 'os_bluetooth_pairing_dialog_tests.js'],
  ['OsBluetoothSummary', 'os_bluetooth_summary_tests.js'],
@@ -546,7 +547,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['TextToSpeechSubpage', 'text_to_speech_subpage_tests.js'],
  ['TimezoneSelector', 'timezone_selector_test.js'],
  ['TimezoneSubpage', 'timezone_subpage_test.js'],
- ['TtsSubpage', 'tts_subpage_test.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {

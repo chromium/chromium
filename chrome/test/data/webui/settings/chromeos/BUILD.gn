@@ -22,7 +22,6 @@ test_files = [
   "apn_detail_dialog_tests.js",
   "app_notifications_subpage_tests.js",
   "apps_page_test.js",
-  "audio_and_captions_page_tests.ts",
   "cellular_networks_list_test.js",
   "cellular_roaming_toggle_button_test.js",
   "cellular_setup_dialog_test.js",
@@ -179,7 +178,6 @@ test_files = [
   "text_to_speech_subpage_tests.js",
   "timezone_selector_test.js",
   "timezone_subpage_test.js",
-  "tts_subpage_test.js",
   "utils.ts",
 
   # Subfolder files.
@@ -217,6 +215,9 @@ test_files = [
   "app_management/test_store.js",
   "app_management/test_util.js",
   "app_management/toggle_row_test.js",
+
+  "os_a11y_page/audio_and_captions_page_tests.ts",
+  "os_a11y_page/tts_subpage_test.ts",
 
   "os_files_page/office_page_test.ts",
 

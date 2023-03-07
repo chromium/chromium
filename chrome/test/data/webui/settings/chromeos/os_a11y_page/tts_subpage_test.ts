@@ -4,12 +4,12 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {SettingsTtsSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('TtsSubpage', function() {
-  /** @type {!TtsSubpageElement|undefined} */
-  let ttsSubpage;
+  let ttsSubpage: SettingsTtsSubpageElement;
 
   setup(function() {
     ttsSubpage = document.createElement('settings-tts-subpage');
@@ -45,7 +45,7 @@ suite('TtsSubpage', function() {
     assertEquals(3, previewVoice.length);
 
     // Check one of the language option details.
-    const secondVoice = ttsSubpage.shadowRoot.querySelector('option[value=B]');
+    const secondVoice = ttsSubpage.shadowRoot!.querySelector('option[value=B]');
     assertTrue(!!secondVoice);
     assertEquals(
         'Goa\'uld - Star Gate', String(secondVoice.textContent).trim());
