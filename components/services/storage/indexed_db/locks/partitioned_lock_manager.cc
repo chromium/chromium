@@ -9,8 +9,11 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
 namespace content {
@@ -162,6 +165,33 @@ void PartitionedLockManager::RemoveLockId(const PartitionedLockId& lock_id) {
     DCHECK_EQ(0, it->second.acquired_count);
     locks_.erase(it);
   }
+}
+
+base::Value PartitionedLockManager::ToDebugValue(
+    TransformLockIdToStringFn transform) const {
+  base::Value::Dict result;
+  for (const std::pair<PartitionedLockId, Lock>& id_lock_pair : locks_) {
+    const Lock& lock = id_lock_pair.second;
+    base::Value::Dict lock_state;
+    base::Value::List held_locations;
+    for (const base::Location& location : lock.request_locations) {
+      held_locations.Append(location.ToString());
+    }
+    lock_state.Set("held_locations", std::move(held_locations));
+
+    base::Value::List queued_locations;
+    for (const LockRequest& request : lock.queue) {
+      queued_locations.Append(request.location.ToString());
+    }
+    lock_state.Set("queue", std::move(queued_locations));
+
+    std::string id_as_str = transform(id_lock_pair.first);
+    DCHECK(!result.contains(id_as_str))
+        << id_as_str << " already exists in " << result.DebugString()
+        << ", cannot insert " << lock_state.DebugString();
+    result.Set(id_as_str, std::move(lock_state));
+  }
+  return base::Value(std::move(result));
 }
 
 void PartitionedLockManager::AcquireLock(

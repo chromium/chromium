@@ -609,6 +609,7 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/isolated_web_app_validator_unittest.cc",
     "isolated_web_apps/pending_install_info_unittest.cc",
     "isolated_web_apps/signed_web_bundle_reader_unittest.cc",
+    "locks/web_app_lock_manager_unittest.cc",
     "os_integration/file_handling_sub_manager_unittest.cc",
     "os_integration/os_integration_manager_unittest.cc",
     "os_integration/protocol_handling_sub_manager_unittest.cc",

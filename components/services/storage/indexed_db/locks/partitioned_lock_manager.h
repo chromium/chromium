@@ -24,6 +24,10 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
+namespace base {
+class Value;
+}
+
 namespace content {
 
 // Used to receive and hold locks from a PartitionedLockManager. This struct
@@ -118,6 +122,14 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   // Returns 0 if the lock is not found, or the number of other active
   // requests queued if the lock is held.
   int64_t GetQueuedLockRequestCount(const PartitionedLockId& lock_id) const;
+
+  // Outputs the lock state (held & requested locks) into a debug value,
+  // suitable for printing an 'internals' or to print during debugging. The
+  // `transform` is used to change the lock ids to human-readable values.
+  // Note: The human-readable values MUST be unique per lock id, and if to lock
+  // ids resolve to the same string, then this function will DCHECK.
+  using TransformLockIdToStringFn = std::string(const PartitionedLockId&);
+  base::Value ToDebugValue(TransformLockIdToStringFn transform) const;
 
  private:
   struct LockRequest {

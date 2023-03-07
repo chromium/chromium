@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -39,6 +40,7 @@ constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
 constexpr char kUserUninstalledPreinstalledWebAppPrefs[] =
     "UserUninstalledPreinstalledWebAppPrefs";
 constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
+constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
 constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
@@ -66,6 +68,7 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kPreinstalledWebAppConfigs);
   index.Append(kUserUninstalledPreinstalledWebAppPrefs);
   index.Append(kExternallyManagedWebAppPrefs);
+  index.Append(kLockManager);
   index.Append(kCommandManager);
   index.Append(kIconErrorLog);
   index.Append(kInstallationProcessErrorLog);
@@ -200,6 +203,13 @@ base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
   return root;
 }
 
+base::Value::Dict BuildLockManagerJson(web_app::WebAppProvider& provider) {
+  base::Value::Dict root;
+  root.Set(kLockManager,
+           provider.command_manager().lock_manager().ToDebugValue());
+  return root;
+}
+
 base::Value::Dict BuildCommandManagerJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
   root.Set(kCommandManager, provider.command_manager().ToDebugValue());
@@ -307,6 +317,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile));
   root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
+  root.Append(BuildLockManagerJson(*provider));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));
   root.Append(BuildInstallProcessErrorLogJson(*provider));
