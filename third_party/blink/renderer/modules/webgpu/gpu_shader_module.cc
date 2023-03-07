@@ -123,8 +123,4 @@ ScriptPromise GPUShaderModule::getCompilationInfo(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
-  return getCompilationInfo(script_state);
-}
-
 }  // namespace blink
